@@ -1180,7 +1180,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : layEgg !== null
           ? `nest:${layEgg.cityId}:${layEgg.role}`
           : martianPick !== null
-            ? `martian:${martianPick.kind}:${martianPick.unitId}:${martianPick.kind === "BEAM_DOWN" ? String(martianPick.passengerUnitId) : ""}`
+            ? `martian:${martianPick.kind}:${martianPick.unitId}:${martianPick.kind === "BEAM_DOWN" ? String(martianPick.passengerUnitId) : martianPick.kind === "MASS_BEAM_DOWN" && martianPick.chosen !== null ? `${martianPick.chosen.x},${martianPick.chosen.y}` : ""}`
             : iceFolkPick !== null
               ? `ice-folk:${iceFolkPick.kind}:${iceFolkPick.unitId}`
               : dwarfPick !== null

@@ -202,7 +202,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
     // FIRE_MOON_GUN after JOIN_CHANT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(88);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
     expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 18)).toEqual([
       "BREAK_OFF",

@@ -63,6 +63,7 @@ import {
   beamDownPickupTilesV7,
   beamDownTileLabelV7,
   beamDownUnavailableTextV7,
+  massBeamDownUnavailableTextV7,
   martianAbilityDescriptionV7,
   martianTurnChipsV7,
   tractorBeamTooltipV7,
@@ -447,8 +448,13 @@ describe("Tractor Beam aiming", () => {
       // against the Saucer's beam.)
       `a ${saucer} pulls a unit two tiles away one tile closer, but not a unit on its own city center with City Walls; a ${mothership} pulls a unit two or three tiles away up to two tiles closer, also off City Walls, once a turn, and can still act.`,
     );
+    // The Mothership redesign (`pulp_wars-ewpj`): the Beam Down is the
+    // Saucer's; the Mothership's is Mass Beam Down.
     expect(help.get("Beam Down")).toBe(
-      `a ${saucer} or ${mothership} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
+      `a ${saucer} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
+    );
+    expect(help.get("Mass Beam Down")).toBe(
+      `a ${mothership} beams up to three of your units from up to two tiles away down around a tile up to three tiles away, each on the nearest free tile; they can still attack but not move.`,
     );
     expect(new Map(ICE_FOLK_HELP_RULES_V7).get("Snow")).toContain(
       "Ice Folk units move at half cost from Snow to Snow and have light cover on it unless they are fortified",
@@ -508,9 +514,13 @@ describe("Tractor Beam aiming", () => {
             command.unitId === unit.id,
         ),
       ).toBe(false);
-      expect(beamDownUnavailableTextV7(frozen, unit.id, false)).toBe(
-        MARTIAN_FROZEN_MOVED_V7,
-      );
+      // The Mothership redesign (`pulp_wars-ewpj`): the Mothership names it
+      // on its Mass Beam Down.
+      expect(
+        (unit.role === "KNIGHT"
+          ? massBeamDownUnavailableTextV7
+          : beamDownUnavailableTextV7)(frozen, unit.id, false),
+      ).toBe(MARTIAN_FROZEN_MOVED_V7);
       expect(tractorBeamUnavailableTextV7(frozen, unit.id, false)).toBe(
         MARTIAN_FROZEN_MOVED_V7,
       );
@@ -650,8 +660,9 @@ describe("Snow cover in the Defense row", () => {
 
 describe("Gallery: the balance round's cues and details", () => {
   it("plays a Mothership's heavy pull through two tiles", () => {
+    // The Mothership redesign (`pulp_wars-ewpj`): Mass Beam Down.
     expect(galleryDemoCuesV7("MARTIAN", "KNIGHT")).toEqual(
-      expect.arrayContaining(["TRACTOR_BEAM", "BEAM_DOWN"]),
+      expect.arrayContaining(["TRACTOR_BEAM", "MASS_BEAM_DOWN"]),
     );
     const scene = buildGalleryDemoSceneV7("MARTIAN", "KNIGHT", "TRACTOR_BEAM");
     const pulled = scene?.events.events.find(

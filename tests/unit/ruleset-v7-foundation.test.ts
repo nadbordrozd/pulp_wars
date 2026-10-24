@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r107");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -148,8 +148,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
-    // FIRE_MOON_GUN after JOIN_CHANT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    // FIRE_MOON_GUN after JOIN_CHANT (87). The Mothership redesign
+    // (`pulp_wars-ewpj`) adds MASS_BEAM_DOWN last (88).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(88);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(

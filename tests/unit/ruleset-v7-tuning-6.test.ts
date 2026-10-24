@@ -67,7 +67,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r107`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r108`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -176,13 +176,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r107");
-    expect(PRIOR_RULESET_7_IDS.slice(-59, -57)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
+    expect(PRIOR_RULESET_7_IDS.slice(-60, -58)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r107.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-59, -57)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-60, -58)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -1387,9 +1387,12 @@ describe("the dear units get bought", () => {
       });
       // The Martian pass (`pulp_wars-w49.14`): a fifth of a Martian army
       // is Tripods and a tenth Motherships, so its second dear unit of
-      // seven is a Tripod again.
+      // seven was a Tripod again. The Mothership redesign
+      // (`pulp_wars-ewpj`): the tougher Mothership (20 HP, Defense 3) is
+      // now worth its slot beside the first Tripod, as every other
+      // faction's breakthrough unit is.
       expect(second, faction).toBe(
-        faction === "MARTIAN" || first !== "CATAPULT" ? "CATAPULT" : "KNIGHT",
+        first !== "CATAPULT" ? "CATAPULT" : "KNIGHT",
       );
     }
   });

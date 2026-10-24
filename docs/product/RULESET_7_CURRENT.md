@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r107`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r108`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r108` (`pulp_wars-ewpj`; the user, 2026-10-24: "the
+mothership unit is lame and doesn't have a purpose ... its supposed to be
+in the same class as knight and vampire") redesigns the **Mothership** as
+the Martian army-mover and anchor
+([section 20.7.1](#2071-mass-beam-down),
+[section 20.3](#203-force-field-and-force-fields)): it costs 9 Coins (8)
+and has 20 HP (16), Attack 3 (2.5), Defense 3 (2), and Sight 2 (1). Its
+single Beam Down (the Saucer keeps it) becomes **Mass Beam Down**
+(`MASS_BEAM_DOWN`, its primary action): up to three own units from within
+two tiles of it are set down around an explored tile within three tiles,
+each on the nearest free tile, and may still attack. Its **Shield
+Canopy** covers the own units beside it like a Force Field at every
+recharge, the End Turn one included, with no technology. The Heavy
+Tractor Beam is unchanged (it already pulls an enemy into the army, so
+there is no separate Abduct). A save, replay, or setup of `7r107` is
+rejected, and the browser autosave has a new key. Boards are unchanged.
 `pulp-wars-poc-7r107` (`pulp_wars-zir6`; the user, 2026-10-23: "some
 actions are pointless - casting freezing spell on a unit that is already
 frozen ... there should not be the option to do it") adds one general
@@ -1620,10 +1636,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r107`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r108`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r107.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r108.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6619,20 +6635,20 @@ The Martian (`MARTIAN`) roster, by mechanical role, with the
 ([section 20.2](#202-shields)); "Slots" is the capacity the unit uses; "Mode"
 is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-water)):
 
-| Unit             | Role          | Tech              | Cost | Slots |  HP | Shield |  Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                                           |
-| ---------------- | ------------- | ----------------- | ---: | ----: | --: | -----: | ------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ----------------------------------------------------------------------------------- |
-| Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |  8⁸ |      2 |  2 (4)⁷ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                                           |
-| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | yes     | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance          |
-| Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |   8 |      2 |   3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                            |
-| Shield Projector | `GUARD`       | Fortification     |    4 |     1 |  12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                       |
-| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |   1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no Tend Wounded                                      |
-| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | yes     | heat ray; Pierce; never advances                                                    |
-| Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | yes     | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
-| Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |  12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                            |
-| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                |
-| Skimmer⁹         | `PATROL_BOAT` | Shorecraft        |    5 |     1 |   8 |      2 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Hover Pods)                                                             |
-| Hover Cruiser⁹   | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  20 |      3 |  5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
-| Bathysphere⁹     | `SUBMARINE`   | Submersibles      |    9 |     1 |  10 |      2 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                           |
+| Unit             | Role          | Tech              | Cost | Slots |   HP | Shield |  Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                                                                  |
+| ---------------- | ------------- | ----------------- | ---: | ----: | ---: | -----: | ------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |   8⁸ |      2 |  2 (4)⁷ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                                                                  |
+| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |    8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | yes     | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance                                 |
+| Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |    8 |      2 |   3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                                                   |
+| Shield Projector | `GUARD`       | Fortification     |    4 |     1 |   12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                                              |
+| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |    8 |      2 |   1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no Tend Wounded                                                             |
+| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |   12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | yes     | heat ray; Pierce; never advances                                                                           |
+| Mothership       | `KNIGHT`      | Chivalry          |  9¹⁰ |     2 | 20¹⁰ |      4 | 3 (6)¹⁰ |  3 (6)¹⁰ |    2 |     1 |   2¹⁰ | fly    | yes               | yes     | Mass Beam Down¹⁰; Shield Canopy¹⁰; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
+| Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |   12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                                                   |
+| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |   32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                                       |
+| Skimmer⁹         | `PATROL_BOAT` | Shorecraft        |    5 |     1 |    8 |      2 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Hover Pods)                                                                                    |
+| Hover Cruiser⁹   | `BATTLESHIP`  | Naval Engineering |   16 |     1 |   20 |      3 |  5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                                              |
+| Bathysphere⁹     | `SUBMARINE`   | Submersibles      |    9 |     1 |   10 |      2 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                                                  |
 
 ⁵ Ray Gunner Sight becomes 2 with Fieldcraft.
 ⁶ [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record)
@@ -6656,6 +6672,11 @@ applied after the Martians won about 75% of the coarse Dry Land games at
 the Human ships' numbers under their own names, with less HP behind a
 Shield; the Martian Seamanship is shown as Hover Pods (the Ram and the
 shore launch of foot units, no Board).
+¹⁰ The Mothership redesign (`pulp-wars-poc-7r108`, `pulp_wars-ewpj`,
+[section 20.7.1](#2071-mass-beam-down)): the Martian army-mover and
+anchor at the Knight's price, 9 Coins (8), 20 HP (16), Attack 3 (2.5),
+Defense 3 (2), Sight 2 (1); Mass Beam Down instead of Beam Down, and the
+Shield Canopy ([section 20.3](#203-force-field-and-force-fields)).
 
 - **Grunt** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion: 13 HP promoted) except its numbers, its Shield, its
@@ -6695,9 +6716,11 @@ shore launch of foot units, no Board).
   `CATAPULT`).
 - **Mothership** flies. It has Knight parity for `CAPTURE` only (it
   captures since `pulp_wars-ke95`; as a flyer it may stand on a village or
-  a foreign center): no Overrun, Move 2, and it never advances. It is the faction's carrier: its
-  primary actions are Attack and Beam Down ([section 20.7](#207-beam-down)),
-  and its **Heavy Tractor Beam** ([section 20.10](#2010-tractor-beam)) is
+  a foreign center): no Overrun, Move 2, and it never advances. It is the
+  faction's army-mover (`7r108`): its primary actions are Attack and
+  **Mass Beam Down** ([section 20.7.1](#2071-mass-beam-down)), its
+  **Shield Canopy** covers the units beside it
+  ([section 20.3](#203-force-field-and-force-fields)), and its **Heavy Tractor Beam** ([section 20.10](#2010-tractor-beam)) is
   not a primary action: it is free once a turn, before or after its Move
   and its primary action. It is never a treasure unit.
 - **Colossus** is a walker with a heat ray and Juggernaut parity otherwise:
@@ -6718,8 +6741,8 @@ shore launch of foot units, no Board).
   `ATTACK`, `CAPTURE`, `HEAT_RAY`; Shield Projector `ATTACK`, `CAPTURE`,
   `FORCE_FIELD`; Brain `ATTACK`, `CAPTURE`, `RALLY`, `MIND_CONTROL`; Tripod
   `ATTACK`, `CAPTURE`, `STRIDE`, `HEAT_RAY`, `PIERCE`; Mothership `ATTACK`,
-  `CAPTURE`, `FLY`, `BEAM_DOWN`,
-  `TRACTOR_BEAM`; Colossus `ATTACK`, `CAPTURE`, `PUSH`, `STRIDE`,
+  `CAPTURE`, `FLY`, `MASS_BEAM_DOWN`, `TRACTOR_BEAM`, `SHIELD_CANOPY`
+  (`BEAM_DOWN` before `7r108`); Colossus `ATTACK`, `CAPTURE`, `PUSH`, `STRIDE`,
   `HEAT_RAY`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
   `SUBMERGED`, `TORPEDO`.
   The Shield maximum, the slots, the movement
@@ -7739,33 +7762,33 @@ offered commands, never picks it.
 
 The audit of every command (`7r107`):
 
-| Ability (command)                                                                                                                                                                                        | Where it would change nothing                                                                                                                        | Decision                                                                                                                                                                         |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frost Bolt (`FROST_BOLT`, the Ice Witch) and the Sled's Frost Bolt (`THROW_BOLAS`)                                                                                                                       | the target is Frozen already for as long as a freeze gives (every Frozen enemy: a freeze in your turn gives it 1)                                    | **new**: `FROST_BOLT_NOT_LEGAL` / `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }`, not offered                                                                                    |
-| Cold Snap (`COLD_SNAP`, area)                                                                                                                                                                            | every target around the Witch is Frozen already                                                                                                      | **new**: `COLD_SNAP_NOT_LEGAL { reason: "ALREADY_FROZEN" }` (`NO_TARGET` with nobody at all); legal with one unfrozen target                                                     |
-| Thunder Stomp (`STOMP`, area)                                                                                                                                                                            | no hostile ground unit or Egg and no Field Defense around the Brontosaurus                                                                           | **new**: `STOMP_NOT_LEGAL { reason: "NO_TARGET" }` (it was legal); a Field Defense alone keeps it legal (it is smashed)                                                          |
-| Freeze (`FREEZE`, the frozen sea)                                                                                                                                                                        | only the actor's own sound ice in the freeze set                                                                                                     | already refused (`FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`, `7r100`)                                                                                                            |
-| Crack Ice (`CRACK_ICE`)                                                                                                                                                                                  | no ice on the tile                                                                                                                                   | already refused (`NO_ICE`)                                                                                                                                                       |
-| Tend Wounded and Repair (`TEND_WOUNDED`)                                                                                                                                                                 | a full-HP unit with no Plague, Bitten, Frozen, or frog; a Barricade at full HP                                                                       | already no target (`HEAL_TARGET_NOT_FOUND` with none); a full-HP afflicted unit stays a target: it is cured                                                                      |
-| Rally: Inspire, Frenzy, War Drums, Psychic Command (`RALLY`, area)                                                                                                                                       | the unit is Inspired already (it does not stack or refresh)                                                                                          | already no target; with none, `HEAL_TARGET_NOT_FOUND`. A unit that has attacked stays a target (an Overrun, a twin shot, a Feast, or a thaw by Tend Wounded may still use it)    |
-| Berserk (`RALLY` of the Orc Warboss, area)                                                                                                                                                               | the unit has moved or is Berserk already                                                                                                             | already no target ([section 18.10](#1810-berserk-ram-and-troll-regeneration))                                                                                                    |
-| Sugar Toss (`SUGAR_TOSS`) and Top-Up (`TOP_UP`)                                                                                                                                                          | a full-HP target (Toss); a full-HP target with nothing to cure and no Crash (Top-Up)                                                                 | already refused (`HEAL_TARGET_FULL`, `ALREADY_TOSSED`; `NOTHING_TO_DO`)                                                                                                          |
-| Recover (`RECOVER`)                                                                                                                                                                                      | full HP, or no healing (Restless, a construct, a ship away from a dock)                                                                              | already refused (`RECOVER_NOT_LEGAL`)                                                                                                                                            |
-| Sugar Rush (`SUGAR_RUSH`)                                                                                                                                                                                | the unit is Rushed already                                                                                                                           | already refused (`RUSHED`)                                                                                                                                                       |
-| Mind Control (`MIND_CONTROL`)                                                                                                                                                                            | the target is mind-controlled already (by any Brain)                                                                                                 | already refused (`TARGET_IMMUNE`)                                                                                                                                                |
-| Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                            | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |
-| Ribbit (`RIBBIT`)                                                                                                                                                                                        | the target is a frog already                                                                                                                         | already refused (`FROG`)                                                                                                                                                         |
-| Proclaim (`PROCLAIM`)                                                                                                                                                                                    | the city is Cowed already                                                                                                                            | already refused (`COWED`)                                                                                                                                                        |
-| Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                         | the cultist chants already; the Thing grips already or the cultist is gripped                                                                        | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
-| Channel and Bind again (`CHANNEL`)                                                                                                                                                                       | an own daemon that has enough strands (or is on its Doorstep)                                                                                        | kept: the strand is a change (it guards against a disruption and pays the trickle, [section 26.5](#265-the-channel-strands-and-the-check)); Bind again only on an Unbound daemon |
-| Seize (`SEIZE`), Tentacle (`TENTACLE`), Bomb Run (`BOMB_RUN`)                                                                                                                                            | a healthy victim; a Tentacle that stands already; a target bombed already this turn                                                                  | already refused (`HEALTHY`; `EXISTS`; `ALREADY_BOMBED`)                                                                                                                          |
-| Wail (`WAIL`, area)                                                                                                                                                                                      | every target would take 0                                                                                                                            | kept: a 0 hit counts ([section 17.9](#179-wail)) and a hidden Blizzard can make the public preview higher than the hit, so the offer could not match the rule; rare              |
-| Whirl, Boo!, Raise Dead, Devour, Hatch, Zap, Swallow, Goblin Toss, Break Off, Stampede, Board, Sacrifice, Summon, Assemble, Barricade, Re-bake, Tunnel, Beam Down, Moon Gun, rituals, Switcheroo, Attack | none: each deals damage, moves, makes, removes, or spends something, and each needs its target where it has one (`NO_TARGET`, `NOBODY`, `TILE`, ...) | unchanged                                                                                                                                                                        |
-| Kaboom (`KABOOM`)                                                                                                                                                                                        | none: with nobody around the unit still destroys itself                                                                                              | unchanged (legal by design, [section 18.4](#184-kaboom))                                                                                                                         |
-| Promote, Capture, Pillage, Disband, Wait, Toss a Coin                                                                                                                                                    | none: each changes the unit, tile, or Coins; Wait is not offered to a handled unit, a Coin is tossed once per seat                                   | unchanged                                                                                                                                                                        |
-| Building and terrain actions (`BUILD_*`, Field Defense, Road, Redevelop, Clear, Replant, Cultivate, Blast Mountain, harvests)                                                                            | a building or Field Defense where one stands, a Road on a road, Redevelop of an empty tile, a harvest without its resource                           | already refused (`INVALID_TILE`, `PLACEMENT_REQUIREMENT_UNMET`, `CITY_BUILDING_LIMIT`, ...) and never offered                                                                    |
-| City actions (Train, Hire, Lay Egg, Offering, Land Grant, a reward)                                                                                                                                      | none: each makes or spends something                                                                                                                 | unchanged                                                                                                                                                                        |
-| Shields, Force Fields, the Cold Aura, Black Ice, Frostbite                                                                                                                                               | not commands (passive): nothing is offered                                                                                                           | unchanged                                                                                                                                                                        |
+| Ability (command)                                                                                                                                                                                                        | Where it would change nothing                                                                                                                        | Decision                                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frost Bolt (`FROST_BOLT`, the Ice Witch) and the Sled's Frost Bolt (`THROW_BOLAS`)                                                                                                                                       | the target is Frozen already for as long as a freeze gives (every Frozen enemy: a freeze in your turn gives it 1)                                    | **new**: `FROST_BOLT_NOT_LEGAL` / `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }`, not offered                                                                                    |
+| Cold Snap (`COLD_SNAP`, area)                                                                                                                                                                                            | every target around the Witch is Frozen already                                                                                                      | **new**: `COLD_SNAP_NOT_LEGAL { reason: "ALREADY_FROZEN" }` (`NO_TARGET` with nobody at all); legal with one unfrozen target                                                     |
+| Thunder Stomp (`STOMP`, area)                                                                                                                                                                                            | no hostile ground unit or Egg and no Field Defense around the Brontosaurus                                                                           | **new**: `STOMP_NOT_LEGAL { reason: "NO_TARGET" }` (it was legal); a Field Defense alone keeps it legal (it is smashed)                                                          |
+| Freeze (`FREEZE`, the frozen sea)                                                                                                                                                                                        | only the actor's own sound ice in the freeze set                                                                                                     | already refused (`FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`, `7r100`)                                                                                                            |
+| Crack Ice (`CRACK_ICE`)                                                                                                                                                                                                  | no ice on the tile                                                                                                                                   | already refused (`NO_ICE`)                                                                                                                                                       |
+| Tend Wounded and Repair (`TEND_WOUNDED`)                                                                                                                                                                                 | a full-HP unit with no Plague, Bitten, Frozen, or frog; a Barricade at full HP                                                                       | already no target (`HEAL_TARGET_NOT_FOUND` with none); a full-HP afflicted unit stays a target: it is cured                                                                      |
+| Rally: Inspire, Frenzy, War Drums, Psychic Command (`RALLY`, area)                                                                                                                                                       | the unit is Inspired already (it does not stack or refresh)                                                                                          | already no target; with none, `HEAL_TARGET_NOT_FOUND`. A unit that has attacked stays a target (an Overrun, a twin shot, a Feast, or a thaw by Tend Wounded may still use it)    |
+| Berserk (`RALLY` of the Orc Warboss, area)                                                                                                                                                                               | the unit has moved or is Berserk already                                                                                                             | already no target ([section 18.10](#1810-berserk-ram-and-troll-regeneration))                                                                                                    |
+| Sugar Toss (`SUGAR_TOSS`) and Top-Up (`TOP_UP`)                                                                                                                                                                          | a full-HP target (Toss); a full-HP target with nothing to cure and no Crash (Top-Up)                                                                 | already refused (`HEAL_TARGET_FULL`, `ALREADY_TOSSED`; `NOTHING_TO_DO`)                                                                                                          |
+| Recover (`RECOVER`)                                                                                                                                                                                                      | full HP, or no healing (Restless, a construct, a ship away from a dock)                                                                              | already refused (`RECOVER_NOT_LEGAL`)                                                                                                                                            |
+| Sugar Rush (`SUGAR_RUSH`)                                                                                                                                                                                                | the unit is Rushed already                                                                                                                           | already refused (`RUSHED`)                                                                                                                                                       |
+| Mind Control (`MIND_CONTROL`)                                                                                                                                                                                            | the target is mind-controlled already (by any Brain)                                                                                                 | already refused (`TARGET_IMMUNE`)                                                                                                                                                |
+| Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                                            | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |
+| Ribbit (`RIBBIT`)                                                                                                                                                                                                        | the target is a frog already                                                                                                                         | already refused (`FROG`)                                                                                                                                                         |
+| Proclaim (`PROCLAIM`)                                                                                                                                                                                                    | the city is Cowed already                                                                                                                            | already refused (`COWED`)                                                                                                                                                        |
+| Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                                         | the cultist chants already; the Thing grips already or the cultist is gripped                                                                        | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
+| Channel and Bind again (`CHANNEL`)                                                                                                                                                                                       | an own daemon that has enough strands (or is on its Doorstep)                                                                                        | kept: the strand is a change (it guards against a disruption and pays the trickle, [section 26.5](#265-the-channel-strands-and-the-check)); Bind again only on an Unbound daemon |
+| Seize (`SEIZE`), Tentacle (`TENTACLE`), Bomb Run (`BOMB_RUN`)                                                                                                                                                            | a healthy victim; a Tentacle that stands already; a target bombed already this turn                                                                  | already refused (`HEALTHY`; `EXISTS`; `ALREADY_BOMBED`)                                                                                                                          |
+| Wail (`WAIL`, area)                                                                                                                                                                                                      | every target would take 0                                                                                                                            | kept: a 0 hit counts ([section 17.9](#179-wail)) and a hidden Blizzard can make the public preview higher than the hit, so the offer could not match the rule; rare              |
+| Whirl, Boo!, Raise Dead, Devour, Hatch, Zap, Swallow, Goblin Toss, Break Off, Stampede, Board, Sacrifice, Summon, Assemble, Barricade, Re-bake, Tunnel, Beam Down, Mass Beam Down, Moon Gun, rituals, Switcheroo, Attack | none: each deals damage, moves, makes, removes, or spends something, and each needs its target where it has one (`NO_TARGET`, `NOBODY`, `TILE`, ...) | unchanged                                                                                                                                                                        |
+| Kaboom (`KABOOM`)                                                                                                                                                                                                        | none: with nobody around the unit still destroys itself                                                                                              | unchanged (legal by design, [section 18.4](#184-kaboom))                                                                                                                         |
+| Promote, Capture, Pillage, Disband, Wait, Toss a Coin                                                                                                                                                                    | none: each changes the unit, tile, or Coins; Wait is not offered to a handled unit, a Coin is tossed once per seat                                   | unchanged                                                                                                                                                                        |
+| Building and terrain actions (`BUILD_*`, Field Defense, Road, Redevelop, Clear, Replant, Cultivate, Blast Mountain, harvests)                                                                                            | a building or Field Defense where one stands, a Road on a road, Redevelop of an empty tile, a harvest without its resource                           | already refused (`INVALID_TILE`, `PLACEMENT_REQUIREMENT_UNMET`, `CITY_BUILDING_LIMIT`, ...) and never offered                                                                    |
+| City actions (Train, Hire, Lay Egg, Offering, Land Grant, a reward)                                                                                                                                                      | none: each makes or spends something                                                                                                                 | unchanged                                                                                                                                                                        |
+| Shields, Force Fields, the Shield Canopy, the Cold Aura, Black Ice, Frostbite                                                                                                                                            | not commands (passive): nothing is offered                                                                                                           | unchanged                                                                                                                                                                        |
 
 ## 13. Combat and fortification
 
@@ -9888,7 +9911,9 @@ Harbours from it.
   Heavy Tractor Beam mechanic, now that both units carry Beam Down and a
   Tractor Beam), scores every offered pull, a Saucer's too, by the same
   effects, read from the tile the public query says the pull ends on, and
-  scores a Mothership's Beam Down like a Saucer's. Since `pulp_wars-1wy.4`
+  scored a Mothership's Beam Down like a Saucer's (since `7r108` it scores
+  its Mass Beam Down, [section 20.7.1](#2071-mass-beam-down), and values a
+  Move under a Shield Canopy like one beside a Projector). Since `pulp_wars-1wy.4`
   it uses the new tools on purpose: it trains one Saucer per three front
   units, beams a unit to a tile it shoots from on arrival, extracts a unit
   that has fired from lethal reach (and flies a carrier there to do it),
@@ -11693,19 +11718,19 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
 
 Examples (engine formula, full HP, open Grass):
 
-| Hit                                             | Hit | Shield absorbs | HP lost | Note                                              |
-| ----------------------------------------------- | --: | -------------: | ------: | ------------------------------------------------- |
-| Fighter attacks a Grunt (8 HP, Shield 2)        |   5 |              2 |       3 | the Fighter takes 3 back                          |
-| A second Fighter attacks the same Grunt         |   5 |              0 |       5 | the Grunt is dead (two Fighter hits kill it)      |
-| Guard attacks a Grunt                           |   3 |              2 |       1 |                                                   |
-| Banshee Wail on a Grunt                         |   2 |              2 |       0 | the Wail strips every Shield in its radius        |
-| Goblin Kaboom (6) on a Grunt                    |   6 |              2 |       4 | a second blast of 4 or more kills (`w49.35`)      |
-| Zombie attacks a Grunt                          |   5 |              2 |       3 | HP was lost, so the Grunt is Bitten               |
-| Zombie attacks a Grunt in a Force Field         |   5 |              4 |       1 | still Bitten                                      |
-| Fighter attacks a Mothership (16 HP, Shield 4)  |   5 |              4 |       1 |                                                   |
-| Grunt attacks a Fighter; the Fighter retaliates |   5 |              2 |       3 | the Grunt meets the enemy turn with Shield 0      |
-| Vampire at 4 of 10 HP attacks a Grunt           |   6 |              2 |       4 | the Vampire heals 4 (to 8), not 6                 |
-| Lich attacks a Grunt next to another Grunt      |   9 |              2 |       7 | splash 5 on the neighbour: Shield 2, HP 3, Plague |
+| Hit                                             | Hit | Shield absorbs | HP lost | Note                                               |
+| ----------------------------------------------- | --: | -------------: | ------: | -------------------------------------------------- |
+| Fighter attacks a Grunt (8 HP, Shield 2)        |   5 |              2 |       3 | the Fighter takes 3 back                           |
+| A second Fighter attacks the same Grunt         |   5 |              0 |       5 | the Grunt is dead (two Fighter hits kill it)       |
+| Guard attacks a Grunt                           |   3 |              2 |       1 |                                                    |
+| Banshee Wail on a Grunt                         |   2 |              2 |       0 | the Wail strips every Shield in its radius         |
+| Goblin Kaboom (6) on a Grunt                    |   6 |              2 |       4 | a second blast of 4 or more kills (`w49.35`)       |
+| Zombie attacks a Grunt                          |   5 |              2 |       3 | HP was lost, so the Grunt is Bitten                |
+| Zombie attacks a Grunt in a Force Field         |   5 |              4 |       1 | still Bitten                                       |
+| Fighter attacks a Mothership (20 HP, Shield 4)  |   4 |              4 |       0 | Defense 3 since `7r108` (hit 5, HP 1 at Defense 2) |
+| Grunt attacks a Fighter; the Fighter retaliates |   5 |              2 |       3 | the Grunt meets the enemy turn with Shield 0       |
+| Vampire at 4 of 10 HP attacks a Grunt           |   6 |              2 |       4 | the Vampire heals 4 (to 8), not 6                  |
+| Lich attacks a Grunt next to another Grunt      |   9 |              2 |       7 | splash 5 on the neighbour: Shield 2, HP 3, Plague  |
 
 ### 20.3 Force Field and Force Fields
 
@@ -11744,6 +11769,18 @@ Examples (engine formula, full HP, open Grass):
   takes; splash, Pierce, a blast, a Dwarf bomb, a Wail, and the ice crush
   (none is the primary hit of an attack); and an Ice Folk Shatter, which
   reads the HP the held hit leaves. A bite, a Plague, Frozen, and a Push are not damage and are as before.
+- **Shield Canopy** (the Mothership redesign, `pulp_wars-ewpj`, `7r108`;
+  role mechanic `shieldCanopy`, the Martian `KNIGHT` only; ability
+  `SHIELD_CANOPY`). A shielded unit beside an own land-form Mothership
+  (`isUnderShieldCanopyV7`; not the Mothership itself) is covered at a
+  recharge exactly as by a Force Field (`max(maximum, 4)`), **with no
+  technology**, and the field holds for it. Without Force Fields the End
+  Turn recharge still runs for the units under a Canopy (only for them;
+  every other unit keeps its Shield until the Start Turn), so the army
+  gathered around a Mothership meets the enemy turn at Shield 4. A
+  Mothership's own Shield is its maximum, 4, so it gains nothing and is
+  no field. The public `martian` stats carry `shieldCanopy`, and a
+  selected Mothership shows the ring like a Projector's.
 - **Force Fields** (the Martian `FORTIFICATION`, Industry tier 2, requires
   Drill, ordinary tier-2 cost; capabilities `projectsForceField` and
   `shieldsRechargeAtEndTurn`). While
@@ -11962,7 +11999,9 @@ its heat ray after an Overstride is at half power.
 ### 20.7 Beam Down
 
 `BEAM_DOWN { kind, unitId, passengerUnitId, to }` is a primary action of a
-**carrier**, a role with `BEAM_DOWN`: the Saucer and the Mothership. It
+**carrier**, a role with `BEAM_DOWN`: the Saucer (the Mothership too
+until `7r108`; its carrier action is now Mass Beam Down,
+[section 20.7.1](#2071-mass-beam-down)). It
 moves one own unit, from a city or from up to two tiles away, to a tile next
 to the carrier, and the unit can still attack. It is not an Attack, costs no
 Coins, needs no technology beyond the carrier, and spends no city action.
@@ -12022,6 +12061,87 @@ offered `BEAM_DOWN` is accepted and every rejected one is not offered.
 - Beam Down is not a Move: no path, ZOC, terrain stop, Road, treasure, or
   embarking. Every tile around a carrier is explored by its owner, so the
   command is exact.
+
+### 20.7.1 Mass Beam Down
+
+The Mothership redesign (`pulp_wars-ewpj`, `7r108`; the user, 2026-10-24:
+"like idk - beaming down enemy units into the middle of your army. or mass
+beam down of your units. or very strong defence"). The Mothership is slow
+(Move 2) and tough, and it **projects the army**:
+`MASS_BEAM_DOWN { kind, unitId, passengerUnitIds, to }` is its primary
+action (role ability `MASS_BEAM_DOWN`; the Mothership has no single
+`BEAM_DOWN` since `7r108`, the Saucer's carrier action). It costs no Coins
+and spends no city action. `passengerUnitIds` lists 1 to
+`MASS_BEAM_DOWN_CAPACITY_V7` (3) unit IDs in strictly ascending order
+without the actor (command parsing rejects any other list). Legality, in
+this order (all rejections atomic):
+
+| #   | Requirement                                                                                                                                                                                                                                         | Rejection                                             |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                      | the ordinary unit errors                              |
+| 2   | Its role has `MASS_BEAM_DOWN`.                                                                                                                                                                                                                      | `UNIT_ROLE_INVALID { role }`                          |
+| 3   | The Beam Down carrier rule (`beamDownCarrierReadyV7`): no primary action used and not landed this turn; it may have moved (and used its free Heavy Tractor Beam); a Frozen Mothership may not.                                                      | `UNIT_ALREADY_ACTED`                                  |
+| 4   | It is in land form.                                                                                                                                                                                                                                 | `MASS_BEAM_DOWN_NOT_LEGAL { reason: "EMBARKED" }`     |
+| 5   | Every passenger passes the Beam Down passenger rule without the city clause (`massBeamDownPassengerLegalV7`): another own living land-form one-slot unit that does not fly, not beamed this turn, within Chebyshev `BEAM_DOWN_PICKUP_RANGE_V7` (2). | `MASS_BEAM_DOWN_NOT_LEGAL { reason: "NO_PASSENGER" }` |
+| 6   | `to` is on the board and explored by the actor (every unit on an explored tile is visible, so the command is exact).                                                                                                                                | `INVALID_TILE { action: "MASS_BEAM_DOWN" }`           |
+| 7   | `to` is within Chebyshev `MASS_BEAM_DOWN_RANGE_V7` (3) of the Mothership (0 included).                                                                                                                                                              | `MASS_BEAM_DOWN_NOT_LEGAL { reason: "OUT_OF_RANGE" }` |
+| 8   | Every passenger finds a landing tile (below).                                                                                                                                                                                                       | `MASS_BEAM_DOWN_NOT_LEGAL { reason: "NO_ROOM" }`      |
+
+- **Placement** (`massBeamDownPlacementsV7`, deterministic). The landing
+  tiles are `to` itself, then the eight tiles around it in (y, x) order
+  (`massBeamDownLandingTilesV7`). In unit-ID order each passenger takes
+  the first one that passes the Beam Down tile rule of
+  [section 20.7](#207-beam-down) row 7 without the carrier adjacency
+  (`beamDownLandingLegalV7`: explored land the passenger can enter, never a
+  Rift, no unit, mound, or chest, not a settlement site, not in territory
+  allied to the actor) and that no earlier passenger took. So a target
+  that holds an enemy unit, or a city center, sets the strike force down
+  around it. Tiles are read before the command: a passenger's own tile is
+  not freed for another.
+- **Result.** Each passenger stands on its tile with the Beam Down
+  passenger result: it **counts as having moved** (`beamedActivationV7`),
+  so one that has not acted may still attack (a ray at half power; a
+  Shield Projector not at all), but not Move; `captureEligible` false; its
+  ID joins `beamedThisTurn`, once a turn. Field Defense on a landing tile
+  in hostile territory is destroyed (`OCCUPATION`). The Mothership stays
+  where it is, has used its primary action, and is handled (its free Heavy
+  Tractor Beam is still its own). Each passenger reveals its sight.
+- **Events:** one `UNIT_BEAMED { playerId, unitId, passengerUnitId, from,
+to }` per passenger in unit-ID order (`unitId` is the Mothership), then
+  `FIELD_DEFENSE_DESTROYED`, one `TILES_REVEALED`, and the tail. The
+  board plays the Beam Down column of light for each passenger.
+- **What is offered.** The public query offers one `MASS_BEAM_DOWN` per
+  explored tile in reach, in (y, x) order, with the passengers
+  `massBeamDownOfferedPassengersV7` picks: the legal passengers that have
+  not used a primary action (a fresh strike force), nearest the
+  Mothership first and then by unit ID, each one that can still be placed
+  with those already chosen, up to three. A tile with none is not
+  offered. The reducer accepts any legal set (a unit that has acted may be
+  carried, and is only relocated); every offered command is accepted.
+  `previewMassBeamDownV7(view, command)` gives the placements and the
+  Field Defense the landing destroys, exactly.
+- **Board.** Its button arms the aiming: every offered tile is a Place
+  target, the pick-up range is tinted, and each unit that would go wears
+  "Beam". Choosing a tile previews it ("Beam 3 units" on the tile,
+  "Beaming" on the passengers, and on each landing tile, in the Tractor
+  Beam's magenta, the name of the unit that lands there); choosing it again,
+  or the panel's "Beam down", beams. Back clears the choice. The log line
+  names every passenger of one beam ("Your Mothership beamed down a Grunt,
+  a Grunt, and a Ray Gunner").
+- **Normal AI** (`massBeamDownScoreV7`): per passenger, its best shot on
+  arrival (as a Beam Down's: 2 a point of the hit, the target's value on a
+  kill, 6 more from two tiles; a passenger that can already shoot where
+  it stands counts only a kill), 6 for landing next to a hostile city
+  center (16 when the center is empty), and 4 a step toward the wave
+  target, less twice its visible danger there and its retained value when
+  it would die there without a kill. 1180 with a kill, 906 with a shot,
+  865 (the delivery tier) otherwise; nothing without a purpose.
+- **Limiters** (`pulp_wars-ewpj`): once a turn per Mothership (a primary
+  action) and per passenger (`beamedThisTurn`), passengers only from
+  within two tiles (no city pick-up, so the army must gather under the
+  slow Mothership), landings never in own territory, and a beamed unit
+  cannot Move. No cooldown or extra technology: the Mothership is a
+  Chivalry unit already.
 
 ### 20.8 Mind Control
 

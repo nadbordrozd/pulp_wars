@@ -87,6 +87,7 @@ import {
   previewAttackBarricadeV7,
   previewAttackExplosionsV7,
   previewBeamDownV7,
+  previewMassBeamDownV7,
   previewBoardV7,
   previewBolasV7,
   previewBombRunV7,
@@ -1124,6 +1125,8 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
       return `u${command.unitId}.beam.u${command.passengerUnitId}.${xyV7(command.to)}`;
+    case "MASS_BEAM_DOWN":
+      return `u${command.unitId}.massbeam.${command.passengerUnitIds.map((id) => `u${id}`).join("+")}.${xyV7(command.to)}`;
     case "BOMB_RUN":
       return `u${command.unitId}.bomb.u${command.targetUnitId}.${xyV7(command.to)}`;
     case "TUNNEL":
@@ -1982,6 +1985,8 @@ function describeCommandV7(
       return `hatch ${context.memory.tag(command.eggUnitId)}${generic(previewHatchV7(view, command.unitId, command.eggUnitId))}`;
     case "BEAM_DOWN":
       return `beam ${context.memory.tag(command.passengerUnitId)} down to ${xyV7(command.to)}${generic(previewBeamDownV7(view, command.unitId, command.passengerUnitId))}`;
+    case "MASS_BEAM_DOWN":
+      return `mass beam ${command.passengerUnitIds.map((id) => context.memory.tag(id)).join(", ")} down around ${xyV7(command.to)}${generic(previewMassBeamDownV7(view, command))}`;
     case "MIND_CONTROL":
       return `mind control ${context.memory.tag(command.targetUnitId)}${generic(previewMindControlV7(view, command.unitId, command.targetUnitId))}`;
     case "TRACTOR_BEAM":

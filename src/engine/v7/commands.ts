@@ -26,6 +26,7 @@ import {
   parseCoordV7,
   parseUnitIdV7,
 } from "./schema";
+import { MASS_BEAM_DOWN_CAPACITY_V7 } from "../rules/ruleset-v7";
 
 export type TileCommandKindV7 =
   | "HARVEST_FRUIT"
@@ -111,6 +112,18 @@ export type CommandV7 =
       readonly kind: "BEAM_DOWN";
       readonly unitId: UnitId;
       readonly passengerUnitId: UnitId;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * The Mothership redesign (`pulp_wars-ewpj`, 7r108): a Mothership sets
+       * the own units `passengerUnitIds` (1 to 3, in ascending unit-ID
+       * order) from within 2 tiles of it down around the explored tile
+       * `to` within 3 tiles, each on the nearest free tile.
+       */
+      readonly kind: "MASS_BEAM_DOWN";
+      readonly unitId: UnitId;
+      readonly passengerUnitIds: readonly UnitId[];
       readonly to: CoordV7;
     }
   | {
@@ -785,6 +798,25 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           value: { kind, unitId: unit, passengerUnitId: passenger, to },
         };
   }
+  if (kind === "MASS_BEAM_DOWN") {
+    if (!hasExactKeysV7(input, ["kind", "passengerUnitIds", "to", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const to = parseCoordV7(candidate.to);
+    const passengers = parseAscendingUnitIdsV7(
+      candidate.passengerUnitIds,
+      MASS_BEAM_DOWN_CAPACITY_V7,
+    );
+    return unit === null ||
+      to === null ||
+      passengers === null ||
+      passengers.includes(unit)
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: { kind, unitId: unit, passengerUnitIds: passengers, to },
+        };
+  }
   if (kind === "TOSS") {
     if (!hasExactKeysV7(input, ["at", "kind", "passengerUnitId", "unitId"]))
       return invalid(kind);
@@ -1020,9 +1052,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
 }
 
 export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
-  const byKind =
-    COMMAND_KIND_ORDER_V7.indexOf(left.kind) -
-    COMMAND_KIND_ORDER_V7.indexOf(right.kind);
+  const byKind = commandKindRankV7(left.kind) - commandKindRankV7(right.kind);
   if (byKind !== 0) return byKind;
   // Revision 19 section 10: `LAY_EGG` is offered in city-ID, role, then
   // (y, x) order.
@@ -1040,6 +1070,14 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
       left.unitId - right.unitId ||
       left.passengerUnitId - right.passengerUnitId ||
       compareNullableCoords(left.to, right.to)
+    );
+  // The Mothership redesign (`pulp_wars-ewpj`): `MASS_BEAM_DOWN` in
+  // unit-ID, tile (y, x), then passenger-list order.
+  if (left.kind === "MASS_BEAM_DOWN" && right.kind === "MASS_BEAM_DOWN")
+    return (
+      left.unitId - right.unitId ||
+      compareNullableCoords(left.to, right.to) ||
+      compareIdLists(left.passengerUnitIds, right.passengerUnitIds)
     );
   // The Dwarf revision section 14: `TUNNEL` in unit-ID, destination (y, x),
   // then rider order (the rider-less entry first, then rider ID and tile);
@@ -1200,6 +1238,50 @@ function referencedOrdinal(command: CommandV7): number {
   if (command.kind === "JOIN_CHANT") return command.leaderUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
+}
+
+/**
+ * A kind's place in an ordered command list: its `COMMAND_KIND_ORDER_V7`
+ * position, except that End Turn is always last (the Mothership redesign,
+ * `pulp_wars-ewpj`, appended `MASS_BEAM_DOWN` after it so that no earlier
+ * kind's position moved).
+ */
+function commandKindRankV7(kind: CommandV7["kind"]): number {
+  return kind === "END_TURN"
+    ? COMMAND_KIND_ORDER_V7.length
+    : COMMAND_KIND_ORDER_V7.indexOf(kind);
+}
+
+function compareIdLists(
+  left: readonly number[],
+  right: readonly number[],
+): number {
+  const length = Math.min(left.length, right.length);
+  for (let index = 0; index < length; index += 1) {
+    const compared = (left[index] ?? 0) - (right[index] ?? 0);
+    if (compared !== 0) return compared;
+  }
+  return left.length - right.length;
+}
+
+/**
+ * A dense array of 1 to `maximum` unit IDs in strictly ascending order, or
+ * null.
+ */
+function parseAscendingUnitIdsV7(
+  input: unknown,
+  maximum: number,
+): readonly UnitId[] | null {
+  if (!isDenseArrayV7(input) || input.length === 0 || input.length > maximum)
+    return null;
+  const ids: UnitId[] = [];
+  for (const candidate of input) {
+    const id = parseUnitIdV7(candidate);
+    const last = ids.at(-1);
+    if (id === null || (last !== undefined && id <= last)) return null;
+    ids.push(id);
+  }
+  return ids;
 }
 
 function comparePaths(

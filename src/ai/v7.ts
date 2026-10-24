@@ -108,6 +108,7 @@ import {
   previewBlastMountainV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
+  previewMassBeamDownV7,
   queryCombatPreviewV7,
   previewSeizeV7,
   queryPublicEconomicPotentialsV7,
@@ -494,6 +495,8 @@ import {
   isMothershipForPolicyV7,
   isSaucerForPolicyV7,
   enemyTurnShieldV7,
+  massBeamDownScoreV7,
+  underOwnCanopyV7,
   fliesForPolicyV7,
   hasAbilityV7,
   hostileRayAttack2V7,
@@ -15548,6 +15551,19 @@ function scoreCommandWithContext(
     immediateValue = beam.immediate;
   }
 
+  if (command.kind === "MASS_BEAM_DOWN" && context.martian) {
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
+    const cache = martianCacheV7(context);
+    const beam = massBeamDownScoreV7(
+      cache.tools,
+      previewMassBeamDownV7(view, command),
+      (unitId) => cache.attackers.has(unitId),
+    );
+    priority = beam.priority;
+    strategicValue = beam.strategic;
+    immediateValue = beam.immediate;
+  }
+
   if (command.kind === "MIND_CONTROL" && context.martian) {
     const control = mindControlScoreV7(
       martianCacheV7(context).tools,
@@ -23570,14 +23586,16 @@ function martianMoveValueV7(
     if (gain > 0 && next >= 0 && dangerThere() < actor.hp)
       next = Math.max(next, 705);
   } else if (
-    // The Martian pass (`pulp_wars-w49.14`): a Projector covers nobody
-    // until its owner has Force Fields.
-    facts.forceFields &&
     shieldMaximumForPolicyV7(view, facts, actor) > 0 &&
-    facts.ownProjectors.some(
-      (projector) =>
-        projector.id !== actor.id && distance(projector.at, to) === 1,
-    )
+    // The Martian pass (`pulp_wars-w49.14`): a Projector covers nobody
+    // until its owner has Force Fields. The Mothership redesign
+    // (`pulp_wars-ewpj`): a Mothership's Shield Canopy needs nothing.
+    ((facts.forceFields &&
+      facts.ownProjectors.some(
+        (projector) =>
+          projector.id !== actor.id && distance(projector.at, to) === 1,
+      )) ||
+      underOwnCanopyV7(facts, actor, to))
   )
     strategic += FORCE_FIELD_COVER_VALUE_V7;
   // A wounded unit without a Shield leaves visible reach to recover.

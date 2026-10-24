@@ -135,7 +135,7 @@ describe("the balance registry (section 10)", () => {
     });
   });
 
-  it("M2 to M4: the Saucer pulls at Scouting, the Mothership is an 8-Coin carrier, the Grunt has Attack 2 and 8 HP", () => {
+  it("M2 to M4: the Saucer pulls at Scouting, the Mothership is a carrier, the Grunt has Attack 2 and 8 HP", () => {
     const saucer = effectiveRoleRuleV7("RAIDER", "MARTIAN");
     expect(saucer.technology).toBe("SCOUTING");
     // Any unit can capture (`pulp_wars-ke95`).
@@ -151,13 +151,17 @@ describe("the balance registry (section 10)", () => {
       4, 8, 3, 3,
     ]);
     const mothership = effectiveRoleRuleV7("KNIGHT", "MARTIAN");
-    expect(mothership.cost).toBe(8);
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108): 9 Coins (8 since
+    // the balance round), Mass Beam Down instead of Beam Down, and the
+    // Shield Canopy.
+    expect(mothership.cost).toBe(9);
     expect(mothership.abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "FLY",
-      "BEAM_DOWN",
+      "MASS_BEAM_DOWN",
       "TRACTOR_BEAM",
+      "SHIELD_CANOPY",
     ]);
     expect(roleMechanicsV7("KNIGHT", "MARTIAN").capacitySlots).toBe(2);
     const grunt = effectiveRoleRuleV7("FIGHTER", "MARTIAN");
@@ -412,22 +416,30 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
     ).toBe(false);
   });
 
-  it("the Mothership is a carrier: Beam Down is its primary action, after its Move too", () => {
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Mothership's
+  // carrier action is Mass Beam Down (the single Beam Down is the
+  // Saucer's), taking the units within two tiles of it.
+  it("the Mothership is a carrier: Mass Beam Down is its primary action, after its Move too", () => {
     const state = martianFieldV7([
       { seat: 0, role: "KNIGHT", at: at(4, 3), activation: movedV7(2) },
+      { seat: 0, role: "FIGHTER", at: at(3, 3) },
       { seat: 0, role: "FIGHTER", at: CAPITAL },
       { seat: 1, role: "FIGHTER", at: at(7, 3) },
       FAR,
     ]);
     const ship = unitAtV7(state, at(4, 3));
-    expect(
-      previewBeamDownV7(activeViewV7(state), ship.id, idAt(state, CAPITAL))
-        ?.destinations,
-    ).toHaveLength(8);
-    const run = playV7(state, beam(state, at(4, 3), CAPITAL, at(5, 3)));
+    expect(offeredFor(state, at(4, 3), "BEAM_DOWN")).toEqual([]);
+    const mass: CommandV7 = {
+      kind: "MASS_BEAM_DOWN",
+      unitId: ship.id,
+      passengerUnitIds: [idAt(state, at(3, 3))],
+      to: at(6, 3),
+    };
+    const run = playV7(state, mass);
     expect(run.events[0]).toMatchObject({
       kind: "UNIT_BEAMED",
       unitId: ship.id,
+      to: at(6, 3),
     });
     expect(unitAtV7(run.state, at(4, 3)).activation).toMatchObject({
       specialActed: true,
@@ -445,11 +457,16 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
         at: at(4, 3),
         activation: { attacked: true, attacksUsed: 1, handled: true },
       },
-      { seat: 0, role: "FIGHTER", at: CAPITAL },
+      { seat: 0, role: "FIGHTER", at: at(3, 3) },
       FAR,
     ]);
     expect(
-      rejectedV7(attacked, beam(attacked, at(4, 3), CAPITAL, at(5, 3))).code,
+      rejectedV7(attacked, {
+        kind: "MASS_BEAM_DOWN",
+        unitId: idAt(attacked, at(4, 3)),
+        passengerUnitIds: [idAt(attacked, at(3, 3))],
+        to: at(6, 3),
+      }).code,
     ).toBe("UNIT_ALREADY_ACTED");
   });
 
@@ -563,7 +580,7 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
     );
     const state = checkedV7({ ...base, treasureChests: [at(5, 7)] });
     const offered = expectOfferedAcceptedV7(state, "BEAM_DOWN");
-    expect(offered.length).toBeGreaterThan(10);
+    expect(offered.length).toBeGreaterThan(5);
     const view = activeViewV7(state);
     const pairs = new Map<string, CoordV7[]>();
     for (const command of offered) {
@@ -571,12 +588,16 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
       const key = `${command.unitId}:${command.passengerUnitId}`;
       pairs.set(key, [...(pairs.get(key) ?? []), command.to]);
     }
-    // Both carriers carry; the Tripod (within two of each) is a passenger.
+    // The Saucer carries (the Mothership's carrier action is Mass Beam
+    // Down since `pulp_wars-ewpj`); the Tripod within two is a passenger.
     expect(
       new Set(
         offered.map((command) => ("unitId" in command ? command.unitId : 0)),
       ).size,
-    ).toBe(2);
+    ).toBe(1);
+    expect(
+      expectOfferedAcceptedV7(state, "MASS_BEAM_DOWN").length,
+    ).toBeGreaterThan(0);
     for (const [key, tiles] of pairs) {
       const [carrier, passenger] = key.split(":").map(Number) as [
         UnitId,
@@ -1037,18 +1058,18 @@ describe("M3: the Heavy Tractor Beam (section 5.3)", () => {
     );
     expect(kinds.has("MOVE")).toBe(true);
     expect(kinds.has("ATTACK")).toBe(true);
-    expect(kinds.has("BEAM_DOWN")).toBe(true);
     expect(kinds.has("TRACTOR_BEAM")).toBe(false);
     // Not twice.
     expect(rejectedV7(run.state, pull(run.state, SHIP, at(3, 6)))).toEqual({
       code: "UNIT_ALREADY_ACTED",
       params: { unitId: ship.id },
     });
-    // The pulled Fighter stands next to it: the Mothership attacks it (6;
-    // the Fighter's 4 back is absorbed by the Shield).
+    // The pulled Fighter stands next to it: the Mothership attacks it (8
+    // at Attack 3 since `pulp_wars-ewpj`, 6 before; the Fighter's 4 back
+    // is absorbed by the Shield).
     const hit = attackV7(run.state, SHIP, at(4, 3));
     expect(hit.combat).toMatchObject({
-      damageToDefender: 6,
+      damageToDefender: 8,
       damageToAttacker: 0,
       attackerShieldDamage: 4,
     });

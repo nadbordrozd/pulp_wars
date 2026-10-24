@@ -115,6 +115,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/query.ts::publicAssembleFactsV7": "PLAYER_ONLY",
   // Commands: `commonError` admits only the active seat as the actor.
   "src/engine/v7/reducer.ts::applyBeamDown": "PLAYER_ONLY",
+  "src/engine/v7/reducer.ts::applyMassBeamDown": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyCapture": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyDisband": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyDisembark": "PLAYER_ONLY",

@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r107");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r107");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r108");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r107.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-88, -86)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-89, -87)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-88, -86)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-89, -87)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r107");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r108");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -247,7 +247,7 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
     // FIRE_MOON_GUN after JOIN_CHANT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(88);
     // The Mammoth's Stampede of Ice Folk Freeze is a new command with the
     // old name, after BREAK_OFF; the Dinosaur's revision-19 slot is gone.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(

@@ -546,6 +546,15 @@ const ENTRIES = {
     "Beam Down",
     "Brings one of your units from a city, or from nearby, to its side. That unit can still attack.",
   ],
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
+  MASS_BEAM_DOWN: [
+    "Mass Beam Down",
+    "Beams up to three of your units from around it down beside a tile up to 3 tiles away. They can still attack.",
+  ],
+  SHIELD_CANOPY: [
+    "Shield Canopy",
+    "Friendly units next to it get a stronger Shield, at the start and at the end of your turn. No technology needed.",
+  ],
   TRACTOR_BEAM: [
     "Tractor Beam",
     "Pulls a unit 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",

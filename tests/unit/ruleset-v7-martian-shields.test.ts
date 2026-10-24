@@ -97,7 +97,9 @@ describe("Martian Shields: absorption (section 5.3)", () => {
     expect(shieldAtV7(run.state, at(5, 2))).toBe(0);
   });
 
-  it("Fighter attacks a Mothership (16 HP, Shield 4): hit 5, Shield 4, HP 1", () => {
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): 20 HP and Defense
+  // 3 (16 HP and Defense 2 before: hit 5, HP 1).
+  it("Fighter attacks a Mothership (20 HP, Shield 4): hit 4, all absorbed by the Shield", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(5, 2) },
@@ -107,10 +109,10 @@ describe("Martian Shields: absorption (section 5.3)", () => {
     );
     const run = attackV7(state, at(5, 3), at(5, 2));
     expect(run.combat).toMatchObject({
-      damageToDefender: 1,
+      damageToDefender: 0,
       defenderShieldDamage: 4,
     });
-    expect(run.target?.hp).toBe(15);
+    expect(run.target?.hp).toBe(20);
   });
 
   it("the retaliation a Grunt takes as an attacker is absorbed too", () => {
@@ -156,12 +158,14 @@ describe("Martian Shields: absorption (section 5.3)", () => {
       push: "WILL_PUSH",
     });
     // The push happens whatever the Shield absorbed.
-    expect(run.target).toMatchObject({ at: at(5, 2), hp: 16 });
+    expect(run.target).toMatchObject({ at: at(5, 2), hp: 20 });
     expect(shieldAtV7(run.state, at(5, 2))).toBe(1);
     expect(run.events.map((event) => event.kind)).toContain("UNIT_PUSHED");
   });
 
-  it("Triceratops with a run-up of 2 on a Mothership: 16, Shield 4, HP 12, then the push and the follow", () => {
+  // The Mothership redesign (`pulp_wars-ewpj`): Defense 3 (the hit was
+  // 16, HP 12, at Defense 2).
+  it("Triceratops with a run-up of 2 on a Mothership: 14, Shield 4, HP 10, then the push and the follow", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(5, 2) },
@@ -172,13 +176,13 @@ describe("Martian Shields: absorption (section 5.3)", () => {
     const moved = moveV7(state, at(5, 5), [at(5, 4), at(5, 3)]).state;
     const run = attackV7(moved, at(5, 3), at(5, 2));
     expect(run.combat).toMatchObject({
-      damageToDefender: 12,
+      damageToDefender: 10,
       defenderShieldDamage: 4,
-      damageToAttacker: 3,
+      damageToAttacker: 5,
       push: "WILL_PUSH",
       advances: true,
     });
-    expect(run.target).toMatchObject({ at: at(5, 1), hp: 4 });
+    expect(run.target).toMatchObject({ at: at(5, 1), hp: 10 });
     expect(run.attacker?.at).toEqual(at(5, 2));
   });
 });
@@ -186,7 +190,9 @@ describe("Martian Shields: absorption (section 5.3)", () => {
 describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => {
   // The Vampire and Banshee rework (`pulp_wars-ty6i`): at Attack 1.5 the
   // Grunt loses 1 HP too (it was 2 absorbed, 0 HP, at Attack 1).
-  it("Banshee Wail on a Grunt: 2 absorbed, 1 HP; the Wail strips every Shield in its radius", () => {
+  // The Mothership redesign (`pulp_wars-ewpj`): Defense 3, so the Wail
+  // takes 2 of its Shield (3 at Defense 2).
+  it("Banshee Wail on a Grunt: 2 absorbed, 1 HP; the Wail hits every Shield in its radius", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -213,15 +219,15 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
         at: at(6, 3),
         damage: 0,
         dies: false,
-        shieldDamage: 3,
+        shieldDamage: 2,
       },
     ]);
     expect(preview?.targets.map((target) => target.shieldDamage)).toEqual([
-      2, 3,
+      2, 2,
     ]);
     expect(preview?.targets.map((target) => target.damage)).toEqual([1, 0]);
     expect(shieldAtV7(result.state, at(5, 2))).toBe(0);
-    expect(shieldAtV7(result.state, at(6, 3))).toBe(1);
+    expect(shieldAtV7(result.state, at(6, 3))).toBe(2);
     expect(unitAtV7(result.state, at(5, 2)).hp).toBe(7);
   });
 

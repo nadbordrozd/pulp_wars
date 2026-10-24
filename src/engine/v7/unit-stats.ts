@@ -212,6 +212,11 @@ export interface PublicMartianMechanicsV7 {
   readonly cooling: boolean;
   readonly pierce: boolean;
   readonly forceField: boolean;
+  /**
+   * The Mothership redesign (`pulp_wars-ewpj`, 7r108): the unit projects a
+   * Shield Canopy over the eight tiles around it (land form only).
+   */
+  readonly shieldCanopy: boolean;
   readonly mindControl: {
     readonly cooldown: number | null;
     readonly controlled: number;
@@ -932,6 +937,7 @@ export function publicUnitStatsV7(
               !embarked &&
               role.abilities.includes("FORCE_FIELD") &&
               capabilities.projectsForceField,
+            shieldCanopy: !embarked && mechanics.shieldCanopy,
             mindControl: role.abilities.includes("MIND_CONTROL")
               ? {
                   cooldown:

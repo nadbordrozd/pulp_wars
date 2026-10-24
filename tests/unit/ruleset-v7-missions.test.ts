@@ -142,7 +142,7 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "MARTIAN_4@3:MARTIAN":
     "c9c079ab825d9d43982c0e0c08eb41fe48de994ce3dff22fcef808591f2d4720",
   "MARTIAN_5@5:MARTIAN":
-    "0157d82119eac5e4886eb56d7c0013e71ddc5ce3e900ce5f7cb7d893a3e1b87a",
+    "8efabd5d38f5724461d6171208408de3b400be02d95fe812811aa683d4092541",
   "MARTIAN_6@3:MARTIAN":
     "9ea4696ee3dd4d24a128813c7f8c8ab0410ccdc0e6970718d15c7a9fc4c68d06",
   // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
@@ -166,7 +166,7 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "DWARF_3@3:DWARF":
     "8f86310cf32eac2ca222def3c13be415cfb4eeb02ce99f546b3ef4901ce266ae",
   "DWARF_4@4:DWARF":
-    "2a375056f666e34539779fb27653a05f800f8577a258d6400ed5f07a4e8e9905",
+    "fa1f5e0ba76da68cf9f4cf29c5605d72e23a7a2b038facaad3c724a16a9c3ed6",
   "DWARF_5@4:DWARF":
     "1e78aad532ea300a40ede9c2b1006db914946029f6ef3b46368b8160f6f189f1",
   "DWARF_6@4:DWARF":
@@ -260,7 +260,7 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_MARTIAN_MID@3:MARTIAN":
-    "efa38f717f336a86840ce1fc29a03a6feee435bea970f29c9bf3f9ab22b7e488",
+    "97e80cdd0c514cb2519509b921568f6d2ffe263759d5706f1158a775648a4502",
   // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaurs for the hand
   // player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
@@ -505,7 +505,7 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "MARTIAN_4@3:MARTIAN":
     "1edcbec02c1cd0dec3c740a54409c8f8e7522d7067ed49770c00fe9ba00bc8b6",
   "MARTIAN_5@5:MARTIAN":
-    "e6c30276f56eb1838115b4a82b564896ae936dfb1053db4785bbe4db36a733b4",
+    "4cf9ff01039b4a66b6e93fdb5c213e4c8d45ccbbac4e2d715d57f7b1f539b638",
   "MARTIAN_6@3:MARTIAN":
     "8a73683d76526f00c4b9cbe5c867615b90e4ad9bfbfda6808081558124808126",
   // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
@@ -528,7 +528,7 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "DWARF_3@3:DWARF":
     "235b034e186c0ef5a6e72c40991fc2d9e6762337fbab315ba9c66928ac579e88",
   "DWARF_4@4:DWARF":
-    "66ef30fbce698a5d03233b924869742084eed22fd420dbf06a0d4b4e8d009fc5",
+    "a482641c7fe479ccbcf4be313aa8c684d0a0121ca09e2f00ccc93da89effd4dc",
   "DWARF_5@4:DWARF":
     "fb003a428952409275f7f2ac73f3abdd6203b0a5754257d5505f571bbac2924b",
   "DWARF_6@4:DWARF":
@@ -613,7 +613,7 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_MARTIAN_MID@3:MARTIAN":
-    "a5d2bf334a793f8d30ef8ca819a565110c204bcedc39189023cf2c16ebef9e5a",
+    "4bcd18d00f33116e340a7b0376dd52aa5bb61ea46db6fadea031a5f0cb270d5d",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_DINOSAUR_MID@3:DINOSAUR":

@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 107;
+const REVISION = 108;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -291,7 +291,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
     // FIRE_MOON_GUN after JOIN_CHANT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(88);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -755,19 +755,28 @@ const ROSTER = [
     "Mothership",
     "KNIGHT",
     "CHIVALRY",
-    // `pulp_wars-1wy.3` (M3): cost 8 (was 10) and Beam Down.
-    8,
+    // `pulp_wars-1wy.3` (M3): cost 8 (was 10) and Beam Down. The
+    // Mothership redesign (`pulp_wars-ewpj`, 7r108): cost 9, 20 HP,
+    // Attack 3, Defense 3, Sight 2, Mass Beam Down and the Shield Canopy.
+    9,
     2,
-    16,
+    20,
     4,
-    5,
-    4,
+    6,
+    6,
     2,
     1,
     1,
-    1,
+    2,
     true,
-    ["ATTACK", "CAPTURE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
+    [
+      "ATTACK",
+      "CAPTURE",
+      "FLY",
+      "MASS_BEAM_DOWN",
+      "TRACTOR_BEAM",
+      "SHIELD_CANOPY",
+    ],
     "FLY",
     false,
     false,
@@ -885,6 +894,9 @@ describe("Martian roster (section 3)", () => {
       "STRIDE",
       // The giants' signatures (`pulp_wars-w49.30`): the Colossus.
       "OVERSTRIDE",
+      // The Mothership redesign (`pulp_wars-ewpj`).
+      "MASS_BEAM_DOWN",
+      "SHIELD_CANOPY",
     ];
     // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter flies under
     // the Martian flyer rule (`FLY`); it is the one exception.
@@ -1646,19 +1658,25 @@ describe("Martian Showcase (section 2.4)", () => {
     expect(kinds.has("BEAM_DOWN")).toBe(true);
     expect(kinds.has("TRACTOR_BEAM")).toBe(true);
     expect(kinds.has("ATTACK")).toBe(true);
-    // The Grunt on the capital center is a passenger of the Saucer and of
-    // the Mothership (`pulp_wars-1wy.3`: every carrier, and every own unit
-    // in a city or within two tiles of the carrier).
-    for (const carrier of ["RAIDER", "KNIGHT"] as const)
-      expect(
-        offered.some(
-          (command) =>
-            command.kind === "BEAM_DOWN" &&
-            command.unitId === own(carrier).id &&
-            command.passengerUnitId === own("FIGHTER").id,
-        ),
-        carrier,
-      ).toBe(true);
+    // The Grunt on the capital center is a passenger of the Saucer
+    // (`pulp_wars-1wy.3`: every own unit in a city or within two tiles of
+    // the carrier). The Mothership redesign (`pulp_wars-ewpj`): the
+    // Mothership's Mass Beam Down takes the units within two tiles of it.
+    expect(
+      offered.some(
+        (command) =>
+          command.kind === "BEAM_DOWN" &&
+          command.unitId === own("RAIDER").id &&
+          command.passengerUnitId === own("FIGHTER").id,
+      ),
+    ).toBe(true);
+    expect(
+      offered.some(
+        (command) =>
+          command.kind === "MASS_BEAM_DOWN" &&
+          command.unitId === own("KNIGHT").id,
+      ),
+    ).toBe(true);
     // Both pullers have a target.
     expect(
       new Set(
@@ -1725,6 +1743,7 @@ describe("Martian public unit stats (section 11)", () => {
       cooling: true,
       pierce: true,
       forceField: false,
+      shieldCanopy: false,
       mindControl: null,
     });
     expect(stats(at(6, 3)).martian).toMatchObject({

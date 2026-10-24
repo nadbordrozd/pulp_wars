@@ -4,6 +4,7 @@ import {
   FORCE_FIELD_SHIELD_V7,
   HEAVY_TRACTOR_PULL_V7,
   HEAVY_TRACTOR_RANGE_V7,
+  MASS_BEAM_DOWN_RANGE_V7,
   MIND_CONTROL_RANGE_V7,
   TRACTOR_BEAM_PULL_V7,
   TRACTOR_BEAM_RANGE_V7,
@@ -201,7 +202,9 @@ interface ForceFieldUnitV7 extends MartianUnitFactsV7 {
 /**
  * Section 5.4: whether `unit` is covered: one of its owner's Shield
  * Projectors in land form, other than itself, stands on one of the eight
- * tiles around it. Not cumulative; read at a recharge only.
+ * tiles around it. Not cumulative; read at a recharge only. The Mothership
+ * redesign (`pulp_wars-ewpj`, 7r108): an own land-form Mothership beside
+ * it covers it too, its Shield Canopy (`isUnderShieldCanopyV7`).
  */
 export function isCoveredByForceFieldV7(
   roster: FactionRosterV7,
@@ -209,19 +212,45 @@ export function isCoveredByForceFieldV7(
   unit: ForceFieldUnitV7,
   ownerResearchedTechs: readonly TechnologyIdV7[],
 ): boolean {
+  return (
+    isUnderShieldCanopyV7(roster, units, unit) ||
+    units.some(
+      (projector) =>
+        projector.id !== unit.id &&
+        projector.hp > 0 &&
+        projector.ownerId === unit.ownerId &&
+        projector.form === "LAND" &&
+        chebyshev(projector.at, unit.at) === 1 &&
+        unitRoleRuleV7(roster, projector).abilities.includes("FORCE_FIELD") &&
+        // The Martian pass (`pulp_wars-w49.14`, 7r52): a Projector projects
+        // the field only once its owner has Force Fields (the Martian
+        // `FORTIFICATION`, read through the Projector's own tree).
+        unitCapabilitiesV7(roster, projector, ownerResearchedTechs)
+          .projectsForceField,
+    )
+  );
+}
+
+/**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Shield Canopy.
+ * Whether one of `unit`'s owner's land-form units whose role has the
+ * `shieldCanopy` mechanic (the Mothership), other than itself, stands on
+ * one of the eight tiles around it. It needs no technology; read at a
+ * recharge only, like the Force Field.
+ */
+export function isUnderShieldCanopyV7(
+  roster: FactionRosterV7,
+  units: readonly ForceFieldUnitV7[],
+  unit: ForceFieldUnitV7,
+): boolean {
   return units.some(
-    (projector) =>
-      projector.id !== unit.id &&
-      projector.hp > 0 &&
-      projector.ownerId === unit.ownerId &&
-      projector.form === "LAND" &&
-      chebyshev(projector.at, unit.at) === 1 &&
-      unitRoleRuleV7(roster, projector).abilities.includes("FORCE_FIELD") &&
-      // The Martian pass (`pulp_wars-w49.14`, 7r52): a Projector projects
-      // the field only once its owner has Force Fields (the Martian
-      // `FORTIFICATION`, read through the Projector's own tree).
-      unitCapabilitiesV7(roster, projector, ownerResearchedTechs)
-        .projectsForceField,
+    (mothership) =>
+      mothership.id !== unit.id &&
+      mothership.hp > 0 &&
+      mothership.ownerId === unit.ownerId &&
+      mothership.form === "LAND" &&
+      chebyshev(mothership.at, unit.at) === 1 &&
+      unitRoleMechanicsV7(roster, mothership).shieldCanopy,
   );
 }
 
@@ -249,6 +278,7 @@ export function rechargedShieldV7(
 export function rechargeShieldsV7(
   state: GameStateV7,
   playerId: PlayerId,
+  canopyOnly = false,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const updates = new Map<UnitId, number>();
   const results: { unitId: UnitId; shield: number }[] = [];
@@ -257,6 +287,11 @@ export function rechargeShieldsV7(
       ?.researchedTechs ?? [];
   for (const unit of [...state.units].sort((a, b) => a.id - b.id)) {
     if (unit.ownerId !== playerId || unit.hp <= 0) continue;
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108): without Force
+    // Fields the End Turn recharge reaches only the units under a Shield
+    // Canopy, raising them to `FORCE_FIELD_SHIELD_V7`.
+    if (canopyOnly && !isUnderShieldCanopyV7(state, state.units, unit))
+      continue;
     const target = rechargedShieldV7(state, state.units, unit, researched);
     if (target === 0 || target === shieldOfV7(state.shields, unit.id)) continue;
     updates.set(unit.id, target);
@@ -270,21 +305,34 @@ export function rechargeShieldsV7(
 }
 
 /**
- * Section 5.5 Force Fields: the recharge at the owner's End Turn, only
- * while the owner's technology grants `shieldsRechargeAtEndTurn`.
+ * Section 5.5 Force Fields: the recharge at the owner's End Turn, while
+ * the owner's technology grants `shieldsRechargeAtEndTurn`. The Mothership
+ * redesign (`pulp_wars-ewpj`, 7r108): without it, the units under a Shield
+ * Canopy still recharge (to `FORCE_FIELD_SHIELD_V7`); every other unit
+ * keeps its Shield.
  */
 export function rechargeShieldsAtEndTurnV7(
   state: GameStateV7,
   playerId: PlayerId,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const player = state.players.find((candidate) => candidate.id === playerId);
+  if (player === undefined) return { state, events: [] };
+  const forceFields = technologyCapabilitiesV7(
+    player.researchedTechs,
+    player.faction,
+  ).shieldsRechargeAtEndTurn;
   if (
-    player === undefined ||
-    !technologyCapabilitiesV7(player.researchedTechs, player.faction)
-      .shieldsRechargeAtEndTurn
+    !forceFields &&
+    (state.shields.length === 0 ||
+      !state.units.some(
+        (unit) =>
+          unit.ownerId === playerId &&
+          unit.form === "LAND" &&
+          unitRoleMechanicsV7(state, unit).shieldCanopy,
+      ))
   )
     return { state, events: [] };
-  return rechargeShieldsV7(state, playerId);
+  return rechargeShieldsV7(state, playerId, !forceFields);
 }
 
 /** Section 6.2: a unit is Cooling while its entry has `firedThisTurn` false. */
@@ -899,9 +947,30 @@ export function beamDownDestinationLegalV7(
   facts: PlacementTileFactsV7 | undefined,
 ): boolean {
   return (
+    chebyshev(carrier.at, to) === 1 &&
+    beamDownLandingLegalV7(roster, passenger, technology, facts)
+  );
+}
+
+/**
+ * The tile part of Beam Down row 7, shared with Mass Beam Down
+ * (`pulp_wars-ewpj`): explored, not a settlement site, enterable by the
+ * passenger in land form, with no unit, mound, or treasure chest, and not
+ * in territory allied to the actor. `facts` is undefined off the board.
+ */
+export function beamDownLandingLegalV7(
+  roster: FactionRosterV7,
+  passenger: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
+  technology: { readonly engineering: boolean; readonly navigation: boolean },
+  facts: PlacementTileFactsV7 | undefined,
+): boolean {
+  return (
     facts !== undefined &&
     facts.explored &&
-    chebyshev(carrier.at, to) === 1 &&
     facts.site === null &&
     canEnterTerrainV7({
       terrain: facts.terrain,
@@ -915,6 +984,131 @@ export function beamDownDestinationLegalV7(
     !facts.chest &&
     !facts.alliedTerritory
   );
+}
+
+// ---------------------------------------------------------------------------
+// The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down. The
+// Mothership sets up to `MASS_BEAM_DOWN_CAPACITY_V7` own units from within
+// `BEAM_DOWN_PICKUP_RANGE_V7` of it down around an explored tile within
+// `MASS_BEAM_DOWN_RANGE_V7`, each on the nearest free tile, in unit-ID
+// order. One predicate set, read by the reducer and the public query.
+// ---------------------------------------------------------------------------
+
+/**
+ * Mass Beam Down: whether `passenger` may go with `carrier`: the Beam Down
+ * passenger rule without the city clause (a Mothership carries only the
+ * units gathered under it).
+ */
+export function massBeamDownPassengerLegalV7(
+  roster: FactionRosterV7,
+  carrier: Parameters<typeof beamDownPassengerLegalV7>[1],
+  passenger: Parameters<typeof beamDownPassengerLegalV7>[2],
+  beamedThisTurn: readonly UnitId[],
+): boolean {
+  return beamDownPassengerLegalV7(
+    roster,
+    carrier,
+    passenger,
+    [],
+    beamedThisTurn,
+  );
+}
+
+/** Mass Beam Down: whether `target` is within the Mothership's reach. */
+export function massBeamDownTargetInRangeV7(
+  carrier: { readonly at: CoordV7 },
+  target: CoordV7,
+): boolean {
+  return chebyshev(carrier.at, target) <= MASS_BEAM_DOWN_RANGE_V7;
+}
+
+/**
+ * Mass Beam Down: the landing tiles around `target`, nearest first: the
+ * target itself, then the eight tiles around it in (y, x) order.
+ */
+export function massBeamDownLandingTilesV7(
+  target: CoordV7,
+): readonly CoordV7[] {
+  const tiles: CoordV7[] = [{ x: target.x, y: target.y }];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1)
+      if (dx !== 0 || dy !== 0)
+        tiles.push({ x: target.x + dx, y: target.y + dy });
+  return tiles;
+}
+
+/** Where one Mass Beam Down passenger lands. */
+export interface MassBeamPlacementV7 {
+  readonly unitId: UnitId;
+  readonly from: CoordV7;
+  readonly to: CoordV7;
+}
+
+/**
+ * Mass Beam Down placement: each passenger, in the given (unit-ID) order,
+ * takes the first landing tile (`massBeamDownLandingTilesV7`) that is
+ * legal for it (`landingLegal`, the Beam Down tile rule) and not taken by
+ * an earlier passenger. Null when one of them finds none.
+ */
+export function massBeamDownPlacementsV7<
+  P extends { readonly id: UnitId; readonly at: CoordV7 },
+>(
+  passengers: readonly P[],
+  target: CoordV7,
+  landingLegal: (passenger: P, at: CoordV7) => boolean,
+): readonly MassBeamPlacementV7[] | null {
+  const tiles = massBeamDownLandingTilesV7(target);
+  const placements: MassBeamPlacementV7[] = [];
+  for (const passenger of passengers) {
+    const to = tiles.find(
+      (at) =>
+        !placements.some((placed) => same(placed.to, at)) &&
+        landingLegal(passenger, at),
+    );
+    if (to === undefined) return null;
+    placements.push({ unitId: passenger.id, from: passenger.at, to });
+  }
+  return placements;
+}
+
+/**
+ * Mass Beam Down: the passengers the public query offers for `target` (the
+ * reducer accepts any legal set): from the legal passengers that have not
+ * used a primary action (a fresh strike force), nearest the Mothership
+ * first, then by unit ID, each one that can still be placed with those
+ * already chosen, up to `capacity`. Returned in unit-ID order, the
+ * command's order.
+ */
+export function massBeamDownOfferedPassengersV7<
+  P extends {
+    readonly id: UnitId;
+    readonly at: CoordV7;
+    readonly activation: ActivationV7;
+  },
+>(
+  carrier: { readonly at: CoordV7 },
+  candidates: readonly P[],
+  target: CoordV7,
+  capacity: number,
+  landingLegal: (passenger: P, at: CoordV7) => boolean,
+): readonly P[] {
+  const ordered = candidates
+    .filter((unit) => !primaryActionUsedV7(unit.activation))
+    .sort(
+      (left, right) =>
+        chebyshev(carrier.at, left.at) - chebyshev(carrier.at, right.at) ||
+        left.id - right.id,
+    );
+  let chosen: P[] = [];
+  for (const candidate of ordered) {
+    if (chosen.length >= capacity) break;
+    const next = [...chosen, candidate].sort(
+      (left, right) => left.id - right.id,
+    );
+    if (massBeamDownPlacementsV7(next, target, landingLegal) !== null)
+      chosen = next;
+  }
+  return chosen;
 }
 
 /**
@@ -1177,3 +1371,5 @@ export function exhaustedMartianActivationV7(): UnitStateV7["activation"] {
 
 const chebyshev = (left: CoordV7, right: CoordV7): number =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+const same = (left: CoordV7, right: CoordV7): boolean =>
+  left.x === right.x && left.y === right.y;

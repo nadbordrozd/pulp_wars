@@ -558,7 +558,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Map curiosities round 3 (`pulp_wars-737.20`): the public Zap and
     // Moon Gun previews are a land-form unit's on the Tower or the Gun (an
     // Egg never acts, and an embarked unit never stands on either).
-    "src/engine/v7/query.ts": 6,
+    // The Mothership redesign (`pulp_wars-ewpj`): the public Mass Beam
+    // Down preview is a land-form Mothership's (an embarked one beams
+    // nobody).
+    "src/engine/v7/query.ts": 7,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
@@ -579,7 +582,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Map curiosities round 3 (`pulp_wars-737.20`): ZAP and FIRE_MOON_GUN
     // are commands of a unit in land form on the Tower or the Gun (an Egg
     // and an embarked unit are refused NOT_ON_TOWER and NOT_ON_GUN).
-    "src/engine/v7/reducer.ts": 19,
+    // The Mothership redesign (`pulp_wars-ewpj`): MASS_BEAM_DOWN is a
+    // land-form Mothership's (`MASS_BEAM_DOWN_NOT_LEGAL { reason:
+    // "EMBARKED" }`, as for BEAM_DOWN).
+    "src/engine/v7/reducer.ts": 20,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat

@@ -67,6 +67,8 @@ export type GalleryDemoCueV7 =
   | "RALLY"
   | "TEND_WOUNDED"
   | "BEAM_DOWN"
+  // The Mothership redesign (`pulp_wars-ewpj`).
+  | "MASS_BEAM_DOWN"
   | "MIND_CONTROL"
   | "TRACTOR_BEAM"
   | "THROW_BOLAS"
@@ -89,6 +91,7 @@ const ABILITY_CUES_V7: Partial<Record<UnitRoleAbilityV7, GalleryDemoCueV7>> = {
   RALLY: "RALLY",
   TEND_WOUNDED: "TEND_WOUNDED",
   BEAM_DOWN: "BEAM_DOWN",
+  MASS_BEAM_DOWN: "MASS_BEAM_DOWN",
   MIND_CONTROL: "MIND_CONTROL",
   TRACTOR_BEAM: "TRACTOR_BEAM",
   BOLAS: "THROW_BOLAS",
@@ -113,6 +116,7 @@ export const GALLERY_DEMO_CUE_ABILITIES_V7: Readonly<
   RALLY: "RALLY",
   TEND_WOUNDED: "TEND_WOUNDED",
   BEAM_DOWN: "BEAM_DOWN",
+  MASS_BEAM_DOWN: "MASS_BEAM_DOWN",
   MIND_CONTROL: "MIND_CONTROL",
   TRACTOR_BEAM: "TRACTOR_BEAM",
   THROW_BOLAS: "BOLAS",
@@ -241,6 +245,10 @@ function targetAt(
   // Grunt beside the capital (`BEAM_PASSENGER`): the carrier sets the Grunt
   // down between itself and the target, and the Grunt shoots on arrival.
   if (cue === "BEAM_DOWN") return { x: UNIT.x + 3, y: UNIT.y };
+  // The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down reaches
+  // three tiles, so its target stands four tiles east and the Grunt lands
+  // beside it.
+  if (cue === "MASS_BEAM_DOWN") return { x: UNIT.x + 4, y: UNIT.y };
   if (cue === "TUNNEL") return { x: UNIT.x + 3, y: UNIT.y };
   if (cue !== "ATTACK") return { x: UNIT.x + 1, y: UNIT.y };
   const rule = effectiveRoleRuleV7(role, faction);
@@ -286,7 +294,7 @@ function missionFor(
             role: "FIGHTER",
             at: naval(role)
               ? NAVAL_CAPITAL
-              : cue === "BEAM_DOWN"
+              : cue === "BEAM_DOWN" || cue === "MASS_BEAM_DOWN"
                 ? BEAM_PASSENGER
                 : CAPITAL,
           },
@@ -400,6 +408,17 @@ function cueCommand(
           chebyshev(left.to, target) - chebyshev(right.to, target) ||
           Math.abs(left.to.y - target.y) - Math.abs(right.to.y - target.y),
       )[0];
+  if (cue === "MASS_BEAM_DOWN")
+    // The Mothership redesign: beam the strike force down beside the
+    // target, in its row.
+    return [...own]
+      .filter((command) => command.kind === "MASS_BEAM_DOWN")
+      .filter((command) => chebyshev(command.to, target) >= 1)
+      .sort(
+        (left, right) =>
+          chebyshev(left.to, target) - chebyshev(right.to, target) ||
+          Math.abs(left.to.y - target.y) - Math.abs(right.to.y - target.y),
+      )[0];
   if (cue === "BOMB_RUN")
     // The Gyrocopter pass (`pulp_wars-w49.44`): it flies over the target
     // and back to its own tile.
@@ -478,12 +497,16 @@ export function buildGalleryDemoSceneV7(
   // Bead pulp_wars-1wy.5: "beam down and shoot": the beamed unit counts as
   // moved but may still attack, so the scene plays its attack on arrival
   // when the engine offers one on the demo target.
-  if (command.kind === "BEAM_DOWN") {
+  if (command.kind === "BEAM_DOWN" || command.kind === "MASS_BEAM_DOWN") {
     const arrived = first.after;
+    const passengers =
+      command.kind === "BEAM_DOWN"
+        ? [command.passengerUnitId]
+        : command.passengerUnitIds;
     const shot = queryPlayerCommandsV7(arrived).find(
       (candidate) =>
         candidate.kind === "ATTACK" &&
-        candidate.unitId === command.passengerUnitId &&
+        passengers.includes(candidate.unitId) &&
         candidate.targetUnitId === targetUnit?.id,
     );
     const fired =

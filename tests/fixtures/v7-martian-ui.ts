@@ -358,6 +358,40 @@ export function martianMobilityFixtureV7(): GameStateV7 {
 }
 
 /**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): a Mothership with a
+ * strike force gathered under it (two Grunts and a Ray Gunner within two
+ * tiles), an enemy Guard on the enemy capital (2, 8) and an enemy Fighter
+ * at (4, 6), out of the strike force's walking reach. A Mass Beam Down
+ * around `target` sets the three down beside the Fighter.
+ */
+export const MARTIAN_MASS_BEAM_V7 = {
+  mothership: { x: 2, y: 3 },
+  passengers: [
+    { x: 1, y: 2 },
+    { x: 2, y: 1 },
+    { x: 3, y: 2 },
+  ],
+  enemyGuard: { x: 2, y: 8 },
+  enemyFighter: { x: 4, y: 6 },
+  target: { x: 3, y: 6 },
+} as const;
+
+export function martianMassBeamFixtureV7(): GameStateV7 {
+  const at = MARTIAN_MASS_BEAM_V7;
+  return martianUiFieldV7(
+    [
+      { seat: 0, role: "KNIGHT", at: at.mothership },
+      { seat: 0, role: "FIGHTER", at: at.passengers[0] },
+      { seat: 0, role: "FIGHTER", at: at.passengers[1] },
+      { seat: 0, role: "MARKSMAN", at: at.passengers[2] },
+      { seat: 1, role: "GUARD", at: at.enemyGuard },
+      { seat: 1, role: "FIGHTER", at: at.enemyFighter },
+    ],
+    { factions: ["MARTIAN", "ORIGINAL"] },
+  );
+}
+
+/**
  * Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain with enemies of
  * several kinds beside it, every one a Mind Control target: a full-HP
  * Juggernaut (a giant), a full-HP Knight on the village (5, 5), a Battleship

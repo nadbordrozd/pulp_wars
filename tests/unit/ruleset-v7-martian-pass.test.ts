@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r107`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r108`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r107");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r107.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-56, -54)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-57, -55)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -54)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-57, -55)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -296,7 +296,9 @@ describe("the Martian pass: identity", () => {
       ["Shield Projector", 4, 12, 3, 3, 5, 1, 1, 1, "FORTIFICATION"],
       ["Brain", 5, 8, 2, 2, 2, 1, 1, 1, "ADMINISTRATION"],
       ["Tripod", 9, 12, 2, 8, 2, 2, 2, 2, "SAWMILLING"],
-      ["Mothership", 8, 16, 4, 5, 4, 2, 1, 1, "CHIVALRY"],
+      // The Mothership redesign (`pulp_wars-ewpj`, 7r108): 9 Coins, 20 HP,
+      // Attack 3, Defense 3 (8, 16, 2.5, 2 before).
+      ["Mothership", 9, 20, 4, 6, 6, 2, 1, 1, "CHIVALRY"],
       // The giants' signatures (`pulp_wars-w49.30`): the Colossus has Move 2.
       ["Colossus", null, 32, 3, 8, 5, 2, 1, 2, null],
     ]);
@@ -721,6 +723,7 @@ describe("the Martian pass: Heat Sinks", () => {
       cooling: false,
       pierce: false,
       forceField: false,
+      shieldCanopy: false,
       mindControl: null,
     } as const;
     const ray = (overheats: boolean): string | undefined =>
@@ -1666,7 +1669,9 @@ describe("the Martian pass: LAB_MARTIAN_MID", () => {
         0,
       );
     // (7r55: the three Champions cost 6 each, 80 for the Human side.)
-    expect([worth(0, "MARTIAN"), worth(1, "ORIGINAL")]).toEqual([70, 80]);
+    // (The Mothership redesign, `pulp_wars-ewpj`: its Mothership costs 9,
+    // so the Martian side is worth 71, 70 before.)
+    expect([worth(0, "MARTIAN"), worth(1, "ORIGINAL")]).toEqual([71, 80]);
     const cities = (seat: number): number[] => {
       const owner = state.players.find((player) => player.seat === seat);
       return state.cities

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r107" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r108" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -118,8 +118,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r104",
   "pulp-wars-poc-7r105",
   "pulp-wars-poc-7r106",
+  "pulp-wars-poc-7r107",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r107.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r108.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -469,6 +470,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "DISEMBARK",
   "CHOOSE_CITY_REWARD",
   "END_TURN",
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Mothership's
+  // Mass Beam Down, appended, so no earlier kind's position (read by the
+  // Normal AI's tie-break and every pinned command surface) moves. An
+  // offered command list still ends with End Turn (`compareCommandsV7`).
+  "MASS_BEAM_DOWN",
 ] as const);
 export const REWARD_IDS_V7 = Object.freeze([
   "SURVEY",

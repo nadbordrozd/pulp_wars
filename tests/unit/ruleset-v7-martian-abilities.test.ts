@@ -924,7 +924,8 @@ describe("Tractor Beam (section 8.4)", () => {
     const shot = attackV7(run.state, at(7, 3), at(5, 2));
     expect(shot.combat.defenderDies).toBe(true);
     expect(shieldAtV7(shot.state, SHIP)).toBe(0);
-    expect(unitAtV7(shot.state, SHIP).hp).toBe(15);
+    // The Mothership redesign (`pulp_wars-ewpj`): 20 HP (16 before).
+    expect(unitAtV7(shot.state, SHIP).hp).toBe(19);
   });
 
   it("is projected to the target's owner", () => {

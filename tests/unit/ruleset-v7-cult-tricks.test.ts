@@ -157,14 +157,14 @@ describe("tricks: identity and registration", () => {
   // The spread villages (`pulp_wars-9s0.12`) took 7r79, so 7r78 is a prior
   // identity.
   it("was 7r78 after 7r77, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r107");
-    expect(PRIOR_RULESET_7_IDS.slice(-30, -28)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
+    expect(PRIOR_RULESET_7_IDS.slice(-31, -29)).toEqual([
       "pulp-wars-poc-7r77",
       "pulp-wars-poc-7r78",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r107.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-30, -28)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-31, -29)).toEqual([
       "pulpWars.save.v7r77.current",
       "pulpWars.save.v7r78.current",
     ]);

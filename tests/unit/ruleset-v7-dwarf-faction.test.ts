@@ -183,7 +183,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
     // FIRE_MOON_GUN after JOIN_CHANT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(88);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 8)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP

@@ -5,6 +5,7 @@ import {
   isIceAtV7,
   isMindControlledV7,
   previewBeamDownV7,
+  previewMassBeamDownV7,
   previewMindControlV7,
   previewTractorBeamV7,
   roleMechanicsV7,
@@ -22,6 +23,8 @@ import {
   BEAM_BADGE_V7,
   HOVER_LAUNCH_LABEL_V7,
   LAUNCH_LABEL_V7,
+  MASS_BEAM_DOWN_CONFIRM_V7,
+  MASS_BEAM_DOWN_PICK_V7,
   beamDownPickupTilesV7,
   beamDownTileLabelV7,
   martianCombatLinesV7,
@@ -61,7 +64,17 @@ export type MartianPickV7 =
       readonly passengerUnitId: UnitId | null;
     }
   | { readonly kind: "MIND_CONTROL"; readonly unitId: UnitId }
-  | { readonly kind: "TRACTOR_BEAM"; readonly unitId: UnitId };
+  | { readonly kind: "TRACTOR_BEAM"; readonly unitId: UnitId }
+  /**
+   * The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down. The tile
+   * is chosen once (`chosen`: its landings stay drawn) and beamed when
+   * chosen again, like a Stampede's end.
+   */
+  | {
+      readonly kind: "MASS_BEAM_DOWN";
+      readonly unitId: UnitId;
+      readonly chosen: CoordV7 | null;
+    };
 
 /**
  * The board markers of a visible unit of the Martian kind, or of a
@@ -176,6 +189,36 @@ export function martianPickTargetsV7(
       ];
     });
   }
+  if (pick.kind === "MASS_BEAM_DOWN")
+    return commands.flatMap((command): MapCommandTargetV7[] => {
+      if (command.kind !== "MASS_BEAM_DOWN" || command.unitId !== pick.unitId)
+        return [];
+      const preview = previewMassBeamDownV7(view, command);
+      if (preview === null) return [];
+      const chosen = pick.chosen !== null && same(pick.chosen, command.to);
+      const names = preview.placements.map((placement) => {
+        const passenger = unitAt(placement.unitId);
+        return passenger === undefined
+          ? "unit"
+          : martianUnitNameV7(view, passenger);
+      });
+      const count = names.length;
+      return [
+        {
+          at: command.to,
+          command,
+          family: "MASS_BEAM_DOWN",
+          // Only the chosen tile carries a label; its landings are drawn
+          // on their own tiles.
+          ...(chosen
+            ? {
+                previewLabel: `Beam ${count} ${count === 1 ? "unit" : "units"}`,
+              }
+            : {}),
+          semanticLabel: `Beam ${names.join(", ")} down around here${preview.fieldDefenseDestroyed.length > 0 ? ", destroys Field Defense" : ""}. ${BEAMED_HINT_V7}. ${chosen ? MASS_BEAM_DOWN_CONFIRM_V7 : MASS_BEAM_DOWN_PICK_V7}`,
+        },
+      ];
+    });
   if (pick.kind === "MIND_CONTROL")
     return commands.flatMap((command): MapCommandTargetV7[] => {
       if (command.kind !== "MIND_CONTROL" || command.unitId !== pick.unitId)
@@ -255,6 +298,10 @@ export function addMartianPickEntriesV7(
 ): void {
   const actor = view.units.find((unit) => unit.id === pick.unitId);
   if (actor === undefined) return;
+  if (pick.kind === "MASS_BEAM_DOWN") {
+    addMassBeamDownEntriesV7(entries, view, targets, pick, actor);
+    return;
+  }
   if (pick.kind === "MIND_CONTROL") {
     for (const unit of view.units) {
       if (
@@ -329,6 +376,95 @@ export function addMartianPickEntriesV7(
 }
 
 /**
+ * The Mothership redesign (`pulp_wars-ewpj`): the Mass Beam Down preview.
+ * Before a tile is chosen: the pick-up range tint and a "Beam" badge on
+ * every unit an offered tile takes. Once one is chosen: "Beaming" on its
+ * passengers and, on each landing tile, the name of the unit that lands
+ * there (the Tractor Beam's magenta), so where the units land is seen
+ * before they are beamed.
+ */
+function addMassBeamDownEntriesV7(
+  entries: BoardRenderPlanEntryV7[],
+  view: PlayerViewV7,
+  targets: readonly MapCommandTargetV7[],
+  pick: Extract<MartianPickV7, { kind: "MASS_BEAM_DOWN" }>,
+  actor: PlayerViewV7["units"][number],
+): void {
+  const chosen =
+    pick.chosen === null
+      ? undefined
+      : targets.find(
+          (target) =>
+            target.command.kind === "MASS_BEAM_DOWN" &&
+            pick.chosen !== null &&
+            same(target.command.to, pick.chosen),
+        );
+  const preview =
+    chosen === undefined || chosen.command.kind !== "MASS_BEAM_DOWN"
+      ? null
+      : previewMassBeamDownV7(view, chosen.command);
+  if (preview === null) {
+    const range = beamDownPickupTilesV7(view, actor.at);
+    const inRange = (at: CoordV7): boolean =>
+      same(at, actor.at) || range.some((cell) => same(cell, at));
+    for (const at of range)
+      entries.push({
+        key: `ability-area:BEAM_RANGE:${at.x},${at.y}`,
+        kind: "ABILITY_AREA",
+        layer: 7,
+        at,
+        abilityStyle: "BEAM_RANGE",
+        targetEdges: (["NORTH", "EAST", "SOUTH", "WEST"] as const).filter(
+          (edge) =>
+            !inRange({
+              x: at.x + (edge === "EAST" ? 1 : edge === "WEST" ? -1 : 0),
+              y: at.y + (edge === "SOUTH" ? 1 : edge === "NORTH" ? -1 : 0),
+            }),
+        ),
+      });
+    const passengers = new Set<number>();
+    for (const target of targets)
+      if (target.command.kind === "MASS_BEAM_DOWN")
+        for (const id of target.command.passengerUnitIds) passengers.add(id);
+    for (const id of passengers) {
+      const passenger = view.units.find((unit) => unit.id === id);
+      if (passenger === undefined) continue;
+      entries.push({
+        key: `ability-target:BEAM_PASSENGER:${passenger.id}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at: passenger.at,
+        abilityStyle: "BEAM_RANGE",
+        label: BEAM_BADGE_V7,
+      });
+    }
+    return;
+  }
+  for (const placement of preview.placements) {
+    const passenger = view.units.find((unit) => unit.id === placement.unitId);
+    if (passenger === undefined) continue;
+    entries.push({
+      key: `ability-target:BEAM_PASSENGER:${passenger.id}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: passenger.at,
+      abilityStyle: "PULL",
+      label: BEAMING_BADGE_V7,
+    });
+    entries.push({
+      key: `ability-target:MASS_BEAM_LANDING:${placement.to.x},${placement.to.y}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: placement.to,
+      abilityStyle: "PULL",
+      // The unit's name alone: on a phone a longer badge overlaps the
+      // next tile's.
+      label: martianUnitNameV7(view, passenger),
+    });
+  }
+}
+
+/**
  * Selection previews (section 13.1): the Force Field tiles of a selected
  * land-form Shield Projector, and the link from a selected controlled unit
  * to its Brain or from a selected Brain to its controlled units.
@@ -343,7 +479,12 @@ export function addMartianSelectionEntriesV7(
   const mechanics = martianStatsV7(view, unit.id);
   const control = view.mindControlled.find((entry) => entry.unitId === unit.id);
   if (mechanics === undefined && control === undefined) return;
-  if (mechanics?.forceField === true && unit.form === "LAND") {
+  // The Mothership redesign (`pulp_wars-ewpj`): a Mothership's Shield
+  // Canopy covers the same ring as a Force Field.
+  if (
+    (mechanics?.forceField === true || mechanics?.shieldCanopy === true) &&
+    unit.form === "LAND"
+  ) {
     const explored = new Set(
       view.board.tiles
         .filter((tile) => tile.explored)
@@ -450,7 +591,10 @@ export function martianAttackTargetExtrasV7(
 /** Whether `kind` is one of the three Martian ability commands. */
 export function isMartianPickCommandV7(kind: CommandV7["kind"]): boolean {
   return (
-    kind === "BEAM_DOWN" || kind === "MIND_CONTROL" || kind === "TRACTOR_BEAM"
+    kind === "BEAM_DOWN" ||
+    kind === "MASS_BEAM_DOWN" ||
+    kind === "MIND_CONTROL" ||
+    kind === "TRACTOR_BEAM"
   );
 }
 

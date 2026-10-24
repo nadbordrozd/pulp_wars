@@ -393,6 +393,13 @@ export function commandRelocationsV7(
       return [{ unitId: command.unitId, to: command.to }];
     case "BEAM_DOWN":
       return [{ unitId: command.passengerUnitId, to: command.to }];
+    // The Mothership redesign (`pulp_wars-ewpj`): every passenger lands on
+    // the chosen tile or one beside it; the tile stands for the landing.
+    case "MASS_BEAM_DOWN":
+      return command.passengerUnitIds.map((unitId) => ({
+        unitId,
+        to: command.to,
+      }));
     case "TUNNEL":
       return command.rider === null
         ? [{ unitId: command.unitId, to: command.to }]

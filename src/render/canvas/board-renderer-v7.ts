@@ -704,6 +704,11 @@ export interface MapCommandTargetV7 {
      */
     | "BEAM_DOWN_PASSENGER"
     | "BEAM_DOWN"
+    /**
+     * The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down tile
+     * (chosen once to preview the landings, then again to beam).
+     */
+    | "MASS_BEAM_DOWN"
     | "MIND_CONTROL"
     | "TRACTOR_BEAM"
     /**

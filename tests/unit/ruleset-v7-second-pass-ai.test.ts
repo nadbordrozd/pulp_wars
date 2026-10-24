@@ -255,7 +255,9 @@ describe("Normal AI second pass: Ice Folk, Martian abilities", () => {
         // live, so this is no kill setup. `pulp_wars-1wy.3`: a Grunt has
         // Attack 2 again (4 on the Guard; at Attack 1.5, `pulp_wars-b5f.2`,
         // it took two more Grunts with their ray pistols).
-        own("KNIGHT", 6, 3),
+        // The Mothership redesign (`pulp_wars-ewpj`): it has shot already
+        // (its Attack 3 would now finish the Guard); its pull is free.
+        own("KNIGHT", 6, 3, { activation: { attacked: true, attacksUsed: 1 } }),
         own("FIGHTER", 5, 4),
         own("FIGHTER", 7, 4),
         own("GUARD", 7, 3),

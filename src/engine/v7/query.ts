@@ -27,6 +27,7 @@ import {
   TENTACLE_LIFETIME_V7,
   TENTACLE_RANGE_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
+  MASS_BEAM_DOWN_CAPACITY_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
   RAMPAGE_ATTACKS_V7,
@@ -246,7 +247,13 @@ import {
   isCoolingV7,
   beamDownCarrierReadyV7,
   beamDownDestinationLegalV7,
+  beamDownLandingLegalV7,
   beamDownPassengerLegalV7,
+  massBeamDownOfferedPassengersV7,
+  massBeamDownPassengerLegalV7,
+  massBeamDownPlacementsV7,
+  massBeamDownTargetInRangeV7,
+  type MassBeamPlacementV7,
   controlledByBrainV7,
   mindControlTargetBlockV7,
   pierceTileV7,
@@ -1325,6 +1332,13 @@ function appendPublicUnitCommandsV7(
             passengerUnitId: passenger.id,
             to,
           });
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down,
+    // one command per legal tile with its offered passengers.
+    if (
+      rule.abilities.includes("MASS_BEAM_DOWN") &&
+      beamDownCarrierReadyV7(view, unit)
+    )
+      candidates.push(...publicMassBeamDownCommandsV7(view, unit));
     if (
       !overrun &&
       !primaryUsedForQuery(unit) &&
@@ -4053,6 +4067,137 @@ function publicBeamDownPassengersV7(
       ),
     )
     .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): the reducer's Mass
+ * Beam Down landing test on the view (the Beam Down tile rule without the
+ * carrier adjacency), with each tile's facts read once.
+ */
+function publicMassBeamLandingV7(
+  view: PlayerViewV7,
+): (passenger: PlayerViewV7["units"][number], at: CoordV7) => boolean {
+  const technology = {
+    engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
+    navigation: view.viewer.researchedTechs.includes("NAVIGATION"),
+  };
+  const facts = new Map<string, PlacementTileFactsV7 | undefined>();
+  return (passenger, at) => {
+    const key = `${at.x},${at.y}`;
+    if (!facts.has(key))
+      facts.set(key, publicPlacementFactsV7(view, at, view.viewer.id));
+    return beamDownLandingLegalV7(view, passenger, technology, facts.get(key));
+  };
+}
+
+/**
+ * The Mothership redesign: the offered `MASS_BEAM_DOWN` commands of a ready
+ * own Mothership in land form, in (y, x) order of their tile: for every
+ * explored tile within `MASS_BEAM_DOWN_RANGE_V7`, the passengers
+ * `massBeamDownOfferedPassengersV7` chooses (fresh units first by distance,
+ * up to the capacity, each placeable), when there is at least one. The
+ * reducer also accepts any other legal set.
+ */
+function publicMassBeamDownCommandsV7(
+  view: PlayerViewV7,
+  mothership: PlayerViewV7["units"][number],
+): readonly CommandV7[] {
+  const candidates = view.units.filter((unit) =>
+    massBeamDownPassengerLegalV7(view, mothership, unit, view.beamedThisTurn),
+  );
+  if (candidates.length === 0) return [];
+  const landing = publicMassBeamLandingV7(view);
+  const commands: CommandV7[] = [];
+  for (const tile of view.board.tiles) {
+    if (!tile.explored || !massBeamDownTargetInRangeV7(mothership, tile.at))
+      continue;
+    const passengers = massBeamDownOfferedPassengersV7(
+      mothership,
+      candidates,
+      tile.at,
+      MASS_BEAM_DOWN_CAPACITY_V7,
+      landing,
+    );
+    if (passengers.length > 0)
+      commands.push({
+        kind: "MASS_BEAM_DOWN",
+        unitId: mothership.id,
+        passengerUnitIds: passengers.map((passenger) => passenger.id),
+        to: tile.at,
+      });
+  }
+  // The board's tiles are in (y, x) order.
+  return commands;
+}
+
+/** The Mothership redesign: the preview of a Mass Beam Down. */
+export interface MassBeamDownPreviewV7 {
+  readonly unitId: UnitId;
+  readonly to: CoordV7;
+  /** Where each passenger lands, in unit-ID order. */
+  readonly placements: readonly MassBeamPlacementV7[];
+  /** The landing tiles whose Field Defense the landing would destroy. */
+  readonly fieldDefenseDestroyed: readonly CoordV7[];
+}
+
+/**
+ * The Mothership redesign: where the passengers of `command` would land,
+ * from the view alone, or null when the command is not legal for the
+ * view's own Mothership (it does not test whether the Mothership may
+ * still act this turn: for an offered command it is exact). Every tile is
+ * read as the reducer reads it (explored tiles show every unit).
+ */
+export function previewMassBeamDownV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "MASS_BEAM_DOWN" }>,
+): MassBeamDownPreviewV7 | null {
+  const mothership = view.units.find((unit) => unit.id === command.unitId);
+  if (
+    mothership === undefined ||
+    mothership.ownerId !== view.viewer.id ||
+    mothership.form !== "LAND" ||
+    !unitRoleRuleV7(view, mothership).abilities.includes("MASS_BEAM_DOWN") ||
+    tileAtView(view, command.to)?.explored !== true ||
+    !massBeamDownTargetInRangeV7(mothership, command.to)
+  )
+    return null;
+  const passengers: PlayerViewV7["units"][number][] = [];
+  for (const id of command.passengerUnitIds) {
+    const passenger = view.units.find(
+      (unit) =>
+        unit.id === id &&
+        massBeamDownPassengerLegalV7(
+          view,
+          mothership,
+          unit,
+          view.beamedThisTurn,
+        ),
+    );
+    if (passenger === undefined) return null;
+    passengers.push(passenger);
+  }
+  const placements = massBeamDownPlacementsV7(
+    passengers,
+    command.to,
+    publicMassBeamLandingV7(view),
+  );
+  if (placements === null) return null;
+  return {
+    unitId: command.unitId,
+    to: command.to,
+    placements,
+    fieldDefenseDestroyed: placements
+      .map((placement) => placement.to)
+      .filter((at) => {
+        const tile = tileAtView(view, at);
+        return (
+          tile?.explored === true &&
+          tile.fieldDefense &&
+          tile.territoryOwnerId !== null &&
+          publicHostile(view, view.viewer.id, tile.territoryOwnerId)
+        );
+      }),
+  };
 }
 
 /**
@@ -8011,7 +8156,9 @@ export function queryAiReadyCommandsV7(
                   ? command.eggUnitId
                   : command.kind === "BEAM_DOWN" || command.kind === "TOSS"
                     ? command.passengerUnitId
-                    : 0;
+                    : command.kind === "MASS_BEAM_DOWN"
+                      ? (command.passengerUnitIds[0] ?? 0)
+                      : 0;
     return {
       command,
       tuple: [
@@ -13641,6 +13788,7 @@ function publicCommandTarget(view: PlayerViewV7, command: CommandV7): CoordV7 {
   if ("at" in command) return command.at;
   if (
     command.kind === "BEAM_DOWN" ||
+    command.kind === "MASS_BEAM_DOWN" ||
     command.kind === "TUNNEL" ||
     command.kind === "BOMB_RUN" ||
     command.kind === "ASSEMBLE" ||

@@ -927,10 +927,12 @@ async function sweep(fixture: () => GameStateV7): Promise<{
 /**
  * The only controls an aiming panel may hold (bead pulp_wars-9im). The
  * summon chooser's three kinds (the Cult redesign, bead pulp_wars-mch9.44)
- * are a fixed set, never targets: the tiles are picked on the board.
+ * are a fixed set, never targets: the tiles are picked on the board. A
+ * Mass Beam Down's confirm (the Mothership redesign, `pulp_wars-ewpj`)
+ * beams the tile chosen on the board, like the Stampede's Charge.
  */
 const PICK_PANEL_CONTROLS =
-  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|bomb-run-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|cult-boo-cast|cult-ritual-begin|cult-summon-(imp|horror|mass))$/;
+  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|bomb-run-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|martian-mass-beam-confirm|cult-boo-cast|cult-ritual-begin|cult-summon-(imp|horror|mass))$/;
 
 /**
  * Bead pulp_wars-9im, the generic guard: targets are picked on the board,

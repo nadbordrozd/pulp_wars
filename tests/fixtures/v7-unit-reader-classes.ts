@@ -267,6 +267,17 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-ice-folk.ts::witchMoveKeyV7": "BOARD",
     "src/ai/v7-martian.ts::beamDownPassengerIsGarrisonV7": "BOARD",
     "src/ai/v7-martian.ts::martianArmyCountsV7": "BOARD",
+    // The Mothership redesign (`pulp_wars-ewpj`): Mass Beam Down and the
+    // Shield Canopy read the board's units.
+    "src/ai/v7-martian.ts::massBeamDownScoreV7": "BOARD",
+    "src/engine/v7/martian.ts::rechargeShieldsAtEndTurnV7": "BOARD",
+    "src/engine/v7/query.ts::publicMassBeamDownCommandsV7": "BOARD",
+    "src/engine/v7/query.ts::previewMassBeamDownV7": "BOARD",
+    "src/engine/v7/reducer.ts::applyMassBeamDown": "BOARD",
+    "src/render/canvas/martian-board-plan-v7.ts::addMassBeamDownEntriesV7":
+      "BOARD",
+    "src/render/martian-presentation-v7.ts::massBeamDownUnavailableTextV7":
+      "BOARD",
     "src/ai/v7-martian.ts::martianFactsV7": "BOARD",
     "src/ai/v7-martian.ts::martianResearchV7": "BOARD",
     "src/ai/v7-martian.ts::martianRetainedValueV7": "BOARD",

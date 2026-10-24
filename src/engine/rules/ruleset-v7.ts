@@ -423,6 +423,10 @@ export type UnitRoleAbilityV7 =
   | "TRACTOR_BEAM"
   | "FLY"
   | "STRIDE"
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Mothership's
+  // Mass Beam Down (a command) and its Shield Canopy (passive).
+  | "MASS_BEAM_DOWN"
+  | "SHIELD_CANOPY"
   // The Ice Folk revision (section 3): Mountain-born, the Yeti's Rockfall,
   // the Sled's Bolas, the Snow Hunter's Cold Blood, the Mammoth's Sweep and
   // Trample, the Ice Witch's Blizzard and Cold Snap, the Boulder Yeti's
@@ -822,6 +826,15 @@ export interface RoleMechanicsV7 {
    * primary-action Tractor Beam).
    */
   readonly heavyTractorBeam: boolean;
+  /**
+   * The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Shield Canopy.
+   * At every Shield recharge of its owner, Start Turn and End Turn alike,
+   * each other own shielded unit on one of the eight tiles around the
+   * land-form unit is covered like a Force Field (to
+   * `FORCE_FIELD_SHIELD_V7`), with no technology needed. The Martian
+   * Mothership only.
+   */
+  readonly shieldCanopy: boolean;
   /**
    * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
    * 7.1): Sticky Toffee. A unit the role hits in an `ATTACK` exchange (its
@@ -1978,6 +1991,7 @@ const mechanics = (
           knockback: false,
           plated: null,
           heavyTractorBeam: false,
+          shieldCanopy: false,
           sticky: false,
           glazeTrail: false,
           ricochet: false,
@@ -3151,18 +3165,29 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     tacticalRole: "BREAKTHROUGH",
     // `pulp_wars-1wy.3` (balance M3): the carrier costs 8 (was 10), has Beam
     // Down, and its Tractor Beam is the Heavy one (role mechanic
-    // `heavyTractorBeam`).
-    cost: 8,
-    maxHp: 16,
-    attack2: 5,
-    defense2: 4,
+    // `heavyTractorBeam`). The Mothership redesign (`pulp_wars-ewpj`,
+    // 7r108): the slow, tough anchor that projects the army, at the
+    // Knight's price: 9 Coins, 20 HP (was 16), Attack 3 (was 2.5), Defense
+    // 3 (was 2), Sight 2 (was 1); Mass Beam Down instead of Beam Down, and
+    // the Shield Canopy (role mechanic `shieldCanopy`).
+    cost: 9,
+    maxHp: 20,
+    attack2: 6,
+    defense2: 6,
     move: 2,
     range: 1,
     minimumRange: 1,
-    sightRadius: 1,
+    sightRadius: 2,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "FLY",
+      "MASS_BEAM_DOWN",
+      "TRACTOR_BEAM",
+      "SHIELD_CANOPY",
+    ],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3249,6 +3274,8 @@ export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
     advancesAfterKill: false,
     capacitySlots: 2,
     heavyTractorBeam: true,
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
+    shieldCanopy: true,
   },
   // The giants' signatures (section 6.5): Overstride.
   JUGGERNAUT: {
@@ -7028,6 +7055,15 @@ export const HEAVY_TRACTOR_PULL_V7 = 2;
  * an own unit within this Chebyshev distance (or from an own city).
  */
 export const BEAM_DOWN_PICKUP_RANGE_V7 = 2;
+/**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down. The
+ * Mothership sets its passengers (own units within
+ * `BEAM_DOWN_PICKUP_RANGE_V7` of it) down around a tile it has explored
+ * within this Chebyshev distance of it ...
+ */
+export const MASS_BEAM_DOWN_RANGE_V7 = 3;
+/** ... at most this many of them at once. */
+export const MASS_BEAM_DOWN_CAPACITY_V7 = 3;
 /**
  * The Ice Folk balance revision (RULESET_7_BALANCE_MARTIAN_ICE.md section
  * 6.2): Snow cover is `x 1.25`. A Forest or Mountain stays

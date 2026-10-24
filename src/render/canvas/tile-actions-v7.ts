@@ -40,6 +40,7 @@ import { tunnelRidersV7 } from "../dwarf-tunnel-v7";
 import { freezesRingV7 } from "../frozen-sea-presentation-v7";
 import {
   BEAM_DOWN_LABEL_V7,
+  MASS_BEAM_DOWN_LABEL_V7,
   MIND_CONTROL_LABEL_V7,
   TRACTOR_BEAM_LABEL_V7,
 } from "../martian-presentation-v7";
@@ -116,6 +117,7 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   TOP_UP: "BOARD",
   BOARD: "AIMED",
   BEAM_DOWN: "AIMED",
+  MASS_BEAM_DOWN: "AIMED",
   MIND_CONTROL: "AIMED",
   TRACTOR_BEAM: "AIMED",
   THROW_BOLAS: "AIMED",
@@ -335,6 +337,19 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     offered: kind("BEAM_DOWN"),
     pick: (unitId) => ({
       martianPick: { kind: "BEAM_DOWN", unitId, passengerUnitId: null },
+    }),
+  },
+  // The Mothership redesign (`pulp_wars-ewpj`): Mass Beam Down, with the
+  // Beam Down icon.
+  {
+    id: "MASS_BEAM_DOWN",
+    label: MASS_BEAM_DOWN_LABEL_V7,
+    icon: "beam-down",
+    dockAction: "martian-mass-beam-down",
+    families: ["MASS_BEAM_DOWN"],
+    offered: kind("MASS_BEAM_DOWN"),
+    pick: (unitId) => ({
+      martianPick: { kind: "MASS_BEAM_DOWN", unitId, chosen: null },
     }),
   },
   // The Ice Folk.

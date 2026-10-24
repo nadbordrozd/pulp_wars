@@ -28,7 +28,10 @@ import {
   tractorBeamTargetBlockV7,
   unitHeldByCityWallsV7,
 } from "../engine/v7/martian";
-import { queryTractorBeamPathV7 } from "../engine/v7/query";
+import {
+  queryTractorBeamPathV7,
+  type MassBeamDownPreviewV7,
+} from "../engine/v7/query";
 import { unitScoreValueV7 } from "../engine/v7/score";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
@@ -231,6 +234,14 @@ export const BEAM_DOWN_ATTACK_PRIORITY_V7 = 906;
  * above the delivery by route (865) and every routine Move.
  */
 export const BEAM_DOWN_EXTRACT_PRIORITY_V7 = 890;
+/**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down. A
+ * passenger landing next to a hostile city center is worth this (it
+ * besieges and threatens the center) ...
+ */
+export const MASS_BEAM_DOWN_CITY_VALUE_V7 = 6;
+/** ... and this more when the center stands empty (it walks in next turn). */
+export const MASS_BEAM_DOWN_EMPTY_CITY_VALUE_V7 = 10;
 /** A carrier flies to where it can extract such a unit: just above it. */
 export const CARRIER_RESCUE_MOVE_PRIORITY_V7 = 891;
 /** A Cooling ray unit steps out of melee reach before its half shot. */
@@ -378,6 +389,12 @@ export interface MartianFactsV7 {
   readonly cooldownBrains: ReadonlySet<UnitId>;
   /** Own land-form Shield Projectors. */
   readonly ownProjectors: readonly PublicUnitV7[];
+  /**
+   * The Mothership redesign (`pulp_wars-ewpj`): own land-form units with a
+   * Shield Canopy (the Mothership), which cover the units beside them at
+   * every recharge, End Turn included, with no technology.
+   */
+  readonly ownCanopies: readonly PublicUnitV7[];
 }
 
 export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
@@ -422,7 +439,29 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
         unit.hp > 0 &&
         hasAbilityV7(view, unit, "FORCE_FIELD"),
     ),
+    ownCanopies: view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        unit.hp > 0 &&
+        unitRoleMechanicsV7(view, unit).shieldCanopy,
+    ),
   };
+}
+
+/**
+ * The Mothership redesign: whether an own unit ending its Move on `at`
+ * stands under an own Shield Canopy (beside an own Mothership).
+ */
+export function underOwnCanopyV7(
+  facts: MartianFactsV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  return facts.ownCanopies.some(
+    (mothership) =>
+      mothership.id !== unit.id && chebyshev(mothership.at, at) === 1,
+  );
 }
 
 export function hasAbilityV7(
@@ -484,9 +523,14 @@ export function enemyTurnShieldV7(
   at: CoordV7,
 ): number {
   const current = facts.shieldByUnit.get(unit.id) ?? 0;
-  if (unit.ownerId !== view.viewer.id || !facts.forceFields) return current;
+  if (unit.ownerId !== view.viewer.id) return current;
   const maximum = shieldMaximumForPolicyV7(view, facts, unit);
   if (maximum === 0) return current;
+  // The Mothership redesign (`pulp_wars-ewpj`): a Shield Canopy recharges
+  // the units beside it at End Turn without Force Fields too.
+  if (underOwnCanopyV7(facts, unit, at))
+    return Math.max(maximum, FORCE_FIELD_SHIELD_V7);
+  if (!facts.forceFields) return current;
   const covered = facts.ownProjectors.some(
     (projector) =>
       projector.id !== unit.id && chebyshev(projector.at, at) === 1,
@@ -1081,6 +1125,116 @@ export function beamDownScoreV7(
       (passengerCanMove ? 0 : 8) -
       2 * danger,
     immediate: -danger,
+  };
+}
+
+/**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): `MASS_BEAM_DOWN`, by
+ * what the strike force does where it lands (`preview`, the engine's own
+ * placement). Per passenger: its best shot on arrival (as a Beam Down's: 2
+ * a point of the whole hit, the target's value when it kills, 6 more from
+ * two tiles or more; only a passenger that may still act after moving, and
+ * a passenger that can already shoot where it stands counts only a kill),
+ * 6 for landing next to a hostile city center (10 more when the center is
+ * empty), and 4 a step of progress toward the seat's wave target; less
+ * twice its danger there, and its retained value when it would die there
+ * without a kill. Not a candidate without a shot, a city, or three steps
+ * of progress for some passenger, or with a total of 0 or less. Priority:
+ * 1180 with a kill, 906 with a shot (the passengers arrive before they
+ * fire), otherwise 865 (the Beam Down delivery).
+ */
+export function massBeamDownScoreV7(
+  tools: MartianPolicyToolsV7,
+  preview: MassBeamDownPreviewV7 | null,
+  passengerCanAct: (unitId: UnitId) => boolean,
+): MartianScoreV7 {
+  if (preview === null) return NOT_A_CANDIDATE_V7;
+  const { view } = tools;
+  let total = 0;
+  let kills = false;
+  let shots = false;
+  let purpose = false;
+  let worstDanger = 0;
+  for (const placement of preview.placements) {
+    const passenger = tools.unit(placement.unitId);
+    if (passenger === undefined) return NOT_A_CANDIDATE_V7;
+    const rule = unitRoleRuleV7(view, passenger);
+    const mayShoot =
+      rule.abilities.includes("ATTACK") &&
+      !rule.abilities.includes("MIND_CONTROL") &&
+      unitMayActAfterMoveV7(view, passenger) &&
+      !primaryUsedForPolicyV7(passenger);
+    let best: { value: number; kills: boolean } | null = null;
+    if (mayShoot)
+      for (const target of tools.hostileTargets) {
+        const gap = chebyshev(placement.to, target.at);
+        if (gap < rule.minimumRange || gap > rule.range) continue;
+        const hit = tools.arrivalHit(passenger, target);
+        if (hit <= 0) continue;
+        const kill =
+          hit >= target.hp + (tools.facts.shieldByUnit.get(target.id) ?? 0);
+        const value =
+          BEAM_DOWN_HIT_VALUE_V7 * hit +
+          (kill ? tools.targetValue(target) : 0) +
+          (gap >= 2 ? BEAM_DOWN_STANDOFF_VALUE_V7 : 0);
+        if (
+          best === null ||
+          (kill && !best.kills) ||
+          (kill === best.kills && value > best.value)
+        )
+          best = { value, kills: kill };
+      }
+    // A passenger that can shoot where it stands goes only for a kill.
+    if (best !== null && !best.kills && passengerCanAct(passenger.id))
+      best = null;
+    let city = 0;
+    for (const center of view.cities) {
+      if (
+        center.ownerId === null ||
+        !tools.isHostile(center.ownerId) ||
+        chebyshev(center.at, placement.to) !== 1
+      )
+        continue;
+      city = Math.max(
+        city,
+        MASS_BEAM_DOWN_CITY_VALUE_V7 +
+          (view.units.some((unit) => same(unit.at, center.at))
+            ? 0
+            : MASS_BEAM_DOWN_EMPTY_CITY_VALUE_V7),
+      );
+    }
+    const progress =
+      tools.routeProgress(passenger, placement.to) ??
+      (tools.waveTarget === null
+        ? 0
+        : chebyshev(passenger.at, tools.waveTarget) -
+          chebyshev(placement.to, tools.waveTarget));
+    const danger = tools.danger(passenger, placement.to);
+    worstDanger = Math.max(worstDanger, danger);
+    if (best !== null) {
+      shots = true;
+      if (best.kills) kills = true;
+    }
+    if (best !== null || city > 0 || progress >= BEAM_DOWN_MINIMUM_PROGRESS_V7)
+      purpose = true;
+    total +=
+      (best?.value ?? 0) +
+      city +
+      BEAM_DOWN_STEP_VALUE_V7 * Math.min(Math.max(progress, 0), 8) -
+      2 * danger -
+      (danger >= passenger.hp && best?.kills !== true
+        ? tools.retainedValue(passenger)
+        : 0);
+  }
+  if (!purpose || total <= 0) return NOT_A_CANDIDATE_V7;
+  return {
+    priority: kills
+      ? BEAM_DOWN_KILL_PRIORITY_V7
+      : shots
+        ? BEAM_DOWN_ATTACK_PRIORITY_V7
+        : BEAM_DOWN_PRIORITY_V7,
+    strategic: total,
+    immediate: -worstDanger,
   };
 }
 

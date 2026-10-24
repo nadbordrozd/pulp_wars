@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r107",
+  "rulesetId": "pulp-wars-poc-7r108",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r107",
+    "rulesetId": "pulp-wars-poc-7r108",
     "seed": 20261401,
     "width": 16,
     "height": 16,
@@ -4205,8 +4205,8 @@
       "role": "KNIGHT",
       "form": "LAND",
       "at": { "x": 6, "y": 10 },
-      "hp": 16,
-      "maxHp": 16,
+      "hp": 20,
+      "maxHp": 20,
       "kills": 0,
       "veteran": false,
       "captureEligible": false,

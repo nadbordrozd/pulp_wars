@@ -300,13 +300,9 @@ describe("Martian mobility probe: pulls", () => {
 
   it("does not pull a unit that nothing can finish", () => {
     // A Guard (17 HP): the Mothership's attack after its free pull (7r37)
-    // and the Ray Gunner's full ray together do not kill it (they do kill
-    // a Fighter now).
-    const state = martianFieldV7([
-      own("KNIGHT", 5, 3),
-      own("MARKSMAN", 6, 3),
-      foe("GUARD", 3, 3),
-    ]);
+    // does not kill it. (The Mothership redesign, `pulp_wars-ewpj`: with
+    // Attack 3 it and a Ray Gunner's full ray now do.)
+    const state = martianFieldV7([own("KNIGHT", 5, 3), foe("GUARD", 3, 3)]);
     expect(probeBestPullV7(viewerViewV7(state), indexOf(state))).toBeNull();
   });
 

@@ -4,7 +4,10 @@ import {
   FORCE_FIELD_SHIELD_V7,
   HEAVY_TRACTOR_PULL_V7,
   HEAVY_TRACTOR_RANGE_V7,
+  MASS_BEAM_DOWN_CAPACITY_V7,
+  MASS_BEAM_DOWN_RANGE_V7,
   beamDownPassengerLegalV7,
+  massBeamDownPassengerLegalV7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   TRACTOR_BEAM_RANGE_V7,
@@ -138,6 +141,20 @@ export const BEAM_DOWN_PICK_TILE_V7 = "Choose a tile next to the carrier";
  */
 export const BEAM_BADGE_V7 = "Beam";
 export const BEAMING_BADGE_V7 = "Beaming";
+/**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down and
+ * the Shield Canopy.
+ */
+export const MASS_BEAM_DOWN_LABEL_V7 = "Mass Beam Down";
+export const MASS_BEAM_DOWN_TOOLTIP_V7 = `Beam up to ${numberWord(MASS_BEAM_DOWN_CAPACITY_V7)} of your units from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away down around a tile up to ${MASS_BEAM_DOWN_RANGE_V7} tiles away, each on the nearest free tile. They can still attack but not move.`;
+export const MASS_BEAM_DOWN_PICK_V7 = "Choose where to beam your units down";
+export const MASS_BEAM_DOWN_CONFIRM_V7 = "Choose the tile again to beam down";
+/** The aiming panel's confirm of a chosen tile. */
+export const MASS_BEAM_DOWN_CONFIRM_LABEL_V7 = "Beam down";
+export const MASS_BEAM_DOWN_NO_PASSENGER_V7 = `No unit within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
+export const MASS_BEAM_DOWN_NO_TILE_V7 = "No free tile in reach";
+export const SHIELD_CANOPY_LABEL_V7 = "Shield Canopy";
+export const SHIELD_CANOPY_TOOLTIP_V7 = `Your units next to it recharge their Shield to ${FORCE_FIELD_SHIELD_V7} at the start and at the end of your turn, with no technology needed; at full HP one attack cannot kill them.`;
 /**
  * `pulp_wars-1wy.5`: what a beamed unit may still do, as the two hint chips
  * of the aiming panel (an attack icon, and a move icon struck through) and
@@ -385,6 +402,8 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     (role) => roleMechanicsV7(role, "MARTIAN").heatSink,
   ).map(label);
   const beamers = martianRolesWith("BEAM_DOWN").map(label);
+  const massBeamers = martianRolesWith("MASS_BEAM_DOWN").map(label);
+  const canopies = martianRolesWith("SHIELD_CANOPY").map(label);
   const brains = martianRolesWith("MIND_CONTROL").map(label);
   const heavy = (role: UnitRoleIdV7): boolean =>
     roleMechanicsV7(role, "MARTIAN").heavyTractorBeam;
@@ -471,6 +490,15 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
       BEAM_DOWN_LABEL_V7,
       `a ${joinOr(beamers)} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
     ],
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
+    [
+      MASS_BEAM_DOWN_LABEL_V7,
+      `a ${joinOr(massBeamers)} beams up to ${numberWord(MASS_BEAM_DOWN_CAPACITY_V7)} of your units from up to ${numberWord(BEAM_DOWN_PICKUP_RANGE_V7)} tiles away down around a tile up to ${numberWord(MASS_BEAM_DOWN_RANGE_V7)} tiles away, each on the nearest free tile; they can still attack but not move.`,
+    ],
+    [
+      SHIELD_CANOPY_LABEL_V7,
+      `your units next to a ${joinOr(canopies)} recharge their Shield to ${FORCE_FIELD_SHIELD_V7}, at the start and at the end of your turn, with no technology needed.`,
+    ],
     [
       MIND_CONTROL_LABEL_V7,
       `a ${joinOr(brains)} takes control of any enemy unit next to it (giants and ships too, at any HP), up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time, and needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next. The unit keeps its type and abilities but cannot create units. When the ${joinOr(brains)} is lost, the unit returns to its owner.`,
@@ -512,6 +540,10 @@ export function martianAbilityNameV7(
       return "Force Field";
     case "BEAM_DOWN":
       return BEAM_DOWN_LABEL_V7;
+    case "MASS_BEAM_DOWN":
+      return MASS_BEAM_DOWN_LABEL_V7;
+    case "SHIELD_CANOPY":
+      return SHIELD_CANOPY_LABEL_V7;
     case "MIND_CONTROL":
       return MIND_CONTROL_LABEL_V7;
     case "TRACTOR_BEAM":
@@ -549,6 +581,10 @@ export function martianAbilityDescriptionV7(
       return `${FORCE_FIELD_NEEDS_TEXT_V7} own units next to it recharge their Shield to ${FORCE_FIELD_SHIELD_V7}. ${FORCE_FIELD_HOLDS_RULE_V7}`;
     case "BEAM_DOWN":
       return BEAM_DOWN_TOOLTIP_V7;
+    case "MASS_BEAM_DOWN":
+      return MASS_BEAM_DOWN_TOOLTIP_V7;
+    case "SHIELD_CANOPY":
+      return SHIELD_CANOPY_TOOLTIP_V7;
     case "MIND_CONTROL":
       return MIND_CONTROL_TOOLTIP_V7;
     case "TRACTOR_BEAM":
@@ -573,6 +609,7 @@ export function martianCommandLabelV7(
   faction: FactionIdV7,
 ): string | null {
   if (kind === "BEAM_DOWN") return BEAM_DOWN_LABEL_V7;
+  if (kind === "MASS_BEAM_DOWN") return MASS_BEAM_DOWN_LABEL_V7;
   if (kind === "MIND_CONTROL") return MIND_CONTROL_LABEL_V7;
   if (kind === "TRACTOR_BEAM") return TRACTOR_BEAM_LABEL_V7;
   if (kind === "RALLY" && faction === "MARTIAN")
@@ -614,7 +651,9 @@ export function martianRoleUnlockTextV7(role: UnitRoleIdV7): string {
     // field alone ("Force Field with Force Fields" at the root before).
     ...(abilities.includes("FORCE_FIELD") ? ["Force Field"] : []),
     ...(abilities.includes("BEAM_DOWN") ? [BEAM_DOWN_LABEL_V7] : []),
+    ...(abilities.includes("MASS_BEAM_DOWN") ? [MASS_BEAM_DOWN_LABEL_V7] : []),
     ...(abilities.includes("TRACTOR_BEAM") ? [TRACTOR_BEAM_LABEL_V7] : []),
+    ...(abilities.includes("SHIELD_CANOPY") ? [SHIELD_CANOPY_LABEL_V7] : []),
   ];
   const label = martianLabelV7(role);
   return notes.length === 0
@@ -650,6 +689,12 @@ export function martianRecruitNotesV7(
         ]
       : []),
     ...(mechanics.heatSink ? [HEAT_SINK_NOTE_V7] : []),
+    // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
+    ...(mechanics.shieldCanopy
+      ? [
+          `${SHIELD_CANOPY_LABEL_V7}: raises the Shields of units next to it to ${FORCE_FIELD_SHIELD_V7}, with no technology; at full HP one attack cannot kill them.`,
+        ]
+      : []),
     ...(roleMechanicsV7(role, "ORIGINAL").buildsFieldDefense &&
     !mechanics.buildsFieldDefense
       ? [`${MARTIAN_FIELD_DEFENSE_EXPLANATION_V7}.`]
@@ -1009,6 +1054,41 @@ export function beamDownUnavailableTextV7(
 }
 
 /**
+ * The Mothership redesign (`pulp_wars-ewpj`, 7r108): why an own Mothership
+ * has no Mass Beam Down: Frozen, its action used, no passenger within
+ * `BEAM_DOWN_PICKUP_RANGE_V7`, or no free tile in reach; null when one is
+ * offered, when it is not the viewer's to command now, or when it arrived
+ * this turn.
+ */
+export function massBeamDownUnavailableTextV7(
+  view: PlayerViewV7,
+  unitId: number,
+  offered: boolean,
+): string | null {
+  if (offered) return null;
+  const mothership = view.units.find((unit) => unit.id === unitId);
+  if (
+    mothership === undefined ||
+    !ownActorNow(view, mothership) ||
+    !(unitRoleRuleV7(view, mothership).abilities as readonly string[]).includes(
+      "MASS_BEAM_DOWN",
+    ) ||
+    activationIsExhaustedV7(mothership.activation)
+  )
+    return null;
+  if (unitIsFrozenV7(view, mothership)) return MARTIAN_FROZEN_MOVED_V7;
+  if (primaryActionUsedV7(mothership.activation)) return MARTIAN_ACTED_V7;
+  const passengers = view.units.filter(
+    (unit) =>
+      !primaryActionUsedV7(unit.activation) &&
+      massBeamDownPassengerLegalV7(view, mothership, unit, view.beamedThisTurn),
+  );
+  return passengers.length === 0
+    ? MASS_BEAM_DOWN_NO_PASSENGER_V7
+    : MASS_BEAM_DOWN_NO_TILE_V7;
+}
+
+/**
  * `pulp_wars-1wy.5`: why an own puller has no Tractor Beam: a Frozen puller
  * that moved, a Mothership whose free pull is spent ("Tractor Beam used
  * this turn"), a Saucer that used its action, or nothing in reach; null
@@ -1115,7 +1195,17 @@ export function martianBoundaryNoticeV7(
     before.units.find((unit) => unit.id === id);
   const owner = (playerId: number): string =>
     capitalized(possessive(after, playerId));
+  // The Mothership redesign (`pulp_wars-ewpj`): the passengers of one Mass
+  // Beam Down are one line ("beamed down a Grunt, a Grunt, and a Ray
+  // Gunner").
+  let beam: {
+    readonly carrierId: number;
+    readonly index: number;
+    readonly prefix: string;
+    readonly names: string[];
+  } | null = null;
   for (const event of events) {
+    if (event.kind !== "UNIT_BEAMED") beam = null;
     if (event.kind === "SHIELDS_RECHARGED") {
       if (event.results.length === 0) continue;
       parts.push(`${owner(event.playerId)} Shields recharged`);
@@ -1130,9 +1220,24 @@ export function martianBoundaryNoticeV7(
         carrier === undefined
           ? martianLabelV7("RAIDER")
           : martianUnitNameV7(after, carrier);
-      parts.push(
-        `${owner(event.playerId)} ${carrierName} beamed down a ${name}`,
-      );
+      if (beam !== null && beam.carrierId === event.unitId) {
+        beam.names.push(`a ${name}`);
+        const names = beam.names;
+        parts[beam.index] = `${beam.prefix} ${
+          names.length === 2
+            ? names.join(" and ")
+            : `${names.slice(0, -1).join(", ")}, and ${names.at(-1) ?? ""}`
+        }`;
+        continue;
+      }
+      const prefix: string = `${owner(event.playerId)} ${carrierName} beamed down`;
+      beam = {
+        carrierId: event.unitId,
+        index: parts.length,
+        prefix,
+        names: [`a ${name}`],
+      };
+      parts.push(`${prefix} a ${name}`);
     } else if (event.kind === "UNIT_MIND_CONTROLLED") {
       toast = true;
       // The target keeps its kind: the original owner's registration.

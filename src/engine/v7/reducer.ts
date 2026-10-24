@@ -241,8 +241,12 @@ import {
 import {
   beamDownCarrierReadyV7,
   beamDownDestinationLegalV7,
+  beamDownLandingLegalV7,
   beamDownPassengerLegalV7,
   beamedActivationV7,
+  massBeamDownPassengerLegalV7,
+  massBeamDownPlacementsV7,
+  massBeamDownTargetInRangeV7,
   controlledByBrainV7,
   coolingStepV7,
   isCoolingV7,
@@ -505,6 +509,9 @@ export type RuleErrorCodeV7 =
   // `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), or Tractor Beam
   // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
   | "BEAM_DOWN_NOT_LEGAL"
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): an illegal Mass
+  // Beam Down (`EMBARKED`, `NO_PASSENGER`, `OUT_OF_RANGE`, `NO_ROOM`).
+  | "MASS_BEAM_DOWN_NOT_LEGAL"
   | "MIND_CONTROL_NOT_LEGAL"
   | "TRACTOR_BEAM_NOT_LEGAL"
   // The Ice Folk revision: an illegal Bolas (`EMBARKED`, `TARGET_IMMUNE`,
@@ -2141,6 +2148,13 @@ function applyCommandCoreV7(
       state,
       command.passengerUnitId,
       applyBeamDown(stateInput, state, actor, command),
+    );
+  if (command.kind === "MASS_BEAM_DOWN")
+    // The frozen sea redesign: Black Ice reads each passenger's landing.
+    return command.passengerUnitIds.reduce(
+      (result, passengerUnitId) =>
+        withBlackIceResultV7(state, passengerUnitId, result),
+      applyMassBeamDown(stateInput, state, actor, command),
     );
   if (command.kind === "MIND_CONTROL")
     return applyMindControl(stateInput, state, actor, command);
@@ -4396,6 +4410,208 @@ function applyBeamDown(
         beamedThisTurn: [...state.beamedThisTurn, passenger.id].sort(
           (left, right) => left - right,
         ),
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The Mothership redesign `MASS_BEAM_DOWN` (`pulp_wars-ewpj`, 7r108, the
+ * current rules section 20.7.1): a primary action of a Mothership, which
+ * may have moved. It sets 1 to `MASS_BEAM_DOWN_CAPACITY_V7` own Beam Down
+ * passengers from within `BEAM_DOWN_PICKUP_RANGE_V7` of it (no city
+ * pick-up) down around an explored tile within `MASS_BEAM_DOWN_RANGE_V7`:
+ * in unit-ID order each lands on the first tile of the target and the
+ * eight tiles around it (`massBeamDownLandingTilesV7`) that passes the Beam
+ * Down tile rule and is not taken. Each passenger counts as having moved,
+ * as after a Beam Down; the Mothership has used its primary action. The
+ * checks run in the section's order, through the predicates the public
+ * query shares; the first failure is the (atomic) rejection.
+ */
+function applyMassBeamDown(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "MASS_BEAM_DOWN" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const mothership = actorCheck.unit;
+  if (!unitRoleRuleV7(state, mothership).abilities.includes("MASS_BEAM_DOWN"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: mothership.role });
+  if (!beamDownCarrierReadyV7(state, mothership))
+    return rejected(original, "UNIT_ALREADY_ACTED", {
+      unitId: mothership.id,
+    });
+  if (mothership.form !== "LAND")
+    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
+      reason: "EMBARKED",
+    });
+  const passengers = command.passengerUnitIds.map((id) =>
+    state.units.find(
+      (unit) =>
+        unit.id === id &&
+        massBeamDownPassengerLegalV7(
+          state,
+          mothership,
+          unit,
+          state.beamedThisTurn,
+        ),
+    ),
+  );
+  if (passengers.some((passenger) => passenger === undefined))
+    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
+      reason: "NO_PASSENGER",
+    });
+  const riders = passengers as readonly UnitStateV7[];
+  const player = requirePlayer(state, actor);
+  if (
+    tileAtV7(state.board, command.to) === undefined ||
+    !isExplored(player, command.to)
+  )
+    return rejected(original, "INVALID_TILE", { action: "MASS_BEAM_DOWN" });
+  if (!massBeamDownTargetInRangeV7(mothership, command.to))
+    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
+      reason: "OUT_OF_RANGE",
+    });
+  const technology = {
+    engineering: player.researchedTechs.includes("ENGINEERING"),
+    navigation: player.researchedTechs.includes("NAVIGATION"),
+  };
+  const territoryOwnerAt = (at: CoordV7): PlayerId | undefined => {
+    const tile = tileAtV7(state.board, at);
+    return tile === undefined
+      ? undefined
+      : state.cities.find((city) => city.id === tile.territoryCityId)?.ownerId;
+  };
+  // The Beam Down tile rule (row 7 without the carrier adjacency), shared
+  // with the public command query. A Rift is never a landing tile.
+  const placements = massBeamDownPlacementsV7(
+    riders,
+    command.to,
+    (rider, at) => {
+      const tile = tileAtV7(state.board, at);
+      const territoryOwner = territoryOwnerAt(at);
+      return (
+        tile !== undefined &&
+        beamDownLandingLegalV7(state, rider, technology, {
+          explored: isExplored(player, at),
+          site: tile.site,
+          terrain: tile.terrain,
+          ice: isIceAtV7(state, at),
+          occupied: tileOccupiedV7(state, at),
+          chest: state.treasureChests.some((chest) => same(chest, at)),
+          alliedTerritory:
+            territoryOwner !== undefined &&
+            arePlayersAlliedV7(state, actor, territoryOwner),
+        })
+      );
+    },
+  );
+  if (placements === null)
+    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
+      reason: "NO_ROOM",
+    });
+  try {
+    const landing = new Map(
+      placements.map((placement) => [placement.unitId, placement.to]),
+    );
+    // The disembarkation rule: Field Defense in hostile territory is
+    // destroyed by the unit that lands on it.
+    const destroyed = placements
+      .map((placement) => placement.to)
+      .filter((to) => {
+        const tile = requireValue(tileAtV7(state.board, to));
+        const territoryOwner = territoryOwnerAt(to);
+        return (
+          tile.fieldDefense &&
+          territoryOwner !== undefined &&
+          arePlayersHostileV7(state, actor, territoryOwner)
+        );
+      });
+    let board = state.board;
+    for (const to of destroyed)
+      board = replaceTile({ ...state, board }, to, {
+        ...requireValue(tileAtV7(board, to)),
+        fieldDefense: false,
+      });
+    const units = state.units.map((unit) => {
+      const to = landing.get(unit.id);
+      if (to !== undefined)
+        return {
+          ...unit,
+          at: { x: to.x, y: to.y },
+          captureEligible: false,
+          // As after a Beam Down: the passenger counts as having moved (it
+          // may still attack, at half power for a ray), not as exhausted.
+          activation: beamedActivationV7(unit.activation),
+        };
+      return unit.id === mothership.id
+        ? {
+            ...unit,
+            activation: {
+              ...unit.activation,
+              specialActed: true,
+              handled: true,
+            },
+          }
+        : unit;
+    });
+    let sightState = { ...state, board, units } as GameStateV7;
+    const revealed: CoordV7[] = [];
+    for (const placement of placements) {
+      const beamed = requireValue(
+        units.find((unit) => unit.id === placement.unitId),
+      );
+      const reveal = revealRadius(
+        sightState,
+        actor,
+        placement.to,
+        unitSightRadiusAtV7(sightState, beamed),
+      );
+      revealed.push(...reveal.revealed);
+      sightState = {
+        ...sightState,
+        players: setExplored(sightState.players, actor, reveal.explored),
+      };
+    }
+    const events: DomainEventV7[] = placements.map((placement) => ({
+      kind: "UNIT_BEAMED",
+      playerId: actor,
+      unitId: mothership.id,
+      passengerUnitId: placement.unitId,
+      from: placement.from,
+      to: { x: placement.to.x, y: placement.to.y },
+    }));
+    for (const at of destroyed)
+      events.push({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: { x: at.x, y: at.y },
+        reason: "OCCUPATION",
+      });
+    if (revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: [...revealed].sort(compareCoords),
+      });
+    const staged = graveActionTail(
+      {
+        ...sightState,
+        commandIndex: nextSafe(state.commandIndex),
+        // Once per turn per passenger (no chain teleports).
+        beamedThisTurn: [
+          ...state.beamedThisTurn,
+          ...placements.map((placement) => placement.unitId),
+        ].sort((left, right) => left - right),
       },
       actor,
       events,
