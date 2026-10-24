@@ -3,7 +3,10 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
-import { MARTIAN_MASS_BEAM_V7 } from "../tests/fixtures/v7-martian-ui";
+import {
+  MARTIAN_MASS_BEAM_PICK_V7,
+  MARTIAN_MASS_BEAM_V7,
+} from "../tests/fixtures/v7-martian-ui";
 import { prepareSmokeOutput } from "./browser-smoke-output";
 import {
   martianFixtureMountExpressionV7,
@@ -21,7 +24,9 @@ import {
  * `tests/fixtures`). Built on the Martian UI review below.
  *
  * Usage: tsx scripts/browser-mothership-review-v7.ts http://localhost:6173/
- *   --output-dir=<new-dir>
+ *   --output-dir=<new-dir> [--only=beam,passengers]
+ *
+ * `passengers` (bead pulp_wars-8vmy): the passengers picked on the board.
  *
  * Martian UI visual review (bead pulp_wars-t6s.4). It captures the
  * default-route setup with a Martian seat; real Showcase launches (the
@@ -103,6 +108,12 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__MARTIAN_REVIEW__";
+const parts = (
+  process.argv
+    .slice(2)
+    .find((argument) => argument.startsWith("--only="))
+    ?.slice("--only=".length) ?? "beam,passengers"
+).split(",");
 
 try {
   const target = await waitForTarget();
@@ -113,8 +124,10 @@ try {
   });
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
-  for (const size of ["desktop", "phone"] as const)
-    await massBeamTour(connection, size);
+  for (const size of ["desktop", "phone"] as const) {
+    if (parts.includes("beam")) await massBeamTour(connection, size);
+    if (parts.includes("passengers")) await passengerTour(connection, size);
+  }
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
   await writeFile(
@@ -192,6 +205,67 @@ async function massBeamTour(
   await capture(connection, `mass-beam-shot-${size}.png`);
 }
 
+/**
+ * `pulp_wars-8vmy`: the passengers picked on the board, on the
+ * `martianMassBeamPickFixtureV7` scene (four units under the Mothership):
+ * the nearest three chosen, a fourth refused ("Up to 3"), one left behind
+ * and the far Grunt taken, and the chosen tile's landing preview.
+ */
+async function passengerTour(
+  connection: Connection,
+  size: ScreenSize,
+): Promise<void> {
+  const at = MARTIAN_MASS_BEAM_PICK_V7;
+  await viewport(connection, size);
+  await mount(connection, "chibi", "martianMassBeamPickFixtureV7");
+  await activate(connection, at.mothership);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="martian-mass-beam-down"]')?.click()`,
+  );
+  await delay(700);
+  const line = async (): Promise<unknown> =>
+    evaluate(
+      connection,
+      `({ line: document.querySelector('.v7-mass-beam-count')?.textContent ?? null, notice: document.querySelector('#v7-live')?.textContent ?? null })`,
+    );
+  await capture(connection, `passengers-default-${size}.png`);
+  evidence[`${size}PassengersDefault`] = await line();
+  const tap = async (where: Coord, name: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify(where)})`,
+    );
+    await delay(600);
+    await capture(connection, `passengers-${name}-${size}.png`);
+    evidence[`${size}Passengers-${name}`] = await line();
+  };
+  // The far Grunt: refused while three are chosen.
+  await tap(at.passengers[1], "full");
+  // Leave the Grunt at (1, 4) behind, then take the far one.
+  await tap(at.fourth, "left-behind");
+  await tap(at.passengers[1], "taken");
+  // The chosen tile previews the landing of the picked three.
+  await tap(at.target, "preview");
+  evidence[`${size}PassengersTargets`] = await boardTargets(connection);
+  // Bead pulp_wars-2yc.109: the beamed unit's turn chip says it can still
+  // attack.
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="martian-mass-beam-confirm"]')?.click()`,
+  );
+  await waitFor(
+    connection,
+    `${REVIEW}.traces.some((trace) => trace.command.kind === 'MASS_BEAM_DOWN')`,
+  );
+  await delay(2_000);
+  await deselect(connection);
+  await activate(connection, at.target);
+  evidence[`${size}BeamedChip`] = await dockText(connection);
+  await capture(connection, `beamed-chip-${size}.png`);
+  await deselect(connection);
+}
+
 function url(params: Record<string, string>): string {
   const next = new URL(baseUrl.href);
   next.search = "";
@@ -209,6 +283,12 @@ async function mount(
   await waitFor(
     connection,
     `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__ !== undefined`,
+  );
+  // The game's sound and music stay off in review runs (Chrome is muted
+  // too).
+  await evaluate(
+    connection,
+    `localStorage.setItem('pulpWars.audio.v1', JSON.stringify({ enabled: false, volume: 0 })); localStorage.setItem('pulpWars.music.v1', JSON.stringify({ enabled: false, volume: 0 }))`,
   );
   await evaluate(
     connection,

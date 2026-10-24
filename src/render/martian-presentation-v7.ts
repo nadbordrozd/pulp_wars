@@ -151,6 +151,30 @@ export const MASS_BEAM_DOWN_PICK_V7 = "Choose where to beam your units down";
 export const MASS_BEAM_DOWN_CONFIRM_V7 = "Choose the tile again to beam down";
 /** The aiming panel's confirm of a chosen tile. */
 export const MASS_BEAM_DOWN_CONFIRM_LABEL_V7 = "Beam down";
+/**
+ * `pulp_wars-8vmy`: the passengers are picked on the board. The aiming
+ * panel's line ("Beam 2 of 3: tap your units to choose"), and the notice of
+ * a tap on a fourth unit ("Up to 3").
+ */
+export function massBeamDownCountTextV7(count: number): string {
+  return `Beam ${count} of ${MASS_BEAM_DOWN_CAPACITY_V7}: tap your units to choose`;
+}
+export const MASS_BEAM_DOWN_FULL_V7 = `Up to ${MASS_BEAM_DOWN_CAPACITY_V7}`;
+/** The spoken name of a unit the Mothership may take, on the board. */
+export function massBeamDownPassengerLabelV7(
+  name: string,
+  hp: number,
+  maxHp: number,
+  state: "SELECTED" | "UNSELECTED" | "FULL",
+  acted: boolean,
+): string {
+  const unit = `the ${name}, ${hp} of ${maxHp} HP${acted ? ", has acted, so it is only moved" : ""}`;
+  return state === "SELECTED"
+    ? `Beaming ${unit}. Choose again to leave it behind`
+    : state === "FULL"
+      ? `${capitalized(unit)}, stays behind. ${MASS_BEAM_DOWN_FULL_V7} units: leave one behind first`
+      : `${capitalized(unit)}, stays behind. Choose to beam it too`;
+}
 export const MASS_BEAM_DOWN_NO_PASSENGER_V7 = `No unit within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
 export const MASS_BEAM_DOWN_NO_TILE_V7 = "No free tile in reach";
 export const SHIELD_CANOPY_LABEL_V7 = "Shield Canopy";

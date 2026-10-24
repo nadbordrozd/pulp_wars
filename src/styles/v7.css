@@ -6826,6 +6826,14 @@ html:has(.v7-match-shell) body {
   );
 }
 
+/* pulp_wars-8vmy: how many units a Mass Beam Down takes, and how to pick. */
+.v7-mass-beam-count {
+  margin: 0;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+}
+
 /* The Mothership's Heavy Tractor Beam costs no action: a "Free" tag. */
 .v7-action-tag {
   padding: 0 0.3rem;

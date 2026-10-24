@@ -751,6 +751,15 @@ const ENTRIES = {
     "Done this turn",
     "It has nothing left to do this turn. It can act again on your next turn.",
   ],
+  // Bead pulp_wars-2yc.109: a spent Move with an attack or action left.
+  STATUS_ATTACK_LEFT: [
+    "Can attack · can't move",
+    "It has moved, been beamed, or acted, so it cannot move again this turn, but it can still attack.",
+  ],
+  STATUS_ACTION_LEFT: [
+    "Can act · can't move",
+    "It has moved, been beamed, or acted, so it cannot move again this turn, but it can still use an action.",
+  ],
   STATUS_RESTING: [
     "Resting",
     "It has not moved or acted, so it heals at the end of your turn.",
@@ -1215,6 +1224,8 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   provoked: "STATUS_PROVOKED",
   restless: "STATUS_RESTLESS",
   done: "STATUS_DONE",
+  "attack-left": "STATUS_ATTACK_LEFT",
+  "action-left": "STATUS_ACTION_LEFT",
   "idle-recovery": "STATUS_RESTING",
   plague: "STATUS_PLAGUED",
   bitten: "STATUS_BITTEN",

@@ -12174,7 +12174,15 @@ to }` per passenger in unit-ID order (`unitId` is the Mothership), then
   Field Defense the landing destroys, exactly.
 - **Board.** Its button arms the aiming: every offered tile is a Place
   target, the pick-up range is tinted, and each unit that would go wears
-  "Beam". Choosing a tile previews it ("Beam 3 units" on the tile,
+  "Beam". The passengers are picked on the board (`pulp_wars-8vmy`, no
+  rule change): every unit the Mothership may take (the passenger rule
+  above, a unit that has acted included) is a Help target, and the offered
+  three start chosen; a tap takes a unit or leaves it behind, a fourth is
+  refused with "Up to 3", and the dock's line reads "Beam 2 of 3: tap your
+  units to choose". Once the player changes the set, the Place targets are
+  the explored tiles in reach whose landing `previewMassBeamDownV7` accepts
+  for it, and the beam sends it. A passenger's own tile toggles it and is
+  no Place target. Choosing a tile previews it ("Beam 3 units" on the tile,
   "Beaming" on the passengers, and on each landing tile, in the Tractor
   Beam's magenta, the name of the unit that lands there); choosing it again,
   or the panel's "Beam down", beams. Back clears the choice. The log line

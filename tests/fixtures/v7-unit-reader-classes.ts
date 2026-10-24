@@ -847,6 +847,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/martian-board-plan-v7.ts::martianAttackTargetExtrasV7":
       "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::martianMoveLabelV7": "BOARD",
+    // `pulp_wars-8vmy`: the units a Mass Beam Down may take stand on the
+    // board within two tiles of the Mothership; a burrowed unit is not one.
+    "src/render/canvas/martian-board-plan-v7.ts::massBeamSelectionV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::martianPickTargetsV7": "BOARD",
     "src/render/canvas/presentation-plan-v7.ts::corePresentationPlanV7":
       "BOARD",

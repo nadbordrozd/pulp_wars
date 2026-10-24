@@ -392,6 +392,33 @@ export function martianMassBeamFixtureV7(): GameStateV7 {
 }
 
 /**
+ * `pulp_wars-8vmy`: the Mass Beam Down scene with a fourth unit under the
+ * Mothership, a Grunt at (1, 4) beside it. The nearest three (the Grunt at
+ * (1, 2), the Ray Gunner and this Grunt) start chosen; the Grunt at (2, 1),
+ * two tiles away, stays behind until the player takes it.
+ */
+export const MARTIAN_MASS_BEAM_PICK_V7 = {
+  ...MARTIAN_MASS_BEAM_V7,
+  fourth: { x: 1, y: 4 },
+} as const;
+
+export function martianMassBeamPickFixtureV7(): GameStateV7 {
+  const at = MARTIAN_MASS_BEAM_PICK_V7;
+  return martianUiFieldV7(
+    [
+      { seat: 0, role: "KNIGHT", at: at.mothership },
+      { seat: 0, role: "FIGHTER", at: at.passengers[0] },
+      { seat: 0, role: "FIGHTER", at: at.passengers[1] },
+      { seat: 0, role: "MARKSMAN", at: at.passengers[2] },
+      { seat: 0, role: "FIGHTER", at: at.fourth },
+      { seat: 1, role: "GUARD", at: at.enemyGuard },
+      { seat: 1, role: "FIGHTER", at: at.enemyFighter },
+    ],
+    { factions: ["MARTIAN", "ORIGINAL"] },
+  );
+}
+
+/**
  * Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain with enemies of
  * several kinds beside it, every one a Mind Control target: a full-HP
  * Juggernaut (a giant), a full-HP Knight on the village (5, 5), a Battleship

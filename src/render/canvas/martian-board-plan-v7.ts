@@ -1,10 +1,14 @@
 import {
   cooperativeAlliesV7,
   BEAM_DOWN_PICKUP_RANGE_V7,
+  MASS_BEAM_DOWN_CAPACITY_V7,
   MIND_CONTROL_RANGE_V7,
   isIceAtV7,
   isMindControlledV7,
+  massBeamDownPassengerLegalV7,
+  massBeamDownTargetInRangeV7,
   previewBeamDownV7,
+  primaryActionUsedV7,
   previewMassBeamDownV7,
   previewMindControlV7,
   previewTractorBeamV7,
@@ -27,6 +31,7 @@ import {
   MASS_BEAM_DOWN_PICK_V7,
   beamDownPickupTilesV7,
   beamDownTileLabelV7,
+  massBeamDownPassengerLabelV7,
   martianCombatLinesV7,
   martianStatsV7,
   martianUnitNameV7,
@@ -74,6 +79,12 @@ export type MartianPickV7 =
       readonly kind: "MASS_BEAM_DOWN";
       readonly unitId: UnitId;
       readonly chosen: CoordV7 | null;
+      /**
+       * `pulp_wars-8vmy`: the passengers the player picked on the board, in
+       * ascending ID order; null or absent while untouched (the offered
+       * commands' own, the nearest fresh units).
+       */
+      readonly passengerUnitIds?: readonly UnitId[] | null;
     };
 
 /**
@@ -126,6 +137,112 @@ export function martianMachineV7(
 
 const same = (left: CoordV7, right: CoordV7): boolean =>
   left.x === right.x && left.y === right.y;
+
+type MassBeamCommandV7 = Extract<CommandV7, { kind: "MASS_BEAM_DOWN" }>;
+type MassBeamPickV7 = Extract<MartianPickV7, { kind: "MASS_BEAM_DOWN" }>;
+
+/** `pulp_wars-8vmy`: the passengers of an aimed Mass Beam Down. */
+export interface MassBeamSelectionV7 {
+  /**
+   * Every unit the Mothership may take (the passenger rule), nearest the
+   * Mothership first, then by unit ID.
+   */
+  readonly eligible: readonly PlayerViewV7["units"][number][];
+  /** The passengers that go, in ascending ID order (the command's order). */
+  readonly selected: readonly UnitId[];
+  /** Whether the player changed the selection on the board. */
+  readonly picked: boolean;
+  /** Whether as many go as the Mothership carries. */
+  readonly full: boolean;
+  /**
+   * The beam of the selection onto each tile it may land around, in
+   * (y, x) order: the offered commands while the selection is untouched,
+   * otherwise every explored tile in reach whose landing the public preview
+   * accepts for the picked passengers (the reducer accepts any legal set).
+   */
+  readonly commands: readonly MassBeamCommandV7[];
+}
+
+/**
+ * The selection of an aimed Mass Beam Down, or null when the Mothership
+ * has no offered beam (it cannot beam this turn). Untouched, it is the
+ * automatic one: the passengers of the chosen tile's offered command, or
+ * before a tile is chosen the nearest fresh units, up to the capacity.
+ */
+export function massBeamSelectionV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  pick: MassBeamPickV7,
+): MassBeamSelectionV7 | null {
+  const offered = commands.filter(
+    (command): command is MassBeamCommandV7 =>
+      command.kind === "MASS_BEAM_DOWN" && command.unitId === pick.unitId,
+  );
+  const mothership = view.units.find((unit) => unit.id === pick.unitId);
+  if (offered.length === 0 || mothership === undefined) return null;
+  const distance = (at: CoordV7): number =>
+    Math.max(
+      Math.abs(at.x - mothership.at.x),
+      Math.abs(at.y - mothership.at.y),
+    );
+  const eligible = view.units
+    .filter((unit) =>
+      massBeamDownPassengerLegalV7(view, mothership, unit, view.beamedThisTurn),
+    )
+    .sort(
+      (left, right) =>
+        distance(left.at) - distance(right.at) || left.id - right.id,
+    );
+  const ascending = (ids: readonly UnitId[]): UnitId[] =>
+    [...ids].sort((left, right) => left - right);
+  const picked = pick.passengerUnitIds ?? null;
+  if (picked === null) {
+    const chosen =
+      pick.chosen === null
+        ? undefined
+        : offered.find(
+            (command) => pick.chosen !== null && same(command.to, pick.chosen),
+          );
+    const selected =
+      chosen?.passengerUnitIds ??
+      ascending(
+        eligible
+          .filter((unit) => !primaryActionUsedV7(unit.activation))
+          .slice(0, MASS_BEAM_DOWN_CAPACITY_V7)
+          .map((unit) => unit.id),
+      );
+    return {
+      eligible,
+      selected,
+      picked: false,
+      full: selected.length >= MASS_BEAM_DOWN_CAPACITY_V7,
+      commands: offered,
+    };
+  }
+  const selected = ascending(
+    picked.filter((id) => eligible.some((unit) => unit.id === id)),
+  ).slice(0, MASS_BEAM_DOWN_CAPACITY_V7);
+  const beams: MassBeamCommandV7[] = [];
+  if (selected.length > 0)
+    for (const tile of view.board.tiles) {
+      if (!tile.explored || !massBeamDownTargetInRangeV7(mothership, tile.at))
+        continue;
+      const command: MassBeamCommandV7 = {
+        kind: "MASS_BEAM_DOWN",
+        unitId: pick.unitId,
+        passengerUnitIds: selected,
+        to: tile.at,
+      };
+      if (previewMassBeamDownV7(view, command) !== null) beams.push(command);
+    }
+  return {
+    eligible,
+    selected,
+    picked: true,
+    full: selected.length >= MASS_BEAM_DOWN_CAPACITY_V7,
+    commands: beams,
+  };
+}
 
 /** The map targets of an active Martian pick. */
 export function martianPickTargetsV7(
@@ -189,36 +306,46 @@ export function martianPickTargetsV7(
       ];
     });
   }
-  if (pick.kind === "MASS_BEAM_DOWN")
-    return commands.flatMap((command): MapCommandTargetV7[] => {
-      if (command.kind !== "MASS_BEAM_DOWN" || command.unitId !== pick.unitId)
-        return [];
-      const preview = previewMassBeamDownV7(view, command);
-      if (preview === null) return [];
-      const chosen = pick.chosen !== null && same(pick.chosen, command.to);
-      const names = preview.placements.map((placement) => {
-        const passenger = unitAt(placement.unitId);
-        return passenger === undefined
-          ? "unit"
-          : martianUnitNameV7(view, passenger);
-      });
-      const count = names.length;
-      return [
-        {
-          at: command.to,
-          command,
-          family: "MASS_BEAM_DOWN",
-          // Only the chosen tile carries a label; its landings are drawn
-          // on their own tiles.
-          ...(chosen
-            ? {
-                previewLabel: `Beam ${count} ${count === 1 ? "unit" : "units"}`,
-              }
-            : {}),
-          semanticLabel: `Beam ${names.join(", ")} down around here${preview.fieldDefenseDestroyed.length > 0 ? ", destroys Field Defense" : ""}. ${BEAMED_HINT_V7}. ${chosen ? MASS_BEAM_DOWN_CONFIRM_V7 : MASS_BEAM_DOWN_PICK_V7}`,
-        },
-      ];
-    });
+  if (pick.kind === "MASS_BEAM_DOWN") {
+    const selection = massBeamSelectionV7(view, commands, pick);
+    if (selection === null) return [];
+    // `pulp_wars-8vmy`: every unit the Mothership may take is a Help
+    // target first: a tap takes it or leaves it behind (the selected ones
+    // also wear the "Beam" badge, drawn by `addMartianPickEntriesV7`). Its
+    // tile is no landing target: a tap there toggles the unit.
+    const full = selection.full;
+    const passengers = selection.eligible.map(
+      (passenger): MapCommandTargetV7 => {
+        const selected = selection.selected.includes(passenger.id);
+        return {
+          at: passenger.at,
+          command: {
+            kind: "MASS_BEAM_DOWN",
+            unitId: pick.unitId,
+            passengerUnitIds: [passenger.id],
+            to: passenger.at,
+          },
+          family: "MASS_BEAM_DOWN_PASSENGER",
+          semanticLabel: massBeamDownPassengerLabelV7(
+            martianUnitNameV7(view, passenger),
+            passenger.hp,
+            passenger.maxHp,
+            selected ? "SELECTED" : full ? "FULL" : "UNSELECTED",
+            primaryActionUsedV7(passenger.activation),
+          ),
+        };
+      },
+    );
+    const standing = (at: CoordV7): boolean =>
+      selection.eligible.some((passenger) => same(passenger.at, at));
+    return [
+      ...passengers,
+      ...selection.commands.flatMap((command): MapCommandTargetV7[] => {
+        if (standing(command.to)) return [];
+        return massBeamTileTargetV7(view, pick, command, unitAt);
+      }),
+    ];
+  }
   if (pick.kind === "MIND_CONTROL")
     return commands.flatMap((command): MapCommandTargetV7[] => {
       if (command.kind !== "MIND_CONTROL" || command.unitId !== pick.unitId)
@@ -248,6 +375,50 @@ export function martianPickTargetsV7(
         },
       ];
     });
+  return tractorBeamTargetsV7(view, commands, pick, unitAt);
+}
+
+/** The landing target of one Mass Beam Down tile. */
+function massBeamTileTargetV7(
+  view: PlayerViewV7,
+  pick: MassBeamPickV7,
+  command: MassBeamCommandV7,
+  unitAt: (id: number) => PlayerViewV7["units"][number] | undefined,
+): MapCommandTargetV7[] {
+  const preview = previewMassBeamDownV7(view, command);
+  if (preview === null) return [];
+  const chosen = pick.chosen !== null && same(pick.chosen, command.to);
+  const names = preview.placements.map((placement) => {
+    const passenger = unitAt(placement.unitId);
+    return passenger === undefined
+      ? "unit"
+      : martianUnitNameV7(view, passenger);
+  });
+  const count = names.length;
+  return [
+    {
+      at: command.to,
+      command,
+      family: "MASS_BEAM_DOWN",
+      // Only the chosen tile carries a label; its landings are drawn on
+      // their own tiles.
+      ...(chosen
+        ? {
+            previewLabel: `Beam ${count} ${count === 1 ? "unit" : "units"}`,
+          }
+        : {}),
+      semanticLabel: `Beam ${names.join(", ")} down around here${preview.fieldDefenseDestroyed.length > 0 ? ", destroys Field Defense" : ""}. ${BEAMED_HINT_V7}. ${chosen ? MASS_BEAM_DOWN_CONFIRM_V7 : MASS_BEAM_DOWN_PICK_V7}`,
+    },
+  ];
+}
+
+/** The Tractor Beam targets of an aimed pull. */
+function tractorBeamTargetsV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  pick: MartianPickV7,
+  unitAt: (id: number) => PlayerViewV7["units"][number] | undefined,
+): MapCommandTargetV7[] {
   return commands.flatMap((command): MapCommandTargetV7[] => {
     if (command.kind !== "TRACTOR_BEAM" || command.unitId !== pick.unitId)
       return [];
@@ -295,11 +466,12 @@ export function addMartianPickEntriesV7(
   view: PlayerViewV7,
   targets: readonly MapCommandTargetV7[],
   pick: MartianPickV7,
+  commands: readonly CommandV7[],
 ): void {
   const actor = view.units.find((unit) => unit.id === pick.unitId);
   if (actor === undefined) return;
   if (pick.kind === "MASS_BEAM_DOWN") {
-    addMassBeamDownEntriesV7(entries, view, targets, pick, actor);
+    addMassBeamDownEntriesV7(entries, view, targets, pick, actor, commands);
     return;
   }
   if (pick.kind === "MIND_CONTROL") {
@@ -378,10 +550,11 @@ export function addMartianPickEntriesV7(
 /**
  * The Mothership redesign (`pulp_wars-ewpj`): the Mass Beam Down preview.
  * Before a tile is chosen: the pick-up range tint and a "Beam" badge on
- * every unit an offered tile takes. Once one is chosen: "Beaming" on its
- * passengers and, on each landing tile, the name of the unit that lands
- * there (the Tractor Beam's magenta), so where the units land is seen
- * before they are beamed.
+ * every selected passenger (`pulp_wars-8vmy`: the nearest three until the
+ * player picks others). Once one is chosen: "Beaming" on its passengers
+ * and, on each landing tile, the name of the unit that lands there (the
+ * Tractor Beam's magenta), so where the units land is seen before they are
+ * beamed.
  */
 function addMassBeamDownEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -389,12 +562,14 @@ function addMassBeamDownEntriesV7(
   targets: readonly MapCommandTargetV7[],
   pick: Extract<MartianPickV7, { kind: "MASS_BEAM_DOWN" }>,
   actor: PlayerViewV7["units"][number],
+  commands: readonly CommandV7[],
 ): void {
   const chosen =
     pick.chosen === null
       ? undefined
       : targets.find(
           (target) =>
+            target.family === "MASS_BEAM_DOWN" &&
             target.command.kind === "MASS_BEAM_DOWN" &&
             pick.chosen !== null &&
             same(target.command.to, pick.chosen),
@@ -422,10 +597,8 @@ function addMassBeamDownEntriesV7(
             }),
         ),
       });
-    const passengers = new Set<number>();
-    for (const target of targets)
-      if (target.command.kind === "MASS_BEAM_DOWN")
-        for (const id of target.command.passengerUnitIds) passengers.add(id);
+    const passengers =
+      massBeamSelectionV7(view, commands, pick)?.selected ?? [];
     for (const id of passengers) {
       const passenger = view.units.find((unit) => unit.id === id);
       if (passenger === undefined) continue;

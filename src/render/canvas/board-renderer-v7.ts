@@ -709,6 +709,12 @@ export interface MapCommandTargetV7 {
      * (chosen once to preview the landings, then again to beam).
      */
     | "MASS_BEAM_DOWN"
+    /**
+     * `pulp_wars-8vmy`: a unit the Mothership may take; choosing it takes
+     * it or leaves it behind (nothing is dispatched; its command names the
+     * unit alone).
+     */
+    | "MASS_BEAM_DOWN_PASSENGER"
     | "MIND_CONTROL"
     | "TRACTOR_BEAM"
     /**
@@ -2140,7 +2146,7 @@ export function buildBoardRenderPlanV7(
       view.units.find((unit) => unit.id === curiosityPick.unitId)?.at ?? null,
     );
   if (martianPick !== null)
-    addMartianPickEntriesV7(entries, view, targets, martianPick);
+    addMartianPickEntriesV7(entries, view, targets, martianPick, commands);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   if (dwarfPick !== null)
     addDwarfPickEntriesV7(entries, view, commands, dwarfPick);

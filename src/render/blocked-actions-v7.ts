@@ -180,6 +180,78 @@ export function slotsBlockedTextV7(slots: number): string {
 export const UNIT_DONE_LABEL_V7 = "Done this turn";
 export const UNIT_DONE_TOOLTIP_V7 =
   "This unit has acted. It is ready again next turn";
+/**
+ * Bead `pulp_wars-2yc.109`: the chip of an own unit whose Move is spent
+ * (it moved, was beamed, or acted) but that may still attack, or still use
+ * another action.
+ */
+export const UNIT_ATTACK_LEFT_LABEL_V7 = "Can attack · can't move";
+export const UNIT_ATTACK_LEFT_TOOLTIP_V7 =
+  "It cannot move again this turn, but it can still attack";
+export const UNIT_ACTION_LEFT_LABEL_V7 = "Can act · can't move";
+export const UNIT_ACTION_LEFT_TOOLTIP_V7 =
+  "It cannot move again this turn, but it can still use an action";
+
+/** The turn chip of a unit: its `data-unit-status`, words and tooltip. */
+export interface UnitTurnChipV7 {
+  readonly status: "done" | "attack-left" | "action-left";
+  readonly label: string;
+  readonly tooltip: string;
+}
+
+/**
+ * Commands that leave a unit's turn as it is: Promote is free, Disband and
+ * Wait only end it.
+ */
+const TURN_NEUTRAL_KINDS: ReadonlySet<CommandV7["kind"]> = new Set<
+  CommandV7["kind"]
+>(["DISBAND", "PROMOTE", "WAIT"]);
+
+/**
+ * Bead `pulp_wars-2yc.109`: the turn chip of an own handled unit (its Move
+ * is spent), from the commands the engine offers it: "Can attack · can't
+ * move" while an Attack is offered, "Can act · can't move" while another
+ * action is, and "Done this turn" only when nothing is left. Null for a
+ * unit that is not handled (a fresh unit, or one with an Overrun, Feast or
+ * second shot pending, which its own status chip names) and for a handled
+ * unit offered a Move (it has none). `commands` is the viewer's offer, empty
+ * outside its turn.
+ */
+export function unitTurnChipV7(
+  unit: Pick<PlayerViewV7["units"][number], "id" | "activation">,
+  commands: readonly CommandV7[],
+): UnitTurnChipV7 | null {
+  if (!unit.activation.handled || commands.length === 0) return null;
+  const left = commands.filter(
+    (command) =>
+      "unitId" in command &&
+      command.unitId === unit.id &&
+      !TURN_NEUTRAL_KINDS.has(command.kind),
+  );
+  if (left.some((command) => command.kind === "MOVE")) return null;
+  if (
+    left.some(
+      (command) =>
+        command.kind === "ATTACK" || command.kind === "ATTACK_BARRICADE",
+    )
+  )
+    return {
+      status: "attack-left",
+      label: UNIT_ATTACK_LEFT_LABEL_V7,
+      tooltip: UNIT_ATTACK_LEFT_TOOLTIP_V7,
+    };
+  if (left.length > 0)
+    return {
+      status: "action-left",
+      label: UNIT_ACTION_LEFT_LABEL_V7,
+      tooltip: UNIT_ACTION_LEFT_TOOLTIP_V7,
+    };
+  return {
+    status: "done",
+    label: UNIT_DONE_LABEL_V7,
+    tooltip: UNIT_DONE_TOOLTIP_V7,
+  };
+}
 
 /** The chip of a resource the viewer sees on land that is not its own. */
 export const OUTSIDE_BORDERS_LABEL_V7 = "Outside your borders";

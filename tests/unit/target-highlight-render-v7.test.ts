@@ -84,6 +84,8 @@ const EVERY_FAMILY: Readonly<
   HATCH: "SUPPORT",
   SUGAR_TOSS: "SUPPORT",
   BEAM_DOWN_PASSENGER: "SUPPORT",
+  // `pulp_wars-8vmy`: a unit a Mass Beam Down may take.
+  MASS_BEAM_DOWN_PASSENGER: "SUPPORT",
   TUNNEL_PASSENGER: "SUPPORT",
   LAY_EGG: "PLACE",
   BEAM_DOWN: "PLACE",

@@ -12,6 +12,8 @@ export type MartianUiFixtureNameV7 =
   | "martianDuelFixtureV7"
   // The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down scene.
   | "martianMassBeamFixtureV7"
+  // `pulp_wars-8vmy`: the same scene with a fourth unit to pick.
+  | "martianMassBeamPickFixtureV7"
   // The Mind Control revision (bead pulp_wars-b5f.3): a controlled unit of
   // each other kind.
   | "martianControlGoblinFixtureV7"

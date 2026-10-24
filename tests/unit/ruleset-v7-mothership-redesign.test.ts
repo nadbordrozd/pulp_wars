@@ -533,17 +533,21 @@ describe("the Mothership's presentation", () => {
       chosen: null,
     } as const;
     const targets = martianPickTargetsV7(view, commands, unchosen);
-    expect(targets.length).toBe(offeredV7(state, "MASS_BEAM_DOWN").length);
-    expect(targets.every((target) => target.family === "MASS_BEAM_DOWN")).toBe(
-      true,
-    );
+    // `pulp_wars-8vmy`: the three Grunts are passenger targets (a tap takes
+    // or leaves one); every other offered tile is a landing target.
+    expect(
+      targets.filter((target) => target.family === "MASS_BEAM_DOWN_PASSENGER"),
+    ).toHaveLength(3);
+    expect(
+      targets.filter((target) => target.family === "MASS_BEAM_DOWN").length,
+    ).toBe(offeredV7(state, "MASS_BEAM_DOWN").length - 3);
     // Before a tile is chosen no label clutters the tiles; the passengers
     // wear the "Beam" badge.
     expect(targets.some((target) => target.previewLabel !== undefined)).toBe(
       false,
     );
     const before: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(before, view, targets, unchosen);
+    addMartianPickEntriesV7(before, view, targets, unchosen, commands);
     expect(
       before.filter((entry) => entry.label === BEAM_BADGE_V7),
     ).toHaveLength(3);
@@ -555,7 +559,7 @@ describe("the Mothership's presentation", () => {
         ?.previewLabel,
     ).toBe("Beam 3 units");
     const entries: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(entries, view, chosen, pick);
+    addMartianPickEntriesV7(entries, view, chosen, pick, commands);
     expect(
       entries
         .filter((entry) => entry.key.includes("MASS_BEAM_LANDING"))

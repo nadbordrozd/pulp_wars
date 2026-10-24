@@ -319,7 +319,15 @@ the city trains more than it can pay for.
   player cannot pay for has its price in the loss colour too. Nothing is
   blocked outside the player's turn.
 - **Two chips.** An own unit with nothing left to do this turn says
-  `Done this turn`. A resource the player sees on land that is not theirs
+  `Done this turn`. Bead `pulp_wars-2yc.109`: the chip reads what the engine
+  still offers the handled unit (its Move spent: it moved, was beamed by a
+  Beam Down or a Mass Beam Down, or acted), Promote, Disband and Wait
+  aside: `Can attack · can't move` while an Attack is offered, `Can act ·
+can't move` while another action is (a Capture, a free Tractor Beam), and
+  `Done this turn` only when nothing is. A unit that is not handled (an
+  Overrun, a Feast or a Clockwork Gunner's second shot pending) gets none:
+  its own status chip ("Attack again", "Feast", "Shots") says it. A
+  resource the player sees on land that is not theirs
   says `Outside your borders`.
 - The lists come from the engine's public command query, asked again on a
   copy of the player's own view with no shortage of Coins, and once more
