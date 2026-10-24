@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r109" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r110" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -120,8 +120,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r106",
   "pulp-wars-poc-7r107",
   "pulp-wars-poc-7r108",
+  "pulp-wars-poc-7r109",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r109.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r110.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -1695,6 +1696,16 @@ export interface GameStateV7 {
    * is unknown), and the current score as the peak.
    */
   readonly scoreLedger: readonly ScoreLedgerEntryV7[];
+  /**
+   * Mission waves (`pulp_wars-hmyk.35`, docs/product/CAMPAIGN.md section
+   * 10.3): the held waves, by their index in the mission's
+   * `reinforcements`, strictly ascending. A wave is held when a unit of it
+   * had no calm tile within reach at its seat's Start Turn; it is tried
+   * again at that seat's next Start Turn. The key is absent when no wave is
+   * held (always outside a mission), so a state without one is the state
+   * of before.
+   */
+  readonly heldWaves?: readonly number[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }

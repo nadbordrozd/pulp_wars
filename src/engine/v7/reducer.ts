@@ -820,15 +820,37 @@ function withMissionResultV7(
 }
 
 /**
+ * How far from its written tile a wave unit may come in, in tiles
+ * (Chebyshev), while its arrival keeps clear of hostile units
+ * (`pulp_wars-hmyk.35`; CAMPAIGN.md section 10.3).
+ */
+export const MISSION_WAVE_REACH_V7 = 3;
+/**
+ * The rounds a blocked wave is held at most: in its own round plus this
+ * many it comes regardless (`pulp_wars-hmyk.35`).
+ */
+export const MISSION_WAVE_HOLD_ROUNDS_V7 = 2;
+
+/**
  * The reinforcements of the active seat's Start Turn in the current round
- * (`MissionReinforcementV7`): each unit on the nearest free tile it may
- * stand on that is not next to a unit of a seat hostile to it: its written
- * tile when that one is, otherwise rings outward (`(y, x)` order within a
- * ring) to the edge of the board; a unit with no such tile does not come.
- * The units are homeless (they count for no city's unit limit), start at
- * full HP and Shield, and arrive with their turn spent
- * (`pulp_wars-v642.5`, `pulp-wars-poc-7r83`: before it a wave could act
- * the turn it came and arrive up to two tiles off, into the player's line).
+ * (`MissionReinforcementV7`; docs/product/CAMPAIGN.md section 10.3). The
+ * waves due are the seat's waves of this round and its held waves, in the
+ * mission's order. Each unit of a wave comes on the nearest free tile it
+ * may stand on that is not next to a unit of a seat hostile to it, within
+ * {@link MISSION_WAVE_REACH_V7} tiles of its written tile (rings outward,
+ * `(y, x)` order within a ring), each unit taking its tile before the
+ * next. When a unit of the wave has no such tile the whole wave is
+ * **held** (`heldWaves`) and tried again at its seat's next Start Turn;
+ * {@link MISSION_WAVE_HOLD_ROUNDS_V7} rounds after its own it comes
+ * regardless, a unit without such a tile on the nearest free tile it may
+ * stand on, next to a hostile unit or not, rings outward to the edge of
+ * the board (`pulp_wars-hmyk.35`; before it the calm search went to the
+ * edge of the board, and GOBLIN_5's raft crews came in on far islands). A
+ * unit with no free tile at all does not come. The units are homeless
+ * (they count for no city's unit limit), start at full HP and Shield, and
+ * arrive with their turn spent (`pulp_wars-v642.5`, `pulp-wars-poc-7r83`:
+ * before it a wave could act the turn it came and arrive up to two tiles
+ * off, into the player's line).
  */
 function resolveMissionReinforcementsV7(
   state: GameStateV7,
@@ -844,40 +866,41 @@ function resolveMissionReinforcementsV7(
     return { state, events: [] };
   const events: DomainEventV7[] = [];
   const revealed: CoordV7[] = [];
+  const held = new Set(state.heldWaves ?? []);
   let current = state;
-  for (const wave of mission.reinforcements ?? []) {
-    if (wave.seat !== player.seat || wave.round !== state.round) continue;
+  (mission.reinforcements ?? []).forEach((wave, index) => {
+    if (wave.seat !== player.seat) return;
+    if (wave.round !== state.round && !held.has(index)) return;
+    const forced = state.round >= wave.round + MISSION_WAVE_HOLD_ROUNDS_V7;
+    // Every unit's tile first, each one taking its tile for the next.
+    let planned = current;
+    const tiles: { readonly role: UnitRoleIdV7; readonly at: CoordV7 }[] = [];
     for (const written of wave.units) {
-      const at = missionArrivalTileV7(current, playerId, written);
-      if (at === null) continue;
-      const rule = effectiveRoleRuleV7(written.role, player.faction);
-      const allocation = allocateUnitId(current.nextEntityId);
-      const unit: UnitStateV7 = {
-        id: allocation.id,
-        ownerId: playerId,
-        homeCityId: null,
-        role: written.role,
-        form: isNavalRoleV7(written.role) ? "NAVAL" : "LAND",
-        at,
-        hp: rule.maxHp,
-        maxHp: rule.maxHp,
-        kills: 0,
-        veteran: false,
-        captureEligible: false,
-        activation: exhaustedActivation(),
-      };
-      current = {
-        ...current,
-        nextEntityId: allocation.nextEntityId,
-        units: [...current.units, unit],
-        shields: withFullShieldsV7(current, current.shields, [unit]),
-      };
+      const at =
+        missionArrivalTileV7(planned, playerId, written, "CALM") ??
+        (forced
+          ? missionArrivalTileV7(planned, playerId, written, "FORCED")
+          : null);
+      if (at === null) {
+        if (forced) continue;
+        held.add(index);
+        return;
+      }
+      tiles.push({ role: written.role, at });
+      planned = withReinforcementUnitV7(planned, playerId, written.role, at);
+    }
+    held.delete(index);
+    for (const tile of tiles) {
+      current = withReinforcementUnitV7(current, playerId, tile.role, tile.at);
+      const unit = current.units.at(-1);
+      if (unit === undefined) throw new RangeError("INVALID_STATE");
       events.push({
         kind: "REINFORCEMENT_ARRIVED",
         playerId,
         unitId: unit.id,
         role: unit.role,
         at: unit.at,
+        wave: index,
       });
       const reveal = revealRadius(
         current,
@@ -891,7 +914,11 @@ function resolveMissionReinforcementsV7(
       };
       revealed.push(...reveal.revealed);
     }
-  }
+  });
+  current = withHeldWavesV7(
+    current,
+    [...held].sort((left, right) => left - right),
+  );
   if (revealed.length > 0)
     events.push({
       kind: "TILES_REVEALED",
@@ -901,11 +928,67 @@ function resolveMissionReinforcementsV7(
   return { state: current, events };
 }
 
-/** Where a reinforcement unit appears, or null (no free tile it may enter). */
-function missionArrivalTileV7(
+/** `state` with `heldWaves`, the key absent when the list is empty. */
+function withHeldWavesV7(
+  state: GameStateV7,
+  heldWaves: readonly number[],
+): GameStateV7 {
+  const before = state.heldWaves ?? [];
+  if (
+    before.length === heldWaves.length &&
+    before.every((index, at) => heldWaves[at] === index)
+  )
+    return state;
+  const rest: GameStateV7 = { ...state };
+  delete (rest as { heldWaves?: readonly number[] }).heldWaves;
+  return heldWaves.length === 0 ? rest : { ...rest, heldWaves };
+}
+
+/** `state` with one new reinforcement unit of `role` on `at`. */
+function withReinforcementUnitV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+  role: UnitRoleIdV7,
+  at: CoordV7,
+): GameStateV7 {
+  const player = requirePlayer(state, playerId);
+  const rule = effectiveRoleRuleV7(role, player.faction);
+  const allocation = allocateUnitId(state.nextEntityId);
+  const unit: UnitStateV7 = {
+    id: allocation.id,
+    ownerId: playerId,
+    homeCityId: null,
+    role,
+    form: isNavalRoleV7(role) ? "NAVAL" : "LAND",
+    at,
+    hp: rule.maxHp,
+    maxHp: rule.maxHp,
+    kills: 0,
+    veteran: false,
+    captureEligible: false,
+    activation: exhaustedActivation(),
+  };
+  return {
+    ...state,
+    nextEntityId: allocation.nextEntityId,
+    units: [...state.units, unit],
+    shields: withFullShieldsV7(state, state.shields, [unit]),
+  };
+}
+
+/**
+ * Where a reinforcement unit appears, or null. `CALM`: the nearest free
+ * tile it may stand on that is not next to a unit of a seat hostile to it,
+ * within {@link MISSION_WAVE_REACH_V7} tiles of its written tile.
+ * `FORCED`: the nearest free tile it may stand on, to the edge of the
+ * board. Rings outward from the written tile, `(y, x)` order within a
+ * ring.
+ */
+export function missionArrivalTileV7(
   state: GameStateV7,
   playerId: PlayerId,
   written: { readonly role: UnitRoleIdV7; readonly at: CoordV7 },
+  mode: "CALM" | "FORCED" = "CALM",
 ): CoordV7 | null {
   const player = requirePlayer(state, playerId);
   const naval = isNavalRoleV7(written.role);
@@ -951,13 +1034,16 @@ function missionArrivalTileV7(
       (unit) =>
         Math.max(Math.abs(unit.at.x - at.x), Math.abs(unit.at.y - at.y)) <= 1,
     );
-  const rings = Math.max(state.board.width, state.board.height);
+  const rings =
+    mode === "CALM"
+      ? MISSION_WAVE_REACH_V7
+      : Math.max(state.board.width, state.board.height);
   for (let ring = 0; ring <= rings; ring += 1)
     for (let dy = -ring; dy <= ring; dy += 1)
       for (let dx = -ring; dx <= ring; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== ring) continue;
         const at = { x: written.at.x + dx, y: written.at.y + dy };
-        if (free(at) && calm(at)) return at;
+        if (free(at) && (mode === "FORCED" || calm(at))) return at;
       }
   return null;
 }

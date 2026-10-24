@@ -3,6 +3,7 @@ import { activeMissionDirectiveV7 } from "../../src/ai/v7-directives";
 import {
   DOMAIN_EVENT_KIND_ORDER_V7,
   MISSION_REGISTRY_V7,
+  MISSION_WAVE_REACH_V7,
   PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
@@ -146,11 +147,11 @@ describe("the identity", () => {
   // seat may be forbidden technologies of its own, a mission may bring
   // reinforcements (a new event kind) and name teams: 7r82.
   it("was 7r82 after 7r81, both save keys obsolete now", () => {
-    expect(PRIOR_RULESET_7_IDS.slice(-28, -26)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-29, -27)).toEqual([
       "pulp-wars-poc-7r81",
       "pulp-wars-poc-7r82",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-28, -26)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-29, -27)).toEqual([
       "pulpWars.save.v7r81.current",
       "pulpWars.save.v7r82.current",
     ]);
@@ -161,12 +162,12 @@ describe("the identity", () => {
   // (`pulp_wars-v642.5`): 7r83, a prior identity since 7r84
   // (`pulp_wars-5ti.13`).
   it("was 7r83 after 7r82, its save key obsolete now", () => {
-    expect(PRIOR_RULESET_7_IDS.at(-26)).toBe("pulp-wars-poc-7r83");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-26)).toBe(
+    expect(PRIOR_RULESET_7_IDS.at(-27)).toBe("pulp-wars-poc-7r83");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
       "pulpWars.save.v7r83.current",
     );
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r109");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r109.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r110");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r110.current");
   });
 });
 
@@ -497,6 +498,176 @@ describe("reinforcements", () => {
           if (middle(at)) expect(revealed).toContainEqual(at);
         }
     }
+  });
+});
+
+// `pulp_wars-hmyk.35`: a wave keeps clear of hostile units only within
+// MISSION_WAVE_REACH_V7 tiles of its written tiles. With no calm tile there
+// it is held and tried again at its seat's next Start Turn, and two rounds
+// after its own it comes regardless, on the nearest free tile.
+describe("reinforcements held back", () => {
+  /** `state` with copies of the seat's first unit, homeless, on `tiles`. */
+  function withCopiesOf(
+    state: GameStateV7,
+    seat: number,
+    tiles: readonly CoordV7[],
+  ): GameStateV7 {
+    const owner = seatId(state, seat);
+    const model = state.units.find((unit) => unit.ownerId === owner);
+    if (model === undefined) throw new Error(`seat ${String(seat)}: no unit`);
+    return {
+      ...state,
+      nextEntityId: state.nextEntityId + tiles.length,
+      units: [
+        ...state.units,
+        ...tiles.map((tile, index) => ({
+          ...model,
+          id: (state.nextEntityId + index) as UnitId,
+          homeCityId: null,
+          at: tile,
+        })),
+      ],
+    };
+  }
+
+  /** End Turns until the Start Turn of `seat` in `round` has happened. */
+  function untilTurnOf(
+    state: GameStateV7,
+    seat: number,
+    round: number,
+  ): { readonly state: GameStateV7; readonly events: DomainEventV7[] } {
+    let current = state;
+    let events: DomainEventV7[] = [];
+    const player = seatId(state, seat);
+    while (!(
+      current.round === round &&
+      current.turnOrder[current.activeSeatIndex] === player
+    )) {
+      const actor = current.turnOrder[current.activeSeatIndex] as PlayerId;
+      const applied = applyCommandV7(current, actor, { kind: "END_TURN" });
+      if (!applied.accepted) throw new Error(applied.error.code);
+      events = [...applied.events];
+      current = applied.state;
+    }
+    return { state: current, events };
+  }
+
+  const steps = (a: CoordV7, b: CoordV7): number =>
+    Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+
+  /**
+   * TEST_WAVES, three seats (you, the allied Undead, the Goblins): Goblin
+   * Fighters beside every tile within 3 of the Undead wave's tiles (6, 7)
+   * and (7, 6), so it has no calm tile within reach; the old search went
+   * out to the board's corners.
+   */
+  const BLOCKERS = [4, 7, 10].flatMap((x) => [4, 7, 10].map((y) => at(x, y)));
+  const blocked = (extra: readonly CoordV7[] = []): GameStateV7 =>
+    withCopiesOf(start("TEST_WAVES"), 2, [...BLOCKERS, ...extra]);
+
+  it("come within the reach of their tile when it is blocked", () => {
+    expect(MISSION_WAVE_REACH_V7).toBe(3);
+    // TEST_SURVIVE: four human Guards make every tile within 2 of the
+    // Goblin wave's (5, 5) a tile beside them; ring 3 has calm tiles.
+    const two = endTurns(start("TEST_SURVIVE"), 1).state;
+    const placed = withCopiesOf(two, 0, [
+      at(4, 4),
+      at(4, 6),
+      at(6, 4),
+      at(6, 6),
+    ]);
+    const mine = applyCommandV7(placed, placed.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!mine.accepted) throw new Error(mine.error.code);
+    const arrived = mine.events.flatMap((event) =>
+      event.kind === "REINFORCEMENT_ARRIVED" ? [event] : [],
+    );
+    // Ring 3 in (y, x) order: (2, 2) is a village, then (3, 2), (4, 2).
+    expect(arrived.map((event) => event.at)).toEqual([at(3, 2), at(4, 2)]);
+    expect(arrived.map((event) => event.wave)).toEqual([0, 0]);
+    for (const event of arrived) expect(steps(event.at, at(5, 5))).toBe(3);
+    expect(mine.state.heldWaves).toBeUndefined();
+  });
+
+  it("are held with no calm tile within reach, and come the next round", () => {
+    const state = blocked();
+    const round2 = untilTurnOf(state, 1, 2);
+    expect(
+      round2.events.some((event) => event.kind === "REINFORCEMENT_ARRIVED"),
+    ).toBe(false);
+    expect(round2.state.heldWaves).toEqual([0]);
+    expect(parseGameStateV7(round2.state)).not.toBeNull();
+    // The Goblins' own wave of round 2 is not held up.
+    const goblins = untilTurnOf(round2.state, 2, 2);
+    expect(
+      goblins.events.filter((event) => event.kind === "REINFORCEMENT_ARRIVED"),
+    ).toHaveLength(3);
+    expect(goblins.state.heldWaves).toEqual([0]);
+    // The Goblins march off before the Undead's next Start Turn.
+    const human3 = untilTurnOf(goblins.state, 0, 3);
+    const cleared: GameStateV7 = {
+      ...human3.state,
+      units: human3.state.units.filter(
+        (unit) => !BLOCKERS.some((tile) => steps(tile, unit.at) === 0),
+      ),
+    };
+    const round3 = untilTurnOf(cleared, 1, 3);
+    const arrived = round3.events.flatMap((event) =>
+      event.kind === "REINFORCEMENT_ARRIVED" ? [event] : [],
+    );
+    expect(arrived.map((event) => [event.at, event.wave])).toEqual([
+      [at(6, 7), 0],
+      [at(7, 6), 0],
+    ]);
+    expect(round3.state.heldWaves).toBeUndefined();
+    expect("heldWaves" in round3.state).toBe(false);
+  });
+
+  it("come regardless two rounds after their own, on the nearest free tile", () => {
+    // A Goblin on (6, 7) too: the first Undead Fighter's own tile is taken.
+    const state = blocked([at(6, 7)]);
+    const round3 = untilTurnOf(state, 1, 3);
+    expect(
+      round3.events.some((event) => event.kind === "REINFORCEMENT_ARRIVED"),
+    ).toBe(false);
+    expect(round3.state.heldWaves).toEqual([0]);
+    const round4 = untilTurnOf(round3.state, 1, 4);
+    const arrived = round4.events.flatMap((event) =>
+      event.kind === "REINFORCEMENT_ARRIVED" ? [event] : [],
+    );
+    // Beside Goblins now, but never on one: (6, 7) is taken, so the ring
+    // round it in (y, x) order gives (5, 6); (7, 6) is free.
+    expect(arrived.map((event) => event.at)).toEqual([at(5, 6), at(7, 6)]);
+    const goblin = seatId(state, 2);
+    for (const event of arrived) {
+      expect(
+        round4.state.units.filter(
+          (unit) => unit.hp > 0 && steps(unit.at, event.at) === 0,
+        ),
+      ).toHaveLength(1);
+      expect(
+        round4.state.units.some(
+          (unit) => unit.ownerId === goblin && steps(unit.at, event.at) === 1,
+        ),
+      ).toBe(true);
+    }
+    expect(round4.state.heldWaves).toBeUndefined();
+  });
+
+  it("are the same on a replay, and a stored hold is checked", () => {
+    const run = (): string =>
+      canonicalHash(untilTurnOf(blocked([at(6, 7)]), 1, 4).state);
+    expect(run()).toBe(run());
+    const held = untilTurnOf(blocked(), 1, 2).state;
+    expect(canonicalHash(parseGameStateV7(held))).toBe(canonicalHash(held));
+    // Empty, out of range, or not strictly ascending: refused.
+    for (const heldWaves of [[], [3], [0, 0], [1, 0], [-1], [0.5]])
+      expect(parseGameStateV7({ ...held, heldWaves })).toBeNull();
+    expect(parseGameStateV7({ ...held, heldWaves: [0, 2] })).not.toBeNull();
+    // A mission without waves holds nothing.
+    const plain = start("TEST_ESCORT");
+    expect(parseGameStateV7({ ...plain, heldWaves: [0] })).toBeNull();
   });
 });
 

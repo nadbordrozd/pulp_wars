@@ -222,6 +222,73 @@ describe("the reinforcement banner", () => {
     expect(waveSteps(boundary)).toHaveLength(1);
   });
 
+  // `pulp_wars-hmyk.35`: a held wave keeps its banner, stinger and story
+  // line for the round it actually arrives in.
+  it("shows a held wave's banner, line and stinger when it arrives", () => {
+    const initial = start();
+    const goblin = initial.players[2];
+    const model = initial.units.find((unit) => unit.ownerId === goblin?.id);
+    if (model === undefined) throw new Error("no Goblin unit");
+    // Goblins beside every tile within 3 of the Undead wave's tiles.
+    const blockers = [4, 7, 10].flatMap((x) =>
+      [4, 7, 10].map((y) => ({ x, y })),
+    );
+    const blocked: GameStateV7 = {
+      ...initial,
+      nextEntityId: initial.nextEntityId + blockers.length,
+      units: [
+        ...initial.units,
+        ...blockers.map((at, index) => ({
+          ...model,
+          id: (initial.nextEntityId + index) as never,
+          homeCityId: null,
+          at,
+        })),
+      ],
+    };
+    const boundaries = endTurns(blocked, 2 * ROUND_ONE);
+    // Round 2: the Undead's Start Turn brings nothing; the wave is held.
+    const held = boundaries[ROUND_ONE] as BoundaryV7;
+    expect(held.after.round).toBe(2);
+    expect(waveArrivalBannerV7(held.after, held.envelope.events)).toBeNull();
+    expect(waveSteps(held)).toEqual([]);
+    // Round 3, your turn: the Goblins walk off; your End Turn brings it.
+    const last = boundaries.at(-1) as BoundaryV7;
+    expect(last.after.round).toBe(3);
+    const cleared: GameStateV7 = {
+      ...last.state,
+      units: last.state.units.filter(
+        (unit) =>
+          !blockers.some((at) => at.x === unit.at.x && at.y === unit.at.y),
+      ),
+    };
+    const arrival = endTurn(cleared);
+    expect(arrival.after.round).toBe(3);
+    const banner = waveArrivalBannerV7(arrival.after, arrival.envelope.events);
+    expect(banner).toMatchObject({
+      kind: "ARRIVAL",
+      side: "ALLY",
+      faction: "UNDEAD",
+      title: "Allied reinforcements!",
+      line: "The dead are here. They apologise for the delay.",
+      cells: [
+        { x: 6, y: 7 },
+        { x: 7, y: 6 },
+      ],
+    });
+    const steps = waveSteps(arrival);
+    expect(steps).toHaveLength(1);
+    expect(
+      soundCuesForStepV7({
+        step: steps[0] as CorePresentationStepV7,
+        before: arrival.before,
+        after: arrival.after,
+        envelope: arrival.envelope,
+        durationScale: 1,
+      }),
+    ).toEqual([{ id: "match.wave.ally", delayMs: 0 }]);
+  });
+
   it("shows no banner and plans no wave step for a boundary without one", () => {
     for (const boundary of endTurns(start(), ROUND_ONE)) {
       expect(

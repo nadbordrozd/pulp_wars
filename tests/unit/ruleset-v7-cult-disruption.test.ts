@@ -596,8 +596,9 @@ describe("the disruption rule: the audit (section 6.2)", () => {
 
   it("classifies every key of the game state, and reads every status list", () => {
     const state = cultFieldV7([]);
+    // `heldWaves` (`pulp_wars-hmyk.35`) is an optional key, absent here.
     expect(Object.keys(DISRUPTION_STATE_KEY_CLASSES_V7).sort()).toEqual(
-      Object.keys(state).sort(),
+      [...Object.keys(state), "heldWaves"].sort(),
     );
     const statusKeys = Object.entries(DISRUPTION_STATE_KEY_CLASSES_V7)
       .filter(([, kind]) => kind === "STATUS")

@@ -528,6 +528,55 @@ describe("a bound Herald under a GUARD directive (pulp_wars-mch9.56)", () => {
     expect(end?.held).toBe(true);
     expect(result.unbound).toEqual([]);
   });
+
+  // `pulp_wars-hmyk.34`: in DINOSAUR_6's retune 4 hand play the Herald,
+  // bound, struck the Old Queen standing on Greyhood's centre. A bound
+  // daemon is the seat's own unit and attacks like any other (its kills
+  // pay Favour); the mission sends it with the assault. Here the Queen has
+  // killed the Summoner on the centre and stands there, the Herald beside
+  // her on (10, 6) where the Idol Bearer stood.
+  it("strikes an enemy on its own city centre while bound (pulp_wars-hmyk.34)", () => {
+    const mission = missionByIdV7("DINOSAUR_6");
+    if (mission === null) throw new Error("no DINOSAUR_6");
+    const setup = missionMatchSetupV7(mission);
+    if (setup === null) throw new Error("no setup");
+    let state = missionInitialStateV7(setup);
+    const queenSeat = state.turnOrder[state.activeSeatIndex];
+    if (queenSeat === undefined) throw new Error("no seat");
+    state = applyOkV7(state, queenSeat, { kind: "END_TURN" }).state;
+    const queen = idAt(state, at(5, 12));
+    const gone = [at(9, 6), at(10, 6)];
+    state = {
+      ...state,
+      units: state.units
+        .filter((unit) => !gone.some((where) => gap(where, unit.at) === 0))
+        .map((unit) =>
+          unit.id === queen ? { ...unit, at: at(9, 6), hp: 15 } : unit,
+        ),
+    };
+    state = withFavourV7(
+      withHorrorV7(state, 1, at(10, 6), { role: "HERALD" }),
+      1,
+      10,
+    );
+    const herald = idAt(state, at(10, 6));
+    const cult = state.turnOrder[state.activeSeatIndex];
+    if (cult === undefined) throw new Error("no seat");
+    // Bound: the Herald is the Lodge's, not a wild unit.
+    expect(
+      viewForV7(state, cult).cult.daemons.map((entry) => entry.unitId),
+    ).toContain(herald);
+    const result = turnAndCheck(state);
+    expect(
+      result.commands.some(
+        (command) =>
+          command.kind === "ATTACK" &&
+          command.unitId === herald &&
+          command.targetUnitId === queen,
+      ),
+    ).toBe(true);
+    expect(result.unbound).toEqual([]);
+  });
 });
 
 describe("the Cult seat without summons decides as before (pulp_wars-mch9.57)", () => {

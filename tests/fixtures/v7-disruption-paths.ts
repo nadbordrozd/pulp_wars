@@ -382,6 +382,8 @@ export const DISRUPTION_STATE_KEY_CLASSES_V7: Readonly<
   glazedThisTurn: "OTHER",
   barricades: "OTHER",
   scoreLedger: "OTHER",
+  // Mission waves (`pulp_wars-hmyk.35`): wave indices, no unit.
+  heldWaves: "OTHER",
   pendingChoices: "OTHER",
   outcome: "OTHER",
 };

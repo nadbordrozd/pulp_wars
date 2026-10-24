@@ -154,8 +154,8 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "740a88c4f192f3779cf7bd5d5c09a1891b06b092b2ddf1addf81a48a92636ac0",
   "GOBLIN_4@4:GOBLIN":
     "964266d0316ed9b35e6680a059ab79909370e549a508271f29bebfd8fbd16df8",
-  "GOBLIN_5@4:GOBLIN":
-    "c1e8bf2c2f689276908cfc23f93986add6c0a6d0f1675821a9ff58a76bf6cda9",
+  "GOBLIN_5@5:GOBLIN":
+    "2a2bbdf349bc443bcb844798336b9b19015b912337ffbf8c04278b86b21cd9f1",
   "GOBLIN_6@4:GOBLIN":
     "b0cedc1ddaad37c163c4b563562d2b53e61b77cdcd2dca6d19094ccd6a0cff78",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
@@ -516,8 +516,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "890b6b53325f65ec199a8ae4544035d985853cdb0775398858f324fc82373558",
   "GOBLIN_3@4:GOBLIN":
     "215984be8f6726f7ef57407eb6b6a255f4cab2bc530e7dd42b03fcfd821e709f",
-  "GOBLIN_5@4:GOBLIN":
-    "67e2b41d120a1a2ede63ec2b8e4a82bee93f6eed3ec23542d49b21c172ce5cdd",
+  "GOBLIN_5@5:GOBLIN":
+    "595e27c6c6c9005a3d7a565dc7958257dcf39588ce1c24fd865955a084ac5f41",
   "GOBLIN_6@4:GOBLIN":
     "59538848d285ae75acd398bd38104664225ecee0d90b9a5c02a3b8ba1637ab2d",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).

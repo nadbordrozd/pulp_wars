@@ -1261,6 +1261,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // site, which the arrival refuses as well).
     "src/engine/v7/reducer.ts::resolveMissionReinforcementsV7": "BOARD",
     "src/engine/v7/reducer.ts::missionArrivalTileV7": "BOARD",
+    // `pulp_wars-hmyk.35`: appends the wave's new unit to the board's units.
+    "src/engine/v7/reducer.ts::withReinforcementUnitV7": "BOARD",
     // The objective's text and marks: the objective's own unit tags, the
     // named units of the public status, and the view's units for the tile a
     // mark stands over (a burrowed unit is not drawn, so it gets no mark).

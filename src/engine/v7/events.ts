@@ -2313,13 +2313,16 @@ export type DomainEventV7 =
        * Mission objectives (`pulp_wars-v642.1`, 7r82;
        * docs/product/CAMPAIGN.md section 10.2): at the Start Turn of
        * `playerId` the new unit `unitId` of a mission's reinforcements
-       * arrived on `at`.
+       * arrived on `at`. `wave` is the wave's index in the mission's
+       * `reinforcements` (`pulp_wars-hmyk.35`: a held wave arrives in a
+       * later round than its own, and the banner finds its line by it).
        */
       readonly kind: "REINFORCEMENT_ARRIVED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
       readonly role: UnitRoleIdV7;
       readonly at: CoordV7;
+      readonly wave: number;
     }
   | {
       /**

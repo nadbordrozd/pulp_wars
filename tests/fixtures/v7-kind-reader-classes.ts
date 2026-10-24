@@ -137,7 +137,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Mission objectives (`pulp_wars-v642.1`): the faction of a seat a wave
   // of reinforcements belongs to. A reinforcement is the seat's own unit.
   "src/engine/v7/missions/build.ts::validateMissionGoalsV7": "SEAT",
-  "src/engine/v7/reducer.ts::resolveMissionReinforcementsV7": "SEAT",
+  // `pulp_wars-hmyk.35`: the new unit of a wave, its seat's role rule.
+  "src/engine/v7/reducer.ts::withReinforcementUnitV7": "SEAT",
   "src/engine/v7/reducer.ts::missionArrivalTileV7": "SEAT",
   "src/engine/v7/showcase.ts::createShowcaseEntitiesV7": "SEAT",
   "src/engine/v7/state-schema.ts::parsePlayers": "SEAT",

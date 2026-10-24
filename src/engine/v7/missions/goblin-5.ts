@@ -25,8 +25,10 @@ import type { MissionDefinitionV7 } from "./types";
  * is ashore at the start (their camp is level 2 with 6 Coins), and two
  * more parties land in rounds 7 and 11; the Martians have a Brain and three
  * saucers with 6 Coins and drop in rounds 5 and 9. The raft crews row in
- * in round 12; a wave never lands beside a hostile unit, so with the beach
- * taken they come in far away. The sixteen rounds stay.
+ * in round 12. The sixteen rounds stay. A wave never lands beside a
+ * hostile unit: with the beach taken it once came in on the far islands;
+ * since `pulp_wars-hmyk.35` it lands within 3 tiles of its beach, or waits
+ * up to two rounds and then lands on the nearest free tile.
  *
  * ```text
  *      x 0123456789012345
@@ -55,7 +57,11 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
   // seven announced waves.
   // Revision 4 (`pulp_wars-hmyk.29`, the fourth retune): the first landing
   // party ashore at the start, four waves, a Chucker and the village back.
-  revision: 4,
+  // Revision 5 (`pulp_wars-hmyk.35`): no definition change; a blocked wave
+  // now lands within 3 tiles of its tiles or waits (up to two rounds)
+  // instead of coming in on the far islands, so the same waves play out
+  // differently.
+  revision: 5,
   seed: 20261505,
   // <map>
   size: 16,

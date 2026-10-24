@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r109`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r110`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r110` (`pulp_wars-hmyk.35`; retune 4's hand play of
+GOBLIN_5: the raft crews, whose beach the fighting had reached, came in on
+far islands) adds **held waves** to the mission framework
+([section 2.6](#26-mission-setup), CAMPAIGN.md section 10.3). A wave's
+calm search, which keeps a wave unit from arriving next to a hostile unit,
+reaches only 3 tiles from its written tile; it went to the edge of the
+board before. When a unit of the wave has no calm tile in that reach, the
+whole wave is **held** and tried again at its seat's next Start Turn. In
+the round 2 after its own it comes regardless, a unit without a calm tile
+on the nearest free tile. The state gains the optional `heldWaves`,
+absent when no wave is held, and `REINFORCEMENT_ARRIVED` gains `wave`, the
+wave's index, so a held wave's banner keeps its story line. A match that
+is not a mission is unchanged; GOBLIN_5, whose waves have no calm ground
+in reach on its starting board, is revision 5. A save, replay, or setup of
+`7r109` is rejected, and the browser autosave has a new key. Boards are
+unchanged.
 `pulp-wars-poc-7r109` (`pulp_wars-5ti.31`; the user, 2026-10-24: "when
 doing land grant and city boundaries expand any water within city
 boundaries (including water within the original boundaries) should get
@@ -1654,10 +1670,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r109`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r110`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r109.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r110.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3366,19 +3382,31 @@ after every other step of the command that started the turn, each unit of
 the wave appears, in order, on its tile or, when that tile is taken,
 cannot hold it, or is next to a unit of a seat hostile to the wave's seat
 (one of the eight tiles around it), on the first free tile it may enter
-that is next to no such unit (rings of growing distance out to the edge
-of the board, `(y, x)` order within a ring); with no such tile it does
-not come. A tile with a settlement, a dock, a unit, a treasure chest, a
-curiosity, or a Barricade is never free, so a unit written on a city
-arrives beside it. A reinforcement is the seat's own unit at full HP (a
+that is next to no such unit, within **3 tiles** of its written tile
+(rings of growing distance, `(y, x)` order within a ring; each unit takes
+its tile before the next is placed). **A blocked wave is held**
+(`pulp_wars-hmyk.35`): when a unit of the wave has no such tile, no unit
+of the wave comes, and the wave is tried again at its seat's Start Turn
+of each later round, in the mission's order of waves. In the round 2
+after its own it comes regardless: a unit with no such tile within 3
+comes on the first free tile it may enter, next to a hostile unit or not
+(rings out to the edge of the board); with no free tile at all it does
+not come. The held waves are the state's optional `heldWaves` (the
+waves' indices in the mission's list, strictly ascending; absent when
+none is held). (Before `pulp_wars-hmyk.35` the calm search went out to
+the edge of the board and a unit with no calm tile did not come.) A tile
+with a settlement, a dock, a unit, a treasure chest, a curiosity, or a
+Barricade is never free, so a unit written on a city arrives beside it.
+A reinforcement is the seat's own unit at full HP (a
 Martian at full Shield) with **its turn spent** (an exhausted activation:
 it neither moves, attacks, nor acts until its seat's next Start Turn) and
 **no home city** (it takes no unit slot). (`7r83`, `pulp_wars-v642.5`;
 at `7r82` a wave acted the turn it arrived and searched only 2 tiles
 out, so it could arrive in the player's line and attack at once.) Each arrival is the event `REINFORCEMENT_ARRIVED { playerId,
-unitId, role, at }` (projected to a viewer who sees the tile, like a
-hatching Egg), and the tiles it reveals follow in `TILES_REVEALED`. A wave
-for an eliminated seat brings nothing.
+unitId, role, at, wave }` (`wave` is the wave's index in the mission's
+list, so a held wave's banner keeps its story line; projected to a viewer
+who sees the tile, like a hatching Egg), and the tiles it reveals follow
+in `TILES_REVEALED`. A wave for an eliminated seat brings nothing.
 
 **A seat's own forbidden technologies.** A seat may be forbidden
 technologies besides the mission's list, closed under prerequisites with

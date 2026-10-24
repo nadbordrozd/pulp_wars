@@ -133,6 +133,7 @@ import {
   setupHasCuriositiesV7,
   authoredCuriositiesV7,
 } from "./curiosities";
+import { missionDefinitionV7 } from "./missions/index";
 import { parseMatchSetupV7 } from "./setup";
 import { legacyScoreLedgerV7, scoreLedgerShapeValidV7 } from "./score";
 import { spatialContributionAtV7 } from "./spatial-economy";
@@ -252,11 +253,14 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     typeof input === "object" &&
     input !== null &&
     Object.prototype.hasOwnProperty.call(input, "scoreLedger");
+  // Mission waves (`pulp_wars-hmyk.35`): the optional held waves.
+  const storedHeld =
+    typeof input === "object" &&
+    input !== null &&
+    Object.prototype.hasOwnProperty.call(input, "heldWaves");
+  const keys = storedLedger ? STATE_KEYS : STATE_KEYS_WITHOUT_LEDGER;
   if (
-    !hasExactKeysV7(
-      input,
-      storedLedger ? STATE_KEYS : STATE_KEYS_WITHOUT_LEDGER,
-    ) ||
+    !hasExactKeysV7(input, storedHeld ? [...keys, "heldWaves"] : keys) ||
     input.schemaVersion !== 7 ||
     input.rulesetId !== RULESET_7_ID
   )
@@ -362,6 +366,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
+  const heldWaves =
+    storedHeld && setup !== null
+      ? parseHeldWaves(input.heldWaves, setup)
+      : undefined;
   if (
     setup === null ||
     random === null ||
@@ -405,6 +413,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     giants === null ||
     cult === null ||
     storedScoreLedger === null ||
+    heldWaves === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -535,9 +544,39 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     giants,
     cult,
     scoreLedger,
+    ...(heldWaves === undefined ? {} : { heldWaves }),
     pendingChoices: choices,
     outcome,
   };
+}
+
+/**
+ * Mission waves (`pulp_wars-hmyk.35`): a stored `heldWaves` is a non-empty,
+ * strictly ascending list of wave indices of the setup's mission (the key
+ * is absent when no wave is held).
+ */
+function parseHeldWaves(
+  input: unknown,
+  setup: MatchSetupV7,
+): readonly number[] | null {
+  const mission =
+    setup.mapType === "MISSION" && setup.mission !== undefined
+      ? missionDefinitionV7(setup.mission)
+      : null;
+  const count = mission?.reinforcements?.length ?? 0;
+  if (
+    !Array.isArray(input) ||
+    !isDenseArrayV7(input) ||
+    input.length === 0 ||
+    !input.every(
+      (index, at): boolean =>
+        isNonNegativeSafeIntegerV7(index) &&
+        index < count &&
+        (at === 0 || (input[at - 1] as number) < index),
+    )
+  )
+    return null;
+  return input as readonly number[];
 }
 
 export function canonicalGameStateJsonV7(input: unknown): string {

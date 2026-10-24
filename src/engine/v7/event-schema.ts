@@ -780,7 +780,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "homeCityId",
   ],
   WIGHT_RISEN: ["kind", "playerId", "unitId", "at", "hp"],
-  REINFORCEMENT_ARRIVED: ["kind", "playerId", "unitId", "role", "at"],
+  REINFORCEMENT_ARRIVED: ["kind", "playerId", "unitId", "role", "at", "wave"],
   GRAVE_CREATED: ["kind", "at"],
   PLAGUE_CLEARED: ["kind", "unitIds"],
   CITY_CAPTURED: ["kind", "cityId", "from", "to"],
@@ -2634,7 +2634,8 @@ function validPayload(
         id(e.playerId) &&
         id(e.unitId) &&
         UNIT_ROLE_IDS_V7.includes(e.role as UnitRoleIdV7) &&
-        parseCoordV7(e.at) !== null
+        parseCoordV7(e.at) !== null &&
+        isNonNegativeSafeIntegerV7(e.wave)
       );
     case "MATCH_ENDED":
       return outcome(e.outcome);

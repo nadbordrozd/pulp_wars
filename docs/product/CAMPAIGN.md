@@ -2063,15 +2063,40 @@ which keeps replays and the AI's view simple.
 
 **A wave arrives calmly** (`pulp_wars-v642.5`, `7r83`). It arrives with
 its turn spent: nothing in it moves or attacks until its seat's next
-turn. And it never arrives next to a unit of a seat hostile to it: when
+turn. And it does not arrive next to a unit of a seat hostile to it: when
 the written tile is taken, cannot hold the unit, or is next to such a
 unit, the unit comes on the nearest free tile that is not, searched ring
-by ring to the edge of the board (`(y, x)` order within a ring). Before,
+by ring (`(y, x)` order within a ring) within 3 tiles since
+`pulp_wars-hmyk.35` (to the edge of the board before; see the next
+paragraph for a wave that finds none). Before,
 a wave could appear up to two tiles from its tile, in the player's line,
 and attack at once (a Summoner did in mission 10, a wave of five killed a
 squad in mission 9's fourth configuration). Standing on a wave's tiles
-does not cancel it: it comes in further out. A wave is announced by the hints or musters out of sight, and the turn it
+does not cancel it, but it may delay it. A wave is announced by the hints or musters out of sight, and the turn it
 arrives is the player's to answer it.
+
+**A blocked wave waits** (`pulp_wars-hmyk.35`). The calm search reaches at
+most **3 tiles** (`MISSION_WAVE_REACH_V7`, Chebyshev) from each unit's
+written tile. When a unit of the wave has no free, calm tile within that
+reach, the **whole wave is held**: none of it comes. It is tried again at
+its seat's Start Turn in each following round. It is held at most **2
+rounds** (`MISSION_WAVE_HOLD_ROUNDS_V7`). In the round two after its own
+it comes regardless: each unit takes a calm tile within reach if there is
+one, and otherwise the nearest free tile it may stand on, next to a
+hostile unit or not, searched ring by ring to the edge of the board. It
+never comes onto an occupied tile, and a unit with no free tile at all
+does not come. The units of one wave take their tiles one after another,
+in the written order. Due waves are placed in the order the mission lists
+them. A held wave is in the state (`heldWaves`, the wave's index in
+`reinforcements`; the key is absent when none is held). Before the cap the
+calm search went to the edge of the board: in GOBLIN_5 (section 19.5) a
+wave whose beach the fighting had reached came in on the far islands. A
+held wave is announced when it arrives, like any other: its playback
+step, stinger, banner and story line come in the round it actually
+arrives, and each `REINFORCEMENT_ARRIVED` names its `wave`. A heads-up is
+shown only before the wave's own round, so a held wave gets no second one.
+Every built wave was checked on its mission's starting board: all except
+GOBLIN_5's find a calm tile within the reach, as before.
 
 **A wave is announced** (`pulp_wars-hmyk.18`). The user, 2026-10-20: "The
 regularly appearing AI reinforcements are a nice balancer but you should do
@@ -4864,10 +4889,22 @@ what each mission's hand play changed:
   story line on a wave) was not built: a hint announces the freed beasts.
 - **DN5's ford** is a gap in a ridge of peaks (a Dry Land board has no
   river); the Unquiet have no Ghouls.
-- **DN6's bound Herald idles.** Under `GUARD` with `others: ASSAULT` the
-  Herald, once called, stayed on its summoning tile for every round of
-  every run, bound, and attacked only after it went Unbound (follow-up:
-  the Normal AI's play of a bound Herald under a directive).
+- **DN6's bound Herald fights.** In the first hand play, under `GUARD`
+  with `others: ASSAULT`, the Herald stayed on its summoning tile, bound,
+  for every round of every run, and attacked only after it went Unbound:
+  it had taken a garrison place. That was an AI bug, not a rule, and
+  `pulp_wars-mch9.56` fixed it: a summon is never the garrison and plays
+  the others' directive. `pulp_wars-mch9.57` also keeps a daemon where its
+  channellers can follow. A bound daemon is the Cult seat's own unit and
+  moves and attacks like any other (its kills pay Favour,
+  [RULESET_7_CULTISTS.md](RULESET_7_CULTISTS.md) section 8.3). Only an
+  Unbound one belongs to nobody, and "bound" never means idle. So the
+  Herald now joins the assault as far as its channellers on the island
+  allow, and strikes whatever comes within reach. In retune 4 (section
+  17.5) it struck the Queen on Greyhood's centre for 15 with three of its
+  four strands still held: the Queen had killed the fourth channeller, the
+  Summoner on the centre, that turn (`pulp_wars-hmyk.34`). That is the
+  mission as built: the Lodge's island is guarded by its daemon.
 - **The Old Queen** is an Alpha from DN5 on (the `kills` of a mission
   unit), as the story has grown her.
 
@@ -5068,8 +5105,10 @@ Deviations from the brief:
 
 **Follow-ups.** The bound Herald still strikes units beside it: in DN6 it
 struck the Queen on Greyhood's centre for 15 with all three strands held.
-Section 17.3 says the bound Herald idled until it went Unbound, so this
-needs a look at the rules or at the Normal AI. DN5's
+`pulp_wars-hmyk.34` checked it. The rules let a bound daemon attack, and
+the directive sends it with the assault. The idling that section 17.3
+once recorded was the AI bug fixed by `pulp_wars-mch9.56`, and that
+section now says so. Nothing in the mission changed. DN5's
 expand-first attempt lost: if it still proves too hard, the next lever is
 the round-10 marsh rising (or keeping the dead out of Mire's Edge), not
 the clock. DN4 turns on the trick of a Triceratops charge
@@ -5754,7 +5793,16 @@ What decided them:
   loyalists, whose own tiles were taken) are the danger; the raft crews'
   tiles were next to enemies, so they came in on the far islands. The
   hold was won by moving the wounded Brute off the walled centre and
-  training a fresh one onto it each turn from round 14.
+  training a fresh one onto it each turn from round 14. That landing far
+  away was the uncapped calm search. Since `pulp_wars-hmyk.35` (section
+  10.3) a blocked wave lands within 3 tiles of its beach or waits up to
+  two rounds, and then lands on the nearest free tile. GOBLIN_5 is
+  therefore revision 5 (re-pinned in both pin tables, with no definition
+  change), and it has not been hand-played on that rule. On its starting
+  board every one of its five waves already lacks a calm tile within the
+  reach: the island is small and the start's landing party stands on the
+  beach. So in play each wave will usually come a round or two late and
+  closer to the fighting.
 - **G6.** The crew kills the choir's Hexer with a bomb and a Goblin in
   round 2 and its Initiates with a Scrap Buggy chain and the Buggy's
   Crash; the Lodge's Horror spends the game on the Thane's Steam Moles.

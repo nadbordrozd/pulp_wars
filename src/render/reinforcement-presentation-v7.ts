@@ -291,13 +291,15 @@ export function waveArrivalBannerV7(
   const player = after.players.find((entry) => entry.id === first.playerId);
   if (player === undefined) return null;
   const side = waveSideV7(after, player.id);
+  // `pulp_wars-hmyk.35`: the event names its wave, which a hold may have
+  // brought in a later round than its own.
+  const written = mission?.reinforcements?.[first.wave];
   const wave =
-    (mission?.reinforcements ?? []).find(
-      (entry) =>
-        entry.seat === player.seat &&
-        entry.round === after.round &&
-        entry.line !== undefined,
-    ) ?? null;
+    written !== undefined &&
+    written.seat === player.seat &&
+    written.line !== undefined
+      ? written
+      : null;
   return {
     kind: "ARRIVAL",
     side,
