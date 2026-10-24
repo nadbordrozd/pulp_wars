@@ -6310,6 +6310,126 @@ mass for the sortie); C5's `RUSH` may send the dead across the Gates to
 Sugarcrest; C6's Red Dust ally is unchanged and still falls early. **No
 mission of this campaign has been played since the retune.**
 
+### 21.5 Retune 4: toward the middle, strong enemy starts (`pulp_wars-hmyk.32`)
+
+The user, 2026-10-23, on retune 3: "the enemies are too strong and the time
+limits are too harsh". The brief is section 20.5's: ease retune 3 back
+toward the middle but keep a real fight; the difficulty comes from a
+strong, aggressive enemy start, not from the clock; conquest clocks are lax
+(about one and a half times a good win), the escort and the hunt keep a
+pressing clock, the hold keeps its length; waves only fine-tune (most are
+cut or put on the board at the start); some economy comes back; mission 1
+is slightly easier than the rest. The calibration: from mission 2 on the
+first thoughtful attempt is lost or won narrowly, three thoughtful losses
+ease the enemy's start, and the autopilot (section 15) loses. Revisions: C1
+3, C2 4, C3 4, C4 3, C5 3, C6 4, re-pinned in both pin tables. Every enemy
+side starts with more units than you (`tests/unit/campaign-candy-v7.test.ts`;
+the Martians of Red Dust in C6 are yours and do not count), every mission
+starts with two towns, and three waves are left in the campaign, all in
+C6's long night. The chapter's objectives follow the clocks (C4 by turn 24,
+C5 by turn 18).
+
+| Mission | Your start now                                                                                                                                                                                                      | Enemies now                                                                                                                                                                                                                                 | Units (you : them)      | Clock (star)                      | Waves                                                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| C1      | Sugarcrest level 2 and Gumdrop level 1 (back), Praline, two Fighters and a Confectioner (back), Gathering and Hunting, 5 Coins, sight radius 2                                                                      | ten goblins (three of retune 3's four adds kept), 3 Coins (were 4), no hold: three keep the camps and the rest `ASSAULT` Gumdrop from round 1                                                                                               | 4 : 10                  | conquest by 20 (14) (was 14 (10)) | none (rounds 4 and 7 removed)                                                                                                            |
+| C2      | Sugarcrest level 2 and Gumdrop level 1 (back), Nougat, two Fighters and the Pie, Gathering, Hunting and Crafting (workshops from round 1), 5 Coins, the road to the Nest seen                                       | eleven dinosaurs (five of retune 3's seven adds kept, the Nest's Ankylosaurus among them), 3 Coins (were 4), home held for three rounds, then four stay and the rest `RUSH`; the Egg unchanged                                              | 4 : 11                  | capture by 30 (22) (was 16 (12))  | none (rounds 5, 9 and 13 removed)                                                                                                        |
+| C3      | Sugarcrest level 2 and Gumdrop level 3, a Marshmallow and two Tugs (one back), Shorecraft, Navigation and Sugar Sails, 6 Coins (were 4)                                                                             | the Sovereign, two patrol boats, a Submarine and the fort's Guard (one boat and one Submarine of retune 3 gone), 0 Coins (were 4), leashed until round 8 and then an `ASSAULT` on Sugarcrest (was Gumdrop)                                  | 3 : 5                   | kill by 16 (12) (was 14 (10))     | none (rounds 5, 9 and 13 removed)                                                                                                        |
+| C4      | Sugarcrest level 2 and Gumdrop level 1 (back), Praline, two Fighters, a Gunner and a Confectioner, Gathering, Leadership, Hunting, Gumball Gunners and Crafting, 5 Coins                                            | nine brethren (two of retune 3's five adds kept), 3 Coins (were 4), Favour 2 (was 8); the chapel keeps five and the rest `ASSAULT` Gumdrop (was Sugarcrest) from round 1                                                                    | 5 : 9                   | capture by 24 (18) (was 13 (10))  | none (rounds 4, 7 and 10 removed)                                                                                                        |
+| C5      | Sugarcrest level 2 and Riftwatch level 1 (back), Praline, Nougat, a Fighter, the Pie, a Gunner and a Marshmallow (both back), six technologies (Gunners and Home Sweet Home added), 5 Coins                         | nine dead (eight of retune 3's seventeen gone, the Palace's Lich among them), 2 Coins (were 6); each holds its own ground (the Palace, the far gate, Grey Gumdrop, Sour Hollow) until round 6, then six hold the Palace and the rest `RUSH` | 6 : 9                   | escort by 18 (14) (was 16 (13))   | none (rounds 4, 7, 10, 13 and 15 removed)                                                                                                |
+| C6      | Sugarcrest level 3 walled and Gumdrop level 2, Praline, Nougat, a Swordsman, a Guard, a Pie on the walls and Gumdrop's Fighter (both back), eight technologies (Forestry and Pie Launchers added), 5 Coins (were 2) | the dead sixteen (retune 3's round-4 rising on the board from the start), 6 Coins; the horde fourteen (its round-5 band on the board from the start), 5 Coins; the same `ASSAULT`s                                                          | 6 : 30 (the Martians 4) | hold 15 (unchanged)               | three announced: the dead in rounds 7 and 13, the horde in round 9 (rounds 4 and 5 now on the board, rounds 10, 12 and both 15s removed) |
+
+C1's and C2's clocks are lax (good wins in rounds 11 and 20); C4's is lax
+after three losses (the win came in round 19 of 24); C3's hunt and C5's
+escort keep a few rounds over a good win (rounds 11 and 13).
+
+**Hand play** through `play-text` (authorised for this pass). The
+baseline, retune 3 under the autopilot: C1 out of time (round 15), C2 lost
+in round 15, C3 out of time (round 15), C4 out of time (round 14), C5 out
+of time (round 17), C6 lost in round 14.
+
+| Mission | Autopilot (final)     | Thoughtful attempts on the final definition                                                                             | Tried and dropped                                                                                                                                                                                                                                                                                                                         |
+| ------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1      | out of time, round 21 | win, round 16 (of 18, then the clock), 2 stars (the star missed), Praline at 27 of 40 after falling to 1                | nine goblins, 2 Coins and a hold until round 2: a 2-star win in round 11 (too soft; the gang never pressed Gumdrop)                                                                                                                                                                                                                       |
+| C2      | lost, round 13        | win, round 26 of 28 (then the clock), 2 stars (the star missed)                                                         | Crafting unknown and a clock of 24: a loss (abandoned round 18, the clock would bind); Crafting known and ten dinosaurs: a 3-star win in round 20 (too comfortable)                                                                                                                                                                       |
+| C3      | lost, round 16        | win, round 11 of 16, 3 stars, at a cost (a Galleon, three Subs and two Tugs)                                            | the squadron of five with 2 Coins, leashed until round 10 and then on Gumdrop: a loss (abandoned round 14, the Sovereign promoted); with 0 Coins and one escort fewer: abandoned in round 3 on analysis (the leashed Sovereign cannot be reached, and on Gumdrop she shells it from the anchorage)                                        |
+| C4      | out of time, round 25 | win, round 19 of 24, 2 stars (the star missed), Praline at 26 of 45, about fourteen sweets lost                         | ten brethren with Favour 6 and a clock of 20: a loss (abandoned round 14); nine with Favour 4: lost narrowly (Praline killed on the chapel's centre in round 16); the hill camp's Summoner gone: the autopilot won in round 13; Favour 2: a loss (abandoned round 16, Praline at 4 beside the chapel)                                     |
+| C5      | out of time, round 19 | win, round 13 of 18, 2 stars (Nougat killed), narrowly: Praline arrived at 14 of 40, bitten                             | fifteen dead with 4 Coins: two losses (round 8; abandoned round 10); twelve dead: a loss (round 11); ten dead, Home Sweet Home and a Marshmallow: a loss (round 11, Nougat stepped back onto the far gate); every nightmare holding its ground until round 6: a loss (round 11, the Palace's Lich took Praline from 30 to 8 in one night) |
+| C6      | lost, round 14        | win (held 15), 2 stars (Gumdrop lost in round 14), Praline at 15 of 40 on Sugarcrest's centre with one Marshmallow left | a smaller horde and the enemies' Coins cut (two versions): the autopilot held 15 both times, 2 stars                                                                                                                                                                                                                                      |
+
+What decided them:
+
+- **C1.** Mission 1 is a lesson with a real fight: with no hold the gang
+  storms Gumdrop from round 1, and Praline, who killed a goblin in round 3,
+  was hit four times that night and the next (a Brute, two Goblins ganging
+  up, a Wolf Rider), 40 to 1; she sat on Gumdrop's centre healing until
+  round 12 while Troopers and a Donut Racer (from a chest) took Muncher's
+  Camp in round 9 (the Confectioner re-baked two Troopers); Gunners shot
+  Spoon Hill's centre every turn and Praline took it in round 16.
+- **C2.** Crafting at the start is what makes an expand-first plan work:
+  two workshops in round 1 made Sugarcrest walled and Gumdrop level 2, and
+  without them the economy stalled at 6 a turn for ten rounds and the clock
+  bound. The Ankylosaurus, a caveman, a raptor and the hatched T-Rex came
+  at Nougaline (the village at the Nest's foot) together in rounds 4 and 5
+  and killed both Troopers; the T-Rex died to a Splat and two Rushed blows,
+  the Ankylosaurus to a blast and the Pie; the Nest fell in round 20 and
+  two blasts opened the pass to Riftwatch (captured in round 26).
+- **C3.** The leash decides the hunt. Leashed in her anchorage behind the
+  fort's Guard and her escorts, the Sovereign cannot be reached (every
+  approach tile is next to an enemy, and a ship stops there), and on an
+  `ASSAULT` on Gumdrop she shells it from the anchorage and never leaves.
+  Sent north on Sugarcrest she sails into the open lake: the win built
+  Choco Subs at Sugarcrest's west-lake port, lost a Pie Galleon to her
+  first kill, and in round 11 a Sub built at Gumdrop's port beside her sank
+  her (a Rushed Tug had rammed her 20 to 9).
+- **C4.** The brethren's daemons are the fight: broods of Imps (kill the
+  Imp that holds the brood and the rest come unbound) and a Horror every
+  round or two, each one killing a Gunner, a Pie or a Confectioner a turn.
+  Three losses came from Praline walking ahead of a line that could not
+  keep up, into Horrors summoned beside the chapel. The win built the
+  economy for six quiet rounds (the brethren sent nothing until round 8),
+  killed five Horrors with Pie Splat and Praline, and walked her up alone
+  at the end: she fell to 17 of 40 beside the chapel in round 17, and in
+  round 18 her promotion (free, +5 and a full heal) let her kill the Idol
+  Bearer on the centre and stand there at 45; she captured in round 19 at 26.
+- **C5.** The dead arrive round the far gate by twos and the Gates work
+  both ways (a Confectioner who steps back onto the far gate is sent
+  home). Five losses came from Praline walking south alone, cut down by
+  Skeletons, inspired Zombies and the Palace's Lich (8 a shot from three
+  tiles); the Lich came out. The win crossed under the round-6 hold and
+  went west first: Praline took Grey Gumdrop in rounds 6 to 8, which
+  stopped the Skeletons coming out of it for three rounds; the group then
+  marched south losing a Gunner, both Confectioners and the Trooper, and a
+  Rushed blow killed the Palace's Zombie in round 13.
+- **C6.** With the first risings on the board from round 1, the hold is a
+  fight from the first night. The Pie on the walls Splatted and killed
+  Skeletons; both Confectioners died; the Lich's splash killed both of
+  Sugarcrest's Pies in round 10; the Marshmallows on the centre died in
+  rounds 11 and 12 and one rose onto it; a Rushed Praline killed it in
+  round 13 and held the centre to the end under the Lich, Zombies and
+  Skeletons (35 to 15). The horde took Gumdrop in round 14.
+
+Deviations from the brief:
+
+- **C3's first attempt on the final definition is a 3-star win**, though at
+  a cost; the leash is all or nothing (sections 21.2 and 21.4 found the
+  same), and the earlier versions were lost or unwinnable. A stronger
+  squadron would make the sortie in round 8 decide the mission alone.
+- **C4 needed three losses and an easing** (a Confectioner, Leadership and
+  the clock 24) before its win; the win was the fourth thoughtful attempt,
+  narrow in losses rather than on the clock.
+- **C5's win is the sixth thoughtful attempt**, after four easings; it
+  turned on a plan (Grey Gumdrop first) found late.
+- **C6's thoughtful win is on the first attempt** on the final definition,
+  narrowly; two softer versions were dropped because the autopilot held
+  them.
+
+**Follow-ups.** A Juggernaut's promotion (a free full heal and +5) decided
+C4 and comes as soon as Praline has kills; whether it should cost the
+unit's action is a balance question for later. Unbound daemons (killing a
+brood holder or a Horror's channeller) keep fighting for a turn as a
+neutral side, which the hints do not say. Pies off a walled centre have
+Defence 0.5 and die to any daemon.
+
 ## 22. The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`)
 
 The second tier-3 faction campaign, after Candy (section 21): six

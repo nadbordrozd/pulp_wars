@@ -138,28 +138,28 @@ describe("Sweet Dreams", () => {
       };
     });
     expect(summary).toEqual([
-      // Retune 3 (`pulp_wars-hmyk.21`): the clocks are about a fifth
-      // shorter, and the first mission has one.
+      // Retune 4 (`pulp_wars-hmyk.32`): the conquest clocks lax (about half
+      // as long again as a good win), the hunt and the escort tighter.
       {
         kind: "DOMINATION",
-        byRound: 14,
-        bonus: ["WITHIN_ROUNDS 10", "UNIT_ALIVE"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 14", "UNIT_ALIVE"],
       },
       {
         kind: "CAPTURE",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 12", "UNIT_ALIVE"],
+        byRound: 30,
+        bonus: ["WITHIN_ROUNDS 22", "UNIT_ALIVE"],
       },
-      { kind: "KILL", byRound: 14, bonus: ["WITHIN_ROUNDS 10", "KEEP_CITIES"] },
+      { kind: "KILL", byRound: 16, bonus: ["WITHIN_ROUNDS 12", "KEEP_CITIES"] },
       {
         kind: "CAPTURE",
-        byRound: 13,
-        bonus: ["WITHIN_ROUNDS 10", "UNIT_ALIVE"],
+        byRound: 24,
+        bonus: ["WITHIN_ROUNDS 18", "UNIT_ALIVE"],
       },
       {
         kind: "ESCORT",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "UNIT_ALIVE"],
+        byRound: 18,
+        bonus: ["WITHIN_ROUNDS 14", "UNIT_ALIVE"],
       },
       {
         kind: "SURVIVE",
@@ -195,40 +195,28 @@ describe("Sweet Dreams", () => {
     expect(alive("CANDY_6")).toEqual({ kind: "UNIT_ALIVE", unit: "PRALINE" });
   });
 
-  it("builds the missions as the third retune left them", () => {
-    // `pulp_wars-hmyk.21` (CAMPAIGN.md section 21.4, not play-tested): thin
-    // or skirmish starts, bigger enemies that march early, announced waves.
-    const rounds = (id: string) =>
-      (mission(id).reinforcements ?? []).map((wave) => [wave.seat, wave.round]);
-    // Every wave of every mission is announced and has a story line.
-    for (const id of ORDER)
-      for (const wave of mission(id).reinforcements ?? []) {
-        expect(wave.line, id).toBeTypeOf("string");
-        expect(wave.announce, id).toBe(true);
-      }
-    // C1: a skirmish start (Sugarcrest alone, Praline and a Fighter, no
-    // technology); the gang holds three rounds and then storms Sugarcrest.
-    expect(seat("CANDY_1", 0).technologies).toEqual([]);
-    expect(seat("CANDY_1", 0).cities).toHaveLength(1);
-    expect(seat("CANDY_1", 0).units).toHaveLength(2);
-    expect(seat("CANDY_1", 1).directive).toMatchObject([
-      { kind: "GUARD", untilRound: 3 },
-      {
-        kind: "GUARD",
-        garrison: 3,
-        others: { kind: "ASSAULT", target: { x: 2, y: 9 } },
-        fromRound: 3,
-      },
+  it("builds the missions as the fourth retune left them", () => {
+    // `pulp_wars-hmyk.32` (CAMPAIGN.md section 21.5, hand-played): some
+    // economy back, strong enemy starts that march early, and almost no
+    // waves.
+    // C1: Sugarcrest and Gumdrop, Gathering and Hunting; three goblins hold
+    // the camps and the rest storm Gumdrop from the first round.
+    expect(seat("CANDY_1", 0).technologies).toEqual(["GATHERING", "HUNTING"]);
+    expect(seat("CANDY_1", 0).cities).toHaveLength(2);
+    expect(seat("CANDY_1", 1).directive).toMatchObject({
+      kind: "GUARD",
+      garrison: 3,
+      others: { kind: "ASSAULT", target: { x: 5, y: 9 } },
+    });
+    // C2: Crafting known (workshops from round 1) and the old Pie Launcher;
+    // the runaways hold home three rounds and then rampage; a T-Rex Egg
+    // four turns from hatching in the Nest.
+    expect(seat("CANDY_2", 0).technologies).toEqual([
+      "GATHERING",
+      "HUNTING",
+      "DRILL",
     ]);
-    expect(rounds("CANDY_1")).toEqual([
-      [1, 4],
-      [1, 7],
-    ]);
-    // C2: a skirmish start (no technology, the old Pie Launcher); the
-    // runaways rampage from round 3; a T-Rex Egg four turns from hatching
-    // in the Nest; three waves.
-    expect(seat("CANDY_2", 0).technologies).toEqual([]);
-    expect(seat("CANDY_2", 0).cities).toHaveLength(1);
+    expect(seat("CANDY_2", 0).cities).toHaveLength(2);
     expect(
       seat("CANDY_2", 0).units.filter((unit) => unit.role === "CATAPULT"),
     ).toHaveLength(1);
@@ -239,22 +227,18 @@ describe("Sweet Dreams", () => {
       { kind: "GUARD", untilRound: 3 },
       { kind: "GUARD", garrison: 4, others: { kind: "RUSH" }, fromRound: 3 },
     ]);
-    expect(rounds("CANDY_2")).toEqual([
-      [1, 5],
-      [1, 9],
-      [1, 13],
-    ]);
-    // C3: Sugar Sails but nothing else; the squadron leashed to its
-    // anchorage (E7) until round 8 and then sailing on Gumdrop, with no
-    // Shipyard and no Port of its own; three waves of ships.
+    // C3: the squadron, penniless, is leashed to its anchorage (E7) until
+    // round 8 and then sails north on Sugarcrest, into the open lake; no
+    // Shipyard and no Port of its own.
     expect(seat("CANDY_3", 0).technologies).toEqual([
       "SHORECRAFT",
       "NAVIGATION",
       "SEAMANSHIP",
     ]);
+    expect(seat("CANDY_3", 1).coins).toBe(0);
     expect(seat("CANDY_3", 1).directive).toMatchObject([
       { kind: "HOLD", ships: true, untilRound: 8 },
-      { kind: "ASSAULT", target: { x: 8, y: 10 }, fromRound: 8 },
+      { kind: "ASSAULT", target: { x: 7, y: 6 }, fromRound: 8 },
     ]);
     expect(seat("CANDY_3", 1).forbiddenTechnologies).toContain(
       "NAVAL_ENGINEERING",
@@ -264,71 +248,98 @@ describe("Sweet Dreams", () => {
         (item) => item.improvement === "PORT",
       ),
     ).toHaveLength(2);
-    expect(rounds("CANDY_3")).toEqual([
-      [1, 5],
-      [1, 9],
-      [1, 13],
-    ]);
-    // C4: a skirmish start (Sugarcrest alone); a Horror on round 1 and then
-    // some (8 Favour); the chapel keeps five and the rest storm Sugarcrest
-    // from the first round; three waves.
-    expect(seat("CANDY_4", 0).technologies).toEqual([]);
-    expect(seat("CANDY_4", 0).cities).toHaveLength(1);
-    expect(seat("CANDY_4", 1).favour).toBe(8);
+    // C4: Sugarcrest and Gumdrop with a Confectioner; Favour 2; the chapel
+    // keeps five and the rest storm Gumdrop from the first round.
+    expect(seat("CANDY_4", 0).cities).toHaveLength(2);
+    expect(
+      seat("CANDY_4", 0).units.some((unit) => unit.role === "CAPTAIN"),
+    ).toBe(true);
+    expect(seat("CANDY_4", 1).favour).toBe(2);
     expect(seat("CANDY_4", 1).directive).toMatchObject({
       kind: "GUARD",
       garrison: 5,
-      others: { kind: "ASSAULT", target: { x: 7, y: 10 } },
+      others: { kind: "ASSAULT", target: { x: 10, y: 7 } },
     });
-    expect(rounds("CANDY_4")).toEqual([
-      [1, 4],
-      [1, 7],
-      [1, 10],
-    ]);
     // C5: the door is a pair of Dimensional Gates (E1), the only way across
-    // with the naval branch forbidden; a thin start; five waves.
+    // with the naval branch forbidden; Riftwatch back and a Marshmallow for
+    // the far gate; every nightmare holds its own ground until round 6.
     expect(mission("CANDY_5").curiosities).toEqual([
       { kind: "GATES", at: { x: 4, y: 5 }, partner: { x: 13, y: 3 } },
     ]);
     expect(mission("CANDY_5").forbiddenTechnologies).toContain("SHORECRAFT");
     expect(
       seat("CANDY_5", 1).units.filter((unit) => unit.role === "CATAPULT"),
-    ).toHaveLength(2);
-    expect(seat("CANDY_5", 0).cities).toHaveLength(1);
-    expect(seat("CANDY_5", 0).units).toHaveLength(4);
-    expect(seat("CANDY_5", 1).directive).toMatchObject({
-      kind: "GUARD",
-      garrison: 6,
-      others: { kind: "RUSH" },
-    });
-    expect(rounds("CANDY_5")).toEqual([
-      [1, 4],
-      [1, 7],
-      [1, 10],
-      [1, 13],
-      [1, 15],
+    ).toHaveLength(1);
+    expect(seat("CANDY_5", 0).cities).toHaveLength(2);
+    expect(seat("CANDY_5", 0).units).toHaveLength(6);
+    expect(seat("CANDY_5", 1).directive).toMatchObject([
+      { kind: "GUARD", garrison: 10, untilRound: 6 },
+      { kind: "GUARD", garrison: 6, others: { kind: "RUSH" }, fromRound: 6 },
     ]);
-    // C6: 2 Coins; the nightmares rise beside Sugarcrest, the horde comes
-    // down the eastern road and storms Gumdrop from the first round and
-    // Sugarcrest from round 8; nine waves.
-    expect(seat("CANDY_6", 0).coins).toBe(2);
-    expect(seat("CANDY_6", 0).units).toHaveLength(4);
-    expect(rounds("CANDY_6")).toEqual([
-      [1, 4],
-      [2, 5],
-      [1, 7],
-      [2, 9],
-      [1, 10],
-      [2, 12],
-      [1, 13],
-      [2, 15],
-      [1, 15],
-    ]);
+    // C6: Pie Launchers known and a Pie on the walls; the horde storms
+    // Gumdrop first and Sugarcrest from round 8.
+    expect(seat("CANDY_6", 0).coins).toBe(5);
+    expect(seat("CANDY_6", 0).technologies).toContain("SAWMILLING");
+    expect(seat("CANDY_6", 0).units).toHaveLength(6);
     expect(seat("CANDY_6", 2).directive).toEqual([
       { kind: "ASSAULT", target: { x: 9, y: 13 }, untilRound: 8 },
       { kind: "ASSAULT", target: { x: 6, y: 13 } },
     ]);
     expect(seat("CANDY_6", 3).directive).toMatchObject({ kind: "HOLD" });
+  });
+
+  it("keeps the fourth retune's strong enemy starts (pulp_wars-hmyk.32)", () => {
+    // CAMPAIGN.md section 21.5: every enemy side starts with more units than
+    // you (the Martians of Red Dust in C6 are yours and do not count), and
+    // the difficulty comes from them rather than from waves or the clock.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const teams = definition.teams;
+      const ours = seat(id, 0).units.length;
+      const theirs = definition.seats
+        .slice(1)
+        .filter((_, index) => teams === undefined || teams[index + 1] !== 0)
+        .reduce((sum, item) => sum + item.units.length, 0);
+      expect(theirs, id).toBeGreaterThan(ours);
+    }
+    // Every enemy marches, assaults or holds its ground.
+    for (const id of ORDER) expect(seat(id, 1).directive, id).toBeDefined();
+    // Three waves are left in the campaign, all in the long night, each
+    // announced with its story line.
+    const rounds = (id: string) =>
+      (mission(id).reinforcements ?? []).map((wave) => [wave.seat, wave.round]);
+    expect(ORDER.map(rounds)).toEqual([
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        [1, 7],
+        [2, 9],
+        [1, 13],
+      ],
+    ]);
+    for (const id of ORDER)
+      for (const wave of mission(id).reinforcements ?? []) {
+        expect(wave.line, id).toBeTypeOf("string");
+        expect(wave.announce, id).toBe(true);
+      }
+    // Some economy back: every mission starts with two towns and 5 or 6
+    // Coins.
+    expect(ORDER.map((id) => seat(id, 0).cities.length)).toEqual([
+      2, 2, 2, 2, 2, 2,
+    ]);
+    expect(ORDER.map((id) => seat(id, 0).coins)).toEqual([5, 5, 6, 5, 5, 5]);
+    for (const [id, revision] of [
+      ["CANDY_1", 3],
+      ["CANDY_2", 4],
+      ["CANDY_3", 4],
+      ["CANDY_4", 3],
+      ["CANDY_5", 3],
+      ["CANDY_6", 4],
+    ] as const)
+      expect(mission(id).revision, id).toBe(revision);
   });
 
   it("names every place and unit an objective talks about", () => {

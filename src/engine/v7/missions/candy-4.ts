@@ -40,11 +40,20 @@ import type { MissionDefinitionV7 } from "./types";
  * chapel unseen. The brethren have twelve units, 4 Coins and Favour 8; five
  * hold the chapel and the rest march on Sugarcrest from round 1, and three
  * announced waves come in rounds 4, 7 and 10. The clock is 13 (was 16).
+ *
+ * The fourth retune (`pulp_wars-hmyk.32`, CAMPAIGN.md section 21.5,
+ * hand-played): Sugarcrest at level 2 and Gumdrop back, Praline, two
+ * Fighters, a Gunner and a Confectioner, five technologies, 5 Coins. The
+ * brethren have nine units, 3 Coins and Favour 2; five hold the chapel and
+ * the rest go for Gumdrop from round 1. No waves. The clock is 24 (the
+ * stars: 18).
  */
 export const CANDY_4_V7: MissionDefinitionV7 = {
   id: "CANDY_4",
   // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.32`, the fourth retune): Gumdrop and a
+  // few technologies back, fewer brethren, no waves, a lax clock.
+  revision: 3,
   seed: 20261804,
   // <map>
   size: 14,
@@ -132,10 +141,18 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      // Retune 3: a skirmish start. Sugarcrest alone, Queen Praline (who
-      // means to fetch her choir herself) and a Fighter, no technology.
-      coins: 3,
-      technologies: [],
+      // Retune 4: Sugarcrest and Gumdrop, Queen Praline (who means to
+      // fetch her choir herself), a Fighter, a Gunner, a Confectioner and
+      // Gumdrop's Fighter; Gathering, Leadership, Hunting, Gumball Gunners
+      // and Crafting.
+      coins: 5,
+      technologies: [
+        "GATHERING",
+        "ADMINISTRATION",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+      ],
       cities: [
         {
           name: "Sugarcrest",
@@ -143,10 +160,15 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        { name: "Gumdrop", at: { x: 10, y: 7 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "JUGGERNAUT", at: { x: 7, y: 9 }, tag: "PRALINE" },
         { role: "FIGHTER", at: { x: 8, y: 9 } },
+        { role: "MARKSMAN", at: { x: 6, y: 9 } },
+        { role: "FIGHTER", at: { x: 10, y: 7 }, home: 1 },
+        // Retune 4: a Confectioner to bake the fallen back.
+        { role: "CAPTAIN", at: { x: 7, y: 10 } },
       ],
       // The chapel's door, and nothing else.
       reveal: { radius: 2, rects: [{ x0: 10, y0: 1, x1: 10, y1: 1 }] },
@@ -154,8 +176,8 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
     {
       // The Candlewick brethren, who could not agree.
       faction: "CULT",
-      coins: 4,
-      favour: 8,
+      coins: 3,
+      favour: 2,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -181,12 +203,9 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 4, y: 1 }, home: 1 },
         { role: "MARKSMAN", at: { x: 3, y: 1 }, home: 1 },
         { role: "CAPTAIN", at: { x: 5, y: 1 }, home: 1 },
-        // Retune 3: five more brethren.
+        // Retune 3's five more brethren, two of them kept by retune 4.
         { role: "FIGHTER", at: { x: 9, y: 2 } },
-        { role: "MARKSMAN", at: { x: 12, y: 2 } },
         { role: "GUARD", at: { x: 11, y: 1 } },
-        { role: "FIGHTER", at: { x: 3, y: 2 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 5, y: 2 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 4, y0: 4, x1: 12, y1: 9 }] },
       forbiddenTechnologies: [
@@ -206,54 +225,13 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
         "EXPLOSIVES",
       ],
       // The chapel keeps five; the rest of the brethren come down for
-      // Sugarcrest from round 1 (retune 3).
+      // Gumdrop from round 1 (retune 4; retune 3: for Sugarcrest).
       directive: {
         kind: "GUARD",
         zone: [{ x0: 9, y0: 0, x1: 11, y1: 2 }],
         garrison: 5,
-        others: { kind: "ASSAULT", target: { x: 7, y: 10 } },
+        others: { kind: "ASSAULT", target: { x: 10, y: 7 } },
       },
-    },
-  ],
-  // More brethren come up from Candlewick (retune 3: three announced
-  // waves, by the hill camp in rounds 4 and 10 and to the chapel in round 7).
-  reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      line: "Brethren from Candlewick, still arguing, come down the hill.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 2, y: 0 } },
-        { role: "FIGHTER", at: { x: 5, y: 0 } },
-        { role: "MARKSMAN", at: { x: 1, y: 2 } },
-        { role: "GUARD", at: { x: 3, y: 0 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 7,
-      line: "A hooded procession reaches the chapel. Somebody has brought a bell.",
-      announce: true,
-      units: [
-        { role: "CAPTAIN", at: { x: 12, y: 0 } },
-        { role: "FIGHTER", at: { x: 13, y: 1 } },
-        { role: "FIGHTER", at: { x: 8, y: 0 } },
-        { role: "MARKSMAN", at: { x: 12, y: 1 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 10,
-      line: "The vote is in: attack. Every grey hood in the hills is on its way.",
-      announce: true,
-      units: [
-        { role: "CAPTAIN", at: { x: 2, y: 0 } },
-        { role: "FIGHTER", at: { x: 5, y: 0 } },
-        { role: "FIGHTER", at: { x: 1, y: 2 } },
-        { role: "MARKSMAN", at: { x: 3, y: 0 } },
-        { role: "GUARD", at: { x: 4, y: 0 } },
-      ],
     },
   ],
   landmarks: [{ tag: "WICK_CHAPEL", at: { x: 10, y: 1 } }],
@@ -265,14 +243,14 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The chapel by round 13 (the saga's 20: the thoughtful win came in
-  // round 10; retune 3). The stars: by round 10, and Praline lives.
+  // The chapel by round 24 (the saga's 20: the thoughtful win came in
+  // round 10; retune 3: 13). The stars: by round 18, and Praline lives.
   objective: {
     kind: "CAPTURE",
     places: ["WICK_CHAPEL"],
-    byRound: 13,
+    byRound: 24,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 10 },
+      { kind: "WITHIN_ROUNDS", rounds: 18 },
       { kind: "UNIT_ALIVE", unit: "PRALINE" },
     ],
   },

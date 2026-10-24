@@ -49,13 +49,22 @@ import type { MissionDefinitionV7 } from "./types";
  * nightmares rise beside Sugarcrest in rounds 4, 7, 10, 13 and 15, the
  * horde comes in rounds 5, 9, 12 and 15, every wave announced. The clock is
  * 15 nights (was 18).
+ *
+ * The fourth retune (`pulp_wars-hmyk.32`, CAMPAIGN.md section 21.5,
+ * hand-played): Forestry and Sawmilling back (eight technologies), a Pie
+ * on the walls and Gumdrop's Fighter (six units), 5 Coins. The first
+ * nightmares and the first of the horde stand on the board from the start
+ * (the dead sixteen, the horde fourteen), and three waves are left: the
+ * nightmares in rounds 7 and 13, the horde in round 9. Still 15 nights.
  */
 export const CANDY_6_V7: MissionDefinitionV7 = {
   id: "CANDY_6",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a thin start under
   // nine announced waves.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.32`, the fourth retune): Pie Launchers, a
+  // Pie and a Trooper back, 5 Coins, a smaller horde, three waves.
+  revision: 4,
   seed: 20261806,
   // <map>
   size: 16,
@@ -162,12 +171,15 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      // Retune 3: 2 Coins and six technologies (was 0 and eleven).
-      coins: 2,
+      // Retune 4: 5 Coins and eight technologies, Pie Launchers back
+      // (retune 3: 2 and six; was 0 and eleven).
+      coins: 5,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
         "HUNTING",
+        "FORESTRY",
+        "SAWMILLING",
         "MARKSMANSHIP",
         "DRILL",
         "FORTIFICATION",
@@ -192,6 +204,9 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
         { role: "CAPTAIN", at: { x: 6, y: 13 } },
         { role: "SWORDSMAN", at: { x: 5, y: 13 } },
         { role: "GUARD", at: { x: 9, y: 13 }, home: 1 },
+        // Retune 4: the Pie on the walls and Gumdrop's Trooper back.
+        { role: "CATAPULT", at: { x: 6, y: 14 } },
+        { role: "FIGHTER", at: { x: 10, y: 13 }, home: 1 },
       ],
       // The two approaches, west and east of the lake (retune 3).
       reveal: {
@@ -224,6 +239,13 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 5, y: 3 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 4 }, home: 1 },
         { role: "CATAPULT", at: { x: 3, y: 3 } },
+        // Retune 4: retune 3's round-4 wave on the western shore from the
+        // start.
+        { role: "FIGHTER", at: { x: 1, y: 12 } },
+        { role: "GUARD", at: { x: 2, y: 12 } },
+        { role: "FIGHTER", at: { x: 1, y: 13 } },
+        { role: "FIGHTER", at: { x: 2, y: 14 } },
+        { role: "FIGHTER", at: { x: 2, y: 13 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 4, x1: 15, y1: 15 }] },
       forbiddenTechnologies: [
@@ -274,6 +296,12 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 12, y: 8 }, home: 1 },
         { role: "RAIDER", at: { x: 14, y: 8 }, home: 1 },
         { role: "GUARD", at: { x: 14, y: 4 } },
+        // Retune 4: retune 3's round-5 wave on the eastern road from the
+        // start.
+        { role: "FIGHTER", at: { x: 13, y: 13 } },
+        { role: "FIGHTER", at: { x: 14, y: 13 } },
+        { role: "RAIDER", at: { x: 14, y: 14 } },
+        { role: "FIGHTER", at: { x: 14, y: 12 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 7, y0: 9, x1: 15, y1: 15 }] },
       forbiddenTechnologies: [
@@ -335,33 +363,9 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
   // 15 (hand play: the dead that start north of the lake took Red Dust and
   // Riftwatch and never came round it), and the horde brings more goblins
   // down the eastern road in rounds 5, 9, 12 and 15. Retune 3: earlier and
-  // bigger, and every wave announced.
+  // bigger, and every wave announced. Retune 4: three of the nine are left
+  // (the dead in rounds 7 and 13, the horde in round 9).
   reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      line: "The first nightmares tear out of the ground beside Sugarcrest, sour as lemons.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 1, y: 12 } },
-        { role: "GUARD", at: { x: 2, y: 12 } },
-        { role: "FIGHTER", at: { x: 1, y: 13 } },
-        { role: "FIGHTER", at: { x: 2, y: 14 } },
-        { role: "FIGHTER", at: { x: 2, y: 13 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 5,
-      line: "The Sweet-tooth horde comes down the eastern road, spoons out.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 13, y: 13 } },
-        { role: "FIGHTER", at: { x: 14, y: 13 } },
-        { role: "RAIDER", at: { x: 14, y: 14 } },
-        { role: "FIGHTER", at: { x: 14, y: 12 } },
-      ],
-    },
     {
       seat: 1,
       round: 7,
@@ -390,33 +394,6 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
     },
     {
       seat: 1,
-      round: 10,
-      line: "The Rift widens. Something has noticed that Sugarcrest is still sweet.",
-      announce: true,
-      units: [
-        { role: "GUARD", at: { x: 1, y: 12 } },
-        { role: "GUARD", at: { x: 2, y: 13 } },
-        { role: "FIGHTER", at: { x: 1, y: 14 } },
-        { role: "CATAPULT", at: { x: 0, y: 12 } },
-        { role: "FIGHTER", at: { x: 2, y: 11 } },
-        { role: "CAPTAIN", at: { x: 0, y: 14 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 12,
-      line: "The horde, hungry again, and none of them are here for the cake.",
-      announce: true,
-      units: [
-        { role: "GUARD", at: { x: 13, y: 13 } },
-        { role: "GUARD", at: { x: 14, y: 12 } },
-        { role: "FIGHTER", at: { x: 14, y: 14 } },
-        { role: "FIGHTER", at: { x: 13, y: 14 } },
-        { role: "RAIDER", at: { x: 15, y: 12 } },
-      ],
-    },
-    {
-      seat: 1,
       round: 13,
       line: "A Necromancer's whole parish rises on the western shore.",
       announce: true,
@@ -427,33 +404,6 @@ export const CANDY_6_V7: MissionDefinitionV7 = {
         { role: "CATAPULT", at: { x: 0, y: 13 } },
         { role: "CATAPULT", at: { x: 0, y: 15 } },
         { role: "FIGHTER", at: { x: 2, y: 11 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 15,
-      line: "The last of the horde, and the last of the patience of the walls.",
-      announce: true,
-      units: [
-        { role: "GUARD", at: { x: 13, y: 13 } },
-        { role: "FIGHTER", at: { x: 14, y: 12 } },
-        { role: "FIGHTER", at: { x: 14, y: 14 } },
-        { role: "RAIDER", at: { x: 15, y: 13 } },
-        { role: "RAIDER", at: { x: 15, y: 12 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 15,
-      line: "The nightmare's last rank: everything the Rift has left, all at once.",
-      announce: true,
-      units: [
-        { role: "RAIDER", at: { x: 2, y: 12 } },
-        { role: "RAIDER", at: { x: 2, y: 14 } },
-        { role: "FIGHTER", at: { x: 1, y: 13 } },
-        { role: "GUARD", at: { x: 2, y: 13 } },
-        { role: "CATAPULT", at: { x: 0, y: 14 } },
-        { role: "CAPTAIN", at: { x: 0, y: 12 } },
       ],
     },
   ],

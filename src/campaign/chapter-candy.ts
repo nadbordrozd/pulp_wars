@@ -27,11 +27,11 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       format: "CONQUEST",
       briefing:
         "By royal proclamation: Sugarcrest is being eaten. A goblin gang from Sourmash, the Sweet-tooth Boys, has found out that the walls are made of nougat, and they have brought spoons, and more of them are coming. Queen Praline has declared war, sharpened her candy cane and asked for volunteers. One volunteered. Drive them out of both their camps.",
-      objective: "Take both of the gang's camps by turn 14.",
+      objective: "Take both of the gang's camps by turn 20.",
       hints: Object.freeze([
         "Rush, strike, then guard the Crashed until it wakes.",
         "Goblins gang up: never leave a sweet alone by two.",
-        "You start small: train before the gang marches.",
+        "The gang comes for Gumdrop first: meet it there.",
       ]),
       closing:
         "The goblins flee with their spoons. In the ruins of the pantry Madame Nougat finds something worse than goblins: the nougat is stale. All of it. All over the kingdom.",
@@ -46,7 +46,7 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The oldest recipe in the kingdom, the one every Confectioner learns first and nobody has read to the end, is kept in the Royal Library at Riftwatch, on the edge of the crack Sugarcrest fell out of. Madame Nougat must read it before it goes stale too. A family of dinosaurs that ran away from a circus has nested in the stacks, eating the books. Take the library before they reach the R's.",
-      objective: "Take Riftwatch by turn 16.",
+      objective: "Take Riftwatch by turn 30.",
       hints: Object.freeze([
         "Every kill makes a dinosaur bigger: don't feed them.",
         "A Splatted beast can't hit back: strike it after the pie.",
@@ -66,10 +66,10 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "The Crown has noticed Sugarcrest. A Royal Commissioner for Confectionery has sailed onto the lake with a warrant, a squadron and a contract: the Crown's protection, for the services of the Sugarcrest choir on a date to be confirmed. He is a mild little man in grey who smells faintly of candle wax. Praline has eaten the contract. Sink his flagship before the squadron sails, and send him home wet.",
-      objective: "Sink the Sovereign by turn 14.",
+      objective: "Sink the Sovereign by turn 16.",
       hints: Object.freeze([
         "A Rushed Tug rams harder, then sits a turn out.",
-        "Wait out of the Sovereign's reach, then strike together.",
+        "Wait for the squadron to sail out, then strike together.",
         "A Choco Sub's torpedo goes unanswered.",
       ]),
       closing:
@@ -85,7 +85,7 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Someone has stolen the Sugarcrest choir: forty sopranos, a bass made of liquorice, and the conductor's baton. The trail of sugar leads to the Wick Chapel in the hills, where men in grey hoods have locked them in the crypt and are arguing about what to do with them. Get the choir back before the hoods stop arguing.",
-      objective: "Take the Wick Chapel by turn 13.",
+      objective: "Take the Wick Chapel by turn 24.",
       hints: Object.freeze([
         "A Horror's Boo! scatters your line: keep a second rank.",
         "Splat a daemon, then hit it: it can't strike back.",
@@ -105,7 +105,7 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "Madame Nougat has finished the recipe. Sugarcrest is a dream, dreamed by a sleeper under a mountain, and the dream is going sour because the sleeper is having nightmares. Praline means to see for herself. The Martians have found a door: a pair of gates, one on each side of the strait. Walk her through, and through the nightmare on the other side, to the Dreaming Palace.",
-      objective: "Walk Praline to the Palace by turn 16.",
+      objective: "Walk Praline to the Palace by turn 18.",
       hints: Object.freeze([
         "Step on a gate and you come out of the other one.",
         "Hold the far gate before the Queen goes through.",

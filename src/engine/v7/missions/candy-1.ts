@@ -42,11 +42,19 @@ import type { MissionDefinitionV7 } from "./types";
  * The gang has two camps, eleven goblins and 4 Coins, holds its
  * camps for three rounds and then sends all but three at Sugarcrest, with
  * announced waves in rounds 4 and 7. The clock is 14 (it had none).
+ *
+ * The fourth retune (`pulp_wars-hmyk.32`, CAMPAIGN.md section 21.5,
+ * hand-played): Sugarcrest at level 2 and Gumdrop back, Praline, two
+ * Fighters and a Confectioner, Gathering and Hunting, 5 Coins. The gang
+ * has ten goblins and 3 Coins; three hold the camps and the rest go for
+ * Gumdrop from round 1. No waves. The clock is 20 (the stars: 14).
  */
 export const CANDY_1_V7: MissionDefinitionV7 = {
   id: "CANDY_1",
   // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.32`, the fourth retune): Gumdrop back,
+  // the gang smaller and its waves gone, a lax clock.
+  revision: 3,
   seed: 20261801,
   // <map>
   size: 11,
@@ -118,10 +126,11 @@ export const CANDY_1_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      // Retune 3: a skirmish start. Sugarcrest alone, Queen Praline (a
-      // Gingerbread Giant nobody can train yet) and a Fighter.
-      coins: 3,
-      technologies: [],
+      // Retune 4: Sugarcrest and Gumdrop, Queen Praline (a Gingerbread
+      // Giant nobody can train yet), a Confectioner and two Fighters,
+      // Gathering and Hunting.
+      coins: 5,
+      technologies: ["GATHERING", "HUNTING"],
       cities: [
         {
           name: "Sugarcrest",
@@ -129,18 +138,21 @@ export const CANDY_1_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        { name: "Gumdrop", at: { x: 5, y: 9 }, level: 1, rewards: [] },
       ],
       units: [
         // Queen Praline, a Gingerbread Giant armed to the teeth.
         { role: "JUGGERNAUT", at: { x: 3, y: 9 }, tag: "PRALINE" },
         { role: "FIGHTER", at: { x: 2, y: 9 } },
+        { role: "CAPTAIN", at: { x: 1, y: 9 } },
+        { role: "FIGHTER", at: { x: 5, y: 9 }, home: 1 },
       ],
       reveal: { radius: 2 },
     },
     {
       // The Sweet-tooth Boys, out of Sourmash with spoons.
       faction: "GOBLIN",
-      coins: 4,
+      coins: 3,
       technologies: [],
       cities: [
         {
@@ -159,9 +171,8 @@ export const CANDY_1_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 8, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 8, y: 4 }, home: 1 },
         { role: "RAIDER", at: { x: 10, y: 5 }, home: 1 },
-        // Retune 3: four more goblins.
+        // Retune 3's four more goblins, three of them kept by retune 4.
         { role: "FIGHTER", at: { x: 9, y: 7 } },
-        { role: "FIGHTER", at: { x: 7, y: 9 } },
         { role: "GUARD", at: { x: 10, y: 8 } },
         { role: "RAIDER", at: { x: 9, y: 6 }, home: 1 },
       ],
@@ -189,57 +200,18 @@ export const CANDY_1_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // Retune 3: all eleven hold their camps for three rounds; then three
-      // stay and the rest storm Sugarcrest (hand play: under RUSH the gang
-      // stood off at the edge of the walls).
-      directive: [
-        {
-          kind: "GUARD",
-          zone: [
-            { x0: 7, y0: 7, x1: 10, y1: 9 },
-            { x0: 7, y0: 4, x1: 10, y1: 6 },
-          ],
-          garrison: 11,
-          untilRound: 3,
-        },
-        {
-          kind: "GUARD",
-          zone: [
-            { x0: 7, y0: 7, x1: 10, y1: 9 },
-            { x0: 7, y0: 4, x1: 10, y1: 6 },
-          ],
-          garrison: 3,
-          others: { kind: "ASSAULT", target: { x: 2, y: 9 } },
-          fromRound: 3,
-        },
-      ],
-    },
-  ],
-  // Retune 3: more of the gang comes down the Sourmash road in rounds 4
-  // and 7.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      line: "More of the gang down the Sourmash road, with spoons and a plan.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 10, y: 7 } },
-        { role: "FIGHTER", at: { x: 10, y: 8 } },
-        { role: "RAIDER", at: { x: 10, y: 9 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 7,
-      line: "The Sweet-tooth Boys' cousins arrive from the north shore, hungry.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 10, y: 2 } },
-        { role: "FIGHTER", at: { x: 10, y: 3 } },
-        { role: "RAIDER", at: { x: 9, y: 1 } },
-        { role: "GUARD", at: { x: 10, y: 4 } },
-      ],
+      // Retune 4: three hold the camps and the rest storm Gumdrop from the
+      // first round (hand play: under RUSH the gang stood off at the edge
+      // of the walls).
+      directive: {
+        kind: "GUARD",
+        zone: [
+          { x0: 7, y0: 7, x1: 10, y1: 9 },
+          { x0: 7, y0: 4, x1: 10, y1: 6 },
+        ],
+        garrison: 3,
+        others: { kind: "ASSAULT", target: { x: 5, y: 9 } },
+      },
     },
   ],
   landmarks: [],
@@ -251,13 +223,13 @@ export const CANDY_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Drive the gang out by round 14. The stars: by round 10, and Praline
+  // Drive the gang out by round 20. The stars: by round 14, and Praline
   // lives.
   objective: {
     kind: "DOMINATION",
-    byRound: 14,
+    byRound: 20,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 10 },
+      { kind: "WITHIN_ROUNDS", rounds: 14 },
       { kind: "UNIT_ALIVE", unit: "PRALINE" },
     ],
   },

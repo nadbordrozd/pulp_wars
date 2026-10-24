@@ -53,12 +53,21 @@ import type { MissionDefinitionV7 } from "./types";
  * dead have seventeen units and 6 Coins, four hold the Palace and the rest
  * rush, and five announced waves rise in rounds 4, 7, 10, 13 and 15. The
  * clock is 16 (was 20).
+ *
+ * The fourth retune (`pulp_wars-hmyk.32`, CAMPAIGN.md section 21.5,
+ * hand-played): Riftwatch back, Praline, Madame Nougat, a Fighter, the
+ * Pie, a Gunner and a Marshmallow, six technologies, 5 Coins. The dead
+ * have nine units and 2 Coins; each holds its own ground (the Palace, the
+ * far gate, Grey Gumdrop, Sour Hollow) until round 6, and then six hold the
+ * Palace and the rest rush. No waves. The clock is 18 (the stars: 14).
  */
 export const CANDY_5_V7: MissionDefinitionV7 = {
   id: "CANDY_5",
   // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a thin start across
   // the door.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.32`, the fourth retune): Riftwatch and a
+  // Gunner back, fewer dead, no waves, a little more time.
+  revision: 3,
   seed: 20261805,
   // <map>
   size: 16,
@@ -159,9 +168,17 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      // Retune 3: 3 Coins and four technologies (was 8 and nine).
-      coins: 3,
-      technologies: ["GATHERING", "ADMINISTRATION", "HUNTING", "DRILL"],
+      // Retune 4: 5 Coins and six technologies (retune 3: 3 and four; was
+      // 8 and nine), Riftwatch back.
+      coins: 5,
+      technologies: [
+        "GATHERING",
+        "ADMINISTRATION",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [
         {
           name: "Sugarcrest",
@@ -169,6 +186,7 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        { name: "Riftwatch", at: { x: 6, y: 8 }, level: 1, rewards: [] },
       ],
       units: [
         // Queen Praline, going to see for herself.
@@ -177,6 +195,9 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
         { role: "CAPTAIN", at: { x: 2, y: 8 }, tag: "NOUGAT" },
         { role: "FIGHTER", at: { x: 3, y: 9 } },
         { role: "CATAPULT", at: { x: 2, y: 9 } },
+        { role: "MARKSMAN", at: { x: 5, y: 7 }, home: 1 },
+        // Retune 4: a Marshmallow to hold the far gate.
+        { role: "GUARD", at: { x: 4, y: 7 }, home: 1 },
       ],
       // The near gate, and the far gate and the Palace as the Martians
       // saw them from above (retune 3: no more of the far side).
@@ -192,7 +213,7 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
     {
       // The nightmares: the dream side's dead.
       faction: "UNDEAD",
-      coins: 6,
+      coins: 2,
       // Liches (Hunting, Forestry, Sawmilling) and nothing more.
       technologies: ["HUNTING", "FORESTRY", "SAWMILLING"],
       cities: [
@@ -206,27 +227,21 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
         { name: "Sour Hollow", at: { x: 9, y: 11 }, level: 1, rewards: [] },
       ],
       units: [
-        // The Palace's watch: a Zombie on the throne-room floor, a Lich,
-        // a Necromancer among the old graves.
+        // The Palace's watch: a Zombie on the throne-room floor and a
+        // Necromancer among the old graves (retune 4: its Lich gone; Sour
+        // Hollow keeps one).
         { role: "GUARD", at: { x: 14, y: 9 } },
-        { role: "CATAPULT", at: { x: 13, y: 10 } },
         { role: "CAPTAIN", at: { x: 13, y: 9 } },
         { role: "FIGHTER", at: { x: 14, y: 8 } },
         // The watch on the far gate.
         { role: "FIGHTER", at: { x: 12, y: 4 } },
         { role: "GUARD", at: { x: 13, y: 4 } },
         { role: "FIGHTER", at: { x: 10, y: 3 }, home: 1 },
-        { role: "GUARD", at: { x: 11, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 9, y: 11 }, home: 2 },
-        { role: "GUARD", at: { x: 11, y: 10 }, home: 2 },
         { role: "CATAPULT", at: { x: 11, y: 11 }, home: 2 },
-        // Retune 3: six more nightmares, and a second Necromancer.
-        { role: "FIGHTER", at: { x: 12, y: 3 } },
-        { role: "FIGHTER", at: { x: 12, y: 8 } },
-        { role: "GUARD", at: { x: 13, y: 8 } },
-        { role: "CAPTAIN", at: { x: 10, y: 4 }, home: 1 },
+        // Retune 3's six more nightmares and a second Necromancer; retune
+        // 4 keeps one of them.
         { role: "FIGHTER", at: { x: 9, y: 10 }, home: 2 },
-        { role: "GUARD", at: { x: 10, y: 11 }, home: 2 },
       ],
       reveal: { radius: 2, rects: [{ x0: 9, y0: 3, x1: 14, y1: 12 }] },
       // Nightmares learn nothing.
@@ -249,80 +264,29 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // The Palace keeps its watch (retune 3: six); the rest of the dead
+      // Retune 4: every nightmare keeps to its own ground (the Palace, the
+      // far gate, Grey Gumdrop and Sour Hollow) for five rounds; then the
+      // Palace keeps its watch of six (retune 3) and the rest of the dead
       // rush whatever they can reach, the gate's far end first.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 13, y0: 8, x1: 14, y1: 10 }],
-        garrison: 6,
-        others: { kind: "RUSH" },
-      },
-    },
-  ],
-  // The nightmare deepens: the dead rise round the far gate in rounds 4 and
-  // 13, by the Palace in rounds 7 and 15, and everywhere in round 10
-  // (retune 3: five announced waves).
-  reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      line: "The nightmare stirs: grey sweets rise round the far gate, waiting.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 5 } },
-        { role: "GUARD", at: { x: 13, y: 5 } },
-        { role: "FIGHTER", at: { x: 11, y: 6 } },
-        { role: "FIGHTER", at: { x: 12, y: 6 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 7,
-      line: "The Palace's old guard climbs out of the carpet, one stiff step at a time.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 13, y: 11 } },
-        { role: "GUARD", at: { x: 12, y: 12 } },
-        { role: "CATAPULT", at: { x: 13, y: 12 } },
-        { role: "FIGHTER", at: { x: 12, y: 10 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 10,
-      line: "The whole dream turns over in its sleep, and the dead roll out of bed.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 8 } },
-        { role: "FIGHTER", at: { x: 10, y: 9 } },
-        { role: "GUARD", at: { x: 12, y: 7 } },
-        { role: "CATAPULT", at: { x: 11, y: 7 } },
-        { role: "CAPTAIN", at: { x: 11, y: 4 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 13,
-      line: "Another watch at the far gate, with a Lich who has read the Queen's mail.",
-      announce: true,
-      units: [
-        { role: "CATAPULT", at: { x: 12, y: 5 } },
-        { role: "GUARD", at: { x: 13, y: 5 } },
-        { role: "FIGHTER", at: { x: 11, y: 6 } },
-        { role: "FIGHTER", at: { x: 12, y: 4 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 15,
-      line: "The Palace empties its cellars: there is no more dream to hold back.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 13, y: 11 } },
-        { role: "GUARD", at: { x: 12, y: 12 } },
-        { role: "CATAPULT", at: { x: 13, y: 12 } },
-        { role: "FIGHTER", at: { x: 12, y: 10 } },
-        { role: "GUARD", at: { x: 11, y: 11 } },
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 13, y0: 8, x1: 14, y1: 10 },
+            { x0: 12, y0: 2, x1: 14, y1: 4 },
+            { x0: 9, y0: 2, x1: 11, y1: 5 },
+            { x0: 9, y0: 10, x1: 12, y1: 12 },
+          ],
+          garrison: 10,
+          untilRound: 6,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 13, y0: 8, x1: 14, y1: 10 }],
+          garrison: 6,
+          others: { kind: "RUSH" },
+          fromRound: 6,
+        },
       ],
     },
   ],
@@ -335,17 +299,17 @@ export const CANDY_5_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Praline beside the Dreaming Palace by round 16 (the saga's 24: the
-  // thoughtful win came in round 14; retune 3). The stars: by round 13, and
-  // Madame Nougat lives.
+  // Praline beside the Dreaming Palace by round 18 (the saga's 24: the
+  // thoughtful win came in round 14; retune 3: 16). The stars: by round 14,
+  // and Madame Nougat lives.
   objective: {
     kind: "ESCORT",
     unit: "PRALINE",
     to: "DREAMING_PALACE",
     within: 1,
-    byRound: 16,
+    byRound: 18,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 13 },
+      { kind: "WITHIN_ROUNDS", rounds: 14 },
       { kind: "UNIT_ALIVE", unit: "NOUGAT" },
     ],
   },

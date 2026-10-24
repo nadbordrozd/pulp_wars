@@ -53,13 +53,23 @@ import type { MissionDefinitionV7 } from "./types";
  * squadron has two more patrol boats and a Submarine, holds its anchorage
  * until round 8 and then sails on Gumdrop, with three announced waves of
  * ships in rounds 5, 9 and 13. The clock is 14 (was 18).
+ *
+ * The fourth retune (`pulp_wars-hmyk.32`, CAMPAIGN.md section 21.5,
+ * hand-played): the same two towns, a Guard and two Tugs (one back),
+ * Shorecraft, Navigation and Sugar Sails, 6 Coins. The Sovereign has two
+ * patrol boats, a Submarine and the fort's Guard, and no Coins; she holds
+ * the anchorage until round 8 and then sails north on Sugarcrest, into the
+ * open lake. No waves. The clock is 16 (the stars: 12).
  */
 export const CANDY_3_V7: MissionDefinitionV7 = {
   id: "CANDY_3",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a thin start against
   // a bigger squadron that sails out in round 8.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.32`, the fourth retune): a second Tug and
+  // 6 Coins back, one patrol boat fewer, the leash until round 10, no
+  // waves.
+  revision: 4,
   seed: 20261803,
   // <map>
   size: 16,
@@ -162,8 +172,8 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      // Retune 3: 4 Coins (was 10).
-      coins: 4,
+      // Retune 4: 6 Coins (retune 3: 4; was 10).
+      coins: 6,
       // Gumdrop Tugs, Navigation and Sugar Sails (a ship may Sugar Rush
       // afloat, and Tugs ram); Pie Galleons and Choco Subs are a research
       // away. Hand play: with three Tugs three Rushed rams sank the
@@ -190,16 +200,17 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
       ],
       units: [
         { role: "GUARD", at: { x: 7, y: 6 } },
-        // One Tug, out of the Sovereign's reach (retune 3: was two, and a
-        // Fighter).
+        // Two Tugs, out of the Sovereign's reach (retune 4: the second
+        // back; retune 3 had one, the first version two and a Fighter).
         { role: "PATROL_BOAT", at: { x: 6, y: 7 }, home: 1 },
+        { role: "PATROL_BOAT", at: { x: 5, y: 6 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 8, x1: 6, y1: 13 }] },
     },
     {
       // The Crown's lake squadron, out of the Outflow fort.
       faction: "ORIGINAL",
-      coins: 4,
+      coins: 0,
       // The squadron's own technologies, but no Shipyard: the Sovereign
       // stays the only Battleship.
       technologies: ["SHORECRAFT", "NAVIGATION", "SEAMANSHIP", "SUBMERSIBLES"],
@@ -212,10 +223,9 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
         { role: "BATTLESHIP", at: { x: 4, y: 11 }, tag: "SOVEREIGN" },
         { role: "PATROL_BOAT", at: { x: 6, y: 11 } },
         { role: "SUBMARINE", at: { x: 4, y: 12 } },
-        // Retune 3: two more patrol boats and a second Submarine.
+        // Retune 3's two more patrol boats and a second Submarine; retune
+        // 4 keeps one patrol boat.
         { role: "PATROL_BOAT", at: { x: 5, y: 12 } },
-        { role: "PATROL_BOAT", at: { x: 3, y: 12 } },
-        { role: "SUBMARINE", at: { x: 6, y: 12 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 5, x1: 8, y1: 13 }] },
       // A squadron, not an army: no new trees.
@@ -244,8 +254,9 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
       ],
       // The squadron keeps to its anchorage off the Outflow (E7): hand
       // play without the leash had the Sovereign sail out in round 1 and
-      // shell every boat the kingdom launched. Retune 3: until round 8; then
-      // the whole squadron sails on Gumdrop.
+      // shell every boat the kingdom launched. Retune 4: until round 8; then
+      // the whole squadron sails on Sugarcrest (retune 3: on Gumdrop, which
+      // the Sovereign shells from the anchorage without leaving it).
       directive: [
         {
           kind: "HOLD",
@@ -253,54 +264,19 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
           ships: true,
           untilRound: 8,
         },
-        { kind: "ASSAULT", target: { x: 8, y: 10 }, fromRound: 8 },
-      ],
-    },
-  ],
-  // Retune 3: the Crown's squadron is reinforced three times.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 5,
-      line: "Two more of the Crown's patrol boats slip into the anchorage.",
-      announce: true,
-      units: [
-        { role: "PATROL_BOAT", at: { x: 5, y: 12 } },
-        { role: "PATROL_BOAT", at: { x: 7, y: 12 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 9,
-      line: "A Choco Sub's worth of Crown submarines surfaces off the fort.",
-      announce: true,
-      units: [
-        { role: "SUBMARINE", at: { x: 4, y: 12 } },
-        { role: "SUBMARINE", at: { x: 6, y: 12 } },
-        { role: "PATROL_BOAT", at: { x: 3, y: 12 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 13,
-      line: "The Commissioner sends everything that floats. It is a long list.",
-      announce: true,
-      units: [
-        { role: "PATROL_BOAT", at: { x: 5, y: 12 } },
-        { role: "PATROL_BOAT", at: { x: 6, y: 12 } },
-        { role: "PATROL_BOAT", at: { x: 7, y: 12 } },
-        { role: "SUBMARINE", at: { x: 4, y: 12 } },
+        { kind: "ASSAULT", target: { x: 7, y: 6 }, fromRound: 8 },
       ],
     },
   ],
   landmarks: [],
   forbiddenTechnologies: [],
-  // Sink the Sovereign by round 14 (the saga's 22: the thoughtful win
-  // came in round 8; retune 3). The stars: by round 10, and no city lost.
+  // Sink the Sovereign by round 16 (the saga's 22: the thoughtful win
+  // came in round 8; retune 3: 14). The stars: by round 12, and no city
+  // lost.
   objective: {
     kind: "KILL",
     units: ["SOVEREIGN"],
-    byRound: 14,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 10 }, { kind: "KEEP_CITIES" }],
+    byRound: 16,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
   },
 };
