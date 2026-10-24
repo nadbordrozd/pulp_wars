@@ -5362,6 +5362,62 @@ reached the Colossus); worth a rule look or a mission check. If M6 proves
 lax for first-time players, its hunt can go back to 14 (star 11) rather
 than adding men. M1's Colossus has no path off Saucer Field's shore.
 
+### 18.6 M5 retune (`pulp_wars-hmyk.36`)
+
+The user, 2026-10-24, playing the retune-4 campaign: "the level of
+difficulty is now much nicer. Except mission 5 which is way too easy,
+there is no peril at all. partly because goblins are weak match for
+martians. they get one shotted from distance. if you gave them brutes and
+more cities and more aggression it would be fairer." Only `MARTIAN_5`
+changed (revision 5, re-pinned in both pin tables); your start, the Lodge's
+hall and the absence of waves are retune 4's.
+
+| What             | Retune 4 (revision 4)                            | Now (revision 5)                                                                                                                                                         |
+| ---------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Redcaps' towns   | Snuffer's Camp and Redcap Hollow, level 1        | four: Grubber's Den (new, on the village by the road to Red Dust) and Redcap Hollow at level 2, Snuffer's Camp and Muckmire (new, on the marsh village) at level 1       |
+| Redcaps' units   | eight: six Goblins, two Bomb Chuckers            | fifteen: an Orc Brute on every centre and one more (five), four Ogres, an Orc Warboss, a Wolf Rider, three Bomb Chuckers and one Goblin                                  |
+| Redcaps' economy | 0 Coins, Hunting and Marksmanship                | 5 Coins and about 6 a turn, Hunting, Marksmanship and Drill (fortified centres); Fortification stays forbidden, so they train Bomb Chuckers and Goblins, not Brutes      |
+| Directive        | `RUSH`                                           | `RUSH` (they strike from round 1: the first Chucker bombs the Tripod that night, and Ogres with the Warboss's Gang Up killed the Mothership in one turn in two attempts) |
+| You              | Red Dust level 2, nine units, seven technologies | unchanged, but Climbing (Engineering, with Metallurgy after it) is forbidden                                                                                             |
+| Clock (star)     | capture by 20 (14)                               | capture by 18 (13): about one and a half times the hand-played wins (rounds 11 and 12)                                                                                   |
+
+**Hand play** (`play-text`; the autopilot of section 15 on the final
+definition: defeat, eliminated in round 8; retune 4's was out of time in
+round 21).
+
+| Version                                                                                                             | Attempts                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1: the four towns and fourteen Redcaps above, 6 Coins, Drill and Fortification                                     | three losses (abandoned in rounds 8, 7 and 6): the Redcaps' first night killed the Tripod and both guns (Wolf Rider and Ogre Gang Up) in one attempt; then every town trained two Orc Brutes a turn (Fortification, +8 income), eighteen Redcaps by round 7, a wall of fortified Brutes on the road, three Brains lost; Candlewick was never in reach. Ease: no Brute training                                                      |
+| v2: 3 Coins, no Fortification, the Goblin at Snuffer's a Brute                                                      | win, round 9 of 20, 3 stars (the Mothership killed in round 3 by the Warboss and an Ogre, two Saucers lost): a Brain beamed beside Grubber's Den took its centre Brute, which captured it in round 4; with Climbing researched, a Saucer beamed a climbing Brain onto the bare mountain beside the hall's centre and it took the Idol Bearer there in round 8. That mountain is a hole the ring can never fill: strengthen the hall |
+| v3: the Lodge with Climbing and two more men on the mountains                                                       | dropped untried: Climbing gave the Lodge Mines, Candlewick reached level 5 by round 3 and stood a Thing in the Cellar on its centre (a Brain would take the giant), and the AI walked the two men off the mountains                                                                                                                                                                                                                 |
+| v4: v2's Lodge, Climbing forbidden to you                                                                           | win, round 12 of 20, 3 stars, narrowly: the Mothership (round 4, two Ogres on the village by Red Dust), a Brain, a Grunt, the Tripod, a Saucer and the borrowed Brute lost; the first Brain beamed into a gap the Hexers left was frogged and killed, which freed the centre's Idol Bearer; a second Brain trained at Grubber's Den took it in round 11 through another gap                                                         |
+| v5 FINAL: v4 with a fourth Ogre at Snuffer's and 5 Coins (the Mothership is about to get tougher, `pulp_wars-ewpj`) | win, round 11 of 20 (55%), 3 stars, a real fight: seven units lost, three of them Brains (frogged and killed in the gap, one more to a Goblin's Gang Up, and one on Grubber's Den's centre to an Ogre that then stood there), the two borrowed Redcaps, a Grunt and a Saucer (to a star-fall); the fourth Brain, beamed into a gap left when the Lodge pushed out east, took the Idol Bearer and it captured in round 11            |
+
+What decides it: the Redcaps now hit back. Bomb Chuckers (range 2,
+splash) kill Saucers and Brains at the edge of their reach, Ogres and the
+Warboss gang up for 10 to 16 on whatever stands beside two of them (the
+Mothership twice), and an Orc Brute on a fortified centre takes three or
+four shots. The way in is still the hint: take a centre's Brute with a
+Brain (Grubber's Den gives you a town with free slots and a centre to lift
+Brains from), then wait for the Hexers and Initiates to leave a gap in the
+hall's ring and beam a Brain into it. A Hexer frogs the Brain beside the
+centre (Defense 0.5), and a dead Brain frees the Idol Bearer, so a win
+needs more than one Brain.
+
+Deviations: every attempt after the first replayed the first rounds known
+from earlier versions; the user is the stronger player and the Mothership
+redesign (`pulp_wars-ewpj`, ruleset 7r108) will make your start stronger,
+hence the fourth Ogre after v4's narrow win. The v4 and final wins took 60
+and 55 per cent of the old clock; the clock is 18 rather than 1.5 times a
+faster human win, to stay lax.
+
+**Follow-ups.** Replay M5 once `pulp_wars-ewpj` lands (a Mass Beam Down
+that drops three units beside the hall may need a fuller ring or a
+stronger Redcap start). Choosing the free Saucer (Scouts) at a level-up
+displaces and kills the unit standing on the city's centre (M5 starts with
+a Grunt on Red Dust's centre and the free Muster monument offers Scouts in
+round 1); worth a rule look or a warning in the reward choice.
+
 ## 19. The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`)
 
 The third tier-2 faction campaign, after the Martians (section 18): six

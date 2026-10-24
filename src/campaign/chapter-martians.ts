@@ -102,10 +102,10 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Candlewick is a quiet town of candle-makers on the mountain's slope that has thrown out Steele's reeve and started lighting very large candles. In its meeting hall stands the Lodge's orrery, a brass machine that shows when the stars will be right. The Grey Lodge has hired Redcaps to guard it, with orders to melt it down if anyone comes. Take Candlewick first, before the Redcaps arrive in force.",
-      objective: "Take Candlewick by turn 20.",
+      objective: "Take Candlewick by turn 18.",
       hints: Object.freeze([
+        "Redcaps gang up: keep the Mothership out of their reach.",
         "A marked star falls next turn: get out from under it.",
-        "Beside an idol you may hit only the Idol Bearer.",
         "A Brain beside the centre can take whoever stands on it.",
       ]),
       closing:

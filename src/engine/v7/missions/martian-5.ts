@@ -25,6 +25,15 @@ import type { MissionDefinitionV7 } from "./types";
  * no waves come, and the clock is 20 (retune 3: a skirmish start against
  * twelve in the hall, fifteen Redcaps, six waves and a 15-round clock).
  *
+ * Revision 5 (`pulp_wars-hmyk.36`, hand-played; CAMPAIGN.md section 18.6),
+ * after the user found retune 4's Redcaps no peril ("they get one shotted
+ * from distance"): the Redcaps hold four towns (Grubber's Den on the road
+ * to Red Dust and Muckmire in the marsh added, Grubber's Den and the Hollow
+ * at level 2) with fifteen Redcaps: five Orc Brutes (one on every centre),
+ * four Ogres, a Warboss, a Wolf Rider, three Bomb Chuckers and one Goblin,
+ * 5 Coins, no Fortification (no Brute training), and they rush Red Dust
+ * from round 1; you cannot research Climbing; the clock is 18.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   ~~~~f.vf^v.^.~~~      v: villages
@@ -34,7 +43,8 @@ import type { MissionDefinitionV7 } from "./types";
  *    5   ~v..v^^f^.....f~
  *    6   ~.ffff..^......~
  *    7   ~.f.f$.f.f..ff.~      $: a treasure chest
- *    8   ~v.^vf.S..H..v.~      S: Snuffer's Camp   H: Redcap Hollow
+ *    8   ~v.^Mf.S..H..G.~      S: Snuffer's Camp   H: Redcap Hollow
+ *                              G: Grubber's Den    M: Muckmire
  *    9   ~f..fff........~
  *   10   ~..xxx.........~      x: a Rift
  *   11   ~ff.......vf...~
@@ -52,7 +62,10 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
   // Revision 4 (`pulp_wars-hmyk.28`, retune 4): the strike force at home,
   // two villages back, the hall's ring of eight, eight Redcaps, no waves
   // and a 20-round clock.
-  revision: 4,
+  // Revision 5 (`pulp_wars-hmyk.36`): four Redcap towns with Brutes, Ogres
+  // and a Warboss rushing from round 1, no Climbing for you, and an
+  // 18-round clock.
+  revision: 5,
   seed: 20261605,
   // <map>
   size: 16,
@@ -67,6 +80,10 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 9, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 7, y: 8 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 8 }, present: false },
+      // Revision 5 (`pulp_wars-hmyk.36`): two more Redcap towns, on the
+      // villages east of the Hollow and west of Snuffer's Camp.
+      { kind: "VILLAGE", at: { x: 13, y: 8 }, present: false },
+      { kind: "VILLAGE", at: { x: 4, y: 8 }, present: false },
       { kind: "CHEST", at: { x: 9, y: 6 }, present: false },
       // Retune 3: the village south of Red Dust (retune 4 gives back the
       // two toward Candlewick).
@@ -129,14 +146,12 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
   ],
   villages: [
-    { x: 13, y: 8 },
     { x: 10, y: 11 },
     { x: 6, y: 1 },
     { x: 9, y: 1 },
     { x: 1, y: 5 },
     { x: 4, y: 5 },
     { x: 1, y: 8 },
-    { x: 4, y: 8 },
   ],
   treasureChests: [{ x: 5, y: 7 }],
   // </map>
@@ -188,6 +203,10 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         radius: 1,
         rects: [{ x0: 8, y0: 3, x1: 10, y1: 5 }],
       },
+      // Revision 5 (`pulp_wars-hmyk.36`): no Climbing (hand play: a Saucer
+      // beamed a climbing Brain onto the bare mountain beside the hall's
+      // centre and it took the centre in round 8, past the whole ring).
+      forbiddenTechnologies: ["ENGINEERING", "METALLURGY"],
     },
     {
       // The Grey Lodge in Candlewick, with the orrery.
@@ -256,12 +275,15 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
     {
       // The Redcaps, hired to keep the road.
       faction: "GOBLIN",
-      // Retune 3: fifteen Redcaps with Scouting, Raiding, Drill and Walls
-      // (retune 4: eight, no Coins, Hunting and Marksmanship only; hand
-      // play, with Drill and two Orc Brutes they broke every strike force
-      // on the road).
-      coins: 0,
-      technologies: ["HUNTING", "MARKSMANSHIP"],
+      // Retune 3: fifteen Redcaps with Scouting, Raiding, Drill and Walls;
+      // retune 4: eight Goblins and Bomb Chuckers, no Coins. Revision 5
+      // (`pulp_wars-hmyk.36`, the user: "goblins are weak match for
+      // martians. they get one shotted from distance"): four towns, Orc
+      // Brutes on every centre, Ogres and a Warboss, and Coins to train Bomb
+      // Chuckers (hand play: with Fortification and 6 Coins they trained
+      // two Brutes a turn and walled the road in every attempt).
+      coins: 5,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL"],
       cities: [
         {
           name: "Snuffer's Camp",
@@ -269,17 +291,38 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
           level: 1,
           rewards: [],
         },
-        { name: "Redcap Hollow", at: { x: 10, y: 8 }, level: 1, rewards: [] },
+        {
+          name: "Redcap Hollow",
+          at: { x: 10, y: 8 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        // Revision 5: the forward camp on the road to Red Dust.
+        {
+          name: "Grubber's Den",
+          at: { x: 13, y: 8 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        // Revision 5: the marsh camp behind Snuffer's.
+        { name: "Muckmire", at: { x: 4, y: 8 }, level: 1, rewards: [] },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 7, y: 8 } },
-        { role: "FIGHTER", at: { x: 6, y: 8 } },
-        { role: "FIGHTER", at: { x: 8, y: 9 } },
+        { role: "GUARD", at: { x: 7, y: 8 } },
+        { role: "GUARD", at: { x: 6, y: 8 } },
+        { role: "SWORDSMAN", at: { x: 8, y: 9 } },
+        { role: "SWORDSMAN", at: { x: 8, y: 8 } },
         { role: "MARKSMAN", at: { x: 7, y: 9 } },
-        { role: "FIGHTER", at: { x: 10, y: 8 }, home: 1 },
-        { role: "FIGHTER", at: { x: 11, y: 8 }, home: 1 },
-        { role: "FIGHTER", at: { x: 10, y: 9 }, home: 1 },
+        { role: "GUARD", at: { x: 10, y: 8 }, home: 1 },
+        { role: "SWORDSMAN", at: { x: 11, y: 8 }, home: 1 },
+        { role: "CAPTAIN", at: { x: 10, y: 9 }, home: 1 },
         { role: "MARKSMAN", at: { x: 9, y: 8 }, home: 1 },
+        { role: "GUARD", at: { x: 13, y: 8 }, home: 2 },
+        { role: "SWORDSMAN", at: { x: 12, y: 9 }, home: 2 },
+        { role: "RAIDER", at: { x: 14, y: 8 }, home: 2 },
+        { role: "MARKSMAN", at: { x: 13, y: 7 }, home: 2 },
+        { role: "GUARD", at: { x: 4, y: 8 }, home: 3 },
+        { role: "FIGHTER", at: { x: 4, y: 9 }, home: 3 },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 6, x1: 14, y1: 13 }] },
       // The Redcaps go for Red Dust at once.
@@ -298,7 +341,6 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         "COMMERCE",
         "RAIDING",
         "CHIVALRY",
-        "DRILL",
         "ENGINEERING",
         "METALLURGY",
         "FORTIFICATION",
@@ -314,12 +356,13 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "CANDLEWICK", at: { x: 9, y: 4 } }],
-  // Take Candlewick by round 20 (the saga's 22; retune 3: 15). The stars:
-  // by round 14, and no city lost.
+  // Take Candlewick by round 18 (the saga's 22; retune 3: 15; retune 4: 20;
+  // revision 5's hand-played wins came in rounds 11 and 12). The stars: by
+  // round 13, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["CANDLEWICK"],
-    byRound: 20,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 18,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
   },
 };

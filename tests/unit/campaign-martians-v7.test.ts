@@ -139,9 +139,11 @@ describe("Signal from Home", () => {
         rounds: 16,
         bonus: ["KEEP_CITIES", "HOLD_PLACE"],
       },
+      // M5's revision 5 (`pulp_wars-hmyk.36`): 18, about one and a half
+      // times its hand-played wins (rounds 11 and 12).
       {
         kind: "CAPTURE",
-        byRound: 20,
+        byRound: 18,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -261,21 +263,54 @@ describe("Signal from Home", () => {
         seat(id, 0).units.some((unit) => unit.role === "RAIDER"),
         id,
       ).toBe(true);
-    // M5: eight Redcaps without Drill or Walls rush Red Dust (with them
-    // and two Orc Brutes no strike force got up the road).
-    const redcaps = seat("MARTIAN_5", 2);
-    expect(redcaps.units).toHaveLength(8);
-    for (const tech of ["DRILL", "FORTIFICATION"])
-      expect(redcaps.forbiddenTechnologies, tech).toContain(tech);
     for (const [id, revision] of [
       ["MARTIAN_1", 4],
       ["MARTIAN_2", 3],
       ["MARTIAN_3", 4],
       ["MARTIAN_4", 3],
-      ["MARTIAN_5", 4],
+      ["MARTIAN_5", 5],
       ["MARTIAN_6", 3],
     ] as const)
       expect(mission(id).revision, id).toBe(revision);
+  });
+
+  it("gives M5's Redcaps towns and units that survive ranged fire (pulp_wars-hmyk.36)", () => {
+    // CAMPAIGN.md section 18.6: retune 4's eight Goblins and Bomb Chuckers
+    // were no peril ("they get one shotted from distance").
+    const definition = mission("MARTIAN_5");
+    const redcaps = definition.seats[2] as MissionDefinitionV7["seats"][number];
+    expect(redcaps.faction).toBe("GOBLIN");
+    expect(redcaps.directive).toEqual({ kind: "RUSH" });
+    expect(redcaps.cities).toHaveLength(4);
+    expect(
+      redcaps.cities.filter((city) => city.level === 2).length,
+    ).toBeGreaterThanOrEqual(2);
+    // An Orc Brute on every Redcap centre, Ogres and a Warboss behind.
+    for (const city of redcaps.cities)
+      expect(
+        redcaps.units.find(
+          (unit) => unit.at.x === city.at.x && unit.at.y === city.at.y,
+        )?.role,
+        city.name,
+      ).toBe("GUARD");
+    const count = (role: string) =>
+      redcaps.units.filter((unit) => unit.role === role).length;
+    expect(count("SWORDSMAN")).toBeGreaterThanOrEqual(3);
+    expect(count("CAPTAIN")).toBe(1);
+    expect(count("FIGHTER")).toBeLessThanOrEqual(1);
+    // Coins to keep training, but no Brute factory (with Fortification
+    // they walled the road with two new Brutes a turn).
+    expect(redcaps.coins).toBeGreaterThan(0);
+    expect(redcaps.technologies).not.toContain("FORTIFICATION");
+    expect(redcaps.forbiddenTechnologies).toContain("FORTIFICATION");
+    // No Climbing: a Brain on the bare mountain beside the hall's centre
+    // took it past the whole ring.
+    for (const tech of ["ENGINEERING", "METALLURGY"])
+      expect(definition.seats[0]?.forbiddenTechnologies, tech).toContain(tech);
+    expect(definition.objective).toMatchObject({
+      kind: "CAPTURE",
+      byRound: 18,
+    });
   });
 
   it("names every place and unit an objective talks about", () => {
