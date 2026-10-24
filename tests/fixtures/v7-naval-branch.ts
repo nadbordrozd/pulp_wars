@@ -104,6 +104,12 @@ export interface NavalArenaOptionsV7 {
    */
   readonly resources?: readonly string[];
   readonly improvements?: readonly MissionImprovementV7[];
+  /**
+   * The border freeze (`pulp_wars-5ti.31`): per seat, its capital at level
+   * 3 (Survey and Walls taken) so that it may take a Land Grant; level 2 by
+   * default.
+   */
+  readonly levelThree?: readonly [boolean, boolean];
 }
 
 /** The bystander seat's capital ({@link NavalArenaOptionsV7.third}). */
@@ -142,7 +148,13 @@ export function navalArenaV7(options: NavalArenaOptionsV7): GameStateV7 {
     // Level 2: a Port with Harbours gives 2 population, more than a
     // level-1 city holds.
     cities: [
-      { at: NAVAL_ARENA_CAPITALS_V7[index], level: 2, rewards: ["SURVEY"] },
+      options.levelThree?.[index] === true
+        ? {
+            at: NAVAL_ARENA_CAPITALS_V7[index],
+            level: 3,
+            rewards: ["SURVEY", "WALLS"],
+          }
+        : { at: NAVAL_ARENA_CAPITALS_V7[index], level: 2, rewards: ["SURVEY"] },
     ],
     units: [
       { role: "FIGHTER", at: NAVAL_ARENA_CAPITALS_V7[index] },

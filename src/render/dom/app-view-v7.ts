@@ -688,6 +688,7 @@ import {
   FREEZE_PICK_V7,
   FREEZE_RING_TOOLTIP_V7,
   FREEZE_SHALLOW_UNLOCK_V7,
+  ICE_LAND_GRANT_UNLOCK_V7,
   GLACIER_MOVE_LABEL_V7,
   ICEBOUND_BLOCKED_V7,
   ICEBOUND_LABEL_V7,
@@ -19153,7 +19154,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r108",
+    rulesetId: "pulp-wars-poc-7r109",
     seed,
     width,
     height: width,
@@ -19321,11 +19322,16 @@ function effectDescription(
                     : // The frozen sea redesign (bead pulp_wars-5ti.27).
                       effect.command === "BUILD_FISHING_HOLE"
                       ? "Build Fishing Hole"
-                      : // The Dinosaur pass, correction: a faction's own
-                        // building under its own name ("Build Chopping Block").
-                        factionBuildCommandV7(effect.command, faction) === null
-                        ? title(effect.command)
-                        : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
+                      : // The border freeze (`pulp_wars-5ti.31`).
+                        effect.command === "LAND_GRANT" &&
+                          faction === "ICE_FOLK"
+                        ? ICE_LAND_GRANT_UNLOCK_V7
+                        : // The Dinosaur pass, correction: a faction's own
+                          // building under its own name ("Build Chopping Block").
+                          factionBuildCommandV7(effect.command, faction) ===
+                            null
+                          ? title(effect.command)
+                          : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
       // Themed naval branches (`pulp_wars-5ti.16`): the faction's own boats.
       return navalRamUnlockTextV7(faction);

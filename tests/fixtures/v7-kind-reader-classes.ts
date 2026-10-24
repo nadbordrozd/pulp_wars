@@ -198,6 +198,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // as in the engine's `iceBuildableV7`), and only it buys growth with a
   // Fishing Hole.
   "src/ai/v7-frozen-sea.ts::iceBuildSiteV7": "SEAT",
+  // `pulp_wars-5ti.31`: the border freeze is the seat's own research.
+  "src/ai/v7-frozen-sea.ts::landGrantIceTilesV7": "SEAT",
   "src/ai/v7.ts::armyGrowthKindsV7": "SEAT",
   "src/ai/v7-martian.ts::martianMatchForPolicyV7": "SEAT",
   "src/ai/v7-martian.ts::martianFactsV7": "SEAT",
@@ -706,6 +708,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // reducer's placement checks and the public query read the seat.
   "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "SEAT",
   "src/engine/v7/ice.ts::iceIsThickV7": "SEAT",
+  // The border freeze (`pulp_wars-5ti.31`): a seat freezes its own
+  // territory by its own research, on a grant, a capture, or a research.
+  "src/engine/v7/ice.ts::territoryFreezeV7": "SEAT",
+  "src/engine/v7/reducer.ts::applyResearch": "SEAT",
   "src/engine/v7/query.ts::appendPublicTileCommandsV7": "SEAT",
   "src/engine/v7/query.ts::publicTileCommandLegal": "SEAT",
   "src/engine/v7/reducer.ts::applyBasic": "SEAT",

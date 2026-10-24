@@ -1693,10 +1693,11 @@ function validPayload(
       );
     case "WATER_FROZEN":
       // The frozen sea (section 8.4): at least one tile, in (y, x) order;
-      // the newly icebound units in unit-ID order, never the actor.
+      // the newly icebound units in unit-ID order, never the actor. The
+      // border freeze (`pulp_wars-5ti.31`): `unitId` null, no unit froze.
       return (
         id(e.playerId) &&
-        id(e.unitId) &&
+        (e.unitId === null || id(e.unitId)) &&
         sortedCoords(e.tiles) &&
         (e.tiles as readonly unknown[]).length > 0 &&
         ascendingIds(e.icebound) &&

@@ -602,7 +602,7 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     ).toEqual(["Rime", "Pack Ice", "Icebound", "Black Ice", "Glacier"]);
     const rime = lines("shorecraft");
     expect(rime).toContain(
-      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it",
+      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it; the water inside your borders freezes now and whenever they grow",
     );
     expect(rime).toContain("The Ice Folk build no ships");
     expect(rime.join(" ")).not.toMatch(/embark|Patrol Boat/i);
@@ -616,6 +616,10 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     expect(lines("seamanship")).toEqual([
       "Black Ice: an enemy that steps onto your ice is Frozen",
     ]);
+    // The border freeze (`pulp_wars-5ti.31`): the Ice Folk Land Grant.
+    expect(lines("planning")).toContain(
+      "Land Grant: with Rime, the water inside the city's borders, old and new, freezes",
+    );
     const glacier = lines("submersibles");
     expect(glacier).toContain(
       "Glacier: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover and +1 Move across it",

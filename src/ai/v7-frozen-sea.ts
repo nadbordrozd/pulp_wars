@@ -299,6 +299,48 @@ export function iceSeaSeatV7(view: PlayerViewV7): boolean {
   );
 }
 
+/**
+ * The border freeze (`pulp_wars-5ti.31`): the water a Land Grant of the
+ * viewer's city at `cityAt` would freeze: the explored water of the city's
+ * 5 x 5 footprint that is its territory or neutral (the grant claims it)
+ * and is not the viewer's own sound ice, Shallow, or Deep with Pack Ice.
+ * Each such tile is new ground for a Fishing Hole or a mill. 0 for a seat
+ * without Rime, so no other seat's grant is valued differently. A
+ * planning estimate: it does not test ships or other seats' ice.
+ */
+export function landGrantIceTilesV7(
+  view: PlayerViewV7,
+  cityId: number,
+  cityAt: CoordV7,
+): number {
+  const freezeWater = technologyCapabilitiesV7(
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  ).freezeWater;
+  if (freezeWater === "NONE") return 0;
+  let count = 0;
+  for (let y = cityAt.y - 2; y <= cityAt.y + 2; y += 1)
+    for (let x = cityAt.x - 2; x <= cityAt.x + 2; x += 1) {
+      const tile = exploredTile(view, { x, y });
+      if (tile === undefined) continue;
+      if (
+        tile.terrain !== "SHALLOW_WATER" &&
+        !(tile.terrain === "DEEP_WATER" && freezeWater === "DEEP")
+      )
+        continue;
+      if (
+        tile.territoryCityId !== cityId &&
+        !(tile.territoryCityId === null && tile.territoryOwnerId === null)
+      )
+        continue;
+      const ice = iceAtV7(view, tile.at);
+      if (ice !== undefined && ice.ownerId === view.viewer.id && !ice.cracked)
+        continue;
+      count += 1;
+    }
+  return count;
+}
+
 interface CrossingV7 {
   readonly tiles: readonly CoordV7[];
   readonly head: CoordV7;

@@ -1172,7 +1172,11 @@ export type DomainEventV7 =
        */
       readonly kind: "WATER_FROZEN";
       readonly playerId: PlayerId;
-      /** Null only in a projection to a viewer that cannot see the unit. */
+      /**
+       * Null in a projection to a viewer that cannot see the unit, and in
+       * a border freeze (`pulp_wars-5ti.31`: a Land Grant, a capture, or a
+       * research froze the water of a city's territory; no unit did).
+       */
       readonly unitId: UnitId | null;
       readonly tiles: readonly CoordV7[];
       readonly icebound: readonly UnitId[];

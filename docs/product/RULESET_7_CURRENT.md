@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r108`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r109`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,24 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r109` (`pulp_wars-5ti.31`; the user, 2026-10-24: "when
+doing land grant and city boundaries expand any water within city
+boundaries (including water within the original boundaries) should get
+covered with ice IF you have the relevant technology") adds **the border
+freeze** for the Ice Folk ([section 21.16](#2116-the-frozen-sea)): with
+Rime, a **Land Grant** of an Ice Folk city freezes every freezable water
+tile of the city's whole territory, the old footprint's included; so does
+a **capture** (a village captured into a city, or a city taken) for that
+city's territory; and a **research** that widens what the seat freezes
+(Rime, Pack Ice, Icebound) freezes the territory of every own city. Each
+tile follows the Freeze table on its own (Deep Water needs Pack Ice, a
+hostile ship is locked in only with Icebound, another seat's ice is
+taken, own cracks are mended, an own dock becomes an Ice Harbour). The
+event is one `WATER_FROZEN` with `unitId` null. City levels grow no
+borders, so they freeze nothing. The Normal AI values an Ice Folk Land
+Grant more for the water it freezes. A save, replay, or setup of `7r108`
+is rejected, and the browser autosave has a new key. Boards are
+unchanged.
 `pulp-wars-poc-7r108` (`pulp_wars-ewpj`; the user, 2026-10-24: "the
 mothership unit is lame and doesn't have a purpose ... its supposed to be
 in the same class as knight and vampire") redesigns the **Mothership** as
@@ -1636,10 +1654,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r108`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r109`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r108.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r109.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4504,6 +4522,11 @@ land`, 3 with at least `300 + 3 × land` (`land` the board's tiles that
   offer depends on hidden cells. `queryLandGrantPreviewV7(view, cityId)`
   returns the exact cost and the explored cells of an offered grant; the
   city panel button shows the cost, and `LAND_GRANTED.cost` records it.
+- **Ice Folk border freeze** (`pulp_wars-5ti.31`, `7r109`): with Rime, a
+  Land Grant of an Ice Folk city freezes every freezable water tile of the
+  city's whole territory, the old footprint's included, and so does a
+  capture for the city taken
+  ([section 21.16](#2116-the-frozen-sea), the border freeze).
 - Capture transfers the city's exact current footprint with everything on it.
 
 ### 4.2 Population, growth, and levels
@@ -5368,24 +5391,24 @@ movement of ships, and Naval Engineering's `NAVAL_TRAINING_DISCOUNT`, which
 its tree keeps and which does nothing). The Ice Folk unlocks that read
 differently from the Human table are:
 
-| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                |
-| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Administration    | same          | Ice Witch (Blizzard, Cold Snap, Frost Bolt); Market; Disband                                                                    |
-| Sawmilling        | same          | Sawmill; Boulder Yeti (ignores Walls and Field Defense)                                                                         |
-| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                        |
-| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                          |
-| Scouting          | same          | Sled (Bolas); Sled Sight 2                                                                                                      |
-| Raiding           | same          | Pillage; Sled Charge                                                                                                            |
-| Chivalry          | same          | Sabretooth (Prowl); Cultivate Forest                                                                                            |
-| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                    |
-| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                               |
-| Fortification     | Deep Winter   | Musk Ox (Frostbite; `7r56`); Snow spreads two tiles from your city centers; Recover heals 6 in your territory                   |
-| Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                 |
-| Shorecraft        | Rime          | Harvest Fish; Build Port; Freeze Shallow Water; your units slide on ice; no Patrol Boat and no embarking                        |
-| Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea links may cross Deep Water                                                                |
-| Naval Engineering | Icebound      | Freeze locks hostile ships in the ice, which crushes them for 3 a turn; Shipyard (no Battleship; the training discount is dead) |
-| Seamanship        | Black Ice     | hostile land units on your ice are Frozen at the start of your turn                                                             |
-| Submersibles      | Glacier       | your ice lasts 5 turns instead of 3; your units on ice have Snow cover (× 1.25); Harbours                                       |
+| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                                                |
+| ----------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Administration    | same          | Ice Witch (Blizzard, Cold Snap, Frost Bolt); Market; Disband                                                                                                    |
+| Sawmilling        | same          | Sawmill; Boulder Yeti (ignores Walls and Field Defense)                                                                                                         |
+| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                                                        |
+| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                          |
+| Scouting          | same          | Sled (Bolas); Sled Sight 2                                                                                                                                      |
+| Raiding           | same          | Pillage; Sled Charge                                                                                                                                            |
+| Chivalry          | same          | Sabretooth (Prowl); Cultivate Forest                                                                                                                            |
+| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                    |
+| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                               |
+| Fortification     | Deep Winter   | Musk Ox (Frostbite; `7r56`); Snow spreads two tiles from your city centers; Recover heals 6 in your territory                                                   |
+| Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                 |
+| Shorecraft        | Rime          | Harvest Fish; Build Port; Freeze Shallow Water; the water in your borders freezes (the border freeze); your units slide on ice; no Patrol Boat and no embarking |
+| Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea links may cross Deep Water                                                                                                |
+| Naval Engineering | Icebound      | Freeze locks hostile ships in the ice, which crushes them for 3 a turn; Shipyard (no Battleship; the training discount is dead)                                 |
+| Seamanship        | Black Ice     | hostile land units on your ice are Frozen at the start of your turn                                                                                             |
+| Submersibles      | Glacier       | your ice lasts 5 turns instead of 3; your units on ice have Snow cover (× 1.25); Harbours                                                                       |
 
 The Dwarf tree (`DWARF_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -8902,7 +8925,8 @@ Harbours from it.
   every viewer with the tiles it has explored (before or after the command)
   and the units it owns or can see, and are dropped when no tile is left;
   `WATER_FROZEN.unitId` is null for a viewer that cannot see the Freezing
-  unit and does not own it. `UNITS_CRUSHED` is projected like Plague
+  unit and does not own it, and for every viewer of a border freeze
+  (`7r109`, no unit froze). `UNITS_CRUSHED` is projected like Plague
   damage: the results of units the viewer owns or could see. The Ram, the
   torpedo, Board, and Freeze previews are exact (every tile and unit they
   read is visible to the actor), and so are slides and slips on explored
@@ -13331,19 +13355,20 @@ the deep sea, **Black Ice** freezes an enemy that steps onto the ice,
 thick enough to take two Cracks. In a match without an Ice Folk seat
 nothing here happens: the `ice` list is always empty.
 
-| Rule      | One sentence                                                                                                                      |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Freeze    | A unit turns the water next to it to ice, two tiles out in a line; the Witch freezes every tile around her.                       |
-| Ice stays | Ice never melts; it is gone only when someone cracks it.                                                                          |
-| Slide     | An Ice Folk unit that steps onto ice slides straight on until the ice ends, a unit blocks it, or an enemy's zone of control.      |
-| Runners   | A Sled's slide is not stopped by zones of control.                                                                                |
-| Slip      | Any other unit may walk onto ice, but its Move ends there.                                                                        |
-| Crack Ice | Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.        |
-| Build     | The Ice Folk build their Ice Harbour, Fishing Holes, mills, Workshop, Market and Monument on their own ice.                       |
-| No ships  | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                        |
-| Black Ice | An enemy that steps onto your ice is Frozen.                                                                                      |
-| Icebound  | Freeze a ship in place: it cannot sail, shoot, or strike back, and the ice crushes it for 3 each turn until it sinks or is freed. |
-| Glacier   | Your ice is thick: others must Crack Ice twice to break it, and your Freeze mends a crack; Snow cover and +1 Move across it.      |
+| Rule       | One sentence                                                                                                                      |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Freeze     | A unit turns the water next to it to ice, two tiles out in a line; the Witch freezes every tile around her.                       |
+| Ice stays  | Ice never melts; it is gone only when someone cracks it.                                                                          |
+| Border ice | With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.                                  |
+| Slide      | An Ice Folk unit that steps onto ice slides straight on until the ice ends, a unit blocks it, or an enemy's zone of control.      |
+| Runners    | A Sled's slide is not stopped by zones of control.                                                                                |
+| Slip       | Any other unit may walk onto ice, but its Move ends there.                                                                        |
+| Crack Ice  | Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.        |
+| Build      | The Ice Folk build their Ice Harbour, Fishing Holes, mills, Workshop, Market and Monument on their own ice.                       |
+| No ships   | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                        |
+| Black Ice  | An enemy that steps onto your ice is Frozen.                                                                                      |
+| Icebound   | Freeze a ship in place: it cannot sail, shoot, or strike back, and the ice crushes it for 3 each turn until it sinks or is freed. |
+| Glacier    | Your ice is thick: others must Crack Ice twice to break it, and your Freeze mends a crack; Snow cover and +1 Move across it.      |
 
 **Ice tiles.**
 
@@ -13380,6 +13405,33 @@ nothing here happens: the `ice` list is always empty.
   tile's entry goes: `ICE_MELTED { tiles, freed }`, kept for this one
   use), its cracks are gone (an eliminated owner has no thick ice), and
   the rest breaks with one Crack.
+- **The border freeze** (`pulp_wars-5ti.31`, `7r109`; the user,
+  2026-10-24: "when doing land grant and city boundaries expand any water
+  within city boundaries (including water within the original boundaries)
+  should get covered with ice IF you have the relevant technology"). When
+  an Ice Folk city's borders grow, every tile of **that city's whole
+  territory** goes through the Freeze table below on its own, with the
+  seat's own `freezeWater` and `icebound` (`territoryFreezeV7`): open
+  water with no unit (an own dock too, which becomes an Ice Harbour) is
+  made ice; with Icebound a hostile ship on it is locked in; another
+  player's ice is taken; own cracked ice is mended; own sound ice, an
+  unexplored tile, Deep Water without Pack Ice, the Sea Serpent's tile,
+  and a tile holding any other afloat unit are left. There is no line, no
+  ring, and no stop. The triggers: a **Land Grant** of the city, a
+  **capture** (a village captured into a city, or a city taken; after the
+  former owner's ice there passed), and a **research** that changes the
+  seat's `freezeWater` or `icebound` (Rime, Pack Ice, Icebound), which
+  freezes the territory of every own city. City levels never grow borders
+  in this ruleset. A seat without Rime, and every seat of another
+  faction, freezes nothing. The result is one `WATER_FROZEN` with
+  `unitId` null (no unit froze; projected like any `WATER_FROZEN`), right
+  after `LAND_GRANTED` and its `TILES_REVEALED`, after the capture's
+  `TILES_REVEALED`, or after `TECH_RESEARCHED`, and the live economy is
+  recomputed as the command does anyway. No unit acts, nothing is
+  charged, and Black Ice is not triggered (no unit stepped on). Tiles in
+  other seats' borders are never touched. The Normal AI values an Ice
+  Folk Land Grant two more for each water tile it would freeze
+  (`landGrantIceTilesV7`).
 - **Ground for land-form units.** For a land-form unit of every faction and
   movement mode an ice tile is ground (`canEnterTerrainV7`), whatever the
   depth and without Navigation or Engineering: it may be the end of a
@@ -13661,8 +13713,8 @@ it; Glacier's thick ice), not immunity.
 | Push, Knockback, pulls | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never; an icebound unit never moves; none of it triggers Black Ice.                                                                                                                     |
 | Embarking, landing     | A transport may land on adjacent ice (Black Ice freezes the crew). A unit of the Ice Folk kind never embarks; nothing embarks at a dock on ice.                                                                                                                          |
 | Blockade, sea links    | Hostile docks never freeze; a dock on ice is blockaded by land units only; sea links run under ice.                                                                                                                                                                      |
-| Capture, elimination   | The former owner's ice in the captured city's territory passes to the captor, uncracked; an eliminated seat's ice stays, its icebound ships float free, and its cracks are gone.                                                                                         |
-| Land Grant             | Claims ice tiles as it claims water; their owner does not change.                                                                                                                                                                                                        |
+| Capture, elimination   | The former owner's ice in the captured city's territory passes to the captor, uncracked (an Ice Folk captor with Rime then freezes that territory: the border freeze); an eliminated seat's ice stays, its icebound ships float free, and its cracks are gone.           |
+| Land Grant             | Claims ice tiles as it claims water; with Rime an Ice Folk grant then freezes the city's whole territory (the border freeze: another seat's ice there is taken), otherwise their owner does not change.                                                                  |
 | Map generation         | Unchanged; faction choice never affects any draw.                                                                                                                                                                                                                        |
 
 **Worked examples** (full HP unless stated):

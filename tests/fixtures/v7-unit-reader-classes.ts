@@ -972,6 +972,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // freezes the unit that stepped on; Crack Ice and its preview read who
     // stands on the ice; an Ice Harbour on open water needs no unit there.
     "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "BOARD",
+    // The border freeze (`pulp_wars-5ti.31`): the units afloat on a
+    // territory's water; nothing burrowed is ever on water.
+    "src/engine/v7/ice.ts::territoryFreezeV7": "BOARD",
     "src/engine/v7/reducer.ts::withBlackIceResultV7": "BOARD",
     "src/engine/v7/query.ts::publicCrackIceTargetsV7": "BOARD",
     "src/engine/v7/query.ts::previewCrackIceV7": "BOARD",

@@ -68,6 +68,8 @@ export interface FrozenArenaOptionsV7 {
    * more) by default.
    */
   readonly coins?: readonly [number, number];
+  /** The border freeze (`pulp_wars-5ti.31`): passed to the arena. */
+  readonly levelThree?: NavalArenaOptionsV7["levelThree"];
 }
 
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = [
@@ -113,6 +115,9 @@ export function frozenArenaV7(options: FrozenArenaOptionsV7): GameStateV7 {
     ...(options.improvements === undefined
       ? {}
       : { improvements: options.improvements }),
+    ...(options.levelThree === undefined
+      ? {}
+      : { levelThree: options.levelThree }),
   });
   const moved = new Map(
     parked.map(({ from, to }) => [navalUnitAtV7(base, from).id, to] as const),

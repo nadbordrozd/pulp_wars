@@ -78,8 +78,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r109");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r109.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -139,10 +139,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-43)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-44)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(107);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(108);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],

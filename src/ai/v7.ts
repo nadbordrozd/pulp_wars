@@ -623,6 +623,7 @@ import {
   iceTargetBonusV7,
   iceboundCrewLandingV7,
   iceRouteStepCostV7,
+  landGrantIceTilesV7,
   type FrozenSeaToolsV7,
   type IcePlanV7,
 } from "./v7-frozen-sea";
@@ -15003,9 +15004,13 @@ function scoreCommandWithContext(
               Math.abs(tile.at.x - city.at.x) <= 2 &&
               Math.abs(tile.at.y - city.at.y) <= 2,
           ).length;
-    priority = neutral >= 4 ? 1170 : 720;
+    // The border freeze (`pulp_wars-5ti.31`): with Rime an Ice Folk grant
+    // freezes the city's water, old and new: two a tile of new ground.
+    const iced =
+      city === undefined ? 0 : landGrantIceTilesV7(view, city.id, city.at);
+    priority = neutral + iced >= 4 ? 1170 : 720;
     immediateValue = -6;
-    strategicValue = neutral * 3;
+    strategicValue = neutral * 3 + iced * 2;
   }
 
   if (command.kind === "ATTACK") {

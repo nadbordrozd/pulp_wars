@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-93, -53)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r109");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r109.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-94, -54)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -209,8 +209,9 @@ describe("ruleset-7 prior identities", () => {
     // and is cleared): 7r106. No pointless actions (`pulp_wars-zir6`: an
     // ability is never used where it would change nothing): 7r107. The
     // Mothership redesign (`pulp_wars-ewpj`: Mass Beam Down and the Shield
-    // Canopy): 7r108.
-    expect(revision).toBe(108);
+    // Canopy): 7r108. The Ice Folk border freeze (`pulp_wars-5ti.31`: with
+    // Rime, a grown territory's water freezes): 7r109.
+    expect(revision).toBe(109);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -245,7 +246,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r109", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r110", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

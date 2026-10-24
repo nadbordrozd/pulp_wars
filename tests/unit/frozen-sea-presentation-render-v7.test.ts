@@ -1001,6 +1001,8 @@ describe("frozen-sea words", () => {
       // The frozen sea redesign (bead pulp_wars-5ti.27): the ice stays,
       // other factions crack it, the Ice Folk build on it.
       "Ice stays",
+      // The border freeze (`pulp_wars-5ti.31`).
+      "Border ice",
       "Crack Ice",
       "Build",
       "No ships",

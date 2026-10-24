@@ -117,6 +117,8 @@ import {
   releaseEliminatedIceV7,
   resolveBlackIceOnEntryV7,
   resolveIceCrushV7,
+  territoryFreezeV7,
+  territoryFrozenEventsV7,
   unitCracksIceV7,
   unitFreezesRingV7,
   withFrozenV7,
@@ -2395,13 +2397,30 @@ function applyResearch(
           ? state.curiosities
           : state.curiosities.filter((curiosity) => curiosity !== notes),
     };
+    // The border freeze (`pulp_wars-5ti.31`): a technology that widens what
+    // the seat freezes (Rime, Pack Ice, Icebound) freezes the water of every
+    // own city's territory at once, as a Land Grant would.
+    const before = technologyCapabilitiesV7(
+      player.researchedTechs,
+      player.faction,
+    );
+    const after = technologyCapabilitiesV7(researchedTechs, player.faction);
+    const freeze =
+      before.freezeWater !== after.freezeWater ||
+      before.icebound !== after.icebound
+        ? territoryFreezeV7(researched, actor, null)
+        : null;
+    const iced: GameStateV7 =
+      freeze === null || freeze.ice === researched.ice
+        ? researched
+        : { ...researched, ice: freeze.ice };
     const recalculation = recomputeLiveEconomyV7(
-      researched,
-      researched,
-      researched.populationContributions,
+      iced,
+      iced,
+      iced.populationContributions,
     );
     const staged: GameStateV7 = {
-      ...researched,
+      ...iced,
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
     };
@@ -2418,6 +2437,7 @@ function applyResearch(
               at: notes.at,
             },
           ]),
+      ...(freeze === null ? [] : territoryFrozenEventsV7(actor, freeze.frozen)),
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
       ...achievements.events,
@@ -5473,21 +5493,31 @@ function applyLandGrant(
           }
         : candidate,
     );
+    const players = setExplored(
+      debit(state.players, actor, cost),
+      actor,
+      [...player.explored, ...revealed].sort(compareCoords),
+    );
+    // The border freeze (`pulp_wars-5ti.31`): with Rime, every water tile
+    // of the city's grown territory, old and new, freezes as by a Freeze.
+    const freeze = territoryFreezeV7(
+      { ...state, board, cities, players },
+      actor,
+      new Set([city.id]),
+    );
+    const iced: GameStateV7 =
+      freeze.ice === state.ice ? state : { ...state, ice: freeze.ice };
     const recalculation = recomputeLiveEconomyV7(
-      state,
+      iced,
       { board, cities },
       state.populationContributions,
     );
     const staged: GameStateV7 = {
-      ...state,
+      ...iced,
       board,
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
-      players: setExplored(
-        debit(state.players, actor, cost),
-        actor,
-        [...player.explored, ...revealed].sort(compareCoords),
-      ),
+      players,
       commandIndex: nextSafe(state.commandIndex),
     };
     const settlement = settleCityRewardsV7(staged, actor);
@@ -5509,6 +5539,7 @@ function applyLandGrant(
             },
           ]
         : []),
+      ...territoryFrozenEventsV7(actor, freeze.frozen),
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
       ...achievements.events,
@@ -8599,7 +8630,6 @@ function applyCapture(
         iceEvents.push(...release.events);
       }
     }
-    const iceState: GameStateV7 = ice === state.ice ? state : { ...state, ice };
     const events: DomainEventV7[] = [
       {
         kind: "CITY_CAPTURED",
@@ -8634,6 +8664,17 @@ function applyCapture(
         tiles: reveal.revealed,
       });
     }
+    // The border freeze (`pulp_wars-5ti.31`): with Rime, the water of the
+    // territory the captor gains (a village's new city, a city taken)
+    // freezes as by a Freeze, after the former owner's ice there passed.
+    const freeze = territoryFreezeV7(
+      { ...state, ice, board, cities, units, players },
+      actor,
+      new Set([captured.id]),
+    );
+    ice = freeze.ice;
+    events.push(...territoryFrozenEventsV7(actor, freeze.frozen));
+    const iceState: GameStateV7 = ice === state.ice ? state : { ...state, ice };
     const recalc = recomputeLiveEconomyV7(
       iceState,
       { board, cities, units },

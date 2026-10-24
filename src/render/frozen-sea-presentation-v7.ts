@@ -57,6 +57,10 @@ export const NO_SHIPS_RULE_V7 =
 export const BLACK_ICE_RULE_V7 = "An enemy that steps onto your ice is Frozen.";
 export const ICEBOUND_RULE_V7 = `Freeze a ship in place: it cannot sail, shoot or strike back, and the ice crushes it for ${ICE_CRUSH_DAMAGE_V7} each turn.`;
 export const GLACIER_RULE_V7 = `Your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack. Your units on it have cover, and a Move of yours across ice gets +${GLACIER_ICE_MOVE_BONUS_V7} Move.`;
+/** The border freeze (`pulp_wars-5ti.31`). */
+export const BORDER_ICE_LABEL_V7 = "Border ice";
+export const BORDER_ICE_RULE_V7 =
+  "With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.";
 export const CRACK_ICE_LABEL_V7 = "Crack Ice";
 export const CRACK_ICE_RULE_V7 =
   "Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.";
@@ -68,6 +72,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [FREEZE_LABEL_V7, FREEZE_RULE_V7],
   [SLIDE_LABEL_V7, SLIDE_RULE_V7],
   ["Ice stays", ICE_STAYS_RULE_V7],
+  [BORDER_ICE_LABEL_V7, BORDER_ICE_RULE_V7],
   [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],
   ["Build", ICE_BUILD_RULE_V7],
   ["No ships", NO_SHIPS_RULE_V7],
@@ -83,7 +88,10 @@ export const ICE_FOR_SHIPS_HELP_V7: readonly [string, string] = [
 ];
 
 /** The technology card's lines (no trailing full stop, as its other lines). */
-export const FREEZE_SHALLOW_UNLOCK_V7 = `${FREEZE_LABEL_V7}: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it`;
+export const FREEZE_SHALLOW_UNLOCK_V7 = `${FREEZE_LABEL_V7}: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it; the water inside your borders freezes now and whenever they grow`;
+/** The border freeze (`pulp_wars-5ti.31`): the Ice Folk Land Grant line. */
+export const ICE_LAND_GRANT_UNLOCK_V7 =
+  "Land Grant: with Rime, the water inside the city's borders, old and new, freezes";
 export const FREEZE_DEEP_UNLOCK_V7 = `${FREEZE_LABEL_V7}: Deep Water freezes too`;
 export const ICEBOUND_UNLOCK_V7 = `${ICEBOUND_LABEL_V7}: Freeze locks an enemy ship in; it cannot sail, shoot or strike back, and takes ${ICE_CRUSH_DAMAGE_V7} each turn`;
 export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: an enemy that steps onto your ice is Frozen`;

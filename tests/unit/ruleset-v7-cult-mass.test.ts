@@ -158,13 +158,13 @@ describe("the Gibbering Mass: the identity (7r91)", () => {
   // (`pulp_wars-5ti.16`) took 7r92 after it, the Undead Drowned Fleet
   // (`pulp_wars-5ti.17`) 7r93.
   it("was 7r91 after 7r90, both save keys obsolete now, a 7r90 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r108");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r108.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-18, -16)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r109");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r109.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-19, -17)).toEqual([
       "pulp-wars-poc-7r90",
       "pulp-wars-poc-7r91",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-18, -16)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-19, -17)).toEqual([
       "pulpWars.save.v7r90.current",
       "pulpWars.save.v7r91.current",
     ]);
