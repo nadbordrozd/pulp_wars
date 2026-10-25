@@ -85,12 +85,12 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       name: "The Inside Job",
       format: "CAPTURE",
       briefing:
-        "Port Kessler's vault sits under the harbour behind walls no goblin has ever climbed. But on the hill above the town stands the Baron's Moon Gun, a circus cannon built to fire a man at the moon, and Snikkit has done the sums. Take the Moon Gun, fire the crew over the walls, and have the vault before the garrison and the island's angry natives work out what is going on. Bring sacks.",
-      objective: "Take Port Kessler by turn 20.",
+        "Port Kessler's vault sits under its harbour on the far shore, behind walls no goblin has ever climbed. But on the hill above the town stands the Baron's Moon Gun, a circus cannon built to fire a man at the moon, and Snikkit has done the sums. March across, take the Moon Gun, fire the crew over the walls, and have the vault before the garrison and the angry natives catch on. Bring sacks.",
+      objective: "Take Port Kessler by turn 32.",
       hints: Object.freeze([
         "The Moon Gun fires a unit to any empty tile within 5.",
         "With Explosives an Orc Brute's hit ignores Walls.",
-        "The tribes storm Egg Rock from turn 4: hold the beach.",
+        "Tribes storm Egg Rock from turn 4; Tarpit is halfway.",
       ]),
       closing:
         "The vault is full: gold, silver, the good cutlery, and a long iron crate marked 'bell-tongue'. The Baron escapes into the jungle with his hat and his debts and nothing else. The crate hums.",

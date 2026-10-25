@@ -133,7 +133,8 @@ describe("The Big Score", () => {
     // The fourth retune (`pulp_wars-hmyk.29`, CAMPAIGN.md section 19.5):
     // the conquests and captures get a lax clock (about one and a half
     // times a good win); the hunt and the escort keep a meaningful one; the
-    // hold-out keeps its length.
+    // hold-out keeps its length. G4's port is across the island since
+    // `pulp_wars-hmyk.38` (section 19.6), so its clock is longer.
     expect(summary).toEqual([
       {
         kind: "DOMINATION",
@@ -148,8 +149,8 @@ describe("The Big Score", () => {
       { kind: "KILL", byRound: 15, bonus: ["WITHIN_ROUNDS 11", "KEEP_CITIES"] },
       {
         kind: "CAPTURE",
-        byRound: 20,
-        bonus: ["WITHIN_ROUNDS 15", "UNIT_ALIVE"],
+        byRound: 32,
+        bonus: ["WITHIN_ROUNDS 24", "UNIT_ALIVE"],
       },
       {
         kind: "SURVIVE",
@@ -231,12 +232,46 @@ describe("The Big Score", () => {
       x1: 15,
       y1: 15,
     });
-    // G4: the Moon Gun on the hill above the neck; nine men at the port,
-    // seven of them on the headland; no ships; the tribes storm Egg Rock;
-    // no waves.
+    // G4 (`pulp_wars-hmyk.38`): Port Kessler ten tiles from Egg Rock across
+    // the island, the Moon Gun on the hill above it, the Lost Expedition
+    // and a Gold Claim on the way; ten men at the port, seven of them on
+    // its shore; no ships; the tribes storm Egg Rock; no waves.
     const g4 = mission("GOBLIN_4");
-    expect(g4.curiosities).toEqual([{ kind: "MOON_GUN", at: { x: 2, y: 1 } }]);
-    expect(seat("GOBLIN_4", 1).units).toHaveLength(9);
+    expect(g4.source?.mapType).toBe("PANGEA");
+    const landing = seat("GOBLIN_4", 0).cities[0]?.at;
+    const port = g4.landmarks?.[0]?.at;
+    if (landing === undefined || port === undefined) throw new Error("G4");
+    expect(
+      Math.max(Math.abs(landing.x - port.x), Math.abs(landing.y - port.y)),
+    ).toBeGreaterThanOrEqual(10);
+    expect(g4.curiosities).toEqual([
+      { kind: "MOON_GUN", at: { x: 8, y: 10 } },
+      { kind: "GOLD_CLAIM", at: { x: 9, y: 4 } },
+      { kind: "LOST_EXPEDITION", at: { x: 2, y: 7 } },
+    ]);
+    expect(seat("GOBLIN_4", 1).units).toHaveLength(10);
+    // Every village is on the crew's island, over land from Egg Rock
+    // (retune 4's "returned" village was across water with no ships).
+    const reached = new Set([`${String(landing.x)},${String(landing.y)}`]);
+    const queue = [landing];
+    for (let next = queue.shift(); next !== undefined; next = queue.shift())
+      for (let dy = -1; dy <= 1; dy += 1)
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const x = next.x + dx;
+          const y = next.y + dy;
+          const terrain = g4.terrain[y]?.[x];
+          const key = `${String(x)},${String(y)}`;
+          if (terrain === undefined || "~x".includes(terrain)) continue;
+          if (reached.has(key)) continue;
+          reached.add(key);
+          queue.push({ x, y });
+        }
+    for (const village of g4.villages)
+      expect(
+        reached.has(`${String(village.x)},${String(village.y)}`),
+        `${String(village.x)},${String(village.y)}`,
+      ).toBe(true);
+    expect(reached.has(`${String(port.x)},${String(port.y)}`)).toBe(true);
     expect(seat("GOBLIN_4", 1).directive).toEqual([
       expect.objectContaining({ kind: "GUARD", garrison: 7, untilRound: 4 }),
       expect.objectContaining({
@@ -247,7 +282,7 @@ describe("The Big Score", () => {
     ]);
     expect(seat("GOBLIN_4", 2).directive).toEqual([
       { kind: "NORMAL", untilRound: 4 },
-      { kind: "ASSAULT", target: { x: 6, y: 2 } },
+      { kind: "ASSAULT", target: { x: 3, y: 3 } },
     ]);
     expect(g4.forbiddenTechnologies).toContain("SHORECRAFT");
     expect(g4.reinforcements ?? []).toEqual([]);

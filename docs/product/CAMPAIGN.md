@@ -5849,6 +5849,80 @@ off Tarpit's centre, which it had taken by a kill; that looks wrong for a
 hostile unit and needs a look at the rules. G6 is sensitive to the
 Lodge's placement: three holders on the pass let the autopilot through.
 
+### 19.6 G4 across the island (`pulp_wars-hmyk.38`)
+
+The user, 2026-10-25: "mission 4 of goblin campaign is about taking a city
+that is right next to yours. so I won it fairly quickly and didn't even
+explore 20% of the map. it all played out in a tiny neighbourhood. put the
+target a bit further away". On the Archipelago board Egg Rock, Tarpit and
+Port Kessler shared one 7 × 7 island with no ships, three tiles from
+landing to port. So G4 moved to a new board and is revision 5, re-pinned
+(it has no pre-curiosity pin). This supersedes section 19.5's G4 row and
+its note on the returned village.
+
+- **The board** is Pangea 16, seed 7, three seats. It is one island with
+  open plains in the north-west, hills and mountains in the south-west, a
+  Rift and forests in the east. Five village edits: Fernhollow's village,
+  the two others in the tribes' woods and the two by the port go. The
+  seven left are all on the crew's island and reachable over land, with
+  four of them in the crew's half (the campaign test walks the land from
+  Egg Rock to every village and the port).
+- **The layout.** Egg Rock is on the north-western shore at 3,3. Port
+  Kessler is on the far south-eastern shore at 12,13, ten tiles away
+  (Chebyshev, 19 steps), where it used to be three. Tarpit, the tribes'
+  camp, is in the middle at 7,8, five tiles from each. Fernhollow, their
+  home, is in the eastern woods at 12,5. The Moon Gun stands four tiles
+  from the port at 8,10, beside Tarpit. Two new mission curiosities mark
+  the march: a Lost Expedition in the western hills (2,7, a free
+  technology) and a Gold Claim in the middle (9,4). The port's tiles are
+  in the crew's reveal, so the objective is on the map from round 1. The
+  port and the tribes know Egg Rock, so their `RUSH` and `ASSAULT` have a
+  target.
+- **The forces** keep retune 4's character. The crew has Snikkit, the
+  Ogre, a Chucker, a Brute, seven technologies and 5 Coins. The port has
+  ten men: seven guard its shore and three stand on the road north and
+  march from round 4. It keeps 6 Coins and its forbidden list. The tribes
+  have Fernhollow (level 2) and Tarpit (level 1), seven men and 5 Coins,
+  and assault Egg Rock from round 4. Enemies 17 to 4; no waves.
+- **The clock** is 32 (it was 20) and the star is round 24 (it was 15).
+
+**Hand play** (`play-text`, authorised). The autopilot lost in round 10,
+eliminated by the tribes (in round 8 under `7r114`).
+
+- **Attempt a: won in round 28** of the then 30, with 2 stars: Snikkit
+  lived and the speed star was missed. It explored 159 of 256 tiles
+  (Explorer unlocked in round 19). It was played under `7r113`, and its
+  log replays on the final definition under that ruleset (round 28, 2
+  stars). Under `7r114` (reward units take the centre) the log diverges
+  in round 2, where the Militia now appears.
+  - Rounds 1-10: fruit and the Militia, then Dregmuk and Fizzgob.
+    Explosives came free from the Lost Expedition in round 5, and Ratchug
+    and Hobnok followed. The tribes came at once. Raptors killed the Ogre
+    at the tribes' new village in the north in round 6, and two
+    Ankylosaurs and a stream of hatchlings fought the crew's Brutes in
+    the north and at Tarpit for ten rounds.
+  - Tarpit fell in round 17, once its walled Ankylosaur stepped off.
+    Meanwhile the port's three had taken the villages by the port and
+    fought the tribes. Its Guards then stood fortified on the Moon Gun and
+    the road.
+  - Rocket Carts (Sawmilling, round 21) turned it: a Cart deals 12 to 16
+    to a Guard, which is open to ranged fire. Kestrow, the port's village,
+    was taken in round 24. A Brute was fired from the Moon Gun into the
+    forest beside the port in round 25.
+  - In round 27 a Cart killed the Guard that had stepped off the centre,
+    and a Brute with Gang Up 3 killed the fresh Fighter on it and
+    advanced. Port Kessler was captured in round 28, two rounds before the
+    clock.
+- **Attempt b: abandoned in round 14**, behind attempt a. Tarpit was taken
+  in round 12 (five rounds sooner), but early pushes lost the Ogre and
+  four Brutes. Dregmuk fell to the tribes' Raptors, and the crew had 9
+  units to attempt a's 19.
+
+A narrow first-try win in round 28 of 30 and a second attempt going worse
+put the fight where retune 4 wants it. The win came on the clock's last
+turns, so the clock went from 30 to 32: a good win (about round 21) is
+then about two-thirds of it, and the speed star is round 24.
+
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 
 The fourth tier-2 faction campaign, after the Goblins (section 19): six
