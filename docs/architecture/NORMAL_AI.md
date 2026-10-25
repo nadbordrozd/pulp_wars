@@ -6452,6 +6452,54 @@ and the overseas invasion plan (`pulp_wars-9s0.14`, built since: see the
 are not touched: nothing here changes when a unit boards or lands, except
 that it no longer boards or sails into a Battleship's or Submarine's reach.
 
+### Naval AI iteration 1 (`pulp_wars-6t3e`)
+
+**Status: measured by hand play and a small diagnostic set, by the user's
+authorisation for this bead.** The user wins almost every game started on
+a continent apart from the AI. Two hand games (Humans against a Goblin AI,
+Continents 14 x 14, seed 11) and ten AI-against-AI matches on separate
+continents (Continents seeds 1 to 7 with Humans against Goblins or
+Dinosaurs, Archipelago seeds 1 to 3 with Humans against Undead, 14 x 14, 30
+rounds, no curiosities) found three failures. All changes are policy only;
+no rule and no identity changed.
+
+| Failure                                                                                                                                                                                                                                     | Fix                                                                                                                                                                                                                                                                                                                                | Where                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Half of all embarked units (163 of 322) were sunk afloat, 16 on the turn they boarded. Only Battleships and Submarines were feared; Patrol Boats killed 74 and shore units most of the rest. Afloat a unit has Defense 1 and never answers. | A transport Move, or a boarding, is refused where the visible danger to the unit afloat is at least half its HP (`NAVAL_TRANSPORT_EXPOSED_TENTHS_V7` 5), unless it lands from there this turn, an own warship stands on or next to the tile and the danger is not lethal, or it is already exposed and the tile is less dangerous. | `navalTransportExposedV7`, `navalTransportExposedMoveV7` (`navalRejectsV7`) |
+| The warships sailed for any hostile unit afloat in sight, so the transports crossed alone.                                                                                                                                                  | While own transports are afloat, the fleet sails for them and for the hostile units afloat within `NAVAL_ESCORT_HUNT_RADIUS_V7` (4) of one; a blockader on an own dock still comes first.                                                                                                                                          | `navalFleetGoalsV7` (`fleetDistanceByKey`)                                  |
+| An overseas unit boarded at the Port nearest itself: Goblin waves boarded on the far coast of their continent and sailed eight turns round it.                                                                                              | Of the Ports that serve the landing coast, a unit boards only at those whose trip (two half-turns a tile walked, one a tile sailed) is within `NAVAL_PORT_TRIP_SLACK_V7` (2) of the quickest.                                                                                                                                      | `navalQuickestPortsV7` (`navalBoardingPortsV7`)                             |
+
+**Before and after**, the ten matches (20 seats):
+
+| Measure                                     | Before | After |
+| ------------------------------------------- | -----: | ----: |
+| Units embarked                              |    322 |   297 |
+| Sunk afloat                                 |    163 |    81 |
+| Sunk on the turn they boarded               |     16 |     0 |
+| Landings on another landmass                |     96 |   114 |
+| Landings with no other landing near in time |     43 |    34 |
+| Hostile cities captured across water        |     12 |    15 |
+| Matches ended by elimination (of 10)        |      1 |     2 |
+
+In hand play (the same opening for 14 rounds) the AI before boarded a
+Wolf Rider at a Port beside the player's Patrol Boat, drifted its
+transports along the player's coast, and lost seven units afloat in five
+turns; after, it held its units ashore until its Fire Rafts had sunk the
+Patrol Boat, then crossed with escorts. Both games lost the player a city
+in round 29; by then the player's score counted 35 kill points and 18 loss
+points before and 23 and 31 after.
+
+Proven on the authored strait in
+`tests/unit/ruleset-v7-naval-ai-iteration1.test.ts`.
+
+**Next (iteration 2).** A transport sees one tile, so it still sails
+beside a garrison it cannot see (a rule that kept every transport off a
+hostile shore until it landed cut landings to 74 and was dropped); the
+landing coast is the few tiles nearest the target, so a wave drifts along
+it when they are held; one Patrol Boat per transport and the Patrol Boat
+at priority 1290 under any visible hostile afloat unit still train about
+ten ships a seat in 30 rounds, half of them lost.
+
 ### The frozen sea (`pulp_wars-5ti.5`)
 
 [Overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5).

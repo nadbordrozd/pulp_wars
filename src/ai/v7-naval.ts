@@ -1176,6 +1176,141 @@ export function navalTransportMoveRejectedV7(
 }
 
 /**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): a transport is exposed on a tile
+ * where the visible hostile units can take at least this share of its HP
+ * (as tenths) in their next turn. A unit afloat has Defense 1 and strikes
+ * nothing back, so half its HP lost at sea lands it beaten or not at all.
+ */
+export const NAVAL_TRANSPORT_EXPOSED_TENTHS_V7 = 5;
+
+/** The facts of one transport Move (or boarding) for the exposure rule. */
+export interface NavalTransportExposureV7 {
+  /** The unit's HP. */
+  readonly hp: number;
+  /** The visible danger to the unit afloat on the destination. */
+  readonly dangerAtTo: number;
+  /**
+   * The visible danger to the unit afloat where it stands now; null for a
+   * land unit that boards (it is not afloat yet).
+   */
+  readonly dangerHere: number | null;
+  /** An own warship stands on or next to the destination. */
+  readonly escorted: boolean;
+  /** The unit can still land on a planned landing tile from there this turn. */
+  readonly landsFromTo: boolean;
+}
+
+/**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): "do not sail a transport into
+ * the reach of whatever can sink or maul it". Hand play and diagnostic
+ * matches on separate continents found half of all embarked units sunk
+ * afloat: transports boarded at a Port beside a hostile Patrol Boat, and
+ * drifted along a defended coast next to land units that killed them one a
+ * turn. `navalTransportMoveRejectedV7` only feared Battleships and
+ * Submarines. A transport Move (or a boarding) is now refused when the
+ * visible danger on the destination is at least
+ * `NAVAL_TRANSPORT_EXPOSED_TENTHS_V7` tenths of the unit's HP, unless:
+ *
+ * - it lands from there this turn (the Move ends next to a free planned
+ *   landing tile with a landing still allowed): the beach is the goal;
+ * - an own warship stands on or next to the destination and the danger
+ *   there is not lethal: the escort strikes back and screens;
+ * - it is already exposed where it stands afloat and the destination is
+ *   less dangerous: it may always get away (hand play: a damaged Wolf Rider
+ *   "may always move" sailed from one exposed tile to another, beside two
+ *   Fighters, and died).
+ *
+ * So a wave waits out of reach for its escort or for the hunters to leave,
+ * and closes the coast only on the turn it lands.
+ */
+export function navalTransportExposedV7(
+  exposure: NavalTransportExposureV7,
+): boolean {
+  const exposed = (danger: number): boolean =>
+    danger * 10 >= exposure.hp * NAVAL_TRANSPORT_EXPOSED_TENTHS_V7;
+  if (!exposed(exposure.dangerAtTo)) return false;
+  if (exposure.landsFromTo) return false;
+  if (exposure.escorted && exposure.dangerAtTo < exposure.hp) return false;
+  if (
+    exposure.dangerHere !== null &&
+    exposed(exposure.dangerHere) &&
+    exposure.dangerAtTo < exposure.dangerHere
+  )
+    return false;
+  return true;
+}
+
+/**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): the radius round an own
+ * transport inside which a visible hostile unit afloat is the escort's
+ * quarry rather than the transport's company.
+ */
+export const NAVAL_ESCORT_HUNT_RADIUS_V7 = 4;
+
+/**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): where the warships sail
+ * (`fleetDistanceByKey`). A blockader on an own dock first; then, while
+ * own transports are afloat, the convoy: the transports themselves and
+ * every visible hostile unit afloat within `NAVAL_ESCORT_HUNT_RADIUS_V7`
+ * of one (the hunters that threaten it); otherwise every visible hostile
+ * unit afloat. Before, any hostile ship in sight anywhere drew the whole
+ * fleet away and the transports sailed alone. Empty when there is none of
+ * these (the caller then falls back on hostile Ports).
+ */
+export function navalFleetGoalsV7(input: {
+  readonly blockaders: readonly CoordV7[];
+  readonly ownTransports: readonly CoordV7[];
+  readonly hostileAfloat: readonly CoordV7[];
+}): CoordV7[] {
+  if (input.blockaders.length > 0) return [...input.blockaders];
+  if (input.ownTransports.length > 0)
+    return [
+      ...input.ownTransports,
+      ...input.hostileAfloat.filter((at) =>
+        input.ownTransports.some(
+          (own) => chebyshev(own, at) <= NAVAL_ESCORT_HUNT_RADIUS_V7,
+        ),
+      ),
+    ];
+  return [...input.hostileAfloat];
+}
+
+/**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): the slack, in half-turns, by
+ * which a Port's trip may exceed the quickest one and still be boarded at.
+ */
+export const NAVAL_PORT_TRIP_SLACK_V7 = 2;
+
+/**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): of the Ports an overseas
+ * capture unit may board at, those whose whole trip is about the quickest.
+ * A unit boarded at the Port nearest to itself, whatever water lay beyond
+ * it: Goblin waves boarded on the far coast of their continent and sailed
+ * eight turns round it, a Port on the near coast four tiles away. A trip
+ * is counted in half-turns: two for each tile walked to the Port (Move 1,
+ * the Chebyshev distance), one for each tile sailed from it to the landing
+ * coast (`water`; Move 2 afloat). A Port with no known route is kept only
+ * when no Port has one.
+ */
+export function navalQuickestPortsV7(
+  from: CoordV7,
+  ports: readonly CoordV7[],
+  water: (port: CoordV7) => number | undefined,
+): CoordV7[] {
+  const trips = ports.map((port) => {
+    const sail = water(port);
+    return sail === undefined ? undefined : 2 * chebyshev(from, port) + sail;
+  });
+  const known = trips.filter((trip): trip is number => trip !== undefined);
+  if (known.length === 0) return [...ports];
+  const best = Math.min(...known);
+  return ports.filter((_, index) => {
+    const trip = trips[index];
+    return trip !== undefined && trip <= best + NAVAL_PORT_TRIP_SLACK_V7;
+  });
+}
+
+/**
  * The landing discipline on one landmass (`pulp_wars-eru`): the way by sea
  * must be shorter than the walk by more than this many steps. It pays for
  * the turn spent boarding and the turn spent landing, and it keeps a unit

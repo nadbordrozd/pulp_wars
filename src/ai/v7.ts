@@ -651,6 +651,10 @@ import {
   deepOfferingTenthsV7,
   navalTorpedoReachV7,
   navalTransportMoveRejectedV7,
+  navalTransportExposedV7,
+  navalFleetGoalsV7,
+  navalQuickestPortsV7,
+  NAVAL_TRANSPORT_EXPOSED_TENTHS_V7,
   type NavalFleetFactsV7,
   type NavalToolsV7,
 } from "./v7-naval";
@@ -3223,18 +3227,17 @@ function* navalPlanWorkV7(
   const visibleHostileFleet = view.units
     .filter((unit) => isHostile(view, unit.ownerId) && isAfloatV7(unit))
     .map((unit) => unit.at);
-  const fleetGoals =
-    visibleBlockaders.length > 0
-      ? [...visibleBlockaders]
-      : [...visibleHostileFleet];
-  if (fleetGoals.length === 0)
-    fleetGoals.push(
-      ...view.units
-        .filter(
-          (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
-        )
-        .map((unit) => unit.at),
-    );
+  // Naval AI iteration 1 (`pulp_wars-6t3e`): the fleet escorts the own
+  // transports afloat and hunts what threatens them (`navalFleetGoalsV7`).
+  const fleetGoals = navalFleetGoalsV7({
+    blockaders: visibleBlockaders,
+    ownTransports: view.units
+      .filter(
+        (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
+      )
+      .map((unit) => unit.at),
+    hostileAfloat: visibleHostileFleet,
+  });
   if (fleetGoals.length === 0)
     fleetGoals.push(
       ...view.board.tiles.flatMap((tile) =>
@@ -11865,6 +11868,11 @@ function navalFactsV7(context: PolicyContextV7): NavalFleetFactsV7 {
  */
 function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
   if (command.kind !== "MOVE" && command.kind !== "ATTACK") return false;
+  // Naval AI iteration 1 (`pulp_wars-6t3e`): no transport sails, and no
+  // unit boards, into the reach of whatever can maul it afloat, ships or
+  // shore alike (`navalTransportExposedV7`).
+  if (command.kind === "MOVE" && navalTransportExposedMoveV7(context, command))
+    return true;
   const facts = navalFactsV7(context);
   if (!navalShipsInViewV7(facts)) return false;
   const tools = navalToolsV7(context);
@@ -11890,6 +11898,71 @@ function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
     // beside a hostile Kraken that would hold it, unless it lands next turn.
     navalKrakenTransportMoveRejectedV7(context.view, tools, actor, to, embarks)
   );
+}
+
+/**
+ * Naval AI iteration 1 (`pulp_wars-6t3e`): whether an own transport's Move,
+ * or a land unit's boarding Move, is refused by `navalTransportExposedV7`.
+ * The danger is the threat estimate of the unit afloat on the tile (Defense
+ * 1, no answer). The escort is an own warship on or next to the
+ * destination; the landing is a planned landing tile next to it, free, with
+ * the Move short enough to land after it.
+ */
+function navalTransportExposedMoveV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id
+  )
+    return false;
+  // (Not a type guard here: the Move stays a Move either way.)
+  const embarks = Boolean(isAutoembarkMoveV7(context, command));
+  if (actor.form !== "EMBARKED" && !embarks) return false;
+  const afloat: PublicUnitV7 =
+    actor.form === "EMBARKED" ? actor : { ...actor, form: "EMBARKED" };
+  const dangerAtTo = visibleImmediateDamage(view, afloat, to, context);
+  if (dangerAtTo * 10 < actor.hp * NAVAL_TRANSPORT_EXPOSED_TENTHS_V7)
+    return false;
+  const facts = navalFactsV7(context);
+  const escorted = [
+    ...facts.ownPatrolBoats,
+    ...facts.ownBattleships,
+    ...facts.ownSubmarines,
+  ].some((ship) => distance(ship.at, to) <= 1);
+  // A landing from `to`: a free land tile beside it on the target's
+  // landmass, a planned landing tile or one no farther from the target
+  // than the landing coast and a step. (The planned set is read from where
+  // the transport stands, so out at sea it may hold only the occupied
+  // target itself.)
+  const free = (at: CoordV7): boolean =>
+    (context.threatLookup.occupantsByKey.get(coordKey(at)) ?? []).length === 0;
+  const landsFromTo =
+    !embarks &&
+    context.naval.active &&
+    command.path.length <= EMBARKED_LANDING_MAX_SPENT_V7 &&
+    neighbors8V7(view, to).some((at) => {
+      if (!free(at)) return false;
+      if (context.naval.landing.some((landing) => same(landing, at)))
+        return true;
+      const walk = context.naval.walkDistanceByKey.get(coordKey(at));
+      return walk !== undefined && walk <= context.naval.coastDistance + 1;
+    });
+  return navalTransportExposedV7({
+    hp: actor.hp,
+    dangerAtTo,
+    dangerHere:
+      actor.form === "EMBARKED"
+        ? visibleImmediateDamage(view, actor, actor.at, context)
+        : null,
+    escorted,
+    landsFromTo,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -19310,7 +19383,16 @@ function navalBoardingPortsV7(
         plan.servingPortKeys.has(coordKey(port)) ||
         plan.servingLaunchKeys.has(coordKey(port)),
     );
-    return serving.length > 0 ? serving : plan.portMissing ? [] : ports;
+    // Naval AI iteration 1 (`pulp_wars-6t3e`): of those, the Ports with
+    // about the quickest trip from here (`navalQuickestPortsV7`), not
+    // simply the nearest one.
+    return serving.length > 0
+      ? navalQuickestPortsV7(from, serving, (port) =>
+          plan.prospectiveWaterDistanceByKey.get(coordKey(port)),
+        )
+      : plan.portMissing
+        ? []
+        : ports;
   }
   return ports.filter((port) =>
     navalSeaRouteBeatsWalkV7({
