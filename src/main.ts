@@ -37,6 +37,11 @@ const app =
       await (
         await import("./app/v7-preload-boot")
       ).bootstrapPreloadedRuleset7App(document, {
+        // The AI yields between policy slices without the browser's 4 ms
+        // timer clamp (bead pulp_wars-2yc.99, src/app/ai-scheduler-v7.ts).
+        ...aiSchedulerOptions(
+          (await import("./app/ai-scheduler-v7")).messageChannelAiSchedulerV7(),
+        ),
         // Play statistics (bead pulp_wars-2yc.101, docs/ANALYTICS.md):
         // Consent Mode defaults to denied before the tag is configured;
         // Google's script loads only on the deployed site, and only once
@@ -60,6 +65,12 @@ if (
   (import.meta.env.DEV || location.searchParams.get("browser-smoke") === "1")
 ) {
   Reflect.set(globalThis, "__PULP_WARS_APP__", app);
+}
+
+function aiSchedulerOptions<T>(scheduler: T | null): {
+  readonly aiProgressScheduler?: T;
+} {
+  return scheduler === null ? {} : { aiProgressScheduler: scheduler };
 }
 
 function renderUnsupportedRuleset(value: string): { destroy(): void } {

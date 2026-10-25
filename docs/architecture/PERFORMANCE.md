@@ -291,3 +291,86 @@ command), which needs a new envelope field and a loader for both forms.
 `tests/unit/save-resume-deferred-v7.test.ts` checks that the real starting
 save of a nine-seat 25 x 25 game with 120 KB more state and 20,000 commands
 stays under the cap.
+
+## AI turns with big armies (bead `pulp_wars-2yc.99`)
+
+User, 2026-10-25: on an iPad, a 1:1 Dry Land 16 x 16 match whose AI had
+reached about 15 cities and 50 units took "what felt like over a minute" to
+move. Asked: first optimise without changing the AI's logic; failing that,
+a cheaper heuristic for huge armies.
+
+**Fixed states.** `scripts/perf/ai-turn-bench.ts generate` played Normal AI
+seats (the human's seat included) from fixed setups until a seat started its
+turn at a given size (the only matches played; the user authorised them to
+make benchmark states). The states are checked in, gzipped, under
+`scripts/perf/fixtures/ai-turn/` with how each was made in the script's
+header: two 1:1 Dry Land 16 x 16 states at 10 to 12 cities and 32 to 34
+units, a Dwarf against Undead 1:1 Dry Land 16 x 16 game at 8 cities / 50
+units and 10 cities / 80 units (and 13 cities / 97 units in `extreme/`),
+and two six-seat 25 x 25 Pangea states at 13 cities / 48 units and 15
+cities / 45 units. AI-against-AI 1:1 games snowball, so a seat at 15 cities
+has usually all but eliminated its rival; the Undead game is the one where
+the loser held on with an army.
+
+**Where the time goes.** In muted headless Chrome (production build,
+`scripts/perf/ai-turn-browser.ts`: the save at the human's turn, End Turn,
+the AI seat's turn timed until the human's turn returns; CPU profile):
+
+| State (AI seat)             | Commands | Wall, normal playback | Main thread busy                                                          | Policy | Wall, Fast Forward |
+| --------------------------- | -------: | --------------------: | ------------------------------------------------------------------------- | -----: | -----------------: |
+| 10 cities, 34 units         |       38 |                16.4 s | 4.5 s                                                                     |  0.5 s |              1.8 s |
+| Undead, 8 cities, 50 units  |       76 |                34.4 s | 20.4 s: board drawing about 11 s, policy 4.0 s, DOM 1.6 s, applying 1.6 s |  4.0 s |             11.4 s |
+| Undead, 10 cities, 80 units |       90 |                42.6 s | 21.7 s                                                                    |  5.0 s |             16.9 s |
+
+At normal speed **the AI's own thinking is about a tenth of its turn**. The
+rest is the calm playback (beads `pulp_wars-2yc.49`, `2yc.59`): every
+accepted command plays its animation (a Move 240 ms a tile, up to 1.2 s,
+plus a 120 ms settle) and the AI waits while three boundaries are queued, so
+a 76-command turn is about 30 s of animation however fast the policy is.
+The policy runs ahead during the animation, hidden. An iPad is perhaps 2 to
+4 times slower at the drawing and the policy, not at the animation clock.
+
+In Fast Forward the wall time is the work, but a third of it was idle:
+the controller ran the policy in 4 ms slices and yielded with
+`setTimeout(resume, 0)`, which the browser clamps to at least 4 ms once
+timers nest five deep, so the policy got about half of the main thread.
+
+**Behaviour-preserving changes.**
+
+| Change                                                                                                                                                                                                                                                                          | Before  | After |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----- |
+| The browser passes the controller a MessageChannel scheduler (`src/app/ai-scheduler-v7.ts`, wired in `src/main.ts`): a posted message is a task of its own with no clamp; the page still renders between slices. The controller's default (tests, headless) stays `setTimeout`. | 11.4 s  | 7.5 s |
+| `NormalPolicyWorkV7.assertPathWorkBounds`, run after every work unit, compares in place instead of building a table of four tuples                                                                                                                                              | (small) |       |
+
+Measured on the Undead 50-unit state in Fast Forward, the old and new builds
+back to back (busy 7.8 s and 7.7 s: the same work, the idle 3.9 s gone);
+at normal speed 34.4 s and 33.0 s (playback-bound); frame intervals p95
+17 ms in both. No AI command changes: `ai-turn-bench.ts check` replays two
+seats' turns from all six recorded states (460 AI commands) and every
+command and state hash is identical to the record made before the change,
+also after merging `main`.
+
+**Policy cost** (Node CPU profile of the Undead 50-unit turn): command
+scoring 27 % (the Knight-role Overrun lookahead for every Move of a
+Vampire, 15 %, most of it the Vampire's safety check on projected views),
+command enumeration 15 % (movement path validation 9 %), the placement plan
+14 % (reused while the board's economic facts are unchanged; each build
+invalidates it), economic previews 10 %, the tactical plan 12 %
+(replacement path validation 7 %). Every decision re-evaluates every unit
+from a fresh view, so a turn costs roughly units x candidates x commands;
+the early decisions of a big turn take 100 to 500 ms and the last ones 15 to
+25 ms. No single hot spot is left that a per-view cache would remove: the
+views change with every command, and the existing caches (views, economic
+previews and the placement plan by fact key, danger by unit and tile)
+already reuse what is reusable.
+
+**Not done.** No lossy heuristic was added: at normal speed it would save at
+most the policy's tenth of the turn, and the AI's commands would change. The
+latency the player sees is the playback; the lever is to hurry playback in
+a long AI turn (for example Fast durations or the 0.375 floor after the
+first 20 or so boundaries of one seat's turn, or no walk for Moves that end
+outside the camera), a presentation decision for its own bead. A lossy
+policy shortcut for huge seats (reusing the previous decision's ranking for
+far-apart units, or scoring only the units near the front plus a few
+others per decision) would help Fast Forward next (7.5 s here), and needs
+its own quality checks.

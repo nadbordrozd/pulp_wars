@@ -1926,34 +1926,39 @@ export class NormalPolicyWorkV7 {
   }
 
   private assertPathWorkBounds(): void {
-    const checks = [
-      [
-        this.pathWork.navalPathExpansions,
-        this.bounds.navalPathExpansionCeiling,
+    // Runs after every work unit: plain comparisons, no allocation (bead
+    // pulp_wars-2yc.99); the error and its order are as they were.
+    const work = this.pathWork;
+    const bounds = this.bounds;
+    if (work.navalPathExpansions > bounds.navalPathExpansionCeiling)
+      this.pathWorkCeilingExceeded(
+        bounds.navalPathExpansionCeiling,
         "naval path expansions",
-      ],
-      [
-        this.pathWork.threatPathExpansions,
-        this.bounds.threatPathExpansionCeiling,
+      );
+    if (work.threatPathExpansions > bounds.threatPathExpansionCeiling)
+      this.pathWorkCeilingExceeded(
+        bounds.threatPathExpansionCeiling,
         "threat path expansions",
-      ],
-      [
-        this.pathWork.replacementPathValidations,
-        this.bounds.replacementPathValidationCeiling,
+      );
+    if (
+      work.replacementPathValidations > bounds.replacementPathValidationCeiling
+    )
+      this.pathWorkCeilingExceeded(
+        bounds.replacementPathValidationCeiling,
         "replacement path validations",
-      ],
-      [
-        this.pathWork.roadPathExpansions,
-        this.bounds.roadPathExpansionCeiling,
+      );
+    if (work.roadPathExpansions > bounds.roadPathExpansionCeiling)
+      this.pathWorkCeilingExceeded(
+        bounds.roadPathExpansionCeiling,
         "road path expansions",
-      ],
-    ] as const;
-    for (const [actual, ceiling, label] of checks)
-      if (actual > ceiling)
-        throw new NormalPolicyErrorV7(
-          "NO_PUBLIC_COMMAND",
-          `Policy exceeded declared ${label} ceiling ${ceiling}`,
-        );
+      );
+  }
+
+  private pathWorkCeilingExceeded(ceiling: number, label: string): never {
+    throw new NormalPolicyErrorV7(
+      "NO_PUBLIC_COMMAND",
+      `Policy exceeded declared ${label} ceiling ${ceiling}`,
+    );
   }
 }
 
