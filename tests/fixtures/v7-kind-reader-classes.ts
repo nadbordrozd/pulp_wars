@@ -345,6 +345,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::publicRevealGain": "SEAT",
   "src/ai/v7.ts::targetStrategicValue": "SEAT",
   "src/ai/v7.ts::freeCapacity": "SEAT",
+  // pulp_wars-z6za: the scale mode's free unit slots of the seat's cities.
+  "src/ai/v7-scale.ts::trainingCenterKeysV7": "SEAT",
   "src/ai/v7.ts::trainingCostV7": "SEAT",
   "src/ai/v7.ts::projectPublicUnits": "SEAT",
   "src/render/canvas/board-renderer-v7.ts::buildBoardRenderPlanV7": "SEAT",

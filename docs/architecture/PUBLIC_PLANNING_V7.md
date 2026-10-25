@@ -140,3 +140,30 @@ is absent is treated as unknown. There is no eager whole-view indexing inside a
 work operation. A byte-equal reconstructed view receives independent facts, so
 fog, diplomacy, units, pending choices, expansion, and Land Grant state cannot
 leak between view identities.
+
+## The AI scale mode's hooks (`pulp_wars-z6za`)
+
+The Normal AI's scale mode for huge seats
+([PERFORMANCE.md](PERFORMANCE.md#the-scale-mode-for-huge-seats-bead-pulp_wars-z6za))
+uses four optional hooks. Without them every function above behaves exactly
+as before; the full policy's commands are unchanged (the benchmark record of
+`scripts/perf/ai-turn-bench.ts check --full`).
+
+- `createPublicCommandWorkV7(view, { withoutUnits: true })` enumerates every
+  offered command except the per-unit ones (tile, city, research, and End
+  Turn commands, or the pending reward choice) and never primes the view's
+  command cache with that partial list.
+- `queryOfferedUnitCommandsV7(view, unit)` returns the commands full
+  enumeration lists for one unit, so the scale mode enumerates only the
+  units it considers.
+- `restrictPublicCommandsV7(view, commands)` returns a new view object with
+  the same public facts whose offered commands (and so every preview's
+  offer check) are exactly `commands`, a subset of the view's offers. The
+  caller's view and its own command cache are untouched.
+- `createPublicPlanningWorkV7(view, candidates, { local: true })` is the
+  local plan: after a candidate, only the placements in the candidate's own
+  city or within two tiles of its tile are scored again; every other
+  placement keeps its score before the candidate. It approximates the exact
+  plan (a farther placement can change only through city-wide totals) at a
+  fraction of the cost. Its stable-fact entries carry a `LOCAL|` key prefix,
+  so a local result never stands in for an exact one.

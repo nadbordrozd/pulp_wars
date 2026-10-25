@@ -373,7 +373,7 @@ outside the camera), a presentation decision for its own bead. A lossy
 policy shortcut for huge seats (reusing the previous decision's ranking for
 far-apart units, or scoring only the units near the front plus a few
 others per decision) would help Fast Forward next (7.5 s here), and needs
-its own quality checks.
+its own quality checks: it is the scale mode below.
 
 ## Long AI turns: hurried playback and cheaper frames (bead `pulp_wars-2yc.114`)
 
@@ -429,3 +429,83 @@ that, the calm first 12 boundaries are about 4.3 s, the ramp (12th to
 for the AI's slowest decisions (builds). The calm opening, the readable
 beat of what matters and the AI's own decisions bound it there; going
 lower means a shorter calm opening or skipping visible moves.
+
+## The scale mode for huge seats (bead `pulp_wars-z6za`)
+
+User, 2026-10-25: "use some heuristic to get much better performance (in
+terms of latency) that kick in from some number of cities/units ... If it
+gets slightly dumber that's fine." The rules are in
+[NORMAL_AI.md](NORMAL_AI.md#the-scale-mode-for-huge-seats-pulp_wars-z6za)
+and `src/ai/v7-scale.ts`: above 40 units or 14 cities a decision offers the
+policy one window of six units (nearest the enemy first) plus the units on
+city centers with a free slot and every non-unit command; it reads a copy
+of the view that offers only those commands, skips Redevelop, uses the
+local placement plan, and searches a defender's replacement once. When a
+window has nothing better than End Turn the next window decides. Each
+decision is still a pure function of its view.
+
+**Threshold.** 30 units (the bead's suggestion) put the two 10-city,
+32-to-34-unit states in the scale mode for no gain (their policy is about
+0.5 to 1 s a turn); above 40 units or 14 cities they stay exact. Window
+sizes 4, 6, 8, and 12 measured within the noise of each other on the
+Undead 50-unit state; 6 is the middle.
+
+**Also behaviour-preserving.** The economic preview reuse kept 64 previews
+per fact key; a 15-city seat offers 100 to 200 tile commands, so each
+decision computed most previews again. It keeps 512 (a reused preview is
+the same result).
+
+**Policy time** (Node, `ai-turn-bench.ts time --warm`: one untimed turn of
+another state first, so the JIT is warm and the timed state's facts are
+cold; main-thread CPU ms of the active seat's whole turn; three runs
+interleaved with `main`, machine heavily loaded, median and in brackets the
+fastest run; worst is the slowest single decision):
+
+| State (seat)                | `main` before             | Scale mode              | Speed-up (fastest) |  Worst decision |
+| --------------------------- | ------------------------- | ----------------------- | -----------------: | --------------: |
+| 12 cities, 32 units (exact) | 1,074 (799), 35 cmds      | 1,048 (771), 35 cmds    |  (exact, the same) |   367 -> 384 ms |
+| 10 cities, 34 units (exact) | 614 (439), 36 cmds        | 467 (297), 36 cmds      |  (exact, the same) |   165 -> 109 ms |
+| Undead, 8 cities, 50 units  | 3,384 (3,184), 76 cmds    | 1,085 (1,080), 81 cmds  |        3.1x (2.9x) |    220 -> 53 ms |
+| Undead, 10 cities, 80 units | 6,953 (5,318), 104 cmds   | 4,514 (2,364), 117 cmds |        1.5x (2.2x) |   233 -> 150 ms |
+| Pangea, 13 cities, 48 units | 7,678 (3,053), 55 cmds    | 1,687 (1,564), 55 cmds  |        4.6x (2.0x) | 1,259 -> 231 ms |
+| Pangea, 15 cities, 45 units | 2,397 (2,213), 50 cmds    | 1,805 (1,118), 55 cmds  |        1.3x (2.0x) |   298 -> 219 ms |
+| Undead, 13 cities, 97 units | 24,811 (15,875), 128 cmds | 4,369 (3,880), 128 cmds |        5.7x (4.1x) |   860 -> 136 ms |
+
+Quieter runs earlier in the bead put the 50-unit turn at about 2.9 s
+before and 0.85 to 1.1 s after, and the 48-unit Pangea turn at about 3.3 s
+and 1.1 s. The early decisions of a big turn, 200 to 1,300 ms before, take
+50 to 230 ms. What is left is mostly per decision, not per unit: the
+placement plan after each build of the economy (local, but every build
+changes the facts), the economic previews, the tactical plan, and the
+window's own enumeration and scoring.
+
+**Same commands below the threshold.** `ai-turn-bench.ts check --full`
+replays two seats' turns from all six states (the record was made again
+under `7r116` with `main`'s policy; the two records are byte-identical),
+and without `--full` the two 10-city states, whose seats stay below the
+threshold, are identical; the four big states differ from their first
+scale-mode decision on, as intended. The unit tier's pinned AI hashes are
+unchanged.
+
+**Quality** (authorised simulations; `ai-turn-bench.ts play` and `match`,
+the same seed in both modes, under `7r113` before the merge of `main`):
+
+- From the fixed states, every seat on for up to 15 rounds: the 1:1 states
+  end the same (the same winner, the loser out in the same round, or one
+  round later from the Undead 50-unit state, where both sides lost more
+  units: the loser 63 against 55, the winner 31 against 20). On the
+  six-seat Pangea boards the leaders finish at 16 cities and 75 units
+  against 15 and 96 (seed 41), and 25 cities and 76 units, 10 captures,
+  against 20 and 60, 5 captures (seed 42); the other seats end within a
+  city or two of each other.
+- Five whole Dwarf-against-Undead 1:1 matches (seeds 52 to 56): the same
+  winner every time; four end before a seat crosses the threshold (one to
+  four turns in the scale mode) with the same result; the long one
+  (seed 56) has the same winner in round 74 instead of 83.
+- Hand-built tests (`tests/unit/ruleset-v7-scale-ai.test.ts`): a front
+  unit beside a 1-HP enemy takes the kill, a threatened city is defended,
+  and a rear unit marches once the front has acted, each as the full
+  policy decides on the same view; an idle window is passed over.
+
+So it is slightly dumber in some fights (more units lost in one 1:1 state,
+a slower conquest on one Pangea board) and not clearly worse overall.

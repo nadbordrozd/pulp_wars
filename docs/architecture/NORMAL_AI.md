@@ -3843,6 +3843,45 @@ history and do not override the
 [current Human technology graph](../product/RULESET_7_CURRENT.md#62-technology-tree)
 or the revision-11 AI contract.
 
+## The scale mode for huge seats (`pulp_wars-z6za`)
+
+User, 2026-10-25: once a seat has a huge army its turns are slow; a
+heuristic that kicks in from some number of units or cities may make it
+slightly dumber. A seat with more than `SCALE_MODE_UNITS_V7` (40) units or
+more than `SCALE_MODE_CITIES_V7` (14) cities decides in the scale mode
+(`src/ai/v7-scale.ts`); a smaller seat decides exactly as before. Every
+decision is still a pure function of its public view.
+
+- **The window.** The own units are ordered by how near they stand to a
+  visible hostile unit or a hostile city (ties by unit id). A decision
+  offers the policy the commands of the first `SCALE_WINDOW_UNITS_V7` (6)
+  units that can still act (any command but Wait and Disband), the units
+  on own city centers with a free unit slot (while one stands there the
+  city cannot train), and every command that belongs to no unit. The
+  policy scores that subset with its ordinary rules. A unit that acts
+  drops out and the next one comes in, so the front acts first and the
+  rear follows. When the best command of a window is End Turn while a
+  later unit can still act, the next window decides (an idle unit is
+  passed over); End Turn comes only when no window has anything better.
+- **The window's view.** The decision reads a copy of its view that
+  offers only the window's commands (`restrictPublicCommandsV7`), so no
+  preview enumerates the whole army; the commands are the ones full
+  enumeration offers (`queryOfferedUnitCommandsV7`).
+- **No Redevelop.** The seat never Redevelops (its previews and plan cost
+  every decision; the policy rarely took one).
+- **The local plan.** The placement plan re-scores a candidate's next
+  placements only in its own city and within two tiles of it
+  (`createPublicPlanningWorkV7(..., { local: true })`).
+- **Replacement paths.** A defender of a threatened city has its
+  replacement search run for its first Move only; its other Moves share
+  the answer.
+
+What it gives up: units outside the window are not offered while the
+window acts (a Catapult behind the line may wait for its screen, a rear
+unit moves after the economy), Redevelop, and the exact spatial plan's
+far-away effects. Measurements and the quality comparison:
+[PERFORMANCE.md](PERFORMANCE.md#the-scale-mode-for-huge-seats-bead-pulp_wars-z6za).
+
 ## Campaign: expansion, exploration, and standing pressure (`pulp_wars-9s0.1`)
 
 A playtest found the policy passive: it sent a unit or two, lost them, and

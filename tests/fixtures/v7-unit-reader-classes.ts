@@ -329,6 +329,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // policy keeps from a Crack.
     "src/ai/v7.ts::frozenSeaToolsV7": "BOARD",
     "src/ai/v7.ts::freeCapacity": "BOARD",
+    // `pulp_wars-z6za`: the scale mode reads the view's units: the seat's
+    // size, its units by nearness to the enemy, and the slots its cities
+    // have free (as `freeCapacity` reads them).
+    "src/ai/v7-scale.ts::scaleModeV7": "BOARD",
+    "src/ai/v7-scale.ts::scaleUnitOrderV7": "BOARD",
+    "src/ai/v7-scale.ts::trainingCenterKeysV7": "BOARD",
     "src/ai/v7.ts::freshCapturerNextToV7": "BOARD",
     "src/ai/v7.ts::friendlySplashUnitV7": "BOARD",
     "src/ai/v7.ts::hasDurableScreen": "BOARD",

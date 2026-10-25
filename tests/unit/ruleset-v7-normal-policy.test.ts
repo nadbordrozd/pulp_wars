@@ -157,6 +157,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-personality",
       "./v7-opening",
       "./v7-undead",
+      // pulp_wars-z6za: the scale mode for huge seats (the public view and
+      // the public command enumeration only).
+      "./v7-scale",
     ]);
     expect(source).not.toMatch(
       /\bGameStateV7\b|applyCommandV7|createPlayableGameV7|estimateCombatV7/,

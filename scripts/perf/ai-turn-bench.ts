@@ -15,9 +15,18 @@
  *   resulting state hash.
  * - `check --dir <d> --against <file> [--seats n]` recomputes the record;
  *   any difference fails.
- * - `time --dir <d> [--only <name>] [--repeat n] [--log] [--phases]` times
- *   the active seat's whole AI turn (policy, views, apply; each command with
- *   `--log`, the policy's phases with `--phases`).
+ * - `time --dir <d> [--only <name>] [--repeat n] [--log] [--phases]
+ *   [--warm <state file>] [--full]` times the active seat's whole AI turn
+ *   (policy, views, apply; each command with `--log`, the policy's phases
+ *   with `--phases`; after one untimed turn of another state with `--warm`;
+ *   the full policy without the scale mode, `pulp_wars-z6za`, with
+ *   `--full`; the scale mode's window size with `--window n`). `record` and
+ *   `check` take `--full` too. Policy CPU is the main thread's.
+ * - `play --dir <d> [--only <name>] --rounds n [--full]` and `match --spec
+ *   <name> --seed n [--factions A,B] --rounds n [--full]` play every seat
+ *   on from a fixed state or from a setup (the scale mode's quality check;
+ *   they play matches, so only when simulations are authorised) and report
+ *   each seat's cities, units, captures, and losses, and the outcome.
  *
  * The checked-in states (`scripts/perf/fixtures/ai-turn/*.state.json.gz`)
  * and their record (`equivalence-2seats.json.gz`, `--seats 2`) came from:
@@ -30,9 +39,16 @@
  * - `generate --spec pangea-25x25-6seats --seed 41` and `--seed 42` (their
  *   `-peak` states).
  *
+ * The states were saved under `7r113` and are read as the current revision
+ * (`readState`). The record was made again under `7r116` (`pulp_wars-z6za`)
+ * with the policy of `main` before the scale mode, and the scale mode's
+ * `--full` record is byte-identical to it.
+ *
  * Check: `tsx scripts/perf/ai-turn-bench.ts check --dir
  * scripts/perf/fixtures/ai-turn --seats 2 --against
- * scripts/perf/fixtures/ai-turn/equivalence-2seats.json.gz`.
+ * scripts/perf/fixtures/ai-turn/equivalence-2seats.json.gz --full` (every
+ * state identical); without `--full` the two `-10c30u` states, whose seats
+ * stay below the scale threshold, are identical and the others differ.
  */
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
@@ -46,6 +62,11 @@ import {
   chooseNormalTurnCommandV7,
   type NormalAiDecisionV7,
 } from "../../src/ai/v7";
+import {
+  SCALE_MODE_CITIES_V7,
+  SCALE_MODE_SWITCH_V7,
+  SCALE_MODE_UNITS_V7,
+} from "../../src/ai/v7-scale";
 import {
   RULESET_7_ID,
   applyCommandV7,
@@ -298,13 +319,27 @@ function loadStates(dir: string, only: string | null): FixedStateV7[] {
       file,
     }))
     .filter((item) => only === null || item.name === only)
-    .map(({ name, file }) => {
-      const state = parseGameStateV7(
-        JSON.parse(readText(path.join(dir, file))) as unknown,
-      );
-      if (state === null) throw new Error(`${file}: invalid state`);
-      return { name, state };
-    });
+    .map(({ name, file }) => ({
+      name,
+      state: readState(path.join(dir, file)),
+    }));
+}
+
+/**
+ * A fixed state. One saved under an earlier revision is read as the current
+ * one (`pulp_wars-z6za`: the states of `7r113` still parse under `7r116`);
+ * the parser refuses it once its shape no longer fits.
+ */
+function readState(file: string): GameStateV7 {
+  const raw = JSON.parse(readText(file)) as {
+    rulesetId?: string;
+    setup?: { rulesetId?: string };
+  };
+  raw.rulesetId = RULESET_7_ID;
+  if (raw.setup !== undefined) raw.setup.rulesetId = RULESET_7_ID;
+  const state = parseGameStateV7(raw as unknown);
+  if (state === null) throw new Error(`${file}: invalid state`);
+  return state;
 }
 
 interface RecordV7 {
@@ -355,6 +390,22 @@ function decidePhased(
   }
 }
 
+/**
+ * The main thread's CPU time (`process.threadCpuUsage`, Node 23.9 and
+ * later): on a loaded machine steadier than wall time, and without the GC
+ * and compiler threads `process.cpuUsage` adds. Falls back to the process.
+ */
+function threadCpuUsage(previous?: NodeJS.CpuUsage): NodeJS.CpuUsage {
+  const thread = (
+    process as unknown as {
+      threadCpuUsage?: (previous?: NodeJS.CpuUsage) => NodeJS.CpuUsage;
+    }
+  ).threadCpuUsage;
+  return thread === undefined
+    ? process.cpuUsage(previous)
+    : thread.call(process, previous);
+}
+
 /** The active seat's whole turn; policy time per command. */
 function timeTurn(
   state: GameStateV7,
@@ -365,6 +416,7 @@ function timeTurn(
   let turnState = state;
   let commandsThisTurn = 0;
   let policyMs = 0;
+  let policyCpuMs = 0;
   let viewMs = 0;
   let applyMs = 0;
   let worst = 0;
@@ -373,6 +425,7 @@ function timeTurn(
     let started = performance.now();
     const view = viewForV7(turnState, actor);
     viewMs += performance.now() - started;
+    const cpu = threadCpuUsage();
     started = performance.now();
     const before = { ...(phases ?? {}) };
     const command = chooseNormalTurnCommandV7(
@@ -384,6 +437,8 @@ function timeTurn(
         : decidePhased(view, phases),
     );
     const spent = performance.now() - started;
+    const cpuSpent = threadCpuUsage(cpu);
+    policyCpuMs += (cpuSpent.user + cpuSpent.system) / 1000;
     if (log) {
       const split =
         phases === null
@@ -408,11 +463,99 @@ function timeTurn(
     commandsThisTurn += 1;
   }
   const commands = Object.values(kinds).reduce((a, b) => a + b, 0);
-  return { commands, policyMs, viewMs, applyMs, worst, kinds };
+  return { commands, policyMs, policyCpuMs, viewMs, applyMs, worst, kinds };
+}
+
+// The scale mode (`pulp_wars-z6za`): `--full` times and records the full
+// policy at every size (the scale mode off).
+if (process.argv.includes("--full")) SCALE_MODE_SWITCH_V7.enabled = false;
+// `--window n`: the scale mode's window size, for tuning it.
+const windowArgument = optional("--window");
+if (windowArgument !== null)
+  SCALE_MODE_SWITCH_V7.windowUnits = Number(windowArgument);
+
+/**
+ * `play` (the scale mode's quality check, `pulp_wars-z6za`; it plays a
+ * match on, so only when simulations are authorised): every seat plays
+ * single Normal AI turns from the fixed state for `rounds` rounds or until
+ * the match ends, and the line reports each seat's cities and units, the
+ * cities each seat took, its units lost, and the policy time of the seats
+ * in scale mode.
+ */
+function play(fixed: FixedStateV7, rounds: number): string {
+  let state = fixed.state;
+  const last = state.round + rounds;
+  let commandsThisTurn = 0;
+  const captures = new Map<PlayerId, number>();
+  const lost = new Map<PlayerId, number>();
+  let policyMs = 0;
+  let scaleTurns = 0;
+  let turns = 0;
+  while (state.outcome === null && state.round < last) {
+    const actor = activeIdV7(state);
+    if (commandsThisTurn === 0) {
+      turns += 1;
+      const size = seatSize(state, actor);
+      if (
+        size.units > SCALE_MODE_UNITS_V7 ||
+        size.cities > SCALE_MODE_CITIES_V7
+      )
+        scaleTurns += 1;
+    }
+    const started = performance.now();
+    const command = aiCommandV7(state, commandsThisTurn);
+    policyMs += performance.now() - started;
+    const before = state;
+    state = apply(state, command);
+    for (const city of state.cities) {
+      const was = before.cities.find((item) => item.id === city.id);
+      if (city.ownerId !== null && was?.ownerId !== city.ownerId)
+        captures.set(city.ownerId, (captures.get(city.ownerId) ?? 0) + 1);
+    }
+    const alive = new Set(state.units.map((unit) => unit.id));
+    for (const unit of before.units)
+      if (!alive.has(unit.id))
+        lost.set(unit.ownerId, (lost.get(unit.ownerId) ?? 0) + 1);
+    commandsThisTurn =
+      command.kind === "END_TURN" || activeIdV7(state) !== actor
+        ? 0
+        : commandsThisTurn + 1;
+  }
+  const seats = state.players
+    .map((player) => {
+      const size = seatSize(state, player.id);
+      return `${player.id}:${size.cities}c/${size.units}u +${captures.get(player.id) ?? 0}cap -${lost.get(player.id) ?? 0}lost`;
+    })
+    .join(" ");
+  const outcome =
+    state.outcome === null ? "none" : JSON.stringify(state.outcome);
+  return `${fixed.name} round ${fixed.state.round}->${state.round}: ${seats}; outcome ${outcome}; ${scaleTurns} of ${turns} turns of a seat above the scale threshold; policy ${(policyMs / 1000).toFixed(1)} s`;
 }
 
 const mode = process.argv[2];
-if (mode === "generate")
+if (mode === "play")
+  for (const fixed of loadStates(argument("--dir"), optional("--only")))
+    process.stdout.write(`${play(fixed, Number(argument("--rounds")))}\n`);
+else if (mode === "match") {
+  // `match --spec <name> --seed n [--factions A,B] --rounds n`: `play` from
+  // the spec's setup (a whole match: simulations must be authorised).
+  const spec = SPECS.find((item) => item.name === argument("--spec"));
+  if (spec === undefined) throw new Error("unknown --spec");
+  const factions = optional("--factions");
+  const seed = Number(argument("--seed"));
+  const created = createPlayableGameV7({
+    ...spec.setup,
+    seed,
+    ...(factions === null
+      ? {}
+      : { factions: factions.split(",") as FactionIdV7[] }),
+  } as MatchSetupV7);
+  if (!created.ok) throw new Error("setup rejected");
+  const name = `${spec.name}-s${seed}${factions === null ? "" : `-${factions.toLowerCase().replace(/,/g, "-")}`}`;
+  process.stdout.write(
+    `${play({ name, state: created.state }, Number(argument("--rounds")))}\n`,
+  );
+} else if (mode === "generate")
   generate(
     argument("--out"),
     optional("--spec"),
@@ -456,6 +599,13 @@ else if (mode === "record" || mode === "check") {
   }
 } else if (mode === "time") {
   const repeat = Number(argument("--repeat", "1"));
+  // `--warm <state file>`: one untimed turn of another state first, so the
+  // timed turn runs on a warm JIT (as in a page that has played) without
+  // reusing the timed state's own cached facts (a repeat run does both).
+  const warm = optional("--warm");
+  if (warm !== null) {
+    timeTurn(readState(warm), false, null);
+  }
   for (const fixed of loadStates(argument("--dir"), optional("--only"))) {
     const phases: Record<string, number> | null = process.argv.includes(
       "--phases",
@@ -466,10 +616,13 @@ else if (mode === "record" || mode === "check") {
       timeTurn(fixed.state, process.argv.includes("--log"), phases),
     );
     const best = runs.reduce((a, b) => (b.policyMs < a.policyMs ? b : a));
+    // The machine may be loaded: the median of the runs' policy CPU time.
+    const cpus = runs.map((run) => run.policyCpuMs).sort((a, b) => a - b);
+    const medianCpu = cpus[Math.floor(cpus.length / 2)] ?? 0;
     const actor = activeIdV7(fixed.state);
     const size = seatSize(fixed.state, actor);
     process.stdout.write(
-      `${fixed.name} (round ${fixed.state.round}, seat ${actor}: ${size.cities} cities, ${size.units} units): ${best.commands} commands, policy ${best.policyMs.toFixed(0)} ms (${(best.policyMs / best.commands).toFixed(0)} ms/command, worst ${best.worst.toFixed(0)} ms), views ${best.viewMs.toFixed(0)} ms, apply ${best.applyMs.toFixed(0)} ms; ${JSON.stringify(best.kinds)}\n`,
+      `${fixed.name} (round ${fixed.state.round}, seat ${actor}: ${size.cities} cities, ${size.units} units): ${best.commands} commands, policy ${best.policyMs.toFixed(0)} ms (${(best.policyMs / best.commands).toFixed(0)} ms/command, worst ${best.worst.toFixed(0)} ms), policy CPU median ${medianCpu.toFixed(0)} ms, views ${best.viewMs.toFixed(0)} ms, apply ${best.applyMs.toFixed(0)} ms; ${JSON.stringify(best.kinds)}\n`,
     );
     if (phases !== null)
       process.stdout.write(
@@ -479,4 +632,4 @@ else if (mode === "record" || mode === "check") {
           .join(", ")}\n`,
       );
   }
-} else throw new Error("mode: generate | record | check | time");
+} else throw new Error("mode: generate | record | check | time | play");

@@ -2,6 +2,7 @@ import {
   NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7,
   NormalPolicyWorkV7,
   chooseNormalTurnCommandV7,
+  scaleDecisionViewV7,
   type NormalAiDecisionV7,
 } from "../ai/index";
 import {
@@ -1113,7 +1114,13 @@ export class Ruleset7BrowserController {
         NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7,
         decision,
       );
-      if (command === null || !commandIsOfferedV7(aiView, command))
+      // The scale mode (`pulp_wars-z6za`): a large seat's decision offers a
+      // subset of the view's commands; the check reads that subset rather
+      // than enumerate the whole view again (the reducer still validates).
+      if (
+        command === null ||
+        !commandIsOfferedV7(scaleDecisionViewV7(decision) ?? aiView, command)
+      )
         throw new Error("Normal AI produced no exact public command.");
       const result = this.#applyBoundary(actorId, command);
       if (!result.accepted) {

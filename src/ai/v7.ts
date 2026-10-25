@@ -112,6 +112,7 @@ import {
   previewBlastMountainV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
+  restrictPublicCommandsV7,
   previewMassBeamDownV7,
   queryCombatPreviewV7,
   previewSeizeV7,
@@ -878,6 +879,12 @@ import {
   undeadMatchForPolicyV7,
   wailPriorityV7,
 } from "./v7-undead";
+import {
+  ScaleCommandWorkV7,
+  recordScaleDecisionViewV7,
+  scaleDecisionViewV7,
+  scaleModeV7,
+} from "./v7-scale";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7 = 128;
 
@@ -1441,6 +1448,15 @@ export function compareCandidateBestFirstV7(
  */
 export class NormalPolicyWorkV7 {
   private readonly commandWork: ReturnType<typeof createPublicCommandWorkV7>;
+  /**
+   * The scale mode (`pulp_wars-z6za`, `src/ai/v7-scale.ts`): this decision
+   * offers one window of the seat's units; null below the threshold.
+   */
+  private readonly scale: ScaleCommandWorkV7 | null;
+  /** The scale mode's next window, when this one ends the turn early. */
+  private nextWindow: NormalPolicyWorkV7 | null = null;
+  /** The view the decision reads: `view`, or the scale mode's window of it. */
+  private decisionView: PlayerViewV7;
   private planningWork: ReturnType<typeof createPublicPlanningWorkV7> | null =
     null;
   private phase:
@@ -1507,9 +1523,14 @@ export class NormalPolicyWorkV7 {
   constructor(
     readonly view: PlayerViewV7,
     private readonly readClock: () => number = now,
+    scaleWindow = 0,
   ) {
     validatePolicyRegistration(view);
-    this.commandWork = createPublicCommandWorkV7(view);
+    this.decisionView = view;
+    this.scale = scaleModeV7(view)
+      ? new ScaleCommandWorkV7(view, scaleWindow)
+      : null;
+    this.commandWork = this.scale ?? createPublicCommandWorkV7(view);
     const objectives = publicObjectivesV7(view).length;
     const cells = view.board.width * view.board.height;
     const ownedCities = view.cities.filter(
@@ -1586,6 +1607,8 @@ export class NormalPolicyWorkV7 {
     if (!Number.isSafeInteger(maxWorkUnits) || maxWorkUnits <= 0)
       throw new RangeError("maxWorkUnits must be a positive safe integer");
     for (let index = 0; index < maxWorkUnits; index += 1) {
+      if (this.nextWindow !== null)
+        return this.nextWindow.advanceWork(maxWorkUnits - index);
       const phase = this.phase;
       const result = this.advanceOneWorkUnit();
       this.workUnits += 1;
@@ -1637,7 +1660,7 @@ export class NormalPolicyWorkV7 {
     if (this.phase === "COMMAND_PREPARATION") {
       const progress = this.commandWork.advance(1);
       if (!progress.done || progress.commands === null) return null;
-      this.prepareContext();
+      this.prepareContext(progress.commands);
       return null;
     }
     if (this.phase === "PLANNING_PREPARATION") {
@@ -1672,7 +1695,7 @@ export class NormalPolicyWorkV7 {
       if (step.done) {
         this.visibleHostiles = context.lookup.visibleHostiles;
         this.navalWork = navalPlanWorkV7(
-          this.view,
+          this.decisionView,
           context.commands,
           this.pathWork,
         );
@@ -1690,7 +1713,7 @@ export class NormalPolicyWorkV7 {
           return null;
         }
         this.redevelopmentWork = createPublicRedevelopmentPossibilityWorkV7(
-          this.view,
+          this.decisionView,
           this.redevelopmentCandidates,
         );
         if (
@@ -1707,7 +1730,7 @@ export class NormalPolicyWorkV7 {
       this.preparationCursor += 1;
       if (
         command.kind === "REDEVELOP" &&
-        !preservesEstablishedImprovementV7(this.view, command.at)
+        !preservesEstablishedImprovementV7(this.decisionView, command.at)
       )
         this.redevelopmentCandidates.push({
           kind: "REDEVELOP",
@@ -1766,8 +1789,10 @@ export class NormalPolicyWorkV7 {
       if (command === undefined) {
         this.plannedCandidateCount = this.planningCandidates.length;
         this.planningWork = createPublicPlanningWorkV7(
-          this.view,
+          this.decisionView,
           this.planningCandidates,
+          // The scale mode (`pulp_wars-z6za`): the local plan.
+          this.scale === null ? {} : { local: true },
         );
         this.phase = "PLANNING_PREPARATION";
         return null;
@@ -1854,7 +1879,11 @@ export class NormalPolicyWorkV7 {
       return null;
     }
     if (this.phase === "CONTEXT") {
-      this.tacticalWork = tacticalPlanWorkV7(context, this.pathWork);
+      this.tacticalWork = tacticalPlanWorkV7(
+        context,
+        this.pathWork,
+        this.scale !== null,
+      );
       this.phase = "TACTICAL_CONTEXT";
       return null;
     }
@@ -1887,14 +1916,18 @@ export class NormalPolicyWorkV7 {
     return null;
   }
 
-  private prepareContext(): void {
+  private prepareContext(commands: readonly CommandV7[]): void {
+    // The scale mode (`pulp_wars-z6za`): the decision sees a copy of the
+    // view that offers this window's commands only (every preview too).
+    if (this.scale !== null)
+      this.decisionView = restrictPublicCommandsV7(this.view, commands);
     // pulp_wars-68k.3: a mission directive leashes the ready commands (the
     // identity with NORMAL and in every non-mission match).
-    const directive = directivePlanForViewV7(this.view);
+    const directive = directivePlanForViewV7(this.decisionView);
     this.ready = leashReadyCommandsV7(
-      this.view,
+      this.decisionView,
       directive,
-      queryAiReadyCommandsV7(this.view),
+      queryAiReadyCommandsV7(this.decisionView),
     );
     if (this.ready.length > this.bounds.candidateCeiling)
       throw new NormalPolicyErrorV7(
@@ -1902,7 +1935,7 @@ export class NormalPolicyWorkV7 {
         `Policy generated ${this.ready.length} candidates above declared ceiling ${this.bounds.candidateCeiling}`,
       );
     this.context = bareContext(
-      this.view,
+      this.decisionView,
       this.ready.map((item) => item.command),
       directive,
     );
@@ -1922,7 +1955,7 @@ export class NormalPolicyWorkV7 {
       );
   }
 
-  private finish(): NormalAiDecisionV7 {
+  private finish(): NormalAiDecisionV7 | null {
     const context = this.context;
     if (context === null)
       throw new NormalPolicyErrorV7(
@@ -1930,15 +1963,32 @@ export class NormalPolicyWorkV7 {
         "Policy finished without a public context",
       );
     this.scored.sort(compareCandidateBestFirstV7);
+    // The scale mode (`pulp_wars-z6za`): nothing in this window beats End
+    // Turn while a later unit can still act, so the next window decides.
+    const best = this.scored[0]?.command;
+    if (
+      this.scale?.laterWindow === true &&
+      (best === undefined || best.kind === "END_TURN")
+    ) {
+      this.nextWindow = new NormalPolicyWorkV7(
+        this.view,
+        this.readClock,
+        this.scale.window + 1,
+      );
+      return null;
+    }
     // pulp_wars-q6cc: Easy drops some attacks and now and then plays the
     // second-best candidate; Normal returns the candidates unchanged.
-    const easy = easyDecisionV7(this.view, this.scored);
-    return {
+    const easy = easyDecisionV7(this.decisionView, this.scored);
+    const decision: NormalAiDecisionV7 = {
       difficulty: aiPersonalityForViewV7(this.view).id,
       candidates: easy.candidates,
       command: easy.candidates[0]?.command ?? null,
       prngDraws: easy.draws,
     };
+    if (this.scale !== null)
+      recordScaleDecisionViewV7(decision, this.decisionView);
+    return decision;
   }
 
   private assertPathWorkBounds(): void {
@@ -2021,9 +2071,14 @@ export function chooseNormalTurnCommandV7(
   const remaining = maxCommandsPerTurn - commandsThisTurn;
   const reserved = normalTurnClosureSlotsV7(view);
   if (reserved > remaining) throw new NormalTurnCommandCapErrorV7();
+  // The scale mode (`pulp_wars-z6za`): the candidates' previews are read on
+  // the view the decision offered them on (the same public facts), so the
+  // whole view is never enumerated for them.
+  const offered = scaleDecisionViewV7(decision) ?? view;
   const safe = decision.candidates.find(
     (candidate) =>
-      reserved + mandatoryWorkDeltaV7(view, candidate.command) <= remaining - 1,
+      reserved + mandatoryWorkDeltaV7(offered, candidate.command) <=
+      remaining - 1,
   );
   if (safe !== undefined) return safe.command;
   const closure = forcedClosureCommands(view, decision).find(
@@ -2298,8 +2353,10 @@ function publicObjectivesV7(view: PlayerViewV7): readonly CoordV7[] {
 function* tacticalPlanWorkV7(
   context: PolicyContextV7,
   pathWork?: MutablePolicyPathDiagnosticsV7,
+  scaleMode = false,
 ): Generator<void, TacticalPlanV7> {
   const { view, commands } = context;
+  const scaleReplacements = scaleMode ? new Map<UnitId, boolean>() : null;
   const objectives = publicObjectivesV7(view).filter(
     (at) =>
       !view.cities.some(
@@ -2368,6 +2425,15 @@ function* tacticalPlanWorkV7(
       !threatenedCity(context, city.id)
     )
       continue;
+    // The scale mode (`pulp_wars-z6za`): the replacement search runs for a
+    // defender's first Move, and its other Moves share that answer.
+    const known =
+      command.kind === "MOVE" ? scaleReplacements?.get(actor.id) : undefined;
+    if (known !== undefined) {
+      if (known) defenderReplacementActionKeys.add(policyCommandKeyV7(command));
+      yield;
+      continue;
+    }
     let projectedUnits: readonly PublicUnitV7[];
     if (command.kind === "MOVE") {
       const destination = command.path.at(-1);
@@ -2412,7 +2478,14 @@ function* tacticalPlanWorkV7(
         projectedUnits.some((unit) => unit.id === stats.unitId),
       ),
     };
-    if (yield* hasReplacementPathWorkV7(projected, city.at, actor.id, pathWork))
+    const replaced = yield* hasReplacementPathWorkV7(
+      projected,
+      city.at,
+      actor.id,
+      pathWork,
+    );
+    if (command.kind === "MOVE") scaleReplacements?.set(actor.id, replaced);
+    if (replaced)
       defenderReplacementActionKeys.add(policyCommandKeyV7(command));
     yield;
   }

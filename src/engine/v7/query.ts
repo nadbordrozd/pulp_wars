@@ -656,11 +656,58 @@ export interface PublicCommandWorkV7 {
   advance(maxOperations: number): PublicCommandWorkProgressV7;
 }
 
+export interface PublicCommandWorkOptionsV7 {
+  /**
+   * The AI scale mode (`pulp_wars-z6za`, `src/ai/v7-scale.ts`): every
+   * offered command except those enumerated per unit (the tile, city,
+   * research, and End Turn commands, or the pending reward choice). The
+   * scale mode adds the commands of the units it considers with
+   * `queryOfferedUnitCommandsV7`. This partial list is never cached as the
+   * view's commands.
+   */
+  readonly withoutUnits?: boolean;
+}
+
 /** Resumable exact command enumeration; one operation handles one tile, city, or unit. */
 export function createPublicCommandWorkV7(
   view: PlayerViewV7,
+  options: PublicCommandWorkOptionsV7 = {},
 ): PublicCommandWorkV7 {
-  return new IncrementalPublicCommandWorkV7(view);
+  return new IncrementalPublicCommandWorkV7(
+    view,
+    options.withoutUnits === true,
+  );
+}
+
+/**
+ * The AI scale mode (`pulp_wars-z6za`): the commands full enumeration offers
+ * for one unit, in the order it lists them before sorting.
+ */
+export function queryOfferedUnitCommandsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): readonly CommandV7[] {
+  if (!publicCommandOfferingAllowedV7(view)) return [];
+  const candidates: CommandV7[] = [];
+  appendOfferedUnitCommandsV7(view, unit, candidates);
+  return candidates;
+}
+
+/**
+ * The AI scale mode (`pulp_wars-z6za`): a new view object with the same
+ * public facts as `view` whose offered commands (`queryPlayerCommandsV7`,
+ * and every preview that checks an offer) are exactly `commands`: a subset
+ * of the view's offered commands, in `compareCommandsV7` order. The scale
+ * mode decides on it, so the units it leaves out are offered nothing.
+ * `view` itself and its own offered commands are untouched.
+ */
+export function restrictPublicCommandsV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+): PlayerViewV7 {
+  const restricted: PlayerViewV7 = { ...view };
+  store(restricted, commands);
+  return restricted;
 }
 
 class IncrementalPublicCommandWorkV7 implements PublicCommandWorkV7 {
@@ -670,8 +717,11 @@ class IncrementalPublicCommandWorkV7 implements PublicCommandWorkV7 {
   private index = 0;
   private commands: readonly CommandV7[] | null = null;
 
-  constructor(private readonly view: PlayerViewV7) {
-    const cached = COMMAND_CACHE.get(view);
+  constructor(
+    private readonly view: PlayerViewV7,
+    private readonly withoutUnits = false,
+  ) {
+    const cached = withoutUnits ? undefined : COMMAND_CACHE.get(view);
     if (cached !== undefined) {
       this.commands = cached;
       this.phase = "DONE";
@@ -731,7 +781,9 @@ class IncrementalPublicCommandWorkV7 implements PublicCommandWorkV7 {
         }
         appendPublicCityCommandsV7(this.view, city, this.candidates);
       } else {
-        const unit = this.view.units[this.index];
+        const unit = this.withoutUnits
+          ? undefined
+          : this.view.units[this.index];
         if (unit === undefined) {
           this.candidates.push({ kind: "END_TURN" });
           this.finish(this.candidates);
@@ -750,7 +802,8 @@ class IncrementalPublicCommandWorkV7 implements PublicCommandWorkV7 {
   }
 
   private finish(commands: readonly CommandV7[]): void {
-    this.commands = store(this.view, [...commands].sort(compareCommandsV7));
+    const sorted = [...commands].sort(compareCommandsV7);
+    this.commands = this.withoutUnits ? sorted : store(this.view, sorted);
     this.phase = "DONE";
   }
 }
@@ -8460,7 +8513,7 @@ export function previewEconomicV7(
       }
     }
     byCommand.set(cacheKey, cloneEconomicPreviewResultV7(result));
-    if (byCommand.size > 64) {
+    if (byCommand.size > PUBLIC_ECONOMIC_PREVIEWS_PER_KEY_V7) {
       const oldest = byCommand.keys().next().value;
       if (oldest !== undefined) byCommand.delete(oldest);
     }
@@ -8814,6 +8867,13 @@ const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
 const PUBLIC_PLANNING_FACT_KEYS = new WeakMap<PlayerViewV7, string>();
 const PUBLIC_ECONOMIC_PREVIEW_FACT_KEYS = new WeakMap<PlayerViewV7, string>();
 const PUBLIC_PLANNING_REUSE_LIMIT = 24;
+/**
+ * Previews kept per stable-fact key. `pulp_wars-z6za`: 64 until a large
+ * seat offered more tile commands than that (15 cities offer 100 to 200),
+ * so every decision of its turn computed most previews again; a reused
+ * preview is the same result, so the size changes only the time.
+ */
+const PUBLIC_ECONOMIC_PREVIEWS_PER_KEY_V7 = 512;
 interface PublicPlanningReuseEntryV7 {
   readonly potentials: readonly PublicEconomicPotentialV7[];
   readonly scores: ReadonlyMap<string, number>;
@@ -9851,12 +9911,32 @@ export function queryPublicEconomicPotentialsV7(
  * callers choose the integer operation budget and wall time never affects the
  * result.
  */
+export interface PublicPlanningWorkOptionsV7 {
+  /**
+   * The AI scale mode (`pulp_wars-z6za`): a candidate's next placements are
+   * re-scored only in its own city and within `LOCAL_PLANNING_RADIUS_V7`
+   * of its tile; every other placement keeps its score before the
+   * candidate. An approximation (a placement farther away can change only
+   * through city-wide totals), several times cheaper on a large seat. Its
+   * results are kept apart from the exact plan's.
+   */
+  readonly local?: boolean;
+}
+
 export function createPublicPlanningWorkV7(
   view: PlayerViewV7,
   candidates: readonly CommandV7[],
+  options: PublicPlanningWorkOptionsV7 = {},
 ): PublicPlanningWorkV7 {
-  return new IncrementalPublicPlanningWorkV7(view, candidates);
+  return new IncrementalPublicPlanningWorkV7(
+    view,
+    candidates,
+    options.local === true,
+  );
 }
+
+/** The local plan's reach: placements this close to a candidate are re-scored. */
+const LOCAL_PLANNING_RADIUS_V7 = 2;
 
 /** Deterministic one-step per-city public spatial reservation score. */
 export function scorePublicSpatialPlanV7(
@@ -10783,6 +10863,9 @@ function advanceIncrementalBestSelectionV7(
   return false;
 }
 
+const publicPlacementKeyV7 = (placement: PublicPlacementV7): string =>
+  `${placement.kind}:${placement.cityId}:${placement.at.y},${placement.at.x}`;
+
 function comparePublicPlacementV7(
   left: PublicPlacementV7,
   right: PublicPlacementV7,
@@ -10824,11 +10907,15 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
   private readonly scores: PublicSpatialPlanScoreV7[] = [];
   private baseline = 0;
   private completed: PublicPlanningWorkResultV7 | null = null;
+  /** The local plan (`pulp_wars-z6za`): base scores by placement key. */
+  private readonly baseScoreByKey: Map<string, number> | null;
 
   constructor(
     private readonly view: PlayerViewV7,
     candidates: readonly CommandV7[],
+    private readonly local = false,
   ) {
+    this.baseScoreByKey = local ? new Map() : null;
     this.candidates = [...candidates];
     this.graph = publicEconomyGraph(view);
     this.factKeyWork = createPublicPlanningFactKeyWorkV7(view);
@@ -10856,8 +10943,9 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
     if (this.phase === "REUSE_FACT_SCAN") {
       const progress = this.factKeyWork.next();
       if (!progress.done) return true;
-      this.factKey = progress.value;
-      this.reuseEntry = planningReuseEntryV7(progress.value) ?? null;
+      // The local plan's results never stand in for the exact plan's.
+      this.factKey = this.local ? `LOCAL|${progress.value}` : progress.value;
+      this.reuseEntry = planningReuseEntryV7(this.factKey) ?? null;
       this.phase =
         this.reuseEntry === null
           ? this.exact
@@ -10905,6 +10993,7 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
       if (placement !== undefined) {
         const score = scorePublicPlacementV7(this.view, this.graph, placement);
         this.baseScores.set(placement, score);
+        this.baseScoreByKey?.set(publicPlacementKeyV7(placement), score);
         const stats = this.potentialStats.get(placement.kind);
         if (stats !== undefined) {
           stats.targets += 1;
@@ -10964,6 +11053,7 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
         this.view,
         this.enumeration.graph,
         this.enumeration.placementsByCity,
+        this.localKnownScores(),
       );
       this.phase = "CANDIDATE_SELECTION";
       return false;
@@ -11007,6 +11097,42 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
       return false;
     }
     return false;
+  }
+
+  /**
+   * The local plan (`pulp_wars-z6za`): the base score of every placement
+   * after the current candidate that lies outside the candidate's city and
+   * reach; null for the exact plan (every placement is scored).
+   */
+  private localKnownScores(): ReadonlyMap<PublicPlacementV7, number> | null {
+    const byKey = this.baseScoreByKey;
+    const candidate = this.candidates[this.candidateIndex];
+    if (byKey === null || candidate === undefined) return null;
+    // A Road changes trade between cities: every placement is scored.
+    if (candidate.kind === "BUILD_ROAD") return null;
+    const at = "at" in candidate ? candidate.at : null;
+    const cityId =
+      at === null
+        ? "cityId" in candidate
+          ? candidate.cityId
+          : null
+        : (this.graph.board.tiles.find((tile) => same(tile.at, at))
+            ?.territoryCityId ?? null);
+    const known = new Map<PublicPlacementV7, number>();
+    for (const placement of this.enumeration.placements) {
+      if (placement.cityId === cityId) continue;
+      if (
+        at !== null &&
+        Math.max(
+          Math.abs(placement.at.x - at.x),
+          Math.abs(placement.at.y - at.y),
+        ) <= LOCAL_PLANNING_RADIUS_V7
+      )
+        continue;
+      const score = byKey.get(publicPlacementKeyV7(placement));
+      if (score !== undefined) known.set(placement, score);
+    }
+    return known;
   }
 
   private recordCandidateScore(command: CommandV7, score: number): void {
