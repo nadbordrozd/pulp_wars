@@ -2819,16 +2819,8 @@ function applyMonument(
     return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
-  if (
-    state.board.tiles.some(
-      (candidate) =>
-        candidate.territoryCityId === city.id &&
-        candidate.improvement === "MONUMENT",
-    )
-  )
-    return rejected(original, "CITY_BUILDING_LIMIT", {
-      improvement: "MONUMENT",
-    });
+  // Any number of Monuments per city (pulp_wars-d8xm, the user 2026-10-25;
+  // one per city until `7r114`, rejected with CITY_BUILDING_LIMIT).
   if (
     // The frozen sea redesign (section 2.6): or the Ice Folk seat's own ice.
     (tile.biome === null &&

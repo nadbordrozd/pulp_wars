@@ -145,7 +145,7 @@ export function buildingRuleTextV7(
     case "MARKET":
       return `${name}: one per city, next to your ${farm}, ${NAMES.LUMBER_CAMP}, ${NAMES.MINE} or mill; 1–${MARKET_INCOME_CAP_V7} Coins`;
     case "MONUMENT":
-      return `${name}: one per city, built with an achievement; ${population(MONUMENT_POPULATION_V7)}`;
+      return `${name}: built with an achievement, any number per city; ${population(MONUMENT_POPULATION_V7)}`;
     case "PORT":
       return `${name}: on Shallow Water in your borders, next to its city's land, not ice; ${population(dockPopulationV7("PORT", 0))}`;
     case "SHIPYARD":
@@ -177,7 +177,7 @@ function iceFolkBuildingRuleTextV7(
     case "MARKET":
       return `${name}: one per city, land or ice, by a farm, ${hole}, camp, mine or mill; 1–${MARKET_INCOME_CAP_V7} Coins`;
     case "MONUMENT":
-      return `${name}: one per city, on land or your ice, built with an achievement; +${MONUMENT_POPULATION_V7} population`;
+      return `${name}: on land or your ice, built with an achievement, any number per city; +${MONUMENT_POPULATION_V7} population`;
     case "PORT":
       return `${name}: on your ice or Shallow Water (it freezes) by its city's land; +${dockPopulationV7("PORT", 0)} population`;
     case "SHIPYARD":

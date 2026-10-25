@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r114");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r114.current");
-    expect(PRIOR_RULESET_7_IDS.at(-68)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(113);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r115");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r115.current");
+    expect(PRIOR_RULESET_7_IDS.at(-69)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(114);
   });
 });
 

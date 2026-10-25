@@ -768,7 +768,9 @@ It costs 0 and places the shared `MONUMENT` improvement with +3 LIVE population.
 The target must be an explored, owned, non-site tile with no resource or
 improvement, in a non-besieged and non-blacked-out city with no pending reward.
 Any terrain is legal, an existing Road remains, and each city may contain at
-most one Monument. The command marks the entitlement spent, creates the exact
+most one Monument (superseded: any number per city since `7r115`,
+`pulp_wars-d8xm`, [RULESET_7_CURRENT.md section
+5](RULESET_7_CURRENT.md#5-achievements-and-monuments)). The command marks the entitlement spent, creates the exact
 live contribution, recomputes growth/rewards, and emits `MONUMENT_BUILT` before
 economy and level facts.
 
@@ -1707,7 +1709,11 @@ owner or `{ kind: "MONUMENT", visibility: "BUILDING_ONLY", at }` for another
 viewer. The full arm retains the contribution's source achievement after city
 capture even if the current owner has not spent the matching entitlement. The
 redacted arm has no achievement or original-player field, and neither arm
-invents an original-player link.
+invents an original-player link. (Superseded since `7r115`,
+`pulp_wars-d8xm`: every viewer gets `{ kind: "MONUMENT", achievement, at,
+builderFaction }`, with no `visibility`, so a Monument's look never changes
+hands; [RULESET_7_CURRENT.md section
+5](RULESET_7_CURRENT.md#5-achievements-and-monuments).)
 
 `PublicPlayerV7` deliberately omits Coins, researched technologies, exploration,
 Spoils history, achievement entitlements, and achievement progress for non-

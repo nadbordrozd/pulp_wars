@@ -149,6 +149,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/state-schema.ts::parseUnit": "KIND",
   "src/engine/v7/state-schema.ts::validateCrossReferences": "KIND",
   "src/engine/v7/state-schema.ts::burrowedValid": "KIND",
+  // `pulp_wars-d8xm`: a Monument's builder is a seat's faction.
+  "src/engine/v7/state-schema.ts::monumentBuildersMigratedV7": "SEAT",
   // `pulp_wars-1wy.3`: the free Tractor Beam list names units whose role,
   // under its kind (`kindOf`), has the Heavy Tractor Beam.
   "src/engine/v7/state-schema.ts::martianTurnListsValid": "KIND",

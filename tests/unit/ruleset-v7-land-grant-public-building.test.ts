@@ -74,32 +74,45 @@ describe("ruleset-7 public city-building limits", () => {
     ["Land Grant", false, true],
     ["expansion", true, false],
   ] as const)(
-    "uses the radius-two %s footprint for Shipyard and Monument limits",
+    "uses the radius-two %s footprint for the Shipyard limit, and offers Monuments regardless",
     (_label, expanded, landGrantUsed) => {
-      for (const kind of ["BUILD_SHIPYARD", "BUILD_MONUMENT"] as const) {
-        const fixture = buildingFixture({
-          expanded,
-          landGrantUsed,
-          kind,
-          support: null,
-        });
+      const fixture = buildingFixture({
+        expanded,
+        landGrantUsed,
+        kind: "BUILD_SHIPYARD",
+        support: null,
+      });
 
-        expect(queryPlayerCommandsV7(fixture.hidden)).not.toContainEqual(
-          fixture.command,
-        );
-        expect(canonicalHash(fixture.hiddenBlocked)).toBe(
-          canonicalHash(fixture.hidden),
-        );
-        expect(queryPlayerCommandsV7(fixture.hidden)).toContainEqual(
-          fixture.repeatable,
-        );
-        expect(queryPlayerCommandsV7(fixture.complete)).toContainEqual(
-          fixture.command,
-        );
-        expect(
-          queryPlayerCommandsV7(fixture.completeBlocked),
-        ).not.toContainEqual(fixture.command);
-      }
+      expect(queryPlayerCommandsV7(fixture.hidden)).not.toContainEqual(
+        fixture.command,
+      );
+      expect(canonicalHash(fixture.hiddenBlocked)).toBe(
+        canonicalHash(fixture.hidden),
+      );
+      expect(queryPlayerCommandsV7(fixture.hidden)).toContainEqual(
+        fixture.repeatable,
+      );
+      expect(queryPlayerCommandsV7(fixture.complete)).toContainEqual(
+        fixture.command,
+      );
+      expect(queryPlayerCommandsV7(fixture.completeBlocked)).not.toContainEqual(
+        fixture.command,
+      );
+      // Any number of Monuments per city (pulp_wars-d8xm): neither a
+      // fogged footprint nor a Monument already in the city withholds one.
+      const monument = buildingFixture({
+        expanded,
+        landGrantUsed,
+        kind: "BUILD_MONUMENT",
+        support: null,
+      });
+      for (const view of [
+        monument.hidden,
+        monument.hiddenBlocked,
+        monument.complete,
+        monument.completeBlocked,
+      ])
+        expect(queryPlayerCommandsV7(view)).toContainEqual(monument.command);
     },
   );
 

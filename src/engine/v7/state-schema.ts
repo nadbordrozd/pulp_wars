@@ -273,7 +273,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const players =
     setup === null ? null : parsePlayers(input.players, setup.factions);
   const cities = parseCities(input.cities);
-  const contributions = parseContributions(input.populationContributions);
+  const storedContributions = parseContributions(input.populationContributions);
+  // pulp_wars-d8xm: every Monument names its builder's faction.
+  const contributions =
+    storedContributions === null || players === null || cities === null
+      ? null
+      : monumentBuildersMigratedV7(storedContributions, cities, players);
   // The Mind Control revision (section 2.1): a unit's role rule resolves
   // through its kind, so the controlled list is read first.
   const mindControlled = parseMindControlled(input.mindControlled);
@@ -1005,11 +1010,82 @@ function parseRewards(input: unknown): readonly CityRewardRecordV7[] | null {
   return values;
 }
 
+/**
+ * A Monument source as a stored state may hold it: without its builder's
+ * faction when the state was written by hand or before the field existed
+ * (pulp_wars-d8xm migrates it, `monumentBuildersMigratedV7`).
+ */
+type StoredContributionSourceV7 =
+  | Exclude<PopulationContributionSourceV7, { kind: "MONUMENT" }>
+  | (Omit<
+      Extract<PopulationContributionSourceV7, { kind: "MONUMENT" }>,
+      "builderFaction"
+    > & { readonly builderFaction?: FactionIdV7 });
+
+type StoredContributionV7 = Omit<PopulationContributionV7, "source"> & {
+  readonly source: StoredContributionSourceV7;
+};
+
+/**
+ * The builder of every Monument (pulp_wars-d8xm, the user 2026-10-25: a
+ * Monument's look is fixed by the faction that built it for the rest of the
+ * match). A stored Monument without `builderFaction` is read as built by
+ * its current owner's faction; when that faction has no seat left that spent
+ * the achievement (the cross-reference check below allows no more
+ * Monuments of an achievement and faction than such seats), the first seat
+ * in player order whose faction still has one. Deterministic, in
+ * contribution order; a Monument whose city is unknown is left to the
+ * cross-reference check (null).
+ */
+function monumentBuildersMigratedV7(
+  contributions: readonly StoredContributionV7[],
+  cities: readonly CityStateV7[],
+  players: readonly PlayerStateV7[],
+): readonly PopulationContributionV7[] | null {
+  const slot = (achievement: AchievementIdV7, faction: FactionIdV7) =>
+    `${achievement}:${faction}`;
+  const spare = new Map<string, number>();
+  for (const player of players)
+    for (const entitlement of player.achievementEntitlements)
+      if (entitlement.spent) {
+        const at = slot(entitlement.achievement, player.faction);
+        spare.set(at, (spare.get(at) ?? 0) + 1);
+      }
+  for (const { source } of contributions)
+    if (source.kind === "MONUMENT" && source.builderFaction !== undefined) {
+      const at = slot(source.achievement, source.builderFaction);
+      spare.set(at, (spare.get(at) ?? 0) - 1);
+    }
+  const migrated: PopulationContributionV7[] = [];
+  for (const contribution of contributions) {
+    const { source } = contribution;
+    if (source.kind !== "MONUMENT" || source.builderFaction !== undefined) {
+      migrated.push(contribution as PopulationContributionV7);
+      continue;
+    }
+    const ownerId = cities.find(
+      (city) => city.id === contribution.cityId,
+    )?.ownerId;
+    const owner = players.find((player) => player.id === ownerId);
+    if (owner === undefined) return null;
+    const funded = (faction: FactionIdV7) =>
+      (spare.get(slot(source.achievement, faction)) ?? 0) > 0;
+    const builderFaction = funded(owner.faction)
+      ? owner.faction
+      : (players.find((player) => funded(player.faction))?.faction ??
+        owner.faction);
+    const at = slot(source.achievement, builderFaction);
+    spare.set(at, (spare.get(at) ?? 0) - 1);
+    migrated.push({ ...contribution, source: { ...source, builderFaction } });
+  }
+  return migrated;
+}
+
 function parseContributions(
   input: unknown,
-): readonly PopulationContributionV7[] | null {
+): readonly StoredContributionV7[] | null {
   if (!isDenseArrayV7(input)) return null;
-  const values: PopulationContributionV7[] = [];
+  const values: StoredContributionV7[] = [];
   for (const candidate of input) {
     if (
       !hasExactKeysV7(candidate, [
@@ -1053,7 +1129,7 @@ function parseContributions(
 
 function parseContributionSource(
   input: unknown,
-): PopulationContributionSourceV7 | null {
+): StoredContributionSourceV7 | null {
   if (
     hasExactKeysV7(input, ["action", "at", "kind"]) &&
     input.kind === "RESOURCE_ACTION" &&
@@ -1069,8 +1145,8 @@ function parseContributionSource(
       : { kind: "RESOURCE_ACTION", action: input.action, at };
   }
   // The builder's faction (bead pulp_wars-eu3r.3) is present on every
-  // Monument a `BUILD_MONUMENT` places; a state written before it has none
-  // and draws the Monument as before.
+  // Monument a `BUILD_MONUMENT` places; a state written by hand or before
+  // it may have none, and is migrated (monumentBuildersMigratedV7).
   const builder =
     typeof input === "object" &&
     input !== null &&
@@ -3345,7 +3421,7 @@ function validateCrossReferences(value: CrossInput): boolean {
   // of that faction that spent it.
   const builtByFaction = new Map<string, number>();
   for (const { source } of contributions)
-    if (source.kind === "MONUMENT" && source.builderFaction !== undefined) {
+    if (source.kind === "MONUMENT") {
       const slot = `${source.achievement}:${source.builderFaction}`;
       builtByFaction.set(slot, (builtByFaction.get(slot) ?? 0) + 1);
     }
@@ -4217,9 +4293,15 @@ function populationLedgerValid(
     if (
       tile.territoryCityId === null ||
       tile.improvement === null ||
-      ["FARM", "LUMBER_CAMP", "MINE", "PORT", "FISHING_HOLE"].includes(
-        tile.improvement,
-      )
+      // Any number of Monuments per city (pulp_wars-d8xm; one until 7r114).
+      [
+        "FARM",
+        "LUMBER_CAMP",
+        "MINE",
+        "PORT",
+        "FISHING_HOLE",
+        "MONUMENT",
+      ].includes(tile.improvement)
     )
       continue;
     const item = `${tile.territoryCityId}:${tile.improvement}`;

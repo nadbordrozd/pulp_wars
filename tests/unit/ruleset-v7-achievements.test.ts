@@ -571,8 +571,7 @@ describe("ruleset-7 achievements and Monuments", () => {
         achievement: "MUSTER",
         cityId: city.id,
         populationAdded: 3,
-        cityHasMonument: false,
-        onePerCityAvailable: true,
+        cityMonuments: 0,
         lostEmptyTile: true,
         complete: true,
       },
@@ -612,6 +611,8 @@ describe("ruleset-7 achievements and Monuments", () => {
         coinDelta: 1,
       });
 
+    // Any number of Monuments per city (pulp_wars-d8xm; it was
+    // CITY_BUILDING_LIMIT until 7r114).
     const sameCity = applyCommandV7(
       unlockEntitlement(state, "ENGINEER"),
       state.humanPlayerId,
@@ -621,10 +622,7 @@ describe("ruleset-7 achievements and Monuments", () => {
         at: emptyOwnedTile(state, city.id),
       },
     );
-    expect(sameCity).toMatchObject({
-      accepted: false,
-      error: { code: "CITY_BUILDING_LIMIT" },
-    });
+    expect(sameCity.accepted ? null : sameCity.error).toBe(null);
     const removed = applyCommandV7(state, state.humanPlayerId, {
       kind: "REDEVELOP",
       at,
@@ -695,7 +693,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toEqual(before);
   });
 
-  it("keeps captured provenance current-owner-only without spending captor entitlements", () => {
+  it("publishes captured provenance to every viewer without spending captor entitlements", () => {
     const { state, monumentAt, targetCityId, formerOwnerId } =
       capturedMonumentState();
     const beforeEntitlements = required(
@@ -742,7 +740,6 @@ describe("ruleset-7 achievements and Monuments", () => {
       expect.objectContaining({
         source: expect.objectContaining({
           kind: "MONUMENT",
-          visibility: "FULL",
           achievement: "ENGINEER",
         }),
       }),
@@ -754,23 +751,33 @@ describe("ruleset-7 achievements and Monuments", () => {
       measure: "POPULATION",
       contributingTiles: [],
     });
+    // pulp_wars-d8xm: the former owner (and every other viewer) sees the
+    // same record, so the Monument's look never changes hands.
     const formerView = viewForV7(captured.state, formerOwnerId);
+    const builderFaction = required(
+      captured.state.players.find((player) => player.id === formerOwnerId),
+      "former owner missing",
+    ).faction;
     expect(formerView.populationContributions).toContainEqual(
       expect.objectContaining({
         amount: 3,
         source: {
           kind: "MONUMENT",
-          visibility: "BUILDING_ONLY",
+          achievement: "ENGINEER",
           at: monumentAt,
+          builderFaction,
         },
       }),
     );
-    expect(formerView.populationContributions).not.toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          source: expect.objectContaining({ achievement: "ENGINEER" }),
-        }),
-      ]),
+    expect(currentView.populationContributions).toContainEqual(
+      expect.objectContaining({
+        source: {
+          kind: "MONUMENT",
+          achievement: "ENGINEER",
+          at: monumentAt,
+          builderFaction,
+        },
+      }),
     );
     expect(
       formerView.players.every(
@@ -1287,7 +1294,15 @@ function capturedMonumentState(): {
     cityId: target.id,
     category: "LIVE",
     amount: MONUMENT_POPULATION_V7,
-    source: { kind: "MONUMENT", achievement: "ENGINEER", at: monumentAt },
+    source: {
+      kind: "MONUMENT",
+      achievement: "ENGINEER",
+      at: monumentAt,
+      builderFaction: required(
+        base.players.find((player) => player.id === target.ownerId),
+        "builder missing",
+      ).faction,
+    },
   };
   return {
     monumentAt,

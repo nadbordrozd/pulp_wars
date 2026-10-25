@@ -4,6 +4,7 @@ import {
   ACHIEVEMENT_IDS_V7,
   viewForV7,
   type AchievementIdV7,
+  type FactionIdV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
 import {
@@ -159,10 +160,13 @@ describe("the achievement Monuments", () => {
 describe("a Monument on the board", () => {
   type Tile = PlayerViewV7["board"]["tiles"][number];
 
-  /** A view with one Monument of `achievement`, seen as its owner or not. */
+  /**
+   * A view with one Monument of `achievement` built by `builderFaction`
+   * (public to every viewer since pulp_wars-d8xm).
+   */
   function monumentView(
     achievement: AchievementIdV7,
-    visibility: "FULL" | "BUILDING_ONLY",
+    builderFaction: FactionIdV7 = "ORIGINAL",
   ): { readonly view: PlayerViewV7; readonly at: Tile["at"] } {
     const state = exploredAllV7(initialV7(1516));
     const live = viewForV7(state, state.humanPlayerId);
@@ -204,10 +208,7 @@ describe("a Monument on the board", () => {
             cityId: city.id,
             category: "LIVE",
             amount: 3,
-            source:
-              visibility === "FULL"
-                ? { kind: "MONUMENT", visibility, achievement, at }
-                : { kind: "MONUMENT", visibility, at },
+            source: { kind: "MONUMENT", achievement, at, builderFaction },
           },
         ],
       },
@@ -226,9 +227,9 @@ describe("a Monument on the board", () => {
         entry.at.y === at.y,
     )?.artSubject;
 
-  it("is drawn in the look of its achievement for the player who may see it", () => {
+  it("is drawn in the look of its achievement for every viewer", () => {
     for (const achievement of ACHIEVEMENT_IDS_V7) {
-      const { view, at } = monumentView(achievement, "FULL");
+      const { view, at } = monumentView(achievement);
       expect(boardSubject(view, at), achievement).toBe(
         `IMPROVEMENT:MONUMENT:${achievement}`,
       );
@@ -238,12 +239,11 @@ describe("a Monument on the board", () => {
     }
   });
 
-  it("stays the shared Monument when the view hides its achievement", () => {
-    // The source achievement of a Monument is owner-only
-    // (docs/product/RULESET_7.md): another player's Monument is projected
-    // BUILDING_ONLY, so its sprite must not tell.
-    const { view, at } = monumentView("SLAYER", "BUILDING_ONLY");
-    expect(boardSubject(view, at)).toBe("IMPROVEMENT:MONUMENT");
+  it("stays the shared Monument only when the view has no record of it", () => {
+    // Since pulp_wars-d8xm every viewer that has explored a Monument sees
+    // its achievement and builder: a foreign builder's look is its own.
+    const { view, at } = monumentView("SLAYER", "UNDEAD");
+    expect(boardSubject(view, at)).toBe("IMPROVEMENT:MONUMENT:UNDEAD:SLAYER");
     // A Monument with no contribution in the view at all.
     expect(
       tileImprovementSubjectV7(
@@ -302,7 +302,7 @@ describe("the Gallery's Monuments", () => {
       name: "Sea Dog Monument",
       factionName: "Human",
       description:
-        "The Monument of the Sea Dog achievement: Own 5 warships at once. Each achievement earns a free Monument: +3 population, one per city. It keeps its builder's look when its city is captured.",
+        "The Monument of the Sea Dog achievement: Own 5 warships at once. Each achievement earns a free Monument: +3 population, any number per city. It keeps its builder's look for the whole match.",
       effects: [],
       cost: null,
       technology: null,

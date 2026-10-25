@@ -123,14 +123,13 @@ export function factionImprovementSubjectV7(
  * achievement that earned it, every other improvement in the look of the
  * faction that owns its territory (factionImprovementSubjectV7).
  *
- * A Monument keeps its builder's faction look whoever owns it now (bead
- * pulp_wars-eu3r.3): the view publishes `builderFaction` to every viewer,
- * and `faction` (the territory owner's) is ignored for it. The view names
- * a Monument's achievement only to the Monument's current owner
- * (`visibility: "FULL"`, docs/product/RULESET_7.md: the source achievement
- * is owner-only), so another player's Monument is its builder's obelisk
- * (`IMPROVEMENT:MONUMENT:<FACTION>`), or the shared `IMPROVEMENT:MONUMENT`
- * when the builder is Human or unknown (monumentArtSubjectV7).
+ * A Monument's look is fixed when it is built, for the rest of the match
+ * and for every viewer (beads pulp_wars-eu3r.3 and pulp_wars-d8xm): the
+ * view publishes its achievement and its builder's faction to everyone who
+ * has explored it, and `faction` (the territory owner's) is ignored for it,
+ * so a capture changes nothing (monumentArtSubjectV7). Only a Monument
+ * missing from the view's contributions falls back to the shared
+ * `IMPROVEMENT:MONUMENT`.
  */
 export function tileImprovementSubjectV7(
   view: Pick<PlayerViewV7, "populationContributions">,
@@ -146,10 +145,7 @@ export function tileImprovementSubjectV7(
       source.at.x === at.x &&
       source.at.y === at.y
     )
-      return monumentArtSubjectV7(
-        source.visibility === "FULL" ? source.achievement : null,
-        source.builderFaction,
-      );
+      return monumentArtSubjectV7(source.achievement, source.builderFaction);
   return monumentArtSubjectV7(null);
 }
 

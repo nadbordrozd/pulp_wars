@@ -793,8 +793,9 @@ export function factionHasImprovementLookV7(
  * "a separate monument sprite for each achievement"): the Explorer's
  * obelisk with a compass, the Conqueror's arch, the Slayer's sword in the
  * stone. Purely visual. Each falls back to the shared `IMPROVEMENT:MONUMENT`
- * (chibiFallbackSubjectV7), which also draws a Monument whose achievement
- * the viewer may not see: another player's.
+ * (chibiFallbackSubjectV7), which also draws a Monument missing from the
+ * view (since pulp_wars-d8xm every viewer sees every explored Monument's
+ * achievement; before, another player's was drawn as the shared one).
  */
 export type MonumentArtSubjectV7 =
   `IMPROVEMENT:MONUMENT:${AchievementIdV7}` | FactionMonumentArtSubjectV7;

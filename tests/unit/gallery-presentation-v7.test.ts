@@ -456,13 +456,13 @@ describe("Gallery presentation", () => {
         technology: null,
       });
       expect(details.description).toBe(
-        `The Monument of the ${achievementNameV7(achievement)} achievement: ${ACHIEVEMENT_GOALS_V7[achievement]} Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
+        `The Monument of the ${achievementNameV7(achievement)} achievement: ${ACHIEVEMENT_GOALS_V7[achievement]} Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, any number per city. It keeps its builder's look for the whole match.`,
       );
     }
     expect(galleryBuildingDetailsV7("MONUMENT", "UNDEAD")).toMatchObject({
       name: "Monument",
       factionName: "Undead",
-      description: `Another player's Monument: its achievement stays hidden. Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
+      description: `The faction's plain Monument. Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, any number per city. It keeps its builder's look for the whole match.`,
     });
     // A faction the Gallery hides has its Monuments ready (the Cult,
     // tests/unit/gallery-unhidden-factions-v7.test.ts).

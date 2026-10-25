@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r114" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r115" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -125,8 +125,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r111",
   "pulp-wars-poc-7r112",
   "pulp-wars-poc-7r113",
+  "pulp-wars-poc-7r114",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r114.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r115.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -1404,13 +1405,14 @@ export type PopulationContributionSourceV7 =
       readonly at: CoordV7;
       /**
        * The faction of the player whose `BUILD_MONUMENT` placed it (bead
-       * pulp_wars-eu3r.3, the user 2026-10-08): unlike every other
-       * building, a Monument keeps its builder's look when another faction
-       * captures its city, so a capture never changes this. Absent only in
-       * a state written before the field existed, which draws the Monument
-       * as before (the achievement's shared look).
+       * pulp_wars-eu3r.3, the user 2026-10-08; required since
+       * pulp_wars-d8xm, the user 2026-10-25): unlike every other building,
+       * a Monument keeps its builder's look for the rest of the match, so a
+       * capture never changes this. A stored state without it (a hand-built
+       * or mission state) is read with the current owner's faction
+       * (`parseGameStateV7`, `monumentBuildersMigratedV7`).
        */
-      readonly builderFaction?: FactionIdV7;
+      readonly builderFaction: FactionIdV7;
     };
 
 export interface PopulationContributionV7 {

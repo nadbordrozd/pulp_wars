@@ -197,7 +197,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     expect(
       document.querySelector(".v7-info-screen .v7-screen-lede")?.textContent,
     ).toBe(
-      "Each achievement earns a free Monument: +3 population, one per city.",
+      "Each achievement earns a free Monument: +3 population, any number per city.",
     );
     // The economy rejig (`pulp_wars-w49.16`, 7r54): no achievement waits
     // for a technology (Explorer read "Needs Scouting" and Muster "Needs

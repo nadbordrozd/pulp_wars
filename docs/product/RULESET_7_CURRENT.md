@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r114`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r115`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r115` (`pulp_wars-d8xm`; the user, 2026-10-25, of
+Monuments: "they should keep their skin when they change hands ... drop
+the limitation that only one monument can be constructed in a given city") is
+**Monuments, any number and a fixed look**
+([section 5](#5-achievements-and-monuments)). A city may hold any number
+of Monuments (one before; `BUILD_MONUMENT` no longer answers
+`CITY_BUILDING_LIMIT`, and the state accepts several in one city), each
++3; every other placement gate stands. A Monument's look is fixed when it
+is built, for every viewer: the view publishes its achievement and its
+builder's faction to everyone who has explored it (the achievement was
+the current owner's alone, so the sprite another seat saw changed when
+the city changed hands), and `builderFaction` is required in the state (a
+stored Monument without it is read as its current owner's). The Monument
+preview's `cityHasMonument` and `onePerCityAvailable` give way to
+`cityMonuments`. A save, replay, or setup of `7r114` is rejected, and the
+browser autosave has a new key. Boards and missions are unchanged.
 `pulp-wars-poc-7r114` (`pulp_wars-sa3h`; the user, 2026-10-25: "when
 you get a unit from a city level up ... the new unit should appear on the
 city tile and push away whatever unit was standing on that tile before; AI
@@ -1737,10 +1753,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r114`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r115`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r114.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r115.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -5141,10 +5157,17 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   `7r54`, 2 from tuning 1, `7r46`, to `7r53`, and 3 before), on an explored owned Grass tile, or Forest with
   Forestry (cleared), never a Mountain, with no site, improvement, or
   treasure; a resource under it is used up (`7r106`,
-  [section 8.1](#81-common-placement-gates)), at most one Monument
-  per city, no pending reward, and no hostile unit on the tile (a siege
-  has not mattered since `7r80`). A player can therefore place at most
-  seven Monuments in a match, never more than one per owned city.
+  [section 8.1](#81-common-placement-gates)), no pending reward, and no
+  hostile unit on the tile (a siege has not mattered since `7r80`).
+  **A city may hold any number of Monuments** (`pulp_wars-d8xm`, the user
+  2026-10-25, identity `pulp-wars-poc-7r115`; until `7r114` at most one
+  per city, rejected with `CITY_BUILDING_LIMIT`): each adds its own +3,
+  so a city's Monuments add up, and a captured city brings all of its
+  Monuments with it. A player can therefore place at most seven Monuments
+  in a match, in any of its cities. The Monument preview reports
+  `cityMonuments`, the Monuments the city already has (it carried the
+  constants `cityHasMonument: false` and `onePerCityAvailable: true`
+  before).
 - **A Monument keeps its builder's look** (`pulp_wars-eu3r.3`, the user
   2026-10-08). Unlike every other building, which takes the look of the
   faction that owns its territory, a Monument is drawn in the faction of
@@ -5157,16 +5180,32 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   and Pillage remove the Monument and its record together. A state
   validates `builderFaction` as a faction ID held by at least as many
   seats that spent that achievement as there are Monuments of that
-  achievement and faction. The view publishes it to every viewer that sees
-  the Monument (both the owner's `FULL` source and everyone else's
-  `BUILDING_ONLY` one); the achievement stays the current owner's. The
-  board draws `IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` for the
-  owner and the builder's obelisk `IMPROVEMENT:MONUMENT:<FACTION>` for
-  everyone else; a Human Monument keeps the shared subjects
-  (`IMPROVEMENT:MONUMENT:<ACHIEVEMENT>`, or `IMPROVEMENT:MONUMENT`), and so
-  does a Monument of an older state that has no `builderFaction`. The
-  build button and the Achievements screen show the viewer's own faction's
-  Monument. No rule, price, or population changed.
+  achievement and faction.
+- **The look is fixed for the whole match, for every viewer**
+  (`pulp_wars-d8xm`, the user 2026-10-25: "when a monument is constructed
+  the sprite is determined by the faction that constructed it and it will
+  stay this same way for the rest of the match"; identity
+  `pulp-wars-poc-7r115`). From `7r69` to `7r114` the view named a
+  Monument's achievement to its current owner only (`visibility: "FULL"`)
+  and everyone else saw the builder's obelisk (`BUILDING_ONLY`), so the
+  sprite each seat saw still changed when the city changed hands. Since
+  `7r115` the view publishes the Monument's source, `{ kind: "MONUMENT",
+achievement, at, builderFaction }`, to every viewer that has explored its
+  tile, with no `visibility` field, and the board and the tile dock draw
+  `IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` for everyone (a Human
+  Monument `IMPROVEMENT:MONUMENT:<ACHIEVEMENT>`); the tile dock's
+  "<Achievement> monument" chip shows for every viewer. The obelisks
+  (`IMPROVEMENT:MONUMENT:<FACTION>`, `IMPROVEMENT:MONUMENT`) are the
+  Gallery's plain Monuments and the fallback of a Monument missing from the
+  view. `builderFaction` is required in the state: a stored state without
+  it (hand-built, or a mission's) is read with the faction of the
+  Monument's current owner, or, when no seat of that faction spent the
+  achievement, the first seat in player order whose faction did and has a
+  Monument to spare (deterministic, in contribution order). The
+  `MONUMENT_BUILT` event projection is unchanged (`FULL` for the city's
+  owner, `BUILDING_ONLY` for everyone else). Every other building still
+  takes the look of the faction that owns its territory. The build button
+  and the Achievements screen show the viewer's own faction's Monument.
 - Spent entitlements stay spent if the Monument is removed or captured;
   captured Monuments keep their +3 for the captor. A level-1 city with an
   empty meter reaches level 2 with 1 toward level 3; a level-2 city reaches
@@ -5919,7 +5958,7 @@ reserve holds the gathering back.
 | Forge    | Metallurgy     |    6 | one/city | at least one adjacent same-owner Mine                                     | +1 per adjacent same-owner Mine, cap 6                                                                     |
 | Workshop | Drill (`7r56`) |    4 | one/city | at least one adjacent same-owner Farm, Fishing Hole, Lumber Camp, or Mine | 0 without support; else 1 + number of distinct adjacent basic types (2–4; a Fishing Hole is the Farm type) |
 | Market   | Administration |    6 | one/city | at least one adjacent economic family                                     | Coins, not population ([section 9.4](#94-market))                                                          |
-| Monument | achievement    |    0 | one/city | an unspent achievement entitlement                                        | +3                                                                                                         |
+| Monument | achievement    |    0 | any      | an unspent achievement entitlement                                        | +3 each (any number per city since `7r115`, one before)                                                    |
 
 - Buildings target a Grass tile, or a Forest with Forestry (cleared), with
   no site, improvement, or treasure, never a Mountain, whatever its resource

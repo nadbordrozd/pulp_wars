@@ -936,7 +936,7 @@ describe("Ruleset 7 Gallery", () => {
     expect(required("#v7-gallery-detail-title").textContent).toBe("Monument");
     expect(required(".v7-gallery-detail-faction").textContent).toBe("Candy");
     expect(required(".v7-gallery-description").textContent).toContain(
-      "Another player's Monument: its achievement stays hidden.",
+      "The faction's plain Monument.",
     );
     expect(
       required(".v7-gallery-detail canvas.v7-gallery-tile").dataset.subject,

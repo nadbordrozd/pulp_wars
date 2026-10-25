@@ -272,49 +272,84 @@ describe("a Monument's builder (pulp_wars-eu3r.3)", () => {
     });
   });
 
-  it("is published to every viewer; the achievement stays the owner's", () => {
+  it("is published, achievement and builder, to every viewer (pulp_wars-d8xm)", () => {
     const { state, at, captorId, builderId } = capture(build(match("UNDEAD")));
-    // The captor owns it now: FULL, with the achievement.
-    expect(viewSource(viewForV7(state, captorId), at)).toEqual({
+    const published = {
       kind: "MONUMENT",
-      visibility: "FULL",
       achievement: ACHIEVEMENT,
       at,
       builderFaction: "UNDEAD",
-    });
-    // The builder lost it: the building and its builder only.
-    expect(viewSource(viewForV7(state, builderId), at)).toEqual({
-      kind: "MONUMENT",
-      visibility: "BUILDING_ONLY",
-      at,
-      builderFaction: "UNDEAD",
-    });
+    };
+    // The captor owns it now; the builder lost it: both see the same.
+    expect(viewSource(viewForV7(state, captorId), at)).toEqual(published);
+    expect(viewSource(viewForV7(state, builderId), at)).toEqual(published);
   });
 
-  it("draws a captured Undead Monument in the Undead look for both seats", () => {
+  it("draws a captured Undead Monument in the same Undead look for both seats, before and after", () => {
     const built = build(match("UNDEAD"));
-    // Before the capture: the builder sees its achievement, the other seat
-    // the Undead obelisk.
-    expect(subjects(viewForV7(built.state, built.builderId), built.at)).toEqual(
-      {
-        board: "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
-        dock: "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
-      },
-    );
-    expect(subjects(viewForV7(built.state, built.captorId), built.at)).toEqual({
-      board: "IMPROVEMENT:MONUMENT:UNDEAD",
-      dock: "IMPROVEMENT:MONUMENT:UNDEAD",
-    });
-    const { state, at, captorId, builderId } = capture(built);
-    // The Human captor owns Human territory around an Undead Monument.
-    expect(subjects(viewForV7(state, captorId), at)).toEqual({
+    const look = {
       board: "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
       dock: "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+    };
+    expect(subjects(viewForV7(built.state, built.builderId), built.at)).toEqual(
+      look,
+    );
+    expect(subjects(viewForV7(built.state, built.captorId), built.at)).toEqual(
+      look,
+    );
+    const { state, at, captorId, builderId } = capture(built);
+    // The Human captor owns Human territory around an Undead Monument.
+    expect(subjects(viewForV7(state, captorId), at)).toEqual(look);
+    expect(subjects(viewForV7(state, builderId), at)).toEqual(look);
+  });
+
+  it("keeps the builder's look while the city's other buildings take the captor's", () => {
+    const built = build(match("UNDEAD"));
+    const forgeAt = required(
+      built.state.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === built.cityId &&
+          tile.site === null &&
+          tile.improvement === null &&
+          !same(tile.at, built.at),
+      ),
+      "a second building tile",
+    ).at;
+    // A Forge beside the Monument, as the board reads it (only the view
+    // decides the look).
+    const withForge = (view: PlayerViewV7): PlayerViewV7 => ({
+      ...view,
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) =>
+          tile.explored && same(tile.at, forgeAt)
+            ? { ...tile, improvement: "FORGE" }
+            : tile,
+        ),
+      },
     });
-    expect(subjects(viewForV7(state, builderId), at)).toEqual({
-      board: "IMPROVEMENT:MONUMENT:UNDEAD",
-      dock: "IMPROVEMENT:MONUMENT:UNDEAD",
-    });
+    const forgeSubject = (view: PlayerViewV7) =>
+      buildBoardRenderPlanV7(view, [], {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      }).entries.find(
+        (entry) => entry.kind === "IMPROVEMENT" && same(entry.at, forgeAt),
+      )?.artSubject;
+    const before = withForge(viewForV7(built.state, built.builderId));
+    expect(forgeSubject(before)).toBe("IMPROVEMENT:UNDEAD:FORGE");
+    expect(subjects(before, built.at).board).toBe(
+      "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+    );
+    const { state, at, captorId, builderId } = capture(built);
+    for (const viewer of [captorId, builderId]) {
+      const after = withForge(viewForV7(state, viewer));
+      // The Forge re-skins to the Human captor; the Monument does not.
+      expect(forgeSubject(after), String(viewer)).toBe("IMPROVEMENT:FORGE");
+      expect(subjects(after, at).board, String(viewer)).toBe(
+        "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+      );
+    }
   });
 
   it("keeps a captured Human Monument Human inside Undead borders", () => {
@@ -324,14 +359,11 @@ describe("a Monument's builder (pulp_wars-eu3r.3)", () => {
     expect(
       state.players.find((player) => player.id === captorId)?.faction,
     ).toBe("UNDEAD");
-    expect(subjects(viewForV7(state, captorId), at)).toEqual({
-      board: "IMPROVEMENT:MONUMENT:SLAYER",
-      dock: "IMPROVEMENT:MONUMENT:SLAYER",
-    });
-    expect(subjects(viewForV7(state, builderId), at)).toEqual({
-      board: "IMPROVEMENT:MONUMENT",
-      dock: "IMPROVEMENT:MONUMENT",
-    });
+    for (const viewer of [captorId, builderId])
+      expect(subjects(viewForV7(state, viewer), at)).toEqual({
+        board: "IMPROVEMENT:MONUMENT:SLAYER",
+        dock: "IMPROVEMENT:MONUMENT:SLAYER",
+      });
   });
 
   it("survives a capture by any unit: a Martian Saucer, a Gingerbread Man", () => {
@@ -356,13 +388,13 @@ describe("a Monument's builder (pulp_wars-eu3r.3)", () => {
       expect(monumentSource(state, at), captor).toMatchObject({
         builderFaction: "UNDEAD",
       });
-      // The captor's territory, the builder's look.
+      // The captor's territory, the builder's look, for both seats.
       expect(subjects(viewForV7(state, captorId), at), captor).toEqual({
         board: "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
         dock: "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
       });
       expect(subjects(viewForV7(state, builderId), at).board, captor).toBe(
-        "IMPROVEMENT:MONUMENT:UNDEAD",
+        "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
       );
     }
     expect(
@@ -377,34 +409,34 @@ describe("a Monument's builder (pulp_wars-eu3r.3)", () => {
     ).toBeDefined();
   });
 
-  it("falls back to the achievement's shared look in a state without it", () => {
-    const { state, at, captorId, builderId } = capture(build(match("UNDEAD")));
-    // A state written before the field: the Monument has no builder.
-    const legacy = parseGameStateV7(
-      JSON.parse(
-        JSON.stringify(state, (key, value: unknown) =>
-          key === "builderFaction" ? undefined : value,
+  it("reads a stored Monument without a builder as its owner's, or a seat that spent it (pulp_wars-d8xm)", () => {
+    const strip = (state: GameStateV7) =>
+      parseGameStateV7(
+        JSON.parse(
+          JSON.stringify(state, (key, value: unknown) =>
+            key === "builderFaction" ? undefined : value,
+          ),
         ),
-      ),
-    );
-    if (legacy === null) throw new Error("legacy state rejected");
-    expect(monumentSource(legacy, at)).toEqual({
+      );
+    // Not captured: the current owner built it.
+    const built = build(match("UNDEAD"));
+    const own = strip(built.state);
+    if (own === null) throw new Error("stored state rejected");
+    expect(own).toEqual(built.state);
+    // Captured: the Human captor never spent the Slayer, so the seat that
+    // did (the Undead) is read as the builder; the state stays valid.
+    const captured = capture(built);
+    const taken = strip(captured.state);
+    if (taken === null) throw new Error("stored captured state rejected");
+    expect(monumentSource(taken, captured.at)).toEqual({
       kind: "MONUMENT",
       achievement: ACHIEVEMENT,
-      at,
+      at: captured.at,
+      builderFaction: "UNDEAD",
     });
-    expect(viewSource(viewForV7(legacy, builderId), at)).toEqual({
-      kind: "MONUMENT",
-      visibility: "BUILDING_ONLY",
-      at,
-    });
-    expect(subjects(viewForV7(legacy, captorId), at)).toEqual({
-      board: "IMPROVEMENT:MONUMENT:SLAYER",
-      dock: "IMPROVEMENT:MONUMENT:SLAYER",
-    });
-    expect(subjects(viewForV7(legacy, builderId), at).board).toBe(
-      "IMPROVEMENT:MONUMENT",
-    );
+    expect(taken).toEqual(captured.state);
+    // The migration is deterministic: the canonical state round-trips.
+    expect(parseGameStateV7(JSON.parse(JSON.stringify(taken)))).toEqual(taken);
   });
 
   it("rejects a builder that is no faction, or no seat that spent the achievement", () => {

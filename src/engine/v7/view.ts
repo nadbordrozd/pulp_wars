@@ -372,26 +372,22 @@ export type PublicPopulationContributionV7 =
       readonly category: "LIVE";
       /** `MONUMENT_POPULATION_V7` (3 since the economy rejig, 7r54). */
       readonly amount: 3;
-      readonly source:
-        | {
-            readonly kind: "MONUMENT";
-            readonly visibility: "FULL";
-            readonly achievement: AchievementIdV7;
-            readonly at: CoordV7;
-            /** The builder's faction, public (pulp_wars-eu3r.3). */
-            readonly builderFaction?: FactionIdV7;
-          }
-        | {
-            readonly kind: "MONUMENT";
-            readonly visibility: "BUILDING_ONLY";
-            readonly at: CoordV7;
-            /**
-             * The builder's faction (pulp_wars-eu3r.3): public, as the
-             * Monument's look shows it to everyone; the achievement stays
-             * the current owner's.
-             */
-            readonly builderFaction?: FactionIdV7;
-          };
+      /**
+       * Public to every viewer that has explored its tile (pulp_wars-d8xm,
+       * the user 2026-10-25): a Monument's look is fixed for the whole
+       * match by the faction that built it and the achievement that paid
+       * for it, whoever owns it now and whoever looks, so both are
+       * published. (From revision 5 to `7r114` the achievement was the
+       * current owner's alone, and another viewer saw the builder's
+       * obelisk, so the look changed when the city changed hands.)
+       */
+      readonly source: {
+        readonly kind: "MONUMENT";
+        readonly achievement: AchievementIdV7;
+        readonly at: CoordV7;
+        /** The builder's faction (pulp_wars-eu3r.3). */
+        readonly builderFaction: FactionIdV7;
+      };
     });
 
 export interface PlayerViewV7 {
@@ -933,20 +929,9 @@ export function viewForV7(
           ...contribution,
           category: "LIVE",
           amount: MONUMENT_POPULATION_V7,
-          source:
-            owner === viewerId
-              ? {
-                  ...contribution.source,
-                  visibility: "FULL" as const,
-                }
-              : {
-                  kind: "MONUMENT" as const,
-                  visibility: "BUILDING_ONLY" as const,
-                  at: contribution.source.at,
-                  ...(contribution.source.builderFaction === undefined
-                    ? {}
-                    : { builderFaction: contribution.source.builderFaction }),
-                },
+          // Public (pulp_wars-d8xm): its achievement and builder fix its
+          // look for every viewer.
+          source: contribution.source,
         },
       ];
     },

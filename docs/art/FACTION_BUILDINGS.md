@@ -607,7 +607,12 @@ Purely visual: no rule, command, save or identity changed.
   source achievement is limited to the current owner"). Another player's
   Monument is therefore the shared obelisk. Showing it in its own look
   would be a rules decision and a change of the view projection
-  (`src/engine/v7/view.ts`), not an art change.
+  (`src/engine/v7/view.ts`), not an art change. **That decision was made
+  in `pulp_wars-d8xm`** (the user, 2026-10-25, identity `7r115`): the view
+  publishes every Monument's achievement and builder to every viewer, so
+  each seat sees the same achievement Monument in the builder's materials
+  for the whole match, and the obelisks are only the Gallery's plain
+  Monuments and the fallback of a Monument missing from the view.
 - The Monument build button shows its achievement's Monument
   (`commandSubjectV7`), the Achievements screen shows each one beside its
   card, the "achievement complete" notice shows it in the badge, and the
@@ -1112,13 +1117,17 @@ Classic look).
 Monument keeps its builder's faction look whoever owns it now. The engine
 records the builder's faction on the Monument (`builderFaction` on its
 population contribution, docs/product/RULESET_7_CURRENT.md section 5) and the
-view publishes it to every viewer. The board and the dock
-(`tileImprovementSubjectV7`, through `monumentArtSubjectV7`) ask a FULL
-viewer (the current owner) for `IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`
-and everyone else for the builder's obelisk `IMPROVEMENT:MONUMENT:<FACTION>`;
-a Human Monument, and one without a recorded builder, keeps the Human
-subjects (`IMPROVEMENT:MONUMENT:<ACHIEVEMENT>` or the shared
-`IMPROVEMENT:MONUMENT`). The build buttons and the Achievements screen show
+view publishes it to every viewer. Since bead `pulp_wars-d8xm` (the user
+2026-10-25, `7r115`: the sprite "will stay this same way for the rest of
+the match") the view also publishes the achievement to every viewer, so
+the board and the dock (`tileImprovementSubjectV7`, through
+`monumentArtSubjectV7`) ask every viewer for
+`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` (a Human Monument keeps the
+Human `IMPROVEMENT:MONUMENT:<ACHIEVEMENT>`); until then only the current
+owner saw that and everyone else the builder's obelisk, which is now only
+the fallback of a Monument missing from the view. Every stored Monument
+has a builder (`builderFaction` is required; a state without it is read
+as the current owner's). The build buttons and the Achievements screen show
 the viewer's own faction's Monument. The Gallery shows every one of them
 (bead `pulp_wars-2yc.44`, the user 2026-10-10: "all skins for all the
 monuments for all factions"): the Buildings tab's "Monument" row is the

@@ -780,7 +780,9 @@ function appendPublicTileCommandsV7(
     // Siege rules (`pulp_wars-0pgd`, 7r80): a siege does not block it; a
     // hostile unit on the tile does.
     !publicTileEnemyOccupiedV7(view, tile.at) &&
-    publicCityDevelopmentFootprintKnown(view, monumentCity) &&
+    // Any number of Monuments per city (pulp_wars-d8xm): a fogged tile of
+    // the city's footprint no longer matters (it might have held the
+    // city's one Monument until 7r114).
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
     // The frozen sea redesign (section 2.6): or the Ice Folk seat's own ice.
     (tile.biome !== null ||
@@ -795,8 +797,8 @@ function appendPublicTileCommandsV7(
     publicGeneralBuildingTileV7(view, tile) &&
     !view.treasureChests.some((chest) => same(chest, tile.at)) &&
     tile.site === null &&
-    tile.improvement === null &&
-    !cityHasImprovement(view, monumentCity.id, "MONUMENT")
+    // Any number of Monuments per city (pulp_wars-d8xm).
+    tile.improvement === null
   )
     for (const entitlement of view.viewer.achievementEntitlements)
       if (entitlement.unlocked && !entitlement.spent)
@@ -6580,8 +6582,12 @@ export interface MonumentPreviewV7 {
   readonly entitlement: AchievementEntitlementV7;
   readonly at: CoordV7;
   readonly cityId: CityId;
-  readonly cityHasMonument: false;
-  readonly onePerCityAvailable: true;
+  /**
+   * The Monuments the city already has (pulp_wars-d8xm: any number per
+   * city; until `7r114` a city had at most one, and this preview carried
+   * `cityHasMonument: false` and `onePerCityAvailable: true`).
+   */
+  readonly cityMonuments: number;
   readonly populationAdded: 3;
   readonly levelsReached: readonly number[];
   readonly rewardWork: readonly Extract<
@@ -6664,8 +6670,12 @@ export function previewMonumentV7(
       entitlement,
       at: command.at,
       cityId: tile.territoryCityId,
-      cityHasMonument: false,
-      onePerCityAvailable: true,
+      cityMonuments: view.board.tiles.filter(
+        (candidate) =>
+          candidate.explored &&
+          candidate.territoryCityId === city.id &&
+          candidate.improvement === "MONUMENT",
+      ).length,
       populationAdded: MONUMENT_POPULATION_V7,
       levelsReached,
       rewardWork,
@@ -10621,8 +10631,8 @@ function appendPublicPlacementsForTileV7(
       publicGraphGeneralBuildingTileV7(view, tile) &&
       tile.site === null &&
       tile.improvement === null &&
-      !treasureKeys.has(coordKeyV7(tile.at)) &&
-      !cityImprovementKeys.has(`${tile.territoryCityId}:MONUMENT`)
+      // Any number of Monuments per city (pulp_wars-d8xm).
+      !treasureKeys.has(coordKeyV7(tile.at))
     )
       placements.push({
         cityId: tile.territoryCityId,

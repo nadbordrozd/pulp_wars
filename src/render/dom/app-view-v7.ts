@@ -11397,7 +11397,7 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city.`,
+        `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, any number per city.`,
         "v7-screen-lede",
       ),
     );
@@ -19232,7 +19232,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r114",
+    rulesetId: "pulp-wars-poc-7r115",
     seed,
     width,
     height: width,
@@ -19840,8 +19840,8 @@ export function monumentSourceForViewerV7(
     (candidate) =>
       candidate.source.kind === "MONUMENT" && same(candidate.source.at, at),
   );
-  return contribution?.source.kind === "MONUMENT" &&
-    contribution.source.visibility === "FULL"
+  // Public to every viewer since pulp_wars-d8xm (it was the owner's alone).
+  return contribution?.source.kind === "MONUMENT"
     ? contribution.source.achievement
     : null;
 }

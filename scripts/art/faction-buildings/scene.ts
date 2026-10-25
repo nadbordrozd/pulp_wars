@@ -250,7 +250,7 @@ export function factionBuildingsSceneViewV7(
         : {}),
     } as Tile;
   });
-  // A Monument's achievement is in the view for its owner only.
+  // A Monument's achievement and builder are public (pulp_wars-d8xm).
   const populationContributions: PlayerViewV7["populationContributions"][number][] =
     [];
   const cities: PlayerViewV7["cities"][number][] = [];
@@ -276,15 +276,13 @@ export function factionBuildingsSceneViewV7(
           cityId: cityId(cell.seat),
           category: "LIVE",
           amount: 3,
-          source:
-            playerId(cell.seat) === viewerId
-              ? {
-                  kind: "MONUMENT",
-                  visibility: "FULL",
-                  achievement: cell.achievement,
-                  at,
-                }
-              : { kind: "MONUMENT", visibility: "BUILDING_ONLY", at },
+          // Built by the seat whose half it stands in, whoever holds it now.
+          source: {
+            kind: "MONUMENT",
+            achievement: cell.achievement,
+            at,
+            builderFaction: players[cell.seat]?.faction ?? faction,
+          },
         });
       if (cell.unit)
         units.push({

@@ -683,14 +683,15 @@ describe("Ruleset 7 public presentation", () => {
     ]);
   });
 
-  it("shows Monument provenance only from the FULL current-owner projection", () => {
+  it("shows Monument provenance to every viewer (pulp_wars-d8xm)", () => {
     const state = initialV7(1525);
     const view = viewForV7(state, state.humanPlayerId);
     const city = view.cities.find(
       (candidate) => candidate.ownerId === view.viewer.id,
     );
-    if (city === undefined) throw new Error("owned city missing");
-    const full: PlayerViewV7 = {
+    // The view's record no longer depends on who owns the Monument.
+    if (city === undefined) throw new Error("city missing");
+    const rival: PlayerViewV7 = {
       ...view,
       populationContributions: [
         {
@@ -700,34 +701,17 @@ describe("Ruleset 7 public presentation", () => {
           amount: 3 as const,
           source: {
             kind: "MONUMENT" as const,
-            visibility: "FULL" as const,
             achievement: "ENGINEER" as const,
             at: city.at,
+            builderFaction: "UNDEAD" as const,
           },
         },
       ],
     };
-    expect(monumentSourceForViewerV7(full, city.at)).toBe("ENGINEER");
-    const fullContribution = full.populationContributions[0];
-    if (fullContribution === undefined)
-      throw new Error("Monument contribution missing");
+    expect(monumentSourceForViewerV7(rival, city.at)).toBe("ENGINEER");
     expect(
       monumentSourceForViewerV7(
-        {
-          ...full,
-          populationContributions: [
-            {
-              ...fullContribution,
-              category: "LIVE" as const,
-              amount: 3 as const,
-              source: {
-                kind: "MONUMENT" as const,
-                visibility: "BUILDING_ONLY" as const,
-                at: city.at,
-              },
-            },
-          ],
-        },
+        { ...rival, populationContributions: [] },
         city.at,
       ),
     ).toBeNull();

@@ -837,18 +837,19 @@ const BUILDING_DESCRIPTIONS: Readonly<
   WORKSHOP: "Built among varied buildings.",
   MARKET: "Built among varied buildings.",
   // The skin rule (pulp_wars-eu3r.3): a Monument keeps its builder's look.
-  MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
+  MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, any number per city. It keeps its builder's look for the whole match.`,
   PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
   SHIPYARD: "An upgraded Port. Ships cost less.",
   FISHING_HOLE: "Cut in Ice Folk ice. Counts as a farm.",
 };
 
 /**
- * The "Monument" row is the obelisk: the view names a Monument's
- * achievement to its owner only (RULESET_7.md), so everyone else sees this.
+ * The "Monument" row is the obelisk. Until `7r114` everyone but a
+ * Monument's owner saw it in place of the achievement's look; since
+ * pulp_wars-d8xm every viewer sees the achievement's look, and the obelisk
+ * is the faction's plain Monument.
  */
-export const MONUMENT_OBELISK_TEXT_V7 =
-  "Another player's Monument: its achievement stays hidden.";
+export const MONUMENT_OBELISK_TEXT_V7 = "The faction's plain Monument.";
 
 /** Port and Shipyard costs (the engine's economic preview, query.ts). */
 const NAVAL_BUILDING_COSTS: Partial<Record<ImprovementIdV7, number>> = {

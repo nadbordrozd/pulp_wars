@@ -10,11 +10,7 @@ import {
   type Ruleset7DispatchResult,
   type Ruleset7AcceptedBoundary,
 } from "../../src/app/index";
-import type {
-  CityId,
-  PlayerViewV7,
-  PublicPopulationContributionV7,
-} from "../../src/engine/index";
+import type { CityId, PlayerViewV7 } from "../../src/engine/index";
 import { effectiveRoleRuleV7, UNIT_ROLE_IDS_V7 } from "../../src/engine/index";
 import type {
   BoardHostCallbacksV7,
@@ -1942,9 +1938,9 @@ describe("Ruleset 7 DOM shell", () => {
           amount: 3,
           source: {
             kind: "MONUMENT",
-            visibility: "FULL",
             achievement: "ENGINEER",
             at: monumentAt,
+            builderFaction: "ORIGINAL",
           },
         },
       ],
@@ -2209,50 +2205,6 @@ describe("Ruleset 7 DOM shell", () => {
     await Promise.resolve();
     expect(document.querySelector('[role="alertdialog"]')).toBeNull();
     app.destroy();
-
-    document.body.innerHTML = '<div id="app"></div>';
-    const concealedSnapshot: Ruleset7BrowserSnapshot = {
-      ...snapshot,
-      view: {
-        ...view,
-        populationContributions: view.populationContributions.map(
-          (contribution): PublicPopulationContributionV7 =>
-            contribution.source.kind === "MONUMENT" &&
-            contribution.source.visibility === "FULL" &&
-            contribution.source.at.x === monumentAt.x &&
-            contribution.source.at.y === monumentAt.y
-              ? ({
-                  ...contribution,
-                  category: "LIVE",
-                  amount: 3,
-                  source: {
-                    kind: "MONUMENT",
-                    visibility: "BUILDING_ONLY",
-                    at: monumentAt,
-                  },
-                } satisfies PublicPopulationContributionV7)
-              : contribution,
-        ),
-      },
-    };
-    const concealedHost = new CapturingBoardHost();
-    const concealedApp = new Ruleset7DomAppView(
-      document,
-      requiredRoot(),
-      fixturePort(source, concealedSnapshot, async () => ({
-        accepted: false,
-        reason: "NOT_OFFERED",
-      })),
-      { boardHost: concealedHost, settingsStorage: null },
-    );
-    concealedHost.callbacks?.onSelection({ kind: "TILE", at: monumentAt });
-    expect(document.body.textContent).not.toContain("Engineer Monument");
-    expect(
-      document.querySelector(
-        '[data-symbol-id="ui-status-achievement-source-current-owner"]',
-      ),
-    ).toBeNull();
-    concealedApp.destroy();
     source.destroy();
   });
 });

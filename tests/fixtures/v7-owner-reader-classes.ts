@@ -182,6 +182,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/state-schema.ts::burrowedValid": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::parseUnit": "NEUTRAL_AWARE",
   "src/engine/v7/state-schema.ts::validateCrossReferences": "NEUTRAL_AWARE",
+  // `pulp_wars-d8xm`: a stored Monument without a builder is read as its
+  // city's owner's; a city's owner is a seat (a missing one rejects).
+  "src/engine/v7/state-schema.ts::monumentBuildersMigratedV7": "PLAYER_ONLY",
   // Headless faction metrics: the Spider's numbers are skipped first.
   "src/headless/v7.ts::unitKind": "NEUTRAL_AWARE",
   // The Candy revision (`pulp_wars-jdb.3`). Re-bake: the acting seat and its

@@ -343,37 +343,27 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
         "ORIGINAL",
       ),
     ).toBe("IMPROVEMENT:SAWMILL");
-    // A Monument the Cult built keeps the Cult's look in Human territory:
-    // its achievement for the owner, the Cult obelisk for everyone else.
+    // A Monument the Cult built keeps the Cult's look in Human territory,
+    // for every viewer (pulp_wars-d8xm: its achievement is public).
     const at = { x: 1, y: 1 };
-    const monument = (visibility: "FULL" | "BUILDING_ONLY") =>
+    expect(
       tileImprovementSubjectV7(
         {
           populationContributions: [
             {
-              source:
-                visibility === "FULL"
-                  ? {
-                      kind: "MONUMENT",
-                      visibility,
-                      achievement: "SEA_DOG",
-                      at,
-                      builderFaction: "CULT",
-                    }
-                  : {
-                      kind: "MONUMENT",
-                      visibility,
-                      at,
-                      builderFaction: "CULT",
-                    },
+              source: {
+                kind: "MONUMENT",
+                achievement: "SEA_DOG",
+                at,
+                builderFaction: "CULT",
+              },
             },
           ] as never,
         },
         at,
         "MONUMENT",
         "ORIGINAL",
-      );
-    expect(monument("FULL")).toBe("IMPROVEMENT:MONUMENT:CULT:SEA_DOG");
-    expect(monument("BUILDING_ONLY")).toBe("IMPROVEMENT:MONUMENT:CULT");
+      ),
+    ).toBe("IMPROVEMENT:MONUMENT:CULT:SEA_DOG");
   });
 });
