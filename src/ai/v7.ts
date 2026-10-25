@@ -660,6 +660,8 @@ import {
   navalFleetGoalsV7,
   navalQuickestPortsV7,
   navalLandingInForceV7,
+  navalLandingCoastV7,
+  navalPortFarV7,
   navalTransportEscapeValueV7,
   NAVAL_LANDING_FORCE_RADIUS_V7,
   NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7,
@@ -3149,20 +3151,31 @@ function* navalPlanWorkV7(
     servedCoast,
     targetLandDistances,
   );
+  // Naval AI iteration 3 (`pulp_wars-n3ih`): a coastal target city is no
+  // landing tile of its own (`navalLandingCoastV7`).
+  const landingCoast = navalLandingCoastV7(
+    servedCoast,
+    target,
+    !targetIsVillage,
+  );
+  const closestLandingDistance = nearestRouteDistance(
+    landingCoast,
+    targetLandDistances,
+  );
   const targetLand =
-    closestCoastDistance === null
+    closestLandingDistance === null
       ? targetComponentLand
-      : servedCoast.filter(
+      : landingCoast.filter(
           (at) =>
-            targetLandDistances.get(coordKey(at)) === closestCoastDistance,
+            targetLandDistances.get(coordKey(at)) === closestLandingDistance,
         );
   const legalTargetLand = servedCoast.filter((at) => {
     const routeDistance = targetLandDistances.get(coordKey(at));
     return (
       legalDisembarkKeys.has(coordKey(at)) &&
       routeDistance !== undefined &&
-      closestCoastDistance !== null &&
-      routeDistance <= closestCoastDistance + 1
+      closestLandingDistance !== null &&
+      routeDistance <= closestLandingDistance + 1
     );
   });
   const closestLegalLandingDistance = nearestRouteDistance(
@@ -3339,12 +3352,27 @@ function* navalPlanWorkV7(
       .map(coordKey)
       .filter((key) => prospectiveWaterDistanceByKey.has(key)),
   );
-  const portMissing =
-    target !== null &&
+  // Naval AI iteration 3 (`pulp_wars-n3ih`): or every Port the seat has
+  // lies far round the coast from it, and a Port site lies near
+  // (`navalPortFarV7`).
+  const activePortKeys = new Set(activePorts.map(coordKey));
+  const portFar =
     activePorts.length > 0 &&
-    servingPortKeys.size === 0 &&
     servingLaunchKeys.size === 0 &&
-    starts.some((at) => prospectiveWaterDistanceByKey.has(coordKey(at)));
+    navalPortFarV7(
+      nearestRouteDistance(activePorts, prospectiveWaterDistanceByKey),
+      nearestRouteDistance(
+        starts.filter((at) => !activePortKeys.has(coordKey(at))),
+        prospectiveWaterDistanceByKey,
+      ),
+    );
+  const portMissing =
+    portFar ||
+    (target !== null &&
+      activePorts.length > 0 &&
+      servingPortKeys.size === 0 &&
+      servingLaunchKeys.size === 0 &&
+      starts.some((at) => prospectiveWaterDistanceByKey.has(coordKey(at))));
   // Hover Pods (section 6.6, "Research"): the own foot capture units with no
   // walk to the target, from which Hover Pods is asked for.
   const overseasFootUnits =
@@ -19553,9 +19581,16 @@ function navalBoardingPortsV7(
       ? undefined
       : plan.walkDistanceByKey.get(coordKey(from));
   if (walk === undefined) {
+    // Naval AI iteration 3 (`pulp_wars-n3ih`): no boarding while the Port
+    // that serves the coast is still to be built (`navalPortFarV7`), and an
+    // exploring wave too boards at about the quickest Ports.
+    if (plan.portMissing) return [];
+    if (plan.target === null)
+      return navalQuickestPortsV7(from, ports, (port) =>
+        plan.prospectiveWaterDistanceByKey.get(coordKey(port)),
+      );
     // pulp_wars-9s0.14: overseas, only at a Port that serves the landing
     // coast; while none does and the seat can build one that would, at none.
-    if (plan.target === null) return ports;
     const serving = ports.filter(
       (port) =>
         plan.servingPortKeys.has(coordKey(port)) ||

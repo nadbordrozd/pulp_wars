@@ -1518,3 +1518,48 @@ export function navalTorpedoReachV7(
     return tile?.explored !== true || tile.biome === null;
   });
 }
+
+/**
+ * Naval AI iteration 3 (`pulp_wars-n3ih`): the coast tiles a wave bound for
+ * a hostile city lands on. A coastal city is the nearest tile of its own
+ * coast, so the landing coast used to be the city itself: the garrison
+ * stands on it and no transport may land there, and in ten diagnostic
+ * matches 631 of the 893 transport turns spent two to five tiles from the
+ * target had only that tile to land on (386 of them beside other land of
+ * the target's landmass). The city is no landing tile while other coast
+ * is known; it is still landed on when it is empty and offered.
+ */
+export function navalLandingCoastV7(
+  coast: readonly CoordV7[],
+  target: CoordV7 | null,
+  targetIsCity: boolean,
+): CoordV7[] {
+  if (target === null || !targetIsCity) return [...coast];
+  const rest = coast.filter((at) => !same(at, target));
+  return rest.length > 0 ? rest : [...coast];
+}
+
+/**
+ * Naval AI iteration 3 (`pulp_wars-n3ih`): the water steps by which the
+ * nearest Port site may beat every Port the seat has before the seat
+ * builds it and boards nowhere else (`NavalPlanV7.portMissing`).
+ */
+export const NAVAL_PORT_FAR_MARGIN_V7 = 4;
+
+/**
+ * Naval AI iteration 3 (`pulp_wars-n3ih`): whether the Ports the seat has
+ * lie far round the coast from the landing coast (or the sea it explores)
+ * while one of its Port sites lies near. `ports` is the nearest public
+ * water route from an own active Port, `site` the nearest from a Port site
+ * of an own city (null: none known). In a diagnostic match both seats
+ * boarded at Ports on the far coasts of their continents, two tiles of
+ * water apart, and sailed ten rounds round them before either saw the
+ * other: a unit boarded at the nearest Port to itself.
+ */
+export function navalPortFarV7(
+  ports: number | null,
+  site: number | null,
+): boolean {
+  if (site === null) return false;
+  return ports === null || site + NAVAL_PORT_FAR_MARGIN_V7 < ports;
+}

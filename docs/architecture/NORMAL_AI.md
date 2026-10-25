@@ -6581,6 +6581,87 @@ transports and cities), so the fleet should be matched to the hostile fleet
 in sight rather than to the own transports; and a beachhead city taken on
 the target's landmass is not yet used as the wave's harbour.
 
+### Naval AI iteration 3 (`pulp_wars-n3ih`)
+
+**Status: measured by hand play, the same ten matches as iterations 1 and
+2, and the mixed-policy set against the iteration 2 policy (the same ten
+boards with the seats swapped, 20 matches), by the user's authorisation for
+this bead.** A per-turn trace of the ten matches recorded where every own
+transport stood against the plan's target and landing coast. All changes
+are policy only; no rule and no identity changed.
+
+| Failure                                                                                                                                                                                                                                                                                                                          | Fix                                                                                                                                                                                                                                                                                                                                                                | Where                                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| A coastal target city is the nearest tile of its own coast, so the landing coast was the city itself, which its garrison holds: of the 893 transport turns spent two to five tiles from the target, 631 had only that tile to land on (386 of them beside other land of the target's landmass), and the wave hung off the coast. | The target city is no landing tile while other coast of its landmass is known (`navalLandingCoastV7`): the wave sails for the coast beside it. It is still landed on when it is empty and offered (a landing that takes it).                                                                                                                                       | `navalLandingCoastV7` (`navalPlanWorkV7`) |
+| A unit boarded at the Port nearest to itself. On one board both seats boarded at Ports on the far coasts of their continents, two tiles of water apart, and sailed ten rounds round them before either saw the other; 511 transport turns had no target.                                                                         | While a Port site of an own city reaches the landing coast (or, with no target, the sea the seat explores) more than `NAVAL_PORT_FAR_MARGIN_V7` (4) water steps sooner than every own Port, the plan asks for that Port (`portMissing`, built at 1285) and nobody boards elsewhere; an exploring wave boards at about the quickest Ports (`navalQuickestPortsV7`). | `navalPortFarV7`, `navalBoardingPortsV7`  |
+
+**Before and after**, the ten matches (20 seats, the policy on both):
+
+| Measure                              |   Before |    After |
+| ------------------------------------ | -------: | -------: |
+| Units embarked                       |      294 |      295 |
+| Sunk afloat                          |       54 |       58 |
+| Landings on another landmass         |      102 |      117 |
+| Landed units dead within 3 rounds    |       58 |       62 |
+| Hostile cities captured across water |       13 |       15 |
+| Ships trained (lost)                 | 184 (72) | 161 (66) |
+| Units still afloat at the end        |      131 |      108 |
+| Transport turns with no target       |      511 |      387 |
+| Matches ended by elimination (of 10) |        2 |        2 |
+
+**Against the iteration 2 policy** (the 20 matches, totals of the ten seats
+each policy played; with both seats on the iteration 2 policy the two
+sides' totals are equal): cities at the end 85 against 69, hostile cities
+captured across water 18 against 10, cities lost 13 against 21, landings
+119 against 81, units sunk afloat 51 against 70, landed units dead within 3
+rounds 64 against 46, eliminations 1 against 2 (the Goblin seat of
+Continents seed 1 eliminates the Humans whichever policy plays it; on
+Continents seed 5 the iteration 2 Dinosaurs eliminated the Humans in round
+27, the new ones held seven cities to one at round 30). The landing coast
+alone: cities 81 against 73, captures 17 against 11.
+
+**Hand play** (Humans against a Goblin AI, Continents 14 x 14, seed 11,
+curiosities on, a normal expanding game to four cities): the Goblin city
+Hobnok stood two tiles of water from the player's Corwick. The first Goblin transport came in sight in round 17; from round
+18 Goblin transports gathered off Elmsby in the south while Fire Rafts and
+shore Bomb Chuckers sank all six of the player's Patrol Boats by round 24
+(the rafts explode beside them); Wolf Riders landed between Corwick and
+Aldmere in rounds 24 and 25, a Scrap Dreadnought shelled Elmsby's
+garrison, and Corwick fell in round 27 (iteration 2's hand game lost its
+first city in round 32). At round 28 the player held three cities to six,
+two of them besieged.
+
+**Tried and dropped.** Measured against the iteration 2 policy with the two
+fixes above in place:
+
+- A fleet matched to the hostile warships in sight (one more than it sees,
+  one escort with transports afloat and none in sight) instead of one
+  Patrol Boat a transport: ships trained 139 against 169 and units sunk
+  afloat 69 against 58; cities 81 against 73, below the two fixes alone.
+- The same match added to the old rule (a Patrol Boat also while the
+  hostile fleet in sight outnumbers the own): no change beyond noise (ships
+  197, cities 85 against 69).
+- A beachhead city as the wave's harbour (with an own city on the target's
+  landmass, land within 2 of it and walk on): landings rose to 128, but
+  cities (85 against 69) and captures (18 against 10) did not move and
+  landed units dead within 3 rounds rose from 64 to 72. After a beachhead
+  the plan stayed active in every traced turn, so home units kept boarding.
+- A held wave that keeps its place in the staging area (a transport not
+  exposed within 3 water steps of the landing coast makes no Move that
+  brings it no nearer): units sunk afloat 67 against 52 and cities 76
+  against 77; the wave sat still where the hostile ships found it.
+
+Proven on the authored strait in
+`tests/unit/ruleset-v7-naval-ai-iteration3.test.ts`.
+
+**Next (iteration 4).** A held wave still spreads out off the coast: the
+staging hold failed because it held still under fire, so the transports
+should gather beside the one nearest the landing coast and out of reach;
+the landing coast takes no account of the hostile ships covering its water
+(a coast a hostile Battleship covers could yield to the next one); and in
+the ten matches 66 of 161 ships were lost, so where the fleet waits (on
+the convoy, not in reach of shore guns) is the next measure after its size.
+
 ### The frozen sea (`pulp_wars-5ti.5`)
 
 [Overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5).
