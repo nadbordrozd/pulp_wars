@@ -7314,7 +7314,7 @@ export function previewGateV7(
 
 /**
  * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
- * `pulp-wars-poc-7r112`; RULESET_7_CURRENT.md section 4.6): the public
+ * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): the public
  * preview of the unit a city reward grants: its role and where it appears
  * (`at`: the center when no unit stands on it, else the nearest free tile
  * of the city's territory, then within two tiles of the center; null when

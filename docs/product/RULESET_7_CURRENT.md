@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r112`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r113`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,20 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r113` (`pulp_wars-1pwz`; the user, 2026-10-25: "review the
+tier-3 units - equivalents of the champion/knight/catapult and make sure
+they are all useful") is the **tier-3 review A** of the Goblins, Dinosaurs,
+and Ice Folk ([section 11.2](#112-tier-3-review-2026-10-25)). Two units
+change. The **Sabretooth** hunts the frozen line: it has **Overrun** (it
+had none) and **Cold Blood** (+0.5 Attack against a Frozen unit, the Snow
+Hunter's), so a Frozen Fighter, Marksman, Raider, or Knight dies or
+shatters to its bite with no blow back and it bites the next; Chivalry
+grants Overrun in the Ice Folk tree again. The **T-Rex** costs 11 Coins
+(14): Disband refund 5, 10 with Arms Industry, a hired one 17; its Egg
+still hatches in four turns. The Scrap Buggy, Rocket Cart, Ogre,
+Stegosaurus, Triceratops, Boulder Yeti, and Mammoth are unchanged. A save,
+replay, or setup of `7r112` is rejected, and the browser autosave has a new
+key. Boards and missions are unchanged.
 `pulp-wars-poc-7r112` (`pulp_wars-u8so`; the user, 2026-10-25: "review
 the tier-3 units ... and make sure they are all useful") is **tier-3
 review B** ([the review](#tier-3-review-b-2026-10-25)) of the Dwarves,
@@ -1701,10 +1715,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r112`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r113`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r112.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r113.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -5460,7 +5474,7 @@ differently from the Human table are:
 | Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                          |
 | Scouting          | same          | Sled (Bolas); Sled Sight 2                                                                                                                                      |
 | Raiding           | same          | Pillage; Sled Charge                                                                                                                                            |
-| Chivalry          | same          | Sabretooth (Prowl); Cultivate Forest                                                                                                                            |
+| Chivalry          | same          | Sabretooth (Prowl, Cold Blood); Overrun (since `7r113`; not granted before); Cultivate Forest                                                                   |
 | Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                    |
 | Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                               |
 | Fortification     | Deep Winter   | Musk Ox (Frostbite; `7r56`); Snow spreads two tiles from your city centers; Recover heals 6 in your territory                                                   |
@@ -6636,7 +6650,7 @@ capacity the unit, or its Egg, uses
 | Shaman       | `CAPTAIN`     | Administration    |    5 | trained |     1 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | no    | War Drums; Tend Wounded; Hatch                                         |
 | Stegosaurus  | `CATAPULT`    | Sawmilling        |    7 | 2       |     1 |  12 | 2.5 (5) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | yes   | Thagomizer (Cracked; `7r55`); destroys Field Defense; never advances   |
 | Triceratops  | `SWORDSMAN`   | Metallurgy        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Charge! (the heavy role since `7r55`; `CATAPULT` at Sawmilling before) |
-| T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Rampage                                                                |
+| T-Rex        | `KNIGHT`      | Chivalry          |   11 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Rampage (11 Coins since `7r113`; 14 before)                            |
 | Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Thunder Stomp                                                          |
 | Dugout⁵      | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Horned Prow (Seamanship)                                        |
 | War Raft⁵    | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
@@ -6675,7 +6689,10 @@ boarded ([section 14](#14-naval-rules)). At a Shipyard the three ships cost
   the `CATAPULT` role, so War Drums never Inspires it, and its attacks
   destroy Field Defense with reason `CATAPULT`.
 - **T-Rex** has Knight parity (capture, Overrun, labelled **Rampage**)
-  with Move 2 instead of 3. It is never a treasure unit.
+  with Move 2 instead of 3. It is never a treasure unit. It costs 11 Coins
+  since `7r113` (14 from revision 20, 10 before; the tier-3 review A,
+  [section 11.2](#112-tier-3-review-2026-10-25)); its Egg still hatches in
+  four turns, which a Shaman's Hatch shortens.
 - **Brontosaurus** has Juggernaut parity (reward only, capture, no
   Pillage or Disband) with 45 HP and Attack 3.5, and uses 2 slots. Its
   signature is Thunder Stomp (no Push;
@@ -6684,8 +6701,9 @@ boarded ([section 14](#14-naval-rules)). At a Shipyard the three ships cost
   do not apply to them: they are trained with `TRAIN_NAVAL`, use 1 slot, do
   not grow, and keep the ordinary Promotion.
 - Dinosaur Disband refunds: Caveman 1; Raptor, Spitter, Ankylosaurus, and
-  Shaman 2; Triceratops 4; T-Rex 7. An Egg refunds the same as the unit
-  inside. With Arms Industry the T-Rex Egg costs 13.
+  Shaman 2; Triceratops 4; T-Rex 5 (7 before `7r113`). An Egg refunds the
+  same as the unit inside. With Arms Industry the T-Rex Egg costs 10 (13
+  before `7r113`).
 - **Growth** ([section 19.8](#198-grow)): every dinosaur gains +4 maximum HP
   at Big (1 kill) and again at Alpha (3 kills), each with a full heal, and
   +1 Attack at Alpha:
@@ -6851,7 +6869,7 @@ units cross Mountains without Engineering and without stopping
 | Mammoth      | `SWORDSMAN`  | Metallurgy     |    7 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
 | Ice Witch    | `CAPTAIN`    | Administration |    6 |  10 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap; Frost Bolt; no Rally; no Tend Wounded                                        |
 | Boulder Yeti | `CATAPULT`   | Sawmilling     |    9 |  10 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | yes     | Boulders (ignore fortification); Planted; Mountain-born; never advances                           |
-| Sabretooth   | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | yes     | Prowl; no Glide; no Overrun                                                                       |
+| Sabretooth   | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | yes     | Prowl; Overrun and Cold Blood (`7r113`¹⁰); no Glide                                               |
 | Frost Giant  | `JUGGERNAUT` | reward only    |    — |  36 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Aura; Mountain-born; never advances                                           |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
@@ -6861,6 +6879,11 @@ units cross Mountains without Engineering and without stopping
 ⁹ A Yeti standing on a Mountain may also attack at distance 2, at Attack
 1.5 (`attack2` 3): Rockfall
 ([section 21.8](#218-mountain-born-and-rockfall)).
+¹⁰ The tier-3 review A (`pulp-wars-poc-7r113`, `pulp_wars-1pwz`,
+[section 11.2](#112-tier-3-review-2026-10-25)): the Sabretooth has
+Overrun (it had none) and Cold Blood, the Snow Hunter's +0.5 Attack against
+a Frozen unit; its numbers are unchanged. Chivalry grants Overrun in the
+Ice Folk tree again.
 
 - **Yeti** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion, the advance after a melee kill) and the Fighter's
@@ -6890,9 +6913,14 @@ units cross Mountains without Engineering and without stopping
   on the target's tile (reason `CATAPULT`). Its attacks ignore fortification,
   and it has +1 Attack on a turn in which it has not moved
   ([section 21.11](#2111-boulders-and-planted)). It is Mountain-born.
-- **Sabretooth** has Knight parity for `CAPTURE` and for the advance after
-  a melee kill. It has no Overrun and no Charge; it Prowls
-  ([section 21.12](#2112-prowl-and-the-cold-aura)) and never Glides. Since
+- **Sabretooth** has Knight parity for `CAPTURE`, for the advance after
+  a melee kill, and, since `7r113`, for Overrun. It has no Charge; it Prowls
+  ([section 21.12](#2112-prowl-and-the-cold-aura)), never Glides, and
+  since `7r113` has **Cold Blood** (+0.5 Attack against a Frozen unit,
+  [section 21.9](#219-bolas-and-cold-blood)): the hunter of the frozen
+  line, which kills or shatters a frozen Fighter, Marksman, Raider, or
+  Knight with no blow back and runs on to the next
+  ([section 11.2](#112-tier-3-review-2026-10-25)). Since
   `pulp_wars-ke95` it ends a Move and advances on any settlement center
   like any land unit, so it captures.
 - **Frost Giant** has Juggernaut parity (reward only, capture, no
@@ -6917,7 +6945,8 @@ units cross Mountains without Engineering and without stopping
   `BOLAS`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Mammoth `ATTACK`,
   `CAPTURE`, `SWEEP`, `TRAMPLE`, `STAMPEDE`; Ice Witch `ATTACK`, `CAPTURE`,
   `BLIZZARD`, `COLD_SNAP`, `FROST_BOLT`; Boulder Yeti `ATTACK`, `CAPTURE`,
-  `BOULDERS`, `MOUNTAIN_BORN`; Sabretooth `ATTACK`, `CAPTURE`, `PROWL`; Frost
+  `BOULDERS`, `MOUNTAIN_BORN`; Sabretooth `ATTACK`, `CAPTURE`, `PROWL`,
+  `OVERRUN`, `COLD_BLOOD` (the last two since `7r113`); Frost
   Giant `ATTACK`, `CAPTURE`, `PUSH`,
   `COLD_AURA`, `MOUNTAIN_BORN`; and every one of the eight also `FREEZE`.
   Mountain-born, Glide, Prowl,
@@ -7524,6 +7553,85 @@ abilities, so only the Juggernaut). Since `pulp_wars-w49.31` each seat
 uses its own giant's signature and every seat reads a hostile giant's
 ([section 16](#16-normal-ai-summary),
 [Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)).
+
+### 11.2 Tier-3 review (2026-10-25)
+
+The user, 2026-10-25: "review the tier-3 units - equivalents of the
+champion/knight/catapult and make sure they are all useful. We just
+upgraded the mothership because it was lame and redundant. Human units are
+fine so are the undead and martians." **Review A** (`pulp_wars-1pwz`,
+`pulp-wars-poc-7r113`) covers the Goblins, Dinosaurs, and Ice Folk; review
+B (`pulp_wars-u8so`, `7r112`, [below](#tier-3-review-b-2026-10-25)) the
+Dwarves, Candy, and Cult.
+
+**Benchmarks.** The tier-3 units are the `CATAPULT` (Sawmilling),
+`KNIGHT` (Chivalry), and `SWORDSMAN` (Metallurgy) roles. The Human,
+Undead, and Martian ones are the user's yardstick: siege 8 to 9 Coins
+(Catapult 10 HP, Attack 3, range 2–3; Lich with splash and Plague; Tripod
+Attack 4 with Pierce), breakthrough 9 Coins (Knight 13 HP, Attack 4,
+Overrun; Vampire 13 HP, Attack 3, Unanswered, Bat Escape, Feast;
+Mothership 20 HP, Defense 3, two slots, Mass Beam Down and the Shield
+Canopy), heavy line 6 Coins (Champion 15 HP, Attack 3.5, Defense 2.5;
+Wight with Rise Again; Shock Trooper with Shield 3 and Shock Field). The
+Mothership redesign ([section 20.7.1](#2071-mass-beam-down)) is the model
+of a fix: Knight-class numbers, a signature that gives a role nothing
+else has, and a passive that rewards the army built around it.
+
+**The audit.** Damage is the engine formula at full HP on open Grass
+([section 13.2](#132-damage)), the attacker's hit and the blow back.
+
+| Unit         | Cost, numbers                                                                     | Role                                                                                                                                                                          | Done better by a cheaper unit?                                                                                                                           | When a sensible player buys it                                                                     | Normal AI                                                                                                    | Verdict                                                     |
+| ------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| Rocket Cart  | 7; 8 HP, Attack 3.5, Defense 0.5, range 2–3; Kaboom 5, death blast 7              | Siege: the hardest single shot of the three factions (a Marksman 12 dead, a Fighter 10, a Guard 12 from three tiles), Gang Up +1                                              | No: a bomb gets no Gang Up                                                                                                                               | Against Guards, cover, and Walls; a dying Cart blasts the attackers                                | Siege share 25%; Kaboom and chain values                                                                     | **Useful**, unchanged                                       |
+| Scrap Buggy  | 8; 10 HP, Attack 3, Defense 1, Move 3; Ram (Overrun), Crash Kaboom 5, blast 7     | Breakthrough missile: Gang Up turns its 3 into the Knight's 4 (a Fighter dies with one helper beside it), it rams on, and it can end the run with a Kaboom in the back line   | The Wolf Rider (3) explodes for 4 but neither kills first nor rides on                                                                                   | Into a crowd its Gang Up reaches; its death blast punishes the unit that kills it                  | Breakthrough share 15% (20% against shooters); never trained onto a threatened center; Crash valued          | **Useful**, unchanged                                       |
+| Ogre         | 5; 16 HP, Attack 2.5, Defense 2; Heavyweight                                      | Heavy line and Gang Up anchor: two helpers in one body (+2), an Ogre and any ally +3                                                                                          | The Orc Brute (3) is a single helper and does not attack after a Move                                                                                    | To make every Goblin blow on one target +3                                                         | Line share, dearest unit first; helpers counted with their weight                                            | **Useful**, unchanged (see the follow-ups)                  |
+| Stegosaurus  | 7, an Egg of 2 turns; 12 HP, Attack 2.5, Defense 1, range 2–3; Thagomizer         | Siege that sets up the herd: a hit Cracks its target (−1 Defense for every later blow that turn); the faction's only reach of 3; with Wallbreaker it ignores Walls from range | The Spitter (4) strips cover for its own shot only                                                                                                       | Before a Triceratops or T-Rex strike on a fortified line                                           | Siege share 10%; fires first in the order of blows (`dinosaurBlowRankV7`)                                    | **Useful, niche**, unchanged; its 2.5 is a first guess      |
+| Triceratops  | 8, an Egg of 2 turns, two slots; 20 HP, Attack 3, Defense 2, Move 2; Charge!      | Heavy line-breaker: run-up, ignores fortification, pushes and follows                                                                                                         | No                                                                                                                                                       | Always                                                                                             | Line share, the first one +20                                                                                | **Useful**, unchanged                                       |
+| T-Rex        | **14**, an Egg of 4 turns, two slots; 28 HP, Attack 4, Defense 2, Move 2; Rampage | Breakthrough apex: the Knight's bite on 28 HP, and its first kill grows it Big and heals it fully                                                                             | Largely the Triceratops: for 6 more Coins and 2 more Egg turns it adds 8 HP, +1 Attack unmoved, and Overrun, and loses the fortification ignore and Push | Rarely: 14 Coins idle four turns in a 6-HP Egg (revision 20's price, set against the 10-HP Knight) | Breakthrough share 10% (25% against shooters); never onto a threatened center                                | **Fails on price**: **11 Coins** (below)                    |
+| Boulder Yeti | 9; 10 HP, Attack 2 (3 Planted), Defense 1.5, Move 2, range 1–2; Boulders          | City siege: its throw ignores Walls and Field Defense, Planted it is a Catapult at range 1–2, and it moves and throws in one turn; Mountain-born                              | In the open the Snow Hunter (3) hits as hard as a moved Boulder Yeti; on a fortified tile it does not                                                    | Against Walls and Field Defense                                                                    | Fights as a ranged unit (`armyClassV7`); siege share 15%; +3 per fortification level ignored; planted throws | **Useful**, unchanged; dear for 10 HP (see the follow-ups)  |
+| Sabretooth   | 9; 14 HP, Attack 3, Defense 1, Move 3; Prowl; no Overrun                          | One bite behind the line                                                                                                                                                      | Yes: a Knight with 1 Attack less and no Overrun; with Attack 3 it kills only 10-HP units, and every Ice Folk unit already shatters a Frozen one          | Hardly: it bites once, alone in the enemy's back line, and dies                                    | Breakthrough share 10%; backline kills +8                                                                    | **Fails: no distinct role**: Overrun and Cold Blood (below) |
+| Mammoth      | 7; 20 HP, Attack 2.5, Defense 2; Sweep, Trample, Stampede                         | Heavy line against crowds: 2 to both flanks, and the unmoved charge through a line                                                                                            | No                                                                                                                                                       | Against a packed line                                                                              | Line share; Sweep and Trample values; Stampede offered                                                       | **Useful**, unchanged                                       |
+
+**The changes** (`pulp-wars-poc-7r113`). Only the two failing units
+change; no unit lost anything.
+
+1. **The Sabretooth hunts the frozen line.** It gains **Overrun** (the
+   Knight's) and **Cold Blood** (the Snow Hunter's +0.5 Attack against a
+   Frozen unit, [section 21.9](#219-bolas-and-cold-blood)); Chivalry
+   grants Overrun in the Ice Folk tree again. A Frozen unit never strikes
+   back, and the Sabretooth's 3.5 deals a Frozen Fighter 10 (2 left: a
+   Shatter), a Marksman or a Raider 12 (dead), and a Knight 12 (1 left: a
+   Shatter), so it kills, takes the tile, and bites again, through a line
+   the Sleds' Frost Bolts, the Witch's Cold Snap, and the Musk Oxen's
+   Frostbite froze. Unfrozen, its Attack 3 still kills only the 10-HP
+   units (a Catapult, a Captain, a Spitter, a Lich), so it rides on only
+   through the soft back line. The signature is the Ice Folk's own
+   (Freeze, Shatter, Cold Blood), the reward is for building the freezing
+   army around it, and no new mechanic or art is needed. Its numbers,
+   Prowl, and price are unchanged.
+2. **The T-Rex costs 11 Coins** (14 since revision 20, which priced it
+   against the 10-HP, Attack-3 Knight of the time). Disband refund 5 (7),
+   10 with Arms Industry (13), a hired T-Rex 17 (21). Its Egg still
+   hatches in four turns: a Shaman's Hatch is the faction's answer to them,
+   and missions keep their Eggs. It now costs two Coins more than a Knight
+   for the Knight's bite on twice the HP and two slots.
+
+**Normal AI.** Nothing new was needed. The Sabretooth's Cold Blood is in
+the combat preview the policy scores, so a Frozen target is a kill it
+prefers over a fresh one, and its Overrun continues as every Overrun unit's
+does; the T-Rex's price is read from its role, so the army lays its Egg
+when the breakthrough share is short and the Coins reach 11. Proved by
+hand-built states in `tests/unit/ruleset-v7-tier3-review-a.test.ts`.
+
+**Missions.** No built initial state changes (a role's price and
+abilities are not state). Missions in which the player owns or buys a
+Sabretooth (the Ice Folk campaign) or a T-Rex (the Dinosaur campaign) get
+slightly easier; none was re-pinned.
+
+**Follow-ups noted, not changed.** The Ogre is not Blast-proof, so a
+Goblin's Kaboom beside the target it anchors hurts it (6); the Boulder
+Yeti is dear for 10 HP (9 Coins); the Stegosaurus's Attack 2.5 is still a
+first guess. Each is a deliberate trade-off today; none fails the review.
 
 ### Tier-3 review B (2026-10-25)
 
@@ -8295,8 +8403,8 @@ Disintegrator ([section 21.5](#215-snow)).
 - **Escape:** a surviving Human Raider may make one more ordinary Move
   ([section 12.2](#122-activation)).
 - **Overrun** (Human Knight; **Ram** for the Goblin Scrap Buggy; **Rampage**
-  for the Dinosaur T-Rex; same rule and events; the Ice Folk Sabretooth has
-  none): after the unit kills (an
+  for the Dinosaur T-Rex; same rule and events; the Ice Folk Sabretooth
+  since `7r113`, which had none before): after the unit kills (an
   Egg counts) and advances, if a visible hostile unit is adjacent to its new
   cell it may Attack again, with no other action allowed. This repeats
   without a cap until a non-kill, death, or no target. The continuation is
@@ -12804,7 +12912,7 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 | `GUARD`         | Musk Ox       | Freeze source (Frostbite, `7r55`)                              |
 | `CAPTAIN`       | Ice Witch     | Blizzard; Freeze source (Cold Snap, Frost Bolt)                |
 | `CATAPULT`      | Boulder Yeti  | Boulders; Planted; Mountain-born                               |
-| `KNIGHT`        | Sabretooth    | Prowl; no Glide                                                |
+| `KNIGHT`        | Sabretooth    | Prowl; Overrun and Cold Blood (`7r113`); no Glide              |
 | `SWORDSMAN`     | Mammoth       | Sweep, Trample, and Stampede (`GUARD` before `7r55`)           |
 | `JUGGERNAUT`    | Frost Giant   | Freeze source (Cold Aura, Glacial Smash shards); Mountain-born |
 
@@ -13227,10 +13335,12 @@ atomic):
   advance; event `UNITS_FROZEN` (source `BOLAS`). It may follow a Move;
   there is no line of sight and no cover against it.
 
-**Cold Blood** (the Snow Hunter): its attack on a **Frozen** defender has
+**Cold Blood** (the Snow Hunter, and since `7r113` the Sabretooth): its attack on a **Frozen** defender has
 +0.5 Attack (`COLD_BLOOD_BONUS2_V7` 1), at any distance
 (`coldBloodApplied`); never on retaliation. Example: 6 instead of 5 on a
-full-HP Fighter.
+full-HP Fighter. A Sabretooth's bite on a Frozen full-HP Fighter is 10
+instead of 8, which leaves 2 HP: a Shatter, and with its Overrun it bites
+again.
 
 ### 21.10 Sweep and Trample
 
@@ -13291,7 +13401,8 @@ kill, and is displaced onto any settlement center like any land unit, so
 it besieges, blocks captures, and captures villages and cities. (Before,
 it never stood on a neutral village center or the center of a city its
 owner did not own: `MOVEMENT_ILLEGAL` with reason `SETTLEMENT_FORBIDDEN`.)
-It has no Overrun and no Charge.
+It has no Charge; since `7r113` it has Overrun and Cold Blood (it had neither
+before; [section 11.2](#112-tier-3-review-2026-10-25)).
 
 **Cold Aura** (the Frost Giant; Ice Folk Freeze, `pulp_wars-w49.37`).
 When a land-form Frost Giant completes its own `MOVE` or `DISEMBARK`, every

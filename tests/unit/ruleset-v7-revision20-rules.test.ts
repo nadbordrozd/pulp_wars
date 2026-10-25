@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r112");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r112");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r113");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r112.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-93, -91)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r113.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-94, -92)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-93, -91)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-94, -92)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r112");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r113");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -447,12 +447,12 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
 });
 
 describe("ruleset-7 revision-20 T-Rex", () => {
-  it("costs 14 and hatches in 4 turns (3 with Nesting); everything else is unchanged", () => {
+  it("costs 11 (14 until the tier-3 review A) and hatches in 4 turns (3 with Nesting); everything else is unchanged", () => {
     expect(effectiveRoleRuleV7("KNIGHT", "DINOSAUR")).toEqual({
       role: "KNIGHT",
       label: "T-Rex",
       tacticalRole: "BREAKTHROUGH",
-      cost: 14,
+      cost: 11,
       maxHp: 28,
       attack2: 8,
       defense2: 4,
@@ -483,7 +483,7 @@ describe("ruleset-7 revision-20 T-Rex", () => {
       const actor = activeIdV7(state);
       expect(
         previewLayEggV7(viewForV7(state, actor), city.id, "KNIGHT"),
-      ).toMatchObject({ cost: 14, slots: 2, turnsToHatch: turns, hp });
+      ).toMatchObject({ cost: 11, slots: 2, turnsToHatch: turns, hp });
       const laid = applyOkV7(state, actor, {
         kind: "LAY_EGG",
         cityId: city.id,
@@ -492,17 +492,17 @@ describe("ruleset-7 revision-20 T-Rex", () => {
       });
       expect(laid.events[0]).toMatchObject({
         kind: "EGG_LAID",
-        cost: 14,
+        cost: 11,
         turnsRemaining: turns,
       });
       expect(parseEventV7(laid.events[0]).ok).toBe(true);
-      // Disband refund 7, for the Egg too.
+      // Disband refund 5 (7 at 14 Coins), for the Egg too.
       expect(
         applyOkV7(laid.state, actor, {
           kind: "DISBAND",
           unitId: unitAtV7(laid.state, at(7, 7)).id,
         }).events[0],
-      ).toMatchObject({ kind: "UNIT_DISBANDED", coinDelta: 7 });
+      ).toMatchObject({ kind: "UNIT_DISBANDED", coinDelta: 5 });
     }
   });
 

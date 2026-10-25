@@ -10606,7 +10606,7 @@ function settleCityRewardsV7(
 }
 
 /**
- * Reward placement (`pulp_wars-spue`, `pulp-wars-poc-7r112`): whether the
+ * Reward placement (`pulp_wars-spue`, `pulp-wars-poc-7r111`): whether the
  * reward unit `unit` may appear on the cell `at` beside its city's center:
  * it is land, enterable by `unit` (the shared `canEnterTerrainV7`: a
  * Mountain needs its owner's Engineering unless it strides or flies), has
@@ -10654,7 +10654,7 @@ function rewardCellLegalV7(
 
 /**
  * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
- * `pulp-wars-poc-7r112`; RULESET_7_CURRENT.md section 4.6): the unit
+ * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): the unit
  * `spawned` (a trained unit or a reward unit of `city`) appears on the
  * city's center when no unit stands there, or else on the nearest free
  * tile of the city's territory, then within two tiles of the center

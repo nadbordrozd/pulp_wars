@@ -681,7 +681,8 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "PROWL"],
+    // The tier-3 review A (`pulp_wars-1pwz`): Overrun and Cold Blood.
+    ["ATTACK", "CAPTURE", "PROWL", "OVERRUN", "COLD_BLOOD"],
     true,
   ],
   [
@@ -867,14 +868,20 @@ describe("Ice Folk roster (section 3)", () => {
           ),
         ).toEqual([]);
       }
-    // No Ice Folk unit has Escape, Overrun, Rally, or Tend Wounded.
+    // No Ice Folk unit has Escape, Rally, or Tend Wounded; only the
+    // Sabretooth has Overrun (the tier-3 review A, `pulp_wars-1pwz`).
     const all = new Set(
       UNIT_ROLE_IDS_V7.flatMap(
         (role) => effectiveRoleRuleV7(role, "ICE_FOLK").abilities,
       ),
     );
-    for (const ability of ["ESCAPE", "OVERRUN", "RALLY", "TEND_WOUNDED"])
+    for (const ability of ["ESCAPE", "RALLY", "TEND_WOUNDED"])
       expect(all.has(ability as never), ability).toBe(false);
+    expect(
+      UNIT_ROLE_IDS_V7.filter((role) =>
+        effectiveRoleRuleV7(role, "ICE_FOLK").abilities.includes("OVERRUN"),
+      ),
+    ).toEqual(["KNIGHT"]);
   });
 
   it("trains every Ice Folk land unit except the Frost Giant on the city center", () => {
@@ -918,7 +925,7 @@ describe("Ice Folk roster (section 3)", () => {
     }
   });
 
-  it("never offers Field Defense, Rally, Tend Wounded, Overrun, or Escape to an Ice Folk seat", () => {
+  it("never offers Field Defense, Rally, Tend Wounded, or Escape to an Ice Folk seat; only the Sabretooth Overruns", () => {
     const state = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "GUARD", at: at(7, 7) },
@@ -940,8 +947,9 @@ describe("Ice Folk roster (section 3)", () => {
         rejectedV7(state, { kind, unitId: unitAtV7(state, at(9, 7)).id }).code,
         kind,
       ).toBe("UNIT_ROLE_INVALID");
-    // A Sabretooth that kills does not advance-and-attack again (no Overrun),
-    // and a Sled that survives has no Escape.
+    // A Sabretooth that kills advances and may attack again (Overrun since
+    // the tier-3 review A, `pulp_wars-1pwz`; never before), and a Sled
+    // that survives has no Escape.
     const knight = iceFieldV7([
       { seat: 0, role: "KNIGHT", at: at(4, 3) },
       { seat: 0, role: "RAIDER", at: at(4, 1) },
@@ -955,12 +963,18 @@ describe("Ice Folk roster (section 3)", () => {
       targetUnitId: unitAtV7(knight, at(5, 3)).id,
     });
     const cat = unitAtV7(killed.state, at(5, 3));
-    expect(cat.activation.overrunActive).toBe(false);
+    expect(cat.activation.overrunActive).toBe(true);
     expect(
       offeredV7(killed.state, "ATTACK").filter(
         (command) => "unitId" in command && command.unitId === cat.id,
       ),
-    ).toEqual([]);
+    ).toEqual([
+      {
+        kind: "ATTACK",
+        unitId: cat.id,
+        targetUnitId: unitAtV7(knight, at(5, 4)).id,
+      },
+    ]);
     const sled = playV7(killed.state, {
       kind: "ATTACK",
       unitId: unitAtV7(killed.state, at(4, 1)).id,
@@ -1043,7 +1057,7 @@ describe("Ice Folk roster (section 3)", () => {
 });
 
 describe("Ice Folk technology (section 4)", () => {
-  it("differs from the Human graph in four unlock entries and two display names", () => {
+  it("differs from the Human graph in three unlock entries and two display names", () => {
     expect(ICE_FOLK_BASELINE_V1_NODES).toHaveLength(
       SHARED_BASELINE_NODES_V7.length,
     );
@@ -1096,10 +1110,6 @@ describe("Ice Folk technology (section 4)", () => {
               ? { kind: "WITCH_SUPPORT" }
               : unlock,
           ),
-        );
-      else if (human.id === "CHIVALRY")
-        expect(ice.unlocks).toEqual(
-          human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
       else if (human.id === "FORTIFICATION")
         expect(ice.unlocks).toEqual([

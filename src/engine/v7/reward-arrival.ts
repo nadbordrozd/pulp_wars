@@ -21,13 +21,13 @@ export function rewardUnitRoleV7(
 
 /**
  * How far from its city's center a reward unit may appear outside the
- * city's borders (`pulp_wars-spue`, `pulp-wars-poc-7r112`).
+ * city's borders (`pulp_wars-spue`, `pulp-wars-poc-7r111`).
  */
 export const REWARD_ARRIVAL_RADIUS_V7 = 2;
 
 /**
  * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
- * `pulp-wars-poc-7r112`; RULESET_7_CURRENT.md section 4.6): where a free
+ * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): where a free
  * unit a city grants appears. **A reward never harms a unit already
  * there**: nothing is killed, damaged, moved, or pushed, friend or foe.
  * The reducer and the public preview (`previewRewardArrivalV7`) share this

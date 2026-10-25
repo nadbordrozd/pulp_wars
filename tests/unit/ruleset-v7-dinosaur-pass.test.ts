@@ -122,7 +122,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r112`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r113`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -207,15 +207,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r112");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r112.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r113.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-60, -57)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-61, -58)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-60, -57)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-61, -58)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -270,7 +270,7 @@ describe("the Dinosaur pass: identity", () => {
       ["Ankylosaurus", 5, 20, 4, 6, 1, 1],
       ["Shaman", 5, 10, 2, 2, 1, 1],
       ["Triceratops", 8, 20, 6, 4, 2, 1],
-      ["T-Rex", 14, 28, 8, 4, 2, 1],
+      ["T-Rex", 11, 28, 8, 4, 2, 1],
       ["Brontosaurus", null, 45, 7, 8, 1, 1],
     ]);
     expect(
@@ -669,7 +669,7 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
       (["RAIDER", "MARKSMAN", "GUARD", "SWORDSMAN", "KNIGHT"] as const).map(
         (role) => publicHireCostV7(viewOf(state), city.id, role),
       ),
-    ).toEqual([6, 6, 8, 12, 21]);
+    ).toEqual([6, 6, 8, 12, 17]);
     // Never the reward-only Brontosaurus, and nothing without its
     // technology.
     expect(publicHireCostV7(viewOf(state), city.id, "JUGGERNAUT")).toBeNull();
@@ -1724,7 +1724,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
           0,
         );
     };
-    expect([worth(0, "DINOSAUR"), worth(1, "ORIGINAL")]).toEqual([67, 80]);
+    expect([worth(0, "DINOSAUR"), worth(1, "ORIGINAL")]).toEqual([64, 80]); // the T-Rex Egg 11 since the tier-3 review A (67 before)
     // One Big Raptor, one Big Spitter, one Big Triceratops.
     const own0 = state.units.filter(
       (unit) => unit.ownerId === state.humanPlayerId,

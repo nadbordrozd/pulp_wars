@@ -121,9 +121,10 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Eggs", () => {
       attackV7(state, from, { x: 3, y: 9 }),
       attackV7(state, from, { x: 3, y: 7 }),
     ]);
-    // T-Rex Egg (revision 20: cost 14, hatch 4): 14 * 4 + 6 HP + 2 * 4 turns.
+    // T-Rex Egg (revision 20: hatch 4; cost 11 since the tier-3 review A):
+    // 11 * 4 + 6 HP + 2 * 4 turns.
     expect(attacks.map((candidate) => candidate.score.strategicValue)).toEqual([
-      70, 24,
+      58, 24,
     ]);
   });
 
@@ -323,9 +324,9 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Goblin blasts", () 
     const nest = bomb([egg("KNIGHT", 3, 7)]);
     expect(bare.splash).toEqual([]);
     expect(nest.splash).toEqual([3]);
-    // Half of the T-Rex Egg (revision 20: 14 * 4 + 6 HP + 2 * 4 turns = 70):
+    // Half of the T-Rex Egg (11 * 4 + 6 HP + 2 * 4 turns = 58):
     // 3 of 6 HP.
-    expect(nest.score.strategicValue - bare.score.strategicValue).toBe(35);
+    expect(nest.score.strategicValue - bare.score.strategicValue).toBe(29);
     expect(nest.score.immediateValue - bare.score.immediateValue).toBe(30);
   });
 });

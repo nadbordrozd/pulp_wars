@@ -306,7 +306,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     const guard = moveCandidateV7(state, { x: 10, y: 9 }, { x: 10, y: 8 });
     expect(guard?.score.priority).toBe(EGG_GUARD_PRIORITY_V7);
     // A quarter of the Egg's protection value (68 * 2 / 4 = 34).
-    expect(guard?.score.strategicValue).toBe(8);
+    expect(guard?.score.strategicValue).toBe(7);
     expect(
       moveCandidateV7(state, { x: 10, y: 9 }, { x: 9, y: 9 })?.score.priority,
     ).toBe(700);
@@ -387,12 +387,12 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     const nest = dino(pieces, { eggs: egg });
     const from = { x: 10, y: 8 };
     const to = { x: 10, y: 7 };
-    // T-Rex Egg (revision 20: cost 14, hatch 4):
-    // floor((14 * 4 + 28) * 2 / (1 + 4 turns)) = 33.
+    // T-Rex Egg (hatch 4; cost 11 since the tier-3 review A):
+    // floor((11 * 4 + 28) * 2 / (1 + 4 turns)) = 28.
     expect(
       scoreV7(nest, attackV7(nest, from, to)).strategicValue -
         scoreV7(bare, attackV7(bare, from, to)).strategicValue,
-    ).toBe(33);
+    ).toBe(28);
   });
 });
 
@@ -636,9 +636,9 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Hatch", () => {
         candidate.score.strategicValue,
       ]),
     ).toEqual([
-      // T-Rex (revision 20): 14 * 4 + 28 + 10 * 4 turns; Ankylosaurus:
+      // T-Rex (cost 11): 11 * 4 + 28 + 10 * 4 turns; Ankylosaurus:
       // 5 * 4 + 20 + 20.
-      ["KNIGHT", HATCH_PRIORITY_V7, 124],
+      ["KNIGHT", HATCH_PRIORITY_V7, 112],
       ["GUARD", HATCH_PRIORITY_V7, 60],
       ["RAIDER", HATCH_LAST_TURN_PRIORITY_V7, 38],
     ]);
@@ -675,8 +675,8 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Hatch", () => {
     });
     const approach = moveCandidateV7(state, from, { x: 9, y: 9 });
     expect(approach?.score.priority).toBe(HATCH_APPROACH_PRIORITY_V7);
-    // A quarter of the T-Rex inside (revision 20: 14 * 4 + 28 = 84).
-    expect(approach?.score.strategicValue).toBe(21);
+    // A quarter of the T-Rex inside (11 * 4 + 28 = 72).
+    expect(approach?.score.strategicValue).toBe(18);
     // A Move that does not approach the Egg ranks below it. (It scored 700
     // before `pulp_wars-ke95`; since the Shaman captures, the policy no
     // longer offers it that ordinary Move at all.)

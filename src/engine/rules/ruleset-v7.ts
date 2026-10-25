@@ -2866,8 +2866,11 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     role: "KNIGHT",
     label: "T-Rex",
     tacticalRole: "BREAKTHROUGH",
-    // Revision 20 section 3: cost 14 (was 10).
-    cost: 14,
+    // Revision 20 section 3: cost 14 (was 10). The tier-3 review A
+    // (`pulp_wars-1pwz`): 11. At 14 it cost more than one and a half
+    // Knights for the Knight's bite; the four turns in the Egg stay (a
+    // Shaman's Hatch is the faction's answer to them).
+    cost: 11,
     maxHp: 28,
     attack2: 8,
     defense2: 4,
@@ -3305,7 +3308,8 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
 /**
  * The Ice Folk technology graph (docs/product/RULESET_7_ICE_FOLK.md section
  * 4): identical to ORIGINAL_BASELINE_V5 except that Administration grants
- * `WITCH_SUPPORT` instead of Captain support, Chivalry grants no Overrun,
+ * `WITCH_SUPPORT` instead of Captain support (Chivalry granted no Overrun
+ * until the tier-3 review A, `pulp_wars-1pwz`, gave the Sabretooth one),
  * Fortification (displayed as Deep Winter) grants `DEEP_WINTER` instead of
  * `BUILD_FIELD_DEFENSE`, and Explosives (displayed as Brittle) keeps both of
  * its unlocks and adds `BRITTLE`.
@@ -3342,22 +3346,21 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
         original.prerequisites,
         [
           ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            // The tier-3 review A (`pulp_wars-1pwz`): Chivalry grants
+            // Overrun again (the Sabretooth's).
             unlock.kind === "CAPTAIN_SUPPORT"
               ? [{ kind: "WITCH_SUPPORT" }]
-              : unlock.kind === "OVERRUN"
-                ? []
-                : unlock.kind === "COMMAND" &&
-                    unlock.command === "BUILD_FIELD_DEFENSE"
-                  ? [{ kind: "DEEP_WINTER" }]
-                  : // The frozen sea (naval branch sections 2.2 and 8.11):
-                    // the Ice Folk tree unlocks no ship, no Ram, and no
-                    // Board.
-                    (unlock.kind === "UNIT_ROLE" &&
-                        isNavalRoleV7(unlock.role)) ||
-                      unlock.kind === "RAM" ||
-                      (unlock.kind === "COMMAND" && unlock.command === "BOARD")
-                    ? []
-                    : [unlock],
+              : unlock.kind === "COMMAND" &&
+                  unlock.command === "BUILD_FIELD_DEFENSE"
+                ? [{ kind: "DEEP_WINTER" }]
+                : // The frozen sea (naval branch sections 2.2 and 8.11):
+                  // the Ice Folk tree unlocks no ship, no Ram, and no
+                  // Board.
+                  (unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) ||
+                    unlock.kind === "RAM" ||
+                    (unlock.kind === "COMMAND" && unlock.command === "BOARD")
+                  ? []
+                  : [unlock],
           ),
           ...(original.id === "EXPLOSIVES"
             ? [{ kind: "BRITTLE" } as const]
@@ -3500,7 +3503,20 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PROWL", "FREEZE"],
+    // The tier-3 review A (`pulp_wars-1pwz`): the hunter of the frozen
+    // line. Cold Blood (+0.5 Attack against a Frozen unit, the Snow
+    // Hunter's) and Overrun: a Frozen unit does not strike back, and the
+    // Sabretooth's 3.5 kills or shatters a frozen Fighter, Marksman, Raider,
+    // or Knight, so it runs through the units the Sleds, the Witch, and the
+    // Musk Oxen froze. Elsewhere its Attack 3 kills only the 10-HP units.
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "PROWL",
+      "OVERRUN",
+      "COLD_BLOOD",
+      "FREEZE",
+    ],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3581,7 +3597,9 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     ignoresFortification: true,
     plantedBonus2: 2,
   },
-  KNIGHT: { ignoresZocStops: true },
+  // The tier-3 review A (`pulp_wars-1pwz`): the Sabretooth's Cold Blood,
+  // the Snow Hunter's `COLD_BLOOD_BONUS2_V7`.
+  KNIGHT: { ignoresZocStops: true, coldBloodBonus2: 1 },
   // The giants' signatures (section 6.6): Glacial Smash, and the Frost
   // Giant never advances.
   JUGGERNAUT: {

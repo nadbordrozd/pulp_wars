@@ -430,7 +430,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       captureEligible: false,
       activation: eggActivationV7(),
     });
-    // Revision 20 section 3: a T-Rex Egg costs 14 and hatches in 4 turns.
+    // Revision 20 section 3: a T-Rex Egg costs 11 (14 before the tier-3 review A) and hatches in 4 turns.
     expect(result.state.eggs).toEqual([
       { unitId: egg.id, turnsRemaining: 4, laidThisTurn: true },
     ]);
@@ -441,7 +441,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
         cityId: city.id,
         unitId: egg.id,
         role: "KNIGHT",
-        cost: 14,
+        cost: 11,
         at: NEST,
         hp: 6,
         turnsRemaining: 4,
@@ -452,7 +452,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
     expect(result.state.random).toEqual(state.random);
     expect(
       result.state.players.find((player) => player.id === actor)?.coins,
-    ).toBe(6);
+    ).toBe(9);
     expect(cityOfV7(result.state, 0).cityActionAvailable).toBe(false);
     // The city action is shared: a second Egg, or a trained unit, must wait.
     expect(
@@ -647,7 +647,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       ["GUARD", 4],
       ["CATAPULT", 6],
       ["SWORDSMAN", 7],
-      ["KNIGHT", 13],
+      ["KNIGHT", 10],
     ] as const) {
       const command = lay(forged, role, NEST);
       expect(
@@ -718,13 +718,13 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
     const base = dino([], [], { techs: { 0: without("FORTIFICATION") } });
     const actor = base.humanPlayerId;
     const city = cityOfV7(base, 0);
-    // The T-Rex, a two-slot egg-laid role (revision 20: cost 14, hatch 4).
+    // The T-Rex, a two-slot egg-laid role (revision 20: cost 14, hatch 4; the tier-3 review A: cost 11).
     const preview = (state: GameStateV7, role: UnitRoleIdV7 = "KNIGHT") =>
       previewLayEggV7(viewForV7(state, actor), city.id, role);
     expect(preview(base)).toEqual({
       cityId: city.id,
       role: "KNIGHT",
-      cost: 14,
+      cost: 11,
       slots: 2,
       usedSlots: 0,
       capacity: 3,
@@ -2650,7 +2650,7 @@ describe("ruleset-7 revision-19 Abandon Egg (Disband)", () => {
       ["MARKSMAN", 2],
       ["GUARD", 2],
       ["SWORDSMAN", 4],
-      ["KNIGHT", 7],
+      ["KNIGHT", 5],
     ] as const) {
       const start = dino([], [], { coins: 20 });
       const actor = start.humanPlayerId;

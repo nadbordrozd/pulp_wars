@@ -912,8 +912,8 @@ export const ARMY_SHARES_V7 = Object.freeze({
   // siege share: the grown units that are the line), a quarter
   // Ankylosauruses (the units a Knight does not kill, and the garrisons),
   // a fifth Cavemen (the capturers, and Pack Hunt beside the dinosaurs),
-  // 15% Spitters (Acid against cover and Walls), a tenth T-Rexes (14 Coins
-  // and two slots each). Against two or more hostile ranged, siege, or
+  // 15% Spitters (Acid against cover and Walls), a tenth T-Rexes (14 Coins,
+  // 11 since the tier-3 review A, and two slots each). Against two or more hostile ranged, siege, or
   // support units a quarter T-Rexes, which Rampage through them.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is a `LINE`
   // role now, so the line share holds the Triceratops and the Cavemen
@@ -1473,8 +1473,9 @@ export function armyRoleScoreV7(
                 // trained on). Other factions' seats are as they were.
                 // The Martian pass: nor a Martian seat a Mothership (8
                 // Coins and two unit slots of a city that needs bodies).
-                // The Dinosaur pass: nor a Dinosaur seat a T-Rex Egg (14
-                // Coins, two slots, and four turns as an Egg).
+                // The Dinosaur pass: nor a Dinosaur seat a T-Rex Egg (11
+                // Coins since the tier-3 review A, 14 before; two slots,
+                // and four turns as an Egg).
                 unitClass === "BREAKTHROUGH" &&
                   (faction === "GOBLIN" ||
                     faction === "MARTIAN" ||

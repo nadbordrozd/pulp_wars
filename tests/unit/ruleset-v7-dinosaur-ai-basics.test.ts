@@ -149,11 +149,11 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
       unitId: unitAtV7(state, { x: 6, y: 6 }).id,
       eggUnitId: unitAtV7(state, { x: 7, y: 7 }).id,
     };
-    // The T-Rex inside (revision 20: 14 * 4 + 28) and 10 per turn saved
+    // The T-Rex inside (cost 11 since the tier-3 review A: 11 * 4 + 28) and 10 per turn saved
     // (hatch time 4).
     expect(hatchScoreV7(view, hatch, false)).toEqual({
       priority: 1085,
-      strategic: 84 + 40,
+      strategic: 72 + 40,
       immediate: 0,
     });
     const candidates = chooseNormalCommandV7(view).candidates.map(
