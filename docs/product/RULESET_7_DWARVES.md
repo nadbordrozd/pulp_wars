@@ -788,7 +788,9 @@ unit is bombed twice in a turn. Sections 6.1 to 6.4 are the design record;
   neutral village center or the center of a city its owner does not own (so
   it never besieges or captures), never advances, cannot Pillage, crosses
   Shallow Water (Deep Water with Navigation), and self-launches where its
-  Move ends on water. It takes a treasure chest by ending a Move on it.
+  Move ends on water (since `7r116`, `pulp_wars-7pi5`, it stays in the air
+  there instead, in land form,
+  [RULESET_7_CURRENT.md section 20.6](RULESET_7_CURRENT.md#206-movement-stride-flying-and-crossing-water)). It takes a treasure chest by ending a Move on it.
 - **No ordinary attack.** Its abilities are `FLY` and `BOMB_RUN`; it has no
   `ATTACK`, so `ATTACK` is never offered for it and is rejected with
   `UNIT_ROLE_INVALID`. Every reader that asks "can this unit attack" (the
@@ -848,7 +850,8 @@ Legality, in this order (all rejections are atomic):
    Gyrocopter is in the blast when it landed next to the target (a landing
    2 away is outside the 3 × 3 blast area).
 6. **Water.** If `to` is water and the Gyrocopter survived, it self-launches
-   there (form `EMBARKED`, `UNIT_EMBARKED`).
+   there (form `EMBARKED`, `UNIT_EMBARKED`). (Gone with `7r116`: it stays
+   in the air there, in land form.)
 7. The Gyrocopter has used its Move and its primary action and is handled.
 
 A bomb destroys **no Field Defense** (it is not an attack, and a flyer is not

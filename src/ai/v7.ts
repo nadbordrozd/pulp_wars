@@ -11850,15 +11850,17 @@ function publicMovementTilePossible(
 
 /**
  * The Martian revision: whether a walker or flyer can end a Move (and so
- * attack) on `tile`: land only (a Move that ends on water embarks). A flyer
- * may end on any settlement center since any unit can capture
- * (`pulp_wars-ke95`).
+ * attack) on `tile`: a walker land only (a Move that ends on water embarks
+ * it); a flyer also water, where it stays in the air (`pulp_wars-7pi5`,
+ * `7r116`). A flyer may end on any settlement center since any unit can
+ * capture (`pulp_wars-ke95`).
  */
 function machineMayEndForThreatV7(
   tile: PlayerViewV7["board"]["tiles"][number],
   mode: "GROUND" | "STRIDE" | "FLY",
 ): boolean {
-  if (!tile.explored || tile.biome === null) return false;
+  if (!tile.explored) return false;
+  if (tile.biome === null) return mode === "FLY";
   // The Rift (RULESET_7_RIFT.md section 4): only a flyer ends on a Rift.
   return tile.terrain !== "RIFT" || mode === "FLY";
 }
@@ -14498,6 +14500,9 @@ function isAutoembarkMoveV7(
   const unit = context.lookup.unitsById.get(command.unitId);
   const destination = command.path.at(-1);
   if (unit?.form !== "LAND" || destination === undefined) return false;
+  // Flyers over water (`pulp_wars-7pi5`, `7r116`): a flyer never embarks,
+  // at an own Port either.
+  if (unitMovementModeV7(view, unit) === "FLY") return false;
   const tile = findPublicTileV7(view, destination);
   return (
     (tile?.explored === true &&
@@ -23469,9 +23474,10 @@ function martianMoveValueV7(
   if (!facts.viewerMartian || actor.ownerId !== view.viewer.id)
     return { priority: next, strategic };
   const rule = unitRoleRuleV7(view, actor);
-  // Machines cross water only toward their job and never into the reach
-  // of a visible hostile naval unit (afloat they cannot fight).
-  if (routine && unitMovementModeV7(view, actor) !== "GROUND") {
+  // Walkers cross water only toward their job and never into the reach
+  // of a visible hostile naval unit (afloat they cannot fight). A flyer
+  // stays in the air over water and fights there (`pulp_wars-7pi5`).
+  if (routine && unitMovementModeV7(view, actor) === "STRIDE") {
     const tile = findPublicTileV7(view, to);
     if (tile?.explored === true && tile.biome === null) {
       const progress = campaignRouteProgressV7(
@@ -24974,9 +24980,9 @@ function dwarfMoveValueV7(
     )
       return { priority: -1, strategic: 0 };
     if (abilities.includes("BOMB_RUN")) {
-      const tile = findPublicTileV7(view, to);
-      if (tile?.explored === true && tile.biome === null)
-        return { priority: -1, strategic: 0 };
+      // Flyers over water (`pulp_wars-7pi5`, `7r116`): a Gyrocopter over
+      // water stays in the air with its bomb, so water is no longer refused
+      // (it self-launched there before, and could not bomb afloat).
       const there = visibleImmediateDamage(view, actor, to, context);
       const here = visibleImmediateDamage(view, actor, actor.at, context);
       if (there >= actor.hp && there > here)

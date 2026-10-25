@@ -203,8 +203,9 @@ export interface ReachablePathV7 {
  * The Martian revision (section 7): a land-form walker or flyer enters a
  * Mountain without Engineering and is never stopped by terrain; it may step
  * onto water (a walker Shallow Water, a flyer also Deep Water with
- * Navigation), and a Move that ends there self-launches it (the reducer
- * embarks it). A flyer also passes over every unit and ignores hostile zones
+ * Navigation). A walker's Move that ends there self-launches it (the
+ * reducer embarks it); a flyer's leaves it in the air, in land form
+ * (`pulp_wars-7pi5`, `7r116`). A flyer also passes over every unit and ignores hostile zones
  * of control; since `pulp_wars-ke95` it may end on a settlement center it
  * does not own (and capture there). Terrain entry goes through the shared
  * `canEnterTerrainV7` and `canCrossWaterV7`.
@@ -582,9 +583,11 @@ function validateMovementPathCoreV7(
       !stepIce;
     // Section 8.11: a unit of the Ice Folk kind never embarks.
     // The Cultists (`pulp_wars-mch9.5`, section 4.2): a summoned unit
-    // never embarks and never crosses water, though it strides.
+    // never embarks and never crosses water, though it strides. Flyers over
+    // water (`pulp_wars-7pi5`, `7r116`): nor does a flyer, at a dock either.
     const autoEmbark =
       unit.form === "LAND" &&
+      !flies &&
       !iceFolkKind &&
       !summoned &&
       !batEscape &&
@@ -1315,17 +1318,19 @@ export function publicUnitHoverPodsV7(
 
 /**
  * Whether a visible land-form unit can launch onto water by a Move (a
- * Martian machine, or a foot unit with Hover Pods): its water destinations
- * are no attack origins (it is afloat there).
+ * walker, or a foot unit with Hover Pods): its water destinations are no
+ * attack origins (it is afloat there). A flyer never launches
+ * (`pulp_wars-7pi5`, `7r116`): over water it can still attack.
  */
 export function publicUnitLaunchesV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
 ): boolean {
+  const mode = unitMovementModeV7(view, unit);
   return (
     unit.form === "LAND" &&
-    (unitMovementModeV7(view, unit) !== "GROUND" ||
-      publicUnitHoverPodsV7(view, unit))
+    (mode === "STRIDE" ||
+      (mode === "GROUND" && publicUnitHoverPodsV7(view, unit)))
   );
 }
 
@@ -1473,8 +1478,10 @@ function validatePlayerMovementPathCoreV7(
       const water =
         (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
         !stepIce;
+      // Flyers over water (`pulp_wars-7pi5`): a flyer never embarks.
       const autoEmbark =
         unit.form === "LAND" &&
+        !flies &&
         !iceFolkKind &&
         !summoned &&
         !batEscape &&

@@ -12,10 +12,7 @@ import {
   roleGlossaryV7,
 } from "../../src/render/unit-glossary-v7";
 import { martianMoveLabelV7 } from "../../src/render/canvas/martian-board-plan-v7";
-import {
-  HOVER_LAUNCH_LABEL_V7,
-  LAUNCH_LABEL_V7,
-} from "../../src/render/martian-presentation-v7";
+import { HOVER_LAUNCH_LABEL_V7 } from "../../src/render/martian-presentation-v7";
 import {
   FORCE_FIELD_SHIELD_V7,
   NAVAL_ROLE_IDS_V7,
@@ -873,7 +870,7 @@ describe("the interface text (section 12)", () => {
     expect(roleGlossaryV7("FIGHTER", "ORIGINAL")).not.toContainEqual(hover);
   });
 
-  it("marks a shore launch on the board and keeps the machine's own Launch", () => {
+  it("marks a shore launch on the board; a Saucer over water has no Launch (7r116)", () => {
     const state = martianHoverLaunchFixtureV7();
     const view = viewOf(state);
     const grunt = navalUnitAtV7(state, MARTIAN_FLEET_UI_V7.grunt);
@@ -899,7 +896,10 @@ describe("the interface text (section 12)", () => {
         command.path.at(-1)?.y === 3,
     );
     if (saucerLaunch === undefined) throw new Error("no saucer launch");
-    expect(martianMoveLabelV7(view, saucerLaunch)).toBe(LAUNCH_LABEL_V7);
+    // Flyers over water (`pulp_wars-7pi5`): a flyer stays in the air over
+    // water, so its Move there is no launch (the Tripod's Launch is tested
+    // in ruleset-v7-flyers-over-water.test.ts).
+    expect(martianMoveLabelV7(view, saucerLaunch)).toBeNull();
   });
 
   it("captures the fleet: the review fixture's Skimmer previews a shielded Ram", () => {

@@ -207,6 +207,7 @@ import {
   collateralEntryV7,
   gangUpBonusV7,
   packHuntAttack2V7,
+  openWaterAtV7,
   ramShoveTileOpenV7,
   sweepEntryV7,
   tractorBeamTargetTechnologyV7,
@@ -8248,9 +8249,9 @@ export function queryThreatenedTilesV7(
   if (!rule.abilities.includes("ATTACK") && !wail) return [];
   const minimumRange = kaboom ? 0 : wail ? 1 : rule.minimumRange;
   const maximumRange = wail ? WAIL_RADIUS_V7 : rule.range;
-  // The Martian revision: a land-form machine that ends a Move on water
+  // The Martian revision: a land-form walker that ends a Move on water
   // self-launches and cannot attack from there, so its water destinations
-  // are not attack origins. Themed naval branches (`pulp_wars-5ti.19`): nor
+  // are not attack origins (a flyer stays in the air, `pulp_wars-7pi5`). Themed naval branches (`pulp_wars-5ti.19`): nor
   // are a Hover Pods foot unit's (its launch tiles).
   const machine = publicUnitLaunchesV7(view, unit);
   // The Ice Folk revision section 11: the reach includes Glide on known
@@ -12546,6 +12547,8 @@ function publicCombatPreviewCore(
     (target.form === "LAND" || target.form === "EGG") &&
     // The Rift (RULESET_7_RIFT.md section 4): never onto a Rift.
     !riftAtV7(view.board, target.at) &&
+    // Flyers over water (`pulp_wars-7pi5`): nor onto open water.
+    !openWaterAtV7(view, target.at) &&
     publicAdvanceDestinationLegal(view, attacker, target.at) &&
     // The Ice Folk revision section 7.7: never onto a foreign center.
     advanceSiteAllowedV7(

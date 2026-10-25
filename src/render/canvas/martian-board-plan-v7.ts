@@ -14,6 +14,7 @@ import {
   previewTractorBeamV7,
   roleMechanicsV7,
   unitFactionV7,
+  unitMovementModeV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -772,8 +773,10 @@ export function isMartianPickCommandV7(kind: CommandV7["kind"]): boolean {
 }
 
 /**
- * The "Launch" label of a machine's Move onto water (section 13.2): the
- * move ends afloat, so the machine crosses water as a transport.
+ * The "Launch" label of a walker's Move onto water (section 13.2): the
+ * move ends afloat, so the walker crosses water as a transport. A flyer's
+ * Move onto water has none (`pulp_wars-7pi5`, `7r116`): a flyer of any
+ * faction stays in the air over water, as itself.
  */
 export function martianMoveLabelV7(
   view: PlayerViewV7,
@@ -781,7 +784,12 @@ export function martianMoveLabelV7(
 ): string | null {
   const unit = view.units.find((candidate) => candidate.id === command.unitId);
   const at = command.path.at(-1);
-  if (unit === undefined || at === undefined || unit.form !== "LAND")
+  if (
+    unit === undefined ||
+    at === undefined ||
+    unit.form !== "LAND" ||
+    unitMovementModeV7(view, unit) === "FLY"
+  )
     return null;
   const tile = view.board.tiles.find((candidate) => same(candidate.at, at));
   if (tile?.explored !== true || tile.biome !== null) return null;

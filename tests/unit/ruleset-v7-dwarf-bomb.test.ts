@@ -246,7 +246,7 @@ describe("the Bomb Run command (section 6.2)", () => {
     expect(blast.results.map((entry) => entry.unitId)).toContain(gyro.id);
   });
 
-  it("self-launches on water and may land on a Rift", () => {
+  it("stays in the air on water (7r116) and may land on a Rift", () => {
     const wet = dwarfFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(5, 2) },
@@ -255,9 +255,14 @@ describe("the Bomb Run command (section 6.2)", () => {
       ],
       { water: [at(5, 4)] },
     );
-    const launched = bombRun(wet, bombV7(wet, at(5, 2), at(5, 3), at(5, 4)));
-    expect(kindsV7(launched.events)).toContain("UNIT_EMBARKED");
-    expect(unitAtV7(launched.state, at(5, 4)).form).toBe("EMBARKED");
+    // Flyers over water (`pulp_wars-7pi5`): it self-launched there before.
+    const landedWet = bombRun(wet, bombV7(wet, at(5, 2), at(5, 3), at(5, 4)));
+    expect(kindsV7(landedWet.events)).not.toContain("UNIT_EMBARKED");
+    expect(unitAtV7(landedWet.state, at(5, 4))).toMatchObject({
+      role: "RAIDER",
+      form: "LAND",
+      activation: { handled: true },
+    });
     let rift = dwarfFieldV7([
       { seat: 0, role: "RAIDER", at: at(5, 2) },
       { seat: 1, role: "FIGHTER", at: at(5, 3) },

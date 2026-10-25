@@ -571,18 +571,27 @@ describe("the Sunken Wreck (section 7)", () => {
     }
   });
 
-  it("is salvaged by a machine that self-launches onto it, not by a unit passing over it", () => {
-    const saucer = wreckArena(
+  it("is salvaged by a machine that self-launches onto it or a flyer that ends over it, not by a unit passing over it", () => {
+    const tripod = wreckArena(
       ["MARTIAN", "ORIGINAL"],
-      [{ seat: 0, role: "RAIDER", at: at(4, 2) }],
+      [{ seat: 0, role: "CATAPULT", at: at(4, 2) }],
     );
-    const launched = move(saucer, at(4, 2), [WRECK]);
+    const launched = move(tripod, at(4, 2), [WRECK]);
     expect(kinds(launched.events)).toEqual([
       "UNIT_MOVED",
       "UNIT_EMBARKED",
       "WRECK_SALVAGED",
     ]);
     expect(unitAtV7(launched.state, WRECK).form).toBe("EMBARKED");
+    // Flyers over water (`pulp_wars-7pi5`, 7r116): a Saucer stays in the
+    // air over the Wreck and salvages it.
+    const saucer = wreckArena(
+      ["MARTIAN", "ORIGINAL"],
+      [{ seat: 0, role: "RAIDER", at: at(4, 2) }],
+    );
+    const flown = move(saucer, at(4, 2), [WRECK]);
+    expect(kinds(flown.events)).toEqual(["UNIT_MOVED", "WRECK_SALVAGED"]);
+    expect(unitAtV7(flown.state, WRECK).form).toBe("LAND");
     const boat = wreckArena(
       ["ORIGINAL", "GOBLIN"],
       [{ seat: 0, role: "PATROL_BOAT", at: at(3, 1), form: "NAVAL" }],

@@ -1113,7 +1113,7 @@ describe("M3: the Heavy Tractor Beam (section 5.3)", () => {
     expect(offeredFor(next, SHIP, "TRACTOR_BEAM").length).toBeGreaterThan(0);
   });
 
-  it("a Mothership that pulled may still fly out over water (it self-launches) in the same turn", () => {
+  it("a Mothership that pulled may still fly out over water in the same turn, staying in the air (7r116)", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: SHIP },
@@ -1129,11 +1129,12 @@ describe("M3: the Heavy Tractor Beam (section 5.3)", () => {
       unitId: ship.id,
       path: [at(2, 2)],
     });
+    // Flyers over water (`pulp_wars-7pi5`): it self-launched there before.
     expect(unitAtV7(flown.state, at(2, 2))).toMatchObject({
       id: ship.id,
-      form: "EMBARKED",
+      form: "LAND",
     });
-    // The per-turn fact stays on the embarked Mothership until End Turn.
+    // The per-turn fact stays on the Mothership until End Turn.
     expect(flown.state.tractorUsedThisTurn).toEqual([ship.id]);
   });
 

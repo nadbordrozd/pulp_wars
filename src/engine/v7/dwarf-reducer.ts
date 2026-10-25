@@ -1003,36 +1003,10 @@ export function applyBombRunV7(
         playerId: ownerId,
         tiles: kit.uniqueCoords(tiles),
       });
-    // Step 6: a surviving Gyrocopter that landed on water self-launches.
-    const landing = tileAtV7(state.board, to);
-    // The frozen sea (naval branch section 8.3): a Gyrocopter that lands
-    // on ice stands there.
-    if (
-      survivor !== undefined &&
-      landing?.biome === null &&
-      !isIceAtV7(state, to)
-    ) {
-      units = units.map((unit) =>
-        unit.id === gyro.id
-          ? {
-              ...unit,
-              form: "EMBARKED" as const,
-              activation: {
-                ...kit.exhaustedActivation(),
-                movedPathLength: chebyshev(from, to),
-              },
-            }
-          : unit,
-      );
-      events.push({
-        kind: "UNIT_EMBARKED",
-        playerId: actor,
-        unitId: gyro.id,
-        passengerRole: gyro.role,
-        from,
-        to,
-      });
-    }
+    // Step 6 (gone with `7r116`, `pulp_wars-7pi5`; the user, 2026-10-25:
+    // "when a gyrocopter flies over water, it shouldn't become a boat"): a
+    // Gyrocopter that lands on water stays in the air, in land form, with
+    // its own stats and its bomb (it self-launched there before).
     const staged = kit.graveActionTail(
       {
         ...state,

@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r115");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r115.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-100, -60)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r116");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r116.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-101, -61)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -220,8 +220,9 @@ describe("ruleset-7 prior identities", () => {
     // at 11 Coins): 7r113. Reward arrival (`pulp_wars-sa3h`: a reward unit
     // pushes the unit on the center off): 7r114. Monuments
     // (`pulp_wars-d8xm`: any number per city, the look fixed for every
-    // viewer): 7r115.
-    expect(revision).toBe(115);
+    // viewer): 7r115. Flyers over water (`pulp_wars-7pi5`: a flyer stays
+    // in the air over water and never embarks): 7r116.
+    expect(revision).toBe(116);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -256,7 +257,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r116", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r117", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

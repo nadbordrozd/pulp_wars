@@ -3319,10 +3319,16 @@ function validateCrossReferences(value: CrossInput): boolean {
       // and embarked units are afloat.
       // The frozen sea (naval branch section 8.3): a land-form unit may
       // stand on an ice tile (water with an ice entry); an Egg never does.
+      // Flyers over water (`pulp_wars-7pi5`, `7r116`): a land-form flyer
+      // may stand on any water tile (it is in the air, never afloat).
       (isAfloatFormV7(unit.form)
         ? tile.biome !== null
         : tile.biome === null &&
-          !(unit.form === "LAND" && iceKeys.has(key(unit.at)))) ||
+          !(
+            unit.form === "LAND" &&
+            (iceKeys.has(key(unit.at)) ||
+              roleMechanicsV7(unit.role, kind).movementMode === "FLY")
+          )) ||
       (isAfloatFormV7(unit.form) &&
         tile.terrain === "DEEP_WATER" &&
         !owner.researchedTechs.includes("NAVIGATION")) ||
@@ -4036,7 +4042,7 @@ function turnListsValid(
  * only units on the board owned by the active player (a controlled unit
  * included); `tractorUsedThisTurn` lists only units on the board owned by
  * the active player whose role, under its kind, has the Heavy Tractor Beam
- * (in land form when it pulled; it may have self-launched since). Both are
+ * (in land form when it pulled; before `7r116` it may have self-launched since). Both are
  * empty in a match without a Martian seat.
  */
 function martianTurnListsValid(
@@ -4061,8 +4067,8 @@ function martianTurnListsValid(
     ) &&
     tractorUsedThisTurn.every((unitId) => {
       const unit = unitById.get(unitId);
-      // No form test: a Mothership may pull and then end its Move on water
-      // (it self-launches) in the same turn.
+      // No form test: an older state may hold a Mothership that pulled and
+      // then self-launched on water in the same turn (before `7r116`).
       return (
         unit !== undefined &&
         unit.ownerId === activePlayerId &&

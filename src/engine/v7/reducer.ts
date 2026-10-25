@@ -5865,8 +5865,17 @@ function applyMove(
       reason: validation.reason,
     });
   const destinationTile = tileAtV7(state.board, validation.destination);
+  // The Martian revision section 7.3: the unit's own movement mode.
+  const movementMode =
+    unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
+  // Flyers over water (`pulp_wars-7pi5`, `7r116`; the user, 2026-10-25:
+  // "when a gyrocopter flies over water, it shouldn't become a boat"): a
+  // flyer never embarks. A Move that ends on water, an own dock included,
+  // leaves it in land form, with its own stats, abilities, and sprite.
+  const flies = movementMode === "FLY";
   const autoEmbarks =
     unit.form === "LAND" &&
+    !flies &&
     validation.interruption === null &&
     validation.traversedPath.length === command.path.length &&
     (destinationTile?.improvement === "PORT" ||
@@ -5880,11 +5889,10 @@ function applyMove(
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6):
     // nothing embarks at a dock on ice; a unit walks onto it.
     !isIceAtV7(state, validation.destination);
-  // The Martian revision section 7.3: a land-form walker or flyer whose
-  // Move ends (or is stopped or interrupted) on a water tile self-launches:
-  // it embarks there with the ordinary result of embarking. No Port needed.
-  const movementMode =
-    unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
+  // The Martian revision section 7.3: a land-form walker whose Move ends
+  // (or is stopped or interrupted) on a water tile self-launches: it embarks
+  // there with the ordinary result of embarking. No Port needed. A flyer
+  // never does since `7r116` (it stays in the air).
   // The frozen sea (naval branch section 10): a machine that ends its Move
   // on ice stands there (no self-launch).
   // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a foot unit's
@@ -5892,6 +5900,7 @@ function applyMove(
   // accepts one only with Hover Pods) and self-launches it the same way.
   const selfLaunches =
     unit.form === "LAND" &&
+    !flies &&
     (movementMode !== "GROUND" ||
       unitCapabilitiesV7(
         state,

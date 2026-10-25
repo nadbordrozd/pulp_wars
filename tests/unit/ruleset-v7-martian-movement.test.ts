@@ -668,13 +668,8 @@ describe("crossing water and self-launch (section 7.3)", () => {
     rejectedV7(tripod, move(tripod, at(2, 2), at(3, 2)));
   });
 
-  it("self-launch: a Move that ends on water embarks the machine there, exhausted", () => {
-    for (const role of [
-      "RAIDER",
-      "KNIGHT",
-      "CATAPULT",
-      "JUGGERNAUT",
-    ] as const) {
+  it("self-launch: a Move that ends on water embarks a walker there, exhausted", () => {
+    for (const role of ["CATAPULT", "JUGGERNAUT"] as const) {
       const state = lone(role, {
         water: [at(3, 2)],
         techs: without("SHORECRAFT"),
@@ -700,10 +695,37 @@ describe("crossing water and self-launch (section 7.3)", () => {
         ),
       ).toEqual([]);
     }
-    // A flyer self-launches on Deep Water with Navigation only.
+    // No unit on the tile.
+    const taken = lone("CATAPULT", { water: [at(3, 2)] }, [
+      { seat: 0, role: "PATROL_BOAT", at: at(3, 2), form: "NAVAL" },
+    ]);
+    expect(moveReason(taken, at(2, 2), at(3, 2))).toBe("OCCUPIED");
+  });
+
+  // Flyers over water (`pulp_wars-7pi5`, 7r116; the user, 2026-10-25: "when
+  // a gyrocopter flies over water, it shouldn't become a boat. the same goes
+  // for all other flying units"): a flyer whose Move ends on water stays in
+  // the air, in land form, and may still act. It self-launched before.
+  it("a flyer whose Move ends on water stays in the air as itself, not embarked", () => {
+    for (const role of ["RAIDER", "KNIGHT"] as const) {
+      const state = lone(role, {
+        water: [at(3, 2)],
+        techs: without("SHORECRAFT"),
+      });
+      const run = go(state, at(2, 2), at(3, 2));
+      const unit = unitAtV7(run.state, at(3, 2));
+      expect(unit, role).toMatchObject({ role, form: "LAND" });
+      expect(unit.activation, role).toMatchObject({
+        moved: true,
+        attacked: false,
+      });
+      expect(kindsV7(run.events), role).not.toContain("UNIT_EMBARKED");
+      expect(run.state.shields).toEqual(state.shields);
+    }
+    // On Deep Water with Navigation too.
     const deep = lone("KNIGHT", { deepWater: [at(3, 2)] });
     expect(unitAtV7(go(deep, at(2, 2), at(3, 2)).state, at(3, 2)).form).toBe(
-      "EMBARKED",
+      "LAND",
     );
     // No unit on the tile.
     const taken = lone("RAIDER", { water: [at(3, 2)] }, [
@@ -759,18 +781,25 @@ describe("crossing water and self-launch (section 7.3)", () => {
     rejectedV7(noNavigation, move(noNavigation, at(3, 2), at(4, 2)));
   });
 
-  it("a Move stopped on an unexplored water tile embarks the machine there", () => {
+  it("a Move stopped on an unexplored water tile embarks a walker there; a flyer stays in the air", () => {
     // Sight reveals the tiles ahead of every step, so only the first step
     // of a Move can enter an unexplored cell.
-    const base = lone("RAIDER", { water: [at(3, 2)] });
-    const state = unexploreV7(base, 0, [at(3, 2)]);
-    // A Move ends on entering an unexplored cell.
-    expect(moveReason(state, at(2, 2), at(3, 2), at(4, 2))).toBe(
-      "UNEXPLORED_INTERMEDIATE",
-    );
-    const run = go(state, at(2, 2), at(3, 2));
-    expect(unitAtV7(run.state, at(3, 2)).form).toBe("EMBARKED");
-    expect(kindsV7(run.events)).toContain("UNIT_EMBARKED");
+    for (const [role, form] of [
+      ["CATAPULT", "EMBARKED"],
+      ["RAIDER", "LAND"],
+    ] as const) {
+      const base = lone(role, { water: [at(3, 2)] });
+      const state = unexploreV7(base, 0, [at(3, 2)]);
+      // A Move ends on entering an unexplored cell.
+      expect(moveReason(state, at(2, 2), at(3, 2), at(4, 2)), role).toBe(
+        "UNEXPLORED_INTERMEDIATE",
+      );
+      const run = go(state, at(2, 2), at(3, 2));
+      expect(unitAtV7(run.state, at(3, 2)).form, role).toBe(form);
+      expect(kindsV7(run.events).includes("UNIT_EMBARKED"), role).toBe(
+        form === "EMBARKED",
+      );
+    }
   });
 });
 

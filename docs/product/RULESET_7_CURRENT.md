@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r115`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r116`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r116` (`pulp_wars-7pi5`; the user, 2026-10-25: "when a
+gyrocopter flies over water, it shouldn't become a boat. the same goes for
+all other flying units. whatever the rules are for IF a flying unit can
+enter/shallow water, keep them. just when it does enter water, it should
+retain its original sprite and properties - unlike all land-based units
+when they embark in a port") keeps **flyers over water in the air**
+([section 20.6](#206-movement-stride-flying-and-crossing-water)). A
+Saucer, Mothership, or Gyrocopter whose `MOVE` or Bomb Run ends on water,
+an own Port or Shipyard included, no longer self-launches: it stays in
+land form, with its own Move, Attack, Defense, Sight, abilities, Shield,
+and sprite, may still act that turn, and moves on from the water by an
+ordinary `MOVE`. It is not afloat (no Ram, Board, torpedo, Drag, or
+blockade). Which water a flyer may enter is unchanged (Shallow Water, and
+Deep Water with Navigation), and walkers and Hover Pods foot units still
+self-launch. A save, replay, or setup of `7r115` is rejected, and the
+browser autosave has a new key. Boards and missions are unchanged.
 `pulp-wars-poc-7r115` (`pulp_wars-d8xm`; the user, 2026-10-25, of
 Monuments: "they should keep their skin when they change hands ... drop
 the limitation that only one monument can be constructed in a given city") is
@@ -872,7 +888,7 @@ Grunt, Ray Gunner, Shield Projector, Brain, Shock Trooper) may make the
 **last step** of an ordinary Move from land onto an adjacent Shallow Water
 tile it knew before the command, that holds no unit and is neither ice nor
 a dock; the step costs a full point, ends the Move, and the unit
-**self-launches** there (it embarks, exhausted) as a machine does
+**self-launches** there (it embarks, exhausted) as a walker does
 (`hoverLaunchAllowedV7`, read by both movement validations and the
 movement query). It never crosses water inside a Move and never launches
 onto Deep Water; afloat it is an ordinary transport that keeps its Shield.
@@ -1685,7 +1701,8 @@ while it is controlled, otherwise its owner's. Every faction word above
 units", the Martian terms) names a unit's kind. A **ship** (or **boat**) is
 a unit in `NAVAL` form: a Patrol Boat, a Battleship, or a Submarine. A unit
 is **afloat** in `NAVAL` or `EMBARKED` form (a ship, a transport, or a
-self-launched machine). An **ice tile** is a water tile with an entry in
+self-launched walker or foot unit); a flyer over water is in land form and
+never afloat (`7r116`). An **ice tile** is a water tile with an entry in
 the `ice` list; an afloat unit standing on one is **icebound**; a
 **submerged** Submarine is one that is not icebound
 ([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)).
@@ -1753,10 +1770,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r115`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r116`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r115.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r116.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3771,7 +3788,8 @@ kills: the state schema allows that only in a match whose setup has the
 option on (on a generated map).
 
 **The Sunken Wreck.** A unit afloat (a boat, an embarked unit, or a
-Martian or Dwarf machine that self-launched there) that ends a `MOVE` on
+Martian walker that self-launched there), or a flyer in the air over it
+(since `7r116`, when a flyer stopped self-launching), that ends a `MOVE` on
 the Wreck, having moved onto it, salvages `WRECK_COINS_V7` = 8 Coins for
 its owner and the Wreck leaves the board; passing over it, a pull, or
 Knockback does nothing. Event `WRECK_SALVAGED { playerId, unitId, at,
@@ -5113,7 +5131,8 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   however gained. **Sea Dog** counts the player's Patrol Boats,
   Battleships, and Submarines on the board, a boarded prize included (an
   embarked land unit, a self-launched Martian
-  machine or Dwarf Gyrocopter included, is `EMBARKED` and does not count; it
+  walker included, is `EMBARKED` and does not count; a flyer over water is
+  a land unit; it
   cannot be completed
   on `DRY_LAND`). **For an Ice Folk seat**, which has no ship, Sea Dog
   counts instead its land-form units standing on an ice tile, whoever owns
@@ -7391,7 +7410,8 @@ General roster rules:
   cannot be Frozen, and a Frozen unit cannot embark (it cannot move;
   [section 21.3](#213-what-a-frozen-unit-cannot-do)). It has no
   Dwarf ability either (no Tunnel, ride, Bomb Run, Assemble, Repair, Dig
-  In, or eruption); a self-launched Gyrocopter is an ordinary embarked unit.
+  In, or eruption). A flyer never embarks (since `7r116`; a self-launched
+  Gyrocopter was an ordinary embarked unit before).
 - Base Sight gains +1 while standing on a Mountain with Engineering.
 - Minimum range limits only the chosen target: a Catapult, Lich, Rocket Cart,
   Steam Cannon, or Bomb Chucker cannot target an adjacent unit but may still
@@ -7839,8 +7859,9 @@ Candy, and Cult campaigns. No match was played.
 - Land units need Engineering to enter Mountain (Martian walkers and flyers,
   the Dwarf Gyrocopter, and Ice Folk Mountain-born units do not) and cannot
   enter water except by embarking or where it is ice (Martian machines and
-  the Gyrocopter also cross water inside a Move and self-launch; on ice
-  they stand in land form and do not). Every "can this unit stand on
+  the Gyrocopter also cross water inside a Move; a walker self-launches
+  where its Move ends on water, a flyer stays in the air there in land form
+  since `7r116`, and on ice both stand in land form). Every "can this unit stand on
   this tile" test (`MOVE`, `DISEMBARK`, the advance, Push and the Charge!
   push, the Tractor Beam, Knockback, Beam Down, a tunnel or rider
   destination, an Assemble tile, treasure-unit placement, reward
@@ -8609,22 +8630,25 @@ Battleship outguns Patrol Boats at range, the Submarine sinks Battleships
 that cannot shoot it from afar, and Patrol Boats that ram hunt Submarines.
 Every rule that names "naval units", "ships", or "boats" covers all three.
 
-- **Water movement:** only naval and embarked units stand on open water
-  (an ice tile is the reverse: ground for land-form units and closed to
-  every unit afloat). Shallow
+- **Water movement:** only naval and embarked units, and flyers in the
+  air, stand on open water (an ice tile is the reverse: ground for
+  land-form units and closed to every unit afloat). Shallow
   Water needs Shorecraft (via embarking or training), Deep Water needs
   Navigation. A Martian machine or a Dwarf Gyrocopter is the exception for
-  entering: it crosses water inside a Move in land form and
-  **self-launches** (embarks) where a Move (or, for the Gyrocopter, a
-  bombing run) ends on water, with no Port and without Shorecraft
-  ([section 20.6](#206-movement-stride-flying-and-crossing-water)).
+  entering: it crosses water inside a Move in land form, with no Port and
+  without Shorecraft. A walker **self-launches** (embarks) where its Move
+  ends on water; a flyer (Saucer, Mothership, Gyrocopter) whose Move or
+  bombing run ends on water stays in the air there, in land form, and
+  never embarks (`7r116`,
+  [section 20.6](#206-movement-stride-flying-and-crossing-water)).
   Every step that leaves a water tile costs a full movement point. Patrol
   Boats, Battleships, Submarines, and embarked units all have Move 2. A naval or embarked
   unit passes through its owner's boats and transports and cannot end on one
   ([section 12.1](#121-movement)); pass-through adds no landing cell, it only
   widens where a two-cell water Move can end.
-- **Embarking:** a land unit embarks by ending a Move on an own active, empty
-  Port or Shipyard (Shorecraft) on open water; a dock that holds any unit,
+- **Embarking:** a land unit that does not fly embarks by ending a Move on
+  an own active, empty Port or Shipyard (Shorecraft) on open water (a
+  flyer ending there stays in the air, `7r116`); a dock that holds any unit,
   own or not, cannot be embarked on (`OCCUPIED`). Nothing embarks at a dock
   on ice (the frozen sea redesign, `7r100`): a unit walks onto it. The embark step costs half when the
   tile left is a usable Road node ([section 9.2](#92-road-movement)). The
@@ -8811,11 +8835,12 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   tile is never an attack origin. Since `7r99` Mind Control takes a
   ship beside the Brain (afloat on Deep Water only with Navigation); the Tractor Beam may pull a one-slot ship, a submerged Submarine
   included, and never an icebound one (`TARGET_IMMUNE`). A self-launched
-  machine or foot unit is `EMBARKED`: it can be rammed and torpedoed and
+  walker or foot unit is `EMBARKED`: it can be rammed and torpedoed and
   is never boarded. A Ray Gunner or a Tripod cannot target a submerged
   Submarine from 2. Martian foot units also embark at an own active,
-  empty Port or Shipyard with Shorecraft like Human units; machines also
-  self-launch. Afloat, a Martian unit is an ordinary embarked unit (Move 2,
+  empty Port or Shipyard with Shorecraft like Human units; walkers also
+  self-launch, and a Saucer or Mothership stays in the air over water
+  (`7r116`). Afloat, a Martian unit is an ordinary embarked unit (Move 2,
   Defense 1, Sight 1, no Attack, retaliation, ZOC, or ability) that keeps its
   Shield and Cooling; a walker afloat may enter Deep Water with Navigation.
   An embarked Martian unit on a hostile dock blockades it, and so does an
@@ -8871,8 +8896,9 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   reaches a Submarine within 2. Dwarf foot
   units and machines other than the Gyrocopter embark at an own active,
   empty Port or Shipyard with Shorecraft like Human units; the Gyrocopter
-  flies over Shallow Water (Deep Water with Navigation) and self-launches
-  where a Move or a bombing run ends on water. Afloat, a Dwarf unit is an
+  flies over Shallow Water (Deep Water with Navigation) and stays in the
+  air, as itself, where a Move or a bombing run ends on water: it never
+  embarks (it self-launched there before `7r116`). Afloat, a Dwarf unit is an
   ordinary embarked unit (Move 2, no bomb, Tunnel, Repair, or Assemble,
   never dug in) and lands with `DISEMBARK`. A tunnel never passes under
   water but Shallow Water with Sea Tunnels; an eruption never hits a naval
@@ -12293,7 +12319,8 @@ walker rule, and:
   unit passes it;
 - **ignores hostile ZOC** (entering it never ends its Move) and **exerts no
   ZOC**;
-- may cross Shallow Water, and Deep Water with Navigation, inside a Move;
+- may cross Shallow Water, and Deep Water with Navigation, inside a Move,
+  and **stays in the air** where its Move ends on water (below);
 - **may end a Move, or land from the water, on any settlement center**,
   like any land unit (`pulp_wars-ke95`, user direction 2026-10-09: any unit
   can capture). On a hostile center it besieges the city and blocks its
@@ -12314,7 +12341,7 @@ unexplored cell and reveals sight from every tile entered, water included;
 it occupies its tile; anyone in range attacks it, and it retaliates at range
 1; it can be pushed and pulled; it takes a treasure chest by ending a Move
 on it; it recovers, is healed, plagued, bitten, and infected, and leaves a
-Grave like any land unit. A unit is hidden only on an unexplored tile, so a
+Grave like any land unit (on land: water takes no Grave). A unit is hidden only on an unexplored tile, so a
 flyer meets a hidden unit only on the last tile of its Move, which is then
 interrupted as usual.
 
@@ -12326,12 +12353,30 @@ interrupted as usual.
   step that leaves a water tile costs a full point. The unit keeps its land
   form while the Move is validated; only the tile where the Move ends
   matters.
-- **Self-launch.** A machine whose Move ends on a water tile, by choice or
+- **Self-launch.** A walker whose Move ends on a water tile, by choice or
   because the Move was stopped or interrupted there, **embarks** there with
   the ordinary result of embarking: form `EMBARKED`, the exhausted
   activation, and `UNIT_EMBARKED`. The tile needs no Port, and the owner
   needs no Shorecraft.
-- **Afloat,** a machine is an ordinary embarked unit: Move 2, Defense 1,
+- **A flyer over water stays in the air** (`pulp_wars-7pi5`, `7r116`; the
+  user, 2026-10-25: "when a gyrocopter flies over water, it shouldn't
+  become a boat. the same goes for all other flying units"). A flyer whose
+  `MOVE` ends on water, by choice or because it was stopped or interrupted
+  there, an own Port or Shipyard included, and a Gyrocopter whose Bomb Run
+  lands on water, **never embarks**: it keeps its land form, its activation
+  (it may still attack and use its abilities that turn, like after any
+  Move), and its own Move, Attack, Defense, Sight, retaliation, abilities,
+  Shield, Cooling, and sprite. It is **not afloat**: no Ram, Board,
+  torpedo, or Kraken Drag reaches it, a Submarine cannot target it, and it
+  blockades no dock; it still salvages a Wreck it ends a Move on. On a
+  later turn it moves on with an ordinary `MOVE` (never `DISEMBARK`), and it
+  may Beam Down, pull, and bomb from the water. Which water it may enter
+  is unchanged (Shallow Water, and Deep Water with Navigation). State
+  parsing admits a land-form flyer on any water tile. Before `7r116` a
+  flyer self-launched like a walker (form `EMBARKED`: Move 2, Defense 1, no
+  Attack or ability), and a Gyrocopter afloat was drawn as the Dwarf
+  transport.
+- **Afloat,** a walker is an ordinary embarked unit: Move 2, Defense 1,
   Sight 1, no Attack, no retaliation, no ZOC, no ability, Deep Water with
   Navigation (walkers too), and landing with `DISEMBARK` on an adjacent land
   cell it can enter (a Mountain included, under its movement mode), which
@@ -14493,7 +14538,8 @@ its units (`UNIT_DIED` cause `ELIMINATION`, no Grave, no blast).
   stand on a Rift, may end a Move on any settlement center (so it besieges
   and captures like any land unit since `pulp_wars-ke95`), never advances,
   cannot Pillage, crosses Shallow Water (Deep
-  Water with Navigation), and self-launches where a Move ends on water. It
+  Water with Navigation), and stays in the air, as itself, where a Move
+  ends on water (since `7r116`; it self-launched there before). It
   takes a treasure chest by ending a Move on it.
 - **No ordinary attack.** Its abilities are `FLY` and `BOMB_RUN`, with no
   `ATTACK`: `ATTACK` is never offered for it and is rejected with
@@ -14555,15 +14601,16 @@ and the landing matters. **Result,** in order:
    Gyrocopter is in the blast when it landed next to the target (its own
    tile too, when it started next to it); the landing's board label says
    so ("Land · in the blast").
-6. **Water.** If `to` is water and the Gyrocopter survived, it self-launches
-   there (form `EMBARKED`, `UNIT_EMBARKED`).
+6. **Water.** If `to` is water, the Gyrocopter stays there in the air, in
+   land form (`7r116`; before, a survivor self-launched there: form
+   `EMBARKED`, `UNIT_EMBARKED`).
 7. The Gyrocopter has used its Move and its primary action and is handled.
 
 A bomb destroys no Field Defense, inflicts no Plague, bite, or Infect, never
 shatters, and is never halved by a Blizzard (it is not an `ATTACK`).
 Events: `UNIT_BOMBED`, then `UNIT_DIED` (cause `BOMB`) with its Grave,
 rising, or `BRAIN_LOST` events, the chain events, `PLUNDER_AWARDED`,
-`TILES_REVEALED`, `UNIT_EMBARKED`, the naval blockade and sea-network
+`TILES_REVEALED` (`UNIT_EMBARKED` before `7r116`), the naval blockade and sea-network
 events (`BOMB_RUN` is on the recompute list), and the economy, reward, and
 achievement tail. The preview is exact: every tile of a landing is
 explored, the target is visible, and the damage is fixed.

@@ -813,7 +813,10 @@ Machines need no Port.
   tile costs a full point (the existing rule). The unit keeps its land form
   while the Move is being validated; only the tile where the Move ends
   matters.
-- **Ending on water: self-launch.** A machine whose Move ends on a water tile
+- **Ending on water: self-launch.** (Since `7r116`, `pulp_wars-7pi5`, only
+  a walker: a flyer whose Move ends on water stays in the air in land form,
+  [RULESET_7_CURRENT.md section 20.6](RULESET_7_CURRENT.md#206-movement-stride-flying-and-crossing-water).)
+  A machine whose Move ends on a water tile
   it may enter (Shallow Water always, without Shorecraft; Deep Water with
   Navigation; no unit on the tile) **embarks there**, with the ordinary
   result of embarking: form `EMBARKED`, the exhausted activation, and

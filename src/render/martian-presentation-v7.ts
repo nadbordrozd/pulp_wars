@@ -502,7 +502,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Launch",
-      "Martian machines need no Port: they enter water from any shore and cross it as transports that cannot fight.",
+      `a ${joinOr(walkers)} needs no Port: it enters Shallow Water from any shore and crosses it as a transport that cannot fight. A ${joinOr(flyers)} stays in the air over water, as itself.`,
     ],
     // Themed naval branches, the Hover Fleet (`pulp_wars-5ti.19`): the
     // shielded hulls and Hover Pods.

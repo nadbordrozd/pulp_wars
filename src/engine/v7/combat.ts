@@ -946,6 +946,9 @@ export function calculateCombatPreviewV7(
     // The Rift (RULESET_7_RIFT.md section 4): no attacker advances onto a
     // Rift (only a flyer could stand there, and a flyer never advances).
     !riftAtV7(state.board, defender.at) &&
+    // Flyers over water (`pulp_wars-7pi5`, `7r116`): nor onto open water
+    // (only a flyer stands there in land form, in the air); ice is ground.
+    !openWaterAtV7(state, defender.at) &&
     // The Ice Folk revision section 7.7: a Sabretooth never advances onto a
     // settlement center it does not own.
     advanceSiteAllowedV7(
@@ -1408,6 +1411,29 @@ export function ramShoveDestinationV7(
   )
     return null;
   return destination;
+}
+
+/**
+ * Flyers over water (`pulp_wars-7pi5`, `7r116`): whether `at` is open water
+ * (Shallow or Deep Water without ice), where a land-form unit stands only
+ * as a flyer in the air. Nothing advances or follows onto it.
+ */
+export function openWaterAtV7(
+  lookup: Parameters<typeof isIceAtV7>[0] & {
+    readonly board: {
+      readonly width: number;
+      readonly tiles: readonly object[];
+    };
+  },
+  at: CoordV7,
+): boolean {
+  const tile = lookup.board.tiles[at.y * lookup.board.width + at.x];
+  const terrain =
+    tile !== undefined && "terrain" in tile ? tile.terrain : undefined;
+  return (
+    (terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER") &&
+    !isIceAtV7(lookup, at)
+  );
 }
 
 /**
