@@ -173,8 +173,9 @@ const ROSTER = [
     "KNIGHT",
     "CHIVALRY",
     9,
-    14,
-    6,
+    // Tier-3 review B (`pulp_wars-u8so`): 16 HP and Attack 3.5 (14 and 3).
+    16,
+    7,
     3,
     2,
     1,
@@ -288,7 +289,7 @@ describe("Candy registration (sections 2 and 13)", () => {
         at: at(3, 3),
         cityId: 2,
         cost: 5,
-        hp: 7,
+        hp: 8,
       },
       { kind: "UNIT_SUGAR_RUSHED", playerId: 1, unitId: 5, move: 2 },
       {
@@ -526,7 +527,7 @@ describe("Candy roster (section 3)", () => {
       ["GUARD", 2, 9],
       ["CAPTAIN", 3, 5],
       ["CATAPULT", 4, 5],
-      ["KNIGHT", 5, 7],
+      ["KNIGHT", 5, 8],
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker, half of
       // its 6 Coins and half of its 16 HP.
       ["SWORDSMAN", 3, 8],

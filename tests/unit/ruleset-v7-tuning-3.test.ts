@@ -83,7 +83,7 @@ const coinsOf = (state: GameStateV7, seat = 0): number =>
 
 describe("tuning 3 keeps the unpublished identity of tuning 2", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r112");
   });
 });
 
@@ -120,7 +120,9 @@ describe("Knight: Attack 4", () => {
     });
     // The Knight-role units of the other factions keep their Attack.
     expect(effectiveRoleRuleV7("KNIGHT", "UNDEAD").attack2).toBe(6);
-    expect(effectiveRoleRuleV7("KNIGHT", "CANDY").attack2).toBe(6);
+    // Tier-3 review B (`pulp_wars-u8so`): the Chocolate Bunny has Attack
+    // 3.5 since 7r112.
+    expect(effectiveRoleRuleV7("KNIGHT", "CANDY").attack2).toBe(7);
   });
 
   it("kills a full-HP Raider, Marksman, Captain, Catapult, or Knight in one attack, also in Forest cover", () => {

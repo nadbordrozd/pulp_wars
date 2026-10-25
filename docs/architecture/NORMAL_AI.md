@@ -1064,8 +1064,10 @@ in its opening, and the garrison of a threatened city yields to a Gunner.
 **4. Weak links, escorts, and the back row** (`armyWeakLinkV7`,
 `armyEscortValueV7`, `ARMY_CANDY_STURDY_V7`, `armyDinosaurContactHeldV7`,
 `armyIceFolkShooterHeldV7`). A Candy unit of less than 15 HP at its maximum
-is a weak link of a kill chain at any HP; the Marshmallow and the
-Jawbreaker are not, and their Move beside weak units has an escort's value.
+is a weak link of a kill chain at any HP; the Marshmallow, the
+Jawbreaker, and since tier-3 review B (`pulp_wars-u8so`, 16 HP) the
+Chocolate Bunny are not, and their Move beside weak units has an escort's
+value.
 A Trooper, a Racer, a Jawbreaker, a Bunny, or a Confectioner does not step
 beside an enemy unit where it would die unless a unit of its side stands
 beside that enemy or can still come (the Move of a Rushed unit's kill plan

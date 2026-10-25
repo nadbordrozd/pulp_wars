@@ -1098,10 +1098,12 @@ export const ARMY_CANDY_SKIRMISHER_MAXIMUM_V7 = 2;
 /**
  * The Candy army seat: a Candy unit whose maximum HP is below this is a weak
  * link of a kill chain at any HP: a Human Knight's hit kills a Toffee
- * Trooper, a Donut Racer, a Gumball Gunner, a Confectioner, a Pie Launcher,
- * and (14 HP) a Chocolate Bunny at full HP and rides on. A Marshmallow (18
- * HP, Defense 2.5, and it bounces the Knight back) and a Jawbreaker (16 HP,
- * Defense 2.5, and the Knight's next attack is 1 weaker) are not.
+ * Trooper, a Donut Racer, a Gumball Gunner, a Confectioner, and a Pie
+ * Launcher at full HP and rides on. A Marshmallow (18 HP, Defense 2.5, and
+ * it bounces the Knight back), a Jawbreaker (16 HP, Defense 2.5, and the
+ * Knight's next attack is 1 weaker), and since tier-3 review B
+ * (`pulp_wars-u8so`) a Chocolate Bunny (16 HP: the Knight deals it 13) are
+ * not.
  */
 export const ARMY_CANDY_STURDY_V7 = 15;
 /**

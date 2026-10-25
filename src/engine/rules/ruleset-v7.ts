@@ -4077,8 +4077,12 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     label: "Chocolate Bunny",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
-    maxHp: 14,
-    attack2: 6,
+    // Tier-3 review B (`pulp_wars-u8so`): 16 HP and Attack 3.5 (14 and 3
+    // before). It now kills a full-HP Marksman, every ranged or support
+    // unit, and a 10-HP line unit in one blow, a Fighter or a Knight with a
+    // Rush, and lives through the night behind the line it hopped.
+    maxHp: 16,
+    attack2: 7,
     defense2: 3,
     move: 2,
     range: 1,

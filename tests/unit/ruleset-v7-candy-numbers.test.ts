@@ -371,24 +371,26 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
     ).toBe("10, kill");
   });
 
-  it("Chocolate Bunny (11.8): the Rushed first attack and the continuation at 3", () => {
-    // [target, Rushed first attack, continuation (plain Attack 3)].
+  it("Chocolate Bunny (11.8): the Rushed first attack and the continuation at 3.5", () => {
+    // [target, Rushed first attack, continuation (plain Attack 3.5 since
+    // tier-3 review B, `pulp_wars-u8so`; 3 before: a Fighter 8 / 4, a
+    // Marksman and a Raider 10 / 1, a Skeleton and a Caveman 8 / 4)].
     const table: readonly [UnitName, string, string, DuelOptions?][] = [
-      ["Fighter", "12, kill", "8 / 4"],
-      ["Marksman", "12, kill", "10 / 1"],
-      ["Raider", "12, kill", "10 / 1"],
-      ["Hammerer", "12, kill", "8 / 4"],
-      ["Skeleton", "10, kill", "8 / 4"],
-      ["Caveman", "10, kill", "8 / 4"],
+      ["Fighter", "12, kill", "10 / 3"],
+      ["Marksman", "12, kill", "12, kill"],
+      ["Raider", "12, kill", "12, kill"],
+      ["Hammerer", "12, kill", "10 / 3"],
+      ["Skeleton", "10, kill", "10, kill"],
+      ["Caveman", "10, kill", "10, kill"],
       // The contract read the Ice Witch as 9 / 2; the engine gave 10 / 1
       // (12 HP, Defense 1, like a Marksman). Ice Folk Freeze
       // (`pulp_wars-w49.37`): she has 10 HP, so the continuation kills her.
       ["Ice Witch", "10, kill", "10, kill"],
-      ["Orc Warboss", "12, kill", "10 / 1"],
+      ["Orc Warboss", "12, kill", "12, kill"],
       // 8 HP since `pulp_wars-1wy.6` (the kill takes all the HP it has).
-      ["Grunt", "8 +2 sh, kill", "7 +2 sh / 2"],
-      ["Guard", "10 / 6", "7 / 7"],
-      ["Guard", "8 / 6", "5 / 7", { fieldDefense: true }],
+      ["Grunt", "8 +2 sh, kill", "8 +2 sh, kill"],
+      ["Guard", "12 / 5", "8 / 6"],
+      ["Guard", "10 / 5", "6 / 6", { fieldDefense: true }],
     ];
     for (const [name, first, continuation, options] of table) {
       expect(
@@ -398,7 +400,7 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       expect(candyHits("KNIGHT", name, options), name).toBe(continuation);
     }
     // The continuation kills every unit of 10 HP or less with Defense 1 or
-    // less.
+    // less (and since `pulp_wars-u8so` every 12-HP one too: the Marksman).
     const soft: readonly UnitName[] = [
       "Catapult",
       "Captain",
@@ -426,20 +428,26 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
     ];
     for (const name of soft)
       expect(candyHits("KNIGHT", name), name).toMatch(/, kill$/);
-    // The Human Knight has 13 HP since tuning 1: the continuation stops.
-    expect(candyHits("KNIGHT", "Knight")).toBe("10 / 1");
+    // The Human Knight has 13 HP since tuning 1: the continuation stops
+    // (12 of 13 since `pulp_wars-u8so`; 10 before), and a Rush kills it.
+    expect(candyHits("KNIGHT", "Knight")).toBe("12 / 1");
+    expect(candyHits("KNIGHT", "Knight", { attackerExtra: RUSH })).toMatch(
+      /, kill$/,
+    );
     // So does the Vampire since the Vampire and Banshee rework
     // (`pulp_wars-ty6i`, 13 HP; it was killed at 10).
-    expect(candyHits("KNIGHT", "Vampire")).toBe("10 / 1");
-    // A Re-baked Bear (7 of 14 HP) on a Fighter.
+    expect(candyHits("KNIGHT", "Vampire")).toBe("12 / 1");
+    // A Re-baked Bunny (8 of 16 HP since `pulp_wars-u8so`; 7 of 14 before,
+    // 9 / 5) on a Fighter.
     expect(
-      candyHits("KNIGHT", "Fighter", { attackerExtra: { ...RUSH, hp: 7 } }),
-    ).toBe("9 / 5");
+      candyHits("KNIGHT", "Fighter", { attackerExtra: { ...RUSH, hp: 8 } }),
+    ).toBe("11 / 4");
   });
 
   it("Chocolate Bunny (11.8): what attackers deal it", () => {
     const table: readonly [UnitName, string, DuelOptions?][] = [
       ["Fighter", "5 / 3"],
+      // 16 HP since `pulp_wars-u8so`: a fresh Bunny lives through a Knight.
       ["Knight", "13 / 2"],
       ["Ray Gunner", "9 / -", { distance: 2 }],
       // From range 1 the Bear answers with 2, which the Shield absorbs.
@@ -447,7 +455,7 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Catapult", "9 / -", { distance: 2 }],
       ["T-Rex", "13 / 2"],
       // Crashed in the enemy's lines: a Fighter and a Knight kill it.
-      ["Fighter", "5 / 3", { defenderExtra: { hp: 13 } }],
+      ["Fighter", "6 / 3", { defenderExtra: { hp: 13 } }],
       ["Knight", "8, kill", { defenderExtra: { hp: 8 } }],
       ["Fighter", "6 / 2", { defenderExtra: { hp: 10 } }],
       ["Knight", "4, kill", { defenderExtra: { hp: 4 } }],

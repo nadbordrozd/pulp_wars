@@ -228,8 +228,9 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // the Steam Tank, 16, is the heavy role.)
     expect(hp("DWARF")).toEqual([12, 8, 10, 16, 10, 10, 12, 36]);
     // The Candy revision (`pulp_wars-jdb.3`) adds an eighth faction
-    // (docs/product/RULESET_7_CANDY.md section 3).
-    expect(hp("CANDY")).toEqual([10, 10, 8, 18, 10, 10, 14, 40]);
+    // (docs/product/RULESET_7_CANDY.md section 3). Tier-3 review B
+    // (`pulp_wars-u8so`): the Chocolate Bunny has 16 HP (14 before).
+    expect(hp("CANDY")).toEqual([10, 10, 8, 18, 10, 10, 16, 40]);
     // The Cult registration (`pulp_wars-mch9.3`) adds a ninth faction
     // (docs/product/RULESET_7_CULTISTS.md section 4.1): Initiate, Familiar,
     // Hexer, Idol Bearer, Summoner, Stargazer, Caller, Thing in the Cellar.

@@ -33,7 +33,7 @@ import { at, patchTileV7 } from "../fixtures/v7-revision20";
 
 /**
  * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
- * `pulp-wars-poc-7r111`; docs/product/RULESET_7_CURRENT.md section 4.6), on
+ * `pulp-wars-poc-7r112`; docs/product/RULESET_7_CURRENT.md section 4.6), on
  * small hand-built states of the two-seat arena: seat 0's capital is at
  * (8, 8) with the eight tiles around it as its territory, on an 11 by 11
  * board, so every tile within two of the center is on the board.

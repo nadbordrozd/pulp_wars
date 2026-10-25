@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r111`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r112`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,15 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r112` (`pulp_wars-u8so`; the user, 2026-10-25: "review
+the tier-3 units ... and make sure they are all useful") is **tier-3
+review B** ([the review](#tier-3-review-b-2026-10-25)) of the Dwarves,
+Candy, and Cult: the **Chocolate Bunny** has **16 HP and Attack 3.5** (14
+and 3), so it kills a full-HP Marksman and every ranged or support unit in
+one blow, a Fighter or a Knight with a Rush, and lives through a Knight's
+hit; its Re-bake copy has 8 HP. No other number or rule changed. A save,
+replay, or setup of `7r111` is rejected, and the browser autosave has a
+new key. Boards and missions are unchanged.
 `pulp-wars-poc-7r111` (`pulp_wars-spue`, `pulp_wars-rzqf`; found in
 campaign hand play: a tribes' Militia pushed the player's Ogre off the
 center it had just taken, a free Scouts' Saucer killed the Grunt on its
@@ -1692,10 +1701,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r111`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r112`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r111.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r112.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7020,25 +7029,26 @@ Tunnels (the Ram and the Moles' tunnel under shallow water, no Board).
   ([section 22.14](#2214-commands-events-errors-and-queries)).
 
 The Candy (`CANDY`) roster, by mechanical role, with the
-`pulp-wars-poc-7r38` numbers, unchanged since, and the abilities of the
+`pulp-wars-poc-7r38` numbers, unchanged since but for the Chocolate Bunny's
+(¹⁵), and the abilities of the
 Candy redesign (`pulp_wars-jdb.12`, [section 23](#23-candy-faction-rules))
 (`CANDY_ROLE_RULES_V7` and `CANDY_ROLE_MECHANICS_V7`). Every role uses one slot, every Candy unit is
 living, and every Candy land unit is a ground unit:
 
-| Unit              | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                   |
-| ----------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ----------------------------------------------------------- |
-| Toffee Trooper    | `FIGHTER`     | start             |    2 |  10 |   2 (4) |   2 (4) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Sticky Toffee; no Field Defense                 |
-| Donut Racer       | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Sugar Rush; Glaze Trail; Charge (Raiding); no Escape        |
-| Gumball Gunner    | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |   1–2 |   1¹³ | yes               | yes     | Sugar Rush; Ricochet; Sugar Toss                            |
-| Marshmallow       | `GUARD`       | Fortification     |    4 |  18 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                        |
-| Confectioner      | `CAPTAIN`     | Administration    |    5 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Re-bake; Top-Up; no Rally                       |
-| Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |  10 |   3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | yes     | Sugar Rush; Splat; never advances                           |
-| Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | yes     | Sugar Rush; Bunny Hop; Thump; no Overrun                    |
-| Jawbreaker        | `SWORDSMAN`   | Metallurgy        |    6 |  16 |   3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Rock Hard (`7r55`); Toothache; no Field Defense |
-| Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Break Off; Bounce                               |
-| Gumdrop Tug¹⁴     | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram and Sugar Rush (Sugar Sails)                     |
-| Pie Galleon¹⁴     | `BATTLESHIP`  | Naval Engineering |   17 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Splat; Sugar Rush (Sugar Sails)              |
-| Choco Sub¹⁴       | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Sugar Rush (Sugar Sails)         |
+| Unit              | Role          | Tech              | Cost |   HP |    Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                   |
+| ----------------- | ------------- | ----------------- | ---: | ---: | --------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ----------------------------------------------------------- |
+| Toffee Trooper    | `FIGHTER`     | start             |    2 |   10 |     2 (4) |   2 (4) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Sticky Toffee; no Field Defense                 |
+| Donut Racer       | `RAIDER`      | Scouting          |    3 |   10 |     2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Sugar Rush; Glaze Trail; Charge (Raiding); no Escape        |
+| Gumball Gunner    | `MARKSMAN`    | Marksmanship      |    3 |    8 |     2 (4) |   1 (2) |    1 |   1–2 |   1¹³ | yes               | yes     | Sugar Rush; Ricochet; Sugar Toss                            |
+| Marshmallow       | `GUARD`       | Fortification     |    4 |   18 |   1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                        |
+| Confectioner      | `CAPTAIN`     | Administration    |    5 |   10 |     1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Re-bake; Top-Up; no Rally                       |
+| Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |   10 |     3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | yes     | Sugar Rush; Splat; never advances                           |
+| Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 | 16¹⁵ | 3.5 (7)¹⁵ | 1.5 (3) |    2 |     1 |     1 | yes               | yes     | Sugar Rush; Bunny Hop; Thump; no Overrun                    |
+| Jawbreaker        | `SWORDSMAN`   | Metallurgy        |    6 |   16 |     3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Rock Hard (`7r55`); Toothache; no Field Defense |
+| Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |   40 |     4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Break Off; Bounce                               |
+| Gumdrop Tug¹⁴     | `PATROL_BOAT` | Shorecraft        |    5 |   10 |     2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram and Sugar Rush (Sugar Sails)                     |
+| Pie Galleon¹⁴     | `BATTLESHIP`  | Naval Engineering |   17 |   25 |    5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Splat; Sugar Rush (Sugar Sails)              |
+| Choco Sub¹⁴       | `SUBMARINE`   | Submersibles      |    9 |   12 |     4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Sugar Rush (Sugar Sails)         |
 
 ¹³ Gumball Gunner Sight becomes 2 with Fieldcraft.
 
@@ -7048,6 +7058,11 @@ the Human ships' numbers under their own names, the Pie Galleon 1 Coin
 dearer (15 at a Shipyard) with the Pie Launcher's Splat; with the Candy
 Seamanship, shown as Sugar Sails (the Ram and the ships' Sugar Rush, no
 Board), each ship may Sugar Rush afloat.
+
+¹⁵ [Tier-3 review B](#tier-3-review-b-2026-10-25) (`pulp_wars-u8so`,
+`pulp-wars-poc-7r112`): the Chocolate Bunny has 16 HP and Attack 3.5 (14
+and 3 before); its Re-bake copy has 8 HP (7). Its cost, Defense, Move,
+Bunny Hop, and Thump are unchanged.
 
 - **Toffee Trooper** has Fighter parity (cost, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a
@@ -7509,6 +7524,59 @@ abilities, so only the Juggernaut). Since `pulp_wars-w49.31` each seat
 uses its own giant's signature and every seat reads a hostile giant's
 ([section 16](#16-normal-ai-summary),
 [Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)).
+
+### Tier-3 review B (2026-10-25)
+
+`pulp_wars-u8so` (`pulp-wars-poc-7r112`; the user, 2026-10-25: "review the
+tier-3 units - equivalents of the champion/knight/catapult and make sure
+they are all useful ... Human units are fine so are the undead and
+martians"). The tier-3 units of the Dwarves, Candy, and Cult (the
+`CATAPULT`, `KNIGHT`, and `SWORDSMAN` roles, at Sawmilling, Chivalry, and
+Metallurgy) were judged against the units the user called fine: the
+Catapult (8 Coins, 10 HP, Attack 3), the Lich (8), and the Tripod (9,
+Attack 4, Pierce); the Knight (9 Coins, 13 HP, Attack 4, Move 3, Overrun),
+the Vampire (9, Unanswered, Bat Escape), and the redesigned Mothership (9,
+20 HP, Defense 3, Mass Beam Down); the Champion (6 Coins, 15 HP, Attack
+3.5, Defense 2.5), the Wight (6, Rise Again), and the Shock Trooper (6,
+Shock Field). The Goblins, Dinosaurs, and Ice Folk have their own review.
+The evidence is the engine's combat preview on hand-built pairs, the
+Normal AI's code, and the hand-played campaign retune 4 of the Dwarf,
+Candy, and Cult campaigns. No match was played.
+
+| Faction | Unit            | Role        | Cost | Against the benchmark                                                                                                                                  | Its job; redundant?                                                                                                                                                                             | A player buys it for                                                       | Normal AI                                                                                             | Verdict                        |
+| ------- | --------------- | ----------- | ---: | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Dwarf   | Steam Cannon    | `CATAPULT`  |    8 | the Catapult's body with Attack 3.5 (3); with Blasting Charges its shots ignore Walls, Field Defense, and Dig In                                       | siege: Knockback shoves a survivor off a center or a Field Defense. The Gunner and the Gyrocopter's bomb do not do this. Not redundant                                                          | a walled center, a Field Defense line                                      | a tenth of the army; values Knockback off a center or a Field Defense and beside own melee            | fine, unchanged                |
+| Dwarf   | Whirligig       | `KNIGHT`    |    9 | 12 HP, Attack 3, Defense 1.5, Move 3 (the Knight 13, 4, 1, 3); a construct, so it hits at full strength at any HP                                      | Whirl hits every adjacent enemy at once, unanswered (8 to each Fighter, 10 to each Marksman). The Knight chains kills of soft units; the Whirligig punishes a crowd. Not redundant              | a crowd round a center, a ring of ranged units                             | a tenth (a fifth against a backline); goes where several enemies stand round one tile                 | fine, unchanged                |
+| Dwarf   | Steam Tank      | `SWORDSMAN` |    9 | 16 HP, Attack 3, Defense 2, Move 2, Plated 4 (the Champion 6 Coins, 15 HP, Attack 3.5)                                                                 | the anvil: every hit capped at 4. The retune notes call Tanks on walled, healing centers close to a hard wall for the Cult and its Herald. Strong, not redundant                                | holding a center against a giant, a Herald, or a Knight chain              | the line class buys its dearest unit first                                                            | fine (strong), unchanged       |
+| Candy   | Pie Launcher    | `CATAPULT`  |    8 | the Catapult's numbers                                                                                                                                 | Splat: the target never strikes back this turn, so the melee finishes it free. Every Candy campaign win of retune 4 was built on Pie Splat                                                      | the opening of any melee push; a T-Rex, an Ankylosaurus, a Horror          | a tenth; Splat is in the attack's score                                                               | fine, unchanged                |
+| Candy   | Chocolate Bunny | `KNIGHT`    |    9 | was 14 HP, Attack 3, Defense 1.5, Move 2: a Champion's body at a Knight's price. Without a Rush it killed no 12-HP Marksman; a Knight's blow killed it | Bunny Hop over the screen and Thump (2 to each enemy round it). The Jawbreaker (6 Coins, 16 HP, Attack 3, Defense 2.5) out-fought it for 3 Coins less. **Fails**                                | (after the change) the Marksman, Catapult, Captain, or Hexer behind a line | a tenth (a fifth against a backline); hops a screen to the unit behind it; Rushes only for a key kill | **changed: 16 HP, Attack 3.5** |
+| Candy   | Jawbreaker      | `SWORDSMAN` |    6 | 16 HP, Attack 3, Defense 2.5 (the Champion 15, 3.5, 2.5)                                                                                               | the immovable front: Rock Hard, and Toothache weakens its attacker's next blow. Not redundant                                                                                                   | the front of every push; Pushes, Knockback, the Tractor Beam               | one for every two Troopers; kept out of a battery and in front of the melee                           | fine, unchanged                |
+| Cult    | Stargazer       | `CATAPULT`  |    7 | 7 HP, Defense 0.5, no attack (the Catapult 8 Coins, 10 HP)                                                                                             | Star-fall: next turn 6 to nine tiles, 3 more a chanter, fixed (Walls and Field Defense do not count). In retune 4 four stars killed eight Hammerers, two Engineers, and the Brass Titan. Unique | a siege of a held center or a ring that cannot step away                   | a tenth; casts alone and joins the chant                                                              | fine (fragile), unchanged      |
+| Cult    | (vacant)        | `KNIGHT`    |    — | the Horror (4 Favour, 18 HP, Attack 4, Move 2) and the Herald do the job since the Cult redesign (`7r85`)                                              | by design                                                                                                                                                                                       | —                                                                          | —                                                                                                     | unchanged                      |
+| Cult    | (vacant)        | `SWORDSMAN` |    — | the Gibbering Mass (5 Favour, 30 HP, Drag) holds the line                                                                                              | by design                                                                                                                                                                                       | —                                                                          | —                                                                                                     | unchanged                      |
+
+- **The Chocolate Bunny** (`7r112`): **16 HP and Attack 3.5** (14 and 3).
+  Its cost (9), Defense 1.5, Move 2, Bunny Hop, Thump 2, and Sugar Rush are
+  unchanged. At full HP its plain blow kills a full-HP Marksman, Raider,
+  Orc Warboss, Grunt, Hexer, Catapult, Captain, and every 10-HP line unit
+  (Skeleton, Caveman, Goblin, Toffee Trooper), and deals a Fighter 10 and
+  takes 3 (8 and 4 before); Rushed (Attack 4.5) it kills a Fighter, a
+  Knight, and a Vampire. A Knight deals it 13 and no longer kills it, so a
+  Bunny that hopped a screen lives through the night that follows. Its
+  Re-bake copy has 8 HP. It is now the Candy's Knight, the backline killer
+  that the hop delivers, where the Jawbreaker is the anvil. The Normal AI
+  counts it among the sturdy Candy units (`ARMY_CANDY_STURDY_V7`, 15 HP),
+  trains it against a backline, and hops it over a screen to kill a
+  Marksman without a Rush (`tests/unit/ruleset-v7-candy-step2.test.ts`).
+- **The Stargazer** stays as it is: its star is the counter-play the Cult
+  is built on ("disrupt the circle and nothing happens"), and the campaign
+  showed it decisive against held centers. Its fragility (any Hit Point
+  lost fizzles the star; 7 HP, Defense 0.5) is the price. Letting a
+  Stargazer that survives a hit keep a weaker star would change the ritual
+  rule, and is left to the user.
+- No mission's built state has a Chocolate Bunny, so no mission was
+  re-pinned. A Candy player who researches Chivalry in a mission gets the
+  stronger Bunny; no mission's balance rests on it.
 
 ## 12. Movement and unit actions
 
@@ -15048,7 +15116,7 @@ until a death, Disband, or removal brings it back (Break Off needs no slot).
 | Marshmallow     |     2 |              9 |
 | Confectioner    |     3 |              5 |
 | Pie Launcher    |     4 |              5 |
-| Chocolate Bunny |     5 |              7 |
+| Chocolate Bunny |     5 |              8 |
 | Jawbreaker      |     3 |              8 |
 
 ### 23.4 Eating Crumbs and the Peppermint Surprise

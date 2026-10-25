@@ -824,7 +824,7 @@ describe("the Re-bake command (section 6.4, as the Candy redesign changed it)", 
       at: PLACE,
       role: "KNIGHT",
       cost: 5,
-      hp: 7,
+      hp: 8,
     });
     expect(preview?.rebakeCapacity).toBe((preview?.capacity ?? 0) + 1);
     const result = playV7(state, rebake(state));
@@ -839,7 +839,7 @@ describe("the Re-bake command (section 6.4, as the Candy redesign changed it)", 
       at: PLACE,
       cityId: confectioner.homeCityId,
       cost: 5,
-      hp: 7,
+      hp: 8,
     });
     expect(baked).toMatchObject({
       id: state.nextEntityId,
@@ -847,8 +847,8 @@ describe("the Re-bake command (section 6.4, as the Candy redesign changed it)", 
       homeCityId: confectioner.homeCityId,
       role: "KNIGHT",
       form: "LAND",
-      hp: 7,
-      maxHp: 14,
+      hp: 8,
+      maxHp: 16,
       kills: 0,
       veteran: false,
       captureEligible: false,

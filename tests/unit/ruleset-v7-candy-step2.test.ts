@@ -192,7 +192,7 @@ afterEach(() => {
 
 describe("the Candy army seat: no rule changed (the identity moved later, with the Cult registration)", () => {
   it("kept the identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r112");
   });
 });
 
@@ -334,7 +334,7 @@ describe("the Candy army seat: the research order", () => {
 });
 
 describe("the Candy army seat: the army", () => {
-  it("has its own shares, one Donut Racer for every four units at most two, and two sturdy units", () => {
+  it("has its own shares, one Donut Racer for every four units at most two, and three sturdy units", () => {
     expect(armySharesV7("CANDY", false)).toEqual({
       LINE: 40,
       DEFENDER: 15,
@@ -380,7 +380,8 @@ describe("the Candy army seat: the army", () => {
       (role) =>
         effectiveRoleRuleV7(role, "CANDY").maxHp >= ARMY_CANDY_STURDY_V7,
     );
-    expect(sturdy).toEqual(["GUARD", "SWORDSMAN"]);
+    // The Chocolate Bunny too since tier-3 review B (`pulp_wars-u8so`, 16 HP).
+    expect(sturdy).toEqual(["GUARD", "SWORDSMAN", "KNIGHT"]);
   });
 
   it("caps the Marshmallows (no more than cities, nor a third of the army) and the Jawbreakers (one for two Troopers)", () => {
@@ -677,6 +678,60 @@ describe("the Candy army seat: Bunny Hop and Thump", () => {
           command.targetUnitId === unitIdAtV7(state, at(4, 2)),
       ),
     ).toBe(true);
+  });
+});
+
+// Tier-3 review B (`pulp_wars-u8so`): the Chocolate Bunny has 16 HP and
+// Attack 3.5 (14 and 3 before). The army seat buys it against a backline and
+// sends it over the screen for a kill it makes without a Rush.
+describe("the Candy army seat: the Chocolate Bunny after tier-3 review B", () => {
+  it("trains a Chocolate Bunny against a backline of ranged and siege units", () => {
+    const state = orphans(
+      asCandy(
+        [
+          own("FIGHTER", 9, 9),
+          own("FIGHTER", 9, 7),
+          own("FIGHTER", 7, 7),
+          own("SWORDSMAN", 7, 9),
+          own("MARKSMAN", 8, 7),
+          foe("FIGHTER", 4, 8),
+          foe("MARKSMAN", 3, 8),
+          foe("MARKSMAN", 3, 7),
+          foe("CATAPULT", 2, 7),
+        ],
+        { coins: 9 },
+      ),
+    );
+    const command = policyTurn(state).commands.find(
+      (item) => item.kind === "TRAIN",
+    );
+    expect(command).toMatchObject({ kind: "TRAIN", role: "KNIGHT" });
+  });
+
+  it("hops the screen and kills the Marksman behind it in one blow, without a Rush", () => {
+    const state = asCandy([
+      own("KNIGHT", 4, 5),
+      own("FIGHTER", 8, 8),
+      foe("GUARD", 3, 4),
+      foe("GUARD", 4, 4),
+      foe("GUARD", 5, 4),
+      foe("MARKSMAN", 4, 2),
+      foe("FIGHTER", 2, 8),
+    ]);
+    const bunny = unitAtV7(state, at(4, 5));
+    const marksman = unitIdAtV7(state, at(4, 2));
+    const turn = policyTurn(state);
+    const mine = turn.commands.filter(
+      (command) => "unitId" in command && command.unitId === bunny.id,
+    );
+    expect(mine.map((command) => command.kind)).toEqual(["MOVE", "ATTACK"]);
+    expect(mine[0]?.kind === "MOVE" ? mine[0].path : []).toEqual([at(4, 3)]);
+    expect(mine[1]).toMatchObject({ targetUnitId: marksman });
+    expect(turn.state.units.some((unit) => unit.id === marksman)).toBe(false);
+    // 12 of the Marksman's 12 HP: a killed unit never strikes back.
+    expect(turn.state.units.find((unit) => unit.id === bunny.id)).toMatchObject(
+      { hp: 16, maxHp: 16 },
+    );
   });
 });
 

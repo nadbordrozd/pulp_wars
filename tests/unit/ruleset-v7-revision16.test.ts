@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r111.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-96, -56)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r112");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r112.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-97, -57)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -214,8 +214,9 @@ describe("ruleset-7 prior identities", () => {
     // (`pulp_wars-hmyk.35`: a blocked mission wave waits, at most 3 tiles
     // from its tiles and two rounds): 7r110. Reward placement
     // (`pulp_wars-spue`: a reward unit harms nobody and appears beside an
-    // occupied center): 7r111.
-    expect(revision).toBe(111);
+    // occupied center): 7r111. Tier-3 review B (`pulp_wars-u8so`: the
+    // Chocolate Bunny's 16 HP and Attack 3.5): 7r112.
+    expect(revision).toBe(112);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -250,7 +251,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r112", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r113", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

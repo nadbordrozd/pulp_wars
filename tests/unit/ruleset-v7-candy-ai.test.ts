@@ -275,7 +275,9 @@ describe("Candy Normal AI: Sugar Rush", () => {
   it("Rushes a Chocolate Bunny only for a key kill (no Sugar Frenzy since the Candy redesign)", () => {
     const lone = (hp: number) =>
       asCandy([own("KNIGHT", 5, 3), foe("FIGHTER", 5, 2, { hp })]);
-    const hp = rushOnlyHp(lone, at(5, 3), at(5, 2), 10);
+    // A Fighter of 11 or 12 HP since tier-3 review B (`pulp_wars-u8so`: the
+    // Bunny's plain Attack 3.5 kills one of 10).
+    const hp = rushOnlyHp(lone, at(5, 3), at(5, 2), 12);
     expect(unitCandidatesV7(lone(hp), at(5, 3), "SUGAR_RUSH")).toHaveLength(0);
     // A second target next to the first one's tile no longer helps: the
     // Candy redesign (`pulp_wars-jdb.12`) removed Sugar Frenzy.
@@ -293,7 +295,7 @@ describe("Candy Normal AI: Sugar Rush", () => {
       ]);
     expect(
       unitCandidatesV7(
-        knight(rushOnlyHp(knight, at(5, 3), at(5, 2), 10)),
+        knight(rushOnlyHp(knight, at(5, 3), at(5, 2), 13)),
         at(5, 3),
         "SUGAR_RUSH",
       ),
@@ -354,7 +356,8 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
     const bear = turn.state.units.find(
       (unit) => unit.role === "KNIGHT" && unit.ownerId === state.humanPlayerId,
     );
-    expect(bear).toMatchObject({ hp: 7 });
+    // Half of 16 HP since `pulp_wars-u8so` (7 of 14 before).
+    expect(bear).toMatchObject({ hp: 8 });
     expect(chebyshev(bear?.at ?? at(0, 0), at(6, 5))).toBe(1);
     expect(turn.state.crumbs.map((entry) => entry.role)).toEqual(["FIGHTER"]);
   });
