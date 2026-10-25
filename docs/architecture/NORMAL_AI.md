@@ -6701,6 +6701,84 @@ the landing coast takes no account of the hostile ships covering its water
 the ten matches 66 of 161 ships were lost, so where the fleet waits (on
 the convoy, not in reach of shore guns) is the next measure after its size.
 
+### Naval AI iteration 4 (`pulp_wars-xddb`)
+
+**Status: measured by hand play, the same ten matches as iterations 1 to
+3, and the mixed-policy set against the iteration 3 policy (the same ten
+boards with the seats swapped, 20 matches), by the user's authorisation for
+this bead.** The ten matches were measured again on 7r116 (the rules moved
+since iteration 3: flyers stay airborne over water), and the diagnostic now
+records what sank every ship. All changes are policy only; no rule and no
+identity changed.
+
+| Failure                                                                                                                                                                                                                                             | Fix                                                                                                                                                                                                                                                                                                     | Where                                                                             |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| In the ten matches 73 of 170 ships were lost; over a third of them to land units (Marksmen, Bomb Chuckers, Fighters, the starting units) and Fire Rafts: a warship sailed for the convoy or a hostile Port whatever the shore beside it could deal. | An own warship's Move is refused where the danger from the visible hostile land units and Kaboom ships (the hostile warships left out: ships fight ships) is at least half its HP (`NAVAL_TRANSPORT_EXPOSED_TENTHS_V7`), unless it already stands in such danger and the destination is less dangerous. | `navalWarshipShoreExposedV7`, `navalWarshipShoreExposedMoveV7` (`navalRejectsV7`) |
+| In hand play the Goblin AI trained a Fire Raft on the Port beside its city every turn, in reach of the player's Marksman, Battleship and Patrol Boats, and lost ten of them so.                                                                     | A naval training is not made (priority -1) when the visible danger to the new ship on its dock, at full HP in naval form, is at least its HP; the counter to a hostile Battleship or Submarine in sight (`navalCounterRoleV7`, section 9.6 for the Deep Ones) is still trained.                         | `navalLaunchSunkV7`, `navalDockLethalV7` (the `TRAIN_NAVAL` scorer)               |
+
+**Before and after**, the ten matches (20 seats, the policy on both):
+
+| Measure                              |   Before |    After |
+| ------------------------------------ | -------: | -------: |
+| Units embarked                       |      304 |      293 |
+| Sunk afloat                          |       58 |       59 |
+| Landings on another landmass         |      145 |      136 |
+| Landed units dead within 3 rounds    |       62 |       62 |
+| Hostile cities captured across water |       20 |       20 |
+| Ships trained (lost)                 | 170 (73) | 151 (50) |
+| Land units at the end                |      230 |      234 |
+| Matches ended by elimination (of 10) |        2 |        2 |
+
+**Against the iteration 3 policy** (the 20 matches, totals of the ten seats
+each policy played; with both seats on the iteration 3 policy the two
+sides' totals are equal): cities at the end 80 against 72, hostile cities
+captured across water 21 against 19, cities lost 21 against 25, ships lost
+47 of 150 against 73 of 169, eliminations 3 against 2. The shore rule alone:
+cities 80 against 72, captures 21 against 19, cities lost 21 against 25,
+ships lost 58 of 159 against 76 of 170; the launch rule adds the cut in
+ships lost.
+
+**Hand play** (Humans against a Goblin AI, Continents 14 x 14, seed 11,
+curiosities on, the shore rule only, a normal expanding game to four
+cities, 33 rounds): the Goblin city Hobnok stood two tiles of water west of
+the player's Corwick and Aldmere. From round 14 its Bomb Chuckers shelled
+the player's Patrol Boats from the shore, and from round 15 it trained a
+Fire Raft on its Port nearly every turn, each sunk or blown up beside a
+player ship. The first Goblin transport was seen in round 25; a Scrap
+Dreadnought out of the player's sight killed the garrison of Elmsby, in
+the south, every turn from round 27 to 33, while single Wolf Riders and
+Goblins afloat came in one at a time and were sunk beside the coast (rounds
+29 to 31) and a Troll tossed Goblins over the strait onto the player's land
+from round 32. No city fell by round 33; the player's Battleship had
+cleared Hobnok's garrison once (round 29).
+
+**Tried and dropped.** Measured against the iteration 3 policy:
+
+- A held wave that gathers beside its lead (the own transport nearest the
+  landing coast by water), a Move nearer to it out of reach at 1228:
+  cities 75 against 77, captures 21 against 22, lone landings 45 against
+  36; with the shore rule, cities 72 against 80 and captures 19 against 23.
+- A landing coast whose tiles in reach of a visible hostile warship (its
+  range, plus its Move when it may attack after moving) give way to the
+  uncovered coast within 3 steps of the nearest: cities 78 against 75,
+  captures 20 against 18; with the shore rule, no change beyond the shore
+  rule alone (cities 80 against 72, captures 21 against 18).
+- A warship refused every Move into lethal danger, ships included: ships
+  lost fell to 46 of 149, but captures fell to 20 against 22 and cities to
+  77 against 75. The same with an exception for a ship beside an own
+  transport: cities 79 against 73, captures 21 against 21, below the shore
+  rule alone.
+
+Proven on the authored strait in
+`tests/unit/ruleset-v7-naval-ai-iteration4.test.ts`.
+
+**Next (iteration 5).** In hand play the transports still came one at a
+time while the Dreadnought emptied the target city every turn: a capture
+needs the landing on the turn the city is emptied (the siege ship firing
+before a transport beside the city lands), not a held wave; and the AI
+boarded nothing on the strait beside its own city for 25 rounds while the
+player's boats stood there.
+
 ### The frozen sea (`pulp_wars-5ti.5`)
 
 [Overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5).

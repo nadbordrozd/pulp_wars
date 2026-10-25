@@ -664,6 +664,8 @@ import {
   navalLandingCoastV7,
   navalPortFarV7,
   navalTransportEscapeValueV7,
+  navalWarshipShoreExposedV7,
+  navalLaunchSunkV7,
   NAVAL_LANDING_FORCE_RADIUS_V7,
   NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7,
   NAVAL_TRANSPORT_EXPOSED_TENTHS_V7,
@@ -12020,6 +12022,114 @@ function navalArmourRefusesAttackV7(
   );
 }
 
+const NAVAL_SHORE_VIEW_CACHE_V7 = new WeakMap<
+  PolicyContextV7,
+  PlayerViewV7 | null
+>();
+
+/**
+ * Naval AI iteration 4 (`pulp_wars-xddb`): the decision's view with the
+ * visible hostile warships left out, all but those with a Kaboom (Fire
+ * Rafts): what threatens a warship that does not fight a ship. Null when
+ * no hostile unit is left.
+ */
+function navalShoreViewV7(context: PolicyContextV7): PlayerViewV7 | null {
+  const cached = NAVAL_SHORE_VIEW_CACHE_V7.get(context);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const units = view.units.filter(
+    (unit) =>
+      !(
+        unit.form === "NAVAL" &&
+        isHostile(view, unit.ownerId) &&
+        (unitRoleMechanicsV7(view, unit).kaboomDamage ?? 0) <= 0
+      ),
+  );
+  const shore = units.some((unit) => isHostile(view, unit.ownerId))
+    ? { ...view, units }
+    : null;
+  NAVAL_SHORE_VIEW_CACHE_V7.set(context, shore);
+  return shore;
+}
+
+/**
+ * Naval AI iteration 4 (`pulp_wars-xddb`): whether an own warship's Move
+ * is refused by `navalWarshipShoreExposedV7`, the danger read from the
+ * shore view (`navalShoreViewV7`).
+ */
+function navalWarshipShoreExposedMoveV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "NAVAL"
+  )
+    return false;
+  const shore = navalShoreViewV7(context);
+  if (shore === null) return false;
+  let known = NAVAL_SHORE_DANGER_CACHE_V7.get(context);
+  if (known === undefined) {
+    known = new Map();
+    NAVAL_SHORE_DANGER_CACHE_V7.set(context, known);
+  }
+  const shoreDanger = (at: CoordV7): number => {
+    const key = `${actor.id}:${at.x},${at.y}`;
+    const cached = known.get(key);
+    if (cached !== undefined) return cached;
+    const danger = visibleImmediateDamage(shore, actor, at, context);
+    known.set(key, danger);
+    return danger;
+  };
+  return navalWarshipShoreExposedV7({
+    hp: actor.hp,
+    dangerAtTo: shoreDanger(to),
+    dangerHere: shoreDanger(actor.at),
+  });
+}
+
+/**
+ * Naval AI iteration 4 (`pulp_wars-xddb`): whether the ship a naval
+ * training puts on its dock would be sunk there by the visible hostile
+ * units on their next turn (`navalLaunchSunkV7`). The new ship is the
+ * seat's unit of the role at full HP on the dock tile, in naval form.
+ */
+function navalDockLethalV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "TRAIN_NAVAL" }>,
+): boolean {
+  const view = context.view;
+  const template = view.units.find((unit) => unit.ownerId === view.viewer.id);
+  if (template === undefined) return false;
+  const maxHp =
+    effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp ?? 10;
+  const ship: PublicUnitV7 = {
+    ...template,
+    id: -1 as UnitId,
+    role: command.role,
+    form: "NAVAL",
+    at: command.at,
+    hp: maxHp,
+    maxHp,
+    kills: 0,
+    veteran: false,
+  };
+  return navalLaunchSunkV7({
+    maxHp,
+    danger: visibleImmediateDamage(view, ship, command.at, context),
+  });
+}
+
+const NAVAL_SHORE_DANGER_CACHE_V7 = new WeakMap<
+  PolicyContextV7,
+  Map<string, number>
+>();
+
 /** The ships of the decision's view (`navalFleetFactsV7`). */
 function navalFactsV7(context: PolicyContextV7): NavalFleetFactsV7 {
   return navalFleetFactsV7(context.view, (ownerId) =>
@@ -12041,6 +12151,13 @@ function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
   // unit boards, into the reach of whatever can maul it afloat, ships or
   // shore alike (`navalTransportExposedV7`).
   if (command.kind === "MOVE" && navalTransportExposedMoveV7(context, command))
+    return true;
+  // Naval AI iteration 4 (`pulp_wars-xddb`): no warship waits in the reach
+  // of shore guns and Fire Rafts (`navalWarshipShoreExposedV7`).
+  if (
+    command.kind === "MOVE" &&
+    navalWarshipShoreExposedMoveV7(context, command)
+  )
     return true;
   const facts = navalFactsV7(context);
   if (!navalShipsInViewV7(facts)) return false;
@@ -15271,16 +15388,19 @@ function scoreCommandWithContext(
         : 35;
     // The naval branch (`pulp_wars-5ti.4`): the ship that counters a
     // hostile Battleship or Submarine in sight (`navalCounterRoleV7`).
-    if (
+    const counter =
       navalCounterRoleV7(navalFactsV7(context), (role) =>
         context.commands.some(
           (offered) => offered.kind === "TRAIN_NAVAL" && offered.role === role,
         ),
-      ) === command.role
-    ) {
+      ) === command.role;
+    if (counter) {
       priority = Math.max(priority, NAVAL_COUNTER_TRAINING_PRIORITY_V7);
       strategicValue = Math.max(strategicValue, 50);
     }
+    // Naval AI iteration 4 (`pulp_wars-xddb`): no ship but the counter is
+    // launched where it would be sunk on the dock (`navalLaunchSunkV7`).
+    if (!counter && navalDockLethalV7(context, command)) priority = -1;
   }
 
   // The naval branch (`pulp_wars-5ti.4`): a Board that beats the ship's

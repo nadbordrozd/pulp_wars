@@ -220,6 +220,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::tacticalPlanWorkV7": "SEAT",
   "src/ai/v7.ts::roadCorridorWorkV7": "SEAT",
   "src/ai/v7.ts::navalPlanWorkV7": "SEAT",
+  // Naval AI iteration 4 (`pulp_wars-xddb`): the HP of the ship the seat
+  // itself trains.
+  "src/ai/v7.ts::navalDockLethalV7": "SEAT",
   "src/ai/v7.ts::warTrainingFirstV7": "SEAT",
   "src/ai/v7.ts::computeSavingsPlanV7": "SEAT",
   "src/ai/v7.ts::undeadAttackValueV7": "SEAT",

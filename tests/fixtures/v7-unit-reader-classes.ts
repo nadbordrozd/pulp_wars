@@ -414,6 +414,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // defenders round a landing tile are units on the board in the public
     // view (a burrowed unit neither defends a beach in reach nor lands).
     "src/ai/v7.ts::navalLandingInForceAtV7": "BOARD",
+    // Naval AI iteration 4 (`pulp_wars-xddb`): the shore guns and Fire
+    // Rafts a warship keeps clear of, and the seat's unit a new ship is
+    // modelled on, are units on the board in the public view.
+    "src/ai/v7.ts::navalShoreViewV7": "BOARD",
+    "src/ai/v7.ts::navalDockLethalV7": "BOARD",
     "src/ai/v7.ts::mindControlHeldV7": "BOARD",
     "src/ai/v7.ts::armyThinAtWarV7": "BOARD",
     "src/ai/v7.ts::nextNavalTechnologyV7": "BOARD",

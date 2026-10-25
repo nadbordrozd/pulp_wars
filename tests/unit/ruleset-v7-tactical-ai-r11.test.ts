@@ -2072,24 +2072,55 @@ function multiDockSharedCityView(): ReturnType<typeof viewForV7> {
     ),
   );
   if (!second.explored) throw new Error("Explored second dock tile missing");
+  // Naval AI iteration 4 (`pulp_wars-xddb`): no ship is launched onto a dock
+  // where the visible enemy sinks it, so the hostile Battleship that makes
+  // the Patrol Boat urgent stands in sight beyond the reach of both docks.
+  const docks = [...view.naval.ownedPorts.map((port) => port.at), second.at];
+  const battleship = required(
+    view.units.find(
+      (unit) => unit.ownerId !== view.viewer.id && unit.role === "BATTLESHIP",
+    ),
+  );
+  const far = required(
+    view.board.tiles.find(
+      (tile) =>
+        tile.explored &&
+        !occupied.has(coord(tile.at)) &&
+        docks.every((dock) => distance(dock, tile.at) >= 5) &&
+        distance(city.at, tile.at) >= 5,
+    ),
+  );
   return {
     ...view,
+    units: view.units.map((unit) =>
+      unit.id === battleship.id ? { ...unit, at: far.at } : unit,
+    ),
     board: {
       ...view.board,
       tiles: view.board.tiles.map((tile) =>
-        same(tile.at, second.at)
+        same(tile.at, far.at) && far.explored
           ? {
-              ...second,
+              ...far,
               biome: null,
               terrain: "SHALLOW_WATER" as const,
               resource: null,
-              improvement: "PORT" as const,
+              improvement: null,
               road: false,
               site: null,
-              territoryCityId: city.id,
-              territoryOwnerId: view.viewer.id,
             }
-          : tile,
+          : same(tile.at, second.at)
+            ? {
+                ...second,
+                biome: null,
+                terrain: "SHALLOW_WATER" as const,
+                resource: null,
+                improvement: "PORT" as const,
+                road: false,
+                site: null,
+                territoryCityId: city.id,
+                territoryOwnerId: view.viewer.id,
+              }
+            : tile,
       ),
     },
     naval: {

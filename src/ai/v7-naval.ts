@@ -1563,3 +1563,41 @@ export function navalPortFarV7(
   if (site === null) return false;
   return ports === null || site + NAVAL_PORT_FAR_MARGIN_V7 < ports;
 }
+
+/**
+ * Naval AI iteration 4 (`pulp_wars-xddb`): "the fleet waits out of reach of
+ * the shore". In the ten diagnostic matches 73 of 170 ships were lost, a
+ * third of them to land units and Fire Rafts. An own warship's Move is
+ * refused when the danger from the visible hostile land units and Kaboom
+ * ships on the destination (the hostile warships left out: ships fight
+ * ships) is at least `NAVAL_TRANSPORT_EXPOSED_TENTHS_V7` tenths of its HP,
+ * unless it already stands in such danger and the destination is less
+ * dangerous (it may always get away).
+ */
+export function navalWarshipShoreExposedV7(exposure: {
+  readonly hp: number;
+  readonly dangerAtTo: number;
+  readonly dangerHere: number;
+}): boolean {
+  const exposed = (danger: number): boolean =>
+    danger * 10 >= exposure.hp * NAVAL_TRANSPORT_EXPOSED_TENTHS_V7;
+  if (!exposed(exposure.dangerAtTo)) return false;
+  return !(
+    exposed(exposure.dangerHere) && exposure.dangerAtTo < exposure.dangerHere
+  );
+}
+
+/**
+ * Naval AI iteration 4 (`pulp_wars-xddb`): "launch no ship onto a dock
+ * where it is sunk". In hand play a Goblin AI trained a Fire Raft on the
+ * Port beside its city every turn, each in reach of the player's Marksman,
+ * Battleship and Patrol Boats, and lost ten of them that way. A naval
+ * training is not made when the visible danger to the new ship on its dock
+ * (full HP, naval form) is at least its HP.
+ */
+export function navalLaunchSunkV7(launch: {
+  readonly maxHp: number;
+  readonly danger: number;
+}): boolean {
+  return launch.danger >= launch.maxHp;
+}
