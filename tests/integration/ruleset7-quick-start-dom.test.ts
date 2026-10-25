@@ -166,7 +166,7 @@ describe("Quick start on the new-game screen", () => {
           ".v7-picker-segment",
         ),
       ].map((node) => node.textContent),
-    ).toEqual(["Normal", "Hard", "Harder", "Brutal"]);
+    ).toEqual(["Easy", "Normal", "Hard", "Harder", "Brutal"]);
     expect(pressed(".v7-opponents-choice")).toEqual(["1"]);
     expect(pressed(".v7-difficulty-choice")).toEqual(["NORMAL"]);
     // The map and its size, nothing about how they were chosen.
@@ -264,6 +264,30 @@ describe("Quick start on the new-game screen", () => {
       aiDifficulty: "BRUTAL",
     });
     expect(new Set(setup.factions).size).toBe(5);
+  });
+
+  it("offers Easy: one line says what it does, and it launches a regular game with no head start that names Easy", async () => {
+    // pulp_wars-q6cc.
+    const settings = new MemoryStorage();
+    const running = boot(settings);
+    const note = (): string =>
+      required("[data-v7-region='difficulty-note']").textContent;
+    expect(note()).toBe("The AI plays its best, with no head start.");
+    press("difficulty-easy");
+    expect(pressed(".v7-difficulty-choice")).toEqual(["EASY"]);
+    expect(note()).toBe("The AI is cautious and makes the odd mistake.");
+    expect(fieldValue("v7-ai-head-start")).toBe("0");
+    expect(settings.getItem(QUICK_DIFFICULTY_STORAGE_KEY_V7)).toBe("EASY");
+    expect(required('[data-action="launch"]').textContent).toBe(
+      "Start regular game",
+    );
+    const setup = await launch(running);
+    expect(setup).toMatchObject({ aiDifficulty: "EASY", gameKind: "REGULAR" });
+    expect("aiHeadStart" in setup).toBe(false);
+    expect(matchDifficultyV7(setup)).toBe("EASY");
+    // The next visit opens on Easy.
+    boot(settings);
+    expect(pressed(".v7-difficulty-choice")).toEqual(["EASY"]);
   });
 
   it("remembers the difficulty for the next visit, and works with blocked storage", async () => {

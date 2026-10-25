@@ -13,9 +13,10 @@ import {
 /**
  * Difficulty (bead `pulp_wars-2yc.54`, docs/ui/QUICK_START.md; moved into
  * the engine by `pulp_wars-2yc.69` so the skirmish stars can read it): the
- * levels of `DIFFICULTIES_V7`, easiest first. Difficulty is the AI head
- * start only: Normal is the game as balanced, with no head start; each
- * harder level gives every AI seat more starting Coins.
+ * levels of `DIFFICULTIES_V7`, easiest first. Normal is the game as
+ * balanced, with no head start; each harder level gives every AI seat more
+ * starting Coins. Easy (`pulp_wars-q6cc`) has no head start either: its AI
+ * seats play the cautious Easy personality (`src/ai/v7-personality.ts`).
  *
  * A setup names its level in `aiDifficulty` (only with exactly that level's
  * head start, which the setup validation checks); a setup whose head start
@@ -25,11 +26,11 @@ import {
 
 /**
  * The AI head start of each difficulty on a board of reference crowding:
- * Normal none, then +5, +10 and +20 Coins.
+ * Easy and Normal none, then +5, +10 and +20 Coins.
  */
 export const DIFFICULTY_BASE_HEAD_START_V7: Readonly<
   Record<DifficultyV7, number>
-> = Object.freeze({ NORMAL: 0, HARD: 5, HARDER: 10, BRUTAL: 20 });
+> = Object.freeze({ EASY: 0, NORMAL: 0, HARD: 5, HARDER: 10, BRUTAL: 20 });
 /** Reference crowding: one player per this many land tiles. */
 export const DIFFICULTY_REFERENCE_LAND_PER_PLAYER_V7 = 40;
 /**
@@ -44,7 +45,7 @@ export const DIFFICULTY_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7 = 33;
  * where players meet early, so the base Coins scale with the land each
  * player has: `base * (land / players) / 40`. The result snaps to the
  * nearest Coins the engine offers (5, 10, 20, nearest by ratio), never
- * below +5, so only Normal has none. Non-decreasing with the difficulty and
+ * below +5, so only Easy and Normal have none. Non-decreasing with the difficulty and
  * with the land per player.
  */
 export function difficultyHeadStartCoinsV7(
@@ -85,7 +86,8 @@ function nearestHeadStartCoinsV7(raw: number): AiHeadStartCoinsV7 {
  * +10 where Harder gives +10 and Brutal +20 is Harder; +5 where Hard
  * already gives +10 is Normal; where two levels give the same head start
  * (Harder and Brutal on a roomy board) it reads as the harder, the same
- * game. No head start (the Showcase, a mission) is Normal.
+ * game. No head start (the Showcase, a mission) is Normal. An `EASY`
+ * setup is Easy (it never has a head start).
  */
 export function matchDifficultyV7(
   setup: Pick<
@@ -99,6 +101,7 @@ export function matchDifficultyV7(
   if (coins === 0) return reached;
   for (const difficulty of DIFFICULTIES_V7)
     if (
+      difficulty !== "EASY" &&
       difficultyHeadStartCoinsV7(
         difficulty,
         setup.mapType,
@@ -111,15 +114,18 @@ export function matchDifficultyV7(
 }
 
 /**
- * Whether a setup may name this difficulty: `NORMAL` always; a harder
- * level only on a generated map with exactly that level's head start on
- * this board (the head start the new-game screen gives it).
+ * Whether a setup may name this difficulty: `NORMAL` always; `EASY`
+ * (`pulp_wars-q6cc`) on any setup without a head start (a mission and the
+ * Showcase included); a harder level only on a generated map with exactly
+ * that level's head start on this board (the head start the new-game
+ * screen gives it).
  */
 export function setupDifficultyAllowedV7(
   setup: Pick<MatchSetupV7, "aiHeadStart" | "mapType" | "width" | "aiCount">,
   difficulty: DifficultyV7,
 ): boolean {
   if (difficulty === "NORMAL") return true;
+  if (difficulty === "EASY") return aiHeadStartCoinsV7(setup) === 0;
   return (
     isGeneratedMapTypeV7(setup.mapType) &&
     aiHeadStartCoinsV7(setup) ===

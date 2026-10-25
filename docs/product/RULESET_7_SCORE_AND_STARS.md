@@ -53,14 +53,14 @@ whatever the AI mode.
 
 ## 1. Summary
 
-| Piece          | One sentence                                                                                                                                                                               |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Score**      | Every player's score is territory, city levels, technology, achievements, army, and kills, minus units lost and damage taken; the penalty never takes away more than half.                 |
-| **Domination** | Today's game: you win when every rival is eliminated and lose when you are.                                                                                                                |
-| **Perfection** | 30 rounds; after round 30 the highest score wins (eliminating every rival earlier still wins at once, and being eliminated still loses).                                                   |
-| **Stars**      | No win, no star. A win is 1 star; a score of `200 + 2 × land` 2 stars and `300 + 3 × land` 3 stars (at the end, or round 30), capped by difficulty: Normal 1, Hard and Harder 2, Brutal 3. |
-| **Glow**       | A win in which you lost no unit and no city, with at least the 2-star score, gives a hidden glow (no extra star).                                                                          |
-| **Tribe grid** | The new-game screen shows every tribe's emblem with its best stars (and glow) in the chosen mode; the record is kept in the browser and never lowered.                                     |
+| Piece          | One sentence                                                                                                                                                                                        |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Score**      | Every player's score is territory, city levels, technology, achievements, army, and kills, minus units lost and damage taken; the penalty never takes away more than half.                          |
+| **Domination** | Today's game: you win when every rival is eliminated and lose when you are.                                                                                                                         |
+| **Perfection** | 30 rounds; after round 30 the highest score wins (eliminating every rival earlier still wins at once, and being eliminated still loses).                                                            |
+| **Stars**      | No win, no star. A win is 1 star; a score of `200 + 2 × land` 2 stars and `300 + 3 × land` 3 stars (at the end, or round 30), capped by difficulty: Easy and Normal 1, Hard and Harder 2, Brutal 3. |
+| **Glow**       | A win in which you lost no unit and no city, with at least the 2-star score, gives a hidden glow (no extra star).                                                                                   |
+| **Tribe grid** | The new-game screen shows every tribe's emblem with its best stars (and glow) in the chosen mode; the record is kept in the browser and never lowered.                                              |
 
 ## 2. Pillars
 
@@ -425,8 +425,10 @@ start, whose boards stop growing at 20 × 20.
 | 3 stars | a victory with the 3-star score, on Brutal                                   |
 | Glow    | a **flawless** victory (section 5.4) with at least the 2-star score; no star |
 
-The difficulty caps the stars: **Normal 1, Hard 2, Harder 2, Brutal 3**.
-So every win on Normal is exactly 1 star, and 3 stars need Brutal and a
+The difficulty caps the stars: **Easy 1, Normal 1, Hard 2, Harder 2,
+Brutal 3**. Easy (`pulp_wars-q6cc`) earns half of Normal's, rounded down,
+but never less than the win's star, so 1; and an Easy win never glows
+(section 5.4). So every win on Easy or Normal is exactly 1 star, and 3 stars need Brutal and a
 well-played (not flawless) game. The win itself is what each mode already
 calls a win: every rival eliminated in Domination, the highest score after
 round 30 in Perfection (section 4).
@@ -445,7 +447,7 @@ lists every event that removes a unit or a city from a player and checks
 each one clears the flag.
 
 A flawless win with at least the 2-star score gets the hidden **glow**, on
-any difficulty. Since `pulp_wars-2yc.69` the glow adds no star (only Brutal
+any difficulty but Easy (`pulp_wars-q6cc`). Since `pulp_wars-2yc.69` the glow adds no star (only Brutal
 reaches 3); the 2-star score is still required so that a pacifist
 Perfection game on a big board does not earn it without playing well
 (appendix A, C7).
@@ -473,6 +475,15 @@ every AI seat, scaled by the land per player
 - **Recorded stars stay.** A tribe's stars are never lowered, so stars
   earned under the first design (when Normal counted as the hardest
   difficulty) remain.
+- **Easy** (`pulp_wars-q6cc`). Below Normal, with no head start: the AI
+  seats play the cautious Easy personality
+  ([NORMAL_AI.md, Easy mode](../architecture/NORMAL_AI.md#easy-mode-pulp_wars-q6cc)).
+  `aiDifficulty: "EASY"` is valid on any setup without a head start (a
+  mission and the Showcase included) and never with one; an additive value,
+  so no ruleset identity change: every older setup keeps its exact shape.
+  An Easy game is still a regular game (it earns its star) but is never
+  offered to the public leaderboard
+  ([LEADERBOARD.md](../LEADERBOARD.md)).
 
 ### 5.6 Worked examples
 

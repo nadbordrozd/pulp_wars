@@ -373,7 +373,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
 
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--mode domination|perfection]
-          [--ai-head-start 0|5|10|20] [--overwrite]
+          [--ai-head-start 0|5|10|20] [--difficulty normal|easy] [--overwrite]
   lab     --session S <LAB> [--giant] [--overwrite]
                                         start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves; LAB_CULT_MID: the Cultists); lab alone lists them
                                         --giant (a *_MID lab or LAB_BREAKTHROUGH): your faction's reward giant stands at the front, full HP
@@ -425,6 +425,7 @@ const VALUE_FLAGS_V7 = new Set([
   "curiosities",
   "mode",
   "ai-head-start",
+  "difficulty",
   "unit",
   "city",
   "tile",
@@ -3422,6 +3423,15 @@ function commandNewV7(args: ArgsV7): string {
   );
   if (headStartRaw !== "0" && headStartCoins === undefined)
     throw new TextPlayErrorV7("--ai-head-start must be 0, 5, 10, or 20");
+  // Easy mode (`pulp_wars-q6cc`): the AI seats play the cautious Easy
+  // personality; it takes no head start.
+  const difficultyRaw = (
+    args.flags.get("difficulty") ?? "normal"
+  ).toLowerCase();
+  if (difficultyRaw !== "normal" && difficultyRaw !== "easy")
+    throw new TextPlayErrorV7("--difficulty must be normal or easy");
+  if (difficultyRaw === "easy" && headStartCoins !== undefined)
+    throw new TextPlayErrorV7("--difficulty easy takes no --ai-head-start");
   const setup: MatchSetupV7 = {
     rulesetId: RULESET_7_ID,
     mapGenerationRevision: MAP_GENERATION_REVISION_V7,
@@ -3429,7 +3439,7 @@ function commandNewV7(args: ArgsV7): string {
     width: size as BoardSizeV7,
     height: size as BoardSizeV7,
     aiCount: seats - 1,
-    aiDifficulty: "NORMAL",
+    aiDifficulty: difficultyRaw === "easy" ? "EASY" : "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions,
@@ -3470,7 +3480,7 @@ function commandNewV7(args: ArgsV7): string {
   const played = playAiSeatsV7(base, memory);
   saveSessionV7(path, played.session);
   return [
-    `NEW MATCH: ${mapType.toLowerCase()} ${size}x${size} seed ${setup.seed} curiosities ${curiositiesRaw}${headStartTextV7(setup)} | session ${path}`,
+    `NEW MATCH: ${mapType.toLowerCase()} ${size}x${size} seed ${setup.seed} curiosities ${curiositiesRaw}${headStartTextV7(setup)}${setup.aiDifficulty === "EASY" ? " difficulty easy" : ""} | session ${path}`,
     ...played.lines,
     ...viewLinesV7(played.session, false),
   ].join("\n");

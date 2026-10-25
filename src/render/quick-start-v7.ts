@@ -29,16 +29,31 @@ import {
  * The difficulty levels, easiest first (the engine's `DIFFICULTIES_V7`,
  * `src/engine/v7/difficulty.ts`, which also reads a match's level back for
  * the skirmish stars). Normal is the game as balanced, the AI with no head
- * start (the AI cannot be made weaker than that without a rule change);
- * each harder level gives the AI players more starting Coins.
+ * start; each harder level gives the AI players more starting Coins. Easy
+ * (`pulp_wars-q6cc`) has no head start and a cautious AI that makes the odd
+ * mistake (`src/ai/v7-personality.ts`).
  */
 export const QUICK_DIFFICULTIES_V7 = DIFFICULTIES_V7;
 export type QuickDifficultyV7 = DifficultyV7;
+/**
+ * What each difficulty does, in one line (the note under the Difficulty
+ * row, `pulp_wars-q6cc`).
+ */
+export const QUICK_DIFFICULTY_NOTES_V7: Readonly<
+  Record<QuickDifficultyV7, string>
+> = Object.freeze({
+  EASY: "The AI is cautious and makes the odd mistake.",
+  NORMAL: "The AI plays its best, with no head start.",
+  HARD: "The AI plays its best and starts with more Coins.",
+  HARDER: "The AI plays its best and starts with more Coins.",
+  BRUTAL: "The AI plays its best and starts with many more Coins.",
+});
 /** The difficulty a first game starts on. */
 export const QUICK_DEFAULT_DIFFICULTY_V7: QuickDifficultyV7 = "NORMAL";
 export const QUICK_DIFFICULTY_LABELS_V7: Readonly<
   Record<QuickDifficultyV7, string>
 > = Object.freeze({
+  EASY: "Easy",
   NORMAL: "Normal",
   HARD: "Hard",
   HARDER: "Harder",

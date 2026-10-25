@@ -346,7 +346,14 @@ describe("Ruleset 7 campaign front screen", () => {
     );
     expect(
       focusables().map((node) => node.getAttribute("data-action")),
-    ).toEqual(["front-back", "campaign-start", "campaign-back"]);
+    ).toEqual([
+      "front-back",
+      // pulp_wars-q6cc: the difficulty, Normal or Easy.
+      "campaign-difficulty-normal",
+      "campaign-difficulty-easy",
+      "campaign-start",
+      "campaign-back",
+    ]);
     // Escape steps back from the briefing to its card, then to the menu.
     document.activeElement?.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),

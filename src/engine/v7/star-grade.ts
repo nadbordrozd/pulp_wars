@@ -30,8 +30,13 @@ import {
  * land`: 380 and 458), a scrappy win staying at 1.
  */
 export const SKIRMISH_STARS_V7 = Object.freeze({
-  /** The most stars a win can earn on each difficulty. */
+  /**
+   * The most stars a win can earn on each difficulty. Easy
+   * (`pulp_wars-q6cc`): half of Normal's, rounded down, but at least the
+   * win's star, so 1; and an Easy win never glows.
+   */
   maxStars: Object.freeze({
+    EASY: 1,
     NORMAL: 1,
     HARD: 2,
     HARDER: 2,
@@ -101,7 +106,7 @@ export interface StarGradeV7 {
   readonly stars: 0 | 1 | 2 | 3;
   /**
    * The hidden glow: a flawless win with at least the 2-star score, on any
-   * difficulty. It adds no star.
+   * difficulty but Easy (`pulp_wars-q6cc`). It adds no star.
    */
   readonly glow: boolean;
   readonly difficulty: DifficultyV7;
@@ -132,8 +137,9 @@ export interface StarGradeV7 {
 /**
  * Section 5.3: 0 stars without a win; a win earns 1 star, a second with
  * the 2-star score and a third with the 3-star score, never more than the
- * difficulty allows (Normal 1, Hard and Harder 2, Brutal 3). The glow is a
- * flawless win with at least the 2-star score.
+ * difficulty allows (Easy and Normal 1, Hard and Harder 2, Brutal 3). The
+ * glow is a flawless win with at least the 2-star score, on any difficulty
+ * but Easy.
  */
 export function starGradeV7(inputs: StarGradeInputsV7): StarGradeV7 {
   for (const value of [
@@ -154,7 +160,11 @@ export function starGradeV7(inputs: StarGradeInputsV7): StarGradeV7 {
   const stars: 0 | 1 | 2 | 3 = !inputs.victory
     ? 0
     : (Math.min(earned, maxStars) as 1 | 2 | 3);
-  const glow = inputs.victory && inputs.flawless && twoStarScore;
+  const glow =
+    inputs.victory &&
+    inputs.flawless &&
+    twoStarScore &&
+    inputs.difficulty !== "EASY";
   // A rival's peak is never 0 (every player starts with a city); a 0 here
   // (a hand-built state) is read as 1.
   const denominator = Math.max(1, inputs.bestRivalPeak);

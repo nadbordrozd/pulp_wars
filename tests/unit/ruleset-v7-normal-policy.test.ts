@@ -152,6 +152,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-cult-against",
       // pulp_wars-68k.3: mission directives (read from the public setup).
       "./v7-directives",
+      // pulp_wars-q6cc: Easy mode, the personality of an AI seat (the
+      // public setup only; the identity for every Normal seat).
+      "./v7-personality",
       "./v7-opening",
       "./v7-undead",
     ]);

@@ -69,3 +69,43 @@ export function storeQuickLastMapPreferenceV7(
     return false;
   }
 }
+
+/**
+ * Easy mode (`pulp_wars-q6cc`): the campaign briefing's difficulty, Normal
+ * or Easy, remembered per browser like the quick start's. A client
+ * preference under its own key; the launched mission setup carries the
+ * choice (`aiDifficulty`), so Retry mission keeps it.
+ */
+export const CAMPAIGN_DIFFICULTIES_V7 = Object.freeze([
+  "NORMAL",
+  "EASY",
+] as const);
+export type CampaignDifficultyV7 = (typeof CAMPAIGN_DIFFICULTIES_V7)[number];
+export const CAMPAIGN_DIFFICULTY_STORAGE_KEY_V7 =
+  "pulpWars.campaign.difficulty.v1";
+
+/** A missing or unknown value is Normal. */
+export function loadCampaignDifficultyPreferenceV7(
+  storage: StorageAdapter | null,
+): CampaignDifficultyV7 {
+  try {
+    const stored = storage?.getItem(CAMPAIGN_DIFFICULTY_STORAGE_KEY_V7);
+    return (
+      CAMPAIGN_DIFFICULTIES_V7.find((level) => level === stored) ?? "NORMAL"
+    );
+  } catch {
+    return "NORMAL";
+  }
+}
+
+export function storeCampaignDifficultyPreferenceV7(
+  storage: StorageAdapter | null,
+  difficulty: CampaignDifficultyV7,
+): boolean {
+  try {
+    storage?.setItem(CAMPAIGN_DIFFICULTY_STORAGE_KEY_V7, difficulty);
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -87,7 +87,7 @@ describe("skirmish stars: the grade", () => {
       expect(grade(difficulty, true, 0).stars).toBe(1);
   });
 
-  it("caps the stars by difficulty: Normal 1, Hard and Harder 2, only Brutal 3", () => {
+  it("caps the stars by difficulty: Easy and Normal 1, Hard and Harder 2, only Brutal 3", () => {
     const table = DIFFICULTIES_V7.map((difficulty) => [
       difficulty,
       ...[T2 - 1, T2, T3 - 1, T3, 100_000].map(
@@ -95,12 +95,14 @@ describe("skirmish stars: the grade", () => {
       ),
     ]);
     expect(table).toEqual([
+      ["EASY", 1, 1, 1, 1, 1],
       ["NORMAL", 1, 1, 1, 1, 1],
       ["HARD", 1, 2, 2, 2, 2],
       ["HARDER", 1, 2, 2, 2, 2],
       ["BRUTAL", 1, 2, 2, 3, 3],
     ]);
     expect(SKIRMISH_STARS_V7.maxStars).toEqual({
+      EASY: 1,
       NORMAL: 1,
       HARD: 2,
       HARDER: 2,
@@ -121,6 +123,9 @@ describe("skirmish stars: the grade", () => {
     // Under the 2-star score, or without a win, no glow.
     expect(grade("BRUTAL", true, T2 - 1, { flawless: true }).glow).toBe(false);
     expect(grade("BRUTAL", false, T3, { flawless: true }).glow).toBe(false);
+    // pulp_wars-q6cc: an Easy win never glows; a Normal one does.
+    expect(grade("EASY", true, T3, { flawless: true }).glow).toBe(false);
+    expect(grade("NORMAL", true, T3, { flawless: true }).glow).toBe(true);
   });
 
   it("reports the score, the cap, and the thresholds the end screen shows", () => {
@@ -241,7 +246,12 @@ describe("skirmish stars: the difficulty of a match", () => {
     expect(pangea({ aiDifficulty: "NORMAL", aiHeadStart: { coins: 20 } })).toBe(
       true,
     );
-    expect(pangea({ aiDifficulty: "EASY" as unknown as DifficultyV7 })).toBe(
+    // pulp_wars-q6cc: Easy is named without a head start, never with one.
+    expect(pangea({ aiDifficulty: "EASY" })).toBe(true);
+    expect(pangea({ aiDifficulty: "EASY", aiHeadStart: { coins: 5 } })).toBe(
+      false,
+    );
+    expect(pangea({ aiDifficulty: "TRIVIAL" as unknown as DifficultyV7 })).toBe(
       false,
     );
     expect(

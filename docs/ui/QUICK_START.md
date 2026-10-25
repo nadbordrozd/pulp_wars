@@ -17,10 +17,13 @@ New game asks, in order:
 1. **Game mode** (Domination or Perfection), remembered per browser as before.
 2. **Your tribe** (the tribe grid).
 3. **Opponents**, 1 to 8, a row of buttons.
-4. **Difficulty**: Normal, Hard, Harder, Brutal, a row of buttons,
+4. **Difficulty**: Easy, Normal, Hard, Harder, Brutal, a row of buttons,
    remembered per browser (`pulpWars.ruleset7.quickStart.difficulty.v1`).
-   Its tooltip says only that harder levels give the AI players more
-   starting Coins.
+   One short line under it says what the chosen level does (Easy: "The AI
+   is cautious and makes the odd mistake."; Normal: "The AI plays its best,
+   with no head start."; the harder levels: more starting Coins). Easy
+   (`pulp_wars-q6cc`) has no head start; see
+   [Easy](#easy-pulp_wars-q6cc).
 
 Under them one line names the map and its size ("Continents · 11 × 11").
 Then **Custom game** (closed by default, open or closed for the page
@@ -138,11 +141,29 @@ lost room). With today's land counts this gives:
 | Lakes      | 11 × 11 | 14 × 14 | 14 × 14 | 16 × 16 | 20 × 20 | 20 × 20 |
 | Pangea     | 11 × 11 | 14 × 14 | 16 × 16 | 16 × 16 | 20 × 20 | 20 × 20 |
 
+## Easy (`pulp_wars-q6cc`)
+
+The user: "let's also add easy mode where the AI is slightly dumber or
+specifically less aggressive". Easy is the level below Normal. It has no
+head start; instead every AI seat plays the cautious Easy personality
+(`src/ai/v7-personality.ts`,
+[NORMAL_AI.md, Easy mode](../architecture/NORMAL_AI.md#easy-mode-pulp_wars-q6cc)):
+it marches on no enemy city before round 10, needs 40% more weight to
+commit an attack, sends larger waves, does not focus fire, pulls wounded
+units out of fights and takes only exchanges that come out ahead away from
+home, and now and then (15% of decisions) plays its second-best choice. It
+defends its own cities as Normal does. The setup names it
+(`aiDifficulty: "EASY"`); a head start set by hand under Custom game
+launches as Normal. An Easy game is a regular game and earns at most 1 star,
+like Normal (never the glow), and is never offered to the leaderboard.
+
+The campaign briefing has the same choice, Normal or Easy, remembered per
+browser (`pulpWars.campaign.difficulty.v1`); see
+[CAMPAIGN.md section 5](../product/CAMPAIGN.md#5-ui-flow).
+
 ## Difficulty: the AI head start
 
-Difficulty is the AI head start only, for now. Normal is the game as
-balanced: no head start (the AI cannot be made weaker without a rule
-change, so there is no level below it). Each harder level has a base head
+Normal is the game as balanced: no head start. Each harder level has a base head
 start, scaled by how much land each player has, because a head start counts
 for more where players meet early:
 
@@ -154,6 +175,7 @@ coins = the offered amount (5, 10 or 20) nearest to raw by ratio,
 
 | Difficulty | Base (Coins at 40 land tiles per player) |
 | ---------- | ---------------------------------------- |
+| Easy       | 0                                        |
 | Normal     | 0                                        |
 | Hard       | 5                                        |
 | Harder     | 10                                       |
@@ -175,7 +197,7 @@ raises it: one opponent on Pangea 20 × 20 (144 land tiles each) is +20 even
 on Hard. The Showcase never has a head start.
 
 **Stars** (`pulp_wars-2yc.69`). The difficulty also caps the tribe stars a
-win can earn: Normal 1, Hard and Harder 2, Brutal 3
+win can earn: Easy and Normal 1, Hard and Harder 2, Brutal 3
 ([score and stars section 5](../product/RULESET_7_SCORE_AND_STARS.md#5-stars)).
 The launched setup names it in `aiDifficulty` when the head start is the
 one the difficulty gives on that board; a head start set by hand under

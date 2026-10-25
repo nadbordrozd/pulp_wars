@@ -11,6 +11,7 @@ import {
   QUICK_DEFAULT_DIFFICULTY_V7,
   QUICK_DIFFICULTIES_V7,
   QUICK_DIFFICULTY_LABELS_V7,
+  QUICK_DIFFICULTY_NOTES_V7,
   QUICK_MAP_CYCLE_V7,
   QUICK_MAX_BOARD_SIZE_V7,
   nextQuickMapTypeV7,
@@ -19,9 +20,13 @@ import {
   randomOpponentFactionsV7,
 } from "../../src/render/quick-start-v7";
 import {
+  CAMPAIGN_DIFFICULTIES_V7,
+  CAMPAIGN_DIFFICULTY_STORAGE_KEY_V7,
   QUICK_DIFFICULTY_STORAGE_KEY_V7,
   QUICK_LAST_MAP_STORAGE_KEY_V7,
+  loadCampaignDifficultyPreferenceV7,
   loadQuickDifficultyPreferenceV7,
+  storeCampaignDifficultyPreferenceV7,
   loadQuickLastMapPreferenceV7,
   storeQuickDifficultyPreferenceV7,
   storeQuickLastMapPreferenceV7,
@@ -125,8 +130,9 @@ describe("quick start: the board size", () => {
 });
 
 describe("quick start: the difficulty", () => {
-  it("offers four levels in few words, Normal first and by default", () => {
+  it("offers five levels in few words, Easy first and Normal by default", () => {
     expect(QUICK_DIFFICULTIES_V7).toEqual([
+      "EASY",
       "NORMAL",
       "HARD",
       "HARDER",
@@ -134,21 +140,29 @@ describe("quick start: the difficulty", () => {
     ]);
     expect(QUICK_DEFAULT_DIFFICULTY_V7).toBe("NORMAL");
     expect(Object.values(QUICK_DIFFICULTY_LABELS_V7)).toEqual([
+      "Easy",
       "Normal",
       "Hard",
       "Harder",
       "Brutal",
     ]);
+    // pulp_wars-q6cc: Easy says what it does.
+    expect(QUICK_DIFFICULTY_NOTES_V7.EASY).toBe(
+      "The AI is cautious and makes the odd mistake.",
+    );
   });
 
-  it("gives Normal no head start anywhere, and every harder level one the engine offers", () => {
+  it("gives Easy and Normal no head start anywhere, and every harder level one the engine offers", () => {
     for (const mapType of GENERATED)
       for (const opponents of OPPONENTS)
         for (const size of allowedBoardSizesV7(mapType, opponents + 1)) {
+          expect(quickHeadStartCoinsV7("EASY", mapType, size, opponents)).toBe(
+            0,
+          );
           expect(
             quickHeadStartCoinsV7("NORMAL", mapType, size, opponents),
           ).toBe(0);
-          for (const level of QUICK_DIFFICULTIES_V7.slice(1))
+          for (const level of QUICK_DIFFICULTIES_V7.slice(2))
             expect(AI_HEAD_START_COINS_V7).toContain(
               quickHeadStartCoinsV7(level, mapType, size, opponents),
             );
@@ -171,12 +185,12 @@ describe("quick start: the difficulty", () => {
       QUICK_DIFFICULTIES_V7.map((level) =>
         quickHeadStartCoinsV7(level, "CONTINENTS", 11, 1),
       ),
-    ).toEqual([0, 5, 10, 20]);
+    ).toEqual([0, 0, 5, 10, 20]);
     expect(
       QUICK_DIFFICULTIES_V7.map((level) =>
         quickHeadStartCoinsV7(level, "PANGEA", 14, 2),
       ),
-    ).toEqual([0, 5, 10, 20]);
+    ).toEqual([0, 0, 5, 10, 20]);
   });
 
   it("gives a smaller head start where players are crowded and a larger one where they are spread out", () => {
@@ -251,10 +265,26 @@ describe("quick start: what the browser remembers", () => {
       expect(storage.getItem(QUICK_DIFFICULTY_STORAGE_KEY_V7)).toBe(level);
       expect(loadQuickDifficultyPreferenceV7(storage)).toBe(level);
     }
-    storage.setItem(QUICK_DIFFICULTY_STORAGE_KEY_V7, "EASY");
+    storage.setItem(QUICK_DIFFICULTY_STORAGE_KEY_V7, "TRIVIAL");
     expect(loadQuickDifficultyPreferenceV7(storage)).toBe("NORMAL");
     expect(loadQuickDifficultyPreferenceV7(blocked)).toBe("NORMAL");
     expect(storeQuickDifficultyPreferenceV7(blocked, "HARD")).toBe(false);
+  });
+
+  it("remembers the campaign difficulty, Normal or Easy, and reads anything else as Normal", () => {
+    // pulp_wars-q6cc: the briefing's choice, under its own key.
+    const storage = new MemoryStorage();
+    expect(loadCampaignDifficultyPreferenceV7(storage)).toBe("NORMAL");
+    expect(loadCampaignDifficultyPreferenceV7(null)).toBe("NORMAL");
+    for (const level of CAMPAIGN_DIFFICULTIES_V7) {
+      expect(storeCampaignDifficultyPreferenceV7(storage, level)).toBe(true);
+      expect(storage.getItem(CAMPAIGN_DIFFICULTY_STORAGE_KEY_V7)).toBe(level);
+      expect(loadCampaignDifficultyPreferenceV7(storage)).toBe(level);
+    }
+    storage.setItem(CAMPAIGN_DIFFICULTY_STORAGE_KEY_V7, "BRUTAL");
+    expect(loadCampaignDifficultyPreferenceV7(storage)).toBe("NORMAL");
+    expect(loadCampaignDifficultyPreferenceV7(blocked)).toBe("NORMAL");
+    expect(storeCampaignDifficultyPreferenceV7(blocked, "EASY")).toBe(false);
   });
 
   it("remembers the last map of the cycle and nothing else", () => {

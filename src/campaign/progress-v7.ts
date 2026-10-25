@@ -158,6 +158,11 @@ export interface CampaignMissionCardV7 {
   readonly stars: number;
   /** One star for the win plus one for each secondary goal. */
   readonly maxStars: number;
+  /**
+   * Easy mode (`pulp_wars-q6cc`): every win of the mission was on Easy
+   * (the card's "Easy" tag).
+   */
+  readonly easy: boolean;
 }
 
 /** The chapter and entry of a chapter mission, or null (hidden fixtures). */
@@ -224,6 +229,7 @@ export function campaignMissionCardsV7(
         built: false,
         stars: 0,
         maxStars: 3,
+        easy: false,
       };
     }
     const [human, ...ai] = mission.seats;
@@ -242,6 +248,7 @@ export function campaignMissionCardsV7(
       built: true,
       stars: done === null ? 0 : Math.min(maxStars, done.stars ?? 1),
       maxStars,
+      easy: done?.easy === true,
     };
   });
 }

@@ -128,9 +128,10 @@ function splitAiHeadStartV7(input: unknown): {
 }
 
 /**
- * Difficulty (`pulp_wars-2yc.69`): `aiDifficulty` is `NORMAL` or a harder
- * level of `DIFFICULTIES_V7`. The setup without the harder name (read as
- * `NORMAL` by the shape checks), and the name (null when invalid).
+ * Difficulty (`pulp_wars-2yc.69`): `aiDifficulty` is `NORMAL` or another
+ * level of `DIFFICULTIES_V7` (`EASY` since `pulp_wars-q6cc`). The setup
+ * without the other name (read as `NORMAL` by the shape checks), and the
+ * name (null when invalid).
  */
 function splitDifficultyV7(input: unknown): {
   readonly rest: unknown;
@@ -260,9 +261,10 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * The optional `aiHeadStart` (`pulp_wars-w49.39`) is `{ coins }` with 5, 10,
  * or 20, and never on the Showcase or a mission; a setup without it has no
  * head start and is returned without the key. `aiDifficulty`
- * (`pulp_wars-2yc.69`) is `NORMAL`, or `HARD`, `HARDER`, or `BRUTAL` only on
- * a generated map with exactly that level's head start on the board
- * (`setupDifficultyAllowedV7`). The optional `gameKind`
+ * (`pulp_wars-2yc.69`) is `NORMAL`, `EASY` on any setup without a head
+ * start (`pulp_wars-q6cc`: a mission and the Showcase included), or `HARD`,
+ * `HARDER`, or `BRUTAL` only on a generated map with exactly that level's
+ * head start on the board (`setupDifficultyAllowedV7`). The optional `gameKind`
  * (`pulp_wars-2yc.103`) is `REGULAR` or `CUSTOM`, never on a mission and
  * `REGULAR` only on a generated map without the mirror flag; a setup
  * without it is returned without the key.

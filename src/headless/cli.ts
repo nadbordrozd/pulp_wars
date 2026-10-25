@@ -73,7 +73,7 @@ async function runV7Match(): Promise<void> {
     width: size,
     height: size,
     aiCount,
-    aiDifficulty: "NORMAL",
+    aiDifficulty: aiDifficultyArgV7(),
     aiMode: args.includes("--cooperative") ? "COOPERATIVE" : "RIVAL",
     humanColor: "CORAL",
     factions: factionsArgV7(aiCount),
@@ -122,7 +122,10 @@ async function runV7MissionMatch(): Promise<void> {
   const factions = args.includes("--factions")
     ? factionsArgV7(mission.seats.length - 1)
     : null;
-  const setup = missionMatchSetupV7(mission, factions?.[0]);
+  const built = missionMatchSetupV7(mission, factions?.[0]);
+  // Easy mode (`pulp_wars-q6cc`): `--difficulty easy` on a mission too.
+  const setup =
+    built === null ? null : { ...built, aiDifficulty: aiDifficultyArgV7() };
   if (
     setup === null ||
     (factions !== null && setup.factions.join(",") !== factions.join(","))
@@ -366,6 +369,21 @@ function gameModeArgV7(mapType: MapTypeV7 | null): GameModeV7 {
       "--mode perfection does not apply to the showcase map type",
     );
   return value === "perfection" ? "PERFECTION" : "DOMINATION";
+}
+
+/**
+ * Easy mode (`pulp_wars-q6cc`): `--difficulty easy` gives every AI seat
+ * the Easy personality (seat 0, the human seat, plays Normal); `normal`,
+ * the default, is the setup as before.
+ */
+function aiDifficultyArgV7(): "NORMAL" | "EASY" {
+  if (!args.includes("--difficulty")) return "NORMAL";
+  const value = stringArg("--difficulty", "").toLowerCase();
+  if (value !== "normal" && value !== "easy")
+    throw new Error("--difficulty must be normal or easy");
+  if (value === "easy" && args.includes("--ai-head-start"))
+    throw new Error("--difficulty easy takes no --ai-head-start");
+  return value === "easy" ? "EASY" : "NORMAL";
 }
 
 /**

@@ -280,14 +280,19 @@ import {
   storeGameModePreferenceV7,
 } from "../../app/game-mode-preference-v7";
 import {
+  CAMPAIGN_DIFFICULTIES_V7,
+  loadCampaignDifficultyPreferenceV7,
   loadQuickDifficultyPreferenceV7,
   loadQuickLastMapPreferenceV7,
+  storeCampaignDifficultyPreferenceV7,
   storeQuickDifficultyPreferenceV7,
   storeQuickLastMapPreferenceV7,
+  type CampaignDifficultyV7,
 } from "../../app/quick-start-preference-v7";
 import {
   QUICK_DIFFICULTIES_V7,
   QUICK_DIFFICULTY_LABELS_V7,
+  QUICK_DIFFICULTY_NOTES_V7,
   QUICK_MAP_CYCLE_V7,
   nextQuickMapTypeV7,
   quickBoardSizeV7,
@@ -1100,7 +1105,7 @@ const AI_MODE_LABELS: Readonly<Record<string, string>> = ALLIANCE_LABELS_V7;
 const AI_MODE_HINT_V7 = "AIs allied: every opponent is allied against you.";
 /** Quick start: the Difficulty tooltip (never the formula behind it). */
 const DIFFICULTY_HINT_V7 =
-  "Harder levels give the AI players more starting Coins.";
+  "Easy: the AI is cautious and makes the odd mistake. Harder levels give the AI players more starting Coins.";
 const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
   DRY_LAND: "Dry land",
   PANGEA: "Pangea",
@@ -2192,6 +2197,11 @@ export class Ruleset7DomAppView {
   #briefingMissionId: string | null = null;
   #briefingFaction: FactionIdV7 | null = null;
   /**
+   * Easy mode (`pulp_wars-q6cc`): the briefing's difficulty, remembered
+   * per browser (`pulpWars.campaign.difficulty.v1`).
+   */
+  #campaignDifficulty: CampaignDifficultyV7 = "NORMAL";
+  /**
    * The campaign map (pulp_wars-hmyk.3): the campaign whose mission list
    * is open (null: the map), a line the map says after a tap on a closed
    * plate, the testing cheat "All missions unlocked", and its gestures.
@@ -2286,6 +2296,9 @@ export class Ruleset7DomAppView {
       options.downloadDebugBundle ??
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
+    this.#campaignDifficulty = loadCampaignDifficultyPreferenceV7(
+      this.#settingsStorage,
+    );
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#randomDraw =
@@ -3966,6 +3979,8 @@ export class Ruleset7DomAppView {
             : status === "OPEN"
               ? "open"
               : `done, ${String(card.stars)} of ${String(card.maxStars)} stars${
+                  card.easy ? ", won on Easy" : ""
+                }${
                   best === null ? "" : `, best ${String(card.bestRounds)} turns`
                 }`
       }`,
@@ -3982,6 +3997,8 @@ export class Ruleset7DomAppView {
     state.setAttribute("aria-hidden", "true");
     if (status === "DONE")
       state.append(this.#missionStars(card.stars, card.maxStars));
+    // Easy mode (`pulp_wars-q6cc`): a mission only ever won on Easy.
+    if (status === "DONE" && card.easy) state.append(easyTagV7(this.#document));
     state.append(
       text(this.#document, "span", format, "v7-mission-format"),
       text(this.#document, "span", stateText, "v7-mission-state-text"),
@@ -4198,6 +4215,33 @@ export class Ruleset7DomAppView {
       lead.append(leadEmblem, label);
     }
     section.append(lead);
+    // Easy mode (`pulp_wars-q6cc`): Normal or Easy, remembered.
+    const level = select(
+      this.#document,
+      "Difficulty",
+      "v7-campaign-difficulty",
+      CAMPAIGN_DIFFICULTIES_V7,
+      this.#campaignDifficulty,
+      QUICK_DIFFICULTY_LABELS_V7,
+      "segmented",
+    );
+    level.classList.add("v7-briefing-difficulty");
+    const levelNote = text(
+      this.#document,
+      "p",
+      QUICK_DIFFICULTY_NOTES_V7[this.#campaignDifficulty],
+      "v7-difficulty-note",
+    );
+    levelNote.dataset.v7Region = "campaign-difficulty-note";
+    level.querySelector("select")?.addEventListener("change", (event) => {
+      const value = (event.currentTarget as HTMLSelectElement).value;
+      const next = CAMPAIGN_DIFFICULTIES_V7.find((item) => item === value);
+      if (next === undefined) return;
+      this.#campaignDifficulty = next;
+      storeCampaignDifficultyPreferenceV7(this.#settingsStorage, next);
+      levelNote.textContent = QUICK_DIFFICULTY_NOTES_V7[next];
+    });
+    section.append(level, levelNote);
     const actions = el(this.#document, "div", "button-row v7-briefing-actions");
     const start = button(
       this.#document,
@@ -4215,12 +4259,18 @@ export class Ruleset7DomAppView {
     start.onclick = () => {
       const faction = this.#briefingFaction;
       if (faction === null) return;
-      const setup = missionMatchSetupV7(mission, faction);
-      if (setup === null) {
+      const built = missionMatchSetupV7(mission, faction);
+      if (built === null) {
         this.#error = "This mission can't be started.";
         this.#render();
         return;
       }
+      // Easy mode (`pulp_wars-q6cc`): the setup carries the choice, so
+      // Retry mission plays the same difficulty.
+      const setup =
+        this.#campaignDifficulty === "EASY"
+          ? { ...built, aiDifficulty: "EASY" as const }
+          : built;
       void this.#launch(setup, replace, "campaign");
     };
     const back = button(this.#document, "Back", "campaign-back");
@@ -4758,12 +4808,21 @@ export class Ruleset7DomAppView {
     difficulty
       .querySelector("select")
       ?.setAttribute("aria-description", DIFFICULTY_HINT_V7);
+    // Easy mode (`pulp_wars-q6cc`): one line says what the level does.
+    const difficultyNote = text(
+      this.#document,
+      "p",
+      QUICK_DIFFICULTY_NOTES_V7[this.#draft.difficulty],
+      "v7-difficulty-note",
+    );
+    difficultyNote.dataset.v7Region = "difficulty-note";
     const advanced = this.#advancedSettings();
     form.append(
       this.#gameModeChoice(form),
       this.#tribePicker(form),
       opponents,
       difficulty,
+      difficultyNote,
       this.#quickMapLine(),
       ...advanced,
     );
@@ -4783,6 +4842,8 @@ export class Ruleset7DomAppView {
       this.#syncSetupFields(form);
       this.#syncStarFields(form);
       this.#syncGameKind(form);
+      difficultyNote.textContent =
+        QUICK_DIFFICULTY_NOTES_V7[this.#draft.difficulty];
     };
     syncShowcase();
     form.addEventListener("change", (event) => {
@@ -12330,6 +12391,9 @@ export class Ruleset7DomAppView {
       const stars = this.#missionStars(earned, goals.length);
       stars.classList.add("v7-mission-stars-large");
       result.append(stars);
+      // Easy mode (`pulp_wars-q6cc`): the win was on Easy.
+      if (view.setup.aiDifficulty === "EASY")
+        result.append(easyTagV7(this.#document, "Won on Easy"));
       if (goals.length > 1) result.append(this.#missionStarGoals(goals, true));
       result.append(
         text(this.#document, "p", entry.closing, "v7-campaign-story"),
@@ -19241,16 +19305,21 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
     // head start is the one it gives on this board; a head start Advanced
     // set by hand launches as Normal, and the stars read its level back
     // from the head start (`matchDifficultyV7`).
+    // Easy (`pulp_wars-q6cc`) is named whenever there is no head start.
     aiDifficulty:
-      aiHeadStartCoins !== 0 &&
-      quickHeadStartCoinsV7(
-        draft.difficulty,
-        draft.mapType,
-        width,
-        draft.aiCount,
-      ) === aiHeadStartCoins
-        ? draft.difficulty
-        : "NORMAL",
+      draft.difficulty === "EASY"
+        ? aiHeadStartCoins === 0
+          ? "EASY"
+          : "NORMAL"
+        : aiHeadStartCoins !== 0 &&
+            quickHeadStartCoinsV7(
+              draft.difficulty,
+              draft.mapType,
+              width,
+              draft.aiCount,
+            ) === aiHeadStartCoins
+          ? draft.difficulty
+          : "NORMAL",
     aiMode: draft.aiMode,
     // The engine's seat colour is not shown anywhere: every owner colour
     // is the faction's (bead pulp_wars-b5f.4), so the setup offers no
@@ -20372,6 +20441,12 @@ function live(
  * of segments for a short list) over a hidden select that keeps the value
  * (bead pulp_wars-2yc.65, src/render/dom/picker-v7.ts).
  */
+/** Easy mode (`pulp_wars-q6cc`): the small "Easy" tag. */
+function easyTagV7(documentRoot: Document, label = "Easy"): HTMLElement {
+  const tag = text(documentRoot, "span", label, "v7-easy-tag");
+  tag.dataset.v7Region = "easy-tag";
+  return tag;
+}
 function select(
   documentRoot: Document,
   labelText: string,

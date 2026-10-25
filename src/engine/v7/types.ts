@@ -832,10 +832,12 @@ export interface MatchSetupV7 {
    * `NORMAL` on every setup made before the levels, every Showcase and
    * mission, and every setup whose head start was set by hand; `HARD`,
    * `HARDER`, or `BRUTAL` only with exactly that level's AI head start on
-   * this board ({@link aiHeadStart}, `difficultyHeadStartCoinsV7`). Nothing
-   * in play reads it; the star grade reads it through
-   * `matchDifficultyV7`, which reads a `NORMAL` setup's level back from its
-   * head start.
+   * this board ({@link aiHeadStart}, `difficultyHeadStartCoinsV7`). `EASY`
+   * (`pulp_wars-q6cc`) on any setup without a head start, missions and the
+   * Showcase included. No rule reads it; the AI reads `EASY` (its AI seats
+   * play the Easy personality, `src/ai/v7-personality.ts`), and the star
+   * grade reads it through `matchDifficultyV7`, which reads a `NORMAL`
+   * setup's level back from its head start.
    */
   readonly aiDifficulty: DifficultyV7;
   readonly aiMode: "RIVAL" | "COOPERATIVE";
@@ -912,9 +914,11 @@ export type GameKindV7 = (typeof GAME_KINDS_V7)[number];
 /**
  * Difficulty (`pulp_wars-2yc.54`, `pulp_wars-2yc.69`): the levels the
  * new-game screen offers, easiest first; `src/engine/v7/difficulty.ts`
- * holds their head starts.
+ * holds their head starts. Easy (`pulp_wars-q6cc`) has none: its AI seats
+ * play a cautious personality instead (`src/ai/v7-personality.ts`).
  */
 export const DIFFICULTIES_V7 = Object.freeze([
+  "EASY",
   "NORMAL",
   "HARD",
   "HARDER",

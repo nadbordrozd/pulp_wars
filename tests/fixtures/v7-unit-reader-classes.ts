@@ -176,6 +176,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-directives.ts::directivePlanForViewV7": "BOARD",
     "src/ai/v7-directives.ts::guardGarrisonV7": "BOARD",
     "src/ai/v7-directives.ts::leashReadyCommandsV7": "BOARD",
+    // pulp_wars-q6cc: an Easy seat's attack, its actor and its target.
+    "src/ai/v7-personality.ts::easyRefusesV7": "BOARD",
     // `pulp_wars-78i.4`: the Dwarf policy reads the board, and mounds only
     // through the view's `burrowed` list; the army counts include the own
     // burrowed units (they keep their slots and come back next turn).

@@ -265,6 +265,7 @@ describe("Ruleset 7 front screen", () => {
       "tribe-candy",
       "tribe-cult",
       ...Array.from({ length: 8 }, (_, index) => `ai-count-${index + 1}`),
+      "difficulty-easy",
       "difficulty-normal",
       "difficulty-hard",
       "difficulty-harder",

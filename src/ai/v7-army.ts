@@ -740,20 +740,31 @@ export const ARMY_COMMIT_JOINED_COUNT_WEIGHT_V7 = 70;
  * times the position's units commit at 110% of its weight, and count as
  * coming in strength.
  */
-export function armyAssaultModeV7(facts: {
-  readonly hostile: number;
-  readonly near: number;
-  readonly coming: number;
-  readonly contact: boolean;
-  readonly hostileUnits?: number;
-  readonly nearUnits?: number;
-  readonly comingUnits?: number;
-}): ArmyAssaultModeV7 {
+export function armyAssaultModeV7(
+  facts: {
+    readonly hostile: number;
+    readonly near: number;
+    readonly coming: number;
+    readonly contact: boolean;
+    readonly hostileUnits?: number;
+    readonly nearUnits?: number;
+    readonly comingUnits?: number;
+  },
+  /**
+   * Easy mode (`pulp_wars-q6cc`, `src/ai/v7-personality.ts`): every weight
+   * and number the army needs, in percent of Normal's (100, the identity).
+   * The share of the coming strength that counts as assembled is unchanged.
+   */
+  forcePercent = 100,
+): ArmyAssaultModeV7 {
   if (facts.hostile <= 0 || facts.near <= 0) return "NONE";
+  // `need(ratio)` is `ratio * hostile` scaled: exact integers for Normal.
+  const hostile = facts.hostile * forcePercent;
   const outnumbers = (own: number | undefined): boolean =>
     own !== undefined &&
     facts.hostileUnits !== undefined &&
-    100 * own >= ARMY_COMMIT_COUNT_RATIO_V7 * facts.hostileUnits;
+    100 * 100 * own >=
+      ARMY_COMMIT_COUNT_RATIO_V7 * facts.hostileUnits * forcePercent;
   const ratio = facts.contact
     ? // The Goblin pass, correction: a joined battle with the numbers.
       outnumbers(facts.nearUnits)
@@ -762,17 +773,17 @@ export function armyAssaultModeV7(facts: {
     : outnumbers(facts.nearUnits)
       ? ARMY_COMMIT_COUNT_WEIGHT_V7
       : ARMY_COMMIT_RATIO_V7;
-  if (100 * facts.near >= ratio * facts.hostile) return "COMMIT";
+  if (100 * 100 * facts.near >= ratio * hostile) return "COMMIT";
   if (
-    100 * facts.coming < ARMY_COMMIT_RATIO_V7 * facts.hostile &&
+    100 * 100 * facts.coming < ARMY_COMMIT_RATIO_V7 * hostile &&
     !(
       outnumbers(facts.comingUnits) &&
-      100 * facts.coming >= ARMY_COMMIT_COUNT_WEIGHT_V7 * facts.hostile
+      100 * 100 * facts.coming >= ARMY_COMMIT_COUNT_WEIGHT_V7 * hostile
     )
   )
     return "NONE";
   return 100 * facts.near >= ARMY_COMMIT_ARRIVED_V7 * facts.coming &&
-    100 * facts.near >= ARMY_COMMIT_HELD_RATIO_V7 * facts.hostile
+    100 * 100 * facts.near >= ARMY_COMMIT_HELD_RATIO_V7 * hostile
     ? "COMMIT"
     : "STAGE";
 }

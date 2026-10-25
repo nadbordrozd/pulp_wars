@@ -1,4 +1,5 @@
 import { localHostV7, type AnalyticsEnvironmentV7 } from "./analytics-v7";
+import { matchDifficultyV7 } from "../engine/v7/difficulty";
 import { isRegularGameV7 } from "../engine/v7/game-kind";
 import { queryStarGradeV7 } from "../engine/v7/score-query";
 import {
@@ -243,10 +244,11 @@ export function rudeLeaderboardNameV7(name: string): boolean {
  * only kind whose wins go to the board, as only it earns tribe stars. A
  * custom game, the Showcase, a campaign mission or the tutorial never do.
  * "Play again" replays the same setup and seed, and a regular game replayed
- * that way still counts.
+ * that way still counts. Easy mode (`pulp_wars-q6cc`): a regular game on
+ * Easy earns its star but is never offered to the board.
  */
 export function leaderboardRegularGameV7(setup: MatchSetupV7): boolean {
-  return isRegularGameV7(setup);
+  return isRegularGameV7(setup) && matchDifficultyV7(setup) !== "EASY";
 }
 
 /** What a won match may submit, with the match it came from. */

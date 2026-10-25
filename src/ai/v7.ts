@@ -818,6 +818,12 @@ import {
   leashReadyCommandsV7,
   type DirectivePlanV7,
 } from "./v7-directives";
+// pulp_wars-q6cc: Easy mode (the identity for every Normal seat).
+import {
+  aiPersonalityForViewV7,
+  campaignTemperForViewV7,
+  easyDecisionV7,
+} from "./v7-personality";
 import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
@@ -920,10 +926,15 @@ export interface ScoredAiCandidateV7 {
 }
 
 export interface NormalAiDecisionV7 {
-  readonly difficulty: "NORMAL";
+  /** `EASY` for an AI seat of an Easy setup (`pulp_wars-q6cc`). */
+  readonly difficulty: "NORMAL" | "EASY";
   readonly candidates: readonly ScoredAiCandidateV7[];
   readonly command: CommandV7 | null;
-  readonly prngDraws: 0;
+  /**
+   * Draws of the Easy decision's own seeded stream (`easyDecisionV7`);
+   * always 0 for Normal. The match's PRNG is never drawn.
+   */
+  readonly prngDraws: 0 | 1;
 }
 
 interface ThreatV7 {
@@ -1917,11 +1928,14 @@ export class NormalPolicyWorkV7 {
         "Policy finished without a public context",
       );
     this.scored.sort(compareCandidateBestFirstV7);
+    // pulp_wars-q6cc: Easy drops some attacks and now and then plays the
+    // second-best candidate; Normal returns the candidates unchanged.
+    const easy = easyDecisionV7(this.view, this.scored);
     return {
-      difficulty: "NORMAL",
-      candidates: this.scored,
-      command: this.scored[0]?.command ?? null,
-      prngDraws: 0,
+      difficulty: aiPersonalityForViewV7(this.view).id,
+      candidates: easy.candidates,
+      command: easy.candidates[0]?.command ?? null,
+      prngDraws: easy.draws,
     };
   }
 
@@ -2417,6 +2431,7 @@ function* tacticalPlanWorkV7(
     for (const city of view.cities)
       if (city.ownerId === view.viewer.id)
         freeLandSlots += Math.max(0, freeCapacity(view, city.id));
+  const campaignTemper = campaignTemperForViewV7(view);
   const campaign = campaignPlanForPolicyV7(view, {
     freeLandSlots,
     seaTarget: context.naval.seaShortcut ? context.naval.target : null,
@@ -2445,6 +2460,8 @@ function* tacticalPlanWorkV7(
     ...(context.directive === null
       ? {}
       : { directive: context.directive.campaign }),
+    // pulp_wars-q6cc: an Easy seat's waves and fronts (absent for Normal).
+    ...(campaignTemper === null ? {} : { temper: campaignTemper }),
     // Tuning 7 (`pulp_wars-w49.10`): an army seat concentrates on one
     // neighbour, raids undefended cities, and expands with its fast units.
     ...(context.army
@@ -8877,6 +8894,7 @@ function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
   }
   const positionByOwn = new Map<UnitId, ArmyPositionV7>();
   const positionByHostile = new Map<UnitId, ArmyPositionV7>();
+  const personality = aiPersonalityForViewV7(view);
   groups.forEach((group, index) => {
     const total = totals[index];
     if (total === undefined) return;
@@ -8915,23 +8933,31 @@ function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
       mobile ||
       total.underFire ||
       2 * upUnits >= total.ranks.length ||
-      armyAssaultModeV7({
-        hostile: total.hostile,
-        near: up,
-        coming: up,
-        contact: false,
-        hostileUnits: total.hostileUnits,
-        nearUnits: upUnits,
-        comingUnits: upUnits,
-      }) === "COMMIT";
+      armyAssaultModeV7(
+        {
+          hostile: total.hostile,
+          near: up,
+          coming: up,
+          contact: false,
+          hostileUnits: total.hostileUnits,
+          nearUnits: upUnits,
+          comingUnits: upUnits,
+        },
+        personality.commitForcePercent,
+      ) === "COMMIT";
     // `pulp_wars-v642.5`: a mission seat's ASSAULT goes in against the
     // position that holds its target whatever that position weighs (it
     // still masses first).
-    const weighed = group.some((unit) =>
-      assaultHoldsTargetV7(context.directive, unit.at),
-    )
-      ? "COMMIT"
-      : armyAssaultModeV7({ ...total, contact: joined });
+    // pulp_wars-q6cc: an Easy seat weighs that position like any other,
+    // and needs more weight everywhere (`commitForcePercent`).
+    const weighed =
+      personality.assaultAtAnyWeight &&
+      group.some((unit) => assaultHoldsTargetV7(context.directive, unit.at))
+        ? "COMMIT"
+        : armyAssaultModeV7(
+            { ...total, contact: joined },
+            personality.commitForcePercent,
+          );
     const position: ArmyPositionV7 = {
       hostiles: group,
       mode: weighed === "COMMIT" && !massed ? "STAGE" : weighed,
@@ -8970,6 +8996,11 @@ function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
 function armyFocusV7(context: PolicyContextV7): ReadonlySet<UnitId> {
   if (context.armyFocus !== undefined) return context.armyFocus;
   const view = context.view;
+  // pulp_wars-q6cc: an Easy seat does not focus its fire.
+  if (!aiPersonalityForViewV7(view).focusFire) {
+    context.armyFocus = new Set();
+    return context.armyFocus;
+  }
   const potential = new Map<UnitId, number>();
   const assault = armyAssaultV7(context);
   const offered = new Map<UnitId, UnitId[]>();

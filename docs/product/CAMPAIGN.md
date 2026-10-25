@@ -620,6 +620,20 @@ short and plain, with the pulp flavour confined to the story blurbs.
    in reading order; card state is in the accessible name ("Mission 2, The
    Warrens, locked"); focus moves to the briefing heading on open and back
    to the card on Back.
+8. **Easy mode** (`pulp_wars-q6cc`). Under "You lead", the briefing
+   asks **Difficulty**: Normal or Easy, a row of two buttons with one line
+   saying what the level does, remembered per browser
+   (`pulpWars.campaign.difficulty.v1`). Start mission launches the
+   mission's setup with `aiDifficulty: "EASY"` on Easy, so Retry and Replay
+   mission (the same setup) keep it. Easy keeps the mission's directives
+   but softens them (a `RUSH` or `ASSAULT` starts two rounds late and
+   commits with more weight;
+   [NORMAL_AI.md, Easy mode](../architecture/NORMAL_AI.md#easy-mode-pulp_wars-q6cc));
+   the reinforcement waves come as written. A win on Easy opens the next
+   mission and earns its stars as on Normal; the debrief shows "Won on
+   Easy", and the mission card a small **Easy** tag while every win of the
+   mission was on Easy (`easy: true` on the stored completion, removed by a
+   win on Normal).
 
 A painted campaign map in the HoMM manner is out of scope: it is new
 production art and needs an approved art direction first.

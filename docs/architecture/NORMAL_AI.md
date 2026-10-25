@@ -6787,6 +6787,57 @@ Administration. The other is the recorded seed-9 turn
 (`tests/fixtures/ruleset-v7-redevelop-cycle.json`). Both fail with the policy
 before the fix.
 
+## Easy mode (`pulp_wars-q6cc`)
+
+The user: "let's also add easy mode where the AI is slightly dumber or
+specifically less aggressive". A setup whose `aiDifficulty` is `EASY`
+([QUICK_START.md](../ui/QUICK_START.md#easy-pulp_wars-q6cc)) gives every
+AI seat the **Easy personality** (`src/ai/v7-personality.ts`); the human
+seat, and every seat of every other setup, plays Normal. The personality is
+read at five hook points, and the Normal personality is the identity at
+each, so a Normal decision is byte-identical to the policy before it (every
+pinned match and decision is unchanged):
+
+| Hook                                            | Normal                            | Easy                                                                                                                                                              |
+| ----------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `armyAssaultModeV7` (`commitForcePercent`)      | commit at 150% (100% once joined) | every weight 40% more: 210% (140% joined); the numbers rule too                                                                                                   |
+| `armyFocusV7` (`focusFire`)                     | the focus of a committed assault  | no focus: no exchange is taken because the others can finish the target                                                                                           |
+| `CampaignFactsV7.temper` (the plan)             | waves of 3, follow once 2 are out | waves of 5, follow once 3 are out; a RUSH wave of 3 (1); a front needs twice the holders' strength (1.5); in a skirmish no march on an enemy city before round 10 |
+| `activeMissionDirectiveV7` (directives)         | as written                        | a `RUSH` or `ASSAULT` (and a `GUARD`'s others) starts 2 rounds late; an `ASSAULT` weighs its target's position like any other                                     |
+| `easyDecisionV7` (after scoring, in `finish()`) | the candidates unchanged          | see below                                                                                                                                                         |
+
+**The decision.** Away from home (the target more than 2 tiles from every
+own city center; near home the seat defends exactly as Normal does): in a
+skirmish's quiet opening (before round 10) no attack on a player's unit;
+afterwards a unit below half its HP makes no attack that does not kill, and
+a healthy one only an exchange that deals more than it takes. Only attacks
+are dropped, so End Turn and every pending choice remain. Then, with a 15%
+chance per decision, the seat plays the second-best candidate of the same
+priority and the same kind instead of the best, for a Move, an Attack, a
+unit trained, or a technology only, and never an attack that kills the
+attacker without a kill. The chance is a Mulberry32 stream of its own,
+seeded by the match seed, the seat, and the command index
+(`easyDecisionDrawV7`), so a match replays exactly; the match's PRNG is
+never drawn. `NormalAiDecisionV7` reports `difficulty: "EASY"` and
+`prngDraws: 1` for such a decision (`NORMAL` and 0 otherwise).
+
+**Measured** (bead `pulp_wars-q6cc`, authorised: six seeds on Pangea
+11 x 11, one AI seat, seat 0 the Normal AI in both; the same seed and
+factions with the AI seat on Normal and on Easy; headless, up to 45
+rounds):
+
+| AI seat | AI wins | First AI attack on a seat-0 unit (mean round) | First attack away from home (mean round) | Attacks away from home by round 15 | Seat-0 cities captured |
+| ------- | ------- | --------------------------------------------- | ---------------------------------------- | ---------------------------------- | ---------------------- |
+| Normal  | 4 of 6  | 4.2                                           | 11.3 (in 4 matches)                      | 5                                  | 10                     |
+| Easy    | 4 of 6  | 5.5                                           | 15.0 (in 2 matches)                      | 1                                  | 7                      |
+
+Easy goes out later and less, and its wins take longer (19 rounds against
+13, and 34 against 23, on two seeds), but against a Normal seat 0 that
+attacks into its home it defends as Normal does, so on these seeds the
+results did not change. A short text-play game on Easy (Humans against the
+Goblins, seed 5) felt clearly less aggressive: the Goblins attacked only at
+their own cities, and their capital fell in round 10.
+
 ## Mission directives (`pulp_wars-68k.3`)
 
 A mission's AI seat may carry one directive

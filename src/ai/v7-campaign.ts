@@ -1,4 +1,5 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
+import type { CampaignTemperV7 } from "./v7-personality";
 import {
   roleCanEverCaptureV7,
   roleMechanicsV7,
@@ -273,6 +274,13 @@ export interface CampaignFactsV7 {
    * play the army rules, and then the plan is unchanged.
    */
   readonly army?: CampaignArmyFactsV7;
+  /**
+   * Easy mode (`pulp_wars-q6cc`, `src/ai/v7-personality.ts`): the wave
+   * size, the units out that the rest follow, the RUSH wave, the strength a
+   * front needs, and the quiet opening (no march on an enemy city before
+   * that round). Absent for Normal, and then the plan uses its constants.
+   */
+  readonly temper?: CampaignTemperV7;
 }
 
 export interface CampaignArmyFactsV7 {
@@ -1104,12 +1112,15 @@ export function campaignPlanForPolicyV7(
     )
     .map((errand) => errand.field);
   // A HOLD seat marches on no city outside its zone.
+  // pulp_wars-q6cc: an Easy seat's quiet opening marches on no city.
   const marchTargets =
-    assaulted !== null
-      ? [assaulted]
-      : confine === null
-        ? targets
-        : targets.filter((city) => confine(city.at));
+    view.round < (facts.temper?.quietUntilRound ?? 0)
+      ? []
+      : assaulted !== null
+        ? [assaulted]
+        : confine === null
+          ? targets
+          : targets.filter((city) => confine(city.at));
   const raided = new Set<CityId>();
   if (marchTargets.length > 0) {
     const fields = marchTargets.map((city) => field([indexOf(city.at)]));
@@ -1359,7 +1370,9 @@ export function campaignPlanForPolicyV7(
                 left.id - right.id,
             );
           const wanted =
-            (CAMPAIGN_FRONT_NEED_RATIO_V7 * (need[order] ?? 0)) / 100;
+            ((facts.temper?.frontNeedRatio ?? CAMPAIGN_FRONT_NEED_RATIO_V7) *
+              (need[order] ?? 0)) /
+            100;
           const sent: PublicUnitV7[] = [];
           let strength = 0;
           for (const unit of ordered) {
@@ -1505,15 +1518,17 @@ export function campaignPlanForPolicyV7(
       // The wave waits only for units that can still be trained: with
       // every slot filled, the units at home are the wave.
       // A RUSH wave is one unit: it sets out at once.
-      const needed = rush
-        ? 1
-        : Math.max(
-            1,
-            Math.min(
-              home + (order === main ? facts.freeLandSlots : 0),
-              CAMPAIGN_WAVE_SIZE_V7,
-            ),
-          );
+      // (Easy, `pulp_wars-q6cc`: a larger wave, and a RUSH wave of more
+      // than one.)
+      const needed = Math.max(
+        1,
+        Math.min(
+          home + (order === main ? facts.freeLandSlots : 0),
+          rush
+            ? (facts.temper?.rushWave ?? 1)
+            : (facts.temper?.waveSize ?? CAMPAIGN_WAVE_SIZE_V7),
+        ),
+      );
       targetByCityId.set(city.id, {
         city,
         assigned: units.length,
@@ -1521,11 +1536,11 @@ export function campaignPlanForPolicyV7(
         out,
         needed,
         push:
-          rush ||
+          (rush && facts.temper === undefined) ||
           clash ||
           raided.has(city.id) ||
           home >= needed ||
-          out >= CAMPAIGN_WAVE_OUT_V7,
+          out >= (facts.temper?.waveOut ?? CAMPAIGN_WAVE_OUT_V7),
       });
     });
   }

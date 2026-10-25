@@ -33,7 +33,10 @@ the screens are in `src/render/dom/app-view-v7.ts`; the security rules are
   offers "See the leaderboard". A match is sent at most once (the matches sent
   are remembered in this browser), so showing the same Victory again shows the
   rank, not the form. Custom games, campaign missions, the tutorial and the
-  Showcase are not Regular games and are never offered.
+  Showcase are not Regular games and are never offered. A Regular game on
+  Easy (`pulp_wars-q6cc`) earns its star but is never offered either
+  (`leaderboardRegularGameV7`), so the boards hold only Normal and harder
+  games and the stored fields are unchanged.
 - Nothing waits on the store: every request gives up after 8 seconds and every
   failure is a line of text. Play is never blocked.
 

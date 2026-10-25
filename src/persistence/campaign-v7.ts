@@ -40,6 +40,12 @@ export interface CampaignCompletionV7 {
    * progress written before stars existed, which reads as one star.
    */
   readonly stars?: number;
+  /**
+   * Easy mode (`pulp_wars-q6cc`): `true` while every win of the mission was
+   * on Easy (the mission card's "Easy" tag); a win on Normal removes it.
+   * Absent for a mission won on Normal and in progress written before.
+   */
+  readonly easy?: true;
 }
 
 /** One campaign's progress: its completed missions by mission ID. */
@@ -180,8 +186,10 @@ function parseCompleted(completed: unknown): CompletedV7 | string {
       !isRecord(entry) ||
       !(
         hasExactKeys(entry, ["firstWonAt", "bestRounds"]) ||
-        hasExactKeys(entry, ["firstWonAt", "bestRounds", "stars"])
+        hasExactKeys(entry, ["firstWonAt", "bestRounds", "stars"]) ||
+        hasExactKeys(entry, ["firstWonAt", "bestRounds", "stars", "easy"])
       ) ||
+      (Object.hasOwn(entry, "easy") && entry.easy !== true) ||
       (Object.hasOwn(entry, "stars") &&
         entry.stars !== 1 &&
         entry.stars !== 2 &&
@@ -200,6 +208,7 @@ function parseCompleted(completed: unknown): CompletedV7 | string {
         ...(Object.hasOwn(entry, "stars")
           ? { stars: entry.stars as number }
           : {}),
+        ...(entry.easy === true ? { easy: true as const } : {}),
       },
     ]);
   }
@@ -246,13 +255,16 @@ export class CampaignProgressStoreV7 {
   /**
    * Records a won mission of a campaign. Idempotent: a later win keeps
    * `firstWonAt`, only ever lowers `bestRounds`, and only ever raises
-   * `stars`. Unreadable progress records nothing until it is reset.
+   * `stars`. `easy` (`pulp_wars-q6cc`): the win was on Easy; the record
+   * keeps `easy: true` only while every win was. Unreadable progress
+   * records nothing until it is reset.
    */
   recordWin(
     campaignId: string,
     missionId: string,
     rounds: number,
     stars = 1,
+    easy = false,
   ): CampaignRecordResultV7 {
     if (!ID_PATTERN.test(campaignId))
       throw new RangeError(`Invalid campaign ID ${campaignId}`);
@@ -271,19 +283,27 @@ export class CampaignProgressStoreV7 {
         Object.hasOwn(record.completed, missionId),
       )?.[0] ?? campaignId;
     const prior = before.campaigns[home]?.completed[missionId];
+    const easyOnly = easy && (prior === undefined || prior.easy === true);
     const completion: CampaignCompletionV7 =
       prior === undefined
-        ? { firstWonAt: this.#now(), bestRounds: rounds, stars }
+        ? {
+            firstWonAt: this.#now(),
+            bestRounds: rounds,
+            stars,
+            ...(easyOnly ? { easy: true as const } : {}),
+          }
         : {
             firstWonAt: prior.firstWonAt,
             bestRounds: Math.min(prior.bestRounds, rounds),
             stars: Math.max(prior.stars ?? 1, stars),
+            ...(easyOnly ? { easy: true as const } : {}),
           };
     // A win that does not beat the best changes nothing: no write.
     if (
       prior !== undefined &&
       prior.bestRounds === completion.bestRounds &&
-      (prior.stars ?? 1) === completion.stars
+      (prior.stars ?? 1) === completion.stars &&
+      prior.easy === completion.easy
     )
       return { ok: true, firstWin: false, before, progress: before };
     const campaigns: Record<string, CompletedV7> = Object.fromEntries(

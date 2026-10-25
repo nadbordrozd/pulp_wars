@@ -15,6 +15,7 @@ import type {
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import { RouteFieldV7, type CampaignDirectiveV7 } from "./v7-campaign";
+import { aiPersonalityForViewV7 } from "./v7-personality";
 
 /**
  * Mission directives for the Normal AI (`pulp_wars-68k.3`,
@@ -86,14 +87,41 @@ export function activeMissionDirectiveV7(
   if (setup.mapType !== "MISSION" || setup.mission === undefined) return null;
   const seat = missionDefinitionV7(setup.mission)?.seats[view.viewer.seat];
   if (seat === undefined) return null;
+  // Easy mode (`pulp_wars-q6cc`): a RUSH or an ASSAULT, and a GUARD's
+  // others, start this many rounds late (0 for Normal).
+  const delay = aiPersonalityForViewV7(view).directiveDelayRounds;
   // A schedule (`pulp_wars-v642.1`): the first entry whose rounds hold the
   // current round; a single directive is a schedule of one.
   const directive = missionSeatDirectivesV7(seat).find(
     (entry) =>
-      (entry.fromRound === undefined || view.round >= entry.fromRound) &&
+      (entry.fromRound === undefined && delay === 0
+        ? true
+        : view.round >=
+          (entry.fromRound ?? 1) +
+            (entry.kind === "RUSH" || entry.kind === "ASSAULT" ? delay : 0)) &&
       (entry.untilRound === undefined || view.round < entry.untilRound),
   );
   if (directive === undefined || directive.kind === "NORMAL") return null;
+  if (
+    directive.kind === "GUARD" &&
+    directive.others !== undefined &&
+    view.round < (directive.fromRound ?? 1) + delay
+  ) {
+    // The garrison holds; the others wait at home for the delay.
+    const guard: Exclude<MissionDirectiveV7, { readonly kind: "NORMAL" }> = {
+      kind: "GUARD",
+      zone: directive.zone,
+      garrison: directive.garrison,
+      ...(directive.ships === undefined ? {} : { ships: directive.ships }),
+      ...(directive.fromRound === undefined
+        ? {}
+        : { fromRound: directive.fromRound }),
+      ...(directive.untilRound === undefined
+        ? {}
+        : { untilRound: directive.untilRound }),
+    };
+    return guard;
+  }
   return directive;
 }
 

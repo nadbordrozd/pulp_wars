@@ -284,6 +284,7 @@ describe("score and modes: the grade of section 5", () => {
       threeStars: 687,
     });
     expect(SKIRMISH_STARS_V7.maxStars).toEqual({
+      EASY: 1,
       NORMAL: 1,
       HARD: 2,
       HARDER: 2,

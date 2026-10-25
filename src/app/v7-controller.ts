@@ -1236,6 +1236,9 @@ export class Ruleset7BrowserController {
       missionId,
       state.round,
       stars as 1 | 2 | 3,
+      // Easy mode (`pulp_wars-q6cc`): the card says the mission was won on
+      // Easy while every win was.
+      state.setup.aiDifficulty === "EASY",
     );
     if (!recorded.ok) {
       this.#campaignDiagnostic = recorded.diagnostic;
