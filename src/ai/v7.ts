@@ -654,6 +654,10 @@ import {
   navalTransportExposedV7,
   navalFleetGoalsV7,
   navalQuickestPortsV7,
+  navalLandingInForceV7,
+  navalTransportEscapeValueV7,
+  NAVAL_LANDING_FORCE_RADIUS_V7,
+  NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7,
   NAVAL_TRANSPORT_EXPOSED_TENTHS_V7,
   type NavalFleetFactsV7,
   type NavalToolsV7,
@@ -1239,6 +1243,14 @@ interface NavalPlanV7 {
   readonly deepWaterRequired: boolean;
   readonly visibleNavalDanger: boolean;
   /**
+   * Naval AI iteration 2 (`pulp_wars-32bb`): a visible hostile warship (a
+   * unit afloat in naval form; a transport never attacks). The Patrol Boat
+   * is urgent, Coins are reserved for it, and nobody boards without one,
+   * only against this: a hostile transport in sight trained a Patrol Boat at
+   * 1290 and held every boarding.
+   */
+  readonly visibleHostileWarship: boolean;
+  /**
    * The target can be walked to, but the public sea route is shorter by more
    * than three steps: the capture units bound for it go by sea.
    */
@@ -1304,6 +1316,7 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
   landing: [],
   deepWaterRequired: false,
   visibleNavalDanger: false,
+  visibleHostileWarship: false,
   seaShortcut: false,
   holding: false,
   reserveCoins: 0,
@@ -3213,6 +3226,9 @@ function* navalPlanWorkV7(
   const visibleNavalDanger = view.units.some(
     (unit) => isHostile(view, unit.ownerId) && isAfloatV7(unit),
   );
+  const visibleHostileWarship = view.units.some(
+    (unit) => isHostile(view, unit.ownerId) && unit.form === "NAVAL",
+  );
   const ownedPortKeys = new Set(
     view.naval.ownedPorts.map((port) => coordKey(port.at)),
   );
@@ -3322,7 +3338,7 @@ function* navalPlanWorkV7(
   )
     reserveCoins = 4;
   else if (
-    visibleNavalDanger &&
+    visibleHostileWarship &&
     !view.units.some(
       (unit) => unit.ownerId === view.viewer.id && unit.role === "PATROL_BOAT",
     )
@@ -3336,6 +3352,7 @@ function* navalPlanWorkV7(
     landing,
     deepWaterRequired,
     visibleNavalDanger,
+    visibleHostileWarship,
     seaShortcut: seaAdvantageous,
     holding: targetHasCaptureUnit,
     reserveCoins,
@@ -11942,16 +11959,21 @@ function navalTransportExposedMoveV7(
   // target itself.)
   const free = (at: CoordV7): boolean =>
     (context.threatLookup.occupantsByKey.get(coordKey(at)) ?? []).length === 0;
+  // Naval AI iteration 2 (`pulp_wars-32bb`): only a landing in force
+  // (`navalLandingInForceAtV7`) excuses the exposure; a transport whose
+  // landing is held waits out of reach.
   const landsFromTo =
     !embarks &&
     context.naval.active &&
     command.path.length <= EMBARKED_LANDING_MAX_SPENT_V7 &&
     neighbors8V7(view, to).some((at) => {
       if (!free(at)) return false;
-      if (context.naval.landing.some((landing) => same(landing, at)))
-        return true;
       const walk = context.naval.walkDistanceByKey.get(coordKey(at));
-      return walk !== undefined && walk <= context.naval.coastDistance + 1;
+      return (
+        (context.naval.landing.some((landing) => same(landing, at)) ||
+          (walk !== undefined && walk <= context.naval.coastDistance + 1)) &&
+        navalLandingInForceAtV7(context, actor.id, at, to)
+      );
     });
   return navalTransportExposedV7({
     hp: actor.hp,
@@ -11962,6 +11984,65 @@ function navalTransportExposedMoveV7(
         : null,
     escorted,
     landsFromTo,
+  });
+}
+
+/**
+ * Naval AI iteration 2 (`pulp_wars-32bb`): whether the own transport
+ * `unitId` landing on `landAt` lands in force (`navalLandingInForceV7`).
+ * `from` is the tile it lands from after a Move (null: where it stands).
+ * The force counts the unit, the own land units within
+ * `NAVAL_LANDING_FORCE_RADIUS_V7` of `landAt`, and the other own transports
+ * offered a landing within that radius this turn or, for a Move, standing
+ * within it of `from` and not yet moved (they come in beside it); the
+ * defenders are the visible hostile land units within the radius. With the
+ * Move, the sinking is not read: the exposure rule weighs `from` itself.
+ */
+function navalLandingInForceAtV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+  landAt: CoordV7,
+  from: CoordV7 | null,
+): boolean {
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(unitId);
+  if (actor === undefined) return true;
+  let defenders = 0;
+  let force = 1;
+  const coLanders = new Set<UnitId>();
+  for (const command of context.commands)
+    if (
+      command.kind === "DISEMBARK" &&
+      command.unitId !== unitId &&
+      distance(command.at, landAt) <= NAVAL_LANDING_FORCE_RADIUS_V7
+    )
+      coLanders.add(command.unitId);
+  for (const unit of view.units) {
+    if (unit.hp <= 0 || unit.id === unitId) continue;
+    if (unit.form === "LAND" && isHostile(view, unit.ownerId)) {
+      if (distance(unit.at, landAt) <= NAVAL_LANDING_FORCE_RADIUS_V7)
+        defenders += 1;
+      continue;
+    }
+    if (unit.ownerId !== view.viewer.id) continue;
+    if (unit.form === "LAND") {
+      if (distance(unit.at, landAt) <= NAVAL_LANDING_FORCE_RADIUS_V7)
+        force += 1;
+    } else if (
+      unit.form === "EMBARKED" &&
+      (coLanders.has(unit.id) ||
+        (from !== null &&
+          !unit.activation.moved &&
+          distance(unit.at, from) <= NAVAL_LANDING_FORCE_RADIUS_V7))
+    )
+      force += 1;
+  }
+  return navalLandingInForceV7({
+    force,
+    defenders,
+    lethalAfloat:
+      from === null &&
+      visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp,
   });
 }
 
@@ -12508,7 +12589,9 @@ function isPolicyCandidate(
     return (
       (context.naval.landing.some((at) => same(at, command.at)) &&
         // pulp_wars-9s0.14: the wave lands together.
-        !navalLandingWaitsV7(context, command.unitId)) ||
+        !navalLandingWaitsV7(context, command.unitId) &&
+        // Naval AI iteration 2 (`pulp_wars-32bb`): and in force.
+        navalLandingInForceAtV7(context, command.unitId, command.at, null)) ||
       // The frozen sea: the crew of an icebound transport climbs out.
       iceboundCrewLandingV7(
         context.view,
@@ -12537,7 +12620,7 @@ function isPolicyCandidate(
   if (autoembark && navalWaveWaitsV7(context, command)) return false;
   if (
     autoembark &&
-    context.naval.visibleNavalDanger &&
+    context.naval.visibleHostileWarship &&
     !context.view.units.some(
       (unit) =>
         unit.ownerId === context.view.viewer.id && unit.role === "PATROL_BOAT",
@@ -13848,7 +13931,7 @@ function* sharedCityContextWorkV7(
     const preferredNaval =
       counterNaval !== null
         ? counterNaval
-        : context.naval.visibleNavalDanger && patrolBoats === 0
+        : context.naval.visibleHostileWarship && patrolBoats === 0
           ? offersPatrol
             ? "PATROL_BOAT"
             : firstNaval
@@ -13947,7 +14030,7 @@ function* sharedCityContextWorkV7(
         command.kind !== "LAND_GRANT" &&
         !(
           command.kind === "TRAIN_NAVAL" &&
-          context.naval.visibleNavalDanger &&
+          context.naval.visibleHostileWarship &&
           command.role === "PATROL_BOAT"
         );
       const eligible =
@@ -13971,7 +14054,7 @@ function* sharedCityContextWorkV7(
               ) &&
               !eggBlocked(command)
             : (!spendsReserve ||
-                (context.naval.visibleNavalDanger &&
+                (context.naval.visibleHostileWarship &&
                   command.role === "PATROL_BOAT")) &&
               // Revision 14 AI fix: a garrisoned center only offers naval
               // training, which filled every spare slot with Patrol Boats
@@ -14997,7 +15080,7 @@ function scoreCommandWithContext(
 
   if (command.kind === "TRAIN_NAVAL") {
     priority =
-      command.role === "PATROL_BOAT" && context.naval.visibleNavalDanger
+      command.role === "PATROL_BOAT" && context.naval.visibleHostileWarship
         ? 1290
         : command.role === "BATTLESHIP" && context.naval.target !== null
           ? 1215
@@ -15005,7 +15088,7 @@ function scoreCommandWithContext(
     immediateValue = -trainingCostV7(view, command);
     strategicValue =
       command.role === "PATROL_BOAT"
-        ? 25 + Number(context.naval.visibleNavalDanger) * 25
+        ? 25 + Number(context.naval.visibleHostileWarship) * 25
         : 35;
     // The naval branch (`pulp_wars-5ti.4`): the ship that counters a
     // hostile Battleship or Submarine in sight (`navalCounterRoleV7`).
@@ -16037,6 +16120,23 @@ function scoreCommandWithContext(
                 ? 830
                 : 820,
           );
+        }
+      }
+      // Naval AI iteration 2 (`pulp_wars-32bb`): an exposed transport
+      // sails out of reach (`navalTransportEscapeValueV7`).
+      if (
+        actor.form === "EMBARKED" &&
+        actor.ownerId === view.viewer.id &&
+        resultAt !== null
+      ) {
+        const escape = navalTransportEscapeValueV7({
+          hp: actor.hp,
+          dangerHere: visibleImmediateDamage(view, actor, actor.at, context),
+          dangerAtTo: visibleImmediateDamage(view, actor, resultAt, context),
+        });
+        if (escape > 0) {
+          priority = Math.max(priority, NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7);
+          strategicValue += escape;
         }
       }
       const windmillGain = windmillStagingGainV7(view, actor, resultAt);

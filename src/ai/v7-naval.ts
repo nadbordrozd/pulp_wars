@@ -1241,6 +1241,39 @@ export function navalTransportExposedV7(
 }
 
 /**
+ * Naval AI iteration 2 (`pulp_wars-32bb`): the priority of a transport's
+ * Move out of the reach that exposes it: just below its progress along the
+ * route (1230; the exposure rule has already refused the progress that
+ * stays exposed), above every other Move of a transport.
+ */
+export const NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7 = 1229;
+
+/**
+ * Naval AI iteration 2 (`pulp_wars-32bb`): what a Move of an own transport
+ * that stands exposed (`NAVAL_TRANSPORT_EXPOSED_TENTHS_V7`) is worth for
+ * the danger it leaves behind: the visible danger where it stands less the
+ * danger on the destination, and as much again when the destination is not
+ * exposed; 0 when it is not exposed where it stands or the destination is
+ * no safer. In ten diagnostic matches with the landing rule, 42 of the 83
+ * units sunk afloat had stood still for their owner's whole last turn,
+ * their killer in sight: a transport with no progress to make and no
+ * landing on offer had no Move worth making, so it stayed beside the units
+ * that sank it.
+ */
+export function navalTransportEscapeValueV7(exposure: {
+  readonly hp: number;
+  readonly dangerHere: number;
+  readonly dangerAtTo: number;
+}): number {
+  const exposed = (danger: number): boolean =>
+    danger * 10 >= exposure.hp * NAVAL_TRANSPORT_EXPOSED_TENTHS_V7;
+  if (!exposed(exposure.dangerHere)) return 0;
+  if (exposure.dangerAtTo >= exposure.dangerHere) return 0;
+  const relief = exposure.dangerHere - exposure.dangerAtTo;
+  return exposed(exposure.dangerAtTo) ? relief : 2 * relief;
+}
+
+/**
  * Naval AI iteration 1 (`pulp_wars-6t3e`): the radius round an own
  * transport inside which a visible hostile unit afloat is the escort's
  * quarry rather than the transport's company.
@@ -1308,6 +1341,44 @@ export function navalQuickestPortsV7(
     const trip = trips[index];
     return trip !== undefined && trip <= best + NAVAL_PORT_TRIP_SLACK_V7;
   });
+}
+
+/**
+ * Naval AI iteration 2 (`pulp_wars-32bb`): the radius round a landing tile
+ * inside which the own units ashore, the own transports landing with it,
+ * and the visible hostile land units are counted (`navalLandingInForceV7`).
+ */
+export const NAVAL_LANDING_FORCE_RADIUS_V7 = 2;
+
+/** The counts of one landing for `navalLandingInForceV7`. */
+export interface NavalLandingForceV7 {
+  /**
+   * The unit itself, the own land units within
+   * `NAVAL_LANDING_FORCE_RADIUS_V7` of the landing tile, and the other own
+   * transports that land beside it this turn.
+   */
+  readonly force: number;
+  /** The visible hostile land units within that radius of the landing tile. */
+  readonly defenders: number;
+  /** The visible hostile units can sink the transport where it stands. */
+  readonly lethalAfloat: boolean;
+}
+
+/**
+ * Naval AI iteration 2 (`pulp_wars-32bb`): "land in force". In replays of
+ * ten diagnostic matches on separate continents, a unit that came ashore with
+ * fewer own units within two tiles than hostile land units died within three
+ * rounds 38 times in 43 and took no city; one that outnumbered them died 15
+ * times in 54 and took 11. A transport lands on a planned landing tile only
+ * when its force is not outnumbered by the visible defenders there, or when
+ * it would be sunk where it waits. Otherwise it holds off: the exposure rule
+ * keeps it out of reach until the wave behind it (or the units already
+ * ashore) make the landing one in force. (Requiring the force to outnumber
+ * the defenders landed 73 times where the iteration 1 policy it played
+ * against landed 115, and took fewer cities.)
+ */
+export function navalLandingInForceV7(landing: NavalLandingForceV7): boolean {
+  return landing.lethalAfloat || landing.force >= landing.defenders;
 }
 
 /**

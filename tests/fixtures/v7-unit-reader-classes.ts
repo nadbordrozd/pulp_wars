@@ -396,6 +396,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Goblin seat counts against its cities (neither seat has a Mole).
     "src/ai/v7.ts::navalWaveWaitsV7": "BOARD",
     "src/ai/v7.ts::navalLandingWaitsV7": "BOARD",
+    // Naval AI iteration 2 (`pulp_wars-32bb`): the own units and visible
+    // defenders round a landing tile are units on the board in the public
+    // view (a burrowed unit neither defends a beach in reach nor lands).
+    "src/ai/v7.ts::navalLandingInForceAtV7": "BOARD",
     "src/ai/v7.ts::mindControlHeldV7": "BOARD",
     "src/ai/v7.ts::armyThinAtWarV7": "BOARD",
     "src/ai/v7.ts::nextNavalTechnologyV7": "BOARD",

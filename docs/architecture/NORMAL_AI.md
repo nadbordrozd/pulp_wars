@@ -6500,6 +6500,73 @@ it when they are held; one Patrol Boat per transport and the Patrol Boat
 at priority 1290 under any visible hostile afloat unit still train about
 ten ships a seat in 30 rounds, half of them lost.
 
+### Naval AI iteration 2 (`pulp_wars-32bb`)
+
+**Status: measured by hand play and the same small diagnostic set as
+iteration 1, by the user's authorisation for this bead.** The ten matches
+of iteration 1 were measured again on 7r113 (identical to iteration 1's
+"after" numbers), each change was also played against the iteration 1
+policy on the same ten boards with the seats swapped (20 matches, the
+policy under test on one seat), and replays of the matches counted the
+units and defenders round every landing. All changes are policy only; no
+rule and no identity changed.
+
+| Failure                                                                                                                                                                                                                                   | Fix                                                                                                                                                                                                                                                                                                                                                                                                          | Where                                                                    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| In replays of the ten matches, a unit that came ashore with fewer own units within two tiles than hostile land units died within three rounds 38 times in 43 and took no city; one that outnumbered them died 15 times in 54 and took 11. | A transport lands on a planned landing tile only when the unit, the own land units within `NAVAL_LANDING_FORCE_RADIUS_V7` (2) of the tile, and the other own transports landing within that radius this turn are not outnumbered by the visible hostile land units there, or when it would be sunk where it waits. The exposure rule's landing excuse asks the same, so a held transport waits out of reach. | `navalLandingInForceV7`, `navalLandingInForceAtV7` (`isPolicyCandidate`) |
+| With the landing rule, 42 of the 83 units sunk afloat had stood still for their owner's whole last turn with their killer in sight: a transport with no progress to make and no landing on offer had no Move worth making.                | A transport that stands exposed (iteration 1's half-its-HP rule) scores a Move to a tile with less visible danger at `NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7` (1229, just below its progress along the route): the danger left behind, twice when the destination is not exposed.                                                                                                                                | `navalTransportEscapeValueV7` (the Move scorer)                          |
+| A hostile transport in sight (it never attacks) trained the Patrol Boat at 1290, exempted it from the savings goal and the naval reserve, reserved Coins for it, and held every boarding until one existed.                               | All five read `visibleHostileWarship`, a visible hostile unit in naval form; `visibleNavalDanger` (any hostile unit afloat) still activates the plan.                                                                                                                                                                                                                                                        | `NavalPlanV7.visibleHostileWarship`                                      |
+
+**Before and after**, the ten matches (20 seats, the policy on both):
+
+| Measure                              |    Before |    After |
+| ------------------------------------ | --------: | -------: |
+| Units embarked                       |       297 |      294 |
+| Sunk afloat                          |        81 |       54 |
+| Landings on another landmass         |       114 |      102 |
+| Landed units dead within 3 rounds    |        61 |       58 |
+| Lone landings dead within 3 rounds   |        21 |       21 |
+| Hostile cities captured across water |        15 |       13 |
+| Ships trained (lost)                 | 229 (130) | 184 (72) |
+| Land units trained                   |       241 |      221 |
+| Land units at the end                |       225 |      256 |
+| Matches ended by elimination (of 10) |         2 |        2 |
+
+**Against the iteration 1 policy** (the 20 matches, totals of the ten seats
+each policy played): cities at the end 73 against 77, hostile cities
+captured across water 15 against 16, units sunk afloat 66 against 73,
+landings 89 against 108, landed units dead within 3 rounds 51 against 63,
+eliminations 2 against 2. The losses at sea and on the beach fall; the
+cities taken do not rise beyond the matches' noise.
+
+**Hand play** (Humans against a Goblin AI, Continents 14 x 14, seed 11,
+curiosities on, a normal expanding game): the Goblins took a neutral village
+on the player's landmass in round 16, attacked the player's units beside
+Dovemarch from round 18, held the beachhead with Orc Brutes, gathered a wave
+of five transports with two Fire Rafts off Dovemarch's coast from round 28,
+and took Dovemarch in round 32.
+
+**Tried and dropped.** One escorting Patrol Boat for every three
+transports, at most two (in the ten matches ships trained fell from 229 to
+100, lost from 130 to 43): against the iteration 1 policy it lost the sea
+(units sunk afloat 107 against 73) and the war (cities 67 against 83,
+eliminations 1 against 4). Every offered landing within a step of the
+nearest coast instead of the nearest ones: no measurable change. Requiring
+the force to outnumber the defenders rather than match them, against the
+iteration 1 policy: landings 73 against 115 and cities 71 against 78. The
+escape above its progress (1232), in the ten matches: landings fell from 108
+to 85 and the hostile cities captured across water from 17 to 12.
+
+Proven on the authored strait in
+`tests/unit/ruleset-v7-naval-ai-iteration2.test.ts`.
+
+**Next (iteration 3).** A held wave drifts along the target coast for
+several rounds (in hand play five transports took four rounds to come
+ashore); ships still decide the sea (a seat with fewer ships loses
+transports and cities), so the fleet should be matched to the hostile fleet
+in sight rather than to the own transports; and a beachhead city taken on
+the target's landmass is not yet used as the wave's harbour.
+
 ### The frozen sea (`pulp_wars-5ti.5`)
 
 [Overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5).
