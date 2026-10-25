@@ -43,6 +43,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/feedback-host-v7.ts::BoardFeedbackV7.wantsAmbientFrames":
       "BOARD",
     "src/render/canvas/unit-turn-state-v7.ts::unitTurnStatesV7": "BOARD",
+    // Bead pulp_wars-2yc.114: a hurried AI turn plays what matters to the
+    // viewer with a beat: the view's units of the viewer an attack lands
+    // next to, or that are hurt or gone. A burrowed unit is not on the
+    // board, and no attack or cue reaches it there.
+    "src/render/canvas/playback-hurry-v7.ts::playbackMattersToViewerV7":
+      "BOARD",
     // Bead pulp_wars-2yc.83: the fog lift reads where the viewer's units in
     // the view stand, to run a reveal's wave out from the one that moved. A
     // burrowed unit is not in the view and sees nothing new.

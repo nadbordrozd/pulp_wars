@@ -752,6 +752,34 @@ Nothing here changes a rule, an event or a saved game.
 - **Out of view.** An event the fog hides has no step and takes no time. An
   event wholly off the canvas, when the player has taken the camera (below),
   plays at the 0.375 floor.
+- **Long turns hurry** (bead `pulp_wars-2yc.114`,
+  `src/render/canvas/playback-hurry-v7.ts`). A seat with fifty units makes
+  seventy commands, and its turn took over half a minute to watch. The
+  first **12** boundaries of one seat's turn that the viewer sees (those
+  with steps) play exactly as above. From then on the turn is hurried: its
+  time scale falls from 1 to the Fast setting's 0.5 by the 14th, to the
+  0.375 floor from the 17th and, for what does not matter to the viewer, to
+  **0.25** (a tile in 60 ms, still a walk) from the 20th. From the 17th on,
+  what does not matter also skips the beat between units. The Fast setting
+  starts at 0.5 and follows the same ramp; nothing is ever slower than calm
+  playback would play it.
+  - **What matters to the viewer** is an attack or ability cue on or next
+    to (one tile, diagonals included) one of the viewer's units or cities,
+    anything that hurts or removes the viewer's unit, a city of the
+    viewer's changing hands, and a mission's wave. It keeps a readable
+    beat: never quicker than the Fast setting's 0.5 before the 20th seen
+    boundary, never quicker than the 0.375 floor after it, and never skipped.
+  - In a hurried turn **the camera frames only what matters**; everything
+    else plays where it is on a still map.
+  - A hurried boundary that does not matter and **plays wholly off the
+    canvas is shown at once**: no walk, no camera move, no step sound, one
+    board draw with the next frame.
+  - **The AI runs further ahead**: while the board hurries a turn, the AI
+    waits for it only behind **9** queued boundaries (instead of 3), so it
+    decides during a long attack instead of leaving the board idle while it
+    decides a slow command; that stays below the twelve-boundary cut.
+  - The viewer's own commands, and every seat's next turn, start calm again.
+    Nothing here changes an AI command, a rule or a save.
 - **Fast Forward** and the Fast setting's skip are unchanged: Fast Forward
   finishes queued playback at once.
 

@@ -165,6 +165,14 @@ import {
   settleRemainingMsV7,
 } from "./playback-pacing-v7";
 import {
+  boundaryOffscreenV7,
+  hurriedDurationScaleV7,
+  hurrySkipsBeatV7,
+  hurryTurnKeyV7,
+  playbackHurriedV7,
+  playbackMattersToViewerV7,
+} from "./playback-hurry-v7";
+import {
   archerProjectileEndpoints,
   arrowGeometry,
 } from "./combat-presentation";
@@ -483,6 +491,12 @@ export interface BoardHostV7 {
     listener: ((cue: PresentationStepCueV7) => void) | null,
   ): void;
   /**
+   * Bead pulp_wars-2yc.114: whether the board hurries the playback of the
+   * seat turn `view` is in (playback-hurry-v7.ts), so the AI may run
+   * further ahead of it. False before that turn's boundaries play.
+   */
+  playbackHurried?(view: PlayerViewV7): boolean;
+  /**
    * Bead pulp_wars-2yc.29: the feedback animations of this board (Coins,
    * population, Promotions; feedback-host-v7.ts). A host without them
    * shows every gain at once.
@@ -590,6 +604,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly unitId: number;
     readonly endedAt: number;
   } | null = null;
+  /**
+   * Long AI turns hurry (bead pulp_wars-2yc.114): the seat turn whose
+   * boundaries are playing (match, round and seat) and how many of them
+   * with steps have played (playback-hurry-v7.ts).
+   */
+  #hurryTurn: { readonly key: string; played: number } | null = null;
+  /**
+   * Bead pulp_wars-2yc.114: a draw asked for the next frame, at most one a
+   * frame (`#requestDraw`), and the frame asked for it while no playback
+   * frame loop runs.
+   */
+  #drawWanted = false;
+  #pendingDrawFrame: number | null = null;
   /** The camera glide in progress (playback-camera-v7.ts). */
   #cameraGlide: {
     readonly glide: CameraGlideV7;
@@ -1136,7 +1163,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     }
     this.#frameKaboomPreview(model);
     this.#describe();
-    this.#draw();
+    // Bead pulp_wars-2yc.114: while a presentation holds the board (an AI
+    // turn's playback), a game update (one for every AI command) draws
+    // with the playback's next frame instead of drawing the board again.
+    if (this.#presentedView !== null || this.#crossfade !== null)
+      this.#requestDraw();
+    else this.#draw();
     this.#syncAmbientFrame();
   }
 
@@ -1338,6 +1370,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (this.#cameraPanFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#cameraPanFrame);
     this.#cameraPanFrame = null;
+    if (this.#drawWanted) this.#requestDraw();
     const state = this.#cameraGlide;
     this.#cameraGlide = null;
     if (state === null) return;
@@ -1469,6 +1502,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // when finishing a playback or the feedback throws.
     try {
       this.finishPresentations();
+      this.#cancelPendingDraw();
       this.feedback.destroy();
     } catch (error) {
       reportPresentationFailureV7("taking down the board", error);
@@ -1526,6 +1560,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#animationResolve = null;
     resolve?.();
     if (redraw) this.#draw();
+    else if (this.#drawWanted) this.#requestDraw();
     this.#pumpCombatJuice();
   }
 
@@ -1533,6 +1568,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     listener: ((cue: PresentationStepCueV7) => void) | null,
   ): void {
     this.#stepListener = listener;
+  }
+
+  playbackHurried(view: PlayerViewV7): boolean {
+    const model = this.#model;
+    const turn = this.#hurryTurn;
+    return (
+      model !== null &&
+      turn !== null &&
+      turn.key === hurryTurnKeyV7(model.matchInstanceId, view) &&
+      playbackHurriedV7(turn.played)
+    );
   }
 
   async presentBoundary(
@@ -1548,6 +1594,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const model = this.#model;
     if (model === null) return;
     const steps = corePresentationPlanV7(before, envelope, after);
+    const seat = before.turnOrder[before.activeSeatIndex] ?? null;
+    // Long AI turns hurry (bead pulp_wars-2yc.114): another seat's seen
+    // boundaries are counted; from the thirteenth on its turn is hurried.
+    const hurry =
+      steps.length === 0 || seat === before.viewer.id
+        ? null
+        : this.#hurryOf(model.matchInstanceId, before, after, steps);
+    const backlog = options.upcoming?.length ?? 0;
+    const baseDurationScale =
+      hurry === null
+        ? playbackDurationScaleV7(model.animationSpeed, backlog)
+        : hurriedDurationScaleV7({
+            speed: model.animationSpeed,
+            backlog,
+            played: hurry.played,
+            matters: hurry.matters,
+          });
     // Combat juice: the boundary's deaths and arrivals start on the frame
     // that first shows its result.
     this.#juiceBoundary = {
@@ -1555,10 +1618,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       after,
       envelope,
       steps,
-      durationScale: playbackDurationScaleV7(
-        model.animationSpeed,
-        options.upcoming?.length ?? 0,
-      ),
+      durationScale: baseDurationScale,
       fired: false,
     };
     if (steps.length === 0) {
@@ -1569,10 +1629,37 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       else this.#draw();
       return;
     }
+    // Bead pulp_wars-2yc.114: in a hurried turn, a boundary that does not
+    // matter to the viewer and plays wholly off the canvas is shown at
+    // once: no walk, no camera move, no sound, one draw.
+    if (
+      hurry !== null &&
+      hurry.hurried &&
+      !hurry.matters &&
+      boundaryOffscreenV7(steps, this.#camera, this.#viewport)
+    ) {
+      this.#fireBoundaryJuice();
+      this.#animatedUnit = null;
+      this.#heldUnits = NO_HELD_UNITS;
+      // Held while the next boundary waits, like a boundary with no steps:
+      // the next one draws its view before, or is shown at once too.
+      if (options.holdResult?.() === true) this.#presentedView = after;
+      else {
+        this.#presentedView = null;
+        this.#requestDraw();
+      }
+      this.#pumpCombatJuice();
+      return;
+    }
+    // In a hurried turn the camera frames only what matters to the viewer.
+    const follow = hurry === null || !hurry.hurried || hurry.matters;
+    // Late in a hurried turn, what does not matter skips the beat between
+    // units.
+    const skipBeat =
+      hurry !== null && hurrySkipsBeatV7(hurry.played, hurry.matters);
     // Calm playback (bead pulp_wars-2yc.49): the camera frames another
     // player's steps by the comfort-zone rule, unless the player took the
     // camera during this seat's playback.
-    const seat = before.turnOrder[before.activeSeatIndex] ?? null;
     const cameraEvents = playbackCameraEventsV7(
       steps,
       seat !== before.viewer.id,
@@ -1611,10 +1698,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         ...queuedCells,
       ];
     };
-    const baseDurationScale = playbackDurationScaleV7(
-      model.animationSpeed,
-      options.upcoming?.length ?? 0,
-    );
     let durationScale = baseDurationScale;
     this.#presentedView = before;
     // Bead pulp_wars-2yc.62: a boundary queued while the board was idle was
@@ -1644,7 +1727,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         later: readonly (readonly CoordV7[])[] = [],
       ): void => {
         const cells = cameraCells.get(step);
-        if (cells === undefined) return;
+        if (cells === undefined || !follow) return;
         const target = this.#playbackTarget(cells, () => later);
         if (target === null) return;
         this.#camera = target;
@@ -1964,8 +2047,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       }
       if (cells !== undefined) {
         // The camera moves only for an event outside the comfort zone, and
-        // the step starts once it rests (playback-camera-v7.ts).
-        const target = this.#playbackTarget(cells, () => laterCells(index));
+        // the step starts once it rests (playback-camera-v7.ts); in a
+        // hurried turn only for what matters to the viewer.
+        const target = follow
+          ? this.#playbackTarget(cells, () => laterCells(index))
+          : null;
         if (target !== null) {
           await this.#glideCameraTo(target, true, durationScale);
           if (token !== this.#presentationToken) return;
@@ -1980,6 +2066,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           target === null &&
           step.kind === "MOVE" &&
           step.pushSlide !== true &&
+          !skipBeat &&
           this.#lastFollowMove !== null &&
           this.#lastFollowMove.unitId !== step.unitId
         ) {
@@ -2526,6 +2613,68 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   /**
+   * Bead pulp_wars-2yc.114: draws the board with the next frame, once
+   * however often it is asked: by the running playback frame loop (an
+   * animated step or a camera glide), else by a frame of its own. Without
+   * frames it draws at once.
+   */
+  #requestDraw(): void {
+    const browser = this.#document.defaultView;
+    if (
+      browser === null ||
+      typeof browser.requestAnimationFrame !== "function"
+    ) {
+      this.#draw();
+      return;
+    }
+    this.#drawWanted = true;
+    if (
+      this.#pendingDrawFrame !== null ||
+      this.#animationFrame !== null ||
+      this.#cameraPanFrame !== null
+    )
+      return;
+    this.#pendingDrawFrame = browser.requestAnimationFrame(() => {
+      this.#pendingDrawFrame = null;
+      if (this.#drawWanted) this.#draw();
+    });
+  }
+
+  #cancelPendingDraw(): void {
+    if (this.#pendingDrawFrame !== null)
+      this.#document.defaultView?.cancelAnimationFrame(this.#pendingDrawFrame);
+    this.#pendingDrawFrame = null;
+    this.#drawWanted = false;
+  }
+
+  /**
+   * Long AI turns hurry (bead pulp_wars-2yc.114): counts another seat's
+   * boundary with steps in its turn and says whether it is hurried and
+   * whether it matters to the viewer.
+   */
+  #hurryOf(
+    matchInstanceId: BoardHostModelV7["matchInstanceId"],
+    before: PlayerViewV7,
+    after: PlayerViewV7,
+    steps: readonly CorePresentationStepV7[],
+  ): {
+    readonly played: number;
+    readonly hurried: boolean;
+    readonly matters: boolean;
+  } {
+    const key = hurryTurnKeyV7(matchInstanceId, before);
+    if (this.#hurryTurn?.key !== key) this.#hurryTurn = { key, played: 0 };
+    const played = this.#hurryTurn.played;
+    this.#hurryTurn.played += 1;
+    const hurried = playbackHurriedV7(played);
+    return {
+      played,
+      hurried,
+      matters: hurried && playbackMattersToViewerV7(before, after, steps),
+    };
+  }
+
+  /**
    * Bead pulp_wars-2yc.93: a frame that throws is logged and skipped; the
    * board, its input and the playback that asked for it go on.
    */
@@ -2544,6 +2693,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const context = this.#context;
     if (model === null || context === null) return;
     this.#drawSerial += 1;
+    this.#drawWanted = false;
     const now = this.#now();
     // Combat juice: the frame that first shows a boundary's result starts
     // its poofs and pops; a unit a cue draws is left out of the board.
@@ -2673,12 +2823,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           target,
           view,
           present(rippled),
+          rippled,
           clear,
           sceneAlpha,
           tileHops,
           null,
         );
-        drawLayer(layer, view, present(plan), true, 1, tileHops, null);
+        drawLayer(layer, view, present(plan), plan, true, 1, tileHops, null);
         target.save();
         target.setTransform(1, 0, 0, 1, 0, 0);
         target.globalAlpha = sceneAlpha * fade;
@@ -2702,6 +2853,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           target,
           view,
           present(plan),
+          plan,
           clear,
           sceneAlpha,
           tileHops,
@@ -2712,6 +2864,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       target: CanvasRenderingContext2D,
       view: PlayerViewV7,
       presented: BoardRenderPlanV7,
+      terrain: BoardRenderPlanV7,
       clear: boolean,
       sceneAlpha: number,
       tileHops: NonNullable<Parameters<typeof drawBoardV7>[0]["tileHops"]>,
@@ -2723,6 +2876,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         devicePixelRatio: this.#document.defaultView?.devicePixelRatio ?? 1,
         camera: this.#camera,
         plan: presented,
+        // Bead pulp_wars-2yc.114: a walking, held or hidden unit changes
+        // only the units; the terrain packed once per plan is reused.
+        ...(presented === terrain ? {} : { terrainPlan: terrain }),
         glowCache: this.#glowCache,
         readinessElapsedMs: now - this.#readinessStartedAt,
         reducedMotion: model.motion === "REDUCED",
@@ -5018,6 +5174,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       !this.#terrainRipple.active(this.#atmosphereClockMs)
     )
       return;
+    // Bead pulp_wars-2yc.114: with a playback frame loop running, the
+    // ripple's next frame is that loop's draw, not a second one.
+    if (this.#animationFrame !== null || this.#cameraPanFrame !== null) {
+      this.#requestDraw();
+      return;
+    }
     this.#terrainRippleFrame = browser.requestAnimationFrame(() => {
       this.#terrainRippleFrame = null;
       this.#draw();
@@ -5241,6 +5403,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             ? Math.max(0, Math.min(1, (now - started) / duration))
             : 1;
         this.#overlayDrawn = false;
+        const serial = this.#drawSerial;
         // Bead pulp_wars-2yc.93: a step's frame that throws is logged and
         // the step still ends, so its playback never waits forever.
         try {
@@ -5249,9 +5412,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         } catch (error) {
           reportPresentationFailureV7("a playback frame", error);
         }
+        // Bead pulp_wars-2yc.114: a draw asked for since the last frame is
+        // this frame's, unless the step drew the board already.
+        if (this.#drawWanted && serial === this.#drawSerial) this.#draw();
         if (progress >= 1) {
           this.#animationFrame = null;
           this.#animationResolve = null;
+          if (this.#drawWanted) this.#requestDraw();
           resolve();
         } else this.#animationFrame = browser.requestAnimationFrame(frame);
       };

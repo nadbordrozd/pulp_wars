@@ -353,6 +353,7 @@ import {
   type TileActionV7,
 } from "../canvas/tile-actions-v7";
 import { AI_PACING_BACKLOG_V7 } from "../canvas/playback-pacing-v7";
+import { HURRY_PACING_BACKLOG_V7 } from "../canvas/playback-hurry-v7";
 import {
   VICTORY_WAVE_V7,
   victoryWaveTriggerV7,
@@ -13645,13 +13646,15 @@ export class Ruleset7DomAppView {
    * of a long AI turn unhurried instead of hurrying it and cutting the
    * queue. A hidden page (nothing is drawn), Fast Forward and a destroyed
    * view never hold the AI; the queue cut stays the last resort for them.
+   * Bead pulp_wars-2yc.114: while the board hurries a long turn, the AI
+   * waits only behind HURRY_PACING_BACKLOG_V7.
    */
   readonly #aiPacingGate = (): Promise<void> | null => {
     if (
       this.#destroyed ||
       this.#snapshot.ai.fastForward ||
       this.#document.visibilityState === "hidden" ||
-      this.#presentationQueue.length < AI_PACING_BACKLOG_V7
+      this.#presentationQueue.length < this.#aiPacingBacklog()
     )
       return null;
     return new Promise<void>((resolve) => this.#aiPacingWaiters.push(resolve));
@@ -13663,12 +13666,20 @@ export class Ruleset7DomAppView {
     if (
       !all &&
       this.#document.visibilityState !== "hidden" &&
-      this.#presentationQueue.length >= AI_PACING_BACKLOG_V7
+      this.#presentationQueue.length >= this.#aiPacingBacklog()
     )
       return;
     const waiters = this.#aiPacingWaiters;
     this.#aiPacingWaiters = [];
     for (const resolve of waiters) resolve();
+  }
+
+  /** The backlog the AI waits behind (bead pulp_wars-2yc.114). */
+  #aiPacingBacklog(): number {
+    const view = this.#snapshot.view;
+    return view !== null && this.#boardHost.playbackHurried?.(view) === true
+      ? HURRY_PACING_BACKLOG_V7
+      : AI_PACING_BACKLOG_V7;
   }
 
   readonly #onVisibilityChange = (): void => {

@@ -290,6 +290,8 @@ export function navalArtSubjectV7(
   ) as ArtSubjectV7;
 }
 
+const NAVAL_ROLE_BY_SUBJECT_V7 = new Map<ArtSubjectV7, NavalArtRoleV7 | null>();
+
 /**
  * The naval role a subject depicts, shared or faction-styled
  * (`UNIT:PATROL_BOAT`, `UNIT:GOBLIN:EMBARKED_TRANSPORT`,
@@ -299,6 +301,18 @@ export function navalArtRoleOfSubjectV7(
   subject: ArtSubjectV7 | undefined,
 ): NavalArtRoleV7 | null {
   if (subject === undefined) return null;
+  // Bead pulp_wars-2yc.114: asked for every unit of every board frame; the
+  // answer for a subject never changes.
+  const known = NAVAL_ROLE_BY_SUBJECT_V7.get(subject);
+  if (known !== undefined) return known;
+  const role = navalArtRoleOfSubjectUncachedV7(subject);
+  NAVAL_ROLE_BY_SUBJECT_V7.set(subject, role);
+  return role;
+}
+
+function navalArtRoleOfSubjectUncachedV7(
+  subject: ArtSubjectV7,
+): NavalArtRoleV7 | null {
   const parts = subject.split(":");
   if (parts[0] !== "UNIT" && parts[0] !== "PORTRAIT") return null;
   if (parts.length !== 2 && parts.length !== 3) return null;
@@ -1171,7 +1185,21 @@ export function isCultSummonedArtSubjectV7(subject: ArtSubjectV7): boolean {
   return CULT_SUMMONED_SUBJECT_PATTERN_V7.test(subject);
 }
 
+const FALLBACK_BY_SUBJECT_V7 = new Map<ArtSubjectV7, ArtSubjectV7 | null>();
+
 export function chibiFallbackSubjectV7(
+  subject: ArtSubjectV7,
+): ArtSubjectV7 | null {
+  // Bead pulp_wars-2yc.114: asked for every sprite of every board frame;
+  // the answer for a subject never changes.
+  const known = FALLBACK_BY_SUBJECT_V7.get(subject);
+  if (known !== undefined) return known;
+  const fallback = chibiFallbackSubjectUncachedV7(subject);
+  FALLBACK_BY_SUBJECT_V7.set(subject, fallback);
+  return fallback;
+}
+
+function chibiFallbackSubjectUncachedV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
   // An achievement's Monument (bead pulp_wars-2yc.15) without a raster (the

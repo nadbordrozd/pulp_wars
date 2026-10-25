@@ -374,3 +374,58 @@ policy shortcut for huge seats (reusing the previous decision's ranking for
 far-apart units, or scoring only the units near the front plus a few
 others per decision) would help Fast Forward next (7.5 s here), and needs
 its own quality checks.
+
+## Long AI turns: hurried playback and cheaper frames (bead `pulp_wars-2yc.114`)
+
+Follows the finding above that a long AI turn's latency is its playback.
+Presentation only: no AI, rule or save change; the AI's commands and the
+final state of every turn are the same (the engine and `src/ai` are not
+touched); Fast Forward is unchanged.
+
+**Hurried playback** (`src/render/canvas/playback-hurry-v7.ts`; the rules
+are in [SCREEN_FLOW.md, "Calm playback"](../ui/SCREEN_FLOW.md)). A seat's
+first 12 seen boundaries play calm; then the time scale ramps to 0.5 by the
+14th, 0.375 by the 17th and 0.25 for what does not matter to the viewer
+from the 20th; what matters (an attack or cue on or next to the viewer's
+units or cities, a hurt or lost unit, a lost city) keeps a beat of 0.5,
+then 0.375, and is framed; nothing else moves the camera; what does not
+matter and plays wholly off the canvas is shown at once; and the AI may
+run 9 boundaries ahead of a hurried turn instead of 3, so a slow decision
+(a build) no longer leaves the board idle.
+
+**Cheaper frames.** A CPU profile of the 50-unit turn put about 10 s of
+main-thread time in board frames (1,620 full draws, 6 ms each; 159 frames
+drew twice).
+
+| Change                                                                                                                                                                                                                                                         | Effect (same turn)                       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| The renderer's per-plan terrain packing (forests, ranges, faction grass, shore, water blend, fog) was keyed on the plan object, which the board host rebuilds on every frame of a walk; `drawBoardV7` now takes the undecorated `terrainPlan` for those caches | about 1.3 s of repacking per turn gone   |
+| `chibiFallbackSubjectV7` and `navalArtRoleOfSubjectV7`, asked for every sprite of every frame, remember their answer per subject                                                                                                                               | about 1.5 s gone                         |
+| A game update while a presentation holds the board, and the territory ripple while a playback frame loop runs, ask for a draw with the next frame (`#requestDraw`) instead of drawing again                                                                    | at most one board draw a frame from them |
+
+Board drawing on that turn fell from about 9.9 s to 4.4 s of main-thread
+time (unminified profile). A draw that changes only a few tiles still draws
+the whole board: the renderer has no dirty-region drawing (time-based
+water, atmosphere and pulses touch every tile), and adding it is a project
+of its own.
+
+**Timings** (`scripts/perf/ai-turn-browser.ts`, muted headless Chrome,
+production builds of the same base before and after, game sound and music
+off; seat time of the AI's turn). Measured with the before and after runs
+interleaved, on a shared Mac under a load average of about 5 (other work
+running; Fast Forward, which is all policy, is about twice its quiet time
+here):
+
+| State (AI seat)             | Commands | Normal, before | Normal, after | Busy before / after | Fast Forward, before / after |
+| --------------------------- | -------: | -------------: | ------------: | ------------------: | ---------------------------: |
+| 10 cities, 34 units         |       38 |         16.7 s |         9.8 s |       7.1 s / 4.7 s |                2.0 s / 2.2 s |
+| Undead, 8 cities, 50 units  |       76 |         33.8 s |        14.7 s |     19.1 s / 13.0 s |                8.6 s / 7.2 s |
+| Undead, 10 cities, 80 units |       90 |         43.7 s |        19.7 s |     27.3 s / 20.1 s |              11.7 s / 10.9 s |
+
+On the quiet machine (the table of the section above) the 50-unit turn took
+32.6 s before; after, with the same ramp and a 10-deep queue, 13.3 s. Of
+that, the calm first 12 boundaries are about 4.3 s, the ramp (12th to
+19th) about 3.2 s, the rest about 6.1 s, and about 1 s is the board waiting
+for the AI's slowest decisions (builds). The calm opening, the readable
+beat of what matters and the AI's own decisions bound it there; going
+lower means a shorter calm opening or skipping visible moves.

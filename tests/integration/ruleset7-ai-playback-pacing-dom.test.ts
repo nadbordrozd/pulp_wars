@@ -32,6 +32,7 @@ import {
   AI_PACING_BACKLOG_V7,
   playbackDurationScaleV7,
 } from "../../src/render/canvas/playback-pacing-v7";
+import { HURRY_PACING_BACKLOG_V7 } from "../../src/render/canvas/playback-hurry-v7";
 import { Ruleset7DomAppView } from "../../src/render/dom/app-view-v7";
 import { decisionV7 } from "./ruleset7-browser-controller.shared";
 
@@ -100,6 +101,32 @@ describe("Ruleset 7 AI playback pacing", () => {
     rig.destroy();
   });
 
+  // Bead pulp_wars-2yc.114: once the board hurries the turn, the AI decides
+  // ahead behind a deeper queue, still short of the cut.
+  it("lets the AI run up to HURRY_PACING_BACKLOG_V7 ahead of a hurried turn, never to the queue cut", async () => {
+    const rig = await mountRig({ hurryAfter: 2 });
+    await rig.endHumanTurn();
+    let deepest = 0;
+    for (let round = 0; round < 200 && !rig.done(); round += 1) {
+      await rig.runAiAsFastAsItCan();
+      deepest = Math.max(deepest, rig.host.playing() - 1, rig.queued());
+      rig.host.finishOne();
+      await flush();
+    }
+    expect(rig.done()).toBe(true);
+    const aiAccepted = rig.accepted.filter((actor) => actor === "AI").length;
+    const aiPresented = rig.host.presented.filter((entry) => entry.ai);
+    // Every AI command was played, none was cut.
+    expect(aiPresented).toHaveLength(aiAccepted);
+    expect(rig.host.finishes).toBe(rig.finishesBeforeTurn);
+    const upcoming = Math.max(...aiPresented.map((entry) => entry.upcoming));
+    // Deeper than calm playback lets it run, never deeper than allowed.
+    expect(upcoming).toBeGreaterThanOrEqual(AI_PACING_BACKLOG_V7);
+    expect(upcoming).toBeLessThan(HURRY_PACING_BACKLOG_V7);
+    expect(deepest).toBeLessThanOrEqual(HURRY_PACING_BACKLOG_V7);
+    rig.destroy();
+  });
+
   it("lets Fast Forward release a held AI at once", async () => {
     const rig = await mountRig();
     await rig.endHumanTurn();
@@ -145,12 +172,15 @@ interface Rig {
   readonly accepted: ("HUMAN" | "AI")[];
   finishesBeforeTurn: number;
   endHumanTurn(): Promise<void>;
+  queued(): number;
   runAiAsFastAsItCan(): Promise<void>;
   done(): boolean;
   destroy(): void;
 }
 
-async function mountRig(): Promise<Rig> {
+async function mountRig(
+  options: { readonly hurryAfter?: number } = {},
+): Promise<Rig> {
   const scheduler = manualScheduler();
   const controller = new Ruleset7BrowserController({
     aiProgressScheduler: scheduler.schedule,
@@ -162,7 +192,7 @@ async function mountRig(): Promise<Rig> {
   controller.subscribeAcceptedBoundary((boundary) =>
     accepted.push(boundary.actor),
   );
-  const host = new PacedBoardHost();
+  const host = new PacedBoardHost(options.hurryAfter ?? null);
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app");
   const view = new Ruleset7DomAppView(document, root, controller, {
@@ -175,6 +205,9 @@ async function mountRig(): Promise<Rig> {
     scheduler,
     accepted,
     finishesBeforeTurn: 0,
+    queued() {
+      return view.busyStateForReview().presentationQueue;
+    },
     async endHumanTurn() {
       const end = document.querySelector<HTMLButtonElement>(
         '[data-action="end-turn"]',
@@ -259,6 +292,22 @@ class PacedBoardHost implements BoardHostV7 {
   readonly #pending: (() => void)[] = [];
   /** Each playing boundary's options, to ask as it ends. */
   readonly #options: PresentBoundaryOptionsV7[] = [];
+  /**
+   * Bead pulp_wars-2yc.114: after this many AI boundaries the board says
+   * it hurries the turn (null: never, like calm playback).
+   */
+  readonly #hurryAfter: number | null;
+
+  constructor(hurryAfter: number | null = null) {
+    this.#hurryAfter = hurryAfter;
+  }
+
+  playbackHurried(): boolean {
+    return (
+      this.#hurryAfter !== null &&
+      this.presented.filter((entry) => entry.ai).length >= this.#hurryAfter
+    );
+  }
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void {
     this.callbacks = callbacks;

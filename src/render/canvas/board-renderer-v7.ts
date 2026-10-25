@@ -2773,6 +2773,15 @@ export function drawBoardV7(input: {
   readonly devicePixelRatio: number;
   readonly camera: CameraState;
   readonly plan: BoardRenderPlanV7;
+  /**
+   * Bead pulp_wars-2yc.114: the plan `plan` was made from when only its
+   * units and selection box moved (a walking unit, a held or hidden one).
+   * The terrain the board packs once per plan (forests, ranges, grass,
+   * shore, fog) is read from it, so a frame of a walk reuses that work
+   * instead of packing the whole board again. Its terrain must be
+   * `plan`'s; without it `plan` is used.
+   */
+  readonly terrainPlan?: BoardRenderPlanV7;
   readonly glowCache?: BoardGlowCacheV7;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
@@ -3290,9 +3299,10 @@ export function drawBoardV7(input: {
   // faction's Forest is packed as a forest of its own, in the live look.
   // Multi-cell terrain at the fog (pulp_wars-2yc.28): the cover is packed
   // over the plan's entries and its ghosts, and drawn only where no fog is.
-  const composition = compositionEntriesV7(input.plan);
-  const ghosted = composition !== input.plan.entries;
-  const fogAt = fogAtOfV7(input.plan.entries);
+  const terrainPlan = input.terrainPlan ?? input.plan;
+  const composition = compositionEntriesV7(terrainPlan);
+  const ghosted = composition !== terrainPlan.entries;
+  const fogAt = fogAtOfV7(terrainPlan.entries);
   const forestCells =
     forestArt === null
       ? null
@@ -3300,13 +3310,13 @@ export function drawBoardV7(input: {
           composition,
           forestArt,
           direction !== undefined,
-        ) ?? forestCellsOf(input.plan, forestArt));
+        ) ?? forestCellsOf(terrainPlan, forestArt));
   if (forestCells !== null)
     for (const key of forestCells.keys()) splitCells.add(key);
   // Composed mountain ranges (pulp_wars-e9f), the same way.
   const mountainArt = input.mountainArt?.resolve() ?? null;
   const mountainCells =
-    mountainArt === null ? null : massifCellsOf(input.plan, mountainArt);
+    mountainArt === null ? null : massifCellsOf(terrainPlan, mountainArt);
   if (mountainCells !== null)
     for (const key of mountainCells.keys()) splitCells.add(key);
   const iceFolkArt = input.iceFolkArt;
@@ -3314,19 +3324,21 @@ export function drawBoardV7(input: {
   const factionGrassArt =
     direction === undefined ? null : (input.factionGrassArt?.resolve() ?? null);
   const factionGrassCells =
-    factionGrassArt === null ? null : factionGrassCellsOfV7(input.plan.entries);
+    factionGrassArt === null
+      ? null
+      : factionGrassCellsOfV7(terrainPlan.entries);
   // The shoreline (pulp_wars-2yc.5), in the live look only.
   const coastArt = direction === undefined ? null : (input.coastArt ?? null);
   const coastCells =
-    coastArt === null ? null : coastCellsOfV7(input.plan.entries);
+    coastArt === null ? null : coastCellsOfV7(terrainPlan.entries);
   // The atmosphere (pulp_wars-2yc.17), in the live look only: the soft
   // edge between the two waters, and the cloud fog of war.
   const waterBlendArt =
     direction === undefined ? null : (input.waterBlendArt ?? null);
   const waterBlendCells =
-    waterBlendArt === null ? null : waterBlendCellsOfV7(input.plan.entries);
+    waterBlendArt === null ? null : waterBlendCellsOfV7(terrainPlan.entries);
   const fogArt = direction === undefined ? null : (input.fogArt ?? null);
-  const fogCells = fogArt === null ? null : fogCellsOfV7(input.plan.entries);
+  const fogCells = fogArt === null ? null : fogCellsOfV7(terrainPlan.entries);
   const fogFrame = {
     camera,
     devicePixelRatio,
