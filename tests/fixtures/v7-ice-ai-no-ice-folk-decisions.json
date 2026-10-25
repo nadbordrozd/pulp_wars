@@ -737,11 +737,11 @@
         "path": [
           {
             "x": 3,
-            "y": 10
+            "y": 9
           }
         ]
       },
-      "candidates": 3,
+      "candidates": 5,
       "best": [
         {
           "command": {
@@ -750,7 +750,7 @@
             "path": [
               {
                 "x": 3,
-                "y": 10
+                "y": 9
               }
             ]
           },
@@ -761,7 +761,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 1,
-            "deterministicTieBreak": [0, -10, -3, -4, 0]
+            "deterministicTieBreak": [0, -9, -3, -4, 0]
           }
         },
         {
@@ -770,19 +770,61 @@
             "unitId": 4,
             "path": [
               {
-                "x": 4,
-                "y": 11
+                "x": 2,
+                "y": 9
               }
             ]
           },
           "score": {
-            "priority": 700,
+            "priority": 600,
             "strategicValue": 0,
             "immediateValue": 0,
             "futureValue": 0,
             "safetyValue": 0,
-            "objectiveValue": 1,
-            "deterministicTieBreak": [0, -11, -4, -4, 0]
+            "objectiveValue": 0,
+            "deterministicTieBreak": [0, -9, -2, -4, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "MOVE",
+            "unitId": 4,
+            "path": [
+              {
+                "x": 1,
+                "y": 9
+              }
+            ]
+          },
+          "score": {
+            "priority": 600,
+            "strategicValue": 0,
+            "immediateValue": 0,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": -1,
+            "deterministicTieBreak": [0, -9, -1, -4, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "MOVE",
+            "unitId": 4,
+            "path": [
+              {
+                "x": 1,
+                "y": 10
+              }
+            ]
+          },
+          "score": {
+            "priority": 600,
+            "strategicValue": 0,
+            "immediateValue": 0,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": -1,
+            "deterministicTieBreak": [0, -10, -1, -4, 0]
           }
         },
         {
@@ -1543,10 +1585,193 @@
     },
     {
       "command": {
-        "kind": "END_TURN"
+        "kind": "MOVE",
+        "unitId": 2,
+        "path": [
+          {
+            "x": 7,
+            "y": 9
+          }
+        ]
       },
-      "candidates": 1,
+      "candidates": 5,
       "best": [
+        {
+          "command": {
+            "kind": "MOVE",
+            "unitId": 2,
+            "path": [
+              {
+                "x": 7,
+                "y": 9
+              }
+            ]
+          },
+          "score": {
+            "priority": 1330,
+            "strategicValue": 1,
+            "immediateValue": 5,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [0, -9, -7, -2, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "MOVE",
+            "unitId": 2,
+            "path": [
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "score": {
+            "priority": 600,
+            "strategicValue": 0,
+            "immediateValue": 0,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [0, -9, -8, -2, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "MOVE",
+            "unitId": 2,
+            "path": [
+              {
+                "x": 9,
+                "y": 9
+              }
+            ]
+          },
+          "score": {
+            "priority": 600,
+            "strategicValue": 0,
+            "immediateValue": 0,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": -1,
+            "deterministicTieBreak": [0, -9, -9, -2, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "MOVE",
+            "unitId": 2,
+            "path": [
+              {
+                "x": 7,
+                "y": 11
+              }
+            ]
+          },
+          "score": {
+            "priority": 600,
+            "strategicValue": 0,
+            "immediateValue": 0,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": -1,
+            "deterministicTieBreak": [0, -11, -7, -2, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "END_TURN"
+          },
+          "score": {
+            "priority": 0,
+            "strategicValue": 0,
+            "immediateValue": 0,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
+          }
+        }
+      ]
+    },
+    {
+      "command": {
+        "kind": "RESEARCH",
+        "tech": "HUNTING"
+      },
+      "candidates": 5,
+      "best": [
+        {
+          "command": {
+            "kind": "RESEARCH",
+            "tech": "HUNTING"
+          },
+          "score": {
+            "priority": 1219,
+            "strategicValue": 100,
+            "immediateValue": -5,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
+          }
+        },
+        {
+          "command": {
+            "kind": "BUILD_PORT",
+            "at": {
+              "x": 9,
+              "y": 10
+            }
+          },
+          "score": {
+            "priority": 1218,
+            "strategicValue": 3,
+            "immediateValue": 1,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [-69, -10, -9, 0, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "BUILD_PORT",
+            "at": {
+              "x": 10,
+              "y": 10
+            }
+          },
+          "score": {
+            "priority": 1218,
+            "strategicValue": 3,
+            "immediateValue": 1,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [-69, -10, -10, 0, 0]
+          }
+        },
+        {
+          "command": {
+            "kind": "BUILD_PORT",
+            "at": {
+              "x": 10,
+              "y": 12
+            }
+          },
+          "score": {
+            "priority": 1218,
+            "strategicValue": 3,
+            "immediateValue": 1,
+            "futureValue": 0,
+            "safetyValue": 0,
+            "objectiveValue": 0,
+            "deterministicTieBreak": [-69, -12, -10, 0, 0]
+          }
+        },
         {
           "command": {
             "kind": "END_TURN"
@@ -1913,8 +2138,8 @@
         "unitId": 2,
         "path": [
           {
-            "x": 5,
-            "y": 9
+            "x": 4,
+            "y": 8
           }
         ]
       },
@@ -1926,8 +2151,8 @@
             "unitId": 2,
             "path": [
               {
-                "x": 5,
-                "y": 9
+                "x": 4,
+                "y": 8
               }
             ]
           },
@@ -1938,7 +2163,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 1,
-            "deterministicTieBreak": [0, -9, -5, -2, 0]
+            "deterministicTieBreak": [0, -8, -4, -2, 0]
           }
         },
         {
@@ -2255,7 +2480,7 @@
         "unitId": 9,
         "targetUnitId": 10
       },
-      "candidates": 24,
+      "candidates": 26,
       "best": [
         {
           "command": {
@@ -2349,7 +2574,7 @@
         "kind": "RESEARCH",
         "tech": "SCOUTING"
       },
-      "candidates": 10,
+      "candidates": 12,
       "best": [
         {
           "command": {
@@ -2442,7 +2667,7 @@
         "kind": "RESEARCH",
         "tech": "ROADS"
       },
-      "candidates": 11,
+      "candidates": 13,
       "best": [
         {
           "command": {

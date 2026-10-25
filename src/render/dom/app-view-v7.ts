@@ -11923,8 +11923,8 @@ export class Ruleset7DomAppView {
         text(this.#document, "strong", name),
         text(this.#document, "span", detail, "v7-reward-detail"),
       );
-      // Reward placement (`pulp_wars-spue`, 7r111): where the unit appears
-      // when the center is taken.
+      // Reward arrival (`pulp_wars-sa3h`, `pulp_wars-spue`): the unit it
+      // pushes off the center, or where it appears when it cannot.
       const arrival = rewardArrivalNoteV7(view, choice.cityId, reward);
       if (arrival !== null) {
         const note = text(
@@ -19232,7 +19232,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r113",
+    rulesetId: "pulp-wars-poc-7r114",
     seed,
     width,
     height: width,

@@ -67,7 +67,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r114");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -1549,7 +1549,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(second.state.pendingChoices).toEqual([]);
   });
 
-  it("keeps Juggernaut available and removes the center occupant when no adjacent land remains", () => {
+  it("keeps Juggernaut available and pushes the center occupant two tiles out when no adjacent land remains", () => {
     const fixture = rewardSawmillState(93);
     const cityTiles = fixture.state.board.tiles.filter(
       (tile) => tile.territoryCityId === fixture.cityId && tile.biome !== null,
@@ -1592,41 +1592,45 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       reward: "JUGGERNAUT",
     });
     if (!chosen.accepted) throw new Error(chosen.error.code);
-    // Reward placement (`pulp_wars-spue`, 7r111): nobody on the center or
-    // the territory is removed; the giant appears outside the full
-    // territory within two tiles of the center, or waits on the city.
-    expect(
-      chosen.events.some(
-        (event) =>
-          event.kind === "UNIT_SPAWN_DISPLACED" || event.kind === "UNIT_DIED",
-      ),
-    ).toBe(false);
-    for (const before of five.state.units)
-      expect(chosen.state.units.find((item) => item.id === before.id)).toEqual(
-        before,
-      );
+    // Reward arrival (`pulp_wars-sa3h`): nobody is removed. The giant takes
+    // the center and the unit there is pushed out of the full territory to
+    // a free tile within two tiles of the center (siege rules, 7r80 to
+    // 7r110, removed it).
+    expect(chosen.events.some((event) => event.kind === "UNIT_DIED")).toBe(
+      false,
+    );
     const city = required(
       chosen.state.cities.find((item) => item.id === fixture.cityId),
     );
-    const giant = chosen.state.units.find(
-      (item) => item.role === "JUGGERNAUT" && item.homeCityId === city.id,
+    const occupant = required(
+      five.state.units.find((item) => same(item.at, city.at)),
     );
-    if (giant === undefined)
-      expect(city.heldRewardUnits).toEqual([
-        { reachedLevel: 6, role: "JUGGERNAUT" },
-      ]);
-    else {
-      expect(
-        Math.max(
-          Math.abs(giant.at.x - city.at.x),
-          Math.abs(giant.at.y - city.at.y),
-        ),
-      ).toBeLessThanOrEqual(2);
-      expect(
-        chosen.state.board.tiles.find((tile) => same(tile.at, giant.at))
-          ?.territoryCityId,
-      ).not.toBe(city.id);
-    }
+    for (const before of five.state.units)
+      if (before.id !== occupant.id)
+        expect(
+          chosen.state.units.find((item) => item.id === before.id),
+        ).toEqual(before);
+    const pushed = required(
+      chosen.state.units.find((item) => item.id === occupant.id),
+    );
+    expect(pushed).toEqual({
+      ...occupant,
+      at: pushed.at,
+      captureEligible: false,
+    });
+    expect(
+      Math.max(
+        Math.abs(pushed.at.x - city.at.x),
+        Math.abs(pushed.at.y - city.at.y),
+      ),
+    ).toBe(2);
+    expect(
+      chosen.state.board.tiles.find((tile) => same(tile.at, pushed.at))
+        ?.territoryCityId,
+    ).not.toBe(city.id);
+    expect(
+      chosen.state.units.find((item) => same(item.at, city.at)),
+    ).toMatchObject({ role: "JUGGERNAUT", homeCityId: city.id });
   });
 
   it("repairs lost live population without repeating earned rewards", () => {

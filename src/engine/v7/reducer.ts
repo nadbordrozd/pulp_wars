@@ -188,6 +188,7 @@ import {
   bounceStateV7,
   attackBreachesV7,
   calculateCombatPreviewV7,
+  displacementDestinationLegalV7,
   pushedDestinationV7,
   tractorBeamTargetTechnologyV7,
 } from "./combat";
@@ -5759,10 +5760,11 @@ function applyReward(
         requirePlayer(state, actor).faction,
       );
       // Revision 17 section 8.9: a Goblin Militia is two Goblins (a Cult
-      // Militia two Initiates). Reward placement (`pulp_wars-spue`, 7r111):
-      // each unit appears by the placement rule in turn (the center when
-      // it is free, else the nearest free tile), and a unit with no tile
-      // is held on the city (`heldRewardUnits`), never lost.
+      // Militia two Initiates). Reward arrival (`pulp_wars-sa3h`; section
+      // 4.6): the first takes the center, pushing its occupant off when it
+      // can; the second appears beside the city by the placement rule
+      // (`pulp_wars-spue`), and a unit with no tile is held on the city
+      // (`heldRewardUnits`), never lost.
       const militiaSize =
         command.reward === "MILITIA"
           ? MILITIA_FIGHTERS_V7[requirePlayer(state, actor).faction]
@@ -5787,6 +5789,9 @@ function applyReward(
             captureEligible: false,
             activation: exhaustedActivation(),
           },
+          // Reward arrival (`pulp_wars-sa3h`): the first unit takes the
+          // center and pushes its occupant off; a second goes beside it.
+          index === 0,
         );
         if (spawn.placed === null) {
           held.push({ reachedLevel: command.reachedLevel, role: unitRole });
@@ -10653,13 +10658,18 @@ function rewardCellLegalV7(
 }
 
 /**
- * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
- * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): the unit
- * `spawned` (a trained unit or a reward unit of `city`) appears on the
- * city's center when no unit stands there, or else on the nearest free
- * tile of the city's territory, then within two tiles of the center
- * (`rewardArrivalV7`). **No unit already on the board is moved or
- * harmed.** With no tile nothing is placed (`placed` null; the caller
+ * Reward arrival (`pulp_wars-sa3h`; `pulp_wars-spue`, `pulp_wars-rzqf`;
+ * RULESET_7_CURRENT.md section 4.6): the unit `spawned` (a trained unit or
+ * a reward unit of `city`) appears on the city's center when no unit
+ * stands there. When one does and `pushes` (the first unit of a reward),
+ * it takes the center and pushes the occupant, friend or foe, to the
+ * nearest free tile next to the center, then within two
+ * (`rewardPushLegalV7`, `rewardArrivalV7`): the occupant keeps its Hit
+ * Points and statuses and loses `captureEligible`, which ends a siege
+ * (`UNIT_SPAWN_DISPLACED`). Otherwise, or with nowhere to push it, the
+ * unit appears beside the city on the nearest free tile of the city's
+ * territory, then within two tiles of the center. **Nothing is killed or
+ * damaged.** With no tile nothing is placed (`placed` null; the caller
  * holds a reward unit on the city). A trained unit always has the empty
  * center (`CITY_SPAWN_OCCUPIED`).
  */
@@ -10667,53 +10677,102 @@ function placeCitySpawnV7(
   state: GameStateV7,
   city: CityStateV7,
   spawned: UnitStateV7,
+  pushes = false,
 ): {
   readonly placed: UnitStateV7 | null;
   readonly players: readonly PlayerStateV7[];
   readonly units: readonly UnitStateV7[];
   readonly events: readonly DomainEventV7[];
 } {
-  const at = rewardArrivalV7({
+  const occupant = state.units.find(
+    (unit) => unit.hp > 0 && same(unit.at, city.at),
+  );
+  const arrival = rewardArrivalV7({
     center: city.at,
-    centerFree: !state.units.some(
-      (unit) => unit.hp > 0 && same(unit.at, city.at),
-    ),
+    occupant: occupant ?? null,
+    pushes,
     tiles: state.board.tiles.map((tile) => tile.at),
+    occupantMayStand: (where) =>
+      occupant !== undefined && rewardPushLegalV7(state, occupant, where),
     mayStand: (where) => rewardCellLegalV7(state, spawned, where),
     cityTerritory: (where) =>
       tileAtV7(state.board, where)?.territoryCityId === city.id,
   });
-  if (at === null)
+  if (arrival.at === null)
     return {
       placed: null,
       players: state.players,
       units: state.units,
       events: [],
     };
-  const placed = { ...spawned, at };
-  const units = [...state.units, placed];
-  const visibleState = { ...state, units } as GameStateV7;
-  const reveal = revealRadius(
-    visibleState,
-    placed.ownerId,
-    placed.at,
-    unitSightRadiusAtV7(visibleState, placed),
-  );
-  return {
+  const placed = { ...spawned, at: arrival.at };
+  const pushed =
+    occupant === undefined || arrival.pushTo === null
+      ? null
+      : { ...occupant, at: arrival.pushTo, captureEligible: false };
+  const units = [
+    ...state.units.map((unit) => (unit.id === pushed?.id ? pushed : unit)),
     placed,
-    players: setExplored(state.players, placed.ownerId, reveal.explored),
-    units,
-    events:
-      reveal.revealed.length > 0
-        ? [
-            {
-              kind: "TILES_REVEALED",
-              playerId: placed.ownerId,
-              tiles: uniqueCoords(reveal.revealed),
-            },
-          ]
-        : [],
-  };
+  ];
+  const events: DomainEventV7[] = [];
+  if (pushed !== null)
+    events.push({
+      kind: "UNIT_SPAWN_DISPLACED",
+      playerId: placed.ownerId,
+      cityId: city.id,
+      spawnedUnitId: placed.id,
+      displacedUnitId: pushed.id,
+      from: city.at,
+      to: pushed.at,
+    });
+  let players = state.players;
+  const revealedByPlayer = new Map<PlayerId, CoordV7[]>();
+  for (const unit of pushed === null ? [placed] : [placed, pushed]) {
+    const visibleState = { ...state, players, units } as GameStateV7;
+    const reveal = revealRadius(
+      visibleState,
+      unit.ownerId,
+      unit.at,
+      unitSightRadiusAtV7(visibleState, unit),
+    );
+    players = setExplored(players, unit.ownerId, reveal.explored);
+    if (reveal.revealed.length > 0)
+      revealedByPlayer.set(unit.ownerId, [
+        ...(revealedByPlayer.get(unit.ownerId) ?? []),
+        ...reveal.revealed,
+      ]);
+  }
+  for (const [playerId, revealed] of [...revealedByPlayer].sort(
+    ([left], [right]) => left - right,
+  ))
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId,
+      tiles: uniqueCoords(revealed),
+    });
+  return { placed, players, units, events };
+}
+
+/**
+ * Reward arrival (`pulp_wars-sa3h`, section 4.6): whether the unit
+ * `occupant` on a city center may be pushed off it to `at`: the Push
+ * conditions (`displacementDestinationLegalV7`: not an Egg, a neutral
+ * unit, Rock Hard, or icebound; on the board, no settlement, enterable by
+ * its own movement and form, so a land unit goes on ice but never on open
+ * water; empty; not in territory allied to it), no treasure chest, and the
+ * occupant is not Unstoppable.
+ */
+function rewardPushLegalV7(
+  state: GameStateV7,
+  occupant: UnitStateV7,
+  at: CoordV7,
+): boolean {
+  return (
+    !unitIsUnstoppableV7(occupant) &&
+    !same(at, occupant.at) &&
+    !state.treasureChests.some((chest) => same(chest, at)) &&
+    displacementDestinationLegalV7(state, occupant, at)
+  );
 }
 
 /**
@@ -10722,7 +10781,9 @@ function placeCitySpawnV7(
  * Turn, by city ID and then in the order they were held, each by the
  * placement rule (`placeCitySpawnV7`), full-HP, at full Shield, homed to
  * the city, and exhausted like any new unit; one that still finds no tile
- * stays held. Each that appears emits `UNIT_REWARD_GRANTED`.
+ * stays held. Each that appears emits `UNIT_REWARD_GRANTED`. A held unit
+ * waits for a free tile: it never pushes the unit on the center
+ * (`pulp_wars-sa3h`; only a reward as it is chosen does).
  */
 function resolveStartTurnHeldRewardsV7(
   state: GameStateV7,

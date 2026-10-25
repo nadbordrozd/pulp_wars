@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r113.current");
-    expect(PRIOR_RULESET_7_IDS.at(-97)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(112);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-97)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r114");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r114.current");
+    expect(PRIOR_RULESET_7_IDS.at(-98)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(113);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-98)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -1178,11 +1178,12 @@ describe("ruleset-7 Goblin reward substitutions", () => {
     }
   });
 
-  // Reward placement (`pulp_wars-spue`, 7r111): the occupant keeps the
-  // center and both Goblins appear on the first two open cells beside it.
-  // (Siege rules, 7r80 to 7r110, gave the first Goblin the center and
-  // moved the occupant; tuning 6, 7r49 to 7r79, left it there too.)
-  it("leaves a center occupant in place and places both Goblins beside it", () => {
+  // Reward arrival (`pulp_wars-sa3h`): the first Goblin takes the center
+  // and pushes the occupant to the first open cell beside it; the second
+  // Goblin appears on the next open cell. (The siege rules, 7r80 to 7r110,
+  // did the same; tuning 6, 7r49 to 7r79, and reward placement,
+  // `pulp_wars-spue`, left the occupant on the center.)
+  it("pushes a center occupant off: the first Goblin takes the center, the second goes beside it", () => {
     const fixture = rewardState("MILITIA", ["CENTER"]);
     const city = humanCity(fixture.state);
     const occupant = unitAtV7(fixture.state, city.at);
@@ -1193,17 +1194,19 @@ describe("ruleset-7 Goblin reward substitutions", () => {
     );
     const firstCell = firstOpenAdjacent(fixture.state, city.at, []);
     if (firstCell === undefined) throw new Error("no open cell");
-    expect(result.state.units.find((unit) => unit.id === occupant.id)).toEqual(
-      occupant,
-    );
+    expect(result.state.units.find((unit) => unit.id === occupant.id)).toEqual({
+      ...occupant,
+      at: firstCell,
+      captureEligible: false,
+    });
     const [first, second] = newUnits(fixture.state, result.state);
-    expect(first?.at).toEqual(firstCell);
+    expect(first?.at).toEqual(city.at);
     expect(second?.at).toEqual(
       firstOpenAdjacent(fixture.state, city.at, [firstCell]),
     );
     expect(
       result.events.some((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("puts the second Goblin two tiles out when no adjacent cell is open", () => {

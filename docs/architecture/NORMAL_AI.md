@@ -169,14 +169,28 @@ steps aside or dies. The policy was kept working, with one rule added.
   ignore where enemy units stand this turn.
 - **The reward choice** (`rewardWithArrivalV7`, `src/ai/v7.ts`, on top of
   [the ladder policy](#the-reward-ladder-rework-pulp_wars-zypi), from
-  `previewRewardArrivalV7`; `7r80` to `7r110`): a reward unit that would
-  shove or kill a besieger on the city's center was taken whenever one was
-  offered (it ended the siege); a reward unit that would kill the seat's
-  own unit on the center, because that unit had no tile to step to, was
-  not taken when the other reward was on offer. **Reward placement**
-  (`pulp_wars-spue`, `pulp-wars-poc-7r110`) retired it with the rule it
-  read: a reward unit now appears beside an occupied center and harms
-  nobody, so the choice is the ladder alone (`preferredReward`).
+  `previewRewardArrivalV7`). **Reward arrival** (`pulp_wars-sa3h`,
+  `pulp-wars-poc-7r114`): a reward unit takes the center and pushes the
+  unit there off, unharmed. A reward unit that pushes a **besieger** off
+  is taken whenever one is offered (the ladder's choice when it does,
+  else the first offered that does): the push ends the siege and the
+  besieger's capture. A reward unit that would push the seat's **own
+  channelling cultist** (a strand, a grip, or a ritual, which a push
+  breaks) is not taken when another reward is on offer. Pushing its own
+  or an ally's garrison costs nothing, so that is not weighed. (From
+  `7r80` to `7r110` the same function also refused a reward unit that
+  would kill the seat's own garrison; from `7r111` to `7r113` reward
+  placement, `pulp_wars-spue`, moved nobody and the choice was the ladder
+  alone.)
+- **Timing a level for a siege** (`levelUpPushesBesiegerV7`,
+  `pulp_wars-sa3h`): a growth action (`previewEconomicV7`) or a Monument
+  that takes a city besieged by a visible hostile unit to a level whose
+  reward choice offers a unit that pushes that besieger off
+  (`previewRewardArrivalV7`) scores priority 1290
+  (`BESIEGED_LEVEL_UP_PRIORITY_V7`) and +40 strategic value: above every
+  other growth (1210 to 1218), below a reward choice (1300) and the
+  attacks that kill. The opening rule that keeps construction below the
+  level-1 capital's growth harvest still applies.
 
 Proven on hand-built states in `tests/unit/ruleset-v7-siege-rules.test.ts`
 and `tests/unit/ruleset-v7-reward-placement.test.ts`; no match was played.

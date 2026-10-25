@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r113`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r114`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,28 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r114` (`pulp_wars-sa3h`; the user, 2026-10-25: "when
+you get a unit from a city level up ... the new unit should appear on the
+city tile and push away whatever unit was standing on that tile before; AI
+should use this effect to protect its cities when there is an enemy
+occupying unit") is **reward arrival**
+([section 4.6](#46-training-and-city-center-spawning)): a reward unit (the
+Militia, the Scouts' unit, the giant) **takes the city center and pushes
+the unit standing there**, friend or foe, to the nearest free tile next
+to the center (the city's territory first, then `(y, x)` order), else
+within two tiles; the pushed unit keeps its Hit Points and statuses and
+loses `captureEligible`, so **a pushed besieger ends its siege**, and a
+pushed cultist's strand breaks as with any push. Nobody is ever killed.
+A unit nothing moves (an Egg, a Jawbreaker, a neutral unit) or one with
+no tile within two stays, and the reward unit appears beside the city by
+the placement of `7r111`, or is held. The second unit of a Goblin or Cult
+Militia appears beside the city; a held unit never pushes.
+`UNIT_SPAWN_DISPLACED` is emitted again (never with `to` null). The reward
+card says "Pushes the Ogre off the city". The Normal AI takes a reward
+that pushes a besieger off and times a besieged city's level-up for it
+([section 16](#16-normal-ai-summary)). A save, replay, or setup of
+`7r113` is rejected, and the browser autosave has a new key. Boards
+are unchanged.
 `pulp-wars-poc-7r113` (`pulp_wars-1pwz`; the user, 2026-10-25: "review the
 tier-3 units - equivalents of the champion/knight/catapult and make sure
 they are all useful") is the **tier-3 review A** of the Goblins, Dinosaurs,
@@ -1715,10 +1737,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r113`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r114`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r113.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r114.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4730,66 +4752,99 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
   the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, Yeti, or
   Hammerer; Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
   Giant, or Brass Titan) appear at their city, hatched (no reward ever
-  creates an Egg) and at full Shield. **Reward placement**
-  (`pulp_wars-spue`, `pulp_wars-rzqf`, `7r111`; the shared rule is
-  `rewardArrivalV7`): **a reward unit never harms a unit already on the
-  board.** It never kills, damages, moves, or pushes anyone, friend or
-  foe; the unit on the center keeps its tile, Hit Points, statuses,
-  activation, `captureEligible`, strands, and grips.
-  - **Where it appears.** On the city center when no unit stands there.
-    When one does (the owner's garrison, an ally, or a hostile unit
-    besieging the city), on the nearest free tile **of the city's
-    territory** that it may stand on; failing that, on the nearest free
-    tile it may stand on **within two tiles of the center**
-    (`REWARD_ARRIVAL_RADIUS_V7`), whoever's land it is. Nearest is the
-    Chebyshev distance from the center, then `(y, x)` order, so the choice
-    is fixed by the board: there is no draw. A territory tile farther out
-    comes before a nearer tile outside the territory.
-  - **A tile it may stand on** (`rewardCellLegalV7`): on the board, land,
-    enterable by its own movement (a Mountain needs its owner's
-    Engineering unless it strides, flies, or is Mountain-born), with no
-    settlement (no village, city, or capital center), no unit, Egg, mound,
-    or Barricade, no treasure, and not in territory allied to it. No reward
-    unit is a ship, so a reward never goes on water.
-  - **Held.** With no such tile the unit is **held** on the city
+  creates an Egg) and at full Shield. **Reward arrival**
+  (`pulp_wars-sa3h`, `7r114`; the user, 2026-10-25: "the new unit
+  should appear on the city tile and push away whatever unit was standing
+  on that tile before"; the shared rule is `rewardArrivalV7`): **a reward
+  unit takes the city center and pushes the unit standing there off**,
+  friend or foe. **Nothing is ever killed or damaged.**
+  - **Where it appears.** On the city center. When a unit stands there
+    (the owner's garrison, an ally, or a hostile unit besieging the city),
+    that unit is pushed to the nearest free tile it may stand on **next to
+    the center**: a tile of the city's territory first, then the first in
+    `(y, x)` order. With none free next to the center it goes to the
+    nearest such tile **within two tiles of the center**
+    (`REWARD_ARRIVAL_RADIUS_V7`), again the city's territory first, then
+    `(y, x)` order. The choice is fixed by the board: there is no draw.
+    The event is `UNIT_SPAWN_DISPLACED` (`from` the center, `to` the tile;
+    `to` is never null since `7r114`).
+  - **A tile the pushed unit may stand on** (`rewardPushLegalV7`, the Push
+    conditions of [section 13.4](#134-after-combat) and a treasure check):
+    on the board, no settlement (no village, city, or capital center),
+    enterable by the pushed unit's own movement and form with its owner's
+    technologies (a Mountain needs Engineering unless it strides, flies, or
+    is Mountain-born; a land unit may go on ice but never on open water),
+    no unit, Egg, mound, or Barricade, no treasure, and not in territory
+    allied to the pushed unit (its own territory is fine).
+  - **What the push does.** The pushed unit keeps its Hit Points,
+    statuses, activation, home city, and kills; it loses
+    `captureEligible`, so **a besieger pushed off a center no longer
+    besieges it and cannot capture it** next turn. Like any push, it breaks
+    a cultist's strand, a Thing's grip, and a place in a ritual (the one
+    disruption rule, RULESET_7_CULTISTS.md section 6.2). The pushed unit
+    and the reward unit each reveal around them for their owners.
+  - **What is never pushed.** An Egg, a neutral unit (an Unbound daemon,
+    the Monster), a Rock Hard unit (the Candy Jawbreaker), an Unstoppable
+    Herald, and an icebound boat: nothing moves them.
+  - **Beside the city.** When the unit on the center is never pushed, or
+    has no tile within two to go to, the reward unit appears beside the
+    city by the placement of `7r111` (`pulp_wars-spue`): on the nearest
+    free tile **of the city's territory** that it may stand on, failing
+    that on the nearest free tile it may stand on within two tiles of the
+    center, whoever's land it is (nearest is the Chebyshev distance, then
+    `(y, x)` order; a territory tile farther out comes before a nearer
+    tile outside the territory). The unit on the center stays, and a
+    besieger keeps its siege.
+  - **A tile the reward unit may stand on** (`rewardCellLegalV7`): on the
+    board, land, enterable by its own movement (a Mountain needs its
+    owner's Engineering unless it strides, flies, or is Mountain-born),
+    with no settlement, no unit, Egg, mound, or Barricade, no treasure,
+    and not in territory allied to it. No reward unit is a ship, so a
+    reward never goes on water.
+  - **Held.** With no such tile either, the unit is **held** on the city
     (`CityStateV7.heldRewardUnits`, the reward's level and the unit's role,
     in the order granted; absent when empty) and is not lost: it gets no
     unit ID and emits nothing yet. At each Start Turn of the city's owner,
     after the economy steps and before the reward settlement, every held
-    unit (by city ID, then in order) is placed by the same rule and emits
-    `UNIT_REWARD_GRANTED`, exhausted like any new unit; one that still
-    finds no tile stays held. A capture drops the held units with the
-    city.
-  - **The siege goes on.** A reward unit no longer lifts a siege: a
-    besieger stays on the center and keeps its `captureEligible`. A reward
-    is always the city owner's (`CITY_NOT_OWNED` otherwise).
+    unit (by city ID, then in order) is placed **beside the city** by the
+    rule above (a held unit never pushes: it waits for a free tile) and
+    emits `UNIT_REWARD_GRANTED`, exhausted like any new unit; one that
+    still finds no tile stays held. A capture drops the held units with
+    the city.
+  - A reward is always the city owner's (`CITY_NOT_OWNED` otherwise).
   - **The giant** is one tile wide like every unit and arrives the same
     way.
   - **Preview.** `previewRewardArrivalV7(view, cityId, reward)` is the
-    public preview: the role and where the (first) unit appears, `at` null
-    when it would be held. The reward card adds a line when the center is
-    taken: "Appears beside the city", or "No room near the city: arrives
-    when a tile is free". There is no loss to warn of.
+    public preview: the role, where the (first) unit appears (`at`, null
+    when it would be held), and the unit it pushes off the center
+    (`pushedUnitId`, to `pushTo`). A foreign unit's technologies are
+    private, so its push tile is read as if it had neither Engineering nor
+    Navigation; `exact` is false when its Engineering would change the
+    arrival. The reward card adds a line when the center is taken:
+    "Pushes the Ogre off the city" (the pushed unit's name), "Appears
+    beside the city", or "No room near the city: arrives when a tile is
+    free". There is no loss to warn of.
   - **History.** Before `7r49` the occupant always moved, in `(y, x)`
     order with no territory preference, and was removed without a death
     event when it had no cell. **Round 6** (`7r49` to `7r79`) left the
     occupant on the center and put the reward unit beside it, displacing
     only when no cell beside the center was free. **The siege rules**
     (`pulp_wars-0pgd`, `7r80` to `7r110`) gave the center to the reward
-    unit: the unit standing there stepped to a cell beside it
-    (`UNIT_SPAWN_DISPLACED`), losing `captureEligible` (which ended a
-    siege) and, like a Push, a cultist's strand or a Thing's grip, and
-    died with no cell to step to (`UNIT_DIED` cause `DISPLACED`, a
-    removal with no credit, Plunder, Grave, or blast); a Jawbreaker or a
-    rooted Tentacle held the center. Neither event is emitted since
-    `7r111`; both still parse in older logs.
+    unit: the unit standing there stepped to a cell next to it and died
+    with no cell to step to (`UNIT_DIED` cause `DISPLACED`, a removal with
+    no credit, Plunder, Grave, or blast). **Reward placement**
+    (`pulp_wars-spue`, `7r111` to `7r113`) never moved the unit on
+    the center: the reward unit appeared beside it and a reward never
+    ended a siege. Since `7r114` the push is back, reaching two
+    tiles out, and nobody dies; `DISPLACED` still parses in older logs.
 - **Goblin Militia** is two Goblins and a Cult Militia two Initiates
-  (`MILITIA_FIGHTERS_V7`): each appears in turn by the rule above (with a
-  free center the first takes it and the second goes beside it), and one
-  with no tile is held. Each is full-HP, exhausted, homed to the city, may
-  exceed capacity, and emits `UNIT_REWARD_GRANTED`; the reward ID stays
-  `MILITIA`. (Before `7r111` the second appeared on the first adjacent
-  cell in `(y, x)` order or was not created.)
+  (`MILITIA_FIGHTERS_V7`): the first takes the center (pushing the unit
+  there off by the rule above), and the second appears beside the city by
+  the placement rule; one with no tile is held. Each is full-HP,
+  exhausted, homed to the city, may exceed capacity, and emits
+  `UNIT_REWARD_GRANTED`; the reward ID stays `MILITIA`. (Before `7r111`
+  the second appeared on the first adjacent cell in `(y, x)` order or was
+  not created.)
 - New units are full-HP and exhausted until their owner's next Start Turn.
 
 ### 4.7 Siege and capture
@@ -4807,10 +4862,20 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
   places a building on a city center (Walls are a reward, and tile
   commands never target a site), so nothing is built under the besieger.
   Pending rewards can still be chosen (Walls included: they are the
-  city's, not a building on a tile); a reward **unit** appears beside the
-  city and leaves the besieger where it is, so the siege goes on
-  ([section 4.6](#46-training-and-city-center-spawning); from `7r80` to
-  `7r110` it took the center and shoved the besieger off). The city's Eggs
+  city's, not a building on a tile). **A reward unit breaks a siege**
+  (`pulp_wars-sa3h`, `7r114`): it takes the center and pushes the
+  besieger to a free tile next to it, or within two, unharmed; the pushed
+  besieger loses `captureEligible`, so it neither besieges nor captures
+  the city
+  ([section 4.6](#46-training-and-city-center-spawning)). A besieger that
+  nothing moves (a Jawbreaker, an Unbound daemon) or that has no tile to
+  go to stays, and the reward unit appears beside the city. (From `7r80`
+  to `7r110` the push also broke a siege, and killed a besieger with no
+  tile; from `7r111` to `7r113` a reward unit always appeared beside
+  the city and the siege went on.) Leveling a besieged city is therefore
+  a way to lift the siege: its tile economy still builds, and a level
+  that offers a Militia, Scouts, or the giant brings the unit that does
+  it. The city's Eggs
   still count down and hatch. A flyer (Saucer, Mothership, Gyrocopter) and a Sabretooth
   besiege like any land unit since `pulp_wars-ke95` (they never stood on a
   hostile or neutral center before). A mound never stands on a center, so a
@@ -9188,12 +9253,19 @@ Harbours from it.
   cities.)
 - **The siege rules** (`pulp_wars-0pgd`, `7r80`). The policy builds in a
   besieged city whenever it would build anyway (it reads the offered
-  commands, and a siege no longer removes them). Its reward choice is the
-  ladder alone since reward placement (`pulp_wars-spue`, `7r111`): a
-  reward unit harms nobody, so where it appears changes nothing. (From
-  `7r80` to `7r110` `rewardWithArrivalV7` took a reward unit that would
-  shove or kill a besieger whenever one was offered, and refused one that
-  would kill the seat's own garrison when the other reward was on offer.)
+  commands, and a siege no longer removes them). **Reward arrival**
+  (`pulp_wars-sa3h`, `7r114`): its reward choice
+  (`rewardWithArrivalV7`, from `previewRewardArrivalV7`) takes a reward
+  unit that pushes a besieger off the city's center whenever one is
+  offered (the ladder's own choice when it does), and does not take one
+  that would push the seat's own channelling cultist (a strand, a grip, or
+  a ritual) when another reward is on offer; pushing its own or an ally's
+  garrison costs nothing else. It also times its levels for a siege: a
+  growth action or Monument that takes a besieged city to a level whose
+  reward pushes the besieger off has priority 1290, above every other
+  growth (1210 to 1218) and below a reward choice (1300) and the attacks
+  that kill. (From `7r111` to `7r113` the choice was the ladder
+  alone: a reward unit moved nobody.)
 - **Any unit can capture** (`pulp_wars-ke95`; mechanics only, no AI
   tuning yet). The policy reads every capturing land unit as a capturer
   (its village errands, sieges, villages first, and the counts of units

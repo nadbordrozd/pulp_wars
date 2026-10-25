@@ -372,9 +372,10 @@ describe("Ruleset 7 siege rules in the interface", () => {
     app.destroy();
   });
 
-  it("says on the reward where its unit appears when the center is taken", () => {
-    // Reward placement (`pulp_wars-spue`, 7r111): nothing on the center is
-    // moved or harmed, so the card only says where the new unit goes.
+  it("says on the reward which unit it pushes off the center, or where it appears", () => {
+    // Reward arrival (`pulp_wars-sa3h`): the reward unit takes the center
+    // and pushes the unit there off, unharmed; the card names that unit, or
+    // says where the new unit goes when nothing can be pushed.
     const free = rewardStateV7("MILITIA", "ORIGINAL");
     const zeroth = open(free.state);
     expect(
@@ -393,11 +394,11 @@ describe("Ruleset 7 siege rules in the interface", () => {
     const note = required<HTMLElement>(
       '[data-action="reward-militia"] .v7-reward-arrival',
     );
-    expect(note.textContent).toBe("Appears beside the city");
-    expect(note.dataset.rewardArrival).toBe("beside");
+    expect(note.textContent).toBe("Pushes the Guard off the city");
+    expect(note.dataset.rewardArrival).toBe("push");
     expect(note.classList.contains("is-warning")).toBe(false);
     expect(militia.getAttribute("aria-label")).toMatch(
-      /\. Appears beside the city$/,
+      /\. Pushes the Guard off the city$/,
     );
     expect(
       document.querySelector(
@@ -416,8 +417,22 @@ describe("Ruleset 7 siege rules in the interface", () => {
     const second = open(besieged.state);
     expect(
       required('[data-action="reward-militia"] .v7-reward-arrival').textContent,
-    ).toBe("Appears beside the city");
+    ).toBe("Pushes the Fighter off the city");
     second.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    // Nothing moves a Jawbreaker (Rock Hard): the Militia goes beside it.
+    const rock = rewardStateV7("MILITIA", "ORIGINAL", [], {
+      faction: "CANDY",
+      pieces: [{ role: "SWORDSMAN", at: CENTER }],
+    });
+    const beside = open(rock.state);
+    const placed = required<HTMLElement>(
+      '[data-action="reward-militia"] .v7-reward-arrival',
+    );
+    expect(placed.textContent).toBe("Appears beside the city");
+    expect(placed.dataset.rewardArrival).toBe("beside");
+    beside.app.destroy();
 
     document.body.innerHTML = '<div id="app"></div>';
     // Own Guards on every tile within two of the center: no room at all.

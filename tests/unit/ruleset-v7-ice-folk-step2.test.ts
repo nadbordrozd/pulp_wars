@@ -46,7 +46,7 @@ import { iceFieldV7, type IcePieceV7 } from "../fixtures/v7-ice-folk";
 // Humans against the Ice Folk AI and as the Ice Folk. One rule changed (an
 // Ice Folk city's Survey grants a free Sled, Scouts, as the other five
 // factions of the army policy have), so the identity is
-// `pulp-wars-poc-7r113`. An Ice Folk seat of the Normal AI plays the army
+// `pulp-wars-poc-7r114`. An Ice Folk seat of the Normal AI plays the army
 // rules in a match of Humans, Undead, Goblins, Martians, Dinosaurs, and Ice
 // Folk: it researches toward its own units in its own order, trains before
 // it researches while it is short of capturers, caps its Musk Oxen, counts
@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
-    expect(PRIOR_RULESET_7_IDS.slice(-55, -53)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r114");
+    expect(PRIOR_RULESET_7_IDS.slice(-56, -54)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r113.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-55, -53)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r114.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -54)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -235,13 +235,13 @@ describe("step two of the Ice Folk pass: Scouts", () => {
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
     ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
-    // Without Scouting, beside the garrison on the center (reward
-    // placement, `pulp_wars-spue`, 7r111).
+    // Without Scouting, on the center, pushing the garrison off (reward
+    // arrival, `pulp_wars-sa3h`).
     const sled = chosen.state.units.find(
       (unit) => unit.ownerId === actor && unit.role === "RAIDER",
     );
     if (sled === undefined) throw new Error("no Sled");
-    expect(gap(sled.at, capital.at)).toBe(1);
+    expect(gap(sled.at, capital.at)).toBe(0);
     expect(effectiveRoleRuleV7("RAIDER", "ICE_FOLK").label).toBe("Sled");
   });
 });

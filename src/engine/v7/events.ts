@@ -1119,9 +1119,10 @@ export type DomainEventV7 =
        * `from` of `cityId`; the unit that stood there (`displacedUnitId`,
        * of any owner) stepped to `to`, or died when `to` is null (its
        * `UNIT_DIED` cause `DISPLACED` follows; siege rules, `7r80`). Not
-       * emitted since reward placement (`pulp_wars-spue`, `7r111`): a
-       * reward unit appears beside an occupied center. It still parses in
-       * older logs.
+       * emitted from `7r111` (reward placement, `pulp_wars-spue`: a reward
+       * unit appeared beside an occupied center) until reward arrival
+       * (`pulp_wars-sa3h`), which pushes the unit on the center to a free
+       * tile next to it or within two; `to` is never null since.
        */
       readonly kind: "UNIT_SPAWN_DISPLACED";
       readonly playerId: PlayerId;
@@ -2134,7 +2135,8 @@ export type DomainEventV7 =
          * to step to (after `UNIT_SPAWN_DISPLACED` with `to` null). A
          * removal: no credit, Plunder, Grave, Crumbs, or blast. Not emitted
          * since reward placement (`pulp_wars-spue`, `7r111`): a reward
-         * unit harms nobody. It still parses in older logs.
+         * unit harms nobody (reward arrival, `pulp_wars-sa3h`, pushes but
+         * never kills). It still parses in older logs.
          */
         | "DISPLACED";
     }

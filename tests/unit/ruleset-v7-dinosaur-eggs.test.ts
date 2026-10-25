@@ -2749,16 +2749,19 @@ describe("ruleset-7 revision-19 Eggs and reward displacement", () => {
     const occupant = unitAtV7(state, { x: 8, y: 8 });
     const eggs = state.units.filter((unit) => unit.form === "EGG");
     const result = applyOkV7(state, actor, command);
-    // Reward placement (`pulp_wars-spue`, 7r111): the Shaman keeps the
-    // center and the Caveman appears on the first free tile beside it,
-    // past the two Eggs. (Siege rules, 7r80 to 7r110, gave the Caveman the
-    // center and moved the Shaman to that tile.)
-    expect(kinds(result.events)).not.toContain("UNIT_SPAWN_DISPLACED");
+    // Reward arrival (`pulp_wars-sa3h`): the Caveman takes the center and
+    // the Shaman is pushed to the first free tile beside it, past the two
+    // Eggs. (The siege rules, 7r80 to 7r110, did the same; reward
+    // placement, `pulp_wars-spue`, left the Shaman on the center.)
+    expect(kinds(result.events)).toContain("UNIT_SPAWN_DISPLACED");
     expect(result.state.units.filter((unit) => unit.form === "EGG")).toEqual(
       eggs,
     );
-    expect(unitAtV7(result.state, { x: 8, y: 8 })).toEqual(occupant);
-    expect(unitAtV7(result.state, { x: 9, y: 7 })).toMatchObject({
+    expect(unitAtV7(result.state, { x: 9, y: 7 })).toEqual({
+      ...occupant,
+      at: { x: 9, y: 7 },
+    });
+    expect(unitAtV7(result.state, { x: 8, y: 8 })).toMatchObject({
       role: "FIGHTER",
       form: "LAND",
     });

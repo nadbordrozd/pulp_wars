@@ -7313,20 +7313,27 @@ export function previewGateV7(
 }
 
 /**
- * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
- * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): the public
- * preview of the unit a city reward grants: its role and where it appears
- * (`at`: the center when no unit stands on it, else the nearest free tile
+ * Reward arrival (`pulp_wars-sa3h`; `pulp_wars-spue`, `pulp_wars-rzqf`;
+ * RULESET_7_CURRENT.md section 4.6): the public preview of the unit a city
+ * reward grants: its role, where it appears (`at`: the center when no unit
+ * stands on it or when it pushes that unit off; else the nearest free tile
  * of the city's territory, then within two tiles of the center; null when
- * there is no such tile and the unit is held until one is free). A reward
- * never moves or harms the unit on the center. For a Militia of two units
- * it is the first unit's tile.
+ * there is no such tile and the unit is held until one is free), and the
+ * unit it pushes off the center (`pushedUnitId`, to `pushTo`), friend or
+ * foe, or null. A foreign occupant's technology is private, so its push
+ * tile is computed as if it had neither Engineering nor Navigation; `exact`
+ * is false when its Engineering would change the arrival (a Mountain
+ * earlier in the order). For a Militia of two units it is the first unit's
+ * arrival.
  */
 export interface RewardArrivalPreviewV7 {
   readonly cityId: CityId;
   readonly reward: RewardIdV7;
   readonly role: UnitRoleIdV7;
   readonly at: CoordV7 | null;
+  readonly pushedUnitId: UnitId | null;
+  readonly pushTo: CoordV7 | null;
+  readonly exact: boolean;
 }
 
 /**
@@ -7372,22 +7379,75 @@ export function previewRewardArrivalV7(
       return false;
     return !tileOccupiedV7(view, at);
   };
-  return {
-    cityId,
-    reward,
-    role,
-    at: rewardArrivalV7({
+  const occupant = view.units.find(
+    (unit) => unit.hp > 0 && same(unit.at, city.at),
+  );
+  // The push predicate (`rewardPushLegalV7`, the Push conditions) on the
+  // view.
+  const own = occupant?.ownerId === viewer.id;
+  const occupantMayStand =
+    (engineering: boolean) =>
+    (at: CoordV7): boolean => {
+      if (
+        occupant === undefined ||
+        occupant.form === "EGG" ||
+        isNeutralOwnerV7(occupant.ownerId) ||
+        unitIsImmovableV7(view, occupant) ||
+        unitIsIceboundV7(view, occupant) ||
+        unitIsUnstoppableV7(occupant)
+      )
+        return false;
+      const tile = tileAtView(view, at);
+      if (tile?.explored !== true || tile.site !== null) return false;
+      if (view.treasureChests.some((chest) => same(chest, at))) return false;
+      if (
+        !canEnterTerrainV7({
+          terrain: tile.terrain,
+          movementMode: unitMovementModeV7(view, occupant),
+          afloat: isAfloatFormV7(occupant.form),
+          ice: isIceAtV7(view, at),
+          engineering,
+          navigation: own && viewer.researchedTechs.includes("NAVIGATION"),
+          mountainBorn: unitIsMountainBornV7(view, occupant),
+        })
+      )
+        return false;
+      if (
+        tile.territoryOwnerId !== null &&
+        publicAllied(view, occupant.ownerId, tile.territoryOwnerId)
+      )
+        return false;
+      return !tileOccupiedV7(view, at, occupant.id);
+    };
+  const arrivalFor = (engineering: boolean) =>
+    rewardArrivalV7({
       center: city.at,
-      centerFree: !view.units.some(
-        (unit) => unit.hp > 0 && same(unit.at, city.at),
-      ),
+      occupant: occupant ?? null,
+      pushes: true,
       tiles: view.board.tiles.map((tile) => tile.at),
+      occupantMayStand: occupantMayStand(engineering),
       mayStand,
       cityTerritory: (at) => {
         const tile = tileAtView(view, at);
         return tile?.explored === true && tile.territoryCityId === city.id;
       },
-    }),
+    });
+  const arrival = arrivalFor(
+    own && viewer.researchedTechs.includes("ENGINEERING"),
+  );
+  const withEngineering = own ? arrival : arrivalFor(true);
+  const sameAt = (left: CoordV7 | null, right: CoordV7 | null): boolean =>
+    left === null || right === null ? left === right : same(left, right);
+  return {
+    cityId,
+    reward,
+    role,
+    at: arrival.at,
+    pushedUnitId: arrival.pushedUnitId,
+    pushTo: arrival.pushTo,
+    exact:
+      sameAt(arrival.at, withEngineering.at) &&
+      sameAt(arrival.pushTo, withEngineering.pushTo),
   };
 }
 

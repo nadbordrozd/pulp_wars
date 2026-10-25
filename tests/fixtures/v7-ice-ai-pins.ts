@@ -24,7 +24,10 @@ import { frozenArenaV7 } from "./v7-frozen-sea";
  * the policy before the change (`v7-ice-ai-no-ice-folk-decisions.json`).
  * Reward placement (`pulp_wars-spue`, 7r111) re-recorded the four traces
  * that choose a Militia while a unit stands on the center: the Militia now
- * appears beside it, so the decisions after the reward differ.
+ * appears beside it, so the decisions after the reward differ. Reward
+ * arrival (`pulp_wars-sa3h`) re-recorded the traces whose reward unit
+ * (a Militia or the Scouts' unit) meets a unit on the center: it now takes
+ * the center and pushes that unit off, so the decisions after it differ.
  */
 
 export const ICE_AI_PIN_MAP_TYPES_V7: readonly MapTypeV7[] = [

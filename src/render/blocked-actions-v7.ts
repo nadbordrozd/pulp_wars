@@ -6,6 +6,7 @@ import {
   type PlayerViewV7,
   type RewardIdV7,
 } from "../engine/index";
+import { unitDisplayNameV7 } from "./dinosaur-presentation-v7";
 
 /**
  * Blocked actions of the dock (bead `pulp_wars-2yc.36`): an action the
@@ -269,27 +270,48 @@ export const ENEMY_ON_TILE_TOOLTIP_V7 =
 export const BESIEGED_TOOLTIP_V7 =
   "An enemy unit stands on the center: no income and no new units. The city can still build";
 
-/** Reward placement (`pulp_wars-spue`, 7r111): the reward card's line. */
+/**
+ * Reward arrival (`pulp_wars-sa3h`; `pulp_wars-spue`): the reward card's
+ * line when the center is taken.
+ */
 export const REWARD_ARRIVAL_BESIDE_V7 = "Appears beside the city";
 export const REWARD_ARRIVAL_HELD_V7 =
   "No room near the city: arrives when a tile is free";
+/** The line of a reward unit that pushes `unit` (its name) off the center. */
+export function rewardArrivalPushTextV7(unit: string): string {
+  return `Pushes the ${unit} off the city`;
+}
 
 /**
- * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`, 7r111): where a
- * reward unit appears, in a few words for the reward choice, from the
- * engine's public preview (`previewRewardArrivalV7`); null when the reward
- * grants no unit or the unit appears on the free center. A reward never
- * moves or harms the unit on the center, so there is no loss to warn of.
+ * Reward arrival (`pulp_wars-sa3h`; `pulp_wars-spue`, `pulp_wars-rzqf`):
+ * what a reward unit does on arrival, in a few words for the reward
+ * choice, from the engine's public preview (`previewRewardArrivalV7`): it
+ * pushes the unit on the center off ("Pushes the Ogre off the city"),
+ * appears beside the city when there is no room to push, or is held; null
+ * when the reward grants no unit or the unit appears on the free center.
+ * Nothing is ever killed or damaged, so there is no loss to warn of.
  */
 export function rewardArrivalNoteV7(
   view: PlayerViewV7,
   cityId: CityId,
   reward: RewardIdV7,
-): { readonly text: string; readonly placement: "BESIDE" | "HELD" } | null {
+): {
+  readonly text: string;
+  readonly placement: "PUSH" | "BESIDE" | "HELD";
+} | null {
   const arrival = previewRewardArrivalV7(view, cityId, reward);
   if (arrival === null) return null;
   if (arrival.at === null)
     return { text: REWARD_ARRIVAL_HELD_V7, placement: "HELD" };
+  const pushed =
+    arrival.pushedUnitId === null
+      ? undefined
+      : view.units.find((unit) => unit.id === arrival.pushedUnitId);
+  if (pushed !== undefined)
+    return {
+      text: rewardArrivalPushTextV7(unitDisplayNameV7(view, pushed)),
+      placement: "PUSH",
+    };
   const city = view.cities.find((candidate) => candidate.id === cityId);
   return city === undefined ||
     (arrival.at.x === city.at.x && arrival.at.y === city.at.y)

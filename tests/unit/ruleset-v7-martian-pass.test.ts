@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r113`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r114`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r113.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-62, -60)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r114");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r114.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-63, -61)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-62, -60)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-63, -61)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -507,13 +507,13 @@ describe("the Martian pass: Scouts", () => {
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
     ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
-    // Without Scouting; beside the garrison on the center (reward
-    // placement, `pulp_wars-spue`, 7r111); at its Shield maximum.
+    // Without Scouting; on the center, pushing the garrison off (reward
+    // arrival, `pulp_wars-sa3h`); at its Shield maximum.
     const saucer = chosen.state.units.find(
       (unit) => unit.ownerId === actor && unit.role === "RAIDER",
     );
     if (saucer === undefined) throw new Error("no Saucer");
-    expect(gap(saucer.at, capital.at)).toBe(1);
+    expect(gap(saucer.at, capital.at)).toBe(0);
     expect(shieldAtV7(chosen.state, saucer.at)).toBe(2);
     expect(effectiveRoleRuleV7("RAIDER", "MARTIAN").label).toBe("Saucer");
     expect(scoutsRewardTextV7("Saucer")).toBe(

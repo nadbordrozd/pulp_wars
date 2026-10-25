@@ -264,8 +264,12 @@ describe("the shared terrain-entry rule", () => {
       // `publicBooJumpV7`: the Rift, as the public Push reads it); was 9:
       // the public reward-arrival preview (`pulp_wars-0pgd`,
       // `previewRewardArrivalV7`, the public copy of the reducer's
-      // `rewardCellLegalV7`; tested in ruleset-v7-siege-rules.test.ts).
-      "src/engine/v7/query.ts": 10,
+      // `rewardCellLegalV7`; tested in ruleset-v7-siege-rules.test.ts);
+      // was 10: the public tile a reward unit pushes the unit on the center
+      // to (`pulp_wars-sa3h`, the public copy of the reducer's
+      // `rewardPushLegalV7`, the Push conditions; tested in
+      // ruleset-v7-reward-placement.test.ts).
+      "src/engine/v7/query.ts": 11,
       // was 4: the canonical gate displacement (`pulp_wars-737.14`).
       // was 5: the tile a mission's reinforcement arrives on
       // (`pulp_wars-v642.1`, `missionArrivalTileV7`: the unit's own

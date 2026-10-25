@@ -65,7 +65,11 @@ import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
 import { crackedDefense2V7, unitIsCrackedV7 } from "../engine/v7/ninth-unit";
 import { publicUnitHasTerrainCoverV7 } from "../engine/v7/units";
-import { cooperativeAlliesV7, marketCoinsV7 } from "../engine/v7/economy";
+import {
+  cooperativeAlliesV7,
+  marketCoinsV7,
+  rewardCandidatesForLevelV7,
+} from "../engine/v7/economy";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
@@ -111,6 +115,7 @@ import {
   previewMassBeamDownV7,
   queryCombatPreviewV7,
   previewSeizeV7,
+  previewRewardArrivalV7,
   queryPublicEconomicPotentialsV7,
   queryPublicPlannedImprovementV7,
   queryPublicRedevelopmentChangesImprovementV7,
@@ -2046,12 +2051,20 @@ function mandatoryWorkDeltaV7(view: PlayerViewV7, command: CommandV7): number {
 }
 
 function boomLevelsReached(city: PlayerViewV7["cities"][number]): number {
+  return levelsReachedWithPopulationV7(city, 3);
+}
+
+/** The levels `city` reaches when it gains `added` population. */
+function levelsReachedWithPopulationV7(
+  city: PlayerViewV7["cities"][number],
+  added: number,
+): number {
   // The Cultists (`pulp_wars-mch9.4`): less what the city gave up in
   // Offerings (0 for a city that never made one).
   const total =
     city.permanentPopulation +
     city.economicPopulation +
-    3 -
+    added -
     cityOfferedPopulationV7(city);
   if (!Number.isSafeInteger(total)) return Number.POSITIVE_INFINITY;
   let level = city.level;
@@ -14692,6 +14705,18 @@ function scoreCommandWithContext(
         objectiveValue += 8 - corridor.missingRoadKeys.length;
       }
     }
+    // Reward arrival (`pulp_wars-sa3h`): a level that brings a reward unit
+    // to push a besieger off its city is taken before any other growth.
+    if (
+      priority >= 0 &&
+      economic.preview.levelsReached.length > 0 &&
+      economic.preview.populationDeltaByCity.some((item) =>
+        levelUpPushesBesiegerV7(view, item.cityId, item.delta),
+      )
+    ) {
+      priority = Math.max(priority, BESIEGED_LEVEL_UP_PRIORITY_V7);
+      strategicValue += BESIEGED_LEVEL_UP_VALUE_V7;
+    }
   }
 
   if (command.kind === "BUILD_MONUMENT") {
@@ -14721,6 +14746,18 @@ function scoreCommandWithContext(
         );
       futureValue = scorePublicSpatialPlanV7(view, command);
       priority = imminent > 0 ? 1210 : 1150;
+      // Reward arrival (`pulp_wars-sa3h`): as for a growth action.
+      if (
+        imminent > 0 &&
+        levelUpPushesBesiegerV7(
+          view,
+          preview.preview.cityId,
+          preview.preview.populationAdded,
+        )
+      ) {
+        priority = BESIEGED_LEVEL_UP_PRIORITY_V7;
+        strategicValue += BESIEGED_LEVEL_UP_VALUE_V7;
+      }
       // Tuning 6 (`pulp_wars-w49.6`): a Monument is free population.
       if (context.army && !context.naval.active)
         priority = ARMY_GROWTH_PRIORITY_V7;
@@ -26766,12 +26803,130 @@ function preferredReward(
         item.reachedLevel === command.reachedLevel,
     )
     .map((item) => item.reward);
-  // Reward placement (`pulp_wars-spue`, 7r111): a reward unit never moves
-  // or harms the unit on the center, so where it appears does not change
-  // the choice (siege rules, 7r80 to 7r110, took a reward unit to shove a
-  // besieger off and refused one that would kill the garrison).
-  return ladderRewardV7(context, command, offered);
+  return rewardWithArrivalV7(
+    context.view,
+    command.cityId,
+    offered,
+    ladderRewardV7(context, command, offered),
+  );
 }
+
+/**
+ * Reward arrival (`pulp_wars-sa3h`, RULESET_7_CURRENT.md section 4.6): a
+ * reward unit takes its city's center and pushes the unit standing there
+ * to a free tile (`previewRewardArrivalV7`), never harming it. Given the
+ * rewards on offer for the city and the one the ladder policy would take
+ * (`plain`):
+ *
+ * - a reward unit that pushes **a besieger** (a hostile unit) off the
+ *   center is taken whenever one is offered: the push ends the siege and
+ *   the besieger's capture (`plain` when it pushes, else the first offered
+ *   that does);
+ * - a reward unit that would push **the seat's own channelling cultist**
+ *   (a strand, a grip, or a ritual: a push breaks it) is not taken when
+ *   another reward is offered that does not push it.
+ *
+ * Otherwise `plain`. Pushing the seat's own or an ally's garrison costs
+ * nothing else: it keeps its Hit Points and statuses.
+ */
+export function rewardWithArrivalV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+  offered: readonly (typeof REWARD_IDS_V7)[number][],
+  plain: (typeof REWARD_IDS_V7)[number],
+): (typeof REWARD_IDS_V7)[number] {
+  const pushedBy = (reward: (typeof REWARD_IDS_V7)[number]): UnitId | null =>
+    previewRewardArrivalV7(view, cityId, reward)?.pushedUnitId ?? null;
+  const lifts = (reward: (typeof REWARD_IDS_V7)[number]): boolean =>
+    besiegerUnitV7(view, pushedBy(reward)) !== null;
+  if (lifts(plain)) return plain;
+  const lifting = offered.find(lifts);
+  if (lifting !== undefined) return lifting;
+  const breaks = (reward: (typeof REWARD_IDS_V7)[number]): boolean => {
+    const unitId = pushedBy(reward);
+    return unitId !== null && ownChannellerV7(view, unitId);
+  };
+  if (!breaks(plain)) return plain;
+  return offered.find((reward) => !breaks(reward)) ?? plain;
+}
+
+/**
+ * The visible unit `unitId` when it is hostile to the viewer (not its own,
+ * an ally's, or neutral): a unit on one of its city centers besieges it.
+ */
+function besiegerUnitV7(
+  view: PlayerViewV7,
+  unitId: UnitId | null,
+): PlayerViewV7["units"][number] | null {
+  if (unitId === null) return null;
+  const unit = view.units.find((item) => item.id === unitId);
+  return unit === undefined ||
+    unit.ownerId === view.viewer.id ||
+    isNeutralOwnerV7(unit.ownerId) ||
+    cooperativeAlliesV7(
+      view.setup,
+      view.humanPlayerId,
+      unit.ownerId,
+      view.viewer.id,
+    )
+    ? null
+    : unit;
+}
+
+/**
+ * The Cultists: whether the viewer's own unit `unitId` holds a strand, a
+ * grip, or a place in a ritual, which a push breaks.
+ */
+function ownChannellerV7(view: PlayerViewV7, unitId: UnitId): boolean {
+  if (view.units.find((unit) => unit.id === unitId)?.ownerId !== view.viewer.id)
+    return false;
+  const cult = view.cult as PlayerViewV7["cult"] | undefined;
+  if (cult === undefined) return false;
+  return (
+    cult.strands.some((strand) => strand.cultistUnitId === unitId) ||
+    cult.grips.some(
+      (grip) => grip.cultistUnitId === unitId || grip.thingUnitId === unitId,
+    ) ||
+    cult.rituals.some(
+      (ritual) =>
+        ritual.leaderUnitId === unitId ||
+        ritual.chanterUnitIds.includes(unitId),
+    )
+  );
+}
+
+/**
+ * Reward arrival (`pulp_wars-sa3h`): the AI times a city level for a
+ * siege. True when the growth `added` takes the viewer's city `cityId`,
+ * besieged by a visible hostile unit on its center, to a level whose
+ * reward choice offers a unit that pushes that besieger off
+ * (`previewRewardArrivalV7`): the level-up command that does it is worth
+ * more than any other growth (`BESIEGED_LEVEL_UP_PRIORITY_V7`).
+ */
+function levelUpPushesBesiegerV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+  added: number,
+): boolean {
+  const city = view.cities.find((item) => item.id === cityId);
+  if (city === undefined || city.ownerId !== view.viewer.id || added <= 0)
+    return false;
+  const occupant = view.units.find(
+    (unit) => unit.hp > 0 && same(unit.at, city.at),
+  );
+  if (occupant === undefined || besiegerUnitV7(view, occupant.id) === null)
+    return false;
+  if (levelsReachedWithPopulationV7(city, added) === 0) return false;
+  return rewardCandidatesForLevelV7(city.level + 1).some(
+    (reward) =>
+      previewRewardArrivalV7(view, cityId, reward)?.pushedUnitId ===
+      occupant.id,
+  );
+}
+
+/** Above every other growth (1210 to 1212), below a reward choice (1300). */
+const BESIEGED_LEVEL_UP_PRIORITY_V7 = 1290;
+const BESIEGED_LEVEL_UP_VALUE_V7 = 40;
 
 /** The ladder policy of {@link preferredReward}, before the arrival rule. */
 function ladderRewardV7(

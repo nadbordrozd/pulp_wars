@@ -82,7 +82,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r113`;
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r114`;
  * docs/product/RULESET_7_ECONOMY_REJIG.md, and Part C of
  * docs/product/RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md): mills count
  * contributors across their owner's cities, Monuments give 3, research is
@@ -389,11 +389,11 @@ function harvest(state: GameStateV7, where: CoordV7): Step {
 
 describe("the economy rejig: identity", () => {
   it("is 7r54, with 7r53 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r113");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r113.current");
-    expect(PRIOR_RULESET_7_IDS.at(-60)).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r114");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r114.current");
+    expect(PRIOR_RULESET_7_IDS.at(-61)).toBe("pulp-wars-poc-7r53");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-60)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-61)).toBe(
       "pulpWars.save.v7r53.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -1366,14 +1366,18 @@ describe("the reward ladder: the giant in every city at every level from 5", () 
       expect(giants(taken.state)).toHaveLength(before + 1);
       const giant = giants(taken.state).at(-1);
       expect(giant?.homeCityId).toBe(city.id);
-      // The Fighter that captured the city stands on its center: it stays
-      // and the giant appears beside it (reward placement,
-      // `pulp_wars-spue`, 7r111).
-      expect(unitAtV7(taken.state, where).role).toBe("FIGHTER");
+      // The Fighter that captured the city stood on its center: the giant
+      // takes it and pushes the Fighter beside it (reward arrival,
+      // `pulp_wars-sa3h`).
+      const fighter = unitAtV7(five.state, where);
+      expect(fighter.role).toBe("FIGHTER");
+      expect(giant?.at).toEqual(where);
+      const pushed = taken.state.units.find((unit) => unit.id === fighter.id);
+      expect(pushed?.hp).toBe(fighter.hp);
       expect(
         Math.max(
-          Math.abs((giant?.at.x ?? 0) - where.x),
-          Math.abs((giant?.at.y ?? 0) - where.y),
+          Math.abs((pushed?.at.x ?? 0) - where.x),
+          Math.abs((pushed?.at.y ?? 0) - where.y),
         ),
       ).toBe(1);
       // Level 6 in the same city: the giant again.
@@ -1414,22 +1418,29 @@ describe("the reward ladder: the giant in every city at every level from 5", () 
       (unit) => unit.ownerId === human && unit.role === "JUGGERNAUT",
     );
     if (giant === undefined) throw new Error("no giant");
-    // The Fighter keeps the center and the giant appears beside it
-    // (reward placement, `pulp_wars-spue`, 7r111).
+    // The giant takes the center and pushes the Fighter beside it (reward
+    // arrival, `pulp_wars-sa3h`).
     const fighter = six.state.units.find(
       (unit) => unit.at.x === SECOND.x && unit.at.y === SECOND.y,
     );
-    expect(fighter).toBeDefined();
-    expect(unitAtV7(taken.state, SECOND)).toEqual(fighter);
+    if (fighter === undefined) throw new Error("no Fighter");
+    expect(giant.at).toEqual(SECOND);
+    const pushed = taken.state.units.find((unit) => unit.id === fighter.id);
+    if (pushed === undefined) throw new Error("the Fighter died");
+    expect(pushed).toEqual({
+      ...fighter,
+      at: pushed.at,
+      captureEligible: false,
+    });
     expect(
       Math.max(
-        Math.abs(giant.at.x - SECOND.x),
-        Math.abs(giant.at.y - SECOND.y),
+        Math.abs(pushed.at.x - SECOND.x),
+        Math.abs(pushed.at.y - SECOND.y),
       ),
     ).toBe(1);
     expect(
       taken.events.some((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("the Economic Miracle adds a Coin to its city's income every turn, and the AI picks a legal reward at every level", () => {

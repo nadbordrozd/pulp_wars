@@ -713,6 +713,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Reward placement (`pulp_wars-spue`, 7r111): whether a unit stands on
     // the center (a mound never does), and the units a new one joins.
     "src/engine/v7/reducer.ts::placeCitySpawnV7": "BOARD",
+    // Reward arrival (`pulp_wars-sa3h`): the unit a reward unit pushes off
+    // a center, its owner, and whether it holds a strand, a grip, or a
+    // ritual place. Only a unit on the board stands on a center (a mound
+    // never does).
+    "src/ai/v7.ts::besiegerUnitV7": "BOARD",
+    "src/ai/v7.ts::ownChannellerV7": "BOARD",
+    "src/ai/v7.ts::levelUpPushesBesiegerV7": "BOARD",
+    "src/render/blocked-actions-v7.ts::rewardArrivalNoteV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveStartTurnHeldRewardsV7": "BOARD",
     // `pulp_wars-5ti.3`: the death-blast chain of a Start Turn step (the
     // Plague and the ice crush share it) reads who stands on the board.
