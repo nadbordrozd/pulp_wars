@@ -59,6 +59,13 @@ export const LEADERBOARD_NAME_MAX_V7 = 16;
 export const LEADERBOARD_SCORE_MAX_V7 = 100_000;
 /** The longest Domination match accepted, in rounds. */
 export const LEADERBOARD_ROUNDS_MAX_V7 = 1_000;
+/**
+ * The players of a match (the human and the opponents), as a score records
+ * it (bead pulp_wars-2yc.112): at least two; at most 16, room above the
+ * nine seats a skirmish has today.
+ */
+export const LEADERBOARD_PLAYERS_MIN_V7 = 2;
+export const LEADERBOARD_PLAYERS_MAX_V7 = 16;
 /** Every request gives up after this long. */
 export const LEADERBOARD_TIMEOUT_MS_V7 = 8_000;
 /** A board fetched this recently is shown again without a request. */
@@ -84,6 +91,13 @@ export interface LeaderboardSubmissionV7 {
   readonly rounds: number;
   /** The ruleset id ("pulp-wars-poc-7r100"). */
   readonly version: string;
+  /**
+   * The players of the match, the human included (bead pulp_wars-2yc.112;
+   * the regular board size follows from it). Absent on scores sent before
+   * it was recorded, and on a score the live rules refused with it (sent
+   * again without it, {@link createGameLeaderboardV7}).
+   */
+  readonly players?: number;
 }
 
 /** One row of a board. */
@@ -244,6 +258,8 @@ export interface LeaderboardClaimV7 {
   readonly mode: LeaderboardModeV7;
   readonly rounds: number;
   readonly version: string;
+  /** The players of the match, the human included. */
+  readonly players: number;
 }
 
 /** FNV-1a, 32 bits, as eight hex digits. */
@@ -288,6 +304,7 @@ export function leaderboardClaimV7(
     mode,
     rounds,
     version: view.setup.rulesetId,
+    players: view.setup.aiCount + 1,
   };
   if (leaderboardFieldProblemsV7({ ...claim, name: "x" }).length > 0)
     return null;
@@ -339,6 +356,13 @@ export function leaderboardFieldProblemsV7(
     problems.push("rounds");
   if (!/^pulp-wars-[a-z0-9-]{1,24}$/.test(entry.version))
     problems.push("version");
+  if (
+    entry.players !== undefined &&
+    (!Number.isSafeInteger(entry.players) ||
+      entry.players < LEADERBOARD_PLAYERS_MIN_V7 ||
+      entry.players > LEADERBOARD_PLAYERS_MAX_V7)
+  )
+    problems.push("players");
   return problems;
 }
 
@@ -379,7 +403,10 @@ export function firestoreUrlV7(
   return `${FIRESTORE_ROOT_V7}/${firestoreDocumentsPathV7(config.projectId)}:${method}?key=${encodeURIComponent(config.apiKey)}`;
 }
 
-/** The six fields of a submission as Firestore values (no timestamp). */
+/**
+ * The fields of a submission as Firestore values (no timestamp): the six,
+ * and `players` when the submission has it.
+ */
 export function firestoreFieldsV7(
   entry: LeaderboardSubmissionV7,
 ): Record<string, FirestoreValueV7> {
@@ -390,11 +417,14 @@ export function firestoreFieldsV7(
     mode: { stringValue: entry.mode },
     rounds: { integerValue: String(entry.rounds) },
     version: { stringValue: entry.version },
+    ...(entry.players === undefined
+      ? {}
+      : { players: { integerValue: String(entry.players) } }),
   };
 }
 
 /**
- * The `documents:commit` body that creates one score: the six fields, the
+ * The `documents:commit` body that creates one score: the fields, the
  * server's time in `timestamp` (a `REQUEST_TIME` transform, which the rules
  * compare with `request.time`), and `exists: false` so it is a create.
  */
@@ -530,6 +560,8 @@ export function parseFirestoreTopV7(body: unknown): LeaderboardEntryV7[] {
     const version = stringFieldV7(fields, "version");
     const score = integerFieldV7(fields, "score");
     const rounds = integerFieldV7(fields, "rounds");
+    // A score sent before pulp_wars-2yc.112 has no player count.
+    const players = integerFieldV7(fields, "players");
     const timestamp = recordV7(fields.timestamp)?.timestampValue;
     const path = typeof document.name === "string" ? document.name : "";
     if (
@@ -549,6 +581,7 @@ export function parseFirestoreTopV7(body: unknown): LeaderboardEntryV7[] {
       mode: mode as LeaderboardModeV7,
       rounds,
       version,
+      ...(players === null ? {} : { players }),
       timestamp: typeof timestamp === "string" ? timestamp : null,
     };
     if (leaderboardFieldProblemsV7(entry).length === 0) entries.push(entry);
@@ -587,6 +620,20 @@ export function leaderboardFailureTextV7(reason: LeaderboardFailureV7): string {
     case "ERROR":
       return "Couldn't reach the leaderboard.";
   }
+}
+
+/**
+ * A row's player count (bead pulp_wars-2yc.112): `short` for the row's
+ * chip ("4P", or "—" for a score sent before it was recorded), `long` for
+ * its tooltip and screen readers.
+ */
+export function leaderboardPlayersLabelV7(players: number | undefined): {
+  readonly short: string;
+  readonly long: string;
+} {
+  return players === undefined
+    ? { short: "—", long: "Players not recorded" }
+    : { short: `${players}P`, long: `${players} players` };
 }
 
 /** A board's title: "Domination" or "Perfection". */
@@ -745,19 +792,28 @@ export function memoryLeaderboardBackendV7(
 
 /** The rows `?leaderboard-preview=1` puts on the in-memory board. */
 export function leaderboardPreviewEntriesV7(): LeaderboardEntryV7[] {
-  const rows: [string, FactionIdV7, number, LeaderboardModeV7, number][] = [
-    ["Captain Nova", "MARTIAN", 1412, "DOMINATION", 41],
-    ["Grumblebeard", "DWARF", 1180, "DOMINATION", 37],
-    ["Rex", "DINOSAUR", 975, "DOMINATION", 29],
-    ["Lady Frost", "ICE_FOLK", 802, "DOMINATION", 33],
-    ["Sugar Plum", "CANDY", 640, "DOMINATION", 26],
-    ["Snaggletooth", "GOBLIN", 512, "DOMINATION", 24],
-    ["Count Dread", "UNDEAD", 455, "DOMINATION", 31],
-    ["The Whisperer", "CULT", 1033, "PERFECTION", 30],
-    ["Doc Savage", "ORIGINAL", 921, "PERFECTION", 30],
-    ["Zorg", "MARTIAN", 744, "PERFECTION", 30],
+  // The last Domination row has no player count, like a score sent before
+  // pulp_wars-2yc.112.
+  const rows: [
+    string,
+    FactionIdV7,
+    number,
+    LeaderboardModeV7,
+    number,
+    number | null,
+  ][] = [
+    ["Captain Nova", "MARTIAN", 1412, "DOMINATION", 41, 6],
+    ["Grumblebeard", "DWARF", 1180, "DOMINATION", 37, 5],
+    ["Rex", "DINOSAUR", 975, "DOMINATION", 29, 4],
+    ["Lady Frost", "ICE_FOLK", 802, "DOMINATION", 33, 4],
+    ["Sugar Plum", "CANDY", 640, "DOMINATION", 26, 3],
+    ["Snaggletooth", "GOBLIN", 512, "DOMINATION", 24, 2],
+    ["Count Dread", "UNDEAD", 455, "DOMINATION", 31, null],
+    ["The Whisperer", "CULT", 1033, "PERFECTION", 30, 9],
+    ["Doc Savage", "ORIGINAL", 921, "PERFECTION", 30, 4],
+    ["Zorg", "MARTIAN", 744, "PERFECTION", 30, 2],
   ];
-  return rows.map(([name, faction, score, mode, rounds], index) => ({
+  return rows.map(([name, faction, score, mode, rounds, players], index) => ({
     id: `preview-${index + 1}`,
     name,
     faction,
@@ -765,6 +821,7 @@ export function leaderboardPreviewEntriesV7(): LeaderboardEntryV7[] {
     mode,
     rounds,
     version: RULESET_7_ID,
+    ...(players === null ? {} : { players }),
     timestamp: new Date(Date.UTC(2026, 9, 1 + index)).toISOString(),
   }));
 }
@@ -863,6 +920,28 @@ function readSentV7(storage: StorageAdapter | null): StoredSentV7[] {
 
 function failureOfV7(error: unknown): LeaderboardFailureV7 {
   return error instanceof LeaderboardErrorV7 ? error.reason : "ERROR";
+}
+
+/**
+ * Stores a score; when the store refuses one that has `players` (bead
+ * pulp_wars-2yc.112: the rules pasted into the Firebase console may predate
+ * the field and allow only the seven older ones), sends it once more
+ * without it, so the score is never lost to the new field. Any other
+ * failure, or a refusal of the plain score, is thrown as it came.
+ */
+export async function submitWithFallbackV7(
+  backend: Pick<LeaderboardBackendV7, "submit">,
+  entry: LeaderboardSubmissionV7,
+): Promise<string> {
+  try {
+    return await backend.submit(entry);
+  } catch (error) {
+    if (entry.players === undefined || failureOfV7(error) !== "REFUSED")
+      throw error;
+    const { players: _players, ...plain } = entry;
+    void _players;
+    return backend.submit(plain);
+  }
 }
 
 /** The game's board over a backend, remembering what this browser sent. */
@@ -981,10 +1060,11 @@ export function createGameLeaderboardV7(
           mode: claim.mode,
           rounds: claim.rounds,
           version: claim.version,
+          players: claim.players,
         };
         if (leaderboardFieldProblemsV7(entry).length > 0)
           return { ok: false, reason: "REFUSED" };
-        const id = await backend.submit(entry);
+        const id = await submitWithFallbackV7(backend, entry);
         name = clean;
         try {
           storage?.setItem(LEADERBOARD_NAME_STORAGE_KEY_V7, clean);

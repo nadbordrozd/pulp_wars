@@ -325,6 +325,50 @@ describe("the Leaderboard screen", () => {
     );
   });
 
+  it("shows each score's player count, and a dash for an old score without one", async () => {
+    boot(memoryBoard().board);
+    press("public-leaderboard");
+    await waitUntil(() => boardState() === "ready");
+    const chips = [
+      ...document.querySelectorAll<HTMLElement>(".v7-public-board-row"),
+    ].map((row) => {
+      const chip = row.querySelector<HTMLElement>(".v7-public-board-players");
+      return [
+        row.querySelector(".v7-public-board-name")?.textContent,
+        chip?.textContent,
+        chip?.title,
+        chip?.dataset.players ?? null,
+      ];
+    });
+    expect(chips).toEqual([
+      ["Captain Nova", "6P", "6 players", "6"],
+      ["Grumblebeard", "5P", "5 players", "5"],
+      ["Rex", "4P", "4 players", "4"],
+      ["Lady Frost", "4P", "4 players", "4"],
+      ["Sugar Plum", "3P", "3 players", "3"],
+      ["Snaggletooth", "2P", "2 players", "2"],
+      // The preview's old row, sent before the count was recorded.
+      ["Count Dread", "—", "Players not recorded", null],
+    ]);
+    // Between the name and the score, read out in words.
+    const first = required(".v7-public-board-row");
+    const order = [...first.children].map((child) => child.className);
+    expect(order.indexOf("v7-public-board-players")).toBeGreaterThan(
+      order.indexOf("v7-public-board-name"),
+    );
+    expect(order.indexOf("v7-public-board-players")).toBeLessThan(
+      order.indexOf("v7-public-board-score"),
+    );
+    expect(
+      required(".v7-public-board-players").getAttribute("aria-hidden"),
+    ).toBe("true");
+    expect(first.textContent).toContain(", 6 players");
+    const last = [
+      ...document.querySelectorAll<HTMLElement>(".v7-public-board-row"),
+    ].at(-1);
+    expect(last?.textContent).toContain(", Players not recorded");
+  });
+
   it("says when a board is empty", async () => {
     boot(memoryBoard([]).board);
     press("public-leaderboard");
@@ -402,6 +446,8 @@ describe("Submit to the leaderboard", () => {
       name: "Doc Savage",
       mode: "DOMINATION",
       score,
+      // The players of the match (pulp_wars-2yc.112).
+      players: won.setup.aiCount + 1,
     });
     const rank =
       backend.entries.filter(
@@ -429,6 +475,9 @@ describe("Submit to the leaderboard", () => {
       "Doc Savage",
     );
     expect(own.dataset.rank).toBe(String(rank));
+    expect(own.querySelector(".v7-public-board-players")?.textContent).toBe(
+      `${won.setup.aiCount + 1}P`,
+    );
   });
 
   it("a failed send says so and can be sent again", async () => {

@@ -56,6 +56,7 @@ import {
   leaderboardFailureTextV7,
   leaderboardModeLabelV7,
   leaderboardNameProblemTextV7,
+  leaderboardPlayersLabelV7,
   leaderboardRankV7,
   type GameLeaderboardV7,
   type LeaderboardClaimV7,
@@ -4466,7 +4467,7 @@ export class Ruleset7DomAppView {
   /**
    * The public leaderboard (bead pulp_wars-2yc.104, docs/LEADERBOARD.md):
    * two tabs, Domination and Perfection, each the top scores as rank,
-   * faction emblem, name and score. A line says when it is loading, when
+   * faction emblem, name, players ("4P", pulp_wars-2yc.112) and score. A line says when it is loading, when
    * the player is offline or the request failed (with Try again), and when
    * a board is empty. Rows sent from this browser are marked.
    */
@@ -4572,6 +4573,15 @@ export class Ruleset7DomAppView {
         // The name is the player's own text: never parsed, never markup.
         who.textContent = entry.name;
         who.title = `${entry.name} · ${faction}`;
+        // The players of the match (bead pulp_wars-2yc.112), which sets the
+        // board size; "—" for a score sent before it was recorded.
+        const seats = leaderboardPlayersLabelV7(entry.players);
+        const players = el(this.#document, "span", "v7-public-board-players");
+        players.textContent = seats.short;
+        players.title = seats.long;
+        players.setAttribute("aria-hidden", "true");
+        if (entry.players !== undefined)
+          players.dataset.players = String(entry.players);
         const score = el(this.#document, "span", "v7-public-board-score");
         score.textContent = String(entry.score);
         row.append(
@@ -4579,6 +4589,8 @@ export class Ruleset7DomAppView {
           emblem,
           text(this.#document, "span", `${faction}: `, "v7-sr-only"),
           who,
+          text(this.#document, "span", `, ${seats.long}`, "v7-sr-only"),
+          players,
           text(this.#document, "span", ", score ", "v7-sr-only"),
           score,
         );

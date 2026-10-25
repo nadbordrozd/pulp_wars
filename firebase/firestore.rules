@@ -9,9 +9,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // The public leaderboard: one score per document. Anyone may read; a
-    // score may only be created, with exactly these seven fields, each
-    // checked; nobody may change or delete one from a browser (the owner
-    // deletes bad entries in the console).
+    // score may only be created, with these seven fields and optionally
+    // `players`, each checked; nobody may change or delete one from a
+    // browser (the owner deletes bad entries in the console).
     match /pulpWarsScores/{scoreId} {
       allow read: if true;
       allow create: if isValidPulpWarsScore(request.resource.data);
@@ -21,7 +21,12 @@ service cloud.firestore {
 
     function isValidPulpWarsScore(data) {
       return data.keys().hasAll(['name', 'faction', 'score', 'mode', 'rounds', 'version', 'timestamp']) &&
-             data.keys().hasOnly(['name', 'faction', 'score', 'mode', 'rounds', 'version', 'timestamp']) &&
+             data.keys().hasOnly(['name', 'faction', 'score', 'mode', 'rounds', 'version', 'timestamp', 'players']) &&
+
+             // The players of the match, 2 to 16 (pulp_wars-2yc.112).
+             // Optional: scores sent before it was recorded have none.
+             (!('players' in data) ||
+              (data.players is int && data.players >= 2 && data.players <= 16)) &&
 
              // A name of 1 to 16 letters, digits, spaces and . , ! ? ' - _
              // that starts and ends with a non-space.

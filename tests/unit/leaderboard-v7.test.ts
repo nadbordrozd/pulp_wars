@@ -5,6 +5,8 @@ import {
   LEADERBOARD_COLLECTION_V7,
   LEADERBOARD_NAME_PATTERN_V7,
   LEADERBOARD_NAME_STORAGE_KEY_V7,
+  LEADERBOARD_PLAYERS_MAX_V7,
+  LEADERBOARD_PLAYERS_MIN_V7,
   LEADERBOARD_SCORE_MAX_V7,
   LEADERBOARD_SUBMITTED_STORAGE_KEY_V7,
   LeaderboardErrorV7,
@@ -20,6 +22,7 @@ import {
   leaderboardFieldProblemsV7,
   leaderboardModeV7,
   leaderboardNameProblemV7,
+  leaderboardPlayersLabelV7,
   leaderboardRankV7,
   leaderboardRegularGameV7,
   memoryLeaderboardBackendV7,
@@ -27,6 +30,7 @@ import {
   parseFirestoreCountV7,
   parseFirestoreTopV7,
   rudeLeaderboardNameV7,
+  submitWithFallbackV7,
   type LeaderboardBackendV7,
   type LeaderboardClaimV7,
   type LeaderboardFetchV7,
@@ -81,6 +85,7 @@ const CLAIM: LeaderboardClaimV7 = {
   mode: "DOMINATION",
   rounds: 24,
   version: RULESET_7_ID,
+  players: 4,
 };
 
 /** The view of a state, recorded as a regular game (pulp_wars-2yc.103). */
@@ -214,6 +219,29 @@ describe("leaderboard field checks", () => {
       leaderboardFieldProblemsV7({ ...ENTRY, mode: "PERFECTION", rounds: 31 }),
     ).toEqual(["rounds"]);
     expect(leaderboardFieldProblemsV7({ ...ENTRY, rounds: 31 })).toEqual([]);
+    // The player count (pulp_wars-2yc.112) is optional, 2 to 16 when given.
+    for (const players of [
+      LEADERBOARD_PLAYERS_MIN_V7,
+      4,
+      9,
+      LEADERBOARD_PLAYERS_MAX_V7,
+    ])
+      expect(leaderboardFieldProblemsV7({ ...ENTRY, players })).toEqual([]);
+    for (const players of [1, LEADERBOARD_PLAYERS_MAX_V7 + 1, 2.5, Number.NaN])
+      expect(leaderboardFieldProblemsV7({ ...ENTRY, players })).toEqual([
+        "players",
+      ]);
+  });
+
+  it("labels a row's player count, and a score without one", () => {
+    expect(leaderboardPlayersLabelV7(4)).toEqual({
+      short: "4P",
+      long: "4 players",
+    });
+    expect(leaderboardPlayersLabelV7(undefined)).toEqual({
+      short: "—",
+      long: "Players not recorded",
+    });
   });
 
   it("ranks a score as one more than the scores strictly above it", () => {
@@ -238,6 +266,9 @@ describe("the claim of a finished match", () => {
       won.players.find((player) => player.id === won.humanPlayerId)?.faction,
     );
     expect(claim?.version).toBe(RULESET_7_ID);
+    // The players of the match: the human and the opponents.
+    expect(claim?.players).toBe(won.setup.aiCount + 1);
+    expect(claim?.players).toBe(won.players.length);
     // The same match always has the same key; another does not.
     expect(leaderboardClaimV7(view(scoreDominationVictoryV7()))?.matchKey).toBe(
       claim?.matchKey,
@@ -327,6 +358,23 @@ describe("Firestore REST requests", () => {
     expect(firestoreCreateBodyV7(id, ENTRY)).toEqual(call?.body);
   });
 
+  it("carries the player count as an integer field when the score has one", () => {
+    const body = firestoreCreateBodyV7("x", { ...ENTRY, players: 5 }) as {
+      writes: { update: { fields: Record<string, unknown> } }[];
+    };
+    const fields = body.writes[0]?.update.fields;
+    expect(fields?.players).toEqual({ integerValue: "5" });
+    expect(Object.keys(fields ?? {})).toEqual([
+      "name",
+      "faction",
+      "score",
+      "mode",
+      "rounds",
+      "version",
+      "players",
+    ]);
+  });
+
   it("reads the top of a mode by score and parses the rows", async () => {
     const { fetch, calls } = stubFetch(async () => ({
       status: 200,
@@ -339,6 +387,17 @@ describe("Firestore REST requests", () => {
           rounds: 29,
           version: RULESET_7_ID,
           timestamp: "2026-10-18T09:00:00Z",
+        }),
+        // A score sent since pulp_wars-2yc.112 has its player count.
+        firestoreDoc("a2", {
+          name: "Pip",
+          faction: "GOBLIN",
+          score: 640,
+          mode: "DOMINATION",
+          rounds: 22,
+          version: RULESET_7_ID,
+          players: 4,
+          timestamp: "2026-10-25T09:00:00Z",
         }),
         // A malformed row (no faction) is left out.
         firestoreDoc("bad", {
@@ -380,7 +439,20 @@ describe("Firestore REST requests", () => {
         version: RULESET_7_ID,
         timestamp: "2026-10-18T09:00:00Z",
       },
+      {
+        id: "a2",
+        name: "Pip",
+        faction: "GOBLIN",
+        score: 640,
+        mode: "DOMINATION",
+        rounds: 22,
+        version: RULESET_7_ID,
+        players: 4,
+        timestamp: "2026-10-25T09:00:00Z",
+      },
     ]);
+    // The old row has no `players` key at all (not even undefined).
+    expect(rows[0]).not.toHaveProperty("players");
     expect(parseFirestoreTopV7({ error: "x" })).toEqual([]);
   });
 
@@ -466,6 +538,71 @@ describe("Firestore REST requests", () => {
     expect(await reason(slowBody.top("PERFECTION", 5))).toBe("TIMEOUT");
   });
 
+  it("sends a score refused with its player count again without it", async () => {
+    // Rules published before pulp_wars-2yc.112 allow only the seven older
+    // fields: they refuse `players` (403), and the plain score goes in.
+    const { fetch, calls } = stubFetch(async (call) => {
+      const writes = call.body.writes as {
+        update: { fields: Record<string, unknown> };
+      }[];
+      return "players" in (writes[0]?.update.fields ?? {})
+        ? { status: 403, body: { error: { status: "PERMISSION_DENIED" } } }
+        : { status: 200, body: { writeResults: [{}] } };
+    });
+    let draws = 0;
+    const backend = firestoreLeaderboardBackendV7({
+      fetch,
+      // A new document id for the second try.
+      random: () => (draws++ < 20 ? 0 : 0.999999),
+    });
+    const id = await submitWithFallbackV7(backend, { ...ENTRY, players: 6 });
+    expect(id).toBe("9".repeat(20));
+    expect(calls).toHaveLength(2);
+    const fieldsOf = (call: Call | undefined) =>
+      (
+        call?.body.writes as { update: { fields: Record<string, unknown> } }[]
+      )[0]?.update.fields;
+    expect(fieldsOf(calls[0])?.players).toEqual({ integerValue: "6" });
+    expect(fieldsOf(calls[1])).not.toHaveProperty("players");
+    expect(fieldsOf(calls[1])).toEqual({
+      name: { stringValue: "Captain Nova" },
+      faction: { stringValue: "MARTIAN" },
+      score: { integerValue: "812" },
+      mode: { stringValue: "DOMINATION" },
+      rounds: { integerValue: "24" },
+      version: { stringValue: RULESET_7_ID },
+    });
+  });
+
+  it("does not resend on other failures, nor a plain score refused", async () => {
+    const tries: LeaderboardSubmissionV7[] = [];
+    const failing = (reason: "REFUSED" | "TIMEOUT" | "OFFLINE") => ({
+      submit: async (entry: LeaderboardSubmissionV7) => {
+        tries.push(entry);
+        throw new LeaderboardErrorV7(reason);
+      },
+    });
+    for (const reason of ["TIMEOUT", "OFFLINE"] as const) {
+      tries.length = 0;
+      await expect(
+        submitWithFallbackV7(failing(reason), { ...ENTRY, players: 3 }),
+      ).rejects.toMatchObject({ reason });
+      expect(tries).toHaveLength(1);
+    }
+    tries.length = 0;
+    await expect(
+      submitWithFallbackV7(failing("REFUSED"), ENTRY),
+    ).rejects.toMatchObject({ reason: "REFUSED" });
+    expect(tries).toHaveLength(1);
+    // With a player count: one retry without it, then the refusal stands.
+    tries.length = 0;
+    await expect(
+      submitWithFallbackV7(failing("REFUSED"), { ...ENTRY, players: 3 }),
+    ).rejects.toMatchObject({ reason: "REFUSED" });
+    expect(tries.map((entry) => entry.players)).toEqual([3, undefined]);
+    expect(tries[1]).not.toHaveProperty("players");
+  });
+
   it("draws 20-character document ids", () => {
     expect(leaderboardDocumentIdV7()).toMatch(/^[A-Za-z0-9]{20}$/);
     expect(leaderboardDocumentIdV7(() => 0.999999)).toBe("9".repeat(20));
@@ -514,6 +651,7 @@ describe("the game's leaderboard", () => {
       score: 812,
       mode: "DOMINATION",
       faction: "MARTIAN",
+      players: 4,
     });
     expect(board.lastName()).toBe("Doc Savage");
     expect(storage.values.get(LEADERBOARD_NAME_STORAGE_KEY_V7)).toBe(
@@ -541,6 +679,36 @@ describe("the game's leaderboard", () => {
         storage.values.get(LEADERBOARD_SUBMITTED_STORAGE_KEY_V7) ?? "",
       ),
     ).toHaveLength(1);
+  });
+
+  it("a score refused for its player count is sent without it, not lost", async () => {
+    // The live rules may predate pulp_wars-2yc.112 (docs/LEADERBOARD.md).
+    const stored: LeaderboardSubmissionV7[] = [];
+    const oldRules: LeaderboardBackendV7 = {
+      top: async () => [],
+      submit: async (entry) => {
+        if (entry.players !== undefined)
+          throw new LeaderboardErrorV7("REFUSED");
+        stored.push(entry);
+        return "plain-1";
+      },
+      countAbove: async () => 2,
+    };
+    const board = createGameLeaderboardV7(oldRules, {
+      storage: new MemoryStorage(),
+      live: true,
+    });
+    expect(await board.submit(CLAIM, "Doc")).toEqual({
+      ok: true,
+      mode: "DOMINATION",
+      id: "plain-1",
+      score: 812,
+      rank: 3,
+    });
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).not.toHaveProperty("players");
+    expect(stored[0]).toMatchObject({ name: "Doc", score: 812 });
+    expect(board.sent(CLAIM.matchKey)?.id).toBe("plain-1");
   });
 
   it("refuses a second send while the first is out, and remembers without storage", async () => {
@@ -704,9 +872,29 @@ describe("the security rules", () => {
       "version",
       "timestamp",
     ];
-    const list = `[${fields.map((field) => `'${field}'`).join(", ")}]`;
-    expect(rules).toContain(`data.keys().hasAll(${list})`);
-    expect(rules).toContain(`data.keys().hasOnly(${list})`);
+    const quoted = (list: readonly string[]) =>
+      `[${list.map((field) => `'${field}'`).join(", ")}]`;
+    // The seven are required; `players` (pulp_wars-2yc.112) is allowed but
+    // optional, so a score sent without it (an old client, or the fallback)
+    // still passes.
+    expect(rules).toContain(`data.keys().hasAll(${quoted(fields)})`);
+    expect(rules).toContain(
+      `data.keys().hasOnly(${quoted([...fields, "players"])})`,
+    );
+    expect(rules).toContain("(!('players' in data) ||");
+    expect(rules).toContain(
+      `(data.players is int && data.players >= ${LEADERBOARD_PLAYERS_MIN_V7} && data.players <= ${LEADERBOARD_PLAYERS_MAX_V7})`,
+    );
+    const sent = Object.keys(
+      (
+        firestoreCreateBodyV7("x", { ...ENTRY, players: 4 }) as {
+          writes: { update: { fields: Record<string, unknown> } }[];
+        }
+      ).writes[0]?.update.fields ?? {},
+    );
+    expect([...sent, "timestamp"].sort()).toEqual(
+      [...fields, "players"].sort(),
+    );
     const factions = `[${FACTION_IDS_V7.map((id) => `'${id}'`).join(", ")}]`;
     expect(rules).toContain(`data.faction in ${factions}`);
     // The name pattern is the client's (RE2 has no non-capturing groups).
