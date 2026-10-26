@@ -489,6 +489,7 @@ import {
   type ChibiMassifArtV7,
   type ChibiMassifCellV7,
 } from "./chibi-massif-v7";
+import { compareBoardPlanEntriesV7 } from "./moving-unit-order-v7";
 import {
   coastCellsOfV7,
   drawCoastSandV7,
@@ -2268,14 +2269,7 @@ export function buildBoardRenderPlanV7(
       layer: 9,
       at: interaction.cursor,
     });
-  entries.sort(
-    (a, b) =>
-      Number(a.kind === "VALUE") - Number(b.kind === "VALUE") ||
-      a.at.y - b.at.y ||
-      a.at.x - b.at.x ||
-      a.layer - b.layer ||
-      a.key.localeCompare(b.key),
-  );
+  entries.sort(compareBoardPlanEntriesV7);
   // The Cult redesign (bead pulp_wars-mch9.43): with a cultist selected and
   // nothing aimed, each Stargazer it may join carries the join badge; its
   // tile shows the star's new labels while hovered or focused.

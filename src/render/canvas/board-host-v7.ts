@@ -34,6 +34,7 @@ import {
   growthSpriteScaleV7,
 } from "./dinosaur-canvas-v7";
 import { GINGERBREAD_MAN_SPRITE_SCALE_V7 } from "./giant-canvas-v7";
+import { placeMovedUnitsV7 } from "./moving-unit-order-v7";
 import {
   CULT_EFFECT_SUBJECTS_V7,
   cultReducedMotionProgressV7,
@@ -2791,30 +2792,37 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
               ? animated.at
               : { x: Math.round(animated.at.x), y: Math.round(animated.at.y) }
             : held.get(selectedUnitId);
-      const present = (shown: typeof plan): typeof plan =>
-        animated === null && held.size === 0 && hidden.size === 0
-          ? shown
-          : {
-              ...shown,
-              entries: (hidden.size === 0
-                ? shown.entries
-                : shown.entries.filter(
-                    (entry) =>
-                      entry.kind !== "UNIT" ||
-                      !hidden.has(Number(entry.key.slice(5))),
-                  )
-              ).map((entry) => {
-                if (entry.kind === "SELECTION")
-                  return selectedAt === undefined
-                    ? entry
-                    : { ...entry, at: selectedAt };
-                if (entry.kind !== "UNIT") return entry;
-                if (animated !== null && entry.key === `unit:${animated.id}`)
-                  return { ...entry, at: animated.at };
-                const hold = held.get(Number(entry.key.slice(5)));
-                return hold === undefined ? entry : { ...entry, at: hold };
-              }),
-            };
+      const present = (shown: typeof plan): typeof plan => {
+        if (animated === null && held.size === 0 && hidden.size === 0)
+          return shown;
+        // Bead pulp_wars-2yc.116: a unit drawn off its plan cell (walking,
+        // sliding, lunging or held) takes the draw slot of the cells it
+        // overlaps, so no ore or mountain of theirs covers it.
+        const moved = new Set<string>();
+        const entries = (
+          hidden.size === 0
+            ? shown.entries
+            : shown.entries.filter(
+                (entry) =>
+                  entry.kind !== "UNIT" ||
+                  !hidden.has(Number(entry.key.slice(5))),
+              )
+        ).map((entry) => {
+          if (entry.kind === "SELECTION")
+            return selectedAt === undefined
+              ? entry
+              : { ...entry, at: selectedAt };
+          if (entry.kind !== "UNIT") return entry;
+          const at =
+            animated !== null && entry.key === `unit:${animated.id}`
+              ? animated.at
+              : held.get(Number(entry.key.slice(5)));
+          if (at === undefined) return entry;
+          moved.add(entry.key);
+          return { ...entry, at };
+        });
+        return { ...shown, entries: placeMovedUnitsV7(entries, moved) };
+      };
       const layer = fade === null ? null : this.#victoryFadeLayer();
       if (fade !== null && layer !== null) {
         // The crossfade: the skinned board is drawn whole, apart, and laid
