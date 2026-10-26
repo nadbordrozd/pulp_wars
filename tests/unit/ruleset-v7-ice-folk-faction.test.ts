@@ -271,8 +271,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // WATER_FROZEN (154).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
-    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
+    // (`pulp_wars-mch9.61`) adds CHANT_LEFT (161).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(161);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

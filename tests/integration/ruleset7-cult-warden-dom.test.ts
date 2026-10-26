@@ -161,18 +161,14 @@ describe("join the chant", () => {
     expect(
       (hover.marks ?? []).find((mark) => key(mark.at) === key(R.starKnight)),
     ).toMatchObject({ label: "−8", lethal: true });
-    // Armed from the dock: the Stargazer is the only target, its star's
-    // preview shown without a hover.
-    button.click();
-    const armed = boardPlan(host);
-    expect(armed.targets.map((target) => target.family)).toEqual([
-      "JOIN_CHANT",
-    ]);
-    expect(focusedCultPreviewV7(armed, null)).toEqual(hover);
+    // The dock's button joins the only Stargazer at once, with no aiming
+    // and no confirmation (`pulp_wars-mch9.61`; two Stargazers are picked
+    // on the board: tests/integration/ruleset7-cult-join-instant-dom.test.ts).
     const ritualBefore = required(controller.snapshot().view).cult.rituals[0];
     expect(ritualBefore?.chanters).toBe(0);
-    host.callbacks?.onCommand(required(armed.targets[0]));
+    button.click();
     await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]?.kind).toBe("JOIN_CHANT");
     expect(required(controller.snapshot().view).cult.rituals[0]?.chanters).toBe(
       1,
     );

@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 116;
+const REVISION = 117;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -331,8 +331,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // WATER_FROZEN (154).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
-    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
+    // (`pulp_wars-mch9.61`) adds CHANT_LEFT (161).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(161);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

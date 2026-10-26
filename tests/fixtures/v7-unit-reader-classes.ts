@@ -1247,6 +1247,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The Cult redesign (`pulp_wars-mch9.34`): a joiner and the Stargazer
     // it joins stand beside each other on the board.
     "src/engine/v7/cult-rituals.ts::applyJoinChantV7": "BOARD",
+    "src/engine/v7/cult-rituals.ts::withChantsLeftV7": "BOARD",
     "src/engine/v7/cult-rituals.ts::applyProclaimV7": "BOARD",
     "src/engine/v7/cult-rituals.ts::completeStarfallV7": "BOARD",
     "src/engine/v7/cult-rituals.ts::completeGreatSummoningV7": "BOARD",

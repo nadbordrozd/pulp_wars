@@ -93,6 +93,8 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   // The Cult redesign (`pulp_wars-mch9.34`): a cultist that joins a chant
   // chose to (its own command).
   CHANT_JOINED: NONE,
+  // `pulp_wars-mch9.61`: a joiner given another order chose to leave.
+  CHANT_LEFT: NONE,
   RITUAL_DISRUPTED: NONE,
   RITUAL_FIZZLED: NONE,
   CITY_COWED: NONE,

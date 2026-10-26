@@ -726,7 +726,11 @@ star; never when the join (or one it counts on) kills a unit of the seat or
 of a friend. An exposed joiner (one a visible enemy can attack where it
 chants) joins only for a kill worth at least its own cost, and never where
 the visible enemy kills it. One join a decision, each checked against
-`previewJoinChantV7`.
+`previewJoinChantV7`. Since `pulp_wars-mch9.61` a join spends no action
+and any other order takes the joiner out of the chant, so the ready
+commands (`queryAiReadyCommandsV7`) and the scale mode's per-unit offers
+leave out every order that would (`chantsLeftByCommandV7`): a cultist the
+policy puts into a chant stays in it, as before.
 
 **7. The Herald's two attacks** are plan steps (3970), scored together
 through its Move and its **advance**: each tile it may end on and its own

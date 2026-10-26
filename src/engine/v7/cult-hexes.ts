@@ -70,6 +70,14 @@ export interface TrickListsV7 {
       readonly callerUnitId: UnitId | null;
       readonly grabbedUnitId: UnitId | null;
     }[];
+    /**
+     * The rituals under way (`pulp_wars-mch9.61`: the Great Summoning's
+     * circle leaves out a cultist that chants for a star already).
+     */
+    readonly rituals?: readonly {
+      readonly leaderUnitId: UnitId | null;
+      readonly chanterUnitIds: readonly UnitId[];
+    }[];
   };
 }
 

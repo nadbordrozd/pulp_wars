@@ -258,13 +258,13 @@ describe("rituals: identity", () => {
   // took 7r89 after it, and its Imp (`pulp_wars-mch9.36`) 7r90, and its
   // Gibbering Mass (`pulp_wars-mch9.37`) 7r91.
   it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r116");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r116.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-29, -27)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r117");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r117.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-30, -28)).toEqual([
       "pulp-wars-poc-7r87",
       "pulp-wars-poc-7r88",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-29, -27)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-30, -28)).toEqual([
       "pulpWars.save.v7r87.current",
       "pulpWars.save.v7r88.current",
     ]);
@@ -300,11 +300,13 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
     ).toEqual(["BOO", "BEGIN_RITUAL", "PROCLAIM", "RIBBIT"]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     const from = events.indexOf("DAEMON_BOUND");
-    expect(events.slice(from, from + 10)).toEqual([
+    expect(events.slice(from, from + 11)).toEqual([
       "DAEMON_BOUND",
       "RITUAL_BEGUN",
-      // (The Cult redesign, `pulp_wars-mch9.34`: a join of a star's chant.)
+      // (The Cult redesign, `pulp_wars-mch9.34`: a join of a star's chant;
+      // `pulp_wars-mch9.61`: a joiner that took another order.)
       "CHANT_JOINED",
+      "CHANT_LEFT",
       "RITUAL_DISRUPTED",
       "RITUAL_FIZZLED",
       "STAR_FELL",
@@ -692,8 +694,8 @@ describe("rituals: taking part (section 7.1)", () => {
           : [],
       ),
     ).toEqual(chanters.map((unitId) => [unitId, leader]));
-    // They join one by one: each join is the joiner's primary action, and
-    // the star grows by 3 each time.
+    // They join one by one, and the star grows by 3 each time. A join
+    // spends nothing (`pulp_wars-mch9.61`: it is a soft order, like Wait).
     let joined = begun.state;
     const damages: number[] = [];
     for (const unitId of chanters) {
@@ -723,20 +725,31 @@ describe("rituals: taking part (section 7.1)", () => {
         at: STAR,
       },
     ]);
-    for (const unitId of [leader, ...chanters]) {
+    // The Stargazer has acted; each joiner is handled, as after a Wait,
+    // and is still offered its Move and its other orders (each would take
+    // it out of the chant), but no second join of this star.
+    expect(need(unitOf(joined, leader)).activation.specialActed).toBe(true);
+    for (const unitId of chanters) {
       const unit = need(unitOf(joined, unitId));
-      expect(unit.activation.specialActed).toBe(true);
-      expect(
-        offeredV7(joined).filter(
-          (command) =>
-            "unitId" in command &&
-            command.unitId === unitId &&
-            command.kind !== "WAIT" &&
-            command.kind !== "DISBAND" &&
-            command.kind !== "PROMOTE",
-        ),
-      ).toEqual([]);
+      expect(unit.activation).toMatchObject({
+        specialActed: false,
+        handled: true,
+      });
+      const orders = offeredV7(joined).filter(
+        (command) => "unitId" in command && command.unitId === unitId,
+      );
+      expect(orders.some((command) => command.kind === "JOIN_CHANT")).toBe(
+        false,
+      );
+      expect(orders.some((command) => command.kind === "WAIT")).toBe(false);
     }
+    expect(
+      offeredV7(joined).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === idAt(state, CHANTER_WEST),
+      ),
+    ).toBe(true);
     // The others are untouched.
     expect(
       need(unitOf(joined, idAt(state, at(7, 2)))).activation.specialActed,

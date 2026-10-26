@@ -153,13 +153,16 @@ function primaryActedV7(unit: ActorFactsV7): boolean {
  * moved) and are not Frozen or frogs (`pulp_wars-mch9.8`), in unit-ID
  * order. Every such unit joins a Great Summoning at its begin; a player who
  * wants one left out uses it first. A Star-fall begins with nobody (the
- * Cult redesign, `pulp_wars-mch9.34`: {@link beginChantersV7}).
+ * Cult redesign, `pulp_wars-mch9.34`: {@link beginChantersV7}). A cultist
+ * that has joined a star's chant (`pulp_wars-mch9.61`: the join spends no
+ * action) is in that ritual and not in the circle.
  */
 export function ritualChantersV7<U extends ActorFactsV7>(
   lookup: FrozenLookupV7 & TrickListsV7,
   units: readonly U[],
   leader: RitualUnitFactsV7,
 ): readonly U[] {
+  const rituals = lookup.cult?.rituals ?? [];
   return units
     .filter(
       (unit) =>
@@ -171,7 +174,12 @@ export function ritualChantersV7<U extends ActorFactsV7>(
         unitRoleRuleV7(lookup, unit).abilities.includes("CHANNEL") &&
         !primaryActedV7(unit) &&
         !unitIsFrozenV7(lookup, unit) &&
-        !unitIsFrogV7(lookup, unit),
+        !unitIsFrogV7(lookup, unit) &&
+        !rituals.some(
+          (ritual) =>
+            ritual.leaderUnitId === unit.id ||
+            ritual.chanterUnitIds.includes(unit.id),
+        ),
     )
     .sort((left, right) => left.id - right.id);
 }
@@ -406,6 +414,11 @@ export function pendingStarfallOfV7<R extends JoinableRitualV7>(
  * Stargazer that leads a pending Star-fall of the joiner's seat. A star is
  * pending only from its begin to its seat's next Start Turn, so a join
  * happens in the casting turn.
+ *
+ * `pulp_wars-mch9.61`: a join is a soft order, like Wait. A cultist that
+ * has joined another star's chant may join this one (the join takes it out
+ * of the other first, {@link chantsLeftByCommandV7}); one that chants this
+ * star already, leads a ritual, or chants for a Great Summoning may not.
  */
 export function joinChantRejectionV7(
   lookup: FrozenLookupV7 & TrickListsV7,
@@ -417,11 +430,14 @@ export function joinChantRejectionV7(
     return { code: "UNIT_ROLE_INVALID" };
   if (!isRobedCultistV7(lookup, joiner))
     return { code: "JOIN_CHANT_NOT_LEGAL", reason: "EMBARKED" };
+  const joined = starfallJoinOfV7(rituals, joiner.id);
   if (
+    (joined !== undefined && joined.leaderUnitId === leader?.id) ||
     rituals.some(
       (ritual) =>
-        ritual.leaderUnitId === joiner.id ||
-        ritual.chanterUnitIds.includes(joiner.id),
+        ritual !== joined &&
+        (ritual.leaderUnitId === joiner.id ||
+          ritual.chanterUnitIds.includes(joiner.id)),
     )
   )
     return { code: "JOIN_CHANT_NOT_LEGAL", reason: "CHANTING" };
@@ -438,6 +454,152 @@ export function joinChantRejectionV7(
   if (chebyshev(joiner.at, leader.at) !== 1)
     return { code: "JOIN_CHANT_NOT_LEGAL", reason: "ADJACENT" };
   return null;
+}
+
+/**
+ * `pulp_wars-mch9.61`: the Star-fall whose chant the cultist `unitId` has
+ * joined (it is a chanter of it, never its leader), if any.
+ */
+export function starfallJoinOfV7<R extends JoinableRitualV7>(
+  rituals: readonly R[],
+  unitId: UnitId,
+): R | undefined {
+  return rituals.find(
+    (ritual) =>
+      ritual.kind === "STARFALL" &&
+      ritual.leaderUnitId !== unitId &&
+      ritual.chanterUnitIds.includes(unitId),
+  );
+}
+
+/**
+ * `pulp_wars-mch9.61`: whether the unit `unitId` takes part in a ritual of
+ * `rituals`, as its leader or a chanter. A chanter has acted for End
+ * Turn's idle recovery although its join spent no action.
+ */
+export function unitChantsV7(
+  rituals: readonly JoinableRitualV7[],
+  unitId: UnitId,
+): boolean {
+  return rituals.some(
+    (ritual) =>
+      ritual.leaderUnitId === unitId || ritual.chanterUnitIds.includes(unitId),
+  );
+}
+
+/**
+ * `pulp_wars-mch9.61`: the orders that keep a join. Wait is advisory and
+ * Promote is free; a Disband takes the unit off the board, so it leaves
+ * the chant by the disruption rule, as before.
+ */
+const CHANT_KEEPING_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set([
+  "WAIT",
+  "PROMOTE",
+  "DISBAND",
+]);
+
+/** A join that a command takes back. */
+export interface ChantLeftV7 {
+  readonly unitId: UnitId;
+  readonly leaderUnitId: UnitId;
+}
+
+/**
+ * `pulp_wars-mch9.61` (the user, 2026-10-26: "just as with the 'wait'
+ * action - this should be reversible. the player can still change their
+ * mind and direct the unit to do something else"): the joins the command
+ * `command` of the seat `actor` takes back, read from `rituals` (the
+ * canonical list, or the seat's own view of it). Joining a chant spends
+ * nothing, so any other order to a joiner this turn (a Move, an attack, an
+ * ability, a Recover, a join of another star) first takes it out of the
+ * chant, and the order is then judged as if it had never joined; so is a
+ * cultist named as a Summon's helper. Wait, Promote, Disband, and a join
+ * of the same star keep it ({@link CHANT_KEEPING_KINDS_V7}). Shared by the
+ * reducer and the Normal AI, which never orders a cultist out of a chant.
+ */
+export function chantsLeftByCommandV7(
+  rituals: readonly JoinableRitualV7[],
+  actor: PlayerId,
+  command: CommandV7,
+): readonly ChantLeftV7[] {
+  if (rituals.length === 0 || CHANT_KEEPING_KINDS_V7.has(command.kind))
+    return [];
+  const ordered: UnitId[] = [];
+  if ("unitId" in command) ordered.push(command.unitId);
+  if (command.kind === "SUMMON" && command.helperUnitId != null)
+    ordered.push(command.helperUnitId);
+  const left: ChantLeftV7[] = [];
+  for (const unitId of ordered) {
+    const ritual = starfallJoinOfV7(rituals, unitId);
+    if (
+      ritual === undefined ||
+      ritual.playerId !== actor ||
+      ritual.leaderUnitId === null ||
+      (command.kind === "JOIN_CHANT" &&
+        command.leaderUnitId === ritual.leaderUnitId)
+    )
+      continue;
+    left.push({ unitId, leaderUnitId: ritual.leaderUnitId });
+  }
+  return left;
+}
+
+/**
+ * `pulp_wars-mch9.61`: the state before the command `command` of `actor`
+ * with the joins it takes back undone ({@link chantsLeftByCommandV7}): each
+ * such cultist is no chanter of its star (3 less on it) and is no longer
+ * handled, and a `CHANT_LEFT` names the star's damage after it left. Null
+ * when the command takes back no join.
+ */
+export function withChantsLeftV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  command: CommandV7,
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+} | null {
+  const left = chantsLeftByCommandV7(state.cult.rituals, actor, command);
+  if (left.length === 0) return null;
+  const leaving = new Set(left.map((entry) => entry.unitId));
+  let rituals = state.cult.rituals;
+  const events: DomainEventV7[] = [];
+  for (const entry of left) {
+    rituals = rituals.map((ritual) =>
+      ritual.kind === "STARFALL" && ritual.leaderUnitId === entry.leaderUnitId
+        ? {
+            ...ritual,
+            chanterUnitIds: ritual.chanterUnitIds.filter(
+              (unitId) => unitId !== entry.unitId,
+            ),
+          }
+        : ritual,
+    );
+    const star = rituals.find(
+      (ritual) =>
+        ritual.kind === "STARFALL" &&
+        ritual.leaderUnitId === entry.leaderUnitId,
+    );
+    events.push({
+      kind: "CHANT_LEFT",
+      playerId: actor,
+      unitId: entry.unitId,
+      leaderUnitId: entry.leaderUnitId,
+      damage: starfallDamageV7(star?.chanterUnitIds.length ?? 0),
+    });
+  }
+  return {
+    state: {
+      ...state,
+      units: state.units.map((unit) =>
+        leaving.has(unit.id)
+          ? { ...unit, activation: { ...unit.activation, handled: false } }
+          : unit,
+      ),
+      cult: { ...state.cult, rituals },
+    },
+    events,
+  };
 }
 
 // ------------------------------------------------- The Great Summoning ---
@@ -953,12 +1115,17 @@ export function applyBeginRitualV7(
 }
 
 /**
- * The Cult redesign (`pulp_wars-mch9.34`, section 8.2): `JOIN_CHANT`, a
- * primary action of the joiner (it cannot move after it). It becomes a
- * chanter of the Stargazer's pending Star-fall (Candlelit, public, and 3
- * more damage), and `CHANT_JOINED` names the star's damage after the join.
- * It pays no Favour. A disrupted joiner leaves the ritual as any chanter
- * does ({@link ritualDisruptionsV7}).
+ * The Cult redesign (`pulp_wars-mch9.34`, section 8.2): `JOIN_CHANT`. The
+ * joiner becomes a chanter of the Stargazer's pending Star-fall (Candlelit,
+ * public, and 3 more damage), and `CHANT_JOINED` names the star's damage
+ * after the join. It pays no Favour. A disrupted joiner leaves the ritual
+ * as any chanter does ({@link ritualDisruptionsV7}).
+ *
+ * `pulp_wars-mch9.61`: like Wait, the join only marks the joiner handled;
+ * it spends no action and no Move. Any other order to the joiner this turn
+ * takes it out of the chant first ({@link withChantsLeftV7}); so the star
+ * counts the chanters that still hold when it falls, at the seat's next
+ * Start Turn.
  */
 export function applyJoinChantV7(
   kit: CultReducerKitV7,
@@ -1003,7 +1170,9 @@ export function applyJoinChantV7(
         ...state,
         commandIndex: kit.nextSafe(state.commandIndex),
         units: state.units.map((unit) =>
-          unit.id === joiner.id ? withPrimaryUsed(unit) : unit,
+          unit.id === joiner.id
+            ? { ...unit, activation: { ...unit.activation, handled: true } }
+            : unit,
         ),
         cult: {
           ...state.cult,

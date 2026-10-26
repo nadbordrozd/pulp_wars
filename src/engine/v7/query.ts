@@ -388,6 +388,7 @@ import {
   attacksLeftV7,
   beginChantersV7,
   beginRitualRejectionV7,
+  chantsLeftByCommandV7,
   joinChantRejectionV7,
   pendingStarfallOfV7,
   proclaimRejectionV7,
@@ -396,6 +397,7 @@ import {
   starfallAreaV7,
   starfallResultsV7,
   summoningMarkOutcomeV7,
+  unitChantsV7,
   type RitualTileFactsV7,
 } from "./cult-rituals";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
@@ -8173,7 +8175,19 @@ export interface AiReadyCommandV7 {
 export function queryAiReadyCommandsV7(
   view: PlayerViewV7,
 ): readonly AiReadyCommandV7[] {
-  return queryPlayerCommandsV7(view).map((command) => {
+  // `pulp_wars-mch9.61`: a join spends no action, so a joiner is still
+  // offered its other orders (each takes it out of the chant); the Normal
+  // AI never gives one, so it keeps every cultist it puts into a chant.
+  const commands = queryPlayerCommandsV7(view);
+  const ready =
+    view.cult.rituals.length === 0
+      ? commands
+      : commands.filter(
+          (command) =>
+            chantsLeftByCommandV7(view.cult.rituals, view.viewer.id, command)
+              .length === 0,
+        );
+  return ready.map((command) => {
     const target = publicCommandTarget(view, command);
     const primary =
       "unitId" in command
@@ -11649,8 +11663,14 @@ export function queryIdleRecoveryV7(
 ): readonly IdleRecoveryV7[] {
   const view = asView(input, viewerId);
   if (!publicCommandOfferingAllowedV7(view)) return [];
+  // `pulp_wars-mch9.61`: a cultist that chants has acted (End Turn's own
+  // rule, `unitChantsV7`).
   return view.units
-    .filter((unit) => unit.ownerId === view.viewer.id)
+    .filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        !unitChantsV7(view.cult.rituals, unit.id),
+    )
     .map((unit) => ({ unit, facts: publicRecoveryFactsV7(view, unit) }))
     .filter(({ facts }) => recoverEligibleV7(facts))
     .map(({ unit, facts }) => ({

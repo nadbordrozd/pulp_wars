@@ -268,7 +268,7 @@ const ENTRIES = {
   // The Cult redesign (`pulp_wars-mch9.34`, section 8.2).
   JOIN_CHANT: [
     "Join the chant",
-    "Next to a Stargazer whose star is coming, it chants instead of acting, and the star hits harder. Hurt or moved, it stops.",
+    "Next to a Stargazer whose star is coming, it chants and the star hits harder. Hurt, moved, or given another order that turn, it stops.",
   ],
   RAVAGE: [
     "Ravage",

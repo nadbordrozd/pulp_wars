@@ -1757,6 +1757,20 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * `pulp_wars-mch9.61`: the joiner `unitId` of `playerId` was given
+       * another order in the turn it joined, so it left the chant of the
+       * Star-fall led by `leaderUnitId` before that order; the star now
+       * deals `damage` (6, plus 3 for each chanter left). Projected as
+       * `CHANT_JOINED` is.
+       */
+      readonly kind: "CHANT_LEFT";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly leaderUnitId: UnitId;
+      readonly damage: number;
+    }
+  | {
+      /**
        * The Cultists (section 7.1): the participant `participantUnitId` of
        * the ritual `ritual` led by `unitId` (of `playerId`) was disrupted
        * (`cause`) and left it. When that ends the ritual, its

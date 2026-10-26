@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r116`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r117`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r117` (`pulp_wars-mch9.61`; the user, 2026-10-26:
+"joining the chant of a star gazer should not require confirmation ...
+just as with the 'wait' action - this should be reversible. the player can
+still change their mind and direct the unit to do something else") makes
+**Join the chant reversible, like Wait**
+([section 26.8](#268-star-fall)). `JOIN_CHANT` spends nothing: the
+joiner is only marked handled. Any other order to it in that turn (a
+Move, an attack, an ability, Recover, Capture, a Summon naming it as the
+helper, a join of another pending star) first takes it out of the chant,
+with the new event `CHANT_LEFT`, and is then judged as if it had never
+joined; Wait, Promote, and Disband keep the join. The star counts the
+chanters that hold when it falls at the seat's next Start Turn. A chanter
+does not idle-recover at End Turn, a Great Summoning's circle leaves out a
+cultist that chants for a star, and the Normal AI gives a joiner no other
+order. A save, replay, or setup of `7r116` is rejected, and the browser
+autosave has a new key. Boards and missions are unchanged.
 `pulp-wars-poc-7r116` (`pulp_wars-7pi5`; the user, 2026-10-25: "when a
 gyrocopter flies over water, it shouldn't become a boat. the same goes for
 all other flying units. whatever the rules are for IF a flying unit can
@@ -1770,10 +1786,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r116`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r117`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r116.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r117.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -8155,7 +8171,7 @@ The audit of every command (`7r107`):
 | Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                                            | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |
 | Ribbit (`RIBBIT`)                                                                                                                                                                                                        | the target is a frog already                                                                                                                         | already refused (`FROG`)                                                                                                                                                         |
 | Proclaim (`PROCLAIM`)                                                                                                                                                                                                    | the city is Cowed already                                                                                                                            | already refused (`COWED`)                                                                                                                                                        |
-| Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                                         | the cultist chants already; the Thing grips already or the cultist is gripped                                                                        | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
+| Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                                         | the cultist chants that star already; the Thing grips already or the cultist is gripped                                                              | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
 | Channel and Bind again (`CHANNEL`)                                                                                                                                                                                       | an own daemon that has enough strands (or is on its Doorstep)                                                                                        | kept: the strand is a change (it guards against a disruption and pays the trickle, [section 26.5](#265-the-channel-strands-and-the-check)); Bind again only on an Unbound daemon |
 | Seize (`SEIZE`), Tentacle (`TENTACLE`), Bomb Run (`BOMB_RUN`)                                                                                                                                                            | a healthy victim; a Tentacle that stands already; a target bombed already this turn                                                                  | already refused (`HEALTHY`; `EXISTS`; `ALREADY_BOMBED`)                                                                                                                          |
 | Wail (`WAIL`, area)                                                                                                                                                                                                      | every target would take 0                                                                                                                            | kept: a 0 hit counts ([section 17.9](#179-wail)) and a hidden Blizzard can make the public preview higher than the hit, so the offer could not match the rule; rare              |
@@ -17537,18 +17553,34 @@ that has not moved this turn marks any tile its seat has explored that is
 (the Cult redesign, `pulp_wars-mch9.34`; until `7r85` it needed a chanter
 and every unacted robed neighbour joined at the begin).
 
-**Join the chant.** `JOIN_CHANT { unitId, leaderUnitId }` is a primary
-action of an own robed cultist in land form (a mind-controlled one has
-none) standing on one of the eight tiles around a Stargazer that leads a
-pending Star-fall of its seat. The joiner has not used its primary action
-(it may have moved this turn, and cannot move after joining), is neither
-Frozen nor a frog, and is in no ritual already. It becomes a chanter of
+**Join the chant.** `JOIN_CHANT { unitId, leaderUnitId }` is an order of
+an own robed cultist in land form (a mind-controlled one has none)
+standing on one of the eight tiles around a Stargazer that leads a pending
+Star-fall of its seat. The joiner has not used its primary action (it may
+have moved this turn), is neither Frozen nor a frog, and is in no other
+ritual (it may chant for another star: see below). It becomes a chanter of
 that star: Candlelit, public, and **+3** to the star (`CHANT_JOINED`, with
 the star's damage after the join). It pays no Favour. A star is pending
 from its begin to its seat's next Start Turn, so joining happens in the
 casting turn, in any order with the seat's other commands; a cultist may
 move up beside the Stargazer and join in the same turn. A chanter beside
 two pending stars of its seat names the one it joins.
+
+**A join is reversible, like Wait** (`pulp-wars-poc-7r117`,
+`pulp_wars-mch9.61`). Joining spends nothing: the joiner is only marked
+handled, as by a Wait, and keeps its Move and its primary action. Any
+other order to it in that turn (a Move, an attack, an ability, Recover,
+Capture, a Summon that names it as the helper, or a join of the other
+pending star) first takes it out of the chant (`CHANT_LEFT`, with the
+star's damage after it left; no disruption) and is then judged as if it
+had never joined; a refused order leaves the join as it was. Wait,
+Promote, and Disband keep it (a Disband takes it off the board, which
+disrupts it as before), and so does a second join of the same star, which
+is refused (`CHANTING`). The star counts the chanters still in its ritual
+when it completes at the seat's next Start Turn, so the player's change of
+mind ends with End Turn; nothing lands within the turn. A chanter has
+acted for End Turn's idle recovery (it does not recover), and a Great
+Summoning's circle leaves out a cultist that chants for a star.
 
 **Disruption.** A disrupted chanter leaves the ritual (the star loses 3);
 a disrupted Stargazer fizzles it (nothing lands, nothing is refunded). A
@@ -17921,6 +17953,8 @@ and tricks). In summary:
   `DAEMON_BOUND`; `RITUAL_BEGUN`, `CHANT_JOINED`
   (`unitId`, `leaderUnitId`, the star's `damage` after the join; shown to
   its seat and to every viewer that sees the joiner or the Stargazer),
+  `CHANT_LEFT` (the same fields, the star's `damage` after the joiner left
+  on another order; shown as `CHANT_JOINED` is; `pulp_wars-mch9.61`),
   `RITUAL_DISRUPTED`,
   `RITUAL_FIZZLED` (reason `LEADER`, `CHANTERS`, or `BLOCKED`),
   `STAR_FELL`, `UNIT_CONSUMED`, `HERALD_ARRIVED`, `CITY_COWED`;
@@ -18057,7 +18091,11 @@ and tricks). In summary:
     greying what cannot be called with the reason, and each summon is also
     its own tile badge (`pulp_wars-mch9.44`). **Join the chant** is a badge
     on the casting Stargazer (a candle with a plus) and a dock button, and
-    previews the star's new damage (`pulp_wars-mch9.43`). Boo! is cast by
+    previews the star's new damage (`pulp_wars-mch9.43`). With one
+    Stargazer to chant with, the button joins at once, with no aiming and
+    no confirmation; with several it aims, and a tap on a highlighted
+    Stargazer joins it (`pulp_wars-mch9.61`). A joiner wears the Chanting
+    chip and can still be given another order that turn. Boo! is cast by
     its button (Behold! had one until it became the warden's aura,
     `pulp_wars-mch9.33`), and the Offering is a button of the city panel.
   - **On the board, for every player who sees it:** a green chain for each

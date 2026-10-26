@@ -376,6 +376,8 @@ import {
   prunedRitualsV7,
   resolveStartTurnRitualsV7,
   ritualDisruptionsV7,
+  unitChantsV7,
+  withChantsLeftV7,
   withCowedTurnEndedV7,
 } from "./cult-rituals";
 import {
@@ -738,11 +740,19 @@ export function applyCommandV7(
   // Mission objectives (`pulp_wars-v642.1`, 7r82): the reinforcements a
   // mission brings at this Start Turn and the outcome its objective decides
   // follow every other step of the command and precede the ledger.
+  // `pulp_wars-mch9.61`: joining a chant is a soft order, like Wait. Any
+  // other order to a joiner first takes it out of the chant (`CHANT_LEFT`),
+  // and the order is judged on that state.
+  const left = chantsLeftBeforeV7(stateInput, actor, input);
   const collected = collectScoreCreditsV7(() =>
     withMissionResultV7(
       stateInput,
       actor,
-      applyCommandUnscoredV7(stateInput, actor, input),
+      withChantsLeftResultV7(
+        stateInput,
+        left,
+        applyCommandUnscoredV7(left?.state ?? stateInput, actor, input),
+      ),
     ),
   );
   return withScoreLedgerResultV7(
@@ -1047,6 +1057,50 @@ export function missionArrivalTileV7(
         if (free(at) && (mode === "FORCED" || calm(at))) return at;
       }
   return null;
+}
+
+/**
+ * `pulp_wars-mch9.61`: the result of a command judged on the state with the
+ * joins it takes back undone (`chantsLeftBeforeV7`): their `CHANT_LEFT`
+ * events come first; a refused command leaves the joins as they were.
+ */
+function withChantsLeftResultV7(
+  original: GameStateV7,
+  left: ReturnType<typeof chantsLeftBeforeV7>,
+  result: ApplyCommandResultV7,
+): ApplyCommandResultV7 {
+  if (left === null) return result;
+  if (!result.accepted) return { ...result, state: original };
+  return { ...result, events: [...left.events, ...result.events] };
+}
+
+/**
+ * `pulp_wars-mch9.61`: the checked state with the joins the command takes
+ * back undone, and their `CHANT_LEFT` events (`withChantsLeftV7`); null
+ * when it takes back none, or when the state or the command does not parse
+ * (the command is then refused as ever).
+ */
+function chantsLeftBeforeV7(
+  stateInput: GameStateV7,
+  actor: PlayerId,
+  input: CommandV7,
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+} | null {
+  const rituals = (
+    stateInput as { readonly cult?: { readonly rituals?: unknown } }
+  ).cult?.rituals;
+  if (!Array.isArray(rituals) || rituals.length === 0) return null;
+  const state = hasAcceptedStateCertificateV7(stateInput)
+    ? stateInput
+    : parseGameStateV7(stateInput);
+  const command = parseCommandV7(input);
+  if (state === null || !command.ok) return null;
+  const left = withChantsLeftV7(state, actor, command.value);
+  if (left === null) return null;
+  const certified = accepted(checked(left.state), []);
+  return { state: certified.state, events: left.events };
 }
 
 function applyCommandUnscoredV7(
@@ -10387,8 +10441,14 @@ function recoverIdleUnits(
   // predicate `recoverEligibleV7`): an Egg, an embarked unit, a construct, a
   // Restless unit outside own territory, and a ship away from a Port are
   // skipped, with no HP change and no event.
+  // `pulp_wars-mch9.61`: a cultist that chants has acted, although its join
+  // spent no action.
   const items = state.units
-    .filter((unit) => unit.ownerId === player.id)
+    .filter(
+      (unit) =>
+        unit.ownerId === player.id &&
+        !unitChantsV7(state.cult.rituals, unit.id),
+    )
     .map((unit) => ({ unit, facts: recoveryFacts(state, unit) }))
     .filter(({ facts }) => recoverEligibleV7(facts))
     .sort((a, b) => a.unit.id - b.unit.id)

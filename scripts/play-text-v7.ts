@@ -2586,6 +2586,13 @@ function eventTextV7(
       if (event.playerId !== me) notes.push(text);
       break;
     }
+    // `pulp_wars-mch9.61`.
+    case "CHANT_LEFT": {
+      const text = `CHANT LEFT by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)} (given another order): ${context.memory.tag(event.leaderUnitId)}'s star now deals ${event.damage}`;
+      lines.push(text);
+      if (event.playerId !== me) notes.push(text);
+      break;
+    }
     case "RITUAL_DISRUPTED":
       lines.push(
         `RITUAL ${ritualNameV7(event.ritual)}: ${context.memory.tag(event.participantUnitId)} left the circle: ${DISRUPTION_CAUSE_LABELS_V7[event.cause]}`,

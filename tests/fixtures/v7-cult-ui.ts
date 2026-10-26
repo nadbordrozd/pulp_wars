@@ -794,6 +794,46 @@ export function cultJoinUiFixtureV7(): GameStateV7 {
 }
 
 /**
+ * The second Stargazer of the two-star join scene (`pulp_wars-mch9.61`):
+ * two tiles east of the first, with its own star three tiles south of it.
+ */
+export const CULT_TWO_STARS_UI_V7 = {
+  secondStargazer: at(7, 1),
+  secondStar: at(7, 4),
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+/**
+ * Join the chant with two Stargazers to choose from (`pulp_wars-mch9.61`):
+ * the join scene, and a second Stargazer on (7, 1) whose star is pending on
+ * (7, 4). The Initiate on (6, 1) stands beside both Stargazers; the one on
+ * (4, 1) beside the first only.
+ */
+export function cultTwoStarsJoinUiFixtureV7(): GameStateV7 {
+  const A = CULT_RITUAL_UI_V7;
+  const B = CULT_TWO_STARS_UI_V7;
+  return withRitualV7(
+    withRitualV7(
+      cultFieldV7([
+        { seat: 0, role: "CATAPULT", at: A.stargazer },
+        { seat: 0, role: "CATAPULT", at: B.secondStargazer },
+        { seat: 0, role: "FIGHTER", at: A.chanter },
+        { seat: 0, role: "FIGHTER", at: A.secondChanter },
+        { seat: 1, role: "FIGHTER", at: A.starFighter },
+        { seat: 1, role: "KNIGHT", at: A.starKnight, hp: 8 },
+      ]),
+      "STARFALL",
+      A.stargazer,
+      [],
+      A.star,
+    ),
+    "STARFALL",
+    B.secondStargazer,
+    [],
+    B.secondStar,
+  );
+}
+
+/**
  * The Cult redesign's summons on the board (bead `pulp_wars-mch9.44`,
  * docs/product/RULESET_7_CULT_REDESIGN.md sections 7.3, 7.4 and 13): the
  * named tiles of `cultSummonsUiFixtureV7`.

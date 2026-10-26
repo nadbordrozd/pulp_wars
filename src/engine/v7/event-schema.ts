@@ -575,6 +575,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   // The Cult redesign (`pulp_wars-mch9.34`).
   CHANT_JOINED: ["kind", "playerId", "unitId", "leaderUnitId", "damage"],
+  // `pulp_wars-mch9.61`.
+  CHANT_LEFT: ["kind", "playerId", "unitId", "leaderUnitId", "damage"],
   RITUAL_DISRUPTED: [
     "kind",
     "playerId",
@@ -2167,6 +2169,18 @@ function validPayload(
         id(e.leaderUnitId) &&
         e.unitId !== e.leaderUnitId &&
         [1, 2, 3, 4, 5, 6, 7, 8].some(
+          (chanters) => e.damage === starfallDamageV7(chanters),
+        )
+      );
+    // `pulp_wars-mch9.61`: the star's damage after the joiner left (no
+    // chanter at least, seven at most).
+    case "CHANT_LEFT":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.leaderUnitId) &&
+        e.unitId !== e.leaderUnitId &&
+        [0, 1, 2, 3, 4, 5, 6, 7].some(
           (chanters) => e.damage === starfallDamageV7(chanters),
         )
       );

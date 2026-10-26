@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r116");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r116.current");
-    expect(PRIOR_RULESET_7_IDS.at(-62)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r117");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r117.current");
+    expect(PRIOR_RULESET_7_IDS.at(-63)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-62)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-63)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -458,8 +458,9 @@ describe("the ninth unit: identity", () => {
     // WATER_FROZEN (154).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
-    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
+    // (`pulp_wars-mch9.61`) adds CHANT_LEFT (161).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(161);
   });
 });
 

@@ -6,6 +6,7 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { compareCommandsV7 } from "../engine/v7/commands";
+import { chantsLeftByCommandV7 } from "../engine/v7/cult-rituals";
 import { cooperativeAlliesV7 } from "../engine/v7/economy";
 import {
   createPublicCommandWorkV7,
@@ -235,7 +236,16 @@ export class ScaleCommandWorkV7 implements PublicCommandWorkV7 {
         this.laterWindow = true;
         continue;
       }
-      const offered = queryOfferedUnitCommandsV7(this.view, unit);
+      // `pulp_wars-mch9.61`: a joiner's other orders take it out of its
+      // chant, and the policy gives none (`queryAiReadyCommandsV7`).
+      const offered = queryOfferedUnitCommandsV7(this.view, unit).filter(
+        (command) =>
+          chantsLeftByCommandV7(
+            this.view.cult.rituals,
+            this.view.viewer.id,
+            command,
+          ).length === 0,
+      );
       if (!actsV7(offered)) continue;
       if (center) {
         this.unitCommands.push(...offered);

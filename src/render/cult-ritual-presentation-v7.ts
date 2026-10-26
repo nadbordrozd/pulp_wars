@@ -113,7 +113,7 @@ export const CULT_TRICK_TOOLTIPS_V7: Readonly<Record<CultTrickKindV7, string>> =
     RIBBIT: `Turns an enemy within ${RIBBIT_RANGE_V7} tiles into a frog until its next turn ends. A frog hops one tile, is easy to hurt, and cannot attack or strike back`,
     SWITCHEROO: `It and a unit within ${SWITCHEROO_RANGE_V7} tiles swap places, friend or foe. Never on a city or village`,
     TENTACLE: `Up comes a Tentacle within ${TENTACLE_RANGE_V7} tiles. It belongs to nobody, and slaps and grabs whoever is weakest beside it`,
-    JOIN_CHANT: `It chants with the Stargazer beside it, so the star hits ${STARFALL_CHANTER_DAMAGE_V7} harder. It cannot move or act again this turn`,
+    JOIN_CHANT: `It chants with the Stargazer beside it, so the star hits ${STARFALL_CHANTER_DAMAGE_V7} harder. Give it another order this turn and it stops chanting`,
   };
 
 /** The instruction of each aimed action. */
@@ -657,7 +657,16 @@ export function cultTrickChipsV7(
     chips.push({
       id: "chanting",
       label: ritual.leaderUnitId === unit.id ? "Leads the chant" : "Chanting",
-      status: `It chants for ${ritualNameV7(ritual.kind)}, and everyone who has explored its tile sees it. Hurt, move, or hex it and it leaves the circle`,
+      status: `It chants for ${ritualNameV7(ritual.kind)}, and everyone who has explored its tile sees it. Hurt, move, or hex it and it leaves the circle${
+        // `pulp_wars-mch9.61`: an own joiner may still be given another
+        // order this turn, which takes it out of the chant.
+        ritual.kind === "STARFALL" &&
+        ritual.leaderUnitId !== unit.id &&
+        unit.ownerId === view.viewer.id &&
+        view.turnOrder[view.activeSeatIndex] === view.viewer.id
+          ? ". Give it another order this turn and it stops chanting"
+          : ""
+      }`,
       icon: "ICON:STATUS:CANDLELIT",
     });
   if (unitIsFrogV7(view, unit))

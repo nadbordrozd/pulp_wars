@@ -17339,10 +17339,17 @@ export class Ruleset7DomAppView {
         action.setAttribute("aria-label", `${label}${price}. ${tooltip}`);
         action.disabled = this.#localBusy();
         action.setAttribute("aria-pressed", String(aiming));
+        // `pulp_wars-mch9.61`: one Stargazer to chant with joins at once;
+        // several are picked on the board, and a tap there joins.
+        const [only] = commands;
+        const instant =
+          kind === "JOIN_CHANT" && commands.length === 1 && only !== undefined;
         action.onclick = () =>
           aiming
             ? this.#cancelCultPick()
-            : this.#startCultTrickPick(kind, unit.id);
+            : instant
+              ? void this.#dispatch(only)
+              : this.#startCultTrickPick(kind, unit.id);
       } else {
         // aria-disabled keeps the reason reachable by keyboard and touch.
         action.setAttribute("aria-disabled", "true");
@@ -19307,7 +19314,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r116",
+    rulesetId: "pulp-wars-poc-7r117",
     seed,
     width,
     height: width,

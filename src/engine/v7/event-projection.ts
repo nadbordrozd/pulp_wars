@@ -726,7 +726,7 @@ function eventVisible(
   // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
   // section 8.2): a join is public like the circle it adds to: projected to
   // its seat and to every viewer that sees the joiner or the Stargazer.
-  if (event.kind === "CHANT_JOINED")
+  if (event.kind === "CHANT_JOINED" || event.kind === "CHANT_LEFT")
     return (
       event.playerId === viewerId ||
       beforeVisible.has(event.unitId) ||

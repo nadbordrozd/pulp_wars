@@ -167,7 +167,12 @@ arming).
   with Select for it alone, as a Hatch), a chooser only when the
   Stargazer's tile has another action too. The dock shows a "Join the
   chant" button while a join is offered (and no second, generic command
-  button). Bead `pulp_wars-mch9.43` (U-R2): the badge and the button draw
+  button). Bead `pulp_wars-mch9.61`: with one Stargazer to chant with the
+  button joins at once (no aiming, no confirmation); with several it arms
+  the join, every such Stargazer is highlighted, and a tap on one joins
+  it. A join is reversible like Wait: the joiner wears the Chanting chip,
+  and selecting it again offers its other orders (a Move, an attack, the
+  other star's join), any of which takes it out of the chant. Bead `pulp_wars-mch9.43` (U-R2): the badge and the button draw
   the join icon `ICON:ACTION:JOIN_CHANT` (a candle with a plus; a badge
   may name a registered `raster` that it draws in its disc once loaded,
   its glyph standing in until then), and the **live preview**: while the

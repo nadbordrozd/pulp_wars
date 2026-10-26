@@ -547,6 +547,11 @@ around it, and 3 more for every cultist who joins the chant."
   rest of the turn it was begun in, so **joining happens in the casting
   turn**, after the begin, in any order with the seat's other commands.
   A cultist may move up beside the Stargazer and join in the same turn.
+- **Reversible since `pulp_wars-mch9.61` (`7r117`).** A join now spends
+  nothing and only marks the joiner handled, like Wait; any other order to
+  it that turn takes it out of the chant first (`CHANT_LEFT`), so the
+  costs below hold only for a join the player keeps to End Turn
+  ([RULESET_7_CURRENT.md section 26.8](RULESET_7_CURRENT.md#268-star-fall)).
 - **What joining costs the joiner:** its primary action for the turn (it
   channels nothing, attacks nothing, helps no summoning), the Move it has
   not made yet, and its safety: as a chanter it is Candlelit and any
