@@ -6779,6 +6779,105 @@ before a transport beside the city lands), not a held wave; and the AI
 boarded nothing on the strait beside its own city for 25 rounds while the
 player's boats stood there.
 
+### Naval AI iteration 5 (`pulp_wars-2oj9`)
+
+**Status: measured by hand play, the same ten matches as iterations 1 to
+4, and the mixed-policy set against the iteration 4 policy (the same ten
+boards with the seats swapped, 20 matches), by the user's authorisation for
+this bead.** A replay tool played the AI's whole turn from saved hand-game
+positions under each candidate change, and the mixed set now also counts
+every hostile city centre overseas that a seat's attack empties and whether
+the seat stands on it at the end of that turn. All changes are policy only;
+no rule and no identity changed.
+
+| Failure                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Where                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| In hand play the Goblin Scrap Dreadnought killed the garrison of the player's Elmsby every turn while the naval plan's target was Corwick, the hostile city nearest to the Goblin cities across the strait: the transports near Elmsby sailed away toward Corwick, and no landing came on a turn the centre stood empty. With both seats on the iteration 4 policy, the attacks of each side in the mixed set emptied 22 overseas city centres; the side stood on 12 of them at the end of that turn, and an own transport was beside the centre once. | Among the hostile cities, one an own ship of the Battleship role (in naval form) has within 3 tiles, its range, or whose centre stands visibly empty, is the target before the others; the distance to the own cities still orders the rest. From a saved round-31 position (the player passing), the transports close on Elmsby and a Goblin lands on its emptied centre in round 34; the iteration 4 policy sails them toward Corwick and lands nothing in those three turns. | `navalSiegeTargetRankV7`, `NAVAL_SIEGE_REACH_V7` (`navalPlanWorkV7`) |
+| The counter to a hostile Battleship or Submarine was exempt from iteration 4's launch rule, so in hand play the Goblins trained a Diving Barrel on a dock in the player's Battleship's reach two turns running and lost each (8 Coins) before it moved.                                                                                                                                                                                                                                                                                                | The launch rule (`navalLaunchSunkV7`) now holds for the counter too.                                                                                                                                                                                                                                                                                                                                                                                                            | the `TRAIN_NAVAL` scorer                                             |
+
+**Before and after**, the ten matches (20 seats, the policy on both):
+
+| Measure                              |   Before |    After |
+| ------------------------------------ | -------: | -------: |
+| Units embarked                       |      293 |      297 |
+| Sunk afloat                          |       59 |       50 |
+| Landings on another landmass         |      136 |      137 |
+| Lone landings                        |       41 |       37 |
+| Landed units dead within 3 rounds    |       62 |       69 |
+| Hostile cities captured across water |       23 |       23 |
+| Ships trained (lost)                 | 151 (50) | 151 (48) |
+| Land units at the end                |      234 |      242 |
+| Matches ended by elimination (of 10) |        2 |        2 |
+
+**Against the iteration 4 policy** (the 20 matches, totals of the ten seats
+each policy played; with both seats on the iteration 4 policy the two
+sides' totals are equal, 76 cities and 23 captures each): cities at the
+end 77 against 75, hostile cities captured across water 25 against 21 (22
+against 18 from a seat), cities lost 23 against 24, landings 145 against
+133, units sunk afloat 52 against 54, ships lost 46 of 151 against 49 of
+145, eliminations 3 against 2; landed units dead within 3 rounds 69
+against 63. Overseas centres emptied by an attack 26 against 21, with an
+own transport beside the centre 4 times against 0. The siege-ship half of
+the target rule alone changed none of the twenty matches (the boards have
+no siege ship off a city other than the nearest); the empty-centre half
+with the launch rule gives the same totals as all three (77 against 75, 25
+captures against 21); the launch rule alone: cities 77 against 75,
+captures 23 against 22, ships lost 49 against 49.
+
+**Hand play** (Humans against a Goblin AI, Continents 14 x 14, seed 11,
+curiosities on, a normal expanding game to four cities with Ports,
+Shipyards, workshops, windmills and three Battleships, 36 rounds). The
+Goblin capital Hobnok stood two tiles of water west of the player's Corwick
+and Aldmere, and Rookwell south of it faced Elmsby. The Goblins first
+boarded in round 20 (a Wolf Rider and a Bomb Chucker on Hobnok's Ports) and
+first landed in round 21 (a lone damaged Wolf Rider beside Corwick, killed
+at once). From round 24 the policy here differs from iteration 4 (the first
+23 rounds replay identically): no Diving Barrel was launched under the
+player's Battleship. Goblin transports came round Rookwell toward Elmsby
+from round 26, a Bomb Chucker on Hobnok sank a Patrol Boat (26), a Diving
+Barrel sank another (30) and in round 33 a Battleship, and from round 32
+the Dreadnought killed Elmsby's garrison every turn; the player's
+Battleships shelled Hobnok's and Rookwell's centres every turn and sank
+every transport off the Goblin Ports, so no Goblin unit reached Elmsby and
+no city fell by round 36 (score 796 against 748, four cities each). In a first
+playing of the same game (with the dropped siege landing and boarding
+changes below from round 1 and the target rule from round 31), Goblin
+transports landed on Elmsby's emptied centre in rounds 33 and 34, on the
+turn the Dreadnought emptied it, and the player needed two units each time
+to kill the lander before it captured.
+
+**Tried and dropped.** Measured against the iteration 4 policy:
+
+- A siege landing: a transport's Move to a tile beside the empty target
+  centre with a landing left, at 1340 and excused the exposure rule, the
+  landing on that centre at 1341 and not held by the wave or force rules:
+  cities 74 against 78, captures 24 against 24, landed units dead within 3
+  rounds 67 against 58. With the target rule (it lands a turn sooner in
+  the hand-game position): cities 75 against 77; with the target rule's
+  empty-centre half: 77 against 76, captures 24 against 22.
+- Boarding while a hostile warship is in sight with any own warship in
+  place of an own Patrol Boat: cities 77 against 75, captures 23 against
+  22; from the hand-game positions the hold never bound (the boardings it
+  refused were the exposure rule's, into a Battleship's reach).
+- Boarding then also when the boarding tile is within two water steps of
+  the landing coast: the twenty matches were identical to iteration 4.
+
+Proven on the authored strait in
+`tests/unit/ruleset-v7-naval-ai-iteration5.test.ts` (with the target rule
+also inside the scale mode's unit window); the Kraken counter test of
+`tests/unit/ruleset-v7-naval-cult-ai.test.ts` now places the hostile
+Battleship out of the dock's reach and checks the refusal beside it.
+
+**Next.** Stop tuning the naval heuristics: five iterations moved the
+mixed sets by a few cities and captures, and in hand play a player with
+Battleships on the strait still holds every city. The levers left are rules
+and economy, not policy: a unit afloat has Defense 1 and never answers, so
+a Battleship (range 3, unanswered from the sea) sinks every transport and
+kills every unit landed beside it; a sturdier transport (Defense 2, or the
+unit's own Defense at half), a landing that costs no movement point after a
+short crossing, or a costlier or slower Battleship are the candidates, and
+the Normal AI's economy (its starting Coins) is the other.
+
 ### The frozen sea (`pulp_wars-5ti.5`)
 
 [Overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5).

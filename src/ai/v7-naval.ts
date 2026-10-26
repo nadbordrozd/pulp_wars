@@ -1601,3 +1601,35 @@ export function navalLaunchSunkV7(launch: {
 }): boolean {
   return launch.danger >= launch.maxHp;
 }
+
+/**
+ * Naval AI iteration 5 (`pulp_wars-2oj9`): the reach within which an own
+ * siege ship (a ship of the Battleship role in naval form: the Battleship,
+ * the Scrap Dreadnought, and the other branches' capital ships) has a
+ * hostile city centre under its guns. It is the Battleship's range: the ship
+ * cannot move and attack in one turn, so only a ship already in range
+ * empties the centre this turn.
+ */
+export const NAVAL_SIEGE_REACH_V7 = 3;
+
+/**
+ * Naval AI iteration 5 (`pulp_wars-2oj9`): "land where the city is being
+ * emptied". The naval plan's target is the overseas objective nearest to the
+ * seat's own cities; in hand play a Goblin Scrap Dreadnought killed the
+ * garrison of the player's Elmsby every turn while the plan's target stayed
+ * Corwick, the nearer city across the strait, and the transports beside
+ * Elmsby sailed away toward it. Among the hostile cities
+ * (`city`), one an own siege ship has within `NAVAL_SIEGE_REACH_V7`
+ * (`siegeShipInReach`), or whose centre stands visibly empty
+ * (`centreEmpty`), ranks before the rest (0 before 1); the distance to the
+ * own cities still orders the cities within each rank, and a village (not
+ * a city) keeps rank 0, as it always ranks after the cities.
+ */
+export function navalSiegeTargetRankV7(objective: {
+  readonly city: boolean;
+  readonly centreEmpty: boolean;
+  readonly siegeShipInReach: boolean;
+}): number {
+  if (!objective.city) return 0;
+  return objective.centreEmpty || objective.siegeShipInReach ? 0 : 1;
+}

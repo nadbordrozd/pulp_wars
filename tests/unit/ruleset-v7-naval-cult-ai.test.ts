@@ -421,16 +421,29 @@ describe("the Kraken holds (section 9.6)", () => {
 
 describe("training the Deep Ones (section 9.6)", () => {
   it("trains a Kraken against a visible hostile Battleship", () => {
-    const state = strait([{ seat: 1, role: "BATTLESHIP", at: { x: 5, y: 4 } }]);
-    const view = viewOf(state);
-    const train = queryPlayerCommandsV7(view).find(
-      (command) =>
-        command.kind === "TRAIN_NAVAL" && command.role === "SUBMARINE",
-    );
-    if (train === undefined) throw new Error("no Kraken on offer");
-    expect(scoreCommandV7(view, train).priority).toBe(
-      NAVAL_COUNTER_TRAINING_PRIORITY_V7,
-    );
+    const krakenPriority = (state: GameStateV7): number => {
+      const view = viewOf(state);
+      const train = queryPlayerCommandsV7(view).find(
+        (command) =>
+          command.kind === "TRAIN_NAVAL" && command.role === "SUBMARINE",
+      );
+      if (train === undefined) throw new Error("no Kraken on offer");
+      return scoreCommandV7(view, train).priority;
+    };
+    // The Battleship out of reach of the dock: the counter is trained.
+    expect(
+      krakenPriority(
+        strait([{ seat: 1, role: "BATTLESHIP", at: { x: 9, y: 6 } }]),
+      ),
+    ).toBe(NAVAL_COUNTER_TRAINING_PRIORITY_V7);
+    // Naval AI iteration 5 (`pulp_wars-2oj9`): beside the dock it would sink
+    // the new Kraken there, and the counter is no longer exempt from the
+    // launch rule (`navalLaunchSunkV7`).
+    expect(
+      krakenPriority(
+        strait([{ seat: 1, role: "BATTLESHIP", at: { x: 5, y: 4 } }]),
+      ),
+    ).toBe(-1);
   });
 });
 

@@ -666,6 +666,8 @@ import {
   navalTransportEscapeValueV7,
   navalWarshipShoreExposedV7,
   navalLaunchSunkV7,
+  navalSiegeTargetRankV7,
+  NAVAL_SIEGE_REACH_V7,
   NAVAL_LANDING_FORCE_RADIUS_V7,
   NAVAL_TRANSPORT_ESCAPE_PRIORITY_V7,
   NAVAL_TRANSPORT_EXPOSED_TENTHS_V7,
@@ -2982,6 +2984,29 @@ function* navalPlanWorkV7(
     ownedCityComponents.size > 0 ? ownedCityComponents : captureComponents;
   const anchors =
     ownCenters.length > 0 ? ownCenters : captureUnits.map((unit) => unit.at);
+  // Naval AI iteration 5 (`pulp_wars-2oj9`): a hostile city an own siege
+  // ship has in reach, or whose centre stands empty, comes first
+  // (`navalSiegeTargetRankV7`).
+  const ownSiegeShips = view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.form === "NAVAL" &&
+      unit.role === "BATTLESHIP" &&
+      unit.hp > 0,
+  );
+  const siegeRank = (objective: {
+    readonly at: CoordV7;
+    readonly rank: number;
+  }): number =>
+    navalSiegeTargetRankV7({
+      city: objective.rank === 0,
+      centreEmpty: !view.units.some(
+        (unit) => unit.hp > 0 && same(unit.at, objective.at),
+      ),
+      siegeShipInReach: ownSiegeShips.some(
+        (ship) => distance(ship.at, objective.at) <= NAVAL_SIEGE_REACH_V7,
+      ),
+    });
   const objectives = [
     ...view.cities
       .filter((city) => isHostile(view, city.ownerId))
@@ -2997,6 +3022,7 @@ function* navalPlanWorkV7(
   ].sort(
     (left, right) =>
       left.rank - right.rank ||
+      siegeRank(left) - siegeRank(right) ||
       (anchors.length === 0
         ? 0
         : nearestDistance(left.at, anchors) -
@@ -15398,9 +15424,12 @@ function scoreCommandWithContext(
       priority = Math.max(priority, NAVAL_COUNTER_TRAINING_PRIORITY_V7);
       strategicValue = Math.max(strategicValue, 50);
     }
-    // Naval AI iteration 4 (`pulp_wars-xddb`): no ship but the counter is
-    // launched where it would be sunk on the dock (`navalLaunchSunkV7`).
-    if (!counter && navalDockLethalV7(context, command)) priority = -1;
+    // Naval AI iteration 4 (`pulp_wars-xddb`): no ship is launched where it
+    // would be sunk on the dock (`navalLaunchSunkV7`). Naval AI iteration 5
+    // (`pulp_wars-2oj9`): the counter neither: in hand play a Goblin seat
+    // trained a Diving Barrel against the player's Battleship on a dock in
+    // that Battleship's reach turn after turn, and lost it before it moved.
+    if (navalDockLethalV7(context, command)) priority = -1;
   }
 
   // The naval branch (`pulp_wars-5ti.4`): a Board that beats the ship's
