@@ -208,6 +208,33 @@ const TURN_NEUTRAL_KINDS: ReadonlySet<CommandV7["kind"]> = new Set<
 >(["DISBAND", "PROMOTE", "WAIT"]);
 
 /**
+ * Bead `pulp_wars-2yc.110`: the commands that count as an attack for a
+ * unit's turn: an Attack, and an ability the engine offers only with a
+ * hostile unit to hurt or take (a Barricade attack, a Board, a Bomb Run, a
+ * Whirl, a Swallow, a Stomp, a Tesla Tower Zap). A disabling spell (Freeze,
+ * Bolas, Mind Control, Ribbit), a Kaboom (offered with or without a target)
+ * and every other action are not attacks. The dock's turn chip and the
+ * board's "can attack" ring both read it, so they always agree.
+ */
+const ATTACK_COMMAND_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set<
+  CommandV7["kind"]
+>([
+  "ATTACK",
+  "ATTACK_BARRICADE",
+  "BOARD",
+  "BOMB_RUN",
+  "WHIRL",
+  "SWALLOW",
+  "STOMP",
+  "ZAP",
+]);
+
+/** Whether `command` is one of a unit's attacks (see above). */
+export function isAttackCommandV7(command: CommandV7): boolean {
+  return ATTACK_COMMAND_KINDS_V7.has(command.kind);
+}
+
+/**
  * Bead `pulp_wars-2yc.109`: the turn chip of an own handled unit (its Move
  * is spent), from the commands the engine offers it: "Can attack · can't
  * move" while an Attack is offered, "Can act · can't move" while another
@@ -229,12 +256,7 @@ export function unitTurnChipV7(
       !TURN_NEUTRAL_KINDS.has(command.kind),
   );
   if (left.some((command) => command.kind === "MOVE")) return null;
-  if (
-    left.some(
-      (command) =>
-        command.kind === "ATTACK" || command.kind === "ATTACK_BARRICADE",
-    )
-  )
+  if (left.some(isAttackCommandV7))
     return {
       status: "attack-left",
       label: UNIT_ATTACK_LEFT_LABEL_V7,

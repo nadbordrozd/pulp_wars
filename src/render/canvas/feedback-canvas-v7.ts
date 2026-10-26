@@ -62,6 +62,67 @@ export interface ReadyCueFrameV7 {
   readonly highContrast: boolean;
 }
 
+/** The Attack mark's red (docs/ui/BOARD_TARGETING.md section 2). */
+const ATTACK_RED = "#ff655f";
+/** Its dark casing, the casing of every target mark. */
+const ATTACK_CASING = "#10131c";
+/** Dashes round the ellipse: few and long, so it never reads as dots. */
+const CAN_ATTACK_DASHES = 8;
+
+/**
+ * Bead pulp_wars-2yc.110: the "can attack" ring of a unit that has acted but
+ * may still attack. It is the thin ring's ellipse broken into eight long red
+ * dashes (the Attack mark's red) on the target marks' dark casing, a touch
+ * heavier than the thin cream ring and still: a different colour and a
+ * different shape from the cream ready ring, so it survives colour blindness
+ * and the high-contrast setting (which thickens it). It is an ellipse at the
+ * feet, never a tile outline, so it is not an Attack mark; it carries no
+ * plus, so it is not the broken lavender ring of an area support.
+ */
+function drawCanAttackRingV7(
+  context: CanvasRenderingContext2D,
+  ground: FeedbackEllipseV7,
+  zoom: number,
+  highContrast: boolean,
+): void {
+  const alpha = context.globalAlpha;
+  const width = Math.max(2.5, (highContrast ? 4.5 : 3.75) * zoom);
+  const radiusX = Math.max(0.5, ground.radiusX);
+  const radiusY = Math.max(0.5, ground.radiusY);
+  // Ramanujan's perimeter, cut into equal dash-and-gap periods; the round
+  // caps take the line's width out of each gap.
+  const h = ((radiusX - radiusY) / (radiusX + radiusY)) ** 2;
+  const perimeter =
+    Math.PI * (radiusX + radiusY) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
+  const period = perimeter / CAN_ATTACK_DASHES;
+  const dash = Math.max(0.5, period * 0.62 - width);
+  // A dash is centred on each end and on the front of the ellipse, under
+  // the feet, where the sprite never covers it.
+  context.beginPath();
+  context.ellipse(
+    ground.centreX,
+    ground.centreY,
+    radiusX,
+    radiusY,
+    0,
+    0,
+    Math.PI * 2,
+  );
+  context.setLineDash([dash, period - dash]);
+  context.lineDashOffset = dash / 2;
+  context.lineCap = "round";
+  context.globalAlpha = alpha * 0.8;
+  context.strokeStyle = ATTACK_CASING;
+  context.lineWidth = width + Math.max(2.5, 3.5 * zoom);
+  context.stroke();
+  context.globalAlpha = alpha;
+  context.strokeStyle = ATTACK_RED;
+  context.lineWidth = width;
+  context.stroke();
+  context.setLineDash([]);
+  context.lineDashOffset = 0;
+}
+
 /**
  * The ground cue of a unit that can still act. `ACTIVE` is the thin cream
  * ring on its soft dark casing (the look of the ready ring before this
@@ -94,6 +155,11 @@ export function drawReadyGroundCueV7(
   const cream = cue.highContrast ? "#ffffff" : CREAM;
   context.save();
   const alpha = context.globalAlpha;
+  if (cue.state === "ATTACK") {
+    drawCanAttackRingV7(context, ground, zoom, cue.highContrast);
+    context.restore();
+    return;
+  }
   if (cue.state === "ACTIVE") {
     ellipse(0);
     context.globalAlpha = alpha * 0.55;

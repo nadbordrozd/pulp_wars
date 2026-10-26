@@ -126,6 +126,13 @@ plate.
   with ink text, a `--pw-line-w-sm` ink border and `--pw-shadow-sm`. The HUD
   button a hint points at has a `--pw-yellow` outline; the marker on the
   Canvas is the same yellow arrow with an ink keyline and a hard shadow.
+- **Turn cues on the board** (beads `pulp_wars-2yc.29`,
+  `pulp_wars-2yc.110`): an own unit that can still move stands on the thick
+  cream ready ring with the chevron over it; one that has acted but can
+  still attack on a still ring of eight long dashes in the Attack red
+  `#ff655f` on the marks' dark casing; a spent unit on nothing. Both rings
+  are ellipses at the feet, never tile outlines, so they are not target
+  marks ([Board targeting](BOARD_TARGETING.md)).
 - **Over the board**: a dialog or the technology screen sits on `--pw-scrim`.
   The dock is `--pw-dock`, a tone under the panels, so the wide plate under
   the board does not glare.

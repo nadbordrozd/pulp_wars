@@ -322,7 +322,8 @@ the city trains more than it can pay for.
   `Done this turn`. Bead `pulp_wars-2yc.109`: the chip reads what the engine
   still offers the handled unit (its Move spent: it moved, was beamed by a
   Beam Down or a Mass Beam Down, or acted), Promote, Disband and Wait
-  aside: `Can attack · can't move` while an Attack is offered, `Can act ·
+  aside: `Can attack · can't move` while an attack is offered (an Attack
+  or an attack-type ability, `isAttackCommandV7`), `Can act ·
 can't move` while another action is (a Capture, a free Tractor Beam), and
   `Done this turn` only when nothing is. A unit that is not handled (an
   Overrun, a Feast or a Clockwork Gunner's second shot pending) gets none:
@@ -871,8 +872,22 @@ Roads, that text now describes the **Classic look** developer option
     casing round its feet, a pool and an outer line of the viewer's colour,
     a ripple that leaves the ring once per 1.6 s, and a small cream chevron
     bouncing over its head.
-  - **Active** (not handled, no Move left): the thin cream ring as before.
-  - **Spent** (handled): no cue at all; the unit keeps its default look.
+  - **Active** (not handled and it has not acted, no Move left): the thin
+    cream ring as before.
+  - **Can attack** (bead `pulp_wars-2yc.110`, the user's test of
+    2026-10-26): it has acted (it moved, was set down by a Beam Down or a
+    Mass Beam Down, or attacked with an Overrun, a Feast or a second shot
+    pending) and the engine still offers it an attack: the same ellipse
+    broken into eight long dashes in the Attack mark's red `#ff655f` on the
+    marks' dark casing, still (no pulse, no chevron). It reads from the
+    commands on offer exactly as the dock's `Can attack · can't move` chip
+    does: an Attack, or an ability offered only with a hostile unit to hurt
+    or take (Barricade attack, Board, Bomb Run, Whirl, Swallow, Stomp, a
+    Tesla Tower Zap); Wait, Promote, Disband, Kaboom and the disabling
+    spells do not count. One constant, `CAN_ATTACK_CUE_V7` in
+    `unit-turn-state-v7.ts`, switches it off.
+  - **Spent** (handled, no attack left): no cue at all; the unit keeps its
+    default look.
     (For a few hours on 2026-10-07 a spent unit's sprite was dimmed; the
     user found that overkill and it was removed.)
     The states follow the newest view at once and hold through an animation.
