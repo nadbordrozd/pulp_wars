@@ -265,6 +265,12 @@ export interface FirstStepMarkerV7 {
   readonly at: CoordV7;
   /** `HOP`: it hops (full motion). `STILL`: a static marker. */
   readonly motion: "HOP" | "STILL";
+  /**
+   * Bead pulp_wars-2yc.115: other tiles the camera brings into view with
+   * the marker when it comes up (a tutorial step's whole scene); absent,
+   * the marker's tile alone.
+   */
+  readonly frame?: readonly CoordV7[];
 }
 
 export interface FirstStepCueV7 {

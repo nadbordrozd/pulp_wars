@@ -284,9 +284,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Initiate).
   "LAB_CULT_MID@2:CULT":
     "5314ea5794f60ad88ed98e7fbd59abc8cc9f173fcc902de0a4ecb6b53ff7f7a8",
-  // The tutorial board (`pulp_wars-0yxy`): Humans against one Goblin seat.
-  "TUTORIAL_1@2:ORIGINAL":
-    "e7f762c65bfdac5321858dc9393a427690029ef587dc2fbb74e603edaf531686",
+  // The tutorial board (`pulp_wars-0yxy`): Humans against one Goblin seat;
+  // revision 3 (`pulp_wars-2yc.115`): the eight-turn tutorial.
+  "TUTORIAL_1@3:ORIGINAL":
+    "7a8cdbeb225d2d325e6ea181bdf48aeac7c399ddae92b197c4c9fa9c341874f0",
   // The objective fixtures (`pulp_wars-v642.1`): escort, survive, capture
   // with a deadline and an ally, and kill.
   "TEST_ESCORT@1:ORIGINAL":
@@ -627,9 +628,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // (`pulp_wars-mch9.31`): revision 2.
   "LAB_CULT_MID@2:CULT":
     "dd0f9d881c53029f996b230d8be84a6c06098c5c28eeaf376518e0e60baded16",
-  // The tutorial board (`pulp_wars-0yxy`).
-  "TUTORIAL_1@2:ORIGINAL":
-    "e4f0764eaca0130db62162c634fe3fe4a48c03ceb631b6437238fb83b3aafcc7",
+  // The tutorial board (`pulp_wars-0yxy`; revision 3, `pulp_wars-2yc.115`).
+  "TUTORIAL_1@3:ORIGINAL":
+    "8ea20f8a245ed588580364db74bdb7447c73daf2633315b25b5c0d4472cc8012",
   // The objective fixtures (`pulp_wars-v642.1`): escort, survive, capture
   // with a deadline and an ally, and kill.
   "TEST_ESCORT@1:ORIGINAL":

@@ -1,34 +1,20 @@
-import {
-  applyCommandV7,
-  createPlayableGameV7,
-  missionByIdV7,
-  missionMatchSetupV7,
-  queryPlayerCommandsV7,
-  viewForV7,
-  type GameStateV7,
-} from "../../src/engine/index";
+import type { GameStateV7 } from "../../src/engine/index";
 import type { StorageAdapter } from "../../src/persistence/index";
 import {
-  NEW_TUTORIAL_PROGRESS_V7,
-  TUTORIAL_MISSION_ID_V7,
-  TUTORIAL_STEPS_V7,
   TUTORIAL_STORAGE_KEY_V7,
-  acknowledgeTutorialV7,
-  advanceTutorialV7,
   serializeTutorialProgressV7,
-  startTutorialV7,
-  tutorialExpectedCommandV7,
-  tutorialStepV7,
   type TutorialProgressV7,
   type TutorialStepIdV7,
 } from "../../src/render/tutorial-v7";
+import { idleTurn, playTutorialV7, tutorialState } from "./v7-tutorial-play";
 
 /**
- * The tutorial (bead pulp_wars-0yxy) at one of its steps, for the DOM tests
- * and the phone review: the tutorial board with the script's commands
- * applied by the engine up to that step, and the browser record that says
- * the tutorial is running there. The opponent's turn between the player's
- * two is an End Turn with nothing done; no AI runs.
+ * The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115) at one of its
+ * steps, for the DOM tests, the phone review and the screenshots: the
+ * tutorial board with the script's commands applied by the engine up to
+ * that step (v7-tutorial-play.ts), and the browser record that says the
+ * tutorial is running there. The opponent's turns are an End Turn with
+ * nothing done; no AI runs.
  */
 export class TutorialStorageV7 implements StorageAdapter {
   readonly values = new Map<string, string>();
@@ -45,12 +31,7 @@ export class TutorialStorageV7 implements StorageAdapter {
 
 /** The tutorial board before any command. */
 export function tutorialStartStateV7(): GameStateV7 {
-  const mission = missionByIdV7(TUTORIAL_MISSION_ID_V7);
-  const setup = mission === null ? null : missionMatchSetupV7(mission);
-  if (setup === null) throw new Error("the tutorial mission is missing");
-  const created = createPlayableGameV7(setup);
-  if (!created.ok) throw new Error(created.error.code);
-  return created.state;
+  return tutorialState();
 }
 
 export interface TutorialFixtureV7 {
@@ -62,39 +43,13 @@ export interface TutorialFixtureV7 {
 
 /** The tutorial with every step before `at` done. */
 export function tutorialFixtureV7(at: TutorialStepIdV7): TutorialFixtureV7 {
-  let state = tutorialStartStateV7();
-  let progress = startTutorialV7(NEW_TUTORIAL_PROGRESS_V7);
-  for (const step of TUTORIAL_STEPS_V7) {
-    if (step.id === at) break;
-    if (tutorialStepV7(progress)?.id !== step.id)
-      throw new Error(`the tutorial is not at ${step.id}`);
-    if (step.expects === null) {
-      progress = acknowledgeTutorialV7(progress);
-      continue;
-    }
-    const view = viewForV7(state, state.humanPlayerId);
-    const command = tutorialExpectedCommandV7(
-      progress,
-      view,
-      queryPlayerCommandsV7(view),
-    );
-    if (command === null) throw new Error(`${step.id} is not offered`);
-    const applied = applyCommandV7(state, state.humanPlayerId, command);
-    if (!applied.accepted) throw new Error(applied.error.code);
-    state = applied.state;
-    progress = advanceTutorialV7(progress, view, command);
-    if (command.kind === "END_TURN") {
-      const opponent = state.turnOrder[state.activeSeatIndex];
-      if (opponent === undefined) throw new Error("no active seat");
-      const ended = applyCommandV7(state, opponent, { kind: "END_TURN" });
-      if (!ended.accepted) throw new Error(ended.error.code);
-      state = ended.state;
-    }
-  }
+  const play = playTutorialV7({ opponent: idleTurn, stopAt: at });
+  if (play.progress.step === null)
+    throw new Error(`the tutorial ended before ${at}`);
   const storage = new TutorialStorageV7();
   storage.setItem(
     TUTORIAL_STORAGE_KEY_V7,
-    serializeTutorialProgressV7(progress),
+    serializeTutorialProgressV7(play.progress),
   );
-  return { state, progress, storage };
+  return { state: play.state, progress: play.progress, storage };
 }

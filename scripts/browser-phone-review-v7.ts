@@ -28,9 +28,10 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * scenes `cult-*`, `setup-cult-allied`, `end-nine-players`): a new
  * nine-player game as the Cult before any command, its leaderboard with
  * nine rows (rivals, and the AIs allied with a head start), and its
- * technology tree. The tutorial (bead pulp_wars-0yxy; scenes `tutorial-*`):
- * its line at each of its eight steps, with the step's unit, city or tile
- * picked, the technology screen of its research step, and the farewell.
+ * technology tree. The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115;
+ * scenes `tutorial-*`): its line at each lesson of its eight turns, with the
+ * step's unit, city or tile picked, a unit's card, a city reward, the
+ * technology screen of its research steps, and the farewell.
  * Tile actions (bead pulp_wars-2yc.60; scenes `tile-actions-*`): a Human
  * Knight, a Cult Hexer (and the chooser of its Attack and Ribbit on one
  * Knight), an Ice Folk Yeti's Freeze, a Martian Brain's Mind Control and
@@ -164,6 +165,18 @@ const TUTORIAL_PLACE = {
   walker: { x: 4, y: 8 },
   village: { x: 5, y: 8 },
   attacker: { x: 3, y: 7 },
+  fertile: { x: 1, y: 8 },
+  windmill: { x: 2, y: 9 },
+  forest: { x: 1, y: 7 },
+  ore: { x: 6, y: 9 },
+  workshop: { x: 2, y: 7 },
+  roadNear: { x: 3, y: 8 },
+  knight: { x: 6, y: 5 },
+  captain: { x: 5, y: 5 },
+  charge: { x: 7, y: 5 },
+  goblin1: { x: 8, y: 5 },
+  goblin2: { x: 9, y: 5 },
+  goblin3: { x: 10, y: 5 },
 } as const;
 
 /** A tutorial scene: its name, the step, and what is done after mounting. */
@@ -172,16 +185,7 @@ const TUTORIAL_SCENES: readonly (readonly [
   string,
   ((connection: Connection) => Promise<void>)?,
 ])[] = [
-  ["tutorial-research", "RESEARCH"],
-  ["tutorial-research-tech", "RESEARCH", (c) => click(c, "tech")],
-  [
-    "tutorial-research-detail",
-    "RESEARCH",
-    async (c) => {
-      await click(c, "tech");
-      await click(c, "tech-gathering");
-    },
-  ],
+  // Turn 1.
   ["tutorial-harvest", "HARVEST"],
   [
     "tutorial-harvest-picked",
@@ -197,25 +201,125 @@ const TUTORIAL_SCENES: readonly (readonly [
     "TRAIN",
     (c) => activate(c, TUTORIAL_PLACE.capital),
   ],
-  ["tutorial-attack", "ATTACK"],
+  ["tutorial-details", "DETAILS"],
+  [
+    "tutorial-details-picked",
+    "DETAILS",
+    (c) => activate(c, TUTORIAL_PLACE.attacker),
+  ],
+  [
+    "tutorial-details-card",
+    "DETAILS",
+    async (c) => {
+      await activate(c, TUTORIAL_PLACE.attacker);
+      await click(c, "unit-help");
+    },
+  ],
+  ["tutorial-details-info", "DETAILS_INFO"],
   [
     "tutorial-attack-picked",
     "ATTACK",
     (c) => activate(c, TUTORIAL_PLACE.attacker),
   ],
-  ["tutorial-end-turn", "END_TURN"],
+  ["tutorial-end-turn", "END_TURN_1"],
+  // Turn 2.
   ["tutorial-capture", "CAPTURE"],
   [
     "tutorial-capture-picked",
     "CAPTURE",
     (c) => activate(c, TUTORIAL_PLACE.village),
   ],
+  ["tutorial-farm", "FARM"],
+  ["tutorial-farm-picked", "FARM", (c) => activate(c, TUTORIAL_PLACE.fertile)],
+  [
+    "tutorial-farm-reward",
+    "FARM",
+    async (c) => {
+      await activate(c, TUTORIAL_PLACE.fertile);
+      await click(c, "command-build_farm");
+      await delay(1_500);
+    },
+  ],
+  // Turn 3.
+  ["tutorial-windmill", "WINDMILL"],
+  [
+    "tutorial-windmill-picked",
+    "WINDMILL",
+    (c) => activate(c, TUTORIAL_PLACE.windmill),
+  ],
+  ["tutorial-windmill-info", "WINDMILL_INFO"],
+  [
+    "tutorial-lumber-camp-picked",
+    "LUMBER_CAMP",
+    (c) => activate(c, TUTORIAL_PLACE.forest),
+  ],
+  // Turn 4.
+  ["tutorial-crafting", "CRAFTING"],
+  ["tutorial-crafting-tech", "CRAFTING", (c) => click(c, "tech")],
+  ["tutorial-ore", "ORE"],
+  [
+    "tutorial-workshop-picked",
+    "WORKSHOP",
+    (c) => activate(c, TUTORIAL_PLACE.workshop),
+  ],
+  // Turn 5.
+  ["tutorial-engineering-tech", "ENGINEERING", (c) => click(c, "tech")],
+  ["tutorial-climb", "CLIMB"],
+  [
+    "tutorial-climb-picked",
+    "CLIMB",
+    (c) => activate(c, TUTORIAL_PLACE.village),
+  ],
+  ["tutorial-mine-picked", "MINE", (c) => activate(c, TUTORIAL_PLACE.ore)],
+  // Turn 6.
+  ["tutorial-road", "ROAD_NEAR"],
+  [
+    "tutorial-road-picked",
+    "ROAD_NEAR",
+    (c) => activate(c, TUTORIAL_PLACE.roadNear),
+  ],
+  ["tutorial-link", "LINK"],
+  // Turn 7.
+  ["tutorial-reinforced", "REINFORCED"],
+  [
+    "tutorial-road-move-picked",
+    "ROAD_MOVE",
+    (c) => activate(c, TUTORIAL_PLACE.capital),
+  ],
+  // Turn 8.
+  ["tutorial-rally", "RALLY"],
+  [
+    "tutorial-rally-picked",
+    "RALLY",
+    (c) => activate(c, TUTORIAL_PLACE.captain),
+  ],
+  ["tutorial-inspired", "INSPIRED"],
+  [
+    "tutorial-inspired-knight",
+    "INSPIRED",
+    (c) => activate(c, TUTORIAL_PLACE.knight),
+  ],
+  [
+    "tutorial-charge-picked",
+    "CHARGE",
+    (c) => activate(c, TUTORIAL_PLACE.knight),
+  ],
+  [
+    "tutorial-overrun-picked",
+    "OVERRUN_1",
+    (c) => activate(c, TUTORIAL_PLACE.charge),
+  ],
+  [
+    "tutorial-overrun-again",
+    "OVERRUN_2",
+    (c) => activate(c, TUTORIAL_PLACE.goblin1),
+  ],
   [
     "tutorial-farewell",
-    "CAPTURE",
+    "OVERRUN_3",
     async (c) => {
-      await activate(c, TUTORIAL_PLACE.village);
-      await click(c, "command-capture");
+      await activate(c, TUTORIAL_PLACE.goblin2);
+      await activate(c, TUTORIAL_PLACE.goblin3);
       await delay(2_500);
     },
   ],
@@ -648,10 +752,11 @@ const SCENES: readonly Scene[] = [
       );
     },
   },
-  // The tutorial (bead pulp_wars-0yxy): its line at every step, with what
-  // the step asks for picked, the technology screen of the research step,
-  // and the farewell after the capture. Each state is the tutorial board
-  // with the script's commands applied; no AI runs.
+  // The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115): its line at
+  // each lesson, with what the step asks for picked, the technology screen
+  // of the research steps, and the farewell after the Knight's last kill.
+  // Each state is the tutorial board with the script's commands applied; no
+  // AI runs.
   ...TUTORIAL_SCENES.map(([name, step, after]): Scene => ({
     name,
     match: true,
@@ -2444,9 +2549,10 @@ async function setViewport(connection: Connection, size: Size): Promise<void> {
 }
 
 async function navigate(connection: Connection, href: string): Promise<void> {
+  // The game's sound and music stay off (the browser is muted as well).
   await evaluate(
     connection,
-    `localStorage.clear(); globalThis.__PHONE_REVIEW_PRIOR__ = true`,
+    `localStorage.clear(); localStorage.setItem('pulpWars.audio.v1', JSON.stringify({ enabled: false, volume: 0 })); localStorage.setItem('pulpWars.music.v1', JSON.stringify({ enabled: false, volume: 0 })); globalThis.__PHONE_REVIEW_PRIOR__ = true`,
   ).catch(() => undefined);
   await connection.send("Page.navigate", { url: href });
   await waitFor(

@@ -3423,8 +3423,12 @@ the hand player is the Dwarves), and `LAB_CULT_MID` (the Cult's sixth
 engine step: the hand player is the Cultists; built, not played), and
 `TUTORIAL_1` (`pulp_wars-0yxy`: the 11 x 11 board of the interface's guided
 first game, Humans against one Goblin seat; in no chapter, started from the
-main menu's Tutorial; the forcing of its first steps is the interface's and
-changes no rule, [the screen flow](../ui/SCREEN_FLOW.md#tutorial)). A Cult
+main menu's Tutorial; revision 3, `pulp_wars-2yc.115`, is the eight-turn
+tutorial: the Humans start with ten technologies and research Crafting and
+Engineering, the Goblins `HOLD` their corner until round 9, and a Knight
+and a Captain of the player's and three Goblins arrive as waves of round 7;
+the forcing of its steps is the interface's and changes no rule,
+[the screen flow](../ui/SCREEN_FLOW.md#tutorial)). A Cult
 seat of a mission may start with Favour (`favour`); without it, it starts
 with every Cult seat's 2 (`7r85`,
 [section 26.2](#262-favour)). A mission unit may carry `kills` (a dinosaur that has

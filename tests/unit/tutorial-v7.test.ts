@@ -4,16 +4,12 @@ import {
   chooseNormalTurnCommandV7,
 } from "../../src/ai/v7";
 import {
-  applyCommandV7,
   createPlayableGameV7,
   missionByIdV7,
-  missionMatchSetupV7,
   queryPlayerCommandsV7,
-  viewForV7,
   type CommandV7,
   type CoordV7,
   type GameStateV7,
-  type PlayerViewV7,
 } from "../../src/engine/index";
 import {
   NEW_TUTORIAL_PROGRESS_V7,
@@ -25,6 +21,7 @@ import {
   acknowledgeTutorialV7,
   advanceTutorialV7,
   isTutorialMatchV7,
+  noteTutorialUnitHelpV7,
   parseTutorialProgressV7,
   reconcileTutorialV7,
   serializeTutorialProgressV7,
@@ -35,44 +32,37 @@ import {
   tutorialCommandsV7,
   tutorialCueV7,
   tutorialExpectedCommandV7,
-  tutorialStepV7,
   type TutorialProgressV7,
+  type TutorialStepIdV7,
 } from "../../src/render/tutorial-v7";
 import { browserSetupV7 } from "../fixtures/v7-builders";
+import {
+  apply,
+  human,
+  idleTurn,
+  playTutorialV7,
+  tileAt,
+  tutorialState,
+  unitAt,
+} from "../fixtures/v7-tutorial-play";
 
 /**
- * The tutorial (bead pulp_wars-0yxy): the script as a pure state machine
- * (one command a step, every other command refused, advancing, skipping),
- * and the script's commands applied in order to the real engine from the
- * tutorial board's first state. The opponent's one turn between the
- * player's two is played by the Normal AI's single-turn step; no match is
- * played.
+ * The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115): the script as
+ * a pure state machine (the step's commands only, every other command
+ * refused, advancing, skipping, steps of a group in any order), and the
+ * whole eight-turn script applied to the real engine from the tutorial
+ * board's first state. The opponent ends its turns without acting; one
+ * test lets the Normal AI play its single first turn. The play-through
+ * against the Normal AI over all eight turns is tutorial-v7.sim.test.ts.
  */
 const COORDINATE = /\(\s*\d+\s*,\s*\d+\s*\)|\b\d+\s*,\s*\d+\b/;
-
-function tutorialState(): GameStateV7 {
-  const mission = missionByIdV7(TUTORIAL_MISSION_ID_V7);
-  if (mission === null) throw new Error("the tutorial mission is missing");
-  const setup = missionMatchSetupV7(mission);
-  if (setup === null) throw new Error("the tutorial setup is missing");
-  const created = createPlayableGameV7(setup);
-  if (!created.ok) throw new Error(created.error.code);
-  return created.state;
-}
-
-const human = (state: GameStateV7): PlayerViewV7 =>
-  viewForV7(state, state.humanPlayerId);
-
-function apply(
-  state: GameStateV7,
-  actor: number,
-  command: CommandV7,
-): GameStateV7 {
-  const result = applyCommandV7(state, actor as never, command);
-  if (!result.accepted)
-    throw new Error(`${command.kind}: ${result.error.code}`);
-  return result.state;
-}
+const P = TUTORIAL_PLACES_V7;
+const indexOf = (id: TutorialStepIdV7): number =>
+  TUTORIAL_STEPS_V7.findIndex((step) => step.id === id);
+const at = (id: TutorialStepIdV7): TutorialProgressV7 => ({
+  completed: false,
+  step: indexOf(id),
+});
 
 /** One whole turn of the active AI seat, chosen by the Normal AI. */
 function aiTurn(start: GameStateV7): GameStateV7 {
@@ -81,7 +71,7 @@ function aiTurn(start: GameStateV7): GameStateV7 {
   if (actor === undefined || actor === state.humanPlayerId)
     throw new Error("not an AI turn");
   for (let accepted = 0; accepted < 64; accepted += 1) {
-    const view = viewForV7(state, actor);
+    const view = human(state, actor);
     const command = chooseNormalTurnCommandV7(
       view,
       accepted,
@@ -95,58 +85,10 @@ function aiTurn(start: GameStateV7): GameStateV7 {
   throw new Error("the AI turn did not end");
 }
 
-/** The opponent ends its turn without doing anything. */
-function idleTurn(state: GameStateV7): GameStateV7 {
-  const actor = state.turnOrder[state.activeSeatIndex];
-  if (actor === undefined) throw new Error("no active seat");
-  return apply(state, actor, { kind: "END_TURN" });
-}
-
-/**
- * Plays the whole script: at each step the one command the tutorial lets
- * through, as the interface would send it. Returns the state after the
- * last step and what was sent.
- */
-function playScript(opponent: (state: GameStateV7) => GameStateV7): {
-  readonly state: GameStateV7;
-  readonly sent: readonly CommandV7[];
-  readonly progress: TutorialProgressV7;
-} {
-  let state = tutorialState();
-  let progress = startTutorialV7(NEW_TUTORIAL_PROGRESS_V7);
-  const sent: CommandV7[] = [];
-  for (const step of TUTORIAL_STEPS_V7) {
-    expect(tutorialStepV7(progress)?.id).toBe(step.id);
-    const view = human(state);
-    const offered = queryPlayerCommandsV7(view);
-    // The tutorial never gives up on a step of its own script.
-    expect(reconcileTutorialV7(progress, view, offered)).toBe(progress);
-    const allowed = tutorialCommandsV7(progress, view, offered);
-    if (step.expects === null) {
-      expect(allowed).toEqual([]);
-      progress = acknowledgeTutorialV7(progress);
-      continue;
-    }
-    // Exactly one command, and it is one the engine offers.
-    expect(allowed, step.id).toHaveLength(1);
-    const command = allowed[0];
-    if (command === undefined) throw new Error(step.id);
-    expect(offered).toContain(command);
-    // Every other offered command is refused before the engine.
-    for (const other of offered)
-      expect(tutorialAcceptsV7(progress, view, other)).toBe(other === command);
-    state = apply(state, state.humanPlayerId, command);
-    sent.push(command);
-    progress = advanceTutorialV7(progress, view, command);
-    if (command.kind === "END_TURN") state = opponent(state);
-  }
-  return { state, sent, progress };
-}
-
 describe("the tutorial board", () => {
   it("is the registered TUTORIAL_1 mission: Humans against Goblins, in no chapter", () => {
     const mission = missionByIdV7(TUTORIAL_MISSION_ID_V7);
-    expect(mission).toMatchObject({ revision: 2, hidden: true, size: 11 });
+    expect(mission).toMatchObject({ revision: 3, hidden: true, size: 11 });
     expect(mission?.seats.map((seat) => seat.faction)).toEqual([
       "ORIGINAL",
       "GOBLIN",
@@ -159,60 +101,131 @@ describe("the tutorial board", () => {
   it("has every place of the script where the script says", () => {
     const state = tutorialState();
     const view = human(state);
-    const at = (place: CoordV7) =>
-      view.board.tiles.find(
-        (tile) => tile.at.x === place.x && tile.at.y === place.y,
-      );
-    const unitAt = (place: CoordV7) =>
-      view.units.find((unit) => unit.at.x === place.x && unit.at.y === place.y);
     const capital = view.cities.find((city) => city.ownerId === view.viewer.id);
-    expect(capital?.at).toEqual(TUTORIAL_PLACES_V7.capital);
+    expect(capital?.at).toEqual(P.capital);
     // Level 2: room for a third unit.
     expect(capital?.level).toBe(2);
-    expect(at(TUTORIAL_PLACES_V7.fruit)).toMatchObject({
+    expect(tileAt(view, P.fruit)).toMatchObject({
       resource: "FRUIT",
       territoryOwnerId: view.viewer.id,
       explored: true,
     });
-    expect(at(TUTORIAL_PLACES_V7.village)).toMatchObject({ explored: true });
-    expect(unitAt(TUTORIAL_PLACES_V7.walker)?.ownerId).toBe(view.viewer.id);
-    expect(unitAt(TUTORIAL_PLACES_V7.attacker)?.ownerId).toBe(view.viewer.id);
-    const enemy = unitAt(TUTORIAL_PLACES_V7.enemy);
+    expect(tileAt(view, P.fertile)).toMatchObject({
+      resource: "FERTILE_GROUND",
+      territoryOwnerId: view.viewer.id,
+    });
+    expect(tileAt(view, P.forest)).toMatchObject({
+      terrain: "FOREST",
+      resource: null,
+      territoryOwnerId: view.viewer.id,
+    });
+    for (const place of [P.windmill, P.workshop, P.roadNear])
+      expect(tileAt(view, place)).toMatchObject({
+        terrain: "GRASS",
+        resource: null,
+        territoryOwnerId: view.viewer.id,
+      });
+    // The mountains beside the village: one hides Ore until Crafting.
+    expect(tileAt(view, P.ore)).toMatchObject({
+      terrain: "MOUNTAIN",
+      resource: null,
+      explored: true,
+    });
+    expect(tileAt(view, P.peak)).toMatchObject({ terrain: "MOUNTAIN" });
+    expect(tileAt(view, P.village)).toMatchObject({ explored: true });
+    // The Knight's field is known from the start.
+    for (const place of [P.knight, P.charge, P.goblin1, P.goblin3])
+      expect(tileAt(view, place)).toMatchObject({
+        terrain: "GRASS",
+        explored: true,
+      });
+    expect(unitAt(view, P.walker)?.ownerId).toBe(view.viewer.id);
+    expect(unitAt(view, P.attacker)?.ownerId).toBe(view.viewer.id);
+    const enemy = unitAt(view, P.enemy);
     expect(enemy).toBeDefined();
     expect(enemy?.ownerId).not.toBe(view.viewer.id);
-    // Nothing stands on the city center, so a unit can be trained, and
-    // the player has no technology, so the first one is free.
-    expect(unitAt(TUTORIAL_PLACES_V7.capital)).toBeUndefined();
-    expect(view.viewer.researchedTechs).toEqual([]);
-    // The Coins for the harvest (2) and the Fighter (2), and little more.
-    expect(view.viewer.coins).toBe(6);
+    // Nothing stands on the city center, so a unit can be trained.
+    expect(unitAt(view, P.capital)).toBeUndefined();
+  });
+
+  it("starts like a campaign: the lessons' technologies known, Crafting and Engineering not", () => {
+    const view = human(tutorialState());
+    expect([...view.viewer.researchedTechs].sort()).toEqual(
+      [
+        "ADMINISTRATION",
+        "CHIVALRY",
+        "FARMING",
+        "FORESTRY",
+        "GATHERING",
+        "HUNTING",
+        "MILLING",
+        "RAIDING",
+        "ROADS",
+        "SCOUTING",
+      ].sort(),
+    );
+    expect(view.viewer.researchedTechs).not.toContain("DRILL");
+    expect(view.viewer.researchedTechs).not.toContain("ENGINEERING");
+    // Every lesson's Coins over six turns, a little to spare, no more.
+    expect(view.viewer.coins).toBe(23);
   });
 });
 
 describe("the tutorial script as a state machine", () => {
-  it("teaches the seven things the tutorial is for, in a workable order", () => {
+  it("teaches its lessons over eight turns, one or two at a time", () => {
     expect(TUTORIAL_STEPS_V7.map((step) => step.id)).toEqual([
-      "RESEARCH",
       "HARVEST",
       "RESOURCES",
       "MOVE",
       "TRAIN",
+      "DETAILS",
+      "DETAILS_INFO",
       "ATTACK",
-      "END_TURN",
+      "END_TURN_1",
       "CAPTURE",
+      "FARM",
+      "END_TURN_2",
+      "WINDMILL",
+      "WINDMILL_INFO",
+      "LUMBER_CAMP",
+      "END_TURN_3",
+      "CRAFTING",
+      "ORE",
+      "WORKSHOP",
+      "END_TURN_4",
+      "ENGINEERING",
+      "CLIMB",
+      "MINE",
+      "END_TURN_5",
+      "ROAD_NEAR",
+      "ROAD_FAR",
+      "LINK",
+      "END_TURN_6",
+      "REINFORCED",
+      "ROAD_MOVE",
+      "END_TURN_7",
+      "RALLY",
+      "INSPIRED",
+      "CHARGE",
+      "OVERRUN_1",
+      "OVERRUN_2",
+      "OVERRUN_3",
     ]);
-    expect(TUTORIAL_STEPS_V7.map((step) => step.expects?.kind ?? null)).toEqual(
-      [
-        "RESEARCH",
-        "HARVEST_FRUIT",
-        null,
-        "MOVE",
-        "TRAIN",
-        "ATTACK",
-        "END_TURN",
-        "CAPTURE",
-      ],
-    );
+    // Seven End turns: eight turns.
+    expect(
+      TUTORIAL_STEPS_V7.filter((step) => step.expects?.kind === "END_TURN"),
+    ).toHaveLength(7);
+    // At most three things to do in a turn besides ending it (the Knight's
+    // turn: the Rally, the ride and its three attacks are one lesson).
+    const perTurn: string[][] = [[]];
+    for (const step of TUTORIAL_STEPS_V7) {
+      if (step.expects?.kind === "END_TURN") perTurn.push([]);
+      else if (step.expects !== null)
+        (perTurn[perTurn.length - 1] as string[]).push(step.id);
+    }
+    expect(perTurn.map((turn) => turn.length)).toEqual([
+      5, 2, 2, 2, 3, 2, 1, 5,
+    ]);
   });
 
   it("keeps every line short, in plain words, without a coordinate", () => {
@@ -232,6 +245,8 @@ describe("the tutorial script as a state machine", () => {
       );
       expect(line.split(/\s+/).length, line).toBeLessThanOrEqual(26);
     }
+    // The farewell points at Help.
+    expect(TUTORIAL_FAREWELL_V7).toMatch(/Help/);
   });
 
   it("is off until it is started, and only on its own board", () => {
@@ -263,26 +278,32 @@ describe("the tutorial script as a state machine", () => {
     const offered = queryPlayerCommandsV7(view);
     const progress = startTutorialV7(NEW_TUTORIAL_PROGRESS_V7);
     const allowed = tutorialCommandsV7(progress, view, offered);
-    expect(allowed).toEqual([{ kind: "RESEARCH", tech: "GATHERING" }]);
+    expect(allowed).toEqual([{ kind: "HARVEST_FRUIT", at: P.fruit }]);
     expect(offered.length).toBeGreaterThan(5);
     const refused = offered.filter(
       (command) => !tutorialAcceptsV7(progress, view, command),
     );
     expect(refused).toHaveLength(offered.length - 1);
-    // End turn, a move, a train and the other technologies are refused.
+    // End turn, a move, a train, research and the other fruit are refused.
     expect(refused.map((command) => command.kind)).toEqual(
-      expect.arrayContaining(["END_TURN", "MOVE", "TRAIN", "RESEARCH"]),
+      expect.arrayContaining([
+        "END_TURN",
+        "MOVE",
+        "TRAIN",
+        "RESEARCH",
+        "HARVEST_FRUIT",
+      ]),
     );
     // A refused command does not advance the step.
     const endTurn: CommandV7 = { kind: "END_TURN" };
     expect(advanceTutorialV7(progress, view, endTurn)).toBe(progress);
     expect(
-      advanceTutorialV7(progress, view, { kind: "RESEARCH", tech: "HUNTING" }),
+      advanceTutorialV7(progress, view, { kind: "RESEARCH", tech: "DRILL" }),
     ).toBe(progress);
     expect(
       advanceTutorialV7(progress, view, {
-        kind: "RESEARCH",
-        tech: "GATHERING",
+        kind: "HARVEST_FRUIT",
+        at: P.fruit,
       }),
     ).toEqual({ completed: false, step: 1 });
   });
@@ -290,20 +311,37 @@ describe("the tutorial script as a state machine", () => {
   it("an explanation step lets no command through and moves on with Next", () => {
     const view = human(tutorialState());
     const offered = queryPlayerCommandsV7(view);
-    const index = TUTORIAL_STEPS_V7.findIndex((step) => step.expects === null);
-    const progress: TutorialProgressV7 = { completed: false, step: index };
+    const progress = at("RESOURCES");
     expect(tutorialCommandsV7(progress, view, offered)).toEqual([]);
     for (const command of offered)
       expect(tutorialAcceptsV7(progress, view, command)).toBe(false);
     // It is not given up on: there is nothing the engine has to offer.
     expect(reconcileTutorialV7(progress, view, offered)).toBe(progress);
-    expect(acknowledgeTutorialV7(progress)).toEqual({
-      completed: false,
-      step: index + 1,
-    });
+    expect(acknowledgeTutorialV7(progress)).toEqual(at("MOVE"));
     // Next does nothing on a step that wants a command.
     const first = startTutorialV7(NEW_TUTORIAL_PROGRESS_V7);
     expect(acknowledgeTutorialV7(first)).toBe(first);
+  });
+
+  it("the card step lets no command through and moves on when that unit's card opens", () => {
+    const view = human(tutorialState());
+    const offered = queryPlayerCommandsV7(view);
+    const progress = at("DETAILS");
+    expect(tutorialCommandsV7(progress, view, offered)).toEqual([]);
+    expect(reconcileTutorialV7(progress, view, offered)).toBe(progress);
+    // Next does not pass it; another unit's card does not either.
+    expect(acknowledgeTutorialV7(progress)).toBe(progress);
+    const walker = unitAt(view, P.walker);
+    const attacker = unitAt(view, P.attacker);
+    if (walker === undefined || attacker === undefined)
+      throw new Error("fixture");
+    expect(noteTutorialUnitHelpV7(progress, view, walker.id)).toBe(progress);
+    expect(noteTutorialUnitHelpV7(progress, view, attacker.id)).toEqual(
+      at("DETAILS_INFO"),
+    );
+    // A card opened at any other step changes nothing.
+    const move = at("MOVE");
+    expect(noteTutorialUnitHelpV7(move, view, walker.id)).toBe(move);
   });
 
   it("Skip turns the rest into an ordinary game and is remembered", () => {
@@ -324,17 +362,25 @@ describe("the tutorial script as a state machine", () => {
     const view = human(tutorialState());
     const offered = queryPlayerCommandsV7(view);
     // The capture step on turn 1: no unit stands on the village yet.
-    const capture = TUTORIAL_STEPS_V7.findIndex(
-      (step) => step.id === "CAPTURE",
-    );
-    const stuck: TutorialProgressV7 = { completed: false, step: capture };
+    const stuck = at("CAPTURE");
     expect(tutorialExpectedCommandV7(stuck, view, offered)).toBeNull();
-    expect(reconcileTutorialV7(stuck, view, offered)).toEqual({
+    // The Farm of its group is offered: the turn can still be played.
+    expect(reconcileTutorialV7(stuck, view, offered)).toBe(stuck);
+    // A step with nothing of its group offered is given up.
+    const mine = at("MINE");
+    expect(reconcileTutorialV7(mine, view, offered)).toEqual({
       completed: true,
       step: null,
     });
     // Not during another seat's turn, when nothing is offered.
-    expect(reconcileTutorialV7(stuck, view, [])).toBe(stuck);
+    expect(reconcileTutorialV7(mine, view, [])).toBe(mine);
+    // A card step whose unit is gone is given up as well.
+    const card = at("DETAILS");
+    const gone = { ...view, units: view.units.filter((u) => u.hp <= 0) };
+    expect(reconcileTutorialV7(card, gone, offered)).toEqual({
+      completed: true,
+      step: null,
+    });
   });
 
   it("stores its record and reads anything malformed as a new profile", () => {
@@ -343,6 +389,7 @@ describe("the tutorial script as a state machine", () => {
       NEW_TUTORIAL_PROGRESS_V7,
       { completed: false, step: 3 },
       { completed: true, step: null },
+      { completed: false, step: 11, ahead: [13] },
     ])
       expect(
         parseTutorialProgressV7(serializeTutorialProgressV7(progress)),
@@ -361,21 +408,24 @@ describe("the tutorial script as a state machine", () => {
     expect(
       parseTutorialProgressV7('{"version":1,"completed":false,"step":99}'),
     ).toEqual(NEW_TUTORIAL_PROGRESS_V7);
+    // Steps done early must lie after the step and inside the script.
+    expect(
+      parseTutorialProgressV7(
+        '{"version":1,"completed":false,"step":11,"ahead":[13,2,"x",99,13]}',
+      ),
+    ).toEqual({ completed: false, step: 11, ahead: [13] });
   });
 });
 
 describe("the tutorial cue", () => {
   const cueAt = (
-    id: string,
+    id: TutorialStepIdV7,
     state: GameStateV7,
     selection: Parameters<typeof tutorialCueV7>[0]["selection"] = null,
     extra: Partial<Parameters<typeof tutorialCueV7>[0]> = {},
   ) =>
     tutorialCueV7({
-      progress: {
-        completed: false,
-        step: TUTORIAL_STEPS_V7.findIndex((step) => step.id === id),
-      },
+      progress: at(id),
       view: human(state),
       selection,
       ready: true,
@@ -383,83 +433,77 @@ describe("the tutorial cue", () => {
       motion: "FULL",
       ...extra,
     });
+  const unitId = (state: GameStateV7, place: CoordV7) => {
+    const unit = unitAt(human(state), place);
+    if (unit === undefined) throw new Error("fixture");
+    return unit.id;
+  };
 
-  it("points at the Tech button, then at Gathering in the technology screen", () => {
+  it("points at the Tech button on a research step, then at its technology", () => {
     const state = tutorialState();
-    expect(cueAt("RESEARCH", state)).toMatchObject({
-      step: "RESEARCH",
-      number: 1,
-      count: 8,
+    expect(cueAt("CRAFTING", state)).toMatchObject({
+      step: "CRAFTING",
+      number: 16,
+      count: 36,
       button: "TECH",
       buttonMotion: "PULSE",
       marker: null,
       next: false,
-      technology: "GATHERING",
+      technology: "DRILL",
     });
-    expect(cueAt("RESEARCH", state, null, { technologyOpen: true })?.line).toBe(
-      "Pick Gathering, then Research.",
+    expect(cueAt("CRAFTING", state, null, { technologyOpen: true })?.line).toBe(
+      "Pick Crafting, then Research.",
     );
+    expect(cueAt("ENGINEERING", state)?.technology).toBe("ENGINEERING");
     expect(
-      cueAt("RESEARCH", state, null, { motion: "REDUCED" })?.buttonMotion,
+      cueAt("CRAFTING", state, null, { motion: "REDUCED" })?.buttonMotion,
     ).toBe("STILL");
   });
 
   it("marks what to tap, then the target once it is selected", () => {
     const state = tutorialState();
-    const view = human(state);
-    const unitId = (at: CoordV7) => {
-      const unit = view.units.find(
-        (item) => item.at.x === at.x && item.at.y === at.y,
-      );
-      if (unit === undefined) throw new Error("fixture");
-      return unit.id;
-    };
     expect(cueAt("HARVEST", state)?.marker).toEqual({
       kind: "TILE",
-      at: TUTORIAL_PLACES_V7.fruit,
+      at: P.fruit,
       motion: "HOP",
     });
-    const picked = cueAt("HARVEST", state, {
-      kind: "TILE",
-      at: TUTORIAL_PLACES_V7.fruit,
-    });
+    const picked = cueAt("HARVEST", state, { kind: "TILE", at: P.fruit });
     expect(picked?.marker).toBeNull();
     expect(picked?.line).toBe("Press Harvest: it costs 2 Coins.");
+    expect(cueAt("FARM", state)?.marker).toMatchObject({
+      kind: "TILE",
+      at: P.fertile,
+    });
     expect(cueAt("MOVE", state)?.marker).toEqual({
       kind: "UNIT",
-      at: TUTORIAL_PLACES_V7.walker,
+      at: P.walker,
       motion: "HOP",
     });
     expect(
-      cueAt("MOVE", state, {
-        kind: "UNIT",
-        unitId: unitId(TUTORIAL_PLACES_V7.walker),
-      }),
+      cueAt("MOVE", state, { kind: "UNIT", unitId: unitId(state, P.walker) }),
     ).toMatchObject({
       line: "Tap the village to walk there.",
-      marker: { kind: "TILE", at: TUTORIAL_PLACES_V7.village },
+      marker: { kind: "TILE", at: P.village },
     });
     // The other Fighter selected: still pointed at the one to move.
     expect(
-      cueAt("MOVE", state, {
-        kind: "UNIT",
-        unitId: unitId(TUTORIAL_PLACES_V7.attacker),
-      })?.marker,
-    ).toMatchObject({ kind: "UNIT", at: TUTORIAL_PLACES_V7.walker });
+      cueAt("MOVE", state, { kind: "UNIT", unitId: unitId(state, P.attacker) })
+        ?.marker,
+    ).toMatchObject({ kind: "UNIT", at: P.walker });
     expect(cueAt("TRAIN", state)?.marker).toMatchObject({
       kind: "CITY",
-      at: TUTORIAL_PLACES_V7.capital,
+      at: P.capital,
     });
     expect(
       cueAt("ATTACK", state, {
         kind: "UNIT",
-        unitId: unitId(TUTORIAL_PLACES_V7.attacker),
+        unitId: unitId(state, P.attacker),
       }),
     ).toMatchObject({
       line: "Tap the Goblin to attack it.",
-      marker: { kind: "UNIT", at: TUTORIAL_PLACES_V7.enemy },
+      marker: { kind: "UNIT", at: P.enemy },
     });
-    expect(cueAt("END_TURN", state)).toMatchObject({
+    expect(cueAt("END_TURN_1", state)).toMatchObject({
       button: "END_TURN",
       marker: null,
     });
@@ -468,13 +512,46 @@ describe("the tutorial cue", () => {
     ).toBe("STILL");
   });
 
-  it("an explanation has a Next and no marker; nothing shows while the player cannot act", () => {
+  it("the card step marks the unit, then rings its ?", () => {
+    const state = tutorialState();
+    expect(cueAt("DETAILS", state)).toMatchObject({
+      marker: { kind: "UNIT", at: P.attacker },
+      button: null,
+    });
+    expect(
+      cueAt("DETAILS", state, {
+        kind: "UNIT",
+        unitId: unitId(state, P.attacker),
+      }),
+    ).toMatchObject({
+      marker: null,
+      button: "UNIT_HELP",
+      line: "Press the ? beside its name.",
+    });
+  });
+
+  it("an explanation has a Next and its own marker; nothing shows while the player cannot act", () => {
     const state = tutorialState();
     expect(cueAt("RESOURCES", state)).toMatchObject({
       next: true,
       marker: null,
       button: null,
-      number: 3,
+      number: 2,
+    });
+    expect(cueAt("ORE", state)).toMatchObject({
+      next: true,
+      marker: { kind: "TILE", at: P.ore, motion: "HOP" },
+    });
+    expect(cueAt("LINK", state)?.marker).toMatchObject({
+      kind: "CITY",
+      at: P.village,
+    });
+    // The Knight's turn frames its whole field on a phone.
+    expect(cueAt("RALLY", state)?.marker).toEqual({
+      kind: "UNIT",
+      at: P.captain,
+      motion: "HOP",
+      frame: [P.knight, P.goblin1, P.goblin2, P.goblin3],
     });
     expect(cueAt("MOVE", state, null, { ready: false })).toBeNull();
     expect(
@@ -492,75 +569,253 @@ describe("the tutorial cue", () => {
 
 describe("the tutorial script on the real engine", () => {
   it("every step's command is legal, in order, with an idle opponent", () => {
-    const { state, sent, progress } = playScript(idleTurn);
-    expect(sent.map((command) => command.kind)).toEqual([
-      "RESEARCH",
+    const play = playTutorialV7({ opponent: idleTurn });
+    expect(play.sent.map((command) => command.kind)).toEqual([
       "HARVEST_FRUIT",
       "MOVE",
       "TRAIN",
       "ATTACK",
       "END_TURN",
       "CAPTURE",
+      "BUILD_FARM",
+      "END_TURN",
+      "BUILD_WINDMILL",
+      "BUILD_LUMBER_CAMP",
+      "END_TURN",
+      "RESEARCH",
+      "BUILD_WORKSHOP",
+      "END_TURN",
+      "RESEARCH",
+      "MOVE",
+      "BUILD_MINE",
+      "END_TURN",
+      "BUILD_ROAD",
+      "BUILD_ROAD",
+      "END_TURN",
+      "MOVE",
+      "END_TURN",
+      "RALLY",
+      "MOVE",
+      "ATTACK",
+      "ATTACK",
+      "ATTACK",
     ]);
-    // The tutorial is over and remembered; the match goes on.
-    expect(progress).toEqual({ completed: true, step: null });
-    expect(state.outcome).toBeNull();
-    const view = human(state);
-    expect(tutorialActiveV7(progress, view)).toBe(false);
+    // Every step was reached in order, and the tutorial is over.
+    expect(play.visited).toEqual(TUTORIAL_STEPS_V7.map((step) => step.id));
+    expect(play.progress).toEqual({ completed: true, step: null });
+    expect(play.state.outcome).toBeNull();
+    expect(play.state.round).toBe(8);
+    const view = human(play.state);
+    expect(tutorialActiveV7(play.progress, view)).toBe(false);
     const offered = queryPlayerCommandsV7(view);
-    expect(tutorialCommandsV7(progress, view, offered)).toBe(offered);
-    expect(offered.some((command) => command.kind === "END_TURN")).toBe(true);
-    // What the lessons did: Gathering, the fruit gone and the city fed, a
-    // third Fighter, the Goblin dead, the village a second city.
-    expect(view.viewer.researchedTechs).toEqual(["GATHERING"]);
-    const own = view.cities.filter((city) => city.ownerId === view.viewer.id);
-    expect(own.map((city) => city.at)).toEqual(
-      expect.arrayContaining([
-        TUTORIAL_PLACES_V7.capital,
-        TUTORIAL_PLACES_V7.village,
-      ]),
-    );
-    expect(own).toHaveLength(2);
+    expect(tutorialCommandsV7(play.progress, view, offered)).toBe(offered);
+    // The economy stands: Farm, Windmill, Lumber Camp, Workshop, Mine, Roads.
+    expect(tileAt(view, P.fertile)?.improvement).toBe("FARM");
+    expect(tileAt(view, P.windmill)?.improvement).toBe("WINDMILL");
+    expect(tileAt(view, P.forest)?.improvement).toBe("LUMBER_CAMP");
+    expect(tileAt(view, P.workshop)?.improvement).toBe("WORKSHOP");
+    expect(tileAt(view, P.ore)?.improvement).toBe("MINE");
+    expect(tileAt(view, P.roadNear)?.road).toBe(true);
+    expect(tileAt(view, P.roadFar)?.road).toBe(true);
+    // City rewards came up and were chosen; none placed a unit.
+    expect(play.rewards).toEqual(["WALLS", "BOOM", "STOCKPILE", "TREASURY"]);
+  });
+
+  it("Crafting reveals the Ore, with the coach mark on it", () => {
+    const play = playTutorialV7({ opponent: idleTurn, stopAt: "ORE" });
+    const before = play.views.CRAFTING;
+    if (before === undefined) throw new Error("no view before Crafting");
+    expect(tileAt(before, P.ore)?.resource).toBeNull();
+    const view = human(play.state);
+    expect(view.viewer.researchedTechs).toContain("DRILL");
+    expect(tileAt(view, P.ore)?.resource).toBe("ORE");
+  });
+
+  it("Engineering opens the mountain to the Fighter beside it", () => {
+    const climbsTo = (state: GameStateV7): boolean => {
+      const view = human(state);
+      const fighter = unitAt(view, P.village);
+      return queryPlayerCommandsV7(view).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === fighter?.id &&
+          command.path.some(
+            (step) => step.x === P.peak.x && step.y === P.peak.y,
+          ),
+      );
+    };
+    const before = playTutorialV7({
+      opponent: idleTurn,
+      stopAt: "ENGINEERING",
+    });
+    expect(climbsTo(before.state)).toBe(false);
+    const after = playTutorialV7({ opponent: idleTurn, stopAt: "CLIMB" });
+    expect(climbsTo(after.state)).toBe(true);
+    // The Mine is offered only now, on the Ore.
     expect(
-      view.units.filter((unit) => unit.ownerId === view.viewer.id),
-    ).toHaveLength(3);
-    expect(
-      view.board.tiles.find(
-        (tile) =>
-          tile.at.x === TUTORIAL_PLACES_V7.fruit.x &&
-          tile.at.y === TUTORIAL_PLACES_V7.fruit.y,
+      queryPlayerCommandsV7(human(before.state)).some(
+        (command) => command.kind === "BUILD_MINE",
       ),
-    ).toMatchObject({ explored: true, resource: null });
+    ).toBe(false);
+    expect(
+      tutorialCommandsV7(
+        after.progress,
+        human(after.state),
+        queryPlayerCommandsV7(human(after.state)),
+      ).map((command) => command.kind),
+    ).toEqual(["MOVE", "BUILD_MINE"]);
+  });
+
+  it("the Road joins the cities (+1 population each) and doubles a Fighter's reach", () => {
+    const before = playTutorialV7({ opponent: idleTurn, stopAt: "ROAD_FAR" });
+    const after = playTutorialV7({ opponent: idleTurn, stopAt: "LINK" });
+    const live = (state: GameStateV7, place: CoordV7) =>
+      human(state).cities.find(
+        (city) => city.at.x === place.x && city.at.y === place.y,
+      )?.economicPopulation ?? 0;
+    expect(live(after.state, P.village) - live(before.state, P.village)).toBe(
+      1,
+    );
+    expect(live(after.state, P.capital) - live(before.state, P.capital)).toBe(
+      1,
+    );
+    // Turn 7: a Move-1 Fighter on the capital reaches two tiles along it.
+    const move = playTutorialV7({ opponent: idleTurn, stopAt: "ROAD_MOVE" });
+    const view = human(move.state);
+    const fighter = unitAt(view, P.capital);
+    const ends = queryPlayerCommandsV7(view)
+      .filter(
+        (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+          command.kind === "MOVE" && command.unitId === fighter?.id,
+      )
+      .map((command) => command.path[command.path.length - 1]);
+    expect(ends).toContainEqual(P.roadFar);
+    expect(
+      Math.max(...ends.map((end) => Math.abs((end?.x ?? 0) - P.capital.x))),
+    ).toBe(2);
+  });
+
+  it("the Captain's Rally inspires the Knight, which then kills three Goblins in one turn", () => {
+    const start = playTutorialV7({ opponent: idleTurn, stopAt: "RALLY" });
+    const view = human(start.state);
+    // Turn 8: the Knight, its Captain beside it, three Goblins in a row.
+    expect(view.round).toBe(8);
+    expect(unitAt(view, P.knight)?.role).toBe("KNIGHT");
+    expect(unitAt(view, P.captain)?.role).toBe("CAPTAIN");
+    for (const place of [P.goblin1, P.goblin2, P.goblin3])
+      expect(unitAt(view, place)?.ownerId).not.toBe(view.viewer.id);
+    const inspired = playTutorialV7({ opponent: idleTurn, stopAt: "INSPIRED" });
+    const knight = inspired.state.units.find(
+      (unit) => unit.role === "KNIGHT" && unit.ownerId === view.viewer.id,
+    );
+    expect(knight?.activation.inspired).toBe(true);
+    const done = playTutorialV7({ opponent: idleTurn });
+    const enemiesBefore = start.state.units.filter(
+      (unit) => unit.ownerId !== start.state.humanPlayerId,
+    ).length;
+    const enemiesAfter = done.state.units.filter(
+      (unit) => unit.ownerId !== done.state.humanPlayerId,
+    ).length;
+    expect(enemiesBefore - enemiesAfter).toBe(3);
+    expect(done.state.round).toBe(start.state.round);
+    // The three kills were the Knight's, in the turn it rode.
+    const rider = done.state.units.find((unit) => unit.id === knight?.id);
+    expect(rider?.kills).toBe(3);
+    expect(rider?.at).toEqual(P.goblin3);
+  });
+
+  it("steps of one turn may be done in another order and the tutorial still completes", () => {
+    const play = playTutorialV7({
+      opponent: idleTurn,
+      early: ["FARM", "LUMBER_CAMP", "MINE", "ROAD_FAR"],
+    });
+    expect(play.progress).toEqual({ completed: true, step: null });
+    const kinds = play.sent.map((command) => command.kind);
+    // The Farm before the capture, the Lumber Camp before the Windmill, the
+    // Mine before the climb, the far Road tile first.
+    expect(kinds.slice(5, 7)).toEqual(["BUILD_FARM", "CAPTURE"]);
+    expect(kinds.slice(8, 10)).toEqual(["BUILD_LUMBER_CAMP", "BUILD_WINDMILL"]);
+    expect(kinds.slice(15, 17)).toEqual(["BUILD_MINE", "MOVE"]);
+    expect(play.sent[18]).toEqual({ kind: "BUILD_ROAD", at: P.roadFar });
+    // The steps done early were skipped when the script reached them, and
+    // the Windmill's explanation still came after the Windmill.
+    expect(play.visited).not.toContain("LUMBER_CAMP");
+    expect(play.visited).toContain("WINDMILL_INFO");
+    expect(play.visited.length).toBe(TUTORIAL_STEPS_V7.length - 4);
+  });
+
+  it("a later step of the group is let through, but not one of another turn", () => {
+    const play = playTutorialV7({ opponent: idleTurn, stopAt: "WINDMILL" });
+    const view = human(play.state);
+    const offered = queryPlayerCommandsV7(view);
+    expect(
+      tutorialCommandsV7(play.progress, view, offered).map((c) => c.kind),
+    ).toEqual(["BUILD_WINDMILL", "BUILD_LUMBER_CAMP"]);
+    const camp: CommandV7 = { kind: "BUILD_LUMBER_CAMP", at: P.forest };
+    const early = advanceTutorialV7(play.progress, view, camp);
+    expect(early).toEqual({
+      ...play.progress,
+      ahead: [indexOf("LUMBER_CAMP")],
+    });
+    // The cue stays with the Windmill.
+    expect(
+      tutorialCueV7({
+        progress: early,
+        view,
+        selection: null,
+        ready: true,
+        technologyOpen: false,
+        motion: "FULL",
+      })?.step,
+    ).toBe("WINDMILL");
+    // Nothing of turn 4 or of the End turn is let through.
+    expect(
+      tutorialAcceptsV7(early, view, { kind: "RESEARCH", tech: "DRILL" }),
+    ).toBe(false);
+    expect(tutorialAcceptsV7(early, view, { kind: "END_TURN" })).toBe(false);
+  });
+
+  it("a city's reward is chosen freely, but never one that places a unit", () => {
+    const play = playTutorialV7({ opponent: idleTurn, stopAt: "END_TURN_2" });
+    // The Farm took the capital to level 3 at the Farm step.
+    const farm = play.pendingAt.FARM;
+    if (farm === undefined) throw new Error("no reward after the Farm");
+    const offered = queryPlayerCommandsV7(farm.view);
+    expect(offered.map((command) => command.kind)).toEqual([
+      "CHOOSE_CITY_REWARD",
+      "CHOOSE_CITY_REWARD",
+    ]);
+    const allowed = tutorialCommandsV7(farm.progress, farm.view, offered);
+    expect(allowed).toEqual([
+      expect.objectContaining({ kind: "CHOOSE_CITY_REWARD", reward: "WALLS" }),
+    ]);
+    expect(reconcileTutorialV7(farm.progress, farm.view, offered)).toBe(
+      farm.progress,
+    );
+    const scouts = offered.find(
+      (command) =>
+        command.kind === "CHOOSE_CITY_REWARD" && command.reward === "SURVEY",
+    );
+    if (scouts === undefined) throw new Error("no Scouts");
+    expect(tutorialAcceptsV7(farm.progress, farm.view, scouts)).toBe(false);
   });
 
   it("the one attack kills the lone Goblin, so nothing of the enemy is near on turn 2", () => {
-    let state = tutorialState();
-    let progress: TutorialProgressV7 = {
-      completed: false,
-      step: TUTORIAL_STEPS_V7.findIndex((step) => step.id === "ATTACK"),
-    };
-    const view = human(state);
-    const attack = tutorialExpectedCommandV7(
-      progress,
-      view,
-      queryPlayerCommandsV7(view),
+    const play = playTutorialV7({ opponent: idleTurn, stopAt: "END_TURN_1" });
+    const enemies = play.state.units.filter(
+      (unit) => unit.ownerId !== play.state.humanPlayerId,
     );
-    if (attack === null) throw new Error("the attack is not offered");
-    const enemies = (current: GameStateV7) =>
-      current.units.filter((unit) => unit.ownerId !== current.humanPlayerId);
-    expect(enemies(state)).toHaveLength(2);
-    state = apply(state, state.humanPlayerId, attack);
-    progress = advanceTutorialV7(progress, view, attack);
-    expect(tutorialStepV7(progress)?.id).toBe("END_TURN");
-    expect(enemies(state)).toHaveLength(1);
-    expect(enemies(state)[0]?.at).toEqual({ x: 8, y: 2 });
+    expect(enemies).toHaveLength(1);
+    expect(enemies[0]?.at).toEqual({ x: 8, y: 2 });
   });
 
   it("the Normal AI's own first turn leaves the script legal", () => {
-    const { state, sent, progress } = playScript(aiTurn);
-    expect(sent[sent.length - 1]?.kind).toBe("CAPTURE");
-    expect(progress).toEqual({ completed: true, step: null });
-    expect(state.outcome).toBeNull();
-    expect(state.turnOrder[state.activeSeatIndex]).toBe(state.humanPlayerId);
+    const play = playTutorialV7({ opponent: aiTurn, stopAt: "END_TURN_2" });
+    expect(play.visited[play.visited.length - 1]).toBe("END_TURN_2");
+    expect(play.sent[play.sent.length - 1]?.kind).toBe("BUILD_FARM");
+    expect(play.state.outcome).toBeNull();
+    expect(play.state.turnOrder[play.state.activeSeatIndex]).toBe(
+      play.state.humanPlayerId,
+    );
   });
 });

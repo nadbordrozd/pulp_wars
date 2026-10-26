@@ -101,20 +101,36 @@ button over the zoom-out button while a dock is open.
 
 ## The tutorial
 
-Bead `pulp_wars-0yxy` added the scenes `tutorial-research`,
-`tutorial-research-tech`, `tutorial-research-detail`, `tutorial-harvest`,
-`tutorial-harvest-picked`, `tutorial-resources`, `tutorial-move`,
-`tutorial-move-picked`, `tutorial-train`, `tutorial-train-picked`,
-`tutorial-attack`, `tutorial-attack-picked`, `tutorial-end-turn`,
-`tutorial-capture`, `tutorial-capture-picked` and `tutorial-farewell`: the
-tutorial's line at each of its eight steps, with the step's unit, city or
-tile picked, the technology screen of its research step, and the farewell
-after the capture. Each state is the tutorial board with the script's
+Bead `pulp_wars-0yxy` added the tutorial's scenes; bead `pulp_wars-2yc.115`
+(the eight-turn tutorial) replaced them with one or two for every lesson:
+`tutorial-harvest`, `tutorial-harvest-picked`, `tutorial-resources`,
+`tutorial-move`, `tutorial-move-picked`, `tutorial-train`,
+`tutorial-train-picked`, `tutorial-details`, `tutorial-details-picked`,
+`tutorial-details-card`, `tutorial-details-info`, `tutorial-attack-picked`,
+`tutorial-end-turn`, `tutorial-capture`, `tutorial-capture-picked`,
+`tutorial-farm`, `tutorial-farm-picked`, `tutorial-farm-reward`,
+`tutorial-windmill`, `tutorial-windmill-picked`, `tutorial-windmill-info`,
+`tutorial-lumber-camp-picked`, `tutorial-crafting`,
+`tutorial-crafting-tech`, `tutorial-ore`, `tutorial-workshop-picked`,
+`tutorial-engineering-tech`, `tutorial-climb`, `tutorial-climb-picked`,
+`tutorial-mine-picked`, `tutorial-road`, `tutorial-road-picked`,
+`tutorial-link`, `tutorial-reinforced`, `tutorial-road-move-picked`,
+`tutorial-rally`, `tutorial-rally-picked`, `tutorial-inspired`,
+`tutorial-inspired-knight`, `tutorial-charge-picked`,
+`tutorial-overrun-picked`, `tutorial-overrun-again` and
+`tutorial-farewell`. Each state is the tutorial board with the script's
 commands applied by the engine (`tests/fixtures/v7-tutorial-ui.ts`); no AI
-runs. They and `menu` (Tutorial first, for a new profile) were run at
-390 x 844, 320 x 720, 844 x 390 and, for comparison, 1440 x 900. Every
-check passes. On a phone the line is the HUD's last row, like the coach's;
-at 320 px Skip tutorial (and Next) wrap under the text.
+runs. Since `2yc.115` every scene of the review runs with the game's sound
+and music off as well as a muted browser. The first tutorial's scenes were
+run at 390 x 844, 320 x 720, 844 x 390 and 1440 x 900, every check passing;
+on a phone the line is the HUD's last row, like the coach's, and at 320 px
+Skip tutorial (and Next) wrap under the text. The `2yc.115` scenes were run
+at 390 x 844 and 1440 x 900: every phone check passes; at 1440 the dock's
+close button overlaps a lone action tile by 5 px (Train, Capture, Rally,
+Promote), which the tutorial's one-action docks show and the dock's layout
+owns (a follow-up). A scene that picks a unit with the review's keyboard
+cursor stops the camera's glide to the marker (an arrow key takes the
+camera), so its marker may stand at the edge; a tap does not.
 
 ## Nine seats and the Cultists
 

@@ -950,6 +950,7 @@ import {
   acknowledgeTutorialV7,
   advanceTutorialV7,
   isTutorialMatchV7,
+  noteTutorialUnitHelpV7,
   parseTutorialProgressV7,
   reconcileTutorialV7,
   serializeTutorialProgressV7,
@@ -7226,7 +7227,19 @@ export class Ruleset7DomAppView {
       unitHelp.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
       unitHelp.setAttribute("aria-label", `About ${roleLabel}`);
       unitHelp.title = `About ${roleLabel}`;
+      // The tutorial's card step (bead pulp_wars-2yc.115): the `?` of the
+      // unit it asks about is ringed, and opening the card is the step.
+      if (this.#tutorialCue?.button === "UNIT_HELP")
+        unitHelp.dataset.firstStep =
+          this.#tutorialCue.buttonMotion.toLowerCase();
       unitHelp.onclick = () => {
+        this.#setTutorial(
+          noteTutorialUnitHelpV7(
+            this.#tutorial,
+            this.#controllerSnapshot.view,
+            unit.id,
+          ),
+        );
         this.#selectedUnitHelpId = unit.id;
         this.#pendingFocusAction = null;
         this.#render();

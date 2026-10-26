@@ -36,12 +36,13 @@ import {
 } from "../fixtures/v7-tutorial-ui";
 
 /**
- * The tutorial in the interface (bead pulp_wars-0yxy, docs/ui/SCREEN_FLOW.md
- * "Tutorial"): the menu's Tutorial button, the line with its step counter,
- * Next and Skip tutorial, the marker and the ringed HUD button, and the
- * forcing: at each step the interface offers the step's one command and
- * nothing else, and End turn is closed until its own step. Every state is
- * hand-built by applying the script's commands; no AI runs.
+ * The tutorial in the interface (beads pulp_wars-0yxy and pulp_wars-2yc.115,
+ * docs/ui/SCREEN_FLOW.md "Tutorial"): the menu's Tutorial button, the line
+ * with its step counter, Next and Skip tutorial, the marker and the ringed
+ * HUD button or `?`, and the forcing: at each step the interface offers the
+ * step's commands and nothing else, and End turn is closed until its own
+ * step. Every state is hand-built by applying the script's commands; no AI
+ * runs.
  */
 const COORDINATE = /\(\s*\d+\s*,\s*\d+\s*\)|\b\d+\s*,\s*\d+\b/;
 
@@ -76,6 +77,11 @@ const stored = (storage: TutorialStorageV7) =>
   parseTutorialProgressV7(storage.getItem(TUTORIAL_STORAGE_KEY_V7));
 const stepLine = (id: TutorialStepIdV7) =>
   required(TUTORIAL_STEPS_V7.find((step) => step.id === id));
+const indexOf = (id: TutorialStepIdV7): number =>
+  TUTORIAL_STEPS_V7.findIndex((step) => step.id === id);
+/** "5/36": the counter at a step. */
+const numberAt = (id: TutorialStepIdV7): string =>
+  `${String(indexOf(id) + 1)}/${String(TUTORIAL_STEPS_V7.length)}`;
 const settle = async (): Promise<void> => {
   for (let turn = 0; turn < 8; turn += 1)
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -137,8 +143,8 @@ describe("the Tutorial button of the main menu", () => {
       factions: ["ORIGINAL", "GOBLIN"],
       width: 11,
     });
-    expect(counter()).toBe("1/8");
-    expect(lineText()).toBe(stepLine("RESEARCH").line);
+    expect(counter()).toBe("1/36");
+    expect(lineText()).toBe(stepLine("HARVEST").line);
     expect(
       parseTutorialProgressV7(
         window.localStorage.getItem(TUTORIAL_STORAGE_KEY_V7),
@@ -147,7 +153,8 @@ describe("the Tutorial button of the main menu", () => {
     // The real controller offers everything; the interface only the step.
     expect(app.controller.snapshot().offeredCommands.length).toBeGreaterThan(5);
     expect(requiredButton("end-turn").disabled).toBe(true);
-    expect(requiredButton("tech").dataset.firstStep).toBe("pulse");
+    // The first step is on the board: the Tech button is not pointed at.
+    expect(requiredButton("tech").dataset.firstStep).toBeUndefined();
     app.destroy();
   });
 
@@ -210,7 +217,7 @@ describe("the Tutorial button of the main menu", () => {
         !app.controller.snapshot().transitioning &&
         line() !== null,
     );
-    expect(counter()).toBe("1/8");
+    expect(counter()).toBe("1/36");
     expect(
       parseTutorialProgressV7(
         window.localStorage.getItem(TUTORIAL_STORAGE_KEY_V7),
@@ -222,16 +229,16 @@ describe("the Tutorial button of the main menu", () => {
 
 describe("the tutorial's line and cue", () => {
   it("shows the step's number, its text, Skip tutorial, and no Next on a command step", () => {
-    const { host, app } = openAt("RESEARCH");
+    const { host, app } = openAt("CRAFTING");
     const cue = required(line());
     expect(document.querySelectorAll(".v7-first-step")).toHaveLength(1);
-    expect(cue.dataset.tutorialStep).toBe("research");
+    expect(cue.dataset.tutorialStep).toBe("crafting");
     expect(cue.getAttribute("role")).toBe("status");
-    expect(counter()).toBe("1/8");
+    expect(counter()).toBe("16/36");
     expect(
       cue.querySelector(".v7-tutorial-counter")?.getAttribute("aria-label"),
-    ).toBe("Step 1 of 8");
-    expect(lineText()).toBe(stepLine("RESEARCH").line);
+    ).toBe("Step 16 of 36");
+    expect(lineText()).toBe(stepLine("CRAFTING").line);
     expect(requiredButton("tutorial-skip").textContent).toBe("Skip tutorial");
     expect(action("tutorial-next")).toBeNull();
     // No dialog: nothing dims or blocks the board.
@@ -316,30 +323,49 @@ describe("the tutorial's line and cue", () => {
 });
 
 describe("the tutorial's forcing", () => {
-  it("research: only Gathering can be researched, and its screen says so", async () => {
-    const { controller, storage, app } = openAt("RESEARCH");
+  it("research: only Crafting can be researched, its screen says so, and the Ore is then marked", async () => {
+    const { controller, host, storage, app } = openAt("CRAFTING");
     expect(requiredButton("end-turn").disabled).toBe(true);
     expect(requiredButton("end-turn").dataset.tutorialGated).toBe("true");
     requiredButton("tech").click();
     const hint = requiredElement<HTMLElement>(
       '[data-v7-region="overlay-tech"] [data-v7-region="tutorial"]',
     );
-    expect(hint.textContent).toBe(`1/8${stepLine("RESEARCH").techLine}`);
-    expect(requiredButton("tech-gathering").dataset.firstStep).toBe("pulse");
-    expect(requiredButton("tech-hunting").dataset.firstStep).toBeUndefined();
+    expect(hint.textContent).toBe(
+      `${numberAt("CRAFTING")}${stepLine("CRAFTING").techLine}`,
+    );
+    expect(requiredButton("tech-drill").dataset.firstStep).toBe("pulse");
+    expect(
+      requiredButton("tech-marksmanship").dataset.firstStep,
+    ).toBeUndefined();
     // Another technology: its details, and no Research button.
-    requiredButton("tech-hunting").click();
-    expect(action("research-hunting")).toBeNull();
-    requiredButton("tech-gathering").click();
-    requiredButton("research-gathering").click();
+    requiredButton("tech-marksmanship").click();
+    expect(action("research-marksmanship")).toBeNull();
+    requiredButton("tech-drill").click();
+    requiredButton("research-drill").click();
     await waitUntil(() => controller.accepted.length === 1);
-    await waitUntil(() => counter() === "2/8");
-    // The screen closed by itself; the next step is on the board.
+    await waitUntil(() => counter() === numberAt("ORE"));
+    // The screen closed by itself; the next step is on the board: the Ore
+    // Crafting revealed, marked.
     expect(
       document.querySelector('[data-v7-region="overlay-tech"]'),
     ).toBeNull();
-    expect(lineText()).toBe(stepLine("HARVEST").line);
-    expect(stored(storage)).toEqual({ completed: false, step: 1 });
+    expect(lineText()).toBe(stepLine("ORE").line);
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.ore,
+    });
+    const ore = required(controller.snapshot().view).board.tiles.find(
+      (tile) =>
+        tile.at.x === TUTORIAL_PLACES_V7.ore.x &&
+        tile.at.y === TUTORIAL_PLACES_V7.ore.y,
+    );
+    expect(ore).toMatchObject({ resource: "ORE" });
+    expect(requiredButton("tutorial-next").textContent).toBe("Next");
+    expect(stored(storage)).toEqual({
+      completed: false,
+      step: indexOf("ORE"),
+    });
     app.destroy();
   });
 
@@ -409,18 +435,18 @@ describe("the tutorial's forcing", () => {
     expect(
       document.querySelector('[data-v7-region="toast"]')?.textContent,
     ).toBe(TUTORIAL_REFUSED_V7);
-    expect(counter()).toBe("4/8");
+    expect(counter()).toBe(numberAt("MOVE"));
     // The step's own target goes through.
     host.callbacks?.onCommand(required(targets[0]));
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]?.kind).toBe("MOVE");
-    await waitUntil(() => counter() === "5/8");
+    await waitUntil(() => counter() === numberAt("TRAIN"));
     app.destroy();
   });
 
   it("the explanation offers nothing but Next", async () => {
     const { controller, host, storage, app } = openAt("RESOURCES");
-    expect(counter()).toBe("3/8");
+    expect(counter()).toBe(numberAt("RESOURCES"));
     expect(lineText()).toBe(stepLine("RESOURCES").line);
     expect(lineText()).toMatch(/Coins/);
     expect(lineText()).toMatch(/population/);
@@ -433,16 +459,19 @@ describe("the tutorial's forcing", () => {
     });
     expect(action("command-train")).toBeNull();
     requiredButton("tutorial-next").click();
-    expect(counter()).toBe("4/8");
+    expect(counter()).toBe(numberAt("MOVE"));
     expect(action("tutorial-next")).toBeNull();
-    expect(stored(storage)).toEqual({ completed: false, step: 3 });
+    expect(stored(storage)).toEqual({
+      completed: false,
+      step: indexOf("MOVE"),
+    });
     expect(controller.accepted).toEqual([]);
     app.destroy();
   });
 
   it("End turn opens at its own step and is the only thing offered there", () => {
-    const { host, app } = openAt("END_TURN");
-    expect(counter()).toBe("7/8");
+    const { host, app } = openAt("END_TURN_1");
+    expect(counter()).toBe(numberAt("END_TURN_1"));
     const end = requiredButton("end-turn");
     expect(end.disabled).toBe(false);
     expect(end.dataset.tutorialGated).toBeUndefined();
@@ -469,32 +498,40 @@ describe("the tutorial's forcing", () => {
     app.destroy();
   });
 
-  it("the whole first turn is played through the interface, one command a step", async () => {
-    const { controller, host, storage, app } = openAt("RESEARCH");
-    requiredButton("tech").click();
-    requiredButton("tech-gathering").click();
-    requiredButton("research-gathering").click();
-    await waitUntil(() => counter() === "2/8");
+  it("the whole first turn is played through the interface, one thing a step", async () => {
+    const { controller, host, storage, app } = openAt("HARVEST");
     host.callbacks?.onSelection({
       kind: "TILE",
       at: TUTORIAL_PLACES_V7.fruit,
     });
     requiredButton("command-harvest_fruit").click();
-    await waitUntil(() => counter() === "3/8");
+    await waitUntil(() => counter() === numberAt("RESOURCES"));
     requiredButton("tutorial-next").click();
     host.callbacks?.onSelection({
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.walker).id,
     });
     host.callbacks?.onCommand(required(boardPlan(host).targets[0]));
-    await waitUntil(() => counter() === "5/8");
+    await waitUntil(() => counter() === numberAt("TRAIN"));
     host.callbacks?.onSelection({
       kind: "CITY",
       cityId: capital(controller).id,
     });
     expect(lineText()).toBe(stepLine("TRAIN").selectedLine);
     requiredButton("command-train").click();
-    await waitUntil(() => counter() === "6/8");
+    await waitUntil(() => counter() === numberAt("DETAILS"));
+    // The card: the Fighter, then its ringed ?; the card opens and the
+    // explanation comes up once it is closed.
+    host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAt(controller, TUTORIAL_PLACES_V7.attacker).id,
+    });
+    requiredButton("unit-help").click();
+    expect(action("close-unit-help")).not.toBeNull();
+    expect(line()).toBeNull();
+    requiredButton("close-unit-help").click();
+    expect(counter()).toBe(numberAt("DETAILS_INFO"));
+    requiredButton("tutorial-next").click();
     host.callbacks?.onSelection({
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.attacker).id,
@@ -503,12 +540,11 @@ describe("the tutorial's forcing", () => {
     expect(attack).toHaveLength(1);
     expect(attack[0]).toMatchObject({ at: TUTORIAL_PLACES_V7.enemy });
     host.callbacks?.onCommand(required(attack[0]));
-    await waitUntil(() => counter() === "7/8");
-    expect(lineText()).toBe(stepLine("END_TURN").line);
+    await waitUntil(() => counter() === numberAt("END_TURN_1"));
+    expect(lineText()).toBe(stepLine("END_TURN_1").line);
     requiredButton("end-turn").click();
-    await waitUntil(() => controller.accepted.length === 6);
+    await waitUntil(() => controller.accepted.length === 5);
     expect(controller.accepted.map((command) => command.kind)).toEqual([
-      "RESEARCH",
       "HARVEST_FRUIT",
       "MOVE",
       "TRAIN",
@@ -516,30 +552,118 @@ describe("the tutorial's forcing", () => {
       "END_TURN",
     ]);
     // The opponent's turn: the record waits at the capture, with no line.
-    await waitUntil(() => stored(storage).step === 7);
+    await waitUntil(() => stored(storage).step === indexOf("CAPTURE"));
     expect(line()).toBeNull();
     app.destroy();
   });
 
-  it("the capture ends the tutorial: the farewell line, then an ordinary game", async () => {
-    const { controller, host, storage, app } = openAt("CAPTURE");
-    expect(counter()).toBe("8/8");
+  it("the card step marks the Fighter, then rings its ? without covering it", () => {
+    const { controller, host, storage, app } = openAt("DETAILS");
     expect(host.lastModel?.firstStepMarker).toMatchObject({
       kind: "UNIT",
-      at: TUTORIAL_PLACES_V7.village,
+      at: TUTORIAL_PLACES_V7.attacker,
     });
+    expect(host.lastModel?.offeredCommands).toEqual([]);
+    host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAt(controller, TUTORIAL_PLACES_V7.attacker).id,
+    });
+    expect(lineText()).toBe(stepLine("DETAILS").selectedLine);
+    expect(host.lastModel?.firstStepMarker).toBeNull();
+    const help = requiredButton("unit-help");
+    expect(help.dataset.firstStep).toBe("pulse");
+    // The line is in the HUD, the ? in the dock: the line covers nothing.
+    expect(help.closest('[data-v7-region="tutorial"]')).toBeNull();
+    expect(required(line()).closest(".v7-match-hud")).not.toBeNull();
+    // Another unit's card does nothing for the step.
     host.callbacks?.onSelection({
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.village).id,
     });
-    expect(lineText()).toBe(stepLine("CAPTURE").selectedLine);
-    requiredButton("command-capture").click();
+    expect(requiredButton("unit-help").dataset.firstStep).toBeUndefined();
+    requiredButton("unit-help").click();
+    expect(stored(storage).step).toBe(indexOf("DETAILS"));
+    app.destroy();
+  });
+
+  it("a city's reward comes up during the tutorial without the choices that place a unit", async () => {
+    const { controller, host, app } = openAt("FARM");
+    host.callbacks?.onSelection({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.fertile,
+    });
+    requiredButton("command-build_farm").click();
+    await waitUntil(() => action("reward-walls") !== null);
+    // Level 3: Walls, never the Scouts and their Raider.
+    expect(action("reward-survey")).toBeNull();
+    requiredButton("reward-walls").click();
+    await waitUntil(() => controller.accepted.length === 2);
+    expect(controller.accepted.map((command) => command.kind)).toEqual([
+      "BUILD_FARM",
+      "CHOOSE_CITY_REWARD",
+    ]);
+    await waitUntil(() => counter() === numberAt("END_TURN_2"));
+    app.destroy();
+  });
+
+  it("a later step of the turn may come first; the line stays with the first", async () => {
+    const { controller, host, storage, app } = openAt("WINDMILL");
+    // The board is given the Windmill's tile and the forest, nothing else.
+    expect(
+      host.lastModel?.offeredCommands.map((command) => command.kind),
+    ).toEqual(["BUILD_WINDMILL", "BUILD_LUMBER_CAMP"]);
+    host.callbacks?.onSelection({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.forest,
+    });
+    requiredButton("command-build_lumber_camp").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    await settle();
+    expect(counter()).toBe(numberAt("WINDMILL"));
+    expect(lineText()).toBe(stepLine("WINDMILL").line);
+    expect(stored(storage)).toEqual({
+      completed: false,
+      step: indexOf("WINDMILL"),
+      ahead: [indexOf("LUMBER_CAMP")],
+    });
+    host.callbacks?.onSelection({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.windmill,
+    });
+    requiredButton("command-build_windmill").click();
+    await waitUntil(() => counter() === numberAt("WINDMILL_INFO"));
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.windmill,
+    });
+    requiredButton("tutorial-next").click();
+    // The Lumber Camp is done: the turn's end is next.
+    expect(counter()).toBe(numberAt("END_TURN_3"));
+    app.destroy();
+  });
+
+  it("the Knight's third kill ends the tutorial: the farewell line, then an ordinary game", async () => {
+    const { controller, host, storage, app } = openAt("OVERRUN_3");
+    expect(counter()).toBe("36/36");
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "UNIT",
+      at: TUTORIAL_PLACES_V7.goblin2,
+    });
+    host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAt(controller, TUTORIAL_PLACES_V7.goblin2).id,
+    });
+    expect(lineText()).toBe(stepLine("OVERRUN_3").selectedLine);
+    const targets = boardPlan(host).targets;
+    expect(targets).toHaveLength(1);
+    expect(targets[0]).toMatchObject({ at: TUTORIAL_PLACES_V7.goblin3 });
+    host.callbacks?.onCommand(required(targets[0]));
     await waitUntil(() => controller.accepted.length === 1);
     await waitUntil(() => line()?.dataset.tutorialStep === "done");
     expect(lineText()).toBe(TUTORIAL_FAREWELL_V7);
     expect(action("tutorial-skip")).toBeNull();
     expect(stored(storage)).toEqual({ completed: true, step: null });
-    // Nothing is forced any more (once the capture has been shown).
+    // Nothing is forced any more (once the attack has been shown).
     await waitUntil(() => !requiredButton("end-turn").disabled);
     expect(requiredButton("end-turn").dataset.tutorialGated).toBeUndefined();
     expect(host.lastModel?.offeredCommands).toEqual(
@@ -572,11 +696,12 @@ describe("the tutorial's forcing", () => {
   });
 
   it("gives up, without trapping the player, when the step cannot be done", () => {
-    // The record says "capture" on a board where no unit is on the village.
-    const fixture = tutorialFixtureV7("RESEARCH");
+    // The record says "Mine" on the first turn's board: no Engineering, so
+    // neither the Mine nor the climb of its group can be done.
+    const fixture = tutorialFixtureV7("HARVEST");
     fixture.storage.setItem(
       TUTORIAL_STORAGE_KEY_V7,
-      serializeTutorialProgressV7({ completed: false, step: 7 }),
+      serializeTutorialProgressV7({ completed: false, step: indexOf("MINE") }),
     );
     const { controller, host, app } = open(fixture.state, fixture.storage);
     expect(line()).toBeNull();

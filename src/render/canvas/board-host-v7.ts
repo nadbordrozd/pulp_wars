@@ -866,6 +866,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    * player's own pan is not undone by a later redraw.
    */
   #kaboomFramedKey: string | null = null;
+  /** The coach's or tutorial's marker last framed (bead pulp_wars-2yc.115). */
+  #markerFramedKey: string | null = null;
   #cameraPanFrame: number | null = null;
   /**
    * Bead pulp_wars-2yc.29: the feedback animations. They run on this
@@ -1163,6 +1165,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       });
     }
     this.#frameKaboomPreview(model);
+    this.#frameFirstStepMarker(model);
     this.#describe();
     // Bead pulp_wars-2yc.114: while a presentation holds the board (an AI
     // turn's playback), a game update (one for every AI command) draws
@@ -1269,6 +1272,46 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     );
     if (area === null) return;
     const delta = panToFrameArea(this.#camera, area, this.#viewport, band);
+    if (delta.x === 0 && delta.y === 0) return;
+    void this.#glideCameraTo(
+      panCamera(this.#camera, delta),
+      model.motion === "FULL",
+    );
+  }
+
+  /**
+   * Bead pulp_wars-2yc.115: when the coach's or the tutorial's marker comes
+   * up on a new tile, pans the camera the least distance that shows the
+   * tile and the marker above it (and the marker's `frame`, a tutorial
+   * step's scene) between the HUD and the dock, once per marker; a phone's
+   * tutorial line no longer hides the tile it points at (the Captain of the
+   * eighth turn), nor does a lesson point off screen.
+   * The zoom never changes; reduced motion jumps, full motion glides. Not
+   * while a playback holds the board.
+   */
+  #frameFirstStepMarker(model: BoardHostModelV7): void {
+    const marker = model.firstStepMarker ?? null;
+    if (marker === null) {
+      this.#markerFramedKey = null;
+      return;
+    }
+    if (this.#presentedView !== null || this.#crossfade !== null) return;
+    const cells = [
+      marker.at,
+      { x: marker.at.x, y: Math.max(0, marker.at.y - 1) },
+      ...(marker.frame ?? []),
+    ];
+    const key = `${String(model.matchInstanceId)}:${marker.kind}:${cells.map((cell) => `${String(cell.x)},${String(cell.y)}`).join(";")}`;
+    if (key === this.#markerFramedKey) return;
+    this.#markerFramedKey = key;
+    const area = cellWorldBounds(cells);
+    if (area === null) return;
+    const delta = panToFrameArea(
+      this.#camera,
+      area,
+      this.#viewport,
+      this.#unobscuredBand(true),
+    );
     if (delta.x === 0 && delta.y === 0) return;
     void this.#glideCameraTo(
       panCamera(this.#camera, delta),
