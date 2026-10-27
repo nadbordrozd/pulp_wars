@@ -922,18 +922,16 @@ export function createDirectedChibiArtV7(input: {
             // badge of a rite on its leader.
             request.subject === "FROG" ||
             request.subject === "ICON:STATUS:COWED" ||
-            request.subject === "ICON:ACTION:STARFALL" ||
-            request.subject === "ICON:ACTION:GREAT_SUMMONING" ||
             // The Cult redesign (bead pulp_wars-mch9.43): the idol of a
-            // unit the warden's shield wall covers, and the join icon on
-            // a pending Stargazer's tile badge.
+            // unit the warden's shield wall covers.
             request.subject === "ICON:STATUS:WARDED" ||
-            request.subject === "ICON:ACTION:JOIN_CHANT" ||
-            // The Cult redesign's summons (bead pulp_wars-mch9.44): each
-            // summon's badge on the Summoner's tiles.
-            request.subject === "ICON:ACTION:SUMMON_IMP" ||
-            request.subject === "ICON:ACTION:SUMMON_HORROR" ||
-            request.subject === "ICON:ACTION:SUMMON_MASS")
+            // Action icons: the badge of a rite on its leader (Star-fall,
+            // the Great Summoning, bead pulp_wars-mch9.19) and a tile
+            // badge's registered icon (the join icon, bead
+            // pulp_wars-mch9.43; the summons, bead pulp_wars-mch9.44; and,
+            // since bead pulp_wars-2yc.118, every ability whose code glyph
+            // was replaced, the Barricade first).
+            request.subject.startsWith("ICON:ACTION:"))
         ) {
           const sample = input.samples.resolve(request);
           if (sample.kind !== "MISSING") return sample;

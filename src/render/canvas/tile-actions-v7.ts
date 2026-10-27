@@ -214,7 +214,15 @@ export interface TileActionLookV7 {
    * The registered raster the badge draws in its disc in place of the
    * glyph, once loaded (the glyph stands in while it loads, and in a look
    * without it). The Cult redesign's join icon (`pulp_wars-mch9.43`) is the
-   * first: the dock's button draws the same `ICON:ACTION:<KIND>`.
+   * first: the dock's button draws the same `ICON:ACTION:<KIND>`. Since bead
+   * pulp_wars-2yc.118 so does every ability whose glyph read poorly at
+   * badge size and whose icon stays clear on the dark disc: the Barricade
+   * (its glyph a white blob), Assemble (a key that read as a face), Tunnel
+   * (a goblet) and the Frost Bolt (the same snowflake as Freeze). A dark
+   * icon is murky in the disc (the Bomb Run's bomb, the Swallow mouth, the
+   * Re-bake whisk, the tiny tossed goblin and charging mammoth), so those
+   * keep their high-contrast glyphs, as do the clear ones (Move, Bolas,
+   * Freeze, the Martian beams, the Cult's tricks).
    */
   readonly raster?: ArtSubjectV7;
   /**
@@ -366,6 +374,7 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     id: "FROST_BOLT",
     label: FROST_BOLT_LABEL_V7,
     icon: "snowflake",
+    raster: "ICON:ACTION:FROST_BOLT",
     dockAction: "ice-folk-frost-bolt",
     families: ["FROST_BOLT"],
     offered: kind("FROST_BOLT"),
@@ -413,6 +422,7 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     id: "TUNNEL",
     label: TUNNEL_LABEL_V7,
     icon: "drill",
+    raster: "ICON:ACTION:TUNNEL",
     dockAction: "dwarf-tunnel",
     families: ["TUNNEL", "TUNNEL_DESTINATION"],
     offered: kind("TUNNEL"),
@@ -443,6 +453,7 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     id: "ASSEMBLE",
     label: ASSEMBLE_LABEL_V7,
     icon: "key",
+    raster: "ICON:ACTION:ASSEMBLE",
     dockAction: "dwarf-assemble",
     families: ["ASSEMBLE"],
     offered: kind("ASSEMBLE"),
@@ -452,6 +463,7 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     id: "BUILD_BARRICADE",
     label: BARRICADE_LABEL_V7,
     icon: "barricade",
+    raster: "ICON:ACTION:BUILD_BARRICADE",
     dockAction: "dwarf-build-barricade",
     families: ["BARRICADE"],
     offered: kind("BUILD_BARRICADE"),

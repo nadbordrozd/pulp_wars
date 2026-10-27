@@ -115,6 +115,16 @@
         "width": 48,
         "height": 48
       }
+    },
+    {
+      "id": "chibi-icon-action-toss",
+      "subject": "ICON:ACTION:TOSS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
     }
   ],
   "recipes": [
@@ -844,6 +854,23 @@
       "promptAddendum": "The rocket looks like a toy party firework: a smooth plain bright red paper tube with two or three cream stars on it and a big smooth cream cone on its front end, lying diagonally across the whole image from the lower left to the upper right, with loops of cream rope around it. It has no metal, no plates, no rivets and no spikes. The cart under it is small, low and charcoal grey. The cream cone is at the upper right corner of the image and the fuse at the lower left.",
       "negativeAddendum": "missile, metal rocket, iron plates, rivets, tail fins, warhead, spikes, drill, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
       "notes": "Bead pulp_wars-6gd.5. portrait-goblin-rocket-cart-k is a clean fireworks rocket on a small cart but points to the lower left, away from the map piece's upper right; two more seeds that name the cone's corner."
+    },
+    {
+      "id": "icon-action-toss-a",
+      "asset": "chibi-icon-action-toss",
+      "endpoint": "edit-image-pixen",
+      "seed": 5901,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-kaboom-a-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one small scrappy yellow-olive green goblin with long pointed ears flying through the air head first to the upper right, arms stretched forward and grinning, along one thick curved white arc trail from the lower left. Nothing else: no bomb, no fuse. Thick dark outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Troll's Goblin Toss button drew the code goblin-head badge glyph, which says Goblin but not throw. Redrawn from the accepted Kaboom! icon by a sibling edit."
     }
   ]
 }

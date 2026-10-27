@@ -352,6 +352,29 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
         "assets/chibi/icons/chibi-direction-icon-tech-deep-winter.png",
       ),
     },
+    // The Ice Witch's Frost Bolt and the Mammoth's Stampede (bead
+    // pulp_wars-2yc.118), which drew code glyphs (a snowflake like Cold
+    // Snap's, a double chevron) until these existed.
+    {
+      id: "chibi-direction-icon-action-frost-bolt",
+      subject: "ICON:ACTION:FROST_BOLT",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-action-frost-bolt.png",
+      ),
+    },
+    {
+      id: "chibi-direction-icon-action-ice-folk-stampede",
+      subject: "ICON:ACTION:ICE_FOLK:STAMPEDE",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-action-ice-folk-stampede.png",
+      ),
+    },
     // --- The frozen sea (bead pulp_wars-5ti.10): the Freeze icon and the five Naval technology icons ---
     {
       id: "chibi-direction-icon-action-freeze",

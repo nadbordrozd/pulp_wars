@@ -315,6 +315,18 @@ export const CHIBI_DIRECTION_CANDY_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       "assets/chibi/icons/chibi-direction-icon-action-bounce.png",
     ),
   },
+  // The Gingerbread Giant's Break Off (bead pulp_wars-2yc.118), which drew
+  // the code units badge until this existed.
+  {
+    id: "chibi-direction-icon-action-break-off",
+    subject: "ICON:ACTION:BREAK_OFF",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/icons/chibi-direction-icon-action-break-off.png",
+    ),
+  },
   {
     id: "chibi-direction-icon-status-rushed",
     subject: "ICON:STATUS:RUSHED",

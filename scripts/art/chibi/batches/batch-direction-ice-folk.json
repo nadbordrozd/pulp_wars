@@ -507,6 +507,28 @@
         "height": 48
       },
       "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-frost-bolt",
+      "subject": "ICON:ACTION:FROST_BOLT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-ice-folk-stampede",
+      "subject": "ICON:ACTION:ICE_FOLK:STAMPEDE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
     }
   ],
   "recipes": [
@@ -1734,6 +1756,57 @@
       "promptAddendum": "A thick black outline runs round the whole shape. The wall is a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch. The whole wall is drawn small enough to fit inside the image, about two thirds of its width and height, with an empty transparent margin on every side; no part of it touches an edge of the image. It is not a tree stump and not a cloth.",
       "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks, cropped at the edge",
       "notes": "icon-tech-glacier-b is the wall of ice with its snow cap and its cave, outlined, but it fills the canvas from edge to edge with no margin and its left side and foot touch the border."
+    },
+    {
+      "id": "icon-frost-bolt-a",
+      "asset": "chibi-direction-icon-action-frost-bolt",
+      "endpoint": "edit-image-pixen",
+      "seed": 73061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-sweep-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one long sharp pale ice-blue icicle bolt flying diagonally up to the right, point first, with a short trail of white frost sparkles and small ice shards behind it. Nothing else: no tusk, no snowflake, no face. Thick dark outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Ice Witch's Frost Bolt button drew the code snowflake glyph beside Cold Snap's raster snowflake, so the two read as one. Redrawn from the clean Sweep icon (an edit sends no faction layer) as a bolt, not a burst."
+    },
+    {
+      "id": "icon-ice-folk-stampede-a",
+      "asset": "chibi-direction-icon-action-ice-folk-stampede",
+      "endpoint": "edit-image-pixen",
+      "seed": 73071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-sweep-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: the big lowered head of a charging woolly mammoth seen from the side, facing right, shaggy cream-to-tan wool, a small dark eye, two long curved pale ivory tusks thrust forward, three thick white speed lines behind it and two small puffs of snow. Nothing else. Thick dark outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Mammoth's Stampede button drew the code double-chevron glyph; the Dinosaur Charge! raster (ICON:ACTION:STAMPEDE) is a Triceratops. Redrawn from the clean Sweep icon as a charging mammoth."
+    },
+    {
+      "id": "icon-frost-bolt-b",
+      "asset": "chibi-direction-icon-action-frost-bolt",
+      "endpoint": "edit-image-pixen",
+      "seed": 73062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-sweep-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+      "notes": "icon-frost-bolt-a reads as an ice bolt but is a thin outline-less streak like a comet; asks for a thick outlined icicle spear, drawn large."
     }
   ]
 }

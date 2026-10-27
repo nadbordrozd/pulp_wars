@@ -2177,6 +2177,73 @@
         "reviewedAt": "2026-10-02T20:52:03.731Z"
       }
     },
+    "icon-action-stomp-a": {
+      "id": "icon-action-stomp-a",
+      "asset": "chibi-direction-icon-action-stomp",
+      "jobId": "66777a4b-5255-4050-8f6d-82b9940cdcd0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-icon-action-stomp",
+        "subject": "ICON:ACTION:STOMP",
+        "faction": "DINOSAUR",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 238301,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one huge round grey dinosaur foot with three blunt cream toenails stamping straight down onto cracked tawny ground, a ring of dust puffs and small rocks bursting out on both sides and two short white shock lines. Nothing else: no head, no horns. Thick dark outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one huge round grey dinosaur foot with three blunt cream toenails stamping straight down onto cracked tawny ground, a ring of dust puffs and small rocks bursting out on both sides and two short white shock lines. Nothing else: no head, no horns. Thick dark outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one huge round grey dinosaur foot with three blunt cream toenails stamping straight down onto cracked tawny ground, a ring of dust puffs and small rocks bursting out on both sides and two short white shock lines. Nothing else: no head, no horns. Thick dark outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one huge round grey dinosaur foot with three blunt cream toenails stamping straight down onto cracked tawny ground, a ring of dust puffs and small rocks bursting out on both sides and two short white shock lines. Nothing else: no head, no horns. Thick dark outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-stampede-primal-edit",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "382261f61526b5fcd916daf3c9156d884fcb091ed76d74b7d267b763ca984724"
+        }
+      },
+      "submittedAt": "2026-10-27T13:00:15.072Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/icon-action-stomp-a.png",
+      "rawSheetSha256": "16271d54c5a46890c23a44f477fc98b78460675784636688490a8f861ab8351d",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2954,
+          "footprintWidthShare": 0.9545,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.2954,
+          "footprintWidthShare": 0.9545,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-27T13:01:13.581Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "A huge grey three-toed dinosaur foot stamping into cracked tawny ground in a burst of dust and pebbles: the Brontosaurus's Thunder Stomp, where the code glyph was a double chevron. The ground is the stomp, not a base plate. Redrawn from the Charge! icon by a sibling edit; bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T13:02:10.946Z"
+      }
+    },
     "portrait-dinosaur-ankylosaurus-primal-edit": {
       "id": "portrait-dinosaur-ankylosaurus-primal-edit",
       "asset": "chibi-direction-portrait-dinosaur-ankylosaurus",
@@ -5938,6 +6005,50 @@
       },
       "notes": "A dark navy horned head in a frill with an orange rim, cream horns, dust puffs.",
       "acceptedAt": "2026-10-02T20:52:03.731Z"
+    },
+    "chibi-direction-icon-action-stomp": {
+      "id": "chibi-direction-icon-action-stomp",
+      "subject": "ICON:ACTION:STOMP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-stomp-a",
+      "candidate": 1,
+      "candidateSha256": "9deada321a761a55964e77f21e8dae7984dd1761d62358ade9094a48f432142c",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-stomp.png",
+        "sha256": "9deada321a761a55964e77f21e8dae7984dd1761d62358ade9094a48f432142c",
+        "pixelSha256": "61b00a1fe6f2f932ccf86d69b2d230a82f74118e484e5901818f283f31c6c7f1",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.2954,
+        "footprintWidthShare": 0.9545,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A huge grey three-toed dinosaur foot stamping into cracked tawny ground in a burst of dust and pebbles: the Brontosaurus's Thunder Stomp, where the code glyph was a double chevron. The ground is the stomp, not a base plate. Redrawn from the Charge! icon by a sibling edit; bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T13:02:10.946Z"
     },
     "chibi-direction-portrait-dinosaur-ankylosaurus": {
       "id": "chibi-direction-portrait-dinosaur-ankylosaurus",

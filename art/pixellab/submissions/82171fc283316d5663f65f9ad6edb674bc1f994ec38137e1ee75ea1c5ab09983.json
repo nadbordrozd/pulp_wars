@@ -1,0 +1,37 @@
+{
+  "id": "icon-action-toss-a",
+  "jobId": "8ffb1991-2150-44ec-b199-4abf71542b0d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-icon-action-toss",
+    "subject": "ICON:ACTION:TOSS",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5901,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one small scrappy yellow-olive green goblin with long pointed ears flying through the air head first to the upper right, arms stretched forward and grinning, along one thick curved white arc trail from the lower left. Nothing else: no bomb, no fuse. Thick dark outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one small scrappy yellow-olive green goblin with long pointed ears flying through the air head first to the upper right, arms stretched forward and grinning, along one thick curved white arc trail from the lower left. Nothing else: no bomb, no fuse. Thick dark outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one small scrappy yellow-olive green goblin with long pointed ears flying through the air head first to the upper right, arms stretched forward and grinning, along one thick curved white arc trail from the lower left. Nothing else: no bomb, no fuse. Thick dark outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one small scrappy yellow-olive green goblin with long pointed ears flying through the air head first to the upper right, arms stretched forward and grinning, along one thick curved white arc trail from the lower left. Nothing else: no bomb, no fuse. Thick dark outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-kaboom-a-edit",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "7a9421b596c8899905424ccde14b38f00d52294c03621f21005ccacb7cf707bf"
+    }
+  }
+}

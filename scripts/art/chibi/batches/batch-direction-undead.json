@@ -339,6 +339,17 @@
       "ownerColour": false,
       "subjectKey": "PORTRAIT:UNDEAD:SWORDSMAN/BONE",
       "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-icon-action-swallow",
+      "subject": "ICON:ACTION:SWALLOW",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "undead-violet"
     }
   ],
   "recipes": [
@@ -1148,6 +1159,23 @@
       },
       "editInstruction": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
       "notes": "Bead pulp_wars-2yc.34: the Wight's bust from the Skeleton's, to match the accepted map sprite (wight-c): crowned closed iron helm with violet eye slits, pauldrons and the greataxe blade."
+    },
+    {
+      "id": "icon-swallow-a",
+      "asset": "chibi-direction-icon-action-swallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 235101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-devour-violet-edit-b",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Abomination's Swallow button drew the code fang glyph. Redrawn from the accepted Devour icon by a sibling edit (no faction layer)."
     }
   ]
 }

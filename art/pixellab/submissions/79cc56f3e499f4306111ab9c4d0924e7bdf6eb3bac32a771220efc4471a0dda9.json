@@ -1,0 +1,37 @@
+{
+  "id": "icon-frost-bolt-b",
+  "jobId": "5c84a6ed-7b9c-4807-b0af-c096dbd62226",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-action-frost-bolt",
+    "subject": "ICON:ACTION:FROST_BOLT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73062,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-sweep-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "9e3cab69acbbb3f1a8389b5b42d728b775d1ddff6a54204b8c3ad43e0e988e7f"
+    }
+  }
+}

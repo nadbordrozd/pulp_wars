@@ -2531,6 +2531,140 @@
         "reviewedAt": "2026-10-03T11:00:51.450Z"
       }
     },
+    "icon-barricade-a": {
+      "id": "icon-barricade-a",
+      "asset": "chibi-direction-icon-action-barricade",
+      "jobId": "078533ed-1f65-40ba-80f4-c4ce557751a6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-icon-action-barricade",
+        "subject": "ICON:ACTION:BUILD_BARRICADE",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73201,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: a short sturdy barricade of four sharpened wooden stakes standing side by side, pale tan wood with dark brown grain, points up, alternately tall and short, bound together across the middle by one bright copper band with round rivets, their feet driven into a small heap of dark brown earth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: a short sturdy barricade of four sharpened wooden stakes standing side by side, pale tan wood with dark brown grain, points up, alternately tall and short, bound together across the middle by one bright copper band with round rivets, their feet driven into a small heap of dark brown earth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: a short sturdy barricade of four sharpened wooden stakes standing side by side, pale tan wood with dark brown grain, points up, alternately tall and short, bound together across the middle by one bright copper band with round rivets, their feet driven into a small heap of dark brown earth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: a short sturdy barricade of four sharpened wooden stakes standing side by side, pale tan wood with dark brown grain, points up, alternately tall and short, bound together across the middle by one bright copper band with round rivets, their feet driven into a small heap of dark brown earth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-bomb-run-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+        }
+      },
+      "submittedAt": "2026-10-27T12:48:23.340Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/icon-barricade-a.png",
+      "rawSheetSha256": "f05afc5ade6b0581c2d8038f94b92ab4b78cbbbe579ad1109a7e489ed0ba3a0f",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3557,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.3557,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-27T12:49:00.995Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a palisade, but the thin stakes are ragged splinters, weaker at 48 px than icon-barricade-b's thick pointed logs.",
+        "reviewedAt": "2026-10-27T12:51:26.337Z"
+      }
+    },
+    "icon-barricade-b": {
+      "id": "icon-barricade-b",
+      "asset": "chibi-direction-icon-action-barricade",
+      "jobId": "8264be06-3962-4bb8-b926-6b178c56c34b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-icon-action-barricade",
+        "subject": "ICON:ACTION:BUILD_BARRICADE",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-bomb-run-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+        }
+      },
+      "submittedAt": "2026-10-27T12:50:27.966Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/icon-barricade-b.png",
+      "rawSheetSha256": "b59b7fafdf5e030a1cf5448a74a380ce94830fffda01a126be4847d214b68957",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3234,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.3234,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-27T12:51:05.360Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Four thick pale tan logs cut to points, bound by a riveted copper band, in a heap of earth: the Engineer's Barricade, as the board draws it. Bolder at 48 px than icon-barricade-a's thin splintered stakes. Redrawn from the Bomb Run icon by an edit (no faction layer); bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T12:51:26.204Z"
+      }
+    },
     "icon-blasting-charges-a": {
       "id": "icon-blasting-charges-a",
       "asset": "chibi-direction-icon-tech-blasting-charges",
@@ -4577,6 +4711,73 @@
         "candidate": 0,
         "notes": "A copper drill with dark spiral grooves boring into a heap of earth with clods flying: Tunnel. Redrawn from the Bomb Run icon by an edit (no faction layer).",
         "reviewedAt": "2026-10-03T11:00:50.485Z"
+      }
+    },
+    "icon-whirl-a": {
+      "id": "icon-whirl-a",
+      "asset": "chibi-direction-icon-action-whirl",
+      "jobId": "c811e791-b346-4ab5-a631-40cbfa24af2a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-icon-action-whirl",
+        "subject": "ICON:ACTION:WHIRL",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73211,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-bomb-run-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+        }
+      },
+      "submittedAt": "2026-10-27T12:49:01.008Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/icon-whirl-a.png",
+      "rawSheetSha256": "fdb9ba286a48b0e91893a1d6170890622ee4d000db913e66f9906f54fe91f870",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-27T12:49:38.137Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "A riveted soot-black iron hammer head on a copper haft swung round inside two white swoosh arcs with impact stars: the Whirligig's Whirl, readable at 48 px where the code glyph (three hammer heads on a hub) read as a molecule. Redrawn from the Bomb Run icon by an edit; bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T12:51:35.016Z"
       }
     },
     "mound-a": {
@@ -8256,6 +8457,66 @@
       "notes": "A copper wind-up key across an iron cog: Assemble.",
       "acceptedAt": "2026-10-03T11:00:51.450Z"
     },
+    "chibi-direction-icon-action-barricade": {
+      "id": "chibi-direction-icon-action-barricade",
+      "subject": "ICON:ACTION:BUILD_BARRICADE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-barricade-b",
+      "candidate": 1,
+      "candidateSha256": "eda7bd28e1e8d198e51d9c39f79dfb69782ab98d7002dbb9ef56c6661a7df047",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-barricade.png",
+        "sha256": "a13d9fd8fa8b6e663b5cba97d564d788f680e653e407977555bdffaed140363e",
+        "pixelSha256": "d4b5e0027c9c74093e3a950c1b8f0eb5ace61478647ebe30770afa028a787b23",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 56,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.3234,
+        "footprintWidthShare": 1,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Four thick pale tan logs cut to points, bound by a riveted copper band, in a heap of earth: the Engineer's Barricade, as the board draws it. Bolder at 48 px than icon-barricade-a's thin splintered stakes. Redrawn from the Bomb Run icon by an edit (no faction layer); bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T12:51:26.204Z"
+    },
     "chibi-direction-icon-action-bomb-run": {
       "id": "chibi-direction-icon-action-bomb-run",
       "subject": "ICON:ACTION:BOMB_RUN",
@@ -8555,6 +8816,66 @@
       },
       "notes": "A copper drill with dark spiral grooves boring into a heap of earth with clods flying: Tunnel. Redrawn from the Bomb Run icon by an edit (no faction layer).",
       "acceptedAt": "2026-10-03T11:00:50.485Z"
+    },
+    "chibi-direction-icon-action-whirl": {
+      "id": "chibi-direction-icon-action-whirl",
+      "subject": "ICON:ACTION:WHIRL",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-whirl-a",
+      "candidate": 1,
+      "candidateSha256": "5126d3ea870e0b3cf209942a7269564ea3d91d266f307ee3ec407354e4c67cf5",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-whirl.png",
+        "sha256": "5126d3ea870e0b3cf209942a7269564ea3d91d266f307ee3ec407354e4c67cf5",
+        "pixelSha256": "89398c6a4181c8575ea586f2fb3fd182b185f067c7a5c4cd3b0605ceceb9d2d2",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.4878,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A riveted soot-black iron hammer head on a copper haft swung round inside two white swoosh arcs with impact stars: the Whirligig's Whirl, readable at 48 px where the code glyph (three hammer heads on a hub) read as a molecule. Redrawn from the Bomb Run icon by an edit; bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T12:51:35.016Z"
     },
     "chibi-direction-icon-status-clockwork": {
       "id": "chibi-direction-icon-status-clockwork",

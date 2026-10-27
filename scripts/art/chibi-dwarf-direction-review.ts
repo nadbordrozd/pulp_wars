@@ -137,6 +137,9 @@ const ICONS = [
   ["action-repair", "Repair"],
   ["action-knockback", "Knockback"],
   ["action-plated", "Plated"],
+  // Dwarf crowd control (bead pulp_wars-2yc.118).
+  ["action-barricade", "Barricade"],
+  ["action-whirl", "Whirl"],
   ["status-clockwork", "Clockwork"],
   ["status-dug-in", "Dug in"],
   ["tech-dig-in", "Dig In (tech)"],

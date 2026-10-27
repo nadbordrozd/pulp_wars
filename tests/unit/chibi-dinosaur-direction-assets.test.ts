@@ -75,6 +75,8 @@ const ICONS = [
   ["ICON:ACTION:LAY_EGG", "lay-egg"],
   ["ICON:ACTION:HATCH", "hatch"],
   ["ICON:ACTION:STAMPEDE", "stampede"],
+  // The Brontosaurus's Thunder Stomp (bead pulp_wars-2yc.118).
+  ["ICON:ACTION:STOMP", "stomp"],
 ] as const;
 /** The six dinosaurs: every one carries the blue hide and the accent. */
 const DINOSAURS = [
@@ -210,7 +212,7 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
       ]);
     for (const asset of CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7)
       expect(
-        /^(UNIT|PORTRAIT|CITY):DINOSAUR:|^ICON:ACTION:(LAY_EGG|HATCH|STAMPEDE)$/.test(
+        /^(UNIT|PORTRAIT|CITY):DINOSAUR:|^ICON:ACTION:(LAY_EGG|HATCH|STAMPEDE|STOMP)$/.test(
           asset.subject,
         ),
         asset.id,

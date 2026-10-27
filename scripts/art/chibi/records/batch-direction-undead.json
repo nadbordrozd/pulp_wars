@@ -934,6 +934,73 @@
         "reviewedAt": "2026-10-02T16:02:10.541Z"
       }
     },
+    "icon-swallow-a": {
+      "id": "icon-swallow-a",
+      "asset": "chibi-direction-icon-action-swallow",
+      "jobId": "82eb3e42-77c1-4dc6-b965-eb36ddb27431",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-undead",
+        "asset": "chibi-direction-icon-action-swallow",
+        "subject": "ICON:ACTION:SWALLOW",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 235101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-devour-violet-edit-b",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "47853926770fe5a25e968bd57df3a7350a06dcb755c04940b31bfc508071bc39"
+        }
+      },
+      "submittedAt": "2026-10-27T12:58:39.230Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-undead/icon-swallow-a.png",
+      "rawSheetSha256": "645b7456f7b6aa68e45420e7b5310f688e476c88719c816b7f0d6c6d66ad9ad7",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.025,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.025,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-27T12:59:32.101Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "A huge gaping stitched blue-grey mouth with crooked teeth and a long tongue, a small shield and sword tumbling in: the Abomination's Swallow, where the code glyph was a row of fangs. Redrawn from the Devour icon by a sibling edit; bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T13:02:10.688Z"
+      }
+    },
     "lich-bone-edit-a": {
       "id": "lich-bone-edit-a",
       "asset": "chibi-direction-undead-lich",
@@ -3631,6 +3698,73 @@
       },
       "notes": "A bone hand rising from a grey stone base among violet sparks; no green rim.",
       "acceptedAt": "2026-10-02T16:07:04.161Z"
+    },
+    "chibi-direction-icon-action-swallow": {
+      "id": "chibi-direction-icon-action-swallow",
+      "subject": "ICON:ACTION:SWALLOW",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-swallow-a",
+      "candidate": 1,
+      "candidateSha256": "f7e74fab1ae0ba42ea16c66a5e71f95be860539f1f60fc7ad8bb2b7b9bc141dd",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-swallow.png",
+        "sha256": "4738cc0c3892b37bfe5d89d282373f0746134794f036f33fd675ad63545b3be9",
+        "pixelSha256": "a44f9f1c4b2838136264372219239da9edcfe7dc3786ddfd2c1dc07a188b400c",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "undead-violet",
+          "spec": {
+            "band": {
+              "hueFrom": 250,
+              "hueTo": 320,
+              "saturationMin": 0.4,
+              "valueMin": 0.2,
+              "hueCentre": 285
+            },
+            "hue": 274,
+            "hueSpread": 0.5,
+            "trim": {
+              "maxAccentNeighbours": 2,
+              "minDarkNeighbours": 3,
+              "darkValueMax": 0.3,
+              "saturationMax": 0.62,
+              "valueMin": 0.96
+            }
+          },
+          "accentPixels": 281,
+          "trimPixels": 11
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.025,
+        "footprintWidthShare": 0.8,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A huge gaping stitched blue-grey mouth with crooked teeth and a long tongue, a small shield and sword tumbling in: the Abomination's Swallow, where the code glyph was a row of fangs. Redrawn from the Devour icon by a sibling edit; bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T13:02:10.688Z"
     },
     "chibi-direction-icon-action-undead-rally": {
       "id": "chibi-direction-icon-action-undead-rally",

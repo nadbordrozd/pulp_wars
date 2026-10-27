@@ -264,6 +264,18 @@ export const CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
         "assets/chibi/icons/chibi-direction-icon-action-stampede.png",
       ),
     },
+    // The Brontosaurus's Thunder Stomp (bead pulp_wars-2yc.118), which drew
+    // the code double chevron until this existed.
+    {
+      id: "chibi-direction-icon-action-stomp",
+      subject: "ICON:ACTION:STOMP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-action-stomp.png",
+      ),
+    },
     {
       id: "chibi-direction-dinosaur-city-1",
       subject: "CITY:DINOSAUR:1",

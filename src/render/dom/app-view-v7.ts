@@ -16057,12 +16057,10 @@ export class Ruleset7DomAppView {
         "v7-context-action",
       );
       action.append(
-        (entry.kind === "THROW_BOLAS" || entry.kind === "COLD_SNAP"
-          ? this.#chibiArt(
-              `ICON:ACTION:${entry.kind}`,
-              CHIBI_DOM_BOXES_V7.action,
-            )?.element
-          : undefined) ??
+        this.#chibiArt(
+          iceFolkActionSubjectV7(entry.kind),
+          CHIBI_DOM_BOXES_V7.action,
+        )?.element ??
           uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
@@ -16311,9 +16309,7 @@ export class Ruleset7DomAppView {
     panel.setAttribute("aria-label", prompt);
     panel.append(
       this.#pickHead(
-        pick.kind === "THROW_BOLAS" || pick.kind === "COLD_SNAP"
-          ? `ICON:ACTION:${pick.kind}`
-          : null,
+        iceFolkActionSubjectV7(pick.kind),
         entry?.icon ?? "snowflake",
         entry?.label ?? COLD_SNAP_LABEL_V7,
         prompt,
@@ -18249,8 +18245,12 @@ export class Ruleset7DomAppView {
         `giant-${slug}`,
         "v7-context-action",
       );
+      // Bead pulp_wars-2yc.118: each signature has its PixelLab icon; the
+      // classic look keeps the code glyph.
       action.append(
-        uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
       action.dataset.giantAbility = slug;
@@ -18417,7 +18417,7 @@ export class Ruleset7DomAppView {
     panel.setAttribute("aria-label", info);
     panel.append(
       this.#pickHead(
-        null,
+        `ICON:ACTION:${pick.kind}`,
         entry?.icon ?? "info",
         entry?.label ?? pick.kind,
         info,
@@ -19109,12 +19109,24 @@ export class Ruleset7DomAppView {
  * The CHIBI action icon of an aimed Dwarf ability; Whirl and Barricade
  * have none yet (Dwarf crowd control), so their LEGACY glyph is drawn.
  */
+/**
+ * The icon of an aimed Ice Folk ability (its dock button and its pick
+ * head). The Frost Bolt and the Mammoth's Stampede have theirs since bead
+ * pulp_wars-2yc.118; `ICON:ACTION:STAMPEDE` is the Triceratops's Charge!,
+ * so the Mammoth's is `ICON:ACTION:ICE_FOLK:STAMPEDE`.
+ */
+function iceFolkActionSubjectV7(kind: IceFolkAbilityKindV7): ArtSubjectV7 {
+  return kind === "STAMPEDE"
+    ? "ICON:ACTION:ICE_FOLK:STAMPEDE"
+    : `ICON:ACTION:${kind}`;
+}
+
 function dwarfActionSubjectV7(
   kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE" | "WHIRL" | "BUILD_BARRICADE",
-): ArtSubjectV7 | null {
-  return kind === "TUNNEL" || kind === "BOMB_RUN" || kind === "ASSEMBLE"
-    ? `ICON:ACTION:${kind}`
-    : null;
+): ArtSubjectV7 {
+  // The Whirl and the Barricade have their icons since bead
+  // pulp_wars-2yc.118; the classic look keeps the code glyphs.
+  return `ICON:ACTION:${kind}`;
 }
 
 function selectionKey(selection: BoardSelectionV7): string {
@@ -20946,7 +20958,8 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   THROW_BOLAS: "bolas",
   COLD_SNAP: "snowflake",
   // The Dwarf revision: LEGACY glyphs of Tunnel, Bomb Run and Assemble;
-  // Dwarf crowd control: Whirl and Barricade (no CHIBI icon yet).
+  // Dwarf crowd control: Whirl and Barricade (LEGACY glyphs; CHIBI draws
+  // the PixelLab icons since bead pulp_wars-2yc.118).
   TUNNEL: "drill",
   BOMB_RUN: "bomb-run",
   ASSEMBLE: "key",

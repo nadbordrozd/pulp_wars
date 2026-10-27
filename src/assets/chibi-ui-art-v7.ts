@@ -10,6 +10,7 @@ import type {
   UnitRoleIdV7,
 } from "../engine/index";
 import {
+  cultSummonedPortraitSubjectV7,
   factionHasImprovementLookV7,
   monumentArtSubjectV7,
   navalArtSubjectV7,
@@ -326,6 +327,14 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES" || tech === "FARMING")
   )
     return `ICON:TECH:CULT:${tech}`;
+  // The Cult's Tentacles (`CHIVALRY`, bead pulp_wars-2yc.118): its `KNIGHT`
+  // slot is vacant since the Cult redesign (`pulp_wars-mch9.31`), so the
+  // unit rule below asked for `UNIT:CULT:KNIGHT`, which has no raster and
+  // fell back to the Human Knight. The technology lets a Summoner call a
+  // Tentacle, so its card shows the Tentacle, as every other Chivalry card
+  // shows the unit it unlocks.
+  if (faction === "CULT" && tech === "CHIVALRY")
+    return cultSummonedPortraitSubjectV7("TENTACLE");
   // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
   // sections 2 rule 3, 3.7 and 4.7, `pulp_wars-5ti.16`, `pulp_wars-5ti.17`):
   // a technology that unlocks a faction's own ship shows its portrait, and
@@ -441,7 +450,13 @@ export function commandSubjectV7(
   }
   const mapped = RESOURCE_COMMANDS[command.kind];
   if (mapped !== undefined) return mapped;
-  if (command.kind.startsWith("BUILD_") && command.kind !== "BUILD_ROAD")
+  // The Engineer's Barricade is no improvement: its button shows its icon
+  // (bead pulp_wars-2yc.118).
+  if (
+    command.kind.startsWith("BUILD_") &&
+    command.kind !== "BUILD_ROAD" &&
+    command.kind !== "BUILD_BARRICADE"
+  )
     // The viewer builds in its own territory, so the button shows its
     // faction's look of the building (epic pulp_wars-xdh).
     return factionImprovementSubjectV7(

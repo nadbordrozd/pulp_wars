@@ -92,6 +92,8 @@ const ICONS = [
   ["ICON:ACTION:CANDY:TEND_WOUNDED", "icon-action-frosting"],
   ["ICON:ACTION:SPLAT", "icon-action-splat"],
   ["ICON:ACTION:BOUNCE", "icon-action-bounce"],
+  // The Gingerbread Giant's Break Off (bead pulp_wars-2yc.118).
+  ["ICON:ACTION:BREAK_OFF", "icon-action-break-off"],
   ["ICON:STATUS:RUSHED", "icon-status-rushed"],
   ["ICON:STATUS:CRASHED", "icon-status-crashed"],
   ["ICON:STATUS:SPLATTED", "icon-status-splatted"],

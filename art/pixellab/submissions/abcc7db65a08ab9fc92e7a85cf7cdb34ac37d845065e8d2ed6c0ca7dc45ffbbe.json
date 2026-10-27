@@ -1,0 +1,37 @@
+{
+  "id": "icon-swallow-a",
+  "jobId": "82eb3e42-77c1-4dc6-b965-eb36ddb27431",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-icon-action-swallow",
+    "subject": "ICON:ACTION:SWALLOW",
+    "faction": "UNDEAD",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 235101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one huge wide-open gaping mouth of pale blue-grey stitched flesh seen from the front, crooked ivory teeth and a long tongue, with one small round wooden shield and a short sword tumbling down into it. Nothing else: no bone, no eyes, no face. Thick dark outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-devour-violet-edit-b",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "47853926770fe5a25e968bd57df3a7350a06dcb755c04940b31bfc508071bc39"
+    }
+  }
+}

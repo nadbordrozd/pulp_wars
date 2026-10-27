@@ -84,6 +84,8 @@ const ICONS = [
   ["ICON:ACTION:DEVOUR", "devour"],
   ["ICON:ACTION:WAIL", "wail"],
   ["ICON:ACTION:UNDEAD:RALLY", "undead-rally"],
+  // The Abomination's Swallow (bead pulp_wars-2yc.118).
+  ["ICON:ACTION:SWALLOW", "swallow"],
 ] as const;
 const EFFECTS = ["wail", "splash", "raise", "wisp"] as const;
 const SPEC = ACCENT_PRESETS["undead-violet"];
@@ -187,7 +189,7 @@ describe("Undead production art of the new visual direction (pulp_wars-3tq.12)",
       expect(registry.variants(subject), subject).toHaveLength(0);
     for (const asset of CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7)
       expect(
-        /^(UNIT|PORTRAIT|CITY):UNDEAD:|^ICON:ACTION:(RAISE_DEAD|DEVOUR|WAIL|UNDEAD:RALLY)$|^EFFECT:/.test(
+        /^(UNIT|PORTRAIT|CITY):UNDEAD:|^ICON:ACTION:(RAISE_DEAD|DEVOUR|WAIL|UNDEAD:RALLY|SWALLOW)$|^EFFECT:/.test(
           asset.subject,
         ),
         asset.id,

@@ -2728,6 +2728,207 @@
         "reviewedAt": "2026-10-10T12:55:44.356Z"
       }
     },
+    "icon-frost-bolt-a": {
+      "id": "icon-frost-bolt-a",
+      "asset": "chibi-direction-icon-action-frost-bolt",
+      "jobId": "dcdc1041-2ef6-4f32-9f55-a015422f755d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-action-frost-bolt",
+        "subject": "ICON:ACTION:FROST_BOLT",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73061,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one long sharp pale ice-blue icicle bolt flying diagonally up to the right, point first, with a short trail of white frost sparkles and small ice shards behind it. Nothing else: no tusk, no snowflake, no face. Thick dark outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one long sharp pale ice-blue icicle bolt flying diagonally up to the right, point first, with a short trail of white frost sparkles and small ice shards behind it. Nothing else: no tusk, no snowflake, no face. Thick dark outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one long sharp pale ice-blue icicle bolt flying diagonally up to the right, point first, with a short trail of white frost sparkles and small ice shards behind it. Nothing else: no tusk, no snowflake, no face. Thick dark outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one long sharp pale ice-blue icicle bolt flying diagonally up to the right, point first, with a short trail of white frost sparkles and small ice shards behind it. Nothing else: no tusk, no snowflake, no face. Thick dark outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-sweep-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "9e3cab69acbbb3f1a8389b5b42d728b775d1ddff6a54204b8c3ad43e0e988e7f"
+        }
+      },
+      "submittedAt": "2026-10-27T12:53:10.982Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-frost-bolt-a.png",
+      "rawSheetSha256": "16205995b422af37d8e74ea4e77c7114b908ea4f8de37b135cac23e01643fc90",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3415,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3415,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-27T12:54:08.951Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A glowing pale ice-blue bolt streaking up to the right in a spray of frost: the Ice Witch's Frost Bolt, one target, unlike Cold Snap's snowflake burst beside it. Redrawn from the Sweep icon by an edit; bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T12:56:41.241Z"
+      }
+    },
+    "icon-frost-bolt-b": {
+      "id": "icon-frost-bolt-b",
+      "asset": "chibi-direction-icon-action-frost-bolt",
+      "jobId": "5c84a6ed-7b9c-4807-b0af-c096dbd62226",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-action-frost-bolt",
+        "subject": "ICON:ACTION:FROST_BOLT",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73062,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-sweep-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "9e3cab69acbbb3f1a8389b5b42d728b775d1ddff6a54204b8c3ad43e0e988e7f"
+        }
+      },
+      "submittedAt": "2026-10-27T12:55:23.339Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-frost-bolt-b.png",
+      "rawSheetSha256": "dfae645414e5a95f2c581b264b87ef668fb3f53912486587aaac50ba39cf8d7e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1951,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1951,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-27T12:56:16.231Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The thick outlined icicle reads as a trowel or a small rocket, not frost.",
+        "reviewedAt": "2026-10-27T12:56:41.379Z"
+      }
+    },
+    "icon-ice-folk-stampede-a": {
+      "id": "icon-ice-folk-stampede-a",
+      "asset": "chibi-direction-icon-action-ice-folk-stampede",
+      "jobId": "5fdb2663-27a7-4a1c-ab4c-51f4284c617c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-action-ice-folk-stampede",
+        "subject": "ICON:ACTION:ICE_FOLK:STAMPEDE",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73071,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: the big lowered head of a charging woolly mammoth seen from the side, facing right, shaggy cream-to-tan wool, a small dark eye, two long curved pale ivory tusks thrust forward, three thick white speed lines behind it and two small puffs of snow. Nothing else. Thick dark outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: the big lowered head of a charging woolly mammoth seen from the side, facing right, shaggy cream-to-tan wool, a small dark eye, two long curved pale ivory tusks thrust forward, three thick white speed lines behind it and two small puffs of snow. Nothing else. Thick dark outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: the big lowered head of a charging woolly mammoth seen from the side, facing right, shaggy cream-to-tan wool, a small dark eye, two long curved pale ivory tusks thrust forward, three thick white speed lines behind it and two small puffs of snow. Nothing else. Thick dark outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: the big lowered head of a charging woolly mammoth seen from the side, facing right, shaggy cream-to-tan wool, a small dark eye, two long curved pale ivory tusks thrust forward, three thick white speed lines behind it and two small puffs of snow. Nothing else. Thick dark outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-sweep-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "9e3cab69acbbb3f1a8389b5b42d728b775d1ddff6a54204b8c3ad43e0e988e7f"
+        }
+      },
+      "submittedAt": "2026-10-27T12:54:08.964Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-ice-folk-stampede-a.png",
+      "rawSheetSha256": "45633793065dde6ad449bd208e8398dc62c2e46a4c4b4353c1d0b9c09749358e",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0.0459,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 5,
+          "groundShare": 0.0459,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-27T12:54:50.920Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "A woolly mammoth in Ice Folk cream wool and slate charging right, tusks forward, with speed lines and snow puffs: the Mammoth's Stampede, where the code glyph was a double chevron and the Dinosaur Charge! raster a Triceratops. Redrawn from the Sweep icon by an edit; bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T12:56:41.524Z"
+      }
+    },
     "icon-status-chilled-a": {
       "id": "icon-status-chilled-a",
       "asset": "chibi-direction-icon-status-chilled",
@@ -8044,6 +8245,136 @@
       },
       "notes": "Freeze: a curling sea wave frozen solid, icicles on its crest. Candidate 0 keeps more icicles than candidate 1.",
       "acceptedAt": "2026-10-10T12:55:44.356Z"
+    },
+    "chibi-direction-icon-action-frost-bolt": {
+      "id": "chibi-direction-icon-action-frost-bolt",
+      "subject": "ICON:ACTION:FROST_BOLT",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-frost-bolt-a",
+      "candidate": 0,
+      "candidateSha256": "85b56662096a2427b0cb90986d1da81e9c32c61f1c99da8128a1c20b5af9a9a3",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-frost-bolt.png",
+        "sha256": "2644bd1ec634784f85d014767a20b42722f29fae7e5da625481877d148f02f68",
+        "pixelSha256": "f515d05794cbc3926099c293d7291d22fafbc6727f20a36c91463490c483ed20",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 145,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.3415,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A glowing pale ice-blue bolt streaking up to the right in a spray of frost: the Ice Witch's Frost Bolt, one target, unlike Cold Snap's snowflake burst beside it. Redrawn from the Sweep icon by an edit; bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T12:56:41.241Z"
+    },
+    "chibi-direction-icon-action-ice-folk-stampede": {
+      "id": "chibi-direction-icon-action-ice-folk-stampede",
+      "subject": "ICON:ACTION:ICE_FOLK:STAMPEDE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-ice-folk-stampede-a",
+      "candidate": 1,
+      "candidateSha256": "b8e41ff4aa9c5c2c8061cd8c8cd2e1783b47da771e0474613519f1faf3e65abc",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-ice-folk-stampede.png",
+        "sha256": "9a6bd484e799cf456da0d0b62b7ea67f8d4482340230dcf0a2275769b5778920",
+        "pixelSha256": "5c6a28f3dd4c1bf653509234774672107a6406f972bd55f2a80a63c264d0362e",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 56,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0.0459,
+        "footprintWidthShare": 0.75,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A woolly mammoth in Ice Folk cream wool and slate charging right, tusks forward, with speed lines and snow puffs: the Mammoth's Stampede, where the code glyph was a double chevron and the Dinosaur Charge! raster a Triceratops. Redrawn from the Sweep icon by an edit; bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T12:56:41.524Z"
     },
     "chibi-direction-icon-action-prowl": {
       "id": "chibi-direction-icon-action-prowl",

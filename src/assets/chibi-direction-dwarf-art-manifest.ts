@@ -12,7 +12,8 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  *
  * The eight unit sprites, the tunnel mound and the rider's mound, the
  * portraits, City 1-3 (a forge hold with an iron pole for the pennant), ten
- * command, ability, status and technology icons and four effect sprites;
+ * command, ability, status and technology icons (and, since bead
+ * pulp_wars-2yc.118, the Barricade's and the Whirl's) and four effect sprites;
  * and, apart, the Dwarf naval set.
  *
  * Since the Dwarf UI bead (pulp_wars-78i.6) this list is registered in the
@@ -293,6 +294,29 @@ export const CHIBI_DIRECTION_DWARF_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl(
       "assets/chibi/icons/chibi-direction-icon-action-assemble.png",
+    ),
+  },
+  // Dwarf crowd control's two buttons (bead pulp_wars-2yc.118): the
+  // Engineer's Barricade and the Whirligig's Whirl, which drew code glyphs
+  // until these existed.
+  {
+    id: "chibi-direction-icon-action-barricade",
+    subject: "ICON:ACTION:BUILD_BARRICADE",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/icons/chibi-direction-icon-action-barricade.png",
+    ),
+  },
+  {
+    id: "chibi-direction-icon-action-whirl",
+    subject: "ICON:ACTION:WHIRL",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/icons/chibi-direction-icon-action-whirl.png",
     ),
   },
   {

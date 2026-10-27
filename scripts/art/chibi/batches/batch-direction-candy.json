@@ -581,6 +581,17 @@
         "height": 48
       },
       "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-action-break-off",
+      "subject": "ICON:ACTION:BREAK_OFF",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
     }
   ],
   "recipes": [
@@ -2538,6 +2549,23 @@
       },
       "editInstruction": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
       "notes": "icon-toothache-c is the clearest tooth but has four stray dots in its corners and a stitched crack: an edit that cleans both."
+    },
+    {
+      "id": "icon-break-off-a",
+      "asset": "chibi-direction-icon-action-break-off",
+      "endpoint": "edit-image-pixen",
+      "seed": 414401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bounce-choc-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Gingerbread Giant's Break Off button drew the code person glyph (the units badge). Redrawn from the accepted Bounce icon by a sibling edit."
     }
   ]
 }

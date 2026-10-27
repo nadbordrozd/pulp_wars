@@ -88,6 +88,9 @@ const ICONS = [
   ["ICON:ACTION:SWEEP", "action-sweep"],
   ["ICON:ACTION:ROCKFALL", "action-rockfall"],
   ["ICON:ACTION:PROWL", "action-prowl"],
+  // The Frost Bolt and the Mammoth's Stampede (bead pulp_wars-2yc.118).
+  ["ICON:ACTION:FROST_BOLT", "action-frost-bolt"],
+  ["ICON:ACTION:ICE_FOLK:STAMPEDE", "action-ice-folk-stampede"],
   ["ICON:TECH:ICE_FOLK:FORTIFICATION", "tech-deep-winter"],
   ["ICON:TECH:ICE_FOLK:EXPLOSIVES", "tech-brittle"],
   ["ICON:STATUS:CHILLED", "status-chilled"],

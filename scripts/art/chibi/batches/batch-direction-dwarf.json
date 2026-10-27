@@ -451,6 +451,28 @@
       },
       "ownerColour": false,
       "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-barricade",
+      "subject": "ICON:ACTION:BUILD_BARRICADE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-whirl",
+      "subject": "ICON:ACTION:WHIRL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
     }
   ],
   "recipes": [
@@ -1705,6 +1727,57 @@
       },
       "editInstruction": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "Bead pulp_wars-2yc.34, correction pass: a small bluish steam wisp was left beside the lamp of portrait-whirligig-b-ring."
+    },
+    {
+      "id": "icon-barricade-a",
+      "asset": "chibi-direction-icon-action-barricade",
+      "endpoint": "edit-image-pixen",
+      "seed": 73201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bomb-run-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: a short sturdy barricade of four sharpened wooden stakes standing side by side, pale tan wood with dark brown grain, points up, alternately tall and short, bound together across the middle by one bright copper band with round rivets, their feet driven into a small heap of dark brown earth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Engineer's Barricade button showed a code-drawn glyph the user called ugly. Redrawn from the clean Bomb Run icon, as Tunnel, Assemble and Repair were (an edit sends no faction layer), in the look of the board's Barricade (dwarf-canvas-v7.ts: sharpened stakes in a heap of earth)."
+    },
+    {
+      "id": "icon-whirl-a",
+      "asset": "chibi-direction-icon-action-whirl",
+      "endpoint": "edit-image-pixen",
+      "seed": 73211,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bomb-run-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Whirligig's Whirl button showed a code-drawn glyph (three hammer heads round a hub) that read as a molecule at 24 px. Redrawn from the clean Bomb Run icon."
+    },
+    {
+      "id": "icon-barricade-b",
+      "asset": "chibi-direction-icon-action-barricade",
+      "endpoint": "edit-image-pixen",
+      "seed": 73202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bomb-run-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+      "notes": "icon-barricade-a reads as a palisade, but its thin stakes are ragged splinters rather than the board Barricade's neat sharpened stakes: asks for four thick logs cut to sharp points, drawn larger."
     }
   ]
 }

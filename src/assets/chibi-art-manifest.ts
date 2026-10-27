@@ -1448,6 +1448,16 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-kaboom.png"),
   },
+  // The Troll's Goblin Toss (bead pulp_wars-2yc.118), which drew the code
+  // goblin-head badge until this existed.
+  {
+    id: "chibi-icon-action-toss",
+    subject: "ICON:ACTION:TOSS",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-toss.png"),
+  },
   // Dinosaur (pulp_wars-c87.7, batch dinosaur): UNIT:DINOSAUR:<ROLE> units
   // and the one Egg sprite (UNIT:DINOSAUR:EGG, 48 x 48, bottom-centred).
   {

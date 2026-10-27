@@ -1,0 +1,37 @@
+{
+  "id": "icon-whirl-a",
+  "jobId": "c811e791-b346-4ab5-a631-40cbfa24af2a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-icon-action-whirl",
+    "subject": "ICON:ACTION:WHIRL",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one big square soot-black riveted iron hammer head on a short bright copper arm, swinging round, with two thick curved white swoosh arcs circling round it like a spin and three small white impact stars. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-bomb-run-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+    }
+  }
+}

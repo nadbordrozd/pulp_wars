@@ -317,6 +317,17 @@
       },
       "ownerColour": false,
       "subjectKey": "PORTRAIT:DINOSAUR:SWORDSMAN/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-icon-action-stomp",
+      "subject": "ICON:ACTION:STOMP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:STOMP/PRIMAL"
     }
   ],
   "recipes": [
@@ -1546,6 +1557,23 @@
       },
       "editInstruction": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
       "notes": "Bead pulp_wars-eu3r.8: brontosaurus-bulk-wide-a is the heavy long-necked Brontosaurus across the giant canvas (85 px), but its tail is cut off flat at the canvas edge: a tapered, outlined tip."
+    },
+    {
+      "id": "icon-action-stomp-a",
+      "asset": "chibi-direction-icon-action-stomp",
+      "endpoint": "edit-image-pixen",
+      "seed": 238301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-stampede-primal-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one huge round grey dinosaur foot with three blunt cream toenails stamping straight down onto cracked tawny ground, a ring of dust puffs and small rocks bursting out on both sides and two short white shock lines. Nothing else: no head, no horns. Thick dark outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.118: the Brontosaurus's Thunder Stomp button drew the code double-chevron glyph (a charge, not a stomp). Redrawn from the accepted Charge! icon by a sibling edit."
     }
   ]
 }

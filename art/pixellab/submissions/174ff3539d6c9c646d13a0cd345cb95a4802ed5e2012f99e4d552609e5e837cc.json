@@ -1,0 +1,37 @@
+{
+  "id": "icon-barricade-b",
+  "jobId": "8264be06-3962-4bb8-b926-6b178c56c34b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-icon-action-barricade",
+    "subject": "ICON:ACTION:BUILD_BARRICADE",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: four thick upright wooden logs side by side, each cut to a neat sharp point, pale tan wood, alternately tall and short, bound across the middle by one wide bright copper band with rivets, their feet in a small heap of dark brown earth; drawn large. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-bomb-run-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+    }
+  }
+}

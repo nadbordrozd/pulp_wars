@@ -743,15 +743,24 @@ describe("the Cult in the interface's words and lists", () => {
   });
 
   it("names its technologies, rewards, cities and people", () => {
+    const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
+    const live = chibiDirectionArtRegistryV7();
     for (const tech of TECHNOLOGY_IDS_V7) {
       expect(technologyNameV7(tech, "CULT").length, tech).toBeGreaterThan(0);
-      // The card's art is a subject that some raster stands in for.
+      // The card's art is a subject that some raster stands in for, in the
+      // live look (its own art) or the classic one.
       const subject = technologySubjectV7(tech, "CULT");
       expect(
-        standIn(buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry, subject),
+        standIn(live, subject) ?? standIn(classic, subject),
         `${tech} ${subject}`,
       ).not.toBeNull();
     }
+    // Tentacles (bead pulp_wars-2yc.118): the Tentacle the technology lets
+    // a Summoner call, never the Human Knight of the vacant KNIGHT slot.
+    expect(technologySubjectV7("CHIVALRY", "CULT")).toBe(
+      "PORTRAIT:CULT:TENTACLE",
+    );
+    expect(live.variants("PORTRAIT:CULT:TENTACLE")).toHaveLength(1);
     expect(technologyNameV7("EXPLOSIVES", "CULT")).toBe("The Stars Are Right");
     expect(
       commandSubjectV7(

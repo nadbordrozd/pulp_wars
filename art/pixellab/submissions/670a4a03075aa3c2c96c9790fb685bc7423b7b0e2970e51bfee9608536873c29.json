@@ -1,0 +1,37 @@
+{
+  "id": "icon-break-off-a",
+  "jobId": "906373fd-6897-4634-9c6e-bfd6ebfc178a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-break-off",
+    "subject": "ICON:ACTION:BREAK_OFF",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 414401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-bounce-choc-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "7bb945155f253374c0a50464afd5bb9afa90ff29f9fa6f592bf831e42a6ed708"
+    }
+  }
+}

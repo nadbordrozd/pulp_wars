@@ -128,6 +128,9 @@ const ICONS = [
   ["ICON:ACTION:DWARF:TEND_WOUNDED", "action-repair"],
   ["ICON:ACTION:KNOCKBACK", "action-knockback"],
   ["ICON:ACTION:PLATED", "action-plated"],
+  // Dwarf crowd control's buttons (bead pulp_wars-2yc.118).
+  ["ICON:ACTION:BUILD_BARRICADE", "action-barricade"],
+  ["ICON:ACTION:WHIRL", "action-whirl"],
   ["ICON:STATUS:CLOCKWORK", "status-clockwork"],
   ["ICON:STATUS:DUG_IN", "status-dug-in"],
   ["ICON:TECH:DWARF:FORTIFICATION", "tech-dig-in"],

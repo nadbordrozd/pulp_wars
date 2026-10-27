@@ -235,6 +235,18 @@ export const CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
         "assets/chibi/icons/chibi-direction-icon-action-devour.png",
       ),
     },
+    // The Abomination's Swallow (bead pulp_wars-2yc.118), which drew the
+    // code fang glyph until this existed.
+    {
+      id: "chibi-direction-icon-action-swallow",
+      subject: "ICON:ACTION:SWALLOW",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-action-swallow.png",
+      ),
+    },
     {
       id: "chibi-direction-icon-action-wail",
       subject: "ICON:ACTION:WAIL",

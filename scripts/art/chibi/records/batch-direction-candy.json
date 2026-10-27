@@ -4386,6 +4386,73 @@
         "reviewedAt": "2026-10-05T16:47:29.721Z"
       }
     },
+    "icon-break-off-a": {
+      "id": "icon-break-off-a",
+      "asset": "chibi-direction-icon-action-break-off",
+      "jobId": "906373fd-6897-4634-9c6e-bfd6ebfc178a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-action-break-off",
+        "subject": "ICON:ACTION:BREAK_OFF",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414401,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one gingerbread man cookie with white icing eyes, smile and buttons, snapping off the edge of a big slab of golden brown gingerbread along a jagged break, with a few crumbs flying. Nothing else: no spring, no marshmallow. Thick dark outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-bounce-choc-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "7bb945155f253374c0a50464afd5bb9afa90ff29f9fa6f592bf831e42a6ed708"
+        }
+      },
+      "submittedAt": "2026-10-27T13:01:13.877Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-break-off-a.png",
+      "rawSheetSha256": "97d8a782f4f5aca2b1ace59c5de5224d3761c4a204363f419371b2d2a63108aa",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.0881,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0.0881,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-27T13:01:45.952Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A gingerbread man with white icing snapping out of a jagged slab of golden gingerbread, crumbs flying: the Gingerbread Giant's Break Off, where the code glyph was the units badge. Redrawn from the Bounce icon by a sibling edit; bead pulp_wars-2yc.118.",
+        "reviewedAt": "2026-10-27T13:02:11.081Z"
+      }
+    },
     "icon-crashed-a": {
       "id": "icon-crashed-a",
       "asset": "chibi-direction-icon-status-crashed",
@@ -12058,6 +12125,75 @@
       },
       "notes": "Chocolatier look (pulp_wars-jdb.10): the Bounce icon in caramel gold with its cream marshmallow.",
       "acceptedAt": "2026-10-05T16:47:29.721Z"
+    },
+    "chibi-direction-icon-action-break-off": {
+      "id": "chibi-direction-icon-action-break-off",
+      "subject": "ICON:ACTION:BREAK_OFF",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-break-off-a",
+      "candidate": 0,
+      "candidateSha256": "a80e07beac75b425c8bd4cb7c6c0e7ed27683ff9e28c1320f85fe4fdceed170f",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-break-off.png",
+        "sha256": "a80e07beac75b425c8bd4cb7c6c0e7ed27683ff9e28c1320f85fe4fdceed170f",
+        "pixelSha256": "91448985a03e67fc16eec6aca88ee83a42c1b859a13a3ce0aeec6ab567716ec3",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.0881,
+        "footprintWidthShare": 1,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A gingerbread man with white icing snapping out of a jagged slab of golden gingerbread, crumbs flying: the Gingerbread Giant's Break Off, where the code glyph was the units badge. Redrawn from the Bounce icon by a sibling edit; bead pulp_wars-2yc.118.",
+      "acceptedAt": "2026-10-27T13:02:11.081Z"
     },
     "chibi-direction-icon-action-frosting": {
       "id": "chibi-direction-icon-action-frosting",
