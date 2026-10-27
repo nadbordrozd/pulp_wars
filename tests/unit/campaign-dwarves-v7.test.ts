@@ -225,7 +225,7 @@ describe("The Bottomless", () => {
       true,
     );
     // D3: nobody climbs the peaks; the diggers hold their cave until
-    // round 5; ten dead hold the gallery.
+    // round 5; twelve dead hold the gallery (`pulp_wars-hmyk.39`).
     for (const tech of ["ENGINEERING", "METALLURGY"])
       expect(mission("DWARF_3").forbiddenTechnologies, tech).toContain(tech);
     expect(seat("DWARF_3", 2).directive).toEqual([
@@ -234,8 +234,19 @@ describe("The Bottomless", () => {
     ]);
     expect(seat("DWARF_3", 1).directive).toMatchObject({
       kind: "GUARD",
-      garrison: 10,
+      garrison: 12,
     });
+    // D3's villages (`pulp_wars-hmyk.39`): five of the generator's eleven,
+    // unevenly placed (the Gate's hamlet, one west of Lanternhall, a pair
+    // in the western meadow, and the Bell's Rest); the middle column and
+    // the southern plain have none.
+    expect(mission("DWARF_3").villages).toEqual([
+      { x: 13, y: 1 },
+      { x: 7, y: 4 },
+      { x: 1, y: 7 },
+      { x: 4, y: 7 },
+      { x: 14, y: 14 },
+    ]);
     // D4: the Mothership keeps four at its field and sends the rest at the
     // Hold.
     expect(seat("DWARF_4", 1).directive).toMatchObject({
@@ -315,7 +326,7 @@ describe("The Bottomless", () => {
     for (const [id, revision] of [
       ["DWARF_1", 3],
       ["DWARF_2", 3],
-      ["DWARF_3", 3],
+      ["DWARF_3", 4],
       ["DWARF_4", 4],
       ["DWARF_5", 4],
       ["DWARF_6", 4],

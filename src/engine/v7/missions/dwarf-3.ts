@@ -32,19 +32,28 @@ import type { MissionDefinitionV7 } from "./types";
  * eleven dead keep the gallery with 4 Coins, the diggers come out on round
  * 5 with 4 Coins, the four waves are gone, and the clock is 18 rounds.
  *
+ * Villages (`pulp_wars-hmyk.39`, CAMPAIGN.md section 20.6): the board kept
+ * the generator's even lattice of villages three tiles apart, too many to
+ * take and too regular. Five of eleven are left: the hamlet north of the
+ * Gate, one on the forest edge west of Lanternhall, a pair in the western
+ * meadow under the woods, and the Bell's Rest; the middle column and the
+ * southern plain have none. A first try on the thinned board still won in
+ * round 15 without a loss, so two more dead stand at the foot of the
+ * gallery (thirteen, twelve hold it); the next try won in round 17.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  3   fff..f..f...f^..
  *    4   ffffff.v.fL.^D..      D: the Deep Gate; L: Lanternhall
  *    5   fffff^......^f.^
  *    6   .f^f.^.f^..^.f^.
- *    7   .v..v.fv^f^^^.f^      the gallery runs down column D
+ *    7   .v..v.f.^f^^^.f^      the gallery runs down column D
  *    8   ....^.f^.^^^^.^^
  *    9   ....^^.f^^^^C.^^      C: the diggers' cave
- *   10   .v..v^fv^^^^f.ff
+ *   10   .....^f.^^^^f.ff
  *   11   .f...f.^^^^xxxf.      x: the Rift
  *   12   ...f...^^^f^^ff^
- *   13   .......v^^^f^^.^
+ *   13   ........^^^f^^.^
  *   14   ........f^S^^^B.      B: the Bell's Rest; S: Old Sump
  *   15   ....ffff..^^^f^.
  * ```
@@ -55,7 +64,9 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
   // gallery full of the dead.
   // Revision 3 (`pulp_wars-hmyk.30`, the fourth retune): Lanternhall back,
   // no waves, 18 rounds.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.39`): five villages of eleven, unevenly
+  // placed, and two more dead at the foot of the gallery.
+  revision: 4,
   seed: 20261503,
   // <map>
   size: 16,
@@ -73,6 +84,17 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
       // Retune 3: no free village near the Gate (retune 4 gives back the
       // one north of the Gate).
       { kind: "VILLAGE", at: { x: 10, y: 1 }, present: false },
+      // Villages (`pulp_wars-hmyk.39`): the generator's lattice of
+      // villages three tiles apart is thinned to a few, unevenly: the
+      // hamlet north of the Gate, one on the forest edge west of
+      // Lanternhall, a pair in the western meadow under the woods, and the
+      // Bell's Rest; the middle column and the southern plain are empty.
+      { kind: "VILLAGE", at: { x: 7, y: 1 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 7 }, present: false },
+      { kind: "VILLAGE", at: { x: 1, y: 10 }, present: false },
+      { kind: "VILLAGE", at: { x: 4, y: 10 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 10 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 13 }, present: false },
     ],
   },
   terrain: [
@@ -131,16 +153,10 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
     "PPPPPPPPPHHHHHHH",
   ],
   villages: [
-    { x: 7, y: 1 },
     { x: 13, y: 1 },
     { x: 7, y: 4 },
     { x: 1, y: 7 },
     { x: 4, y: 7 },
-    { x: 7, y: 7 },
-    { x: 1, y: 10 },
-    { x: 4, y: 10 },
-    { x: 7, y: 10 },
-    { x: 7, y: 13 },
     { x: 14, y: 14 },
   ],
   treasureChests: [
@@ -230,6 +246,10 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 14, y: 7 } },
         { role: "GUARD", at: { x: 14, y: 10 } },
         { role: "FIGHTER", at: { x: 15, y: 14 } },
+        // `pulp_wars-hmyk.39`: two more at the foot of the gallery (a
+        // first try on the thinned board won in round 15 without a loss).
+        { role: "GUARD", at: { x: 13, y: 12 } },
+        { role: "FIGHTER", at: { x: 15, y: 11 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 11, y0: 3, x1: 15, y1: 15 }] },
       forbiddenTechnologies: [
@@ -253,11 +273,11 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
         "EXPLOSIVES",
       ],
       // The dead stand in the gallery and do not leave it: ten of them
-      // (retune 3; it was six).
+      // (retune 3; it was six), twelve since `pulp_wars-hmyk.39`.
       directive: {
         kind: "GUARD",
         zone: [{ x0: 12, y0: 7, x1: 15, y1: 15 }],
-        garrison: 10,
+        garrison: 12,
       },
     },
     {

@@ -6274,6 +6274,37 @@ The Explorer monument comes fast once a Gyrocopter flies (D1, D2, D4,
 D6), and every early Titan in this pass came from it or from a blast on a
 bare peak in a town's land (D3, D4).
 
+### 20.6 D3's villages (`pulp_wars-hmyk.39`)
+
+The user, 2026-10-27: "dwarf mission 3 has too many villages to conquer too
+regularly spaced". The board kept the map generator's lattice of villages
+three tiles apart (eleven of them; three were already gone under
+Lanternhall, Old Sump and north of the Gate). Six more village
+removals (ten edits now, the default cap) leave five villages of eleven,
+placed unevenly: the hamlet north of the Gate (13,1), one on the forest
+edge west of Lanternhall (7,4), a pair in the western meadow under the
+woods (1,7 and 4,7), and the Bell's Rest (14,14, which the dead take in
+round 2). The middle column and the southern plain have none. D3 is
+revision 4, re-pinned in both pin tables.
+
+The thinner economy did not matter: a first thoughtful try on the thinned
+board (the start otherwise unchanged) won in round 15 of 18 without a
+loss, 2 stars. The Titan came in round 3 (Coins saved for Blasting Charges
+and the blast on the Gate's peak), blasts and the Titan killed three Idol
+Bearers in turn at the diggers' cave and took it in round 10 (the Lodge
+eliminated), and Gyrocopters took Old Sump after the Titan took the Bell's
+Rest: every enemy eliminated. With 70 Coins unspent, the economy was not
+the limit, so the enemy start went up instead: two more dead at the foot
+of the gallery (a Zombie at 13,12 and a Skeleton at 15,11; thirteen dead,
+twelve hold the gallery). On the final definition:
+
+| Run                    | Result                                                                                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Autopilot              | the Thane killed, round 3                                                                                                                                                                                                            |
+| Thoughtful (attempt b) | win, round 17 of 18 (the Thane beside the Bell's Rest), 2 stars (the round-14 star missed), a Gyrocopter lost; the foot of the gallery took two rounds of blasts and the Titan, and the Thane lost a round to a tend before her move |
+
+The clock (18, star 14), the hints and the briefing are unchanged.
+
 ## 21. The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`)
 
 The first tier-3 faction campaign: six missions, `CANDY_1` to `CANDY_6`
