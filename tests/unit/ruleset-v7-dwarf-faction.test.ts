@@ -673,24 +673,26 @@ const ROSTER = [
     false,
   ],
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig is the
-  // breakthrough role the Steam Tank left (9 Coins, 12 HP, Attack 3,
-  // Defense 1.5, Move 3, a construct; it never advances). The Steam Tank
-  // is the heavy line role, asserted below the table.
+  // breakthrough role the Steam Tank left (9 Coins, Attack 3, Move 3, a
+  // construct; it never advances; 18 HP and Defense 2 since
+  // `pulp_wars-befg`, 12 and 1.5 before). The Steam Tank is the heavy line
+  // role, asserted below the table.
   [
     "Whirligig",
     "KNIGHT",
     "CHIVALRY",
     9,
-    12,
+    18,
     6,
-    3,
+    4,
     3,
     1,
     1,
     1,
     true,
-    // Dwarf crowd control (`pulp_wars-w49.33`): the Whirl.
-    ["ATTACK", "CAPTURE", "CLOCKWORK", "WHIRL"],
+    // Dwarf crowd control (`pulp_wars-w49.33`): the Whirl, its ATTACK since
+    // `pulp_wars-befg` (no WHIRL ability).
+    ["ATTACK", "CAPTURE", "CLOCKWORK"],
     false,
   ],
   [

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r118`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r119`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,19 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r119` (`pulp_wars-befg` and `pulp_wars-cln2`; the user,
+2026-10-27) makes **the Whirligig's attack its Whirl**
+([section 22.15](#2215-the-whirligig-whirl)): an attack on an adjacent
+enemy hits every unit next to the Whirligig, its owner's and allies'
+included, and nothing strikes back; the `WHIRL` command is never offered
+and is refused; the Whirligig has **18 HP and Defense 2** (12 and 1.5),
+and only hostile deaths are its kills. A Dwarf Engineer's **Barricade
+costs 1 Coin** (3; [section 22.8](#228-engineer-repair-and-assemble)).
+The Normal AI scores a Whirligig's attack on its whole hit set and avoids
+friendly fire unless it is clearly worth it, and still never builds a
+Barricade. A save, replay, or setup of `7r118` is rejected, and the
+browser autosave has a new key. The lab `LAB_DWARF_MID`, which starts
+with a Whirligig, was re-pinned; no other mission's board changed.
 `pulp-wars-poc-7r118` (`pulp_wars-a7eb`; the user, 2026-10-27: "the
 different versions of the windmill should all offer healing to their
 faction") makes **every faction's Windmill heal its own units**
@@ -1800,10 +1813,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r118`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r119`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r118.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r119.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7131,20 +7144,20 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 **constructs** and the **machines** Repair heals by 4
 ([section 22.1](#221-roles-constructs-machines-and-labels)):
 
-| Unit             | Role          | Tech              | Cost |  HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                                         |
-| ---------------- | ------------- | ----------------- | ---: | --: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
-| Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                        |
-| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (6, Dive 7¹²), once per target per turn                                                           |
-| Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                           |
-| Steam Mole       | `GUARD`       | Fortification     |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                   |
-| Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | yes     | Repair; Assemble; no Rally                                                                                        |
-| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | yes     | Knockback; with Blasting Charges ignores Walls and Field Defense                                                  |
-| Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | yes     | Whirl (hits every adjacent enemy at once, unanswered; `w49.33`, Three Hammers before); never advances; no Overrun |
-| Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | yes     | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
-| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Siege Hammer                                                                                                      |
-| Steam Launch¹³   | `PATROL_BOAT` | Shorecraft        |    6 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Sea Tunnels); Armoured                                                                                |
-| Ironclad¹³       | `BATTLESHIP`  | Naval Engineering |   18 |  25 |    5 (10) |   3 (6) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash; Armoured                                                                                           |
-| Diving Bell¹³    | `SUBMARINE`   | Submersibles      |   10 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo; Armoured                                                                               |
+| Unit             | Role          | Tech              | Cost |   HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                                                                                                    |
+| ---------------- | ------------- | ----------------- | ---: | ---: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hammerer         | `FIGHTER`     | start             |    2 |   12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                                                                                   |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 |    8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (6, Dive 7¹²), once per target per turn                                                                                                                      |
+| Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |   10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                                                                                      |
+| Steam Mole       | `GUARD`       | Fortification     |    5 |   16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                                                                              |
+| Engineer         | `CAPTAIN`     | Administration    |    5 |   10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | yes     | Repair; Assemble; no Rally                                                                                                                                                   |
+| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |   10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | yes     | Knockback; with Blasting Charges ignores Walls and Field Defense                                                                                                             |
+| Whirligig        | `KNIGHT`      | Chivalry          |    9 | 18¹⁴ |     3 (6) | 2 (4)¹⁴ |    3 |     1 |     1 | construct; machine | yes                  | yes     | its attack is the Whirl (hits every adjacent unit, friend and foe, at once, unanswered; `befg`; a separate Whirl `w49.33`, Three Hammers before); never advances; no Overrun |
+| Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |   16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | yes     | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                                                                              |
+| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |   36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Siege Hammer                                                                                                                                                                 |
+| Steam Launch¹³   | `PATROL_BOAT` | Shorecraft        |    6 |   10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Sea Tunnels); Armoured                                                                                                                                           |
+| Ironclad¹³       | `BATTLESHIP`  | Naval Engineering |   18 |   25 |    5 (10) |   3 (6) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash; Armoured                                                                                                                                                      |
+| Diving Bell¹³    | `SUBMARINE`   | Submersibles      |   10 |   12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo; Armoured                                                                                                                                          |
 
 ¹⁰ Clockwork Gunner Sight becomes 2 with Fieldcraft.
 ¹¹ The Gyrocopter has no `ATTACK` ability: its Attack is used only when it
@@ -7158,6 +7171,9 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
 the Human ships' numbers under their own names, Armoured and 1, 2, and 1
 Coins dearer (2 less at a Shipyard); the Dwarf Seamanship is shown as Sea
 Tunnels (the Ram and the Moles' tunnel under shallow water, no Board).
+¹⁴ `pulp_wars-befg` (the user, 2026-10-27): 18 HP and Defense 2 (12 and
+1.5 before), and its attack is the Whirl
+([section 22.15](#2215-the-whirligig-whirl)).
 
 - **Hammerer** has Fighter parity (cost, HP, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a
@@ -7211,7 +7227,8 @@ Tunnels (the Ram and the Moles' tunnel under shallow water, no Board).
   `ATTACK`, `CAPTURE`, `TUNNEL`, `ERUPTION`, `DIG_IN`; Engineer `ATTACK`,
   `CAPTURE`, `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`, `BARRICADE`;
   Steam Cannon `ATTACK`, `CAPTURE`, `KNOCKBACK`; Whirligig `ATTACK`,
-  `CAPTURE`, `CLOCKWORK`, `WHIRL`; Steam Tank `ATTACK`, `CAPTURE`, `PLATED`;
+  `CAPTURE`, `CLOCKWORK` (its `ATTACK` is the Whirl since `pulp_wars-befg`;
+  `WHIRL` before); Steam Tank `ATTACK`, `CAPTURE`, `PLATED`;
   Brass Titan `ATTACK`, `CAPTURE`, `CLOCKWORK`, `SIEGE_HAMMER`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
   `SUBMERGED`, `TORPEDO`.
   Constructs, Unflinching,
@@ -7819,17 +7836,17 @@ The evidence is the engine's combat preview on hand-built pairs, the
 Normal AI's code, and the hand-played campaign retune 4 of the Dwarf,
 Candy, and Cult campaigns. No match was played.
 
-| Faction | Unit            | Role        | Cost | Against the benchmark                                                                                                                                  | Its job; redundant?                                                                                                                                                                             | A player buys it for                                                       | Normal AI                                                                                             | Verdict                        |
-| ------- | --------------- | ----------- | ---: | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------ |
-| Dwarf   | Steam Cannon    | `CATAPULT`  |    8 | the Catapult's body with Attack 3.5 (3); with Blasting Charges its shots ignore Walls, Field Defense, and Dig In                                       | siege: Knockback shoves a survivor off a center or a Field Defense. The Gunner and the Gyrocopter's bomb do not do this. Not redundant                                                          | a walled center, a Field Defense line                                      | a tenth of the army; values Knockback off a center or a Field Defense and beside own melee            | fine, unchanged                |
-| Dwarf   | Whirligig       | `KNIGHT`    |    9 | 12 HP, Attack 3, Defense 1.5, Move 3 (the Knight 13, 4, 1, 3); a construct, so it hits at full strength at any HP                                      | Whirl hits every adjacent enemy at once, unanswered (8 to each Fighter, 10 to each Marksman). The Knight chains kills of soft units; the Whirligig punishes a crowd. Not redundant              | a crowd round a center, a ring of ranged units                             | a tenth (a fifth against a backline); goes where several enemies stand round one tile                 | fine, unchanged                |
-| Dwarf   | Steam Tank      | `SWORDSMAN` |    9 | 16 HP, Attack 3, Defense 2, Move 2, Plated 4 (the Champion 6 Coins, 15 HP, Attack 3.5)                                                                 | the anvil: every hit capped at 4. The retune notes call Tanks on walled, healing centers close to a hard wall for the Cult and its Herald. Strong, not redundant                                | holding a center against a giant, a Herald, or a Knight chain              | the line class buys its dearest unit first                                                            | fine (strong), unchanged       |
-| Candy   | Pie Launcher    | `CATAPULT`  |    8 | the Catapult's numbers                                                                                                                                 | Splat: the target never strikes back this turn, so the melee finishes it free. Every Candy campaign win of retune 4 was built on Pie Splat                                                      | the opening of any melee push; a T-Rex, an Ankylosaurus, a Horror          | a tenth; Splat is in the attack's score                                                               | fine, unchanged                |
-| Candy   | Chocolate Bunny | `KNIGHT`    |    9 | was 14 HP, Attack 3, Defense 1.5, Move 2: a Champion's body at a Knight's price. Without a Rush it killed no 12-HP Marksman; a Knight's blow killed it | Bunny Hop over the screen and Thump (2 to each enemy round it). The Jawbreaker (6 Coins, 16 HP, Attack 3, Defense 2.5) out-fought it for 3 Coins less. **Fails**                                | (after the change) the Marksman, Catapult, Captain, or Hexer behind a line | a tenth (a fifth against a backline); hops a screen to the unit behind it; Rushes only for a key kill | **changed: 16 HP, Attack 3.5** |
-| Candy   | Jawbreaker      | `SWORDSMAN` |    6 | 16 HP, Attack 3, Defense 2.5 (the Champion 15, 3.5, 2.5)                                                                                               | the immovable front: Rock Hard, and Toothache weakens its attacker's next blow. Not redundant                                                                                                   | the front of every push; Pushes, Knockback, the Tractor Beam               | one for every two Troopers; kept out of a battery and in front of the melee                           | fine, unchanged                |
-| Cult    | Stargazer       | `CATAPULT`  |    7 | 7 HP, Defense 0.5, no attack (the Catapult 8 Coins, 10 HP)                                                                                             | Star-fall: next turn 6 to nine tiles, 3 more a chanter, fixed (Walls and Field Defense do not count). In retune 4 four stars killed eight Hammerers, two Engineers, and the Brass Titan. Unique | a siege of a held center or a ring that cannot step away                   | a tenth; casts alone and joins the chant                                                              | fine (fragile), unchanged      |
-| Cult    | (vacant)        | `KNIGHT`    |    — | the Horror (4 Favour, 18 HP, Attack 4, Move 2) and the Herald do the job since the Cult redesign (`7r85`)                                              | by design                                                                                                                                                                                       | —                                                                          | —                                                                                                     | unchanged                      |
-| Cult    | (vacant)        | `SWORDSMAN` |    — | the Gibbering Mass (5 Favour, 30 HP, Drag) holds the line                                                                                              | by design                                                                                                                                                                                       | —                                                                          | —                                                                                                     | unchanged                      |
+| Faction | Unit            | Role        | Cost | Against the benchmark                                                                                                                                  | Its job; redundant?                                                                                                                                                                             | A player buys it for                                                       | Normal AI                                                                                             | Verdict                                                                                                        |
+| ------- | --------------- | ----------- | ---: | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Dwarf   | Steam Cannon    | `CATAPULT`  |    8 | the Catapult's body with Attack 3.5 (3); with Blasting Charges its shots ignore Walls, Field Defense, and Dig In                                       | siege: Knockback shoves a survivor off a center or a Field Defense. The Gunner and the Gyrocopter's bomb do not do this. Not redundant                                                          | a walled center, a Field Defense line                                      | a tenth of the army; values Knockback off a center or a Field Defense and beside own melee            | fine, unchanged                                                                                                |
+| Dwarf   | Whirligig       | `KNIGHT`    |    9 | 12 HP, Attack 3, Defense 1.5, Move 3 (the Knight 13, 4, 1, 3); a construct, so it hits at full strength at any HP                                      | Whirl hits every adjacent enemy at once, unanswered (8 to each Fighter, 10 to each Marksman). The Knight chains kills of soft units; the Whirligig punishes a crowd. Not redundant              | a crowd round a center, a ring of ranged units                             | a tenth (a fifth against a backline); goes where several enemies stand round one tile                 | fine at the review; **changed by `pulp_wars-befg`: its attack is the Whirl, friend and foe; 18 HP, Defense 2** |
+| Dwarf   | Steam Tank      | `SWORDSMAN` |    9 | 16 HP, Attack 3, Defense 2, Move 2, Plated 4 (the Champion 6 Coins, 15 HP, Attack 3.5)                                                                 | the anvil: every hit capped at 4. The retune notes call Tanks on walled, healing centers close to a hard wall for the Cult and its Herald. Strong, not redundant                                | holding a center against a giant, a Herald, or a Knight chain              | the line class buys its dearest unit first                                                            | fine (strong), unchanged                                                                                       |
+| Candy   | Pie Launcher    | `CATAPULT`  |    8 | the Catapult's numbers                                                                                                                                 | Splat: the target never strikes back this turn, so the melee finishes it free. Every Candy campaign win of retune 4 was built on Pie Splat                                                      | the opening of any melee push; a T-Rex, an Ankylosaurus, a Horror          | a tenth; Splat is in the attack's score                                                               | fine, unchanged                                                                                                |
+| Candy   | Chocolate Bunny | `KNIGHT`    |    9 | was 14 HP, Attack 3, Defense 1.5, Move 2: a Champion's body at a Knight's price. Without a Rush it killed no 12-HP Marksman; a Knight's blow killed it | Bunny Hop over the screen and Thump (2 to each enemy round it). The Jawbreaker (6 Coins, 16 HP, Attack 3, Defense 2.5) out-fought it for 3 Coins less. **Fails**                                | (after the change) the Marksman, Catapult, Captain, or Hexer behind a line | a tenth (a fifth against a backline); hops a screen to the unit behind it; Rushes only for a key kill | **changed: 16 HP, Attack 3.5**                                                                                 |
+| Candy   | Jawbreaker      | `SWORDSMAN` |    6 | 16 HP, Attack 3, Defense 2.5 (the Champion 15, 3.5, 2.5)                                                                                               | the immovable front: Rock Hard, and Toothache weakens its attacker's next blow. Not redundant                                                                                                   | the front of every push; Pushes, Knockback, the Tractor Beam               | one for every two Troopers; kept out of a battery and in front of the melee                           | fine, unchanged                                                                                                |
+| Cult    | Stargazer       | `CATAPULT`  |    7 | 7 HP, Defense 0.5, no attack (the Catapult 8 Coins, 10 HP)                                                                                             | Star-fall: next turn 6 to nine tiles, 3 more a chanter, fixed (Walls and Field Defense do not count). In retune 4 four stars killed eight Hammerers, two Engineers, and the Brass Titan. Unique | a siege of a held center or a ring that cannot step away                   | a tenth; casts alone and joins the chant                                                              | fine (fragile), unchanged                                                                                      |
+| Cult    | (vacant)        | `KNIGHT`    |    — | the Horror (4 Favour, 18 HP, Attack 4, Move 2) and the Herald do the job since the Cult redesign (`7r85`)                                              | by design                                                                                                                                                                                       | —                                                                          | —                                                                                                     | unchanged                                                                                                      |
+| Cult    | (vacant)        | `SWORDSMAN` |    — | the Gibbering Mass (5 Favour, 30 HP, Drag) holds the line                                                                                              | by design                                                                                                                                                                                       | —                                                                          | —                                                                                                     | unchanged                                                                                                      |
 
 - **The Chocolate Bunny** (`7r112`): **16 HP and Attack 3.5** (14 and 3).
   Its cost (9), Defense 1.5, Move 2, Bunny Hop, Thump 2, and Sugar Rush are
@@ -7853,6 +7870,24 @@ Candy, and Cult campaigns. No match was played.
 - No mission's built state has a Chocolate Bunny, so no mission was
   re-pinned. A Candy player who researches Chivalry in a mission gets the
   stronger Bunny; no mission's balance rests on it.
+- **The Whirligig, after the review** (`pulp_wars-befg`, the user,
+  2026-10-27: "I want the whirl to just be the regular attack of the
+  whirligig. whenever it attacks someone it attacks every adjacent unit
+  including friendly ones with no retaliation. let's increase its defense
+  to 2 and HP to 18 ... I want my units, especially high level units to be
+  powerful even if only difficult to use rather than just flatly good"):
+  its `ATTACK` on an adjacent enemy **is** the Whirl and hits every unit
+  next to it, the owner's and its allies' included, unanswered; there is
+  no separate Whirl command. **18 HP and Defense 2** (12 and 1.5); Attack 3
+  is unchanged for now. It is the unit that wins a crowd and must be kept
+  apart from its own line: the preview warns of each own unit it would
+  hit ("Also hits your Hammerer: −8"), and the Normal AI weighs the whole
+  hit set, takes friendly fire only for two or more kills worth twice the
+  loss, goes where enemies stand round a tile without its own units, and
+  keeps its other units from parking beside a Whirligig about to whirl.
+  With 18 HP it is one of the sturdy Dwarf units (`ARMY_DWARF_STURDY_V7`,
+  15 HP). The lab `LAB_DWARF_MID` (one Whirligig at the start) was
+  re-pinned; no campaign mission starts with a Dwarf Whirligig.
 
 ## 12. Movement and unit actions
 
@@ -14829,8 +14864,15 @@ order (all rejections atomic):
 **Barricade** (Dwarf crowd control, `pulp_wars-w49.33`; ability
 `BARRICADE`, after `ASSEMBLE`). `BUILD_BARRICADE { kind, unitId, to }` is a
 primary action of the Engineer that may follow a Move: for
-`BARRICADE_COST_V7` **3** Coins it puts a Barricade on a free tile next to
-it. Legality, in this order (all rejections atomic):
+`BARRICADE_COST_V7` **1** Coin (3 until `pulp_wars-cln2`, the user,
+2026-10-27: "building a barricade by dwarf engineer should be cheaper.
+make it cost 1") it puts a Barricade on a free tile next to it. No Candy
+unit builds Barricades: the "chocolate walls" of a Choco Engineer belonged
+to the ruleset before Ruleset 7, and the Candy design rejected gumdrop
+walls ([Candy overlay](RULESET_7_CANDY.md)). The Normal AI never builds
+one (`BUILD_BARRICADE` has no score), so the cheaper price changes no AI
+play; the cap of 4 standing still bounds a player. Legality, in this order
+(all rejections atomic):
 
 | #   | Requirement                                                                                                                                                                                 | Rejection                                    |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
@@ -14839,14 +14881,14 @@ it. Legality, in this order (all rejections atomic):
 | 3   | It has not used a primary action.                                                                                                                                                           | `UNIT_ALREADY_ACTED`                         |
 | 4   | It is in land form.                                                                                                                                                                         | `BARRICADE_NOT_LEGAL { reason: "EMBARKED" }` |
 | 5   | The actor has fewer than `BARRICADE_CAP_V7` (**4**) Barricades standing.                                                                                                                    | `BARRICADE_NOT_LEGAL { reason: "CAP" }`      |
-| 6   | The actor has at least 3 Coins.                                                                                                                                                             | `INSUFFICIENT_COINS { cost }`                |
+| 6   | The actor has at least 1 Coin.                                                                                                                                                              | `INSUFFICIENT_COINS { cost }`                |
 | 7   | `to` is one of the eight tiles around the Engineer, explored by the actor, land and not a Rift, not a settlement site, with no unit, mound, Barricade, treasure chest, curiosity, or Grave. | `INVALID_TILE { action: "BUILD_BARRICADE" }` |
 
 - **Result.** The Coins are spent; a Barricade of the actor with
   `BARRICADE_HP_V7` **10** HP stands on `to`; the Engineer is handled.
   Event `BARRICADE_BUILT { playerId, unitId, at, cost }`, then the economy,
   reward, and achievement tail. The territory does not matter (any owner's,
-  or none); the command is not offered at the cap or below 3 Coins.
+  or none); the command is not offered at the cap or below 1 Coin.
 - **It blocks every unit.** No Move of any unit of any owner (flyers
   included, and the owner's own) passes through or ends on a Barricade's
   tile; a known one rejects the Move with `MOVEMENT_ILLEGAL` reason
@@ -15033,7 +15075,8 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `BOMB_RUN { kind, unitId, targetUnitId, to }`, and
   `ASSEMBLE { kind, unitId, to }`, in that order right after `COLD_SNAP` in
   `COMMAND_KIND_ORDER_V7` (the frozen sea's `FREEZE` came between them),
-  then (Dwarf crowd control, `pulp_wars-w49.33`) `WHIRL { kind, unitId }`,
+  then (Dwarf crowd control, `pulp_wars-w49.33`) `WHIRL { kind, unitId }`
+  (never offered since `pulp_wars-befg`: the Whirligig's `ATTACK` whirls),
   `BUILD_BARRICADE { kind, unitId, to }`, and
   `ATTACK_BARRICADE { kind, unitId, at }`. `MOVE` refuses mound tiles, the rider's foreign
   centers on its surfacing turn, and a Gunner after a shot; `ATTACK` allows
@@ -15082,7 +15125,8 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   (`EMBARKED`, `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`; `SLUGGISH`
   until `pulp_wars-w49.37`),
   `ASSEMBLE_NOT_LEGAL` (`EMBARKED`, `NO_HOME`), and (`pulp_wars-w49.33`)
-  `WHIRL_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`) and `BARRICADE_NOT_LEGAL`
+  `WHIRL_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`; no longer produced since
+  `pulp_wars-befg`) and `BARRICADE_NOT_LEGAL`
   (`EMBARKED`, `CAP`); `RECOVER_NOT_LEGAL` gains
   `CONSTRUCT`. A command naming a burrowed unit is `UNIT_ALREADY_HANDLED`;
   the rider's forbidden center is `MOVEMENT_ILLEGAL` reason
@@ -15104,7 +15148,8 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   3, `BOMB_RANGE_V7` 2, `BOMB_LANDING_RANGE_V7` 2, `BOMB_DAMAGE_V7` 5,
   `DIVE_BOMB_DAMAGE_V7` 6, `GUNNER_UNMOVED_SHOTS_V7` 2, `DIG_IN_RADIUS_V7`
   1, `REPAIR_MACHINE_V7` 4, `ASSEMBLE_COST_V7` 4, `PLATED_CAP_V7` 4,
-  `BARRICADE_COST_V7` 3, `BARRICADE_HP_V7` 10, `BARRICADE_DEFENSE2_V7` 4
+  `BARRICADE_COST_V7` 1 (3 until `pulp_wars-cln2`), `BARRICADE_HP_V7` 10,
+  `BARRICADE_DEFENSE2_V7` 4
   (Defense 2), and `BARRICADE_CAP_V7` 4.
 - **Derived queries** for a state and a view: `boardUnitsV7`,
   `allOwnedUnitsV7`, `tileOccupiedV7`, and `barricadeAtV7`;
@@ -15115,7 +15160,8 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   legal `(Mole, to, rider)` (one entry per destination and per rider tile,
   plus the rider-less entry), `BOMB_RUN` for every legal
   `(Gyrocopter, target, to)`, `ASSEMBLE` for every legal `(Engineer, to)`,
-  `WHIRL` for a ready Whirligig with a target, `BUILD_BARRICADE` for every
+  (`WHIRL` for a ready Whirligig with a target until `pulp_wars-befg`; its
+  `ATTACK` whirls now), `BUILD_BARRICADE` for every
   legal `(Engineer, to)`, `ATTACK_BARRICADE` for every unit that could
   attack now and every hostile Barricade in its range on an explored tile,
   the Gunner's second shot, and Repair (also of a Barricade alone). It never offers `ATTACK` for a
@@ -15140,9 +15186,11 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `queryAssembleUnavailableReasonV7` tells the UI why an own Engineer cannot
   Assemble. Dwarf crowd control (`pulp_wars-w49.33`):
   `previewWhirlV7(view, unitId)` →
-  `{ unitId, at, targets: [{ unitId, at, damage, dies, shieldDamage }], kills, exact }`
-  (each target's ordinary attack from the public combat preview; `exact`
-  is false only where a hidden Blizzard could change a target's cover);
+  `{ unitId, at, targets: [{ unitId, at, damage, dies, shieldDamage, friendly }], kills, friendlyHits, friendlyKills, exact }`
+  (each unit's ordinary attack from the public combat preview; `exact`
+  is false only where a hidden Blizzard could change a target's cover;
+  since `pulp_wars-befg` for an offered `ATTACK` of the Whirligig, with
+  own and allied units, [section 22.15](#2215-the-whirligig-whirl));
   `previewBuildBarricadeV7(view, unitId)` →
   `{ unitId, cost, hp, standing, cap, tiles }`;
   `previewAttackBarricadeV7(view, command)` →
@@ -15185,31 +15233,61 @@ HP, never recovers by itself, is repaired by an Engineer, leaves no Grave,
 and is immune to Plague, bites, and Wail (a Brain takes it since `7r99`). Its numbers are
 first guesses.
 
-- **Whirl** (Dwarf crowd control, `pulp_wars-w49.33`; ability `WHIRL`, role
-  mechanic `whirl`; it replaced the `7r55` Three Hammers, whose
-  `attacksPerTurn`, `WHIRLIGIG_ATTACKS_V7`, `ninthUnit.struckThisTurn`, and
-  `ALREADY_STRUCK` are gone). `WHIRL { kind, unitId }` is the Whirligig's
-  primary action and may follow a Move. It hits **every unit within
-  Chebyshev 1 that is hostile to its owner and visible to it, at once**: a
-  land unit, a flyer, an Egg, an embarked unit, or a boat, each for the
-  damage of the Whirligig's ordinary attack on it (section 13.2 with every
-  Defense, cover, fortification, Dig In, Armoured, Plated, and Shield rule
-  of that defender; the Whirligig's force is Unflinching), all computed
-  from the board before the Whirl. **Nothing answers it**: no retaliation,
-  Shock Field, or Frostbite. Kills have cause `ATTACK` and are credited to
-  the Whirligig (Promotion, Slayer, Plunder, a Monster's bounty), in
-  (y, x, id) order, each with its Grave or Bitten rising; a dead Brain's
-  units are released; death blasts chain (one next to the Whirligig hits
-  it); risings reveal. There is **no advance**. Legality: the ordinary unit
-  errors; the role (`UNIT_ROLE_INVALID`); no primary action used, no attack
-  made, and the role's act-after-Move rule (`UNIT_ALREADY_ACTED`); land
-  form (`WHIRL_NOT_LEGAL { reason: "EMBARKED" }`); at least one target
-  (`WHIRL_NOT_LEGAL { reason: "NO_TARGET" }`). Event `WHIRL_RESOLVED`
-  (shape in [section 22.14](#2214-commands-events-errors-and-queries)).
-  It destroys no Field Defense and never touches a Barricade.
-- Its ordinary `ATTACK` stays (one a turn, a full exchange, never an
-  advance): it is the Whirligig's way to hit a Barricade. A Whirl or an
-  attack is its one primary action of the turn.
+**Since `pulp_wars-befg`** (the user, 2026-10-27) the Whirligig has
+**18 HP and Defense 2** (12 and 1.5; Attack 3 unchanged) and its
+**`ATTACK` is the Whirl**; there is no separate Whirl command.
+
+- **Whirl** (Dwarf crowd control, `pulp_wars-w49.33`, which replaced the
+  `7r55` Three Hammers, whose `attacksPerTurn`, `WHIRLIGIG_ATTACKS_V7`,
+  `ninthUnit.struckThisTurn`, and `ALREADY_STRUCK` are gone; role mechanic
+  `whirl`; `attackIsWhirlV7`: a land-form unit whose role has `ATTACK` and
+  `whirl`). An `ATTACK { kind, unitId, targetUnitId }` of a Whirligig is
+  legal exactly as any `ATTACK` (an adjacent, visible, hostile target; one
+  a turn; it may follow a Move; not embarked), and whichever enemy is its
+  target it hits **every unit within Chebyshev 1 of the Whirligig at
+  once**: each own and allied unit, and each unit hostile to its owner
+  that its owner sees: a land unit, a flyer, an Egg, an embarked unit, or
+  a boat, each for the damage of the Whirligig's ordinary attack on it
+  (section 13.2 with every Defense, cover, fortification, Dig In,
+  Armoured, Plated, and Shield rule of that unit; the Whirligig's force is
+  Unflinching), all computed from the board before the Whirl. **Nothing
+  answers it**: no retaliation, Shock Field, Frostbite, Bounce, Sticky
+  Toffee, or Toothache (the combat preview of its target says so:
+  `retaliation` false, `noRetaliationReason` `UNANSWERED`). Deaths have
+  cause `ATTACK`, in (y, x, id) order, each with its Grave or Bitten
+  rising; a dead Brain's units are released; death blasts chain (one next
+  to the Whirligig hits it); risings reveal. **Only the deaths of units
+  hostile to its owner are its kills** (Promotion, Slayer, Plunder, a
+  Monster's bounty, the score's Kills); an own or allied unit it kills is
+  its owner's loss (the score's loss value, no longer flawless) and
+  nobody's kill. There is **no advance** and no `COMBAT_RESOLVED`: the
+  event is `WHIRL_RESOLVED` (shape in
+  [section 22.14](#2214-commands-events-errors-and-queries); its `results`
+  name own units too). It destroys no Field Defense and never touches a
+  Barricade; `ATTACK_BARRICADE` stays its way to hit one.
+- `WHIRL { kind, unitId }` keeps its place in `COMMAND_KIND_ORDER_V7` and
+  still parses, but no role has the ability `WHIRL`: it is never offered
+  and is refused with the ordinary unit errors, else `UNIT_ROLE_INVALID`.
+  `WHIRL_NOT_LEGAL` is no longer produced.
+- **Preview.** `previewWhirlV7(view, unitId)` is non-null for an own
+  Whirligig with an `ATTACK` offered (`whirlAttackPreviewV7` skips that
+  check for a caller holding the offered attack) and lists every unit hit
+  with `friendly` (own or allied), `kills` (hostile kills), `friendlyHits`,
+  and `friendlyKills`. Each of the Whirligig's attack targets on the board
+  shades the eight tiles round it, marks every other unit it hits (an own
+  one as a hazard-striped "Yours −8"), and warns "Also hits your
+  Hammerer: −8" for each own unit; the note says "Whirl: hits 4 · nobody
+  hits back". The dock has no Whirl button.
+- **Normal AI.** Every `ATTACK` of a Whirligig is scored on the whole hit
+  set (10 a hostile HP, 20 a hostile kill and its strategic value, minus
+  15 an own HP and 60 an own death and its strategic value). One that hits
+  an own or allied unit is made only when it kills at least two enemies
+  and takes at least twice the Coins from them (a dead unit's price, a
+  survivor's price times the share of its HP lost) that it takes from its
+  own side. A Whirligig's Move is worth 8 for each enemy round the tile
+  beyond the first and costs 12 for each own or allied unit there; any
+  other own land unit pays 10 to end next to an own Whirligig with a
+  hostile land unit within 4 of it.
 
 ## 23. Candy faction rules
 
@@ -15695,7 +15773,7 @@ two events come after the idle-recovery events and before
 | Martian Shields, Shock Field  | A Shield absorbs Ricochet and Thump first; a hit wholly on a Shield still sticks. A Bunny or Trooper attacking a Shock Trooper takes its Shock Field as usual.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Armoured, Plated              | Reduce and cap Ricochet and Thump like any fixed damage.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Giant signatures              | A swallowed unit has left the board, so its Stuck, Toothache, Rush, and Crash entries go, and a `DIGESTED` Candy unit leaves no Crumbs. Goblin Toss, Thunder Stomp, Swallow, and Break Off are not Moves or attacks: Stuck and Toothache do not touch them; a crush rides on an `ATTACK`, so its attacker's Toothache lowers that hit, never the fixed crush. Ricochet and Thump hit giants; a Bunny may hop over one; a Top-Up ends a Gingerbread Giant's Crash.                                                                                                                                                                                                                        |
-| Whirl                         | A Whirligig's Whirl is not an `ATTACK`: Toothache never lowers it and is not used up by it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Whirl                         | A Whirligig's attack is a Whirl (`pulp_wars-befg`): Toothache never lowers it and is not used up by it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Charge!                       | A Triceratops is bounced after its push and follow, back to the tile its follow started from.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Graves, Raise Dead, Devour    | A Candy death leaves a Grave where the Grave rules allow and its Crumbs. A raised Skeleton stands on Crumbs without eating them; a Ghoul that ends its Move on the tile eats them.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Infect, Bitten, Plague, Wail  | A Candy unit that rises leaves no Crumbs; Plague, Wail, and splash deaths leave Crumbs; Top-Up cures Plague and Bitten on one adjacent own unit (Sugar Toss cures nothing).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |

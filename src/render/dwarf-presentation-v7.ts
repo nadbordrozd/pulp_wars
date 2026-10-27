@@ -264,70 +264,71 @@ export const REPAIR_TOOLTIP_V7 = `Heal adjacent units: ${REPAIR_CHIP_V7}. Cures 
 
 // ------------------------------------- Dwarf crowd control (w49.33/34)
 
-/** The Whirligig's Whirl (`pulp_wars-w49.33`). */
+/**
+ * The Whirligig's Whirl (`pulp_wars-w49.33`), its attack since
+ * `pulp_wars-befg`: it hits every unit next to it, friend and foe.
+ */
 export const WHIRL_LABEL_V7 = "Whirl";
-export const WHIRL_TOOLTIP_V7 = `Hit every enemy next to the ${WHIRLIGIG()} at once. Nobody hits back`;
-export const WHIRL_PICK_V7 =
-  "Every highlighted enemy is hit. Press Whirl or tap one of them";
-export const WHIRL_NO_TARGET_V7 = "No enemy next to it";
-/** The board label of one Whirl target: "−4", "−4 · Kills". */
+export const WHIRL_TOOLTIP_V7 = `The ${WHIRLIGIG()}'s attack hits every unit next to it at once, yours too. Nobody hits back`;
+/** The board label of one unit a Whirl hits: "−4", "−4 · Kills". */
 export function whirlTargetLabelV7(
   target: WhirlPreviewV7["targets"][number],
 ): string {
   const total = target.damage + target.shieldDamage;
   return target.dies ? `−${total} · ${BOMB_KILLS_V7}` : `−${total}`;
 }
-/** "Whirl: 3 enemies, 11 damage, 1 kill" (the "?" and the button's name). */
+/**
+ * The attack note of a Whirligig's attack: "Whirl: hits 3 · nobody hits
+ * back" (`pulp_wars-befg`), with the hidden-Blizzard caveat.
+ */
 export function whirlSummaryV7(preview: WhirlPreviewV7): string {
-  const total = preview.targets.reduce(
-    (sum, target) => sum + target.damage + target.shieldDamage,
-    0,
-  );
-  const parts = [
-    `${preview.targets.length} ${preview.targets.length === 1 ? "enemy" : "enemies"}`,
-    `${total} damage`,
-    ...(preview.kills > 0 ? [plural(preview.kills, "kill")] : []),
-  ];
-  return `${WHIRL_LABEL_V7}: ${parts.join(", ")}${preview.exact ? "" : " (a hidden Blizzard may change it)"}`;
+  return `${WHIRL_LABEL_V7}: hits ${preview.targets.length} · nobody hits back${preview.exact ? "" : " (a hidden Blizzard may change it)"}`;
 }
-/** One line of the Whirl panel per target: "Fighter −4", "Archer −5 · Kills". */
-export function whirlTargetLinesV7(
+/**
+ * The friendly-fire warnings of a Whirligig's attack, one per own or
+ * allied unit it hits (`pulp_wars-befg`): "Also hits your Hammerer: −8",
+ * "Also hits your Hammerer: −8 · Kills"; an ally's unit is "an ally's".
+ */
+export function whirlFriendlyWarningsV7(
   view: PlayerViewV7,
   preview: WhirlPreviewV7,
-): readonly {
-  readonly unitId: number;
-  readonly name: string;
-  readonly label: string;
-  readonly lethal: boolean;
-}[] {
-  return preview.targets.map((target) => {
-    const unit = view.units.find((candidate) => candidate.id === target.unitId);
-    return {
-      unitId: target.unitId,
-      name: unit === undefined ? "Unit" : unitName(view, unit),
-      label: whirlTargetLabelV7(target),
-      lethal: target.dies,
-    };
-  });
+): readonly string[] {
+  return preview.targets
+    .filter((target) => target.friendly)
+    .map((target) => {
+      const unit = view.units.find(
+        (candidate) => candidate.id === target.unitId,
+      );
+      const name = unit === undefined ? "unit" : unitName(view, unit);
+      const whose = unit?.ownerId === view.viewer.id ? "your" : "an ally's";
+      return `Also hits ${whose} ${name}: ${whirlTargetLabelV7(target)}`;
+    });
 }
 
 /** The Engineer's Barricade (`pulp_wars-w49.33`). */
 export const BARRICADE_LABEL_V7 = "Barricade";
-/** "Build a Barricade next to the Engineer: 3 Coins, 10 HP. It blocks every unit" */
-export const BARRICADE_TOOLTIP_V7 = `Build a Barricade next to the ${ENGINEER()}: ${BARRICADE_COST_V7} Coins, ${BARRICADE_HP_V7} HP. It blocks every unit until it is destroyed`;
+/**
+ * A Barricade's price in words: "1 Coin" (`pulp_wars-cln2`: it costs 1),
+ * "3 Coins".
+ */
+export function barricadeCoinsV7(coins: number): string {
+  return coins === 1 ? "1 Coin" : `${coins} Coins`;
+}
+/** "Build a Barricade next to the Engineer: 1 Coin, 10 HP. It blocks every unit" */
+export const BARRICADE_TOOLTIP_V7 = `Build a Barricade next to the ${ENGINEER()}: ${barricadeCoinsV7(BARRICADE_COST_V7)}, ${BARRICADE_HP_V7} HP. It blocks every unit until it is destroyed`;
 export const BARRICADE_PICK_V7 = `Choose a tile next to the ${ENGINEER()}`;
-/** "3 Coins · 10 HP · 1/4 built" (the Barricade panel's one line). */
+/** "1 Coin · 10 HP · 1/4 built" (the Barricade panel's one line). */
 export function barricadeCostLineV7(
   preview: Pick<BuildBarricadePreviewV7, "cost" | "hp" | "standing" | "cap">,
 ): string {
-  return `${preview.cost} Coins · ${preview.hp} HP · ${preview.standing}/${preview.cap} built`;
+  return `${barricadeCoinsV7(preview.cost)} · ${preview.hp} HP · ${preview.standing}/${preview.cap} built`;
 }
 /** "You have 1 of 4 Barricades" (the cap, in words). */
 export function barricadeCapTextV7(standing: number, cap: number): string {
   return `You have ${standing} of ${cap} Barricades`;
 }
 export const BARRICADE_CAP_REACHED_V7 = `All ${BARRICADE_CAP_V7} Barricades built`;
-export const BARRICADE_NO_COINS_V7 = `Needs ${BARRICADE_COST_V7} Coins`;
+export const BARRICADE_NO_COINS_V7 = `Needs ${barricadeCoinsV7(BARRICADE_COST_V7)}`;
 export const BARRICADE_NO_TILE_V7 = "No free tile";
 /** The rule of a standing Barricade, for the tile dock and the cursor. */
 export const BARRICADE_RULE_V7 =
@@ -523,7 +524,7 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
     // Dwarf crowd control (`pulp_wars-w49.33`): the Engineer's Barricade.
     [
       BARRICADE_LABEL_V7,
-      `an ${ENGINEER()} builds a Barricade next to itself for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
+      `an ${ENGINEER()} builds a Barricade next to itself for ${barricadeCoinsV7(BARRICADE_COST_V7)} (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
     ],
     [
       ASSEMBLE_LABEL_V7,
@@ -631,7 +632,7 @@ export function dwarfAbilityDescriptionV7(
     // Dwarf crowd control (`pulp_wars-w49.33`); the Whirl's sentence is a
     // ninth-unit note (ninthUnitRecruitNotesV7), so it is not repeated.
     case "BARRICADE":
-      return `Builds a Barricade on a free tile next to it for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time). It has ${BARRICADE_HP_V7} HP and blocks every unit until attacks break it.`;
+      return `Builds a Barricade on a free tile next to it for ${barricadeCoinsV7(BARRICADE_COST_V7)} (at most ${BARRICADE_CAP_V7} at a time). It has ${BARRICADE_HP_V7} HP and blocks every unit until attacks break it.`;
     default:
       return null;
   }
@@ -680,7 +681,8 @@ export function dwarfRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("TUNNEL") ? [TUNNEL_LABEL_V7] : []),
     ...(abilities.includes("KNOCKBACK") ? ["Knockback"] : []),
     ...(abilities.includes("PLATED") ? ["Plated"] : []),
-    ...(abilities.includes("WHIRL") ? [WHIRL_LABEL_V7] : []),
+    // `pulp_wars-befg`: the Whirl is the Whirligig's attack.
+    ...(roleMechanicsV7(role, "DWARF").whirl ? [WHIRL_LABEL_V7] : []),
     ...(abilities.includes("BARRICADE") ? [BARRICADE_LABEL_V7] : []),
   ];
   const label = dwarfLabelV7(role);
@@ -1081,8 +1083,8 @@ export function landingHintV7(preview: BombRunPreviewV7): string {
 }
 
 /**
- * Why an own Mole, Gyrocopter, Engineer or Whirligig that could still act
- * has no Tunnel, Bomb Run, Assemble, Barricade or Whirl (section 16.2), or
+ * Why an own Mole, Gyrocopter or Engineer that could still act has no
+ * Tunnel, Bomb Run, Assemble or Barricade (section 16.2), or
  * null when it has one or cannot act at all. `assembleReason` is
  * queryAssembleUnavailableReasonV7's answer; `city` names the Engineer's
  * home city; `barricade` is queryBarricadeUnavailableReasonV7's answer
@@ -1135,9 +1137,8 @@ export function dwarfAbilityUnavailableTextV7(
     if (unit.activation.moved) return BOMB_MOVED_V7;
     return BOMB_NO_TARGET_V7;
   }
-  // Dwarf crowd control: a Whirl may follow a Move; without a visible
-  // enemy next to it there is nothing to hit.
-  if (kind === "WHIRL") return WHIRL_NO_TARGET_V7;
+  // `pulp_wars-befg`: the Whirl is the Whirligig's attack, never a button.
+  if (kind === "WHIRL") return null;
   if (kind === "BUILD_BARRICADE")
     switch (barricade ?? null) {
       case "CAP":
@@ -1272,8 +1273,12 @@ export function dwarfBoundaryNoticeV7(
       );
       if (hitsViewer) toast = true;
       const kills = event.results.filter((result) => result.dies).length;
+      // `pulp_wars-befg`: the Whirl hits its own side too.
+      const own = event.results.filter(
+        (result) => unitById(result.unitId)?.ownerId === event.playerId,
+      ).length;
       parts.push(
-        `${owner(event.playerId)} ${WHIRLIGIG()} whirled: ${plural(event.results.length, "unit")} hit${kills > 0 ? ` (${kills} killed)` : ""}`,
+        `${owner(event.playerId)} ${WHIRLIGIG()} whirled: ${plural(event.results.length, "unit")} hit${kills > 0 ? ` (${kills} killed)` : ""}${own > 0 ? `, ${own} of them its own` : ""}`,
       );
     } else if (event.kind === "BARRICADE_BUILT") {
       parts.push(

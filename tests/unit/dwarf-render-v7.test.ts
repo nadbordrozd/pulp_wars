@@ -19,12 +19,10 @@ import {
   BARRICADE_NO_COINS_V7,
   RIDE_BADGE_V7,
   RIDING_BADGE_V7,
-  WHIRL_NO_TARGET_V7,
   dwarfAbilityUnavailableTextV7,
   dwarfBoundaryNoticeV7,
   dwarfCommandLabelV7,
   whirlSummaryV7,
-  whirlTargetLinesV7,
 } from "../../src/render/dwarf-presentation-v7";
 import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
@@ -1045,43 +1043,81 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
     expect(strokes(broken.log)).toBeGreaterThan(strokes(whole.log));
   });
 
-  it("aims a Whirl: every visible enemy next to the Whirligig, each with its damage, and its reach", () => {
+  it("aims the Whirligig's attack: each enemy next to it a target, every unit it hits marked, its own Hammerer with a warning", () => {
+    // `pulp_wars-befg`: the Whirl is the Whirligig's attack: it hits every
+    // unit next to it, the own Hammerer too.
     const whirligig = id(CC.whirligig);
     const preview = previewWhirlV7(view, whirligig);
     if (preview === null) throw new Error("no Whirl preview");
-    const plan = aim(CC.whirligig, { kind: "WHIRL", unitId: whirligig });
-    expect(plan.targets.map((target) => target.at)).toEqual(
-      preview.targets.map((target) => target.at),
-    );
-    // The own Hammerer next to it is never hit.
-    expect(plan.targets.some((target) => same(target.at, CC.ownHammerer))).toBe(
-      false,
-    );
-    for (const target of plan.targets) {
-      expect(target.family).toBe("WHIRL");
-      expect(targetHighlightStyleV7(target.family)).toBe("ATTACK");
-      expect(target.command).toEqual({ kind: "WHIRL", unitId: whirligig });
-      expect(target.previewLabel).toMatch(/^−\d+( · Kills)?$/);
-    }
-    expect(
-      plan.targets.find((target) => same(target.at, CC.whirlMarksman))
-        ?.previewLabel,
-    ).toMatch(/· Kills$/);
-    expect(
-      plan.entries.filter(
-        (entry) =>
-          entry.kind === "ABILITY_AREA" && entry.abilityStyle === "WHIRL",
-      ),
-    ).toHaveLength(9);
-    // The words of the dock: one line per enemy, by name.
-    expect(whirlTargetLinesV7(view, preview).map((line) => line.name)).toEqual([
-      "Fighter",
-      "Marksman",
-      "Guard",
+    expect(preview.targets.map((target) => target.at)).toEqual([
+      CC.whirlFighter,
+      CC.ownHammerer,
+      CC.whirlMarksman,
+      CC.whirlGuard,
     ]);
-    expect(whirlSummaryV7(preview)).toMatch(
-      /^Whirl: 3 enemies, \d+ damage, 1 kill$/,
+    expect(preview.targets.map((target) => target.friendly)).toEqual([
+      false,
+      true,
+      false,
+      false,
+    ]);
+    const hammererHit = preview.targets[1];
+    if (hammererHit === undefined) throw new Error("no Hammerer hit");
+    const plan = planFor(view, CC.whirligig);
+    const attacks = plan.targets.filter(
+      (target) => target.command.kind === "ATTACK",
     );
+    // The enemies are the targets (picked on the board); the Hammerer is not.
+    expect(attacks.map((target) => target.at)).toEqual([
+      CC.whirlFighter,
+      CC.whirlMarksman,
+      CC.whirlGuard,
+    ]);
+    const warning = `Also hits your Hammerer: −${hammererHit.damage}`;
+    for (const target of attacks) {
+      expect(target.family).toBe("ATTACK");
+      expect(target.previewFocusWarnings).toEqual([warning]);
+      expect(target.previewFocusNote).toContain(
+        "Whirl: hits 4 · nobody hits back",
+      );
+      expect(target.semanticLabel).toContain(warning);
+      // Every other unit it hits, the Hammerer marked as friendly.
+      expect(target.whirl?.center).toEqual(CC.whirligig);
+      expect(target.whirl?.hits.map((hit) => hit.at)).toEqual(
+        preview.targets
+          .filter((hit) => !same(hit.at, target.at))
+          .map((hit) => hit.at),
+      );
+      expect(
+        target.whirl?.hits.find((hit) => same(hit.at, CC.ownHammerer)),
+      ).toEqual({
+        at: CC.ownHammerer,
+        label: `−${hammererHit.damage}`,
+        dies: false,
+        friendly: true,
+      });
+    }
+    // Nothing strikes back: the label is the damage alone.
+    expect(
+      attacks.find((target) => same(target.at, CC.whirlMarksman))?.previewLabel,
+    ).not.toMatch(/Take/);
+    // On the canvas the Hammerer carries its warning label even without a
+    // focused target.
+    const log = draw(plan);
+    expect(
+      log.some(
+        (call) =>
+          call[0] === "fillText" && call[1] === `Yours −${hammererHit.damage}`,
+      ),
+    ).toBe(true);
+    // The warning and the Whirl's line are under the focused target only,
+    // so a row of targets stays calm.
+    const said = (entries: readonly LogEntry[], text: string) =>
+      entries.some((call) => call[0] === "fillText" && call[1] === text);
+    expect(said(log, warning)).toBe(false);
+    const focusedLog = draw(plan, { previewFocus: CC.whirlMarksman });
+    expect(said(focusedLog, warning)).toBe(true);
+    expect(whirlSummaryV7(preview)).toBe("Whirl: hits 4 · nobody hits back");
   });
 
   it("aims a Barricade at the Engineer's free tiles, and marks the Barricade its Repair mends", () => {
@@ -1098,7 +1134,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
       expect(targetHighlightStyleV7(target.family)).toBe("PLACE");
       expect(target.command.kind).toBe("BUILD_BARRICADE");
       expect(target.semanticLabel).toBe(
-        "Build barricade here: 3 Coins · 10 HP · 2/4 built",
+        "Build barricade here: 1 Coin · 10 HP · 2/4 built",
       );
     }
     const repair = planFor(view, CC.engineer).entries.filter(
@@ -1184,6 +1220,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
         "ALREADY_ACTED",
       ),
     ).toBeNull();
+    // `pulp_wars-befg`: the Whirl is the attack, never a button.
     expect(
       dwarfAbilityUnavailableTextV7(
         view,
@@ -1191,7 +1228,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
         "WHIRL",
         false,
       ),
-    ).toBe(WHIRL_NO_TARGET_V7);
+    ).toBeNull();
   });
 
   it("marks an attack on a hostile Barricade with its exact damage, for melee and range", () => {
@@ -1237,9 +1274,11 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
   };
 
   it("whirls with hammer arcs and a hit on every target, then their damage", () => {
+    // `pulp_wars-befg`: the Whirligig's attack, which hits its own Hammerer.
+    const whirligig = id(CC.whirligig);
     const { steps, notice } = boundary(
       state,
-      (command) => command.kind === "WHIRL",
+      (command) => command.kind === "ATTACK" && command.unitId === whirligig,
     );
     expect(steps[0]).toMatchObject({
       kind: "DWARF",
@@ -1249,13 +1288,21 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
     expect(steps[0]?.kind === "DWARF" && steps[0].cells).toEqual([
       CC.whirligig,
       CC.whirlFighter,
+      CC.ownHammerer,
       CC.whirlMarksman,
       CC.whirlGuard,
     ]);
     expect(
       steps.filter((step) => step.kind === "DAMAGE").map((step) => step.at),
-    ).toEqual([CC.whirlFighter, CC.whirlMarksman, CC.whirlGuard]);
-    expect(notice?.text).toBe("Your Whirligig whirled: 3 units hit (1 killed)");
+    ).toEqual([
+      CC.whirlFighter,
+      CC.ownHammerer,
+      CC.whirlMarksman,
+      CC.whirlGuard,
+    ]);
+    expect(notice?.text).toBe(
+      "Your Whirligig whirled: 4 units hit (1 killed), 1 of them its own",
+    );
   });
 
   it("builds a Barricade with earth and steam, and splinters one that is hit", () => {

@@ -1,9 +1,12 @@
-import type { PlayerId } from "../engine/model/ids";
+import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
+  attackIsWhirlV7,
   factionRulesV7,
   unitFactionV7,
   unitRoleMechanicsV7,
+  unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
+import { whirlAttackPreviewV7, type WhirlPreviewV7 } from "../engine/v7/query";
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
@@ -36,6 +39,40 @@ export const NINTH_SHOCK_SCREEN_UNITS_V7 = 2;
  * control, `pulp_wars-w49.33`: its Whirl hits them all, unanswered).
  */
 export const NINTH_WHIRL_TARGET_VALUE_V7 = 8;
+/**
+ * `pulp_wars-befg`: the Whirligig's attack (its Whirl) hits own and allied
+ * units next to it too. Each own or allied unit next to a Whirligig's tile
+ * costs it this much there (it goes into an enemy crowd away from its own
+ * units).
+ */
+export const NINTH_WHIRL_FRIENDLY_COST_V7 = 12;
+/**
+ * `pulp_wars-befg`: another own unit that ends its Move next to an own
+ * Whirligig with a hostile land unit within `NINTH_WHIRL_DANGER_RADIUS_V7`
+ * of it (one that is about to whirl) pays this (it stops parking there).
+ */
+export const NINTH_WHIRL_NEIGHBOUR_COST_V7 = 10;
+/** A Whirligig with a hostile land unit this close is about to whirl. */
+export const NINTH_WHIRL_DANGER_RADIUS_V7 = 4;
+/**
+ * `pulp_wars-befg`: the scoring of a Whirligig's attack. Each HP an own or
+ * allied unit loses costs `NINTH_WHIRL_FRIENDLY_DAMAGE_COST_V7` immediate
+ * units (an enemy's HP is worth 10), each own death
+ * `NINTH_WHIRL_FRIENDLY_DEATH_COST_V7` more and its strategic value.
+ */
+export const NINTH_WHIRL_FRIENDLY_DAMAGE_COST_V7 = 15;
+export const NINTH_WHIRL_FRIENDLY_DEATH_COST_V7 = 60;
+/**
+ * A Whirl that hits own or allied units is made only when it kills at
+ * least this many enemies and the Coins of the enemy units it kills (and
+ * the share of their price it takes from the ones it only hurts) are at
+ * least `NINTH_WHIRL_FRIENDLY_FIRE_RATIO_V7` times the share of the own
+ * units' price it takes (a whole price for a death): "clearly worth it".
+ */
+export const NINTH_WHIRL_FRIENDLY_FIRE_KILLS_V7 = 2;
+export const NINTH_WHIRL_FRIENDLY_FIRE_RATIO_V7 = 2;
+/** The price counted for a unit without one (a reward unit). */
+export const NINTH_WHIRL_PRICELESS_VALUE_V7 = 10;
 /** Standing on the Grave a hostile Wight would climb out of. */
 export const NINTH_GRAVE_DENIAL_VALUE_V7 = 12;
 /** Standing on the Grave an own Wight would climb out of. */
@@ -142,7 +179,10 @@ export function shockScreenMoveValueV7(
  * Each visible hostile land unit next to `to` beyond the first counts
  * `NINTH_WHIRL_TARGET_VALUE_V7`; nothing strikes back at a Whirl, so a
  * healthy unit costs nothing here (the ordinary safety terms weigh the
- * enemy's next turn). Not tuned.
+ * enemy's next turn). Since `pulp_wars-befg` the Whirl (its attack) hits
+ * own and allied units too: with a target there, each own or allied unit
+ * next to `to` costs `NINTH_WHIRL_FRIENDLY_COST_V7`, and any other own
+ * land unit pays the neighbour cost below. Not tuned.
  */
 export function whirlMoveValueV7(
   view: PlayerViewV7,
@@ -150,12 +190,165 @@ export function whirlMoveValueV7(
   to: CoordV7,
   isHostile: NinthUnitHostileV7,
 ): number {
-  if (actor.form !== "LAND" || !unitRoleMechanicsV7(view, actor).whirl)
-    return 0;
+  if (actor.form !== "LAND") return 0;
+  if (!unitRoleMechanicsV7(view, actor).whirl)
+    return whirlNeighbourMoveValueV7(view, actor, to, isHostile);
   const targets = hostileLandUnitsV7(view, isHostile).filter(
     (unit) => chebyshev(unit.at, to) === 1,
   ).length;
-  return Math.max(0, targets - 1) * NINTH_WHIRL_TARGET_VALUE_V7;
+  // `pulp_wars-befg`: its Whirl hits the own and allied units there too.
+  const friends = view.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== actor.id &&
+      !isHostile(unit.ownerId) &&
+      chebyshev(unit.at, to) === 1,
+  ).length;
+  return (
+    Math.max(0, targets - 1) * NINTH_WHIRL_TARGET_VALUE_V7 -
+    (targets > 0 ? friends * NINTH_WHIRL_FRIENDLY_COST_V7 : 0)
+  );
+}
+
+/**
+ * `pulp_wars-befg`: another own land unit does not park next to an own
+ * Whirligig that is about to whirl (a hostile land unit within
+ * `NINTH_WHIRL_DANGER_RADIUS_V7` of it): each such Whirligig next to `to`
+ * costs `NINTH_WHIRL_NEIGHBOUR_COST_V7`. 0 without an own Whirligig.
+ */
+function whirlNeighbourMoveValueV7(
+  view: PlayerViewV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  isHostile: NinthUnitHostileV7,
+): number {
+  const whirligigs = view.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== actor.id &&
+      unit.ownerId === view.viewer.id &&
+      chebyshev(unit.at, to) === 1 &&
+      attackIsWhirlV7(view, unit),
+  );
+  if (whirligigs.length === 0) return 0;
+  const hostiles = hostileLandUnitsV7(view, isHostile);
+  return (
+    0 -
+    whirligigs.filter((whirligig) =>
+      hostiles.some(
+        (unit) =>
+          chebyshev(unit.at, whirligig.at) <= NINTH_WHIRL_DANGER_RADIUS_V7,
+      ),
+    ).length *
+      NINTH_WHIRL_NEIGHBOUR_COST_V7
+  );
+}
+
+const WHIRL_PREVIEWS_V7 = new WeakMap<
+  PlayerViewV7,
+  Map<UnitId, WhirlPreviewV7 | null>
+>();
+
+/**
+ * `pulp_wars-befg`: the Whirl preview of an own Whirligig with an offered
+ * `ATTACK`, once per view (all its attacks share one hit set).
+ */
+export function whirlPreviewForScoringV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): WhirlPreviewV7 | null {
+  let byUnit = WHIRL_PREVIEWS_V7.get(view);
+  if (byUnit === undefined) {
+    byUnit = new Map();
+    WHIRL_PREVIEWS_V7.set(view, byUnit);
+  }
+  if (!byUnit.has(unitId))
+    byUnit.set(unitId, whirlAttackPreviewV7(view, unitId));
+  return byUnit.get(unitId) ?? null;
+}
+
+/** `pulp_wars-befg`: the Normal AI's score of a Whirligig's attack. */
+export interface WhirlAttackScoreV7 {
+  readonly priority: number;
+  readonly immediate: number;
+  readonly strategic: number;
+}
+
+/**
+ * `pulp_wars-befg`: a Whirligig's attack is a Whirl, whichever enemy next
+ * to it is the target, so every such `ATTACK` is scored on the whole hit
+ * set: the enemy damage and kills (10 a HP, 20 a kill, and each kill's
+ * strategic value) minus a heavy cost for each own or allied unit hit
+ * (`NINTH_WHIRL_FRIENDLY_DAMAGE_COST_V7` a HP,
+ * `NINTH_WHIRL_FRIENDLY_DEATH_COST_V7` and its strategic value a death).
+ * null (no attack) without an enemy hit, and for friendly fire unless it
+ * kills at least `NINTH_WHIRL_FRIENDLY_FIRE_KILLS_V7` enemies and the
+ * Coins it takes from the enemy are at least
+ * `NINTH_WHIRL_FRIENDLY_FIRE_RATIO_V7` times those it takes from its own
+ * side. Not tuned.
+ */
+export function whirlAttackScoreV7(
+  view: PlayerViewV7,
+  whirl: WhirlPreviewV7,
+  strategicValueOf: (unitId: UnitId) => number,
+  threatening: (unitId: UnitId) => boolean,
+): WhirlAttackScoreV7 | null {
+  const enemies = whirl.targets.filter((target) => !target.friendly);
+  if (enemies.length === 0) return null;
+  const friends = whirl.targets.filter((target) => target.friendly);
+  const immediate = enemies.reduce(
+    (value, target) => value + 10 * target.damage + 20 * Number(target.dies),
+    0,
+  );
+  const strategic = enemies.reduce(
+    (value, target) =>
+      target.dies ? value + strategicValueOf(target.unitId) : value,
+    0,
+  );
+  const ownImmediate = friends.reduce(
+    (value, target) =>
+      value +
+      NINTH_WHIRL_FRIENDLY_DAMAGE_COST_V7 * target.damage +
+      (target.dies ? NINTH_WHIRL_FRIENDLY_DEATH_COST_V7 : 0),
+    0,
+  );
+  const ownStrategic = friends.reduce(
+    (value, target) =>
+      target.dies ? value + strategicValueOf(target.unitId) : value,
+    0,
+  );
+  if (
+    friends.length > 0 &&
+    (whirl.kills < NINTH_WHIRL_FRIENDLY_FIRE_KILLS_V7 ||
+      whirlCoinsTakenV7(view, enemies) <
+        NINTH_WHIRL_FRIENDLY_FIRE_RATIO_V7 * whirlCoinsTakenV7(view, friends))
+  )
+    return null;
+  const threat = enemies.some((target) => threatening(target.unitId));
+  return {
+    priority: whirl.kills > 0 ? (threat ? 1280 : 1180) : threat ? 1240 : 900,
+    immediate: immediate - ownImmediate,
+    strategic: strategic - ownStrategic,
+  };
+}
+
+/**
+ * The Coins a Whirl takes from the units hit: each dead unit's price, and
+ * each survivor's price times the share of its maximum HP it loses.
+ */
+function whirlCoinsTakenV7(
+  view: PlayerViewV7,
+  hits: WhirlPreviewV7["targets"],
+): number {
+  return hits.reduce((sum, hit) => {
+    const unit = view.units.find((candidate) => candidate.id === hit.unitId);
+    if (unit === undefined) return sum;
+    const price =
+      unitRoleRuleV7(view, unit).cost ?? NINTH_WHIRL_PRICELESS_VALUE_V7;
+    return (
+      sum + (hit.dies ? price : (price * hit.damage) / Math.max(1, unit.maxHp))
+    );
+  }, 0);
 }
 
 /**

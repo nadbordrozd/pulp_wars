@@ -2190,7 +2190,14 @@ a Move's score; public view only).**
   unit next to the destination beyond the first, up to its three attacks
   (weak: 8 HP or less, or a ranged, siege, or support unit), and −4 for
   each healthy hostile melee unit there (it strikes back), so it goes
-  where two or three weak units stand around one tile.
+  where two or three weak units stand around one tile. (Since
+  `pulp_wars-w49.33` and `pulp_wars-befg` it is `whirlMoveValueV7`: +8 for
+  each hostile land unit round the tile beyond the first, −12 for each own
+  or allied unit there; another own land unit pays −10 to end next to an
+  own Whirligig with a hostile land unit within 4. Its attack, a Whirl
+  that hits friend and foe, is scored on the whole hit set by
+  `whirlAttackScoreV7`, and friendly fire needs two kills worth twice the
+  own loss in Coins: [current rules section 22.15](../product/RULESET_7_CURRENT.md#2215-the-whirligig-whirl).)
 - **A Wight's marked Grave** (`wightGraveMoveValueV7`): +12 for a Move
   that ends on a hostile seat's marked Grave (the Wight then stays down),
   and −12 for one that ends on the seat's own. An Undead seat does not

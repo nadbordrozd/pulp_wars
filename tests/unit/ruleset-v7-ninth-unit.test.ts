@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r118");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r118.current");
-    expect(PRIOR_RULESET_7_IDS.at(-64)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r119");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r119.current");
+    expect(PRIOR_RULESET_7_IDS.at(-65)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-64)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-65)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -586,11 +586,12 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       afterMove: false,
       captures: true,
     });
+    // `pulp_wars-befg`: 18 HP and Defense 2 (12 and 1.5 before).
     expect(numbersOf("KNIGHT", "DWARF")).toEqual({
       cost: 9,
-      maxHp: 12,
+      maxHp: 18,
       attack2: 6,
-      defense2: 3,
+      defense2: 4,
       move: 3,
       range: [1, 1],
       afterMove: true,
@@ -711,12 +712,12 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       construct: false,
     });
     // The Whirligig: a construct and a machine, never advances, not Plated;
-    // Dwarf crowd control (`pulp_wars-w49.33`): it Whirls.
+    // Dwarf crowd control (`pulp_wars-w49.33`): it Whirls, with its ATTACK
+    // since `pulp_wars-befg`.
     expect(effectiveRoleRuleV7("KNIGHT", "DWARF").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "CLOCKWORK",
-      "WHIRL",
     ]);
     expect(roleMechanicsV7("KNIGHT", "DWARF")).toMatchObject({
       plated: null,
@@ -1050,7 +1051,8 @@ describe("the ninth unit: technology display names", () => {
       "CANDY SWORDSMAN": /^Rock Hard: Nothing moves it/,
       "DINOSAUR CATAPULT": /^Thagomizer: .* 1 less Defense/,
       "ICE_FOLK GUARD": /^Frostbite: .* is Frozen/,
-      "DWARF KNIGHT": /^Whirl: Hits every enemy next to it at once/,
+      "DWARF KNIGHT":
+        /^Whirl: Its attack hits every unit next to it at once, friend and foe/,
     };
     for (const [key, pattern] of Object.entries(lines)) {
       const [faction, role] = key.split(" ") as [FactionIdV7, UnitRoleIdV7];

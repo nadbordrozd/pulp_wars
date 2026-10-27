@@ -162,14 +162,14 @@ describe("the giants' signatures: the identity", () => {
   // Monument skin rule (`pulp_wars-eu3r.3`) 7r69, and the Vampire and
   // Banshee rework (`pulp_wars-ty6i`) 7r70.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r118");
-    expect(PRIOR_RULESET_7_IDS.slice(-57, -55)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r119");
+    expect(PRIOR_RULESET_7_IDS.slice(-58, -56)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r118.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-57, -55)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r119.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-58, -56)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -1993,14 +1993,28 @@ describe("Siege Hammer (section 6.7)", () => {
       wallsDestroyed: false,
     });
     expect(kindsV7(off.events)).not.toContain("WALLS_DESTROYED");
-    const knight = attackV7(state, at(7, 8), at(8, 8));
-    expect(knight.combat).toMatchObject({
+    // (`pulp_wars-befg`: the Dwarf `KNIGHT` is the Whirligig, whose attack
+    // is a Whirl: it razes no Walls, and the Walls still count.)
+    const view = viewForV7(state, activeIdV7(state));
+    const preview = queryCombatPreviewV7(
+      view,
+      unitAtV7(state, at(7, 8)).id,
+      unitAtV7(state, at(8, 8)).id,
+    );
+    expect(preview).toMatchObject({
       siegeHammer: false,
       wallsDestroyed: false,
     });
     expect(
-      knight.combat.fortificationLevel + knight.combat.fortificationIgnored,
+      (preview?.fortificationLevel ?? 0) + (preview?.fortificationIgnored ?? 0),
     ).toBeGreaterThan(0);
+    const knight = applyOkV7(state, activeIdV7(state), {
+      kind: "ATTACK",
+      unitId: unitAtV7(state, at(7, 8)).id,
+      targetUnitId: unitAtV7(state, at(8, 8)).id,
+    });
+    expect(kindsV7(knight.events)).toContain("WHIRL_RESOLVED");
+    expect(kindsV7(knight.events)).not.toContain("WALLS_DESTROYED");
   });
 
   it("keeps razed Walls through a capture", () => {

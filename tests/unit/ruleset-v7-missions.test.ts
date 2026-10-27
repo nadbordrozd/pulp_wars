@@ -273,9 +273,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
     "b82c78fa2a4a0ac1ca7379830de53fe66a01c3ac5015bff340f1c14bc438772d",
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Dwarf roster in
-  // the same middle game, the hand player as the Dwarves.
+  // the same middle game, the hand player as the Dwarves. Its Whirligig has
+  // 18 HP (was 4b894f5fc0011e42…: pulp_wars-befg).
   "LAB_DWARF_MID@1:DWARF":
-    "4b894f5fc0011e42932a7cb64442e2c01c44db227de74d34f68da6be9552ff46",
+    "a5a307ab7eda5f60236fbf8fa986bb40fbfc96ee3fa83f6071af88284e81f857",
   // The Cult's tricks (`pulp_wars-mch9.8`): the Cult roster in the same
   // middle game, the hand player as the Cultists (its 12 Favour is in the
   // `cult` record, which the pins leave out and `expectedMissionCult`
@@ -623,8 +624,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Ice Folk Freeze (`pulp_wars-w49.37`): revision 2.
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
     "ebd63e3819669af5c3446cca594362b3f44fdd534624e342fb48d9b24c8b19e0",
+  // Its Whirligig has 18 HP (was 8a17c1c43532dc6a…: pulp_wars-befg).
   "LAB_DWARF_MID@1:DWARF":
-    "8a17c1c43532dc6a5e830d0f552cee4a955902a2897545267726d39c890c7ca2",
+    "85a9ee43c70b9fe5cf082c380ed18f94c53316dabef36f13c99a419f10372533",
   // The Cult's tricks (`pulp_wars-mch9.8`); the Cult redesign's roster
   // (`pulp_wars-mch9.31`): revision 2.
   "LAB_CULT_MID@2:CULT":

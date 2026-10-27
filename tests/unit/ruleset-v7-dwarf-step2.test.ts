@@ -164,7 +164,7 @@ describe("step two of the Dwarf pass: no rule changed", () => {
   // Scouts, a level-3 reward since then, grants its fast unit, so the
   // Dwarves a Gyrocopter (the Dwarf Survey was the area alone here).
   it("kept the identity; the Dwarf Survey has a Gyrocopter since the reward ladder rework", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r118");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r119");
     expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([1, 1]);
   });
 });
@@ -374,7 +374,8 @@ describe("step two of the Dwarf pass: the Dwarf Normal AI's army", () => {
       (role) =>
         effectiveRoleRuleV7(role, "DWARF").maxHp >= ARMY_DWARF_STURDY_V7,
     );
-    expect(sturdy).toEqual(["GUARD", "SWORDSMAN"]);
+    // `pulp_wars-befg`: the Whirligig's 18 HP make it sturdy too.
+    expect(sturdy).toEqual(["GUARD", "SWORDSMAN", "KNIGHT"]);
   });
 
   it("lets a garrison yield to a Clockwork Gunner as a Human one does to a Marksman", () => {

@@ -912,9 +912,11 @@ export interface RoleMechanicsV7 {
   readonly frostbite: boolean;
   /**
    * Dwarf crowd control (`pulp_wars-w49.33`): Whirl, which replaced the
-   * ninth unit's Three Hammers. The role's `WHIRL` primary action hits
-   * every visible hostile unit within 1 at once with its ordinary attack,
-   * unanswered (the Dwarf Whirligig).
+   * ninth unit's Three Hammers. Since `pulp_wars-befg` it is the role's
+   * ordinary `ATTACK`: an attack on an adjacent enemy hits every unit
+   * within 1 at once (own and allied units too, hostile ones when visible)
+   * with the ordinary attack's damage on each, unanswered (the Dwarf
+   * Whirligig). No role has the `WHIRL` ability any more.
    */
   readonly whirl: boolean;
   /**
@@ -3778,22 +3780,24 @@ export const DWARF_ROLE_RULES_V7: Readonly<
   // is the `SWORDSMAN` role now). A construct and a machine; it never
   // advances. Dwarf crowd control (`pulp_wars-w49.33`): its Whirl (the role
   // mechanic `whirl`) replaced Three Hammers. It captures like every land
-  // role since `pulp_wars-ke95`.
+  // role since `pulp_wars-ke95`. Since `pulp_wars-befg` the Whirl is its
+  // ordinary `ATTACK` (every unit next to it, friend and foe, unanswered;
+  // no separate `WHIRL` command), with 18 HP and Defense 2 (12 and 1.5).
   KNIGHT: role({
     role: "KNIGHT",
     label: "Whirligig",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
-    maxHp: 12,
+    maxHp: 18,
     attack2: 6,
-    defense2: 3,
+    defense2: 4,
     move: 3,
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CLOCKWORK", "WHIRL"],
+    abilities: ["ATTACK", "CAPTURE", "CLOCKWORK"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -7218,8 +7222,11 @@ export const DIVE_BOMB_DAMAGE_V7 = 7;
 export const DIG_IN_RADIUS_V7 = 1;
 /** The Dwarf revision (section 9.2): the Coins an Assemble costs. */
 export const ASSEMBLE_COST_V7 = 4;
-/** Dwarf crowd control (`pulp_wars-w49.33`): the Coins a Barricade costs. */
-export const BARRICADE_COST_V7 = 3;
+/**
+ * Dwarf crowd control (`pulp_wars-w49.33`): the Coins a Barricade costs; 1
+ * since `pulp_wars-cln2` (3 before).
+ */
+export const BARRICADE_COST_V7 = 1;
 /** Dwarf crowd control: a Barricade's HP (and maximum HP). */
 export const BARRICADE_HP_V7 = 10;
 /** Dwarf crowd control: a Barricade's Defense in half-points (Defense 2). */
@@ -7531,6 +7538,23 @@ export function unitIsSubmergedV7(
     unit.form === "NAVAL" &&
     unitRoleRuleV7(roster, unit).abilities.includes("SUBMERGED") &&
     !isIceAtV7(roster, unit.at)
+  );
+}
+
+/**
+ * `pulp_wars-befg`: whether an `ATTACK` by this unit is a Whirl (a
+ * land-form unit whose role has `ATTACK` and the mechanic `whirl`, the Dwarf
+ * Whirligig): it hits every unit within 1 of the attacker at once, friend
+ * and foe, and nothing answers it (current rules section 22.15).
+ */
+export function attackIsWhirlV7(
+  roster: FactionRosterV7,
+  attacker: NavalBranchUnitFactsV7,
+): boolean {
+  return (
+    attacker.form === "LAND" &&
+    unitRoleMechanicsV7(roster, attacker).whirl &&
+    unitRoleRuleV7(roster, attacker).abilities.includes("ATTACK")
   );
 }
 

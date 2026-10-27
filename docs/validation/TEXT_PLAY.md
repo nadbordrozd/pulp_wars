@@ -359,7 +359,9 @@ Other factions add `.raise`, `.devour`, `.wail`, `.kaboom`, `.coldsnap`,
 `.rush`, `.hatch.u7`, `.bolas.u31`, `.mind.u31`, `.tractor.u31`, `.toss.u9`,
 `.beam.u7.4,5`, `.bomb.u31.4,5`, `.tunnel.4,5`, `.assemble.4,5`,
 `.rebake.4,5`, `.freeze.4,5`, `.board.u31`, `.land.4,5` (disembark),
-`.whirl` and `.barricade.4,5` (Dwarf crowd control, `pulp_wars-w49.33`),
+`.barricade.4,5` (Dwarf crowd control, `pulp_wars-w49.33`; a
+Whirligig's attack whirls since `pulp_wars-befg`, and its line lists every
+unit hit, `YOURS` for own ones),
 `.a.4,5` (an attack on the Barricade on `4,5`), and `c1.egg.ROLE.4,5`;
 `options` prints them when they are offered. The view lists the
 Barricades on explored tiles (owner and HP) and marks their cells `B`.

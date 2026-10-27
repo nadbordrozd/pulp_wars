@@ -3142,6 +3142,13 @@ Precise readings:
 
 ## 24. Crowd control (`pulp_wars-w49.33`)
 
+**Superseded in part** (history): since `pulp_wars-befg` the Whirl is the
+Whirligig's `ATTACK` (every unit next to it, friend and foe, unanswered;
+no `WHIRL` command; 18 HP, Defense 2). See
+[current rules section 22.15](RULESET_7_CURRENT.md#2215-the-whirligig-whirl).
+Since `pulp_wars-cln2` a Barricade costs 1 Coin (3 below):
+[current rules section 22.8](RULESET_7_CURRENT.md#228-engineer-repair-and-assemble).
+
 The user's request of 2026-10-09 gave the Dwarves three pieces of crowd
 control: the Whirligig attacks every adjacent unit at once, the Engineer
 builds a Barricade that stands until it is destroyed, and the bombing run

@@ -40,6 +40,7 @@ import {
   ramBonus2V7,
   attackIsRamV7,
   attackIsTorpedoV7,
+  attackIsWhirlV7,
   boardedPrizeHpV7,
   boardSeaBeastBlockedV7,
   dockPopulationV7,
@@ -290,7 +291,6 @@ import {
   barricadeRepairsV7,
   barricadeTileFactsLegalV7,
   standingBarricadesV7,
-  unitWhirlsV7,
 } from "./dwarf-crowd-control";
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import {
@@ -1500,16 +1500,9 @@ function appendPublicUnitCommandsV7(
     if (rule.abilities.includes("ASSEMBLE") && primaryReady)
       for (const to of publicAssembleTilesV7(view, unit))
         candidates.push({ kind: "ASSEMBLE", unitId: unit.id, to });
-    // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl (with
-    // a target) and the Engineer's Barricade (below the cap, with the
-    // Coins), each offered exactly when legal.
-    if (
-      primaryReady &&
-      unit.activation.attacksUsed === 0 &&
-      unitWhirlsV7(view, unit) &&
-      publicWhirlTargetsV7(view, unit).length > 0
-    )
-      candidates.push({ kind: "WHIRL", unitId: unit.id });
+    // Dwarf crowd control (`pulp_wars-w49.33`): the Engineer's Barricade
+    // (below the cap, with the Coins), offered exactly when legal. (The
+    // Whirligig's Whirl is its `ATTACK` since `pulp_wars-befg`.)
     if (rule.abilities.includes("BARRICADE") && primaryReady)
       for (const to of publicBarricadeTilesV7(view, unit))
         candidates.push({ kind: "BUILD_BARRICADE", unitId: unit.id, to });
@@ -3347,10 +3340,11 @@ export function queryAssembleUnavailableReasonV7(
 // ------------------------------------------- Dwarf crowd control ---
 
 /**
- * Dwarf crowd control (`pulp_wars-w49.33`): the units an own Whirligig's
- * Whirl hits, in (y, x, id) order: every visible unit within 1 that is
- * hostile to the viewer (exactly the reducer's targets: each must be
- * visible to the Whirligig's owner).
+ * Dwarf crowd control (`pulp_wars-w49.33`; `pulp_wars-befg`): the units an
+ * own Whirligig's attack (a Whirl) hits, in (y, x, id) order: every unit in
+ * the view within 1 of it, own, allied, and hostile (exactly the reducer's
+ * targets: every tile next to an own unit is explored, so each hostile
+ * unit there is visible to the Whirligig's owner).
  */
 function publicWhirlTargetsV7(
   view: PlayerViewV7,
@@ -3361,8 +3355,7 @@ function publicWhirlTargetsV7(
       (unit) =>
         unit.hp > 0 &&
         unit.id !== whirligig.id &&
-        chebyshev(unit.at, whirligig.at) <= 1 &&
-        publicHostile(view, whirligig.ownerId, unit.ownerId),
+        chebyshev(unit.at, whirligig.at) <= 1,
     )
     .sort(
       (left, right) =>
@@ -3370,16 +3363,27 @@ function publicWhirlTargetsV7(
     );
 }
 
-/** Dwarf crowd control: the preview of an offered Whirl. */
+/** One unit a Whirl hits (`pulp_wars-befg`). */
+export interface WhirlHitV7 extends CombatSplashEntryV7 {
+  /** The unit is the viewer's own or an ally's (friendly fire). */
+  readonly friendly: boolean;
+}
+
+/** Dwarf crowd control: the preview of a Whirligig's attack (a Whirl). */
 export interface WhirlPreviewV7 {
   readonly unitId: UnitId;
   readonly at: CoordV7;
   /**
-   * Every target in (y, x, id) order with the ordinary attack's damage on
-   * it (`damage` is HP damage, `shieldDamage` what its Shield absorbs).
+   * Every unit hit in (y, x, id) order, friend and foe, with the ordinary
+   * attack's damage on it (`damage` is HP damage, `shieldDamage` what its
+   * Shield absorbs).
    */
-  readonly targets: readonly CombatSplashEntryV7[];
+  readonly targets: readonly WhirlHitV7[];
+  /** The hostile units it kills (the Whirligig's kills). */
   readonly kills: number;
+  /** The own and allied units it hits, and those it kills. */
+  readonly friendlyHits: number;
+  readonly friendlyKills: number;
   /**
    * False only when the public combat preview of a target is not exact (a
    * hidden Witch's Blizzard may change its cover), as for an `ATTACK`.
@@ -3388,9 +3392,11 @@ export interface WhirlPreviewV7 {
 }
 
 /**
- * Dwarf crowd control: null unless `WHIRL` is offered for `unitId`;
- * otherwise each target's ordinary attack from the public combat preview,
- * so the preview equals the resolution (nothing strikes back).
+ * Dwarf crowd control (`pulp_wars-befg`): null unless `unitId` is an own
+ * Whirligig with an `ATTACK` offered; otherwise every unit its attack
+ * hits (whichever enemy next to it is the target), each from the public
+ * combat preview, so the preview equals the resolution (nothing strikes
+ * back).
  */
 export function previewWhirlV7(
   view: PlayerViewV7,
@@ -3398,17 +3404,34 @@ export function previewWhirlV7(
 ): WhirlPreviewV7 | null {
   if (
     !queryPlayerCommandsV7(view).some(
-      (command) => command.kind === "WHIRL" && command.unitId === unitId,
+      (command) => command.kind === "ATTACK" && command.unitId === unitId,
     )
   )
     return null;
-  const whirligig = view.units.find((unit) => unit.id === unitId);
-  if (whirligig === undefined) return null;
+  return whirlAttackPreviewV7(view, unitId);
+}
+
+/**
+ * `pulp_wars-befg`: {@link previewWhirlV7} for a caller that already holds
+ * an offered `ATTACK` of `unitId` (the board's attack targets, the Normal
+ * AI's scoring), without listing the commands again: null unless `unitId`
+ * is an own land-form Whirligig.
+ */
+export function whirlAttackPreviewV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): WhirlPreviewV7 | null {
+  const whirligig = view.units.find(
+    (unit) => unit.id === unitId && unit.ownerId === view.viewer.id,
+  );
+  if (whirligig === undefined || !attackIsWhirlV7(view, whirligig)) return null;
   let exact = true;
-  const targets: CombatSplashEntryV7[] = [];
+  const targets: WhirlHitV7[] = [];
   for (const target of publicWhirlTargetsV7(view, whirligig)) {
+    const friendly = !publicHostile(view, whirligig.ownerId, target.ownerId);
     const hit = publicCombatPreview(view, whirligig.id, target.id, {
       ignoreShatter: true,
+      whirlHit: true,
     });
     if (hit === null) {
       exact = false;
@@ -3421,13 +3444,17 @@ export function previewWhirlV7(
       damage: hit.damageToDefender,
       dies: hit.damageToDefender >= target.hp,
       shieldDamage: hit.defenderShieldDamage,
+      friendly,
     });
   }
   return {
     unitId,
     at: { x: whirligig.at.x, y: whirligig.at.y },
     targets,
-    kills: targets.filter((entry) => entry.dies).length,
+    kills: targets.filter((entry) => entry.dies && !entry.friendly).length,
+    friendlyHits: targets.filter((entry) => entry.friendly).length,
+    friendlyKills: targets.filter((entry) => entry.dies && entry.friendly)
+      .length,
     exact,
   };
 }
@@ -12163,10 +12190,13 @@ function publicCombatPreviewCore(
     (unit) => unit.id === attackerId && unit.ownerId === view.viewer.id,
   );
   const target = view.units.find((unit) => unit.id === targetUnitId);
+  // `pulp_wars-befg`: a Whirl also hits own and allied units next to the
+  // Whirligig (`whirlHit`, for its preview only; never an offered target).
   if (
     attacker === undefined ||
     target === undefined ||
-    !publicHostile(view, attacker.ownerId, target.ownerId)
+    (!publicHostile(view, attacker.ownerId, target.ownerId) &&
+      options.whirlHit !== true)
   )
     return null;
   const attackerRule = unitRoleRuleV7(view, attacker);
@@ -12291,10 +12321,14 @@ function publicCombatPreviewCore(
         inspiredApplied,
         assumeRushed,
       });
+  // `pulp_wars-befg`: a land-form Whirligig's attack is a Whirl, which
+  // nothing answers (no retaliation, Shock Field, Frostbite, Bounce, or
+  // Toothache either way), as the canonical preview computes it.
+  const whirls = attackIsWhirlV7(view, attacker);
   // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.2): the
   // attacker's own Toothache (public on a visible unit), after every other
   // modifier; it is not in the public Attack total.
-  const toothacheAttack = unitHasToothacheV7(view, attacker.id);
+  const toothacheAttack = !whirls && unitHasToothacheV7(view, attacker.id);
   const attack2BeforeToothache =
     rationalToHalfUnits(attack.total) +
     assumedRush2 +
@@ -12497,8 +12531,9 @@ function publicCombatPreviewCore(
     hitOnDefender < Math.min(target.hp + defenderShield, formulaDefenderDamage);
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation. The
-  // naval branch section 5.3: neither does a torpedo.
-  const unanswered = attackerRule.abilities.includes("UNANSWERED") || torpedo;
+  // naval branch section 5.3: neither does a torpedo (nor a Whirl).
+  const unanswered =
+    attackerRule.abilities.includes("UNANSWERED") || torpedo || whirls;
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter retaliates too.
   // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender never
@@ -12549,7 +12584,9 @@ function publicCombatPreviewCore(
   // The ninth unit (7r55): the Shock Field of a Shielded Shock Trooper
   // attacked from the next tile (Shields are public on visible units), as
   // canonical resolution computes it.
-  const shockRaw = shockFieldDamageV7(view, target, defenderShield, distance);
+  const shockRaw = whirls
+    ? 0
+    : shockFieldDamageV7(view, target, defenderShield, distance);
   const shockHit =
     shockRaw > 0
       ? absorbHitV7(
@@ -12710,13 +12747,15 @@ function publicCombatPreviewCore(
   // The Candy redesign (section 6.1): no Candy unit has Overrun.
   const overrunKind = overrunKindV7(attackerRule);
   // The Candy revision section 8: the Bounce, after the Push and the follow.
-  const bounced = publicBounceStateV7(view, attacker, target, {
-    distance,
-    attackerDies,
-    defenderDies,
-    advances,
-    push,
-  });
+  const bounced: Pick<CombatPreviewV7, "bounce" | "bounceTo"> = whirls
+    ? { bounce: "NONE", bounceTo: null }
+    : publicBounceStateV7(view, attacker, target, {
+        distance,
+        attackerDies,
+        defenderDies,
+        advances,
+        push,
+      });
   const overrunContinues =
     overrunKind !== null &&
     advances &&
@@ -12764,13 +12803,9 @@ function publicCombatPreviewCore(
         isIceAtV7(view, target.at),
       ),
   });
-  const frostbitten = attackIsFrostbittenV7(
-    view,
-    attacker,
-    target,
-    distance,
-    attackerDies,
-  );
+  const frostbitten =
+    !whirls &&
+    attackIsFrostbittenV7(view, attacker, target, distance, attackerDies);
   // The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast, from the
   // visible attacker and target, as the canonical preview computes it.
   const feast = attackFeastsV7(view, attacker, {

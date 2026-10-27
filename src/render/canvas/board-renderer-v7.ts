@@ -48,6 +48,7 @@ import {
   previewWailV7,
   queryCombatPreviewV7,
   queryCuriosityMoveEffectV7,
+  whirlAttackPreviewV7,
   queryLandingPreviewV7,
   seatRoleRuleV7,
   unitGrowthStageV7,
@@ -340,6 +341,9 @@ import {
   STAYS_BEHIND_V7,
   barricadeRepairLabelV7,
   matchHasDwarfSeatV7,
+  whirlFriendlyWarningsV7,
+  whirlSummaryV7,
+  whirlTargetLabelV7,
 } from "../dwarf-presentation-v7";
 import {
   TARGET_HIGHLIGHTS_V7,
@@ -917,6 +921,12 @@ export interface MapCommandTargetV7 {
    */
   readonly previewWarningSummary?: string;
   /**
+   * `pulp_wars-befg`: warnings that are the same for each of the selected
+   * unit's targets (the own units a Whirligig's attack hits), drawn under
+   * the focused target (or the only one) only, like `previewFocusNote`.
+   */
+  readonly previewFocusWarnings?: readonly string[];
+  /**
    * Revision 17: the death blasts this attack sets off (Goblin matches
    * only), shown on the board while the target is focused.
    */
@@ -1128,6 +1138,20 @@ export interface MapCommandTargetV7 {
     /** Revision 17: a Bomb Chucker's bomb hits an own or allied unit. */
     readonly friendly?: boolean;
   }[];
+  /**
+   * `pulp_wars-befg`: a Whirligig's attack is a Whirl: the tile it whirls
+   * on, and every other unit it hits (an own or allied one `friendly`),
+   * with its board label ("−4", "−8 · Kills").
+   */
+  readonly whirl?: {
+    readonly center: CoordV7;
+    readonly hits: readonly {
+      readonly at: CoordV7;
+      readonly label: string;
+      readonly dies: boolean;
+      readonly friendly: boolean;
+    }[];
+  };
 }
 
 export interface BoardRenderPlanEntryV7 {
@@ -5758,7 +5782,8 @@ export function drawBoardV7(input: {
   const goblinAreaFirst = input.plan.targets.some(
     (target) =>
       target.blast !== undefined ||
-      target.splash?.some((item) => item.friendly === true) === true,
+      target.splash?.some((item) => item.friendly === true) === true ||
+      target.whirl?.hits.some((item) => item.friendly) === true,
   );
   const paints: (() => void)[] = [];
   const paintLater = goblinAreaFirst
@@ -5823,6 +5848,15 @@ export function drawBoardV7(input: {
       input.previewFocus ?? null,
       placer,
       defer,
+    );
+    drawWhirlAttackPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+      paintLater,
     );
     drawCandyFocusPreviewV7(
       context,
@@ -6286,7 +6320,10 @@ function drawMapTarget(
             baseline: 1.2,
           },
         ];
-  const warnings = (target?.previewWarnings ?? []).map(warningBox);
+  const warnings = [
+    ...(target?.previewWarnings ?? []),
+    ...(focused ? (target?.previewFocusWarnings ?? []) : []),
+  ].map(warningBox);
   const summary =
     warnings.length === 0 || target?.previewWarningSummary === undefined
       ? []
@@ -7233,6 +7270,94 @@ function drawSlidePreviewV7(
  * hostile unit on the ground "if they stay", and the Field Defense it will
  * undermine).
  */
+/**
+ * `pulp_wars-befg`: the Whirl preview of a Whirligig, once per view (every
+ * attack target of one Whirligig shares the same hit set).
+ */
+const WHIRL_PREVIEW_CACHE_V7 = new WeakMap<
+  PlayerViewV7,
+  Map<UnitId, ReturnType<typeof whirlAttackPreviewV7>>
+>();
+
+function cachedWhirlAttackPreviewV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): ReturnType<typeof whirlAttackPreviewV7> {
+  let byUnit = WHIRL_PREVIEW_CACHE_V7.get(view);
+  if (byUnit === undefined) {
+    byUnit = new Map();
+    WHIRL_PREVIEW_CACHE_V7.set(view, byUnit);
+  }
+  if (!byUnit.has(unitId))
+    byUnit.set(unitId, whirlAttackPreviewV7(view, unitId));
+  return byUnit.get(unitId) ?? null;
+}
+
+/**
+ * `pulp_wars-befg`: a Whirligig's attack hits every unit next to it, so
+ * while it aims (any of its attack targets on the board) the eight tiles
+ * round it are shaded in the Whirl's steam copper and every unit it hits
+ * that is not itself an attack target is marked: an own or allied unit as
+ * a hazard-striped warning ("Yours −8"), any other with its damage. The
+ * hit set is the same whichever enemy is the target, so it shows without
+ * a focus too.
+ */
+function drawWhirlAttackPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+  paintLater?: (paint: () => void) => void,
+): void {
+  const whirls = plan.targets.filter(
+    (target) => target.family === "ATTACK" && target.whirl !== undefined,
+  );
+  const target =
+    (focus === null
+      ? undefined
+      : whirls.find((candidate) => same(candidate.at, focus))) ?? whirls[0];
+  if (target?.whirl === undefined) return;
+  const { center, hits } = target.whirl;
+  const x = (at: CoordV7): number =>
+    camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = (at: CoordV7): number =>
+    camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+  const explored = new Set(
+    plan.entries
+      .filter((entry) => entry.kind === "TERRAIN")
+      .map((entry) => coordKey(entry.at)),
+  );
+  context.save();
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const at = { x: center.x + dx, y: center.y + dy };
+      if (explored.has(coordKey(at)))
+        drawAbilityAreaCellV7(context, x(at), y(at), camera.zoom, "WHIRL");
+    }
+  context.restore();
+  const attackTiles = new Set(
+    whirls.map((candidate) => coordKey(candidate.at)),
+  );
+  for (const hit of hits) {
+    if (attackTiles.has(coordKey(hit.at))) continue;
+    drawAbilityTargetV7(
+      context,
+      x(hit.at),
+      y(hit.at),
+      camera.zoom,
+      hit.friendly ? "BLAST_FRIENDLY" : "WHIRL",
+      `${hit.friendly ? "Yours " : ""}${hit.label}`,
+      hit.dies,
+      placer,
+      defer,
+      paintLater,
+    );
+  }
+}
+
 function drawDwarfFocusPreviewV7(
   context: CanvasRenderingContext2D,
   camera: CameraState,
@@ -8237,6 +8362,14 @@ function commandMapTargets(
           ? []
           : advanceCombatNotesV7(preview);
       const giantNotes = preview === null ? [] : giantCombatNotesV7(preview);
+      // `pulp_wars-befg`: a Whirligig's attack is a Whirl: every unit next
+      // to it is hit, yours too, and nobody hits back.
+      const whirl =
+        preview === null || attacker === undefined
+          ? null
+          : cachedWhirlAttackPreviewV7(view, attacker.id);
+      const whirlWarnings =
+        whirl === null ? [] : whirlFriendlyWarningsV7(view, whirl);
       const crushBlocker =
         preview === null || attacker === undefined
           ? null
@@ -8285,6 +8418,9 @@ function commandMapTargets(
         ...advanceNotes.map((note) => `Attacker ${note.toLowerCase()}.`),
         preview?.idolHalved === true ? IDOL_HALVED_SEMANTIC_V7 : null,
         preview?.noRetaliationReason === "SWARMED" ? SWARMED_SEMANTIC_V7 : null,
+        whirl === null
+          ? null
+          : `${whirlSummaryV7(whirl)}.${whirlWarnings.map((line) => ` ${line}.`).join("")}`,
       ].filter((part): part is string => part !== null);
       const semanticNote =
         semanticParts.length === 0 ? null : semanticParts.join(" ");
@@ -8370,16 +8506,26 @@ function commandMapTargets(
               }),
           ...(note === null ? {} : { previewNote: note }),
           // The Dwarf revision: the Gunner's and a construct's shooter
-          // lines likewise.
-          ...([...(martian?.shooter ?? []), ...(dwarf?.shooter ?? [])]
-            .length === 0
+          // lines likewise; `pulp_wars-befg`: the Whirl's line too (every
+          // target of a Whirligig shares it).
+          ...([
+            ...(martian?.shooter ?? []),
+            ...(dwarf?.shooter ?? []),
+            ...(whirl === null ? [] : [whirlSummaryV7(whirl)]),
+          ].length === 0
             ? {}
             : {
                 previewFocusNote: [
+                  ...(whirl === null ? [] : [whirlSummaryV7(whirl)]),
                   ...(martian?.shooter ?? []),
                   ...(dwarf?.shooter ?? []),
                 ].join(" · "),
               }),
+          // `pulp_wars-befg`: the own units a Whirl hits, on the focused
+          // target only (each own unit wears its "Yours" mark regardless).
+          ...(whirlWarnings.length === 0
+            ? {}
+            : { previewFocusWarnings: whirlWarnings }),
           ...(warnings === null ? {} : { previewWarnings: warnings }),
           ...(warnings === null || goblin === null || goblin.summary === null
             ? {}
@@ -8400,6 +8546,21 @@ function commandMapTargets(
               : { knockback: naval.knockback }
             : { knockback: dwarf.knockback }),
           ...(candy?.bounce === undefined ? {} : { bounce: candy.bounce }),
+          ...(whirl === null || attacker === undefined
+            ? {}
+            : {
+                whirl: {
+                  center: attacker.at,
+                  hits: whirl.targets
+                    .filter((hit) => hit.unitId !== command.targetUnitId)
+                    .map((hit) => ({
+                      at: hit.at,
+                      label: whirlTargetLabelV7(hit),
+                      dies: hit.dies,
+                      friendly: hit.friendly,
+                    })),
+                },
+              }),
           ...((undeadMatch || goblinMatch) &&
           martian?.pierce === undefined &&
           iceFolk?.sweep === undefined &&

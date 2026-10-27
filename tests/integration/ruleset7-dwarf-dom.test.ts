@@ -663,53 +663,43 @@ describe("Dwarf abilities through the dock and the board", () => {
 describe("Dwarf crowd control through the dock and the board", () => {
   const CC = DWARF_CROWD_CONTROL_V7;
 
-  it("whirls: one button, the enemies listed with their damage, then Whirl", async () => {
+  it("whirls with the Whirligig's attack: enemies picked on the board, its own Hammerer warned of", async () => {
+    // `pulp_wars-befg`: the Whirl is the Whirligig's attack, no button.
     const controller = new FixtureController(dwarfCrowdControlFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const whirligig = selectUnitAt(controller, host, CC.whirligig);
-    // No generic button: the Whirl has its own, with its damage.
     expect(document.querySelector('[data-action="command-whirl"]')).toBe(null);
-    const button = requiredButton("dwarf-whirl");
-    expect(button.getAttribute("aria-label")).toMatch(
-      /^Whirl\. .*Whirl: 3 enemies, \d+ damage, 1 kill$/,
-    );
-    button.click();
-    expect(host.lastModel?.interaction.dwarfPick).toEqual({
-      kind: "WHIRL",
-      unitId: whirligig.id,
-    });
+    expect(document.querySelector('[data-dwarf-ability="whirl"]')).toBe(null);
     const view = required(controller.snapshot().view);
     const preview = required(previewWhirlV7(view, whirligig.id));
-    expect(
-      [...document.querySelectorAll("[data-whirl-target]")].map(
-        (item) => item.textContent,
-      ),
-    ).toEqual(
-      preview.targets.map((target) => {
-        const unit = required(
-          view.units.find((candidate) => candidate.id === target.unitId),
-        );
-        return `${effectiveRoleRuleV7(unit.role, "ORIGINAL").label}−${target.damage + target.shieldDamage}${target.dies ? " · Kills" : ""}`;
-      }),
+    const hammerer = required(
+      preview.targets.find((target) => target.friendly),
     );
-    expect(
-      requiredElement<HTMLElement>("[data-v7-dwarf-pick]").dataset.boardTargets,
-    ).toBe("3");
-    expect(
-      boardPlan(host)
-        .targets.map((target) => target.family)
-        .every((family) => family === "WHIRL"),
-    ).toBe(true);
-    requiredButton("whirl-confirm").click();
+    const attacks = boardPlan(host).targets.filter(
+      (target) => target.command.kind === "ATTACK",
+    );
+    expect(attacks.map((target) => target.at)).toEqual([
+      CC.whirlFighter,
+      CC.whirlMarksman,
+      CC.whirlGuard,
+    ]);
+    for (const target of attacks) {
+      expect(target.previewFocusWarnings).toEqual([
+        `Also hits your ${label("FIGHTER")}: −${hammerer.damage}`,
+      ]);
+      expect(
+        target.whirl?.hits.some(
+          (hit) => hit.friendly && same(hit.at, CC.ownHammerer),
+        ),
+      ).toBe(true);
+    }
+    host.callbacks?.onCommand(required(attacks[0]));
     await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "WHIRL",
-      unitId: whirligig.id,
-    });
+    expect(controller.accepted[0]).toEqual(attacks[0]?.command);
     await waitUntil(() =>
       live().includes(
-        `Your ${label("KNIGHT")} whirled: 3 units hit (1 killed)`,
+        `Your ${label("KNIGHT")} whirled: 4 units hit (1 killed), 1 of them its own`,
       ),
     );
     app.destroy();
@@ -724,14 +714,14 @@ describe("Dwarf crowd control through the dock and the board", () => {
       document.querySelector('[data-action^="command-build_barricade"]'),
     ).toBe(null);
     const button = requiredButton("dwarf-build-barricade");
-    expect(button.title).toContain("3 Coins, 10 HP");
+    expect(button.title).toContain("1 Coin, 10 HP");
     expect(button.title).toContain("You have 2 of 4 Barricades");
     button.click();
     const view = required(controller.snapshot().view);
     const preview = required(previewBuildBarricadeV7(view, engineer.id));
     expect(
       requiredElement("[data-v7-dwarf-pick] .v7-martian-detail").textContent,
-    ).toBe("3 Coins · 10 HP · 2/4 built");
+    ).toBe("1 Coin · 10 HP · 2/4 built");
     expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
       preview.tiles,
     );

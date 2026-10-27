@@ -5,7 +5,6 @@ import {
   BOMB_DAMAGE_V7,
   BOMB_RANGE_V7,
   BARRICADE_CAP_V7,
-  BARRICADE_COST_V7,
   BARRICADE_HP_V7,
   DIVE_BOMB_DAMAGE_V7,
   ERUPTION_DAMAGE_V7,
@@ -187,10 +186,10 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       "then flies back to where it started or lands anywhere else its Move reaches",
     );
     expect(rules.get("Barricade")).toBe(
-      `an ${label("CAPTAIN")} builds a Barricade next to itself for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
+      `an ${label("CAPTAIN")} builds a Barricade next to itself for 1 Coin (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
     );
     expect(rules.get("Whirl")).toBe(
-      `a ${label("KNIGHT")}: hits every enemy next to it at once with its attack, and nobody hits back.`,
+      `a ${label("KNIGHT")}: its attack hits every unit next to it at once, friend and foe, and nobody hits back.`,
     );
     for (const [, rule] of DWARF_HELP_RULES_V7)
       expect(rule).not.toMatch(/Three Hammers/i);

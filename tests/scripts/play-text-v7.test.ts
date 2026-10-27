@@ -1544,13 +1544,16 @@ describe("text-mode play harness", () => {
       .split("\n")
       .find((line) => line.startsWith(`y${String(barricadeAt.y).padEnd(3)} |`));
     expect(row?.split("|")[barricadeAt.x + 1]?.[2]).toBe("B");
+    // `pulp_wars-befg`: the Whirligig's attack is the Whirl; its line lists
+    // every unit hit.
     const ids = offeredIds(session);
-    expect(ids).toContain(`u${mine.id}.whirl`);
+    expect(ids).not.toContain(`u${mine.id}.whirl`);
+    expect(ids).toContain(`u${mine.id}.a.u${theirs.id}`);
     expect(ids).toContain(`u${mine.id}.a.${xy}`);
     expect(
       ok("options", "--session", session, "--unit", `u${mine.id}`),
-    ).toContain("whirl: hit every enemy next to it at once, nobody hits back");
-    ok("do", "--session", session, `u${mine.id}.whirl`);
+    ).toContain("| whirl, nobody hits back: ");
+    ok("do", "--session", session, `u${mine.id}.a.u${theirs.id}`);
     expect(
       sessionState(session).units.find((unit) => unit.id === mine.id),
     ).toMatchObject({ activation: { attacked: true, handled: true } });

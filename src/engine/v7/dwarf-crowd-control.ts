@@ -32,8 +32,6 @@ import {
   type BarricadeV7,
   type CoordV7,
   type GameStateV7,
-  type UnitFormV7,
-  type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
 import { barricadeAtV7, barricadesOfV7, tileOccupiedV7 } from "./units";
@@ -43,11 +41,12 @@ import { wailDamageV7 } from "./wail";
 /**
  * Dwarf crowd control (`pulp_wars-w49.33`; current rules section 22.15 and
  * docs/product/RULESET_7_DWARVES.md sections 6.2 and 9.3): the Whirligig's
- * `WHIRL`, which replaced Three Hammers, and the Engineer's Barricade (the
- * `BUILD_BARRICADE` command, `ATTACK_BARRICADE` by any hostile unit that can
- * attack, and Repair). The helpers are shared by the reducer, the public
- * queries, and the previews, so every offered command is accepted and every
- * preview equals its result.
+ * Whirl, which replaced Three Hammers and since `pulp_wars-befg` is its
+ * ordinary `ATTACK`, and the Engineer's Barricade (the `BUILD_BARRICADE`
+ * command, `ATTACK_BARRICADE` by any hostile unit that can attack, and
+ * Repair). The helpers are shared by the reducer, the public queries, and
+ * the previews, so every offered command is accepted and every preview
+ * equals its result.
  */
 
 type WhirlCommandV7 = Extract<CommandV7, { kind: "WHIRL" }>;
@@ -59,32 +58,16 @@ type AttackBarricadeCommandV7 = Extract<
 
 // ------------------------------------------------------------- Whirl ---
 
-/** Whether a unit's role Whirls (a land-form Whirligig). */
-export function unitWhirlsV7(
-  roster: FactionRosterV7,
-  unit: {
-    readonly id: UnitId;
-    readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
-    readonly form: UnitFormV7;
-  },
-): boolean {
-  return (
-    unit.form === "LAND" &&
-    unitRoleRuleV7(roster, unit).abilities.includes("WHIRL") &&
-    unitRoleMechanicsV7(roster, unit).whirl
-  );
-}
-
 /**
- * The units a Whirl hits, in (y, x, id) order: every unit on the board
- * within Chebyshev 1 of the Whirligig that is hostile to its owner and
- * visible to it, of any form (land, flyer, Egg, embarked, or boat), each
- * with the ordinary attack's damage on it from the state before the Whirl
- * (current rules section 13.2 with every Defense, cover, fortification,
- * Armoured, Plated, and Shield rule of the defender; the Whirligig's force
- * is Unflinching). Nothing answers it: no retaliation, Shock Field, or
- * Frostbite.
+ * The units a Whirligig's attack (a Whirl, `pulp_wars-befg`) hits, in
+ * (y, x, id) order: every unit on the board within Chebyshev 1 of the
+ * Whirligig, of any form (land, flyer, Egg, embarked, or boat): each own
+ * and allied unit, and each unit hostile to its owner that its owner sees.
+ * Each takes the ordinary attack's damage on it from the state before the
+ * Whirl (current rules section 13.2 with every Defense, cover,
+ * fortification, Armoured, Plated, and Shield rule of that unit; the
+ * Whirligig's force is Unflinching). Nothing answers it: no retaliation,
+ * Shock Field, Frostbite, Bounce, or Toothache.
  */
 export function whirlTargetsV7(
   state: GameStateV7,
@@ -96,8 +79,8 @@ export function whirlTargetsV7(
         unit.hp > 0 &&
         unit.id !== whirligig.id &&
         chebyshev(unit.at, whirligig.at) <= 1 &&
-        arePlayersHostileV7(state, whirligig.ownerId, unit.ownerId) &&
-        isUnitVisibleToPlayerV7(state, whirligig.ownerId, unit),
+        (!arePlayersHostileV7(state, whirligig.ownerId, unit.ownerId) ||
+          isUnitVisibleToPlayerV7(state, whirligig.ownerId, unit)),
     )
     .sort(
       (left, right) =>
@@ -109,9 +92,7 @@ export function whirlTargetsV7(
         whirligig.id,
         unit.id,
         undefined,
-        // The Candy redesign: a Whirl is not an `ATTACK`, so the
-        // Whirligig's Toothache does not lower it.
-        { ignoreShatter: true, ignoreToothache: true },
+        { ignoreShatter: true },
       );
       return {
         unitId: unit.id,
@@ -124,16 +105,10 @@ export function whirlTargetsV7(
 }
 
 /**
- * `WHIRL { kind, unitId }`: the Whirligig's primary action; it may follow a
- * Move. Legality, in order: the ordinary unit errors; the role has `WHIRL`
- * (`UNIT_ROLE_INVALID`); it has not used a primary action (an attack
- * included) and may act after its Move (`UNIT_ALREADY_ACTED`); land form
- * (`WHIRL_NOT_LEGAL { reason: "EMBARKED" }`); at least one target
- * (`WHIRL_NOT_LEGAL { reason: "NO_TARGET" }`). Result: every target loses
- * its damage at once; the deaths (cause `ATTACK`, kill credit to the
- * Whirligig) in (y, x, id) order with their Graves or risings; a dead
- * Brain's units are released; death blasts chain; Plunder; reveals; no
- * advance; the Whirligig has attacked and is handled.
+ * `WHIRL { kind, unitId }` stays a command kind (and its ordinal), but
+ * since `pulp_wars-befg` no role has the `WHIRL` ability: the Whirl is the
+ * Whirligig's `ATTACK`. A `WHIRL` is refused with the ordinary unit errors,
+ * else `UNIT_ROLE_INVALID`.
  */
 export function applyWhirlV7(
   kit: DwarfReducerKitV7,
@@ -142,39 +117,47 @@ export function applyWhirlV7(
   actor: PlayerId,
   command: WhirlCommandV7,
 ): ApplyCommandResultV7 {
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
-    return kit.rejected(original, "INTEGER_OVERFLOW");
   const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
   if (!actorCheck.ok)
     return kit.rejected(original, actorCheck.code, actorCheck.params);
-  const whirligig = actorCheck.unit;
-  if (
-    !unitRoleRuleV7(state, whirligig).abilities.includes("WHIRL") ||
-    !unitRoleMechanicsV7(state, whirligig).whirl
-  )
-    return kit.rejected(original, "UNIT_ROLE_INVALID", {
-      role: whirligig.role,
-    });
-  if (
-    whirligig.activation.overrunActive ||
-    kit.primaryUsed(whirligig) ||
-    whirligig.activation.attacksUsed > 0 ||
-    primaryActionBlockedAfterMoveV7(state, whirligig) ||
-    unitIsCrashedV7(state, whirligig.id)
-  )
-    return kit.rejected(original, "UNIT_ALREADY_ACTED", {
-      unitId: whirligig.id,
-    });
-  if (whirligig.form !== "LAND")
-    return kit.rejected(original, "WHIRL_NOT_LEGAL", { reason: "EMBARKED" });
+  return kit.rejected(original, "UNIT_ROLE_INVALID", {
+    role: actorCheck.unit.role,
+  });
+}
+
+/**
+ * The resolution of a Whirligig's `ATTACK` (`pulp_wars-befg`), after the
+ * `ATTACK` command's own validation: a Whirl. Every unit of
+ * {@link whirlTargetsV7} loses its damage at once (the attack's target is
+ * one of them); the deaths (cause `ATTACK`) in (y, x, id) order with their
+ * Graves or risings; a dead Brain's units are released; death blasts
+ * chain; reveals; no advance; the Whirligig has attacked and is handled.
+ * Only the deaths of units hostile to the Whirligig's owner are its kills
+ * (Promotion, Plunder, a Monster's bounty, the score's Kills); an own or
+ * allied unit it kills is its owner's loss and nobody's kill.
+ */
+export function resolveWhirlAttackV7(
+  kit: DwarfReducerKitV7,
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  whirligig: UnitStateV7,
+): ApplyCommandResultV7 {
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return kit.rejected(original, "INTEGER_OVERFLOW");
   try {
+    // The attack's target is next to the Whirligig: never empty.
     const targets = whirlTargetsV7(state, whirligig);
-    if (targets.length === 0)
-      return kit.rejected(original, "WHIRL_NOT_LEGAL", {
-        reason: "NO_TARGET",
-      });
     const killed = targets.filter((entry) => entry.dies);
-    const kills = whirligig.kills + killed.length;
+    // Friendly fire earns no credit: only hostile victims are kills.
+    const credited = killed.filter((entry) =>
+      arePlayersHostileV7(
+        state,
+        actor,
+        requireUnit(state, entry.unitId).ownerId,
+      ),
+    );
+    const kills = whirligig.kills + credited.length;
     if (!Number.isSafeInteger(kills)) throw new RangeError("INTEGER_OVERFLOW");
     const damage = new Map(
       targets.map((entry) => [entry.unitId, entry.damage] as const),
@@ -276,9 +259,10 @@ export function applyWhirlV7(
       events,
     );
     risings.push(...chain.risings);
-    // The kills are the Whirligig's owner's (Plunder, a Monster's bounty).
+    // The hostile kills are the Whirligig's owner's (Plunder, a Monster's
+    // bounty).
     const plunder = kit.plunderAwards(state, state.players, [
-      ...killed.map((entry) => ({
+      ...credited.map((entry) => ({
         creditedId: actor,
         victimOwnerId: requireUnit(state, entry.unitId).ownerId,
         victimUnitId: entry.unitId,

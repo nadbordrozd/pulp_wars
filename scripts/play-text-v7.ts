@@ -114,7 +114,7 @@ import {
   previewTractorBeamV7,
   previewTunnelV7,
   previewWailV7,
-  previewWhirlV7,
+  whirlAttackPreviewV7,
   projectEventsV7,
   queryCombatPreviewV7,
   queryIdleRecoveryV7,
@@ -1909,6 +1909,18 @@ function describeCommandV7(
       const holds = martianCombatLinesV7(view, preview).notes.includes(
         FORCE_FIELD_HOLDS_V7,
       );
+      // `pulp_wars-befg`: a Whirligig's attack whirls: every unit next to
+      // it is hit, yours included, and nobody hits back.
+      const whirl = whirlAttackPreviewV7(view, command.unitId);
+      const whirlText =
+        whirl === null
+          ? ""
+          : ` | whirl, nobody hits back: ${whirl.targets
+              .map(
+                (entry) =>
+                  `${entry.friendly ? "YOURS " : ""}${context.memory.tag(entry.unitId)} -${entry.damage}${entry.shieldDamage > 0 ? ` (shield -${entry.shieldDamage})` : ""}${entry.dies ? " KILLS" : ""}`,
+              )
+              .join(", ")}`;
       return `${head}: ${combatTextV7(preview as never, context, {
         attacker: unit?.hp ?? null,
         defender: target?.hp ?? null,
@@ -1919,7 +1931,7 @@ function describeCommandV7(
           0
           ? ` | ${packHuntPreviewLineV7()} (in the numbers)`
           : ""
-      }${blast === "" ? "" : ` | explosions ${blast}`}`;
+      }${blast === "" ? "" : ` | explosions ${blast}`}${whirlText}`;
     }
     case "CAPTURE": {
       const city =
@@ -2021,8 +2033,9 @@ function describeCommandV7(
     case "ASSEMBLE":
       return `assemble on ${xyV7(command.to)}${generic(previewAssembleV7(view, command.unitId))}`;
     // Dwarf crowd control (`pulp_wars-w49.33`).
+    // `pulp_wars-befg`: never offered (a Whirligig's ATTACK whirls).
     case "WHIRL":
-      return `whirl: hit every enemy next to it at once, nobody hits back${generic(previewWhirlV7(view, command.unitId))}`;
+      return "whirl (never offered: the whirligig's attack whirls)";
     case "BUILD_BARRICADE":
       return `build a barricade on ${xyV7(command.to)} (${BARRICADE_COST_V7}c, ${BARRICADE_HP_V7} HP, blocks every unit until destroyed)${generic(previewBuildBarricadeV7(view, command.unitId))}`;
     case "ATTACK_BARRICADE":

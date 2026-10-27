@@ -520,7 +520,8 @@ describe("Bounce (section 8)", () => {
       ["DINOSAUR", "SWORDSMAN"],
       ["MARTIAN", "KNIGHT"],
       ["DWARF", "SWORDSMAN"],
-      ["DWARF", "KNIGHT"],
+      // (`pulp_wars-befg`: the Whirligig's attack is a Whirl, which nothing
+      // answers, a Bounce included: below.)
       ["DWARF", "GUARD"],
       ["ICE_FOLK", "SWORDSMAN"],
       ["ICE_FOLK", "GUARD"],
@@ -544,6 +545,24 @@ describe("Bounce (section 8)", () => {
       // A bounced attacker made no kill: no continuation.
       expect(run.combat.overrunContinues).toBe(false);
     }
+    // `pulp_wars-befg`: a Whirligig's attack (a Whirl) is not bounced: it
+    // stays on its tile.
+    const whirl = candyFieldV7(
+      [
+        { seat: 1, role: "KNIGHT", at: at(5, 3) },
+        { seat: 0, role: "GUARD", at: MALLOW },
+      ],
+      { factions: ["CANDY", "DWARF"], activeSeat: 1 },
+    );
+    const whirled = applyOkV7(whirl, seatIdV7(whirl, 1), {
+      kind: "ATTACK",
+      unitId: unitAtV7(whirl, at(5, 3)).id,
+      targetUnitId: unitAtV7(whirl, MALLOW).id,
+    });
+    expect(whirled.events.map((event) => event.kind)).toContain(
+      "WHIRL_RESOLVED",
+    );
+    expect(unitAtV7(whirled.state, at(5, 3)).role).toBe("KNIGHT");
     // A flyer bounced off a Marshmallow may land on a Rift (a ground unit is
     // never bounced onto one), under the Push conditions for a flyer: water
     // is not the land kind of its form.

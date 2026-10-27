@@ -524,13 +524,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // the board (a mound is never hit and blocks a Barricade through the
     // occupancy predicate); the state check reads every owned unit (no
     // Barricade on a unit's tile or a mound).
+    // (`pulp_wars-befg`: the Whirl is the Whirligig's attack, resolved by
+    // resolveWhirlAttackV7; the refused WHIRL reads no unit list.)
     "src/engine/v7/dwarf-crowd-control.ts::whirlTargetsV7": "BOARD",
-    "src/engine/v7/dwarf-crowd-control.ts::applyWhirlV7": "BOARD",
+    "src/engine/v7/dwarf-crowd-control.ts::resolveWhirlAttackV7": "BOARD",
     "src/engine/v7/dwarf-crowd-control.ts::applyBuildBarricadeV7": "BOARD",
     "src/engine/v7/dwarf-crowd-control.ts::applyAttackBarricadeV7": "BOARD",
     "src/engine/v7/dwarf-crowd-control.ts::requireUnit": "BOARD",
     "src/engine/v7/query.ts::publicWhirlTargetsV7": "BOARD",
-    "src/engine/v7/query.ts::previewWhirlV7": "BOARD",
+    "src/engine/v7/query.ts::whirlAttackPreviewV7": "BOARD",
     "src/engine/v7/query.ts::queryBarricadeUnavailableReasonV7": "BOARD",
     "src/engine/v7/query.ts::previewAttackBarricadeV7": "BOARD",
     "src/engine/v7/state-schema.ts::barricadesValid": "ALL",
@@ -892,9 +894,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/dwarf-presentation-v7.ts::dwarfCombatLinesV7": "BOARD",
     "src/render/dwarf-presentation-v7.ts::dwarfFieldDefenseBlockedV7": "BOARD",
     "src/render/dwarf-presentation-v7.ts::tunnelDestinationNameV7": "BOARD",
-    // Dwarf crowd control (`pulp_wars-w49.34`): the names of the visible
-    // enemies a Whirl hits.
-    "src/render/dwarf-presentation-v7.ts::whirlTargetLinesV7": "BOARD",
+    // Dwarf crowd control (`pulp_wars-w49.34`; `pulp_wars-befg`): the names
+    // of the own units a Whirl hits.
+    "src/render/dwarf-presentation-v7.ts::whirlFriendlyWarningsV7": "BOARD",
     // `pulp_wars-78i.9`: the Tunnel's riders, landing and outcome read the
     // board (a burrowed Hammerer is never a passenger or a landmark).
     "src/render/dwarf-tunnel-v7.ts::tunnelAutoLandingV7": "BOARD",
@@ -1039,6 +1041,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // and no Wight or Whirligig burrows (only a Mole and its Hammerer do).
     "src/ai/v7-ninth-unit.ts::hostileLandUnitsV7": "BOARD",
     "src/ai/v7-ninth-unit.ts::ownLandUnitsV7": "BOARD",
+    // `pulp_wars-befg`: the own and allied units next to a Whirligig's
+    // tile, the own Whirligigs next to a unit's destination, and the units
+    // a Whirl hits stand on the board (no Whirligig burrows).
+    "src/ai/v7-ninth-unit.ts::whirlMoveValueV7": "BOARD",
+    "src/ai/v7-ninth-unit.ts::whirlNeighbourMoveValueV7": "BOARD",
+    "src/ai/v7-ninth-unit.ts::whirlCoinsTakenV7": "BOARD",
     "src/engine/v7/ninth-unit.ts::withWightGravesV7": "BOARD",
     "src/engine/v7/ninth-unit.ts::prunedNinthUnitV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveStartTurnRiseAgainV7": "BOARD",

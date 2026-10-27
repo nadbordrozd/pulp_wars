@@ -15,6 +15,7 @@ import {
   attackIsChargeV7,
   attackIsRamV7,
   attackIsTorpedoV7,
+  attackIsWhirlV7,
   canEnterTerrainV7,
   drownedCrewOfV7,
   drownedCrewRaisesV7,
@@ -555,11 +556,17 @@ export function calculateCombatPreviewV7(
     (plannedPathLength ?? 0) > 0,
   );
   const torpedo = attackIsTorpedoV7(state, attacker);
+  // `pulp_wars-befg`: a land-form Whirligig's attack is a Whirl (it hits
+  // every unit next to it and nothing answers it: no retaliation, Shock
+  // Field, Frostbite, Bounce, Sticky Toffee, or Toothache either way).
+  const whirls = attackIsWhirlV7(state, attacker);
   // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.2): the
-  // attacker's own Toothache, after every other modifier (only on an
-  // `ATTACK`: a Whirl passes `ignoreToothache`).
+  // attacker's own Toothache, after every other modifier (never on a
+  // Whirl, and never with `ignoreToothache`).
   const toothacheAttack =
-    options.ignoreToothache !== true && unitHasToothacheV7(state, attacker.id);
+    options.ignoreToothache !== true &&
+    !whirls &&
+    unitHasToothacheV7(state, attacker.id);
   const attack2BeforeToothache =
     attacker.form === "EMBARKED"
       ? 0
@@ -763,7 +770,9 @@ export function calculateCombatPreviewV7(
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
   // The naval branch section 5.3: so does a torpedo.
-  const unanswered = attackerRule.abilities.includes("UNANSWERED") || torpedo;
+  // `pulp_wars-befg`: nor does a Whirl.
+  const unanswered =
+    attackerRule.abilities.includes("UNANSWERED") || torpedo || whirls;
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter (`BOMB_RUN`, no `ATTACK`) retaliates too.
   // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender never
@@ -801,12 +810,9 @@ export function calculateCombatPreviewV7(
   // attacked from the next tile. It is decided by the Shield before the
   // hit, whatever the hit does; it follows the retaliation, is reduced by
   // Armoured and Plated, and is taken from the attacker's Shield first.
-  const shockRaw = shockFieldDamageV7(
-    state,
-    defender,
-    defenderShield,
-    distance,
-  );
+  const shockRaw = whirls
+    ? 0
+    : shockFieldDamageV7(state, defender, defenderShield, distance);
   const shockHit =
     shockRaw > 0
       ? absorbHitV7(
@@ -967,13 +973,9 @@ export function calculateCombatPreviewV7(
     !attackerDies && attackAllowanceV7(state, attacker) > nextAttacks;
   // The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast. A kill heals
   // a surviving Vampire fully and, on its first attack, leaves one more.
-  const frostbitten = attackIsFrostbittenV7(
-    state,
-    attacker,
-    defender,
-    distance,
-    attackerDies,
-  );
+  const frostbitten =
+    !whirls &&
+    attackIsFrostbittenV7(state, attacker, defender, distance, attackerDies);
   const feast = attackFeastsV7(state, attacker, {
     defenderDies,
     attackerDies,
@@ -981,13 +983,15 @@ export function calculateCombatPreviewV7(
   });
   // The Candy revision section 8: the Bounce, read after the Push, the
   // advance, and the Charge! follow.
-  const bounced = bounceStateV7(state, attacker, defender, {
-    distance,
-    attackerDies,
-    defenderDies,
-    advances,
-    pushed: push === "WILL_PUSH",
-  });
+  const bounced: Pick<CombatPreviewV7, "bounce" | "bounceTo"> = whirls
+    ? { bounce: "NONE", bounceTo: null }
+    : bounceStateV7(state, attacker, defender, {
+        distance,
+        attackerDies,
+        defenderDies,
+        advances,
+        pushed: push === "WILL_PUSH",
+      });
   const undead = undeadCombatEffectsV7({
     // Map curiosities (section 8.6): a neutral Monster never rises either.
     attacker: {
@@ -1586,9 +1590,15 @@ export interface CombatOptionsV7 {
   readonly assumeSugarRush?: boolean;
   /**
    * The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.2): evaluates
-   * the hit without the attacker's Toothache (a Whirl is not an `ATTACK`).
+   * the hit without the attacker's Toothache (a Whirl never has it either).
    */
   readonly ignoreToothache?: boolean;
+  /**
+   * `pulp_wars-befg`: the public preview of one hit of a Whirl, which also
+   * hits own and allied units next to the Whirligig (the public preview
+   * otherwise answers only for a hostile target). Never an offered target.
+   */
+  readonly whirlHit?: boolean;
 }
 
 /**

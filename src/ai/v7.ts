@@ -16,6 +16,7 @@ import {
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
   armouredDamageV7,
+  attackIsWhirlV7,
   isMindControlledV7,
   effectiveRoleRuleV7,
   cityUnitCapacityForV7,
@@ -102,7 +103,6 @@ import {
   previewZapChainOddsV7,
   previewEconomicV7,
   previewGateV7,
-  previewWhirlV7,
   previewStampedeV7,
   previewSwallowV7,
   previewTossV7,
@@ -611,7 +611,12 @@ import {
   type DwarfPolicyToolsV7,
   type PlannedDwarfCommandV7,
 } from "./v7-dwarf";
-import { ninthUnitMoveValueV7, ownWightGraveHeldV7 } from "./v7-ninth-unit";
+import {
+  ninthUnitMoveValueV7,
+  ownWightGraveHeldV7,
+  whirlAttackScoreV7,
+  whirlPreviewForScoringV7,
+} from "./v7-ninth-unit";
 import {
   ICE_CREW_LANDING_PRIORITY_V7,
   iceCrackScoreV7,
@@ -15813,43 +15818,32 @@ function scoreCommandWithContext(
     }
   }
 
-  // Dwarf crowd control (`pulp_wars-w49.33`): a Whirligig Whirls instead of
-  // attacking one unit (its Whirl hits every adjacent enemy, unanswered, and
-  // is offered whenever such an attack is). Scored like an attack on the
-  // sum of its hits; not tuned.
+  // Dwarf crowd control (`pulp_wars-w49.33`; `pulp_wars-befg`): a
+  // Whirligig's attack is a Whirl whichever enemy is its target: it hits
+  // every unit next to it, own and allied units too, unanswered. Every such
+  // attack is scored on the whole hit set (enemy damage and kills minus a
+  // heavy cost for own damage); friendly fire only when it is clearly worth
+  // it. Not tuned.
   if (
     command.kind === "ATTACK" &&
     actor !== undefined &&
-    actor.form === "LAND" &&
-    unitRoleMechanicsV7(view, actor).whirl
-  )
-    priority = -1;
-  if (command.kind === "WHIRL") {
-    const whirl = previewWhirlV7(view, command.unitId);
-    if (whirl !== null && whirl.targets.length > 0) {
-      const threatening = whirl.targets.some((target) =>
-        context.threats.some((item) => item.unitId === target.unitId),
-      );
-      priority =
-        whirl.kills > 0
-          ? threatening
-            ? 1280
-            : 1180
-          : threatening
-            ? 1240
-            : 900;
-      immediateValue = whirl.targets.reduce(
-        (value, target) =>
-          value + 10 * target.damage + 20 * Number(target.dies),
-        0,
-      );
-      strategicValue = whirl.targets.reduce(
-        (value, target) =>
-          target.dies
-            ? value + targetStrategicValue(view, target.unitId, context.lookup)
-            : value,
-        0,
-      );
+    attackIsWhirlV7(view, actor)
+  ) {
+    const whirl = whirlPreviewForScoringV7(view, command.unitId);
+    const whirlScore =
+      whirl === null
+        ? null
+        : whirlAttackScoreV7(
+            view,
+            whirl,
+            (unitId) => targetStrategicValue(view, unitId, context.lookup),
+            (unitId) => context.threats.some((item) => item.unitId === unitId),
+          );
+    if (whirlScore === null) priority = -1;
+    else {
+      priority = whirlScore.priority;
+      immediateValue = whirlScore.immediate;
+      strategicValue = whirlScore.strategic;
     }
   }
 

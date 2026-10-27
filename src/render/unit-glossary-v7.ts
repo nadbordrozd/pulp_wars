@@ -667,8 +667,12 @@ const ENTRIES = {
   ],
   PLATED: ["Plated", "Thick plating: one hit never takes much of its health."],
   MACHINE: ["Machine", "An Engineer's Repair heals it more than other units."],
-  // Dwarf crowd control (`pulp_wars-w49.33`).
-  WHIRL: ["Whirl", "Hurts every enemy next to it at once. Nobody hits back."],
+  // Dwarf crowd control (`pulp_wars-w49.33`); its attack since
+  // `pulp_wars-befg`.
+  WHIRL: [
+    "Whirl",
+    "Its attack hurts every unit next to it at once, your own too. Nobody hits back.",
+  ],
   BARRICADE: [
     "Barricade",
     "Builds a Barricade on a free tile next to it, for Coins. It blocks every unit until attacks break it.",
@@ -1126,6 +1130,8 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.glides) traits.push("GLIDE");
   if (mechanics.runners) traits.push("RUNNERS");
   if (mechanics.frostbite) traits.push("FROSTBITE");
+  // `pulp_wars-befg`: the Whirligig's Whirl is its attack, not an ability.
+  if (mechanics.whirl && attacks) traits.push("WHIRL");
   if (mechanics.repairsAsMachine && !mechanics.construct)
     traits.push("MACHINE");
   if (mechanics.leavesCrumbs) traits.push("CRUMBS");

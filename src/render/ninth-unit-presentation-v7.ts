@@ -107,11 +107,12 @@ export function ninthUnitMechanicsV7(
       name: FROSTBITE_LABEL_V7,
       rule: "a unit that attacks it from the next tile and survives is Frozen: it cannot move or act through its next turn",
     });
-  // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl.
+  // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl, its
+  // attack since `pulp_wars-befg`.
   if (mechanics.whirl)
     result.push({
       name: WHIRL_LABEL_V7,
-      rule: "hits every enemy next to it at once with its attack, and nobody hits back",
+      rule: "its attack hits every unit next to it at once, friend and foe, and nobody hits back",
     });
   return result;
 }

@@ -49,6 +49,7 @@ import {
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   attackIsTorpedoV7,
+  attackIsWhirlV7,
   boardedPrizeHpV7,
   boardSeaBeastBlockedV7,
   playerFactionV7,
@@ -294,6 +295,7 @@ import {
   applyAttackBarricadeV7,
   applyBuildBarricadeV7,
   applyWhirlV7,
+  resolveWhirlAttackV7,
   barricadeRepairsV7,
   withBarricadesRepairedV7,
 } from "./dwarf-crowd-control";
@@ -6524,6 +6526,10 @@ function applyAttack(
     (distance > 1 && unitIsSubmergedV7(state, defender))
   )
     return rejected(original, "TARGET_OUT_OF_RANGE");
+  // `pulp_wars-befg`: a Whirligig's attack is a Whirl: it hits every unit
+  // next to it, friend and foe, and nothing answers it.
+  if (attackIsWhirlV7(state, attacker))
+    return resolveWhirlAttackV7(DWARF_KIT_V7, original, state, actor, attacker);
   try {
     const exchange = resolveAttackExchangeV7(
       state,

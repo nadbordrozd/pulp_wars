@@ -135,7 +135,6 @@ import {
   previewAssembleV7,
   previewBombRunV7,
   previewBuildBarricadeV7,
-  previewWhirlV7,
   queryBarricadeUnavailableReasonV7,
   BARRICADE_CAP_V7,
   BARRICADE_COST_V7,
@@ -741,14 +740,10 @@ import {
   BARRICADE_RULE_V7,
   BARRICADE_TOOLTIP_V7,
   WHIRL_LABEL_V7,
-  WHIRL_PICK_V7,
-  WHIRL_TOOLTIP_V7,
   barricadeCapTextV7,
   barricadeCostLineV7,
   barricadeInfoTextV7,
   barricadeNameV7,
-  whirlSummaryV7,
-  whirlTargetLinesV7,
   BLASTING_CHARGES_UNLOCK_TEXT_V7,
   BOMBED_MARK_V7,
   BOMB_RUN_CONFIRM_HINT_V7,
@@ -18476,9 +18471,8 @@ export class Ruleset7DomAppView {
     const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
     const city = dwarfCityNameV7(view, unit.homeCityId);
     const assemble = previewAssembleV7(view, unit.id);
-    // Dwarf crowd control (`pulp_wars-w49.34`): the Whirl's summary and the
-    // Barricade's cost and cap.
-    const whirl = previewWhirlV7(view, unit.id);
+    // Dwarf crowd control (`pulp_wars-w49.34`): the Barricade's cost and
+    // cap. (The Whirl is the Whirligig's attack since `pulp_wars-befg`.)
     const barricade = previewBuildBarricadeV7(view, unit.id);
     const barricadesBuilt = view.barricades.filter(
       (entry) => entry.ownerId === view.viewer.id,
@@ -18514,16 +18508,6 @@ export class Ruleset7DomAppView {
           city,
         ),
         icon: "key",
-      },
-      {
-        kind: "WHIRL",
-        ability: "WHIRL",
-        label: WHIRL_LABEL_V7,
-        tooltip:
-          whirl === null
-            ? WHIRL_TOOLTIP_V7
-            : `${WHIRL_TOOLTIP_V7}. ${whirlSummaryV7(whirl)}`,
-        icon: "whirl",
       },
       {
         kind: "BUILD_BARRICADE",
@@ -18574,21 +18558,7 @@ export class Ruleset7DomAppView {
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
       action.dataset.dwarfAbility = slug;
-      // Dwarf crowd control: the Whirl's damage and the Barricade's price.
-      if (reason === null && entry.kind === "WHIRL" && whirl !== null) {
-        const total = whirl.targets.reduce(
-          (sum, target) => sum + target.damage + target.shieldDamage,
-          0,
-        );
-        action.append(
-          text(
-            this.#document,
-            "span",
-            `−${total} ×${whirl.targets.length}`,
-            "v7-undead-preview-chip",
-          ),
-        );
-      }
+      // Dwarf crowd control: the Barricade's price.
       if (entry.kind === "BUILD_BARRICADE")
         action.append(
           economyChips(this.#document, { cost: BARRICADE_COST_V7 }),
@@ -18658,11 +18628,9 @@ export class Ruleset7DomAppView {
         ? TUNNEL_PICK_V7
         : kind === "BOMB_RUN"
           ? BOMB_RUN_PICK_TARGET_V7
-          : kind === "WHIRL"
-            ? WHIRL_PICK_V7
-            : kind === "BUILD_BARRICADE"
-              ? BARRICADE_PICK_V7
-              : ASSEMBLE_PICK_V7
+          : kind === "BUILD_BARRICADE"
+            ? BARRICADE_PICK_V7
+            : ASSEMBLE_PICK_V7
     }.`;
     this.#pendingFocusAction = null;
     this.#render();
@@ -18769,19 +18737,17 @@ export class Ruleset7DomAppView {
     );
     panel.dataset.v7DwarfPick = pick.kind.toLowerCase();
     panel.dataset.boardTargets = String(
-      pick.kind === "WHIRL"
-        ? (previewWhirlV7(view, unitId)?.targets.length ?? 0)
-        : new Set(
-            commands.map((command) =>
-              command.kind === "BOMB_RUN" && pick.kind === "BOMB_RUN"
-                ? pick.targetUnitId === null
-                  ? String(command.targetUnitId)
-                  : `${command.to.x},${command.to.y}`
-                : "to" in command
-                  ? `${command.to.x},${command.to.y}`
-                  : "",
-            ),
-          ).size,
+      new Set(
+        commands.map((command) =>
+          command.kind === "BOMB_RUN" && pick.kind === "BOMB_RUN"
+            ? pick.targetUnitId === null
+              ? String(command.targetUnitId)
+              : `${command.to.x},${command.to.y}`
+            : "to" in command
+              ? `${command.to.x},${command.to.y}`
+              : "",
+        ),
+      ).size,
     );
     let prompt: string;
     let info: string;
@@ -18790,8 +18756,6 @@ export class Ruleset7DomAppView {
     // The Tunnel's passenger control and its confirmation.
     let passengers: HTMLElement | null = null;
     let confirm: HTMLButtonElement | null = null;
-    // Dwarf crowd control: the Whirl's list of the enemies it hits.
-    let whirlList: HTMLElement | null = null;
     if (pick.kind === "TUNNEL") {
       // Passenger first (bead pulp_wars-78i.9). Bead pulp_wars-9im: the
       // Hammerers that can ride wear their badge on the board and are
@@ -18955,50 +18919,6 @@ export class Ruleset7DomAppView {
           confirm.onclick = () => void this.#dispatch(chosen);
         }
       }
-    } else if (pick.kind === "WHIRL") {
-      // Dwarf crowd control (`pulp_wars-w49.34`): every enemy the Whirl
-      // hits is marked on the board with its damage; the dock lists them
-      // by name (never by tile) and the Whirl button whirls.
-      const preview = previewWhirlV7(view, unitId);
-      const command = commands.find((candidate) => candidate.kind === "WHIRL");
-      if (preview === null || command === undefined) {
-        this.#dwarfPick = null;
-        return null;
-      }
-      const summary = whirlSummaryV7(preview);
-      prompt = summary;
-      info = `${WHIRL_PICK_V7}. ${WHIRL_TOOLTIP_V7}`;
-      whirlList = el(this.#document, "ul", "v7-dwarf-whirl-targets");
-      whirlList.setAttribute("aria-label", "Enemies hit");
-      const lines = whirlTargetLinesV7(view, preview);
-      for (const line of lines) {
-        const item = el(
-          this.#document,
-          "li",
-          line.lethal
-            ? "v7-dwarf-whirl-target is-lethal"
-            : "v7-dwarf-whirl-target",
-        );
-        item.dataset.whirlTarget = String(line.unitId);
-        item.append(
-          text(this.#document, "span", line.name, "v7-dwarf-whirl-name"),
-          text(this.#document, "span", line.label, "v7-dwarf-whirl-damage"),
-        );
-        whirlList.append(item);
-      }
-      confirm = button(
-        this.#document,
-        WHIRL_LABEL_V7,
-        "whirl-confirm",
-        "primary-action v7-dwarf-confirm",
-      );
-      confirm.setAttribute(
-        "aria-label",
-        `${WHIRL_LABEL_V7}. ${summary}. ${lines.map((line) => `${line.name} ${line.label}`).join(", ")}.`,
-      );
-      confirm.title = WHIRL_TOOLTIP_V7;
-      confirm.disabled = this.#localBusy();
-      confirm.onclick = () => void this.#dispatch(command);
     } else if (pick.kind === "BUILD_BARRICADE") {
       // Dwarf crowd control: the tiles are picked on the board; the dock
       // says the price, the HP and how many of the cap stand.
@@ -19046,7 +18966,6 @@ export class Ruleset7DomAppView {
       ),
     );
     if (passengers !== null) panel.append(passengers);
-    if (whirlList !== null) panel.append(whirlList);
     if (detail !== null)
       panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
@@ -19623,7 +19542,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r118",
+    rulesetId: "pulp-wars-poc-7r119",
     seed,
     width,
     height: width,

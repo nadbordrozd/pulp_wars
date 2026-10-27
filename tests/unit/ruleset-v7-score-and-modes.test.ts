@@ -1484,9 +1484,11 @@ describe("score and modes: kills of the giants and the Dwarves (section 3.2)", (
     ]);
     const value = valueAt(state, 4, 2);
     const guard = unitAtV7(state, at(5, 2));
+    // `pulp_wars-befg`: the Whirl is the Whirligig's attack.
     const run = applyOkV7(state, activeIdV7(state), {
-      kind: "WHIRL",
+      kind: "ATTACK",
       unitId: unitAtV7(state, at(5, 3)).id,
+      targetUnitId: guard.id,
     });
     const after = run.state.units.find((unit) => unit.id === guard.id);
     expect(after).toBeDefined();
@@ -1502,6 +1504,30 @@ describe("score and modes: kills of the giants and the Dwarves (section 3.2)", (
       hpLost: 3 + guard.hp - (after?.hp ?? 0),
       flawless: false,
     });
+  });
+
+  it("scores an own unit a Whirl kills as its owner's loss and nobody's kill", () => {
+    // `pulp_wars-befg`: the Whirl hits own units too.
+    const state = dwarfFieldV7([
+      { seat: 0, role: "KNIGHT", at: at(5, 3) },
+      { seat: 0, role: "FIGHTER", at: at(4, 4), hp: 2 },
+      { seat: 1, role: "GUARD", at: at(5, 2) },
+    ]);
+    const value = valueAt(state, 4, 4);
+    const run = applyOkV7(state, activeIdV7(state), {
+      kind: "ATTACK",
+      unitId: unitAtV7(state, at(5, 3)).id,
+      targetUnitId: unitAtV7(state, at(5, 2)).id,
+    });
+    expect(
+      run.state.units.some((unit) => unit.at.x === 4 && unit.at.y === 4),
+    ).toBe(false);
+    expect(ledgerOf(run.state, 0)).toMatchObject({
+      killValue: 0,
+      lossValue: value,
+      flawless: false,
+    });
+    expect(ledgerOf(run.state, 1)).toMatchObject({ killValue: 0 });
   });
 
   it("credits a Thunder Stomp kill to the Brontosaurus's owner, once", () => {

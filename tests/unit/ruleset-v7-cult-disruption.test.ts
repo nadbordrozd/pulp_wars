@@ -241,12 +241,13 @@ const PATH_CASES: readonly PathCaseV7[] = [
     },
   },
   {
+    // `pulp_wars-befg`: a Whirligig's attack is its Whirl.
     name: "a Whirl",
     proves: ["WHIRL_RESOLVED"],
     cause: "HP_LOSS",
     build: () => {
       const state = rig("DWARF", [{ role: "KNIGHT", at: at(5, 7) }]);
-      return { state, command: unitCommand("WHIRL", state, at(5, 7)) };
+      return { state, command: targeted("ATTACK", state, at(5, 7)) };
     },
   },
   {

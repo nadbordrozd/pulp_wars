@@ -679,8 +679,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // an Egg never reaches them), Repair mends Barricades only from land
     // form, a Whirl victim rises as a Zombie only in land form (the Bitten
     // rule), and a Barricade is attacked from land or a ship (an embarked
-    // unit has no attack).
-    "src/engine/v7/dwarf-crowd-control.ts": 5,
+    // unit has no attack). (`pulp_wars-befg`: the Whirl is the Whirligig's
+    // ATTACK, whose own checks refuse an embarked unit, so the Whirl's own
+    // land-form check is gone.)
+    "src/engine/v7/dwarf-crowd-control.ts": 4,
     // The ninth unit: the Shock Field is a land-form defender's (no Martian
     // unit is an Egg, and an embarked Shock Trooper has no field), and a
     // Wight marks its Grave only when it dies in land form (an embarked
