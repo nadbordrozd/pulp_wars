@@ -720,6 +720,8 @@ async function playMatch(
 ): Promise<void> {
   const url = new URL(options.base);
   url.searchParams.set("browser-smoke", "1");
+  // Developer mode (pulp_wars-5xki): the Gallery and every faction.
+  url.searchParams.set("dev", "1");
   url.searchParams.set(
     "hunt-speed",
     report.speed === "NORMAL" ? "NORMAL" : "FAST",
@@ -2033,6 +2035,7 @@ async function saveQuitAndResume(
     // 2yc.95 and its background history check.
     const url = new URL(options.base);
     url.searchParams.set("browser-smoke", "1");
+    url.searchParams.set("dev", "1");
     url.searchParams.set(
       "hunt-speed",
       report.speed === "NORMAL" ? "NORMAL" : "FAST",

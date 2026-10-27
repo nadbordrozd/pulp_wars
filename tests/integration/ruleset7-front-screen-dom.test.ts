@@ -125,7 +125,7 @@ describe("Ruleset 7 front screen", () => {
       "tutorial",
       "new-game",
       "campaign",
-      "gallery",
+      // The Gallery is a developer-mode item (pulp_wars-5xki).
       "front-settings",
       "about",
     ]);
@@ -133,7 +133,6 @@ describe("Ruleset 7 front screen", () => {
       "Tutorial",
       "New game",
       "Campaign",
-      "Gallery",
       "Settings",
       "About",
     ]);
@@ -155,7 +154,7 @@ describe("Ruleset 7 front screen", () => {
       "tutorial",
       "new-game",
       "campaign",
-      "gallery",
+      // The Gallery is a developer-mode item (pulp_wars-5xki).
       "front-settings",
       "about",
     ]);
@@ -171,7 +170,6 @@ describe("Ruleset 7 front screen", () => {
     expect(focused()).toBe("new-game");
     key("ArrowDown");
     expect(focused()).toBe("campaign");
-    key("ArrowDown");
     key("ArrowDown");
     expect(focused()).toBe("front-settings");
     key("ArrowDown");
@@ -427,7 +425,7 @@ describe("Ruleset 7 front screen", () => {
       "new-game",
       "tutorial",
       "campaign",
-      "gallery",
+      // The Gallery is a developer-mode item (pulp_wars-5xki).
       "front-settings",
       "about",
     ]);

@@ -17,6 +17,7 @@ import {
   type Ruleset7AcceptedBoundary,
   type Ruleset7BrowserSnapshot,
 } from "../../src/app/index";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 import { viewForV7, type GameStateV7 } from "../../src/engine/index";
 import type {
   BoardHostModelV7,
@@ -528,6 +529,44 @@ describe("Submit to the leaderboard", () => {
     expect(document.querySelector('[data-v7-region="board-submit"]')).toBe(
       null,
     );
+  });
+
+  it("is not offered in developer mode (pulp_wars-5xki)", () => {
+    const settings = new MemoryStorage();
+    settings.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
+    view?.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    view = new Ruleset7DomAppView(
+      document,
+      required("#app"),
+      new FinishedController(regular(scoreDominationVictoryV7())),
+      {
+        boardHost: new Host(),
+        settingsStorage: settings,
+        leaderboard: memoryBoard().board,
+      },
+    );
+    expect(required(".v7-results").dataset.outcome).toBe("victory");
+    expect(document.querySelector('[data-v7-region="board-submit"]')).toBe(
+      null,
+    );
+    // The same win outside developer mode is offered.
+    settings.removeItem(DEV_MODE_STORAGE_KEY_V7);
+    view.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    view = new Ruleset7DomAppView(
+      document,
+      required("#app"),
+      new FinishedController(regular(scoreDominationVictoryV7())),
+      {
+        boardHost: new Host(),
+        settingsStorage: settings,
+        leaderboard: memoryBoard().board,
+      },
+    );
+    expect(
+      document.querySelector('[data-v7-region="board-submit"]'),
+    ).not.toBeNull();
   });
 
   it("is not offered after a defeat, or without a board", () => {

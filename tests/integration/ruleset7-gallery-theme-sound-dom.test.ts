@@ -2,6 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as SoundManifestModule from "../../src/audio/sound-manifest";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * A theme registered in the manifest (bead pulp_wars-2yc.19,
@@ -76,6 +77,8 @@ async function after(ms: number): Promise<void> {
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
+  // The Gallery is listed in developer mode only (pulp_wars-5xki).
+  window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
   // The theme's recording is not there: its fallback recipe plays.
   vi.stubGlobal(
     "fetch",

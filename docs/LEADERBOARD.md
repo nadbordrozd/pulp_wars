@@ -36,7 +36,9 @@ the screens are in `src/render/dom/app-view-v7.ts`; the security rules are
   Showcase are not Regular games and are never offered. A Regular game on
   Easy (`pulp_wars-q6cc`) earns its star but is never offered either
   (`leaderboardRegularGameV7`), so the boards hold only Normal and harder
-  games and the stored fields are unchanged.
+  games and the stored fields are unchanged. Nothing is offered while
+  developer mode is on (`pulp_wars-5xki`,
+  [Campaign mode](product/CAMPAIGN.md) section 25).
 - Nothing waits on the store: every request gives up after 8 seconds and every
   failure is a line of text. Play is never blocked.
 

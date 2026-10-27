@@ -8,6 +8,7 @@ import {
   uninstallFakeAudioContext,
 } from "../fixtures/fake-audio-context";
 import { RecordingBoardHost } from "../fixtures/v7-dom-rig";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * One vertical scroller in the Gallery (bead pulp_wars-2yc.73). The user
@@ -31,6 +32,8 @@ let app: ReturnType<typeof bootstrapRuleset7App> | null = null;
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
+  // The Gallery is listed in developer mode only (pulp_wars-5xki).
+  window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
   installFakeAudioContext(window);
 });
 

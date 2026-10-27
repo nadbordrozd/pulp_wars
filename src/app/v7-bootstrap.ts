@@ -2,6 +2,7 @@ import {
   Ruleset7DomAppView,
   type MountRuleset7AppOptions,
 } from "../render/dom/app-view-v7";
+import { startupDevModeV7 } from "../campaign/dev-mode-v7";
 import type { StorageAdapter } from "../persistence/index";
 import {
   cleanupObsoleteRuleset7Saves,
@@ -42,6 +43,16 @@ export function bootstrapRuleset7App(
   // A saved game of the retired prototypes goes without a word
   // (pulp_wars-lky5).
   clearRetiredRulesetSavesV7(storage);
+  const settingsStorage =
+    options.settingsStorage === undefined
+      ? browserStorageV7(browser)
+      : options.settingsStorage;
+  let search = "";
+  try {
+    search = browser?.location.search ?? "";
+  } catch {
+    // No address: the stored switch stands.
+  }
   const controller = new Ruleset7BrowserController({
     // Bead pulp_wars-2yc.96: what a subscriber throws reaches the notice.
     onSubscriberFailure: reportPresentationFailureV7,
@@ -55,11 +66,10 @@ export function bootstrapRuleset7App(
         : options.savedHistoryVerifier,
     initialSaveWarning:
       obsoleteSaveCleanup.warning ?? options.initialSaveWarning ?? null,
+    // Developer mode (pulp_wars-5xki): read before a stored mission win
+    // could be recorded on resume.
+    developerMode: startupDevModeV7(settingsStorage, search),
   });
-  const settingsStorage =
-    options.settingsStorage === undefined
-      ? browserStorageV7(browser)
-      : options.settingsStorage;
   clearStoredArtSetV7(settingsStorage);
   const view = new Ruleset7DomAppView(documentRoot, root, controller, {
     ...options,

@@ -152,7 +152,10 @@ async function main(): Promise<void> {
         deviceScaleFactor: 1,
         mobile: false,
       });
-      await connection.send("Page.navigate", { url: base });
+      // Developer mode (pulp_wars-5xki): the Gallery is listed only there.
+      const page = new URL(base);
+      page.searchParams.set("dev", "1");
+      await connection.send("Page.navigate", { url: page.href });
       await waitFor(
         connection,
         `document.readyState === 'complete' && document.querySelector('[data-action="gallery"]') !== null`,

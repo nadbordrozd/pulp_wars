@@ -515,6 +515,8 @@ async function helpLegend(
 async function mount(connection: Connection, shot: Shot): Promise<void> {
   const next = new URL(baseUrl.href);
   next.search = "";
+  // Developer mode (pulp_wars-5xki): the Gallery and every faction.
+  next.searchParams.set("dev", "1");
   next.searchParams.set("art", "chibi");
   await evaluate(connection, `globalThis.__TARGETING_REVIEW_PRIOR__ = true`);
   await connection.send("Page.navigate", { url: next.href });

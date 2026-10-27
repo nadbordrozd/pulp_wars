@@ -120,6 +120,11 @@ export interface GameAnalyticsV7 {
   ): void;
   /** The tutorial's last step was done. */
   tutorialCompleted(): void;
+  /**
+   * Developer mode (`pulp_wars-5xki`): while it is on, no event is sent,
+   * so testing never counts as play.
+   */
+  setDeveloperMode?(on: boolean): void;
 }
 
 /** Analytics that is off: the tests', the development server's. */
@@ -130,6 +135,7 @@ export const NO_ANALYTICS_V7: GameAnalyticsV7 = Object.freeze({
   attach: () => () => undefined,
   matchStarted: () => undefined,
   tutorialCompleted: () => undefined,
+  setDeveloperMode: () => undefined,
 });
 
 /** The page the tracker writes to; a test passes its own. */
@@ -383,8 +389,10 @@ export function createGameAnalyticsV7(
     }
   };
 
+  // Developer mode (pulp_wars-5xki): testing sends nothing.
+  let developer = false;
   const send = (events: readonly AnalyticsEventV7[]): void => {
-    if (consent !== "GRANTED") return;
+    if (consent !== "GRANTED" || developer) return;
     for (const event of events) call("event", event.name, event.params);
   };
 
@@ -459,6 +467,9 @@ export function createGameAnalyticsV7(
     },
     tutorialCompleted(): void {
       send([{ name: "tutorial_complete", params: {} }]);
+    },
+    setDeveloperMode(on: boolean): void {
+      developer = on;
     },
   };
 }

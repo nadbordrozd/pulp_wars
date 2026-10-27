@@ -8,7 +8,11 @@
 > Hollow Frontier" (sections 6, 8.3, 9, 11 and the Frontier parts of 4.3),
 > were retired with their faction unlocks; they are kept below as history.
 > Every faction is open from the start. See
-> [section 24](#24-the-prologue-retired-pulp_wars-hmyk22).
+> [section 24](#24-the-prologue-retired-pulp_wars-hmyk22). (Since
+> `pulp_wars-5xki`, outside developer mode, Ice Folk, Candy and the
+> Cultists are picked for a new game only after 4, 5 and 6 completed
+> campaigns; the testing cheat became developer mode. See
+> [section 25](#25-developer-mode-and-faction-locks-pulp_wars-5xki).)
 
 **Status:** design (`pulp_wars-68k.1`, epic `pulp_wars-68k`). The engine
 bead `68k.2` is implemented at `pulp-wars-poc-7r34`
@@ -3911,6 +3915,9 @@ never reused.
   ("Locked: finish Humans and Undead"). The two are distinct.
 - Inside a campaign the missions open in order, as before (section 4.2).
 - The Cult is the middle of the last row: the saga culminates there.
+- (Since `pulp_wars-5xki`, section 25: outside developer mode, Ice
+  Folk, Candy and the Cultists wait for 4, 5 and 6 completed campaigns in
+  a new game.)
 - Skirmish stays ungated (section 4.3). The faction unlocks of the
   prologue were retired with it (`pulp_wars-hmyk.22`): no faction is
   locked anywhere.
@@ -3999,6 +4006,12 @@ Analytics: `mission_start` and `mission_end` carry `campaign_id`
 (`humans`, `undead`, …; [ANALYTICS.md](../ANALYTICS.md)).
 
 ### 14.5 Testing: pick any mission
+
+(Superseded by developer mode, `pulp_wars-5xki`,
+[section 25](#25-developer-mode-and-faction-locks-pulp_wars-5xki): the
+gestures and `?campaign-cheat=1` now turn developer mode on and never off,
+the chip is no longer a button, and the switch is stored under
+`pulpWars.devMode.v1`.)
 
 A cheat for testing, **"All missions unlocked"**:
 
@@ -7445,3 +7458,100 @@ single-file front on `TEST_NECK`. New tests pin the retirement: the
 registry has nine campaigns and no `FRONTIER` ID, prologue progress
 changes nothing on the map (unit and DOM), and a saved prologue mission
 loads with the removed-mission message.
+
+## 25. Developer mode and faction locks (`pulp_wars-5xki`)
+
+**Request (user, 2026-10-27):** "I want to have a developer mode in the
+game which will be activated by some specific thing and there should be an
+option to deactivate it. the developer mode will have all the campaigns
+unlocked. the regular mode will have to unlock them the long way. the
+gallery item in the main menu will only be in the dev mode. And in the
+normal mode let's make the factions cultists, ice folk and candy only
+available once completes a number of campaigns. let's say any 4 campaigns
+for ice folk, any 5 for candy and any 6 for cultists. they should be greyed
+out in the new game menu and a tooltip should say how to unlock them"
+
+Where this section differs from sections 4.3, 14.2, 14.5 and 24, it is
+current.
+
+### 25.1 Developer mode
+
+Developer mode replaces the testing cheat "All missions unlocked" of
+section 14.5 and keeps its gestures (`src/campaign/dev-mode-v7.ts`):
+
+- **On.** Tap the main menu's "Pulp Wars" logo or the campaign screen's
+  "Campaign" title seven times quickly (each tap within 0.8 s of the last),
+  or type `pulpwars` on the main menu or the campaign screen, or open the
+  game with `?dev=1` (`?campaign-cheat=1` is kept as an alias). A short
+  notice says "Developer mode on". A gesture only ever turns it on.
+- **Off.** While it is on, Settings shows **Developer mode: on**; a press
+  turns it off at once. `?dev=0` (or `?campaign-cheat=0`) also turns it off.
+- **Stored** per browser in localStorage under `pulpWars.devMode.v1`. A
+  browser that had the old cheat on (`pulpWars.campaignCheat` = `1`)
+  starts in developer mode; the next change removes the old key.
+- **Shown** by a small yellow **DEV** tag in the corner of every front
+  screen, and the campaign screen's "All missions unlocked" chip (no
+  longer a button: Settings turns the mode off).
+- **What it does.** Every built campaign is open whatever its
+  prerequisites and every mission of it can be picked (as the cheat did);
+  the main menu lists the **Gallery**; every faction can be picked in a new
+  game; the end screen never offers **Submit to the leaderboard**; the play
+  statistics send no event ([ANALYTICS.md](../ANALYTICS.md)).
+- **A view, not a write.** Developer mode never writes campaign progress:
+  a mission won while it is on is not recorded (the controller is told at
+  start-up and on every switch, so a completed mission save resumed in
+  developer mode records nothing either), so testing never shortcuts the
+  campaign graph or the faction locks. Its Victory dialog shows
+  "Developer mode: not saved to progress" in place of the campaigns and
+  faction notices. A skirmish win still records its tribe stars, which
+  unlock nothing.
+
+### 25.2 The normal game
+
+- **The Gallery** is not in the main menu. It has no address of its own;
+  developer mode is the way in.
+- **Campaigns unlock the long way**, as before: the graph of section 14.2
+  (Humans and Undead open, the middle four after both, the last three after
+  all four) and, inside a campaign, mission N + 1 once mission N is won.
+- **Faction locks** (`src/campaign/faction-locks-v7.ts`): the player's own
+  pick of a new game (the tribe grid and the hidden "Your faction" select)
+  offers Ice Folk only after **any 4** campaigns are completed, Candy after
+  **any 5**, and the Cultists after **any 6**. A campaign is completed when
+  its last mission is won, on any difficulty: Easy wins count. The locks
+  are derived from the stored completions on every read, never stored.
+- **The picker.** A locked tribe card is greyed (dashed edge, grey emblem)
+  with a lock in its corner, `aria-disabled` and still focusable. Hover,
+  keyboard focus or a tap shows a tooltip under it, "Complete any 4
+  campaigns to unlock (2/4)", and a tap picks nothing. The card's
+  accessible name is "Ice Folk, locked. Complete any 4 campaigns to unlock
+  (2/4)".
+- **Quick start** never leads a locked faction: a draft that holds one
+  (developer mode turned off after picking it) leads the first open
+  faction instead.
+- **Opponents are not locked.** The AI may play any faction, the locked
+  three included, so matches keep their variety.
+- **Saves and replays are not locked.** A saved game or a restarted setup
+  whose player leads a locked faction loads and plays: the locks gate only
+  new picks.
+- **The campaigns of the locked factions stay playable** as the map opens
+  them. Since they are the last tier, opening them needs the six campaigns
+  of tiers 1 and 2, by which time all three factions are unlocked anyway.
+- **The debrief.** The Victory dialog of the win that unlocks a faction
+  shows "New faction unlocked: Ice Folk" with the faction's emblem (one
+  line per faction), outside developer mode.
+
+### 25.3 Testing
+
+`tests/unit/faction-locks-v7.test.ts` pins the thresholds, the Easy rule,
+the tooltip text and the newly unlocked factions;
+`tests/unit/campaign-registry-v7.test.ts` the gestures, the address and
+the stored switch; `tests/integration/developer-mode-progress.test.ts` a
+mission win kept out of the progress in developer mode; `tests/integration/developer-mode-dom.test.ts` the
+gestures and the Settings switch, the Gallery only in developer mode, every
+mission open with the stored progress untouched, the locks at 3, 4, 5 and
+6 campaigns with their tooltip, quick start never leading a locked faction
+and a saved game with a locked faction loading. The debrief line is in
+`ruleset7-campaign-dom.test.ts`, the leaderboard rule in
+`leaderboard-dom.test.ts`, the analytics rule in `analytics-v7.test.ts`.
+The browser review scripts and the browser smoke open the game with
+`dev=1`, since they visit the Gallery and lead locked factions.

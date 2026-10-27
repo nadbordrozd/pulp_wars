@@ -18,6 +18,7 @@ import {
 import { GALLERY_TERRAIN_ROWS_V7 } from "../../src/render/gallery-terrain-presentation-v7";
 import { SETTINGS_STORAGE_KEY } from "../../src/persistence/index";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * The Gallery (bead pulp_wars-ic8, docs/ui/SCREEN_FLOW.md "Gallery"): the
@@ -82,12 +83,15 @@ function mount(): ReturnType<typeof bootstrapRuleset7App> {
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
+  // The Gallery is listed in developer mode only (pulp_wars-5xki).
+  window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
   hosts = [];
 });
 
 afterEach(() => {
   app?.destroy();
   app = null;
+  window.history.replaceState(null, "", "/");
 });
 
 function required<T extends Element = HTMLElement>(selector: string): T {
@@ -467,6 +471,8 @@ describe("Ruleset 7 Gallery", () => {
   });
 
   it("survives storage that throws", () => {
+    // Developer mode from the address: the storage cannot hold it.
+    window.history.replaceState(null, "", "/?dev=1");
     app = bootstrapRuleset7App(document, {
       storage: null,
       settingsStorage: {

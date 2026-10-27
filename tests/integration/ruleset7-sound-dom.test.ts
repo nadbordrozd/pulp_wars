@@ -27,6 +27,7 @@ import {
   waitUntil,
 } from "../fixtures/v7-dom-rig";
 import { checkedV7, exploredAllV7, initialV7 } from "../fixtures/v7-builders";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * Sound in the interface (bead pulp_wars-2yc.10, docs/ui/SOUND.md): the
@@ -376,6 +377,8 @@ describe("sound test", () => {
 
   it("is a tab of the Gallery, with the toggle and volume above it", () => {
     // The Sounds tab itself: tests/integration/ruleset7-gallery-sounds-dom.
+    // The Gallery is listed in developer mode only (pulp_wars-5xki).
+    window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
     const app = bootstrapRuleset7App(document, {
       storage: null,
       settingsStorage: window.localStorage,

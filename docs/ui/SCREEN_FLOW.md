@@ -2701,8 +2701,9 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   order: **Continue** (only when a saved game is waiting; under the word,
   its summary: "Turn 7 · 12 coins · 2 players · Continents", or "Mission 2 ·
   The Warrens · Turn 7"), **New game**, **Tutorial** (bead
-  `pulp_wars-0yxy`, [Tutorial](#tutorial)), **Campaign**, **Gallery**,
-  **Settings**, **About** (bead `pulp_wars-2yc.92`). Each button is an
+  `pulp_wars-0yxy`, [Tutorial](#tutorial)), **Campaign**, **Gallery**
+  (in developer mode only, `pulp_wars-5xki`), **Settings**, **About**
+  (bead `pulp_wars-2yc.92`). Each button is an
   icon and one or two words. The first
   button is the primary one (Continue, else New game; for a first-time
   player Tutorial comes first and is the primary one). On a wide screen the
@@ -2802,7 +2803,9 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
 7 route. Ruleset 5 and 6 routes are unchanged.
 
 - **Entry.** The main menu has a **Gallery** button
-  ([title scene and menu](#current-ruleset-7-title-scene-and-menu)). Back
+  ([title scene and menu](#current-ruleset-7-title-scene-and-menu)) in
+  developer mode only (`pulp_wars-5xki`,
+  [Campaign mode](../product/CAMPAIGN.md) section 25). Back
   (or Escape) returns to the main menu with focus on the Gallery button.
   The Gallery never touches the save.
 - **Look.** Always the live CHIBI look, whatever the art set: each cell is
@@ -3403,7 +3406,8 @@ lists above differ, this is current:
 - **Testing cheat.** Seven quick taps of the "Campaign" title, typing
   `pulpwars`, or `?campaign-cheat=1` turn on "All missions unlocked": a
   yellow chip beside the title (a tap turns it off) and every built
-  campaign and mission open.
+  campaign and mission open. (Since `pulp_wars-5xki` these turn on
+  developer mode, below; the chip is a label and Settings turns it off.)
 - **Victory** adds "New campaigns: Dinosaurs, Martians, Goblins and
   Dwarves" (a flag notice) for the win that opened them. Campaign and Next
   mission return to the finished mission's own campaign.
@@ -3415,7 +3419,8 @@ the lists above differ, this is current:
 - **Campaign map.** No prologue plate and no dashed rule: the map is the
   three rows of the nine faction campaigns, Humans and Undead open from the
   start.
-- **No faction unlocks.** Every faction is open from the start, in skirmish
+- **No faction unlocks.** (Superseded for a new game's own pick by the
+  faction locks of `pulp_wars-5xki`, below.) Every faction is open from the start, in skirmish
   and in the campaigns. Gone with the prologue: the mission list's
   **Factions** row, a card's **Unlocks** chip, the briefing's "Win to
   unlock", and the Victory dialog's "New faction" notice. A mission whose
@@ -3429,6 +3434,38 @@ the lists above differ, this is current:
   "The Warrens", "Doctor Crane") are history; the faction campaigns' own
   names stand in their place (for example "Mission 1 · Thaw at Northwatch ·
   Turn 7" on the main menu's Continue).
+
+**Developer mode and faction locks (`pulp_wars-5xki`).** The testing
+cheat became developer mode, and three factions are earned
+([Campaign mode](../product/CAMPAIGN.md) section 25). Where the lists above
+differ, this is current:
+
+- **Developer mode on.** Seven quick taps of the main menu's logo or the
+  campaign screen's title, typing `pulpwars` on either screen, or `?dev=1`
+  (`?campaign-cheat=1` still works). A yellow notice, "Developer mode on",
+  shows for a moment at the foot of the screen; a small yellow **DEV** tag
+  then stands in the top right corner of every front screen. A gesture
+  never turns it off.
+- **Developer mode off.** Settings has **Developer mode: on** at its foot
+  while it is on (with one line on what it does); a press turns it off, the
+  switch, the tag and the Gallery go at once, and focus moves to Menu.
+- **In developer mode** the main menu lists the Gallery (after Campaign),
+  every campaign and mission is open (the campaign screen's chip "All
+  missions unlocked" is a label), every tribe can be picked, and the end
+  screen offers no leaderboard submit.
+- **Locked tribes.** Outside it, the new game's tribe grid greys Ice Folk,
+  Candy and the Cultists until 4, 5 and 6 campaigns are completed: a dashed
+  edge, a grey emblem and stars, a lock in the corner. The card is
+  focusable and `aria-disabled`; hover, keyboard focus or a tap shows a
+  dark tooltip under it ("Complete any 4 campaigns to unlock (2/4)"), kept
+  inside the picker at either edge, and a tap picks nothing. The hidden
+  "Your faction" select disables the same options; opponents' selects
+  offer every faction.
+- **Victory.** The win that unlocks a faction adds "New faction unlocked:
+  Ice Folk" with its emblem, after the campaigns notice. In developer mode
+  a mission win is not recorded: the dialog shows a small grey line,
+  "Developer mode: not saved to progress", and no campaigns or faction
+  notice.
 
 **Retry mission (`pulp_wars-hmyk.24`).** A mission starts over from the
 game, without the main menu. Where the lists above differ, this is current:

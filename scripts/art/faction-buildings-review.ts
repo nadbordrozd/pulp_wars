@@ -926,6 +926,8 @@ async function captureAll(
   );
   const url = new URL(baseUrl);
   url.searchParams.set("art", "chibi");
+  // Developer mode (pulp_wars-5xki): the Gallery is listed only there.
+  url.searchParams.set("dev", "1");
   const browser = spawn(
     chrome,
     [

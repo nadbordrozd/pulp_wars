@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   effectiveRoleRuleV7,
@@ -87,6 +87,16 @@ const COORDINATE = /\(\s*\d+\s*,\s*\d+\s*\)|\b\d+\s*,\s*\d+\b/;
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
+});
+
+// Every faction is offered in developer mode (pulp_wars-5xki locks Ice
+// Folk, Candy and the Cultists outside it); these mounts keep no settings,
+// so the address turns it on.
+beforeEach(() => {
+  window.history.replaceState(null, "", "/?dev=1");
+});
+afterEach(() => {
+  window.history.replaceState(null, "", "/");
 });
 
 describe("Candy setup", () => {

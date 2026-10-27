@@ -14,12 +14,13 @@ import { CHAPTER_ICE_FOLK_V7 } from "../../src/campaign/chapter-ice-folk";
 import { CHAPTER_MARTIANS_V7 } from "../../src/campaign/chapter-martians";
 import { CHAPTER_UNDEAD_V7 } from "../../src/campaign/chapter-undead";
 import {
-  CAMPAIGN_CHEAT_STORAGE_KEY_V7,
-  CampaignCheatGestureV7,
-  campaignCheatFromSearchV7,
-  loadCampaignCheatV7,
-  saveCampaignCheatV7,
-} from "../../src/campaign/cheat-v7";
+  DEV_MODE_STORAGE_KEY_V7,
+  DevModeGestureV7,
+  LEGACY_CAMPAIGN_CHEAT_STORAGE_KEY_V7,
+  devModeFromSearchV7,
+  loadDevModeV7,
+  saveDevModeV7,
+} from "../../src/campaign/dev-mode-v7";
 import {
   CAMPAIGN_CHAPTERS_V7,
   campaignByIdV7,
@@ -30,7 +31,8 @@ import { missionByIdV7 } from "../../src/engine/index";
 import type { StorageAdapter } from "../../src/persistence/index";
 
 /**
- * The campaign registry and the testing cheat (`pulp_wars-hmyk.3`,
+ * The campaign registry and the developer mode switch (`pulp_wars-hmyk.3`,
+ * `pulp_wars-5xki`,
  * docs/product/CAMPAIGN.md section 14). The graph with built campaigns is
  * in campaign-graph-v7.test.ts.
  */
@@ -216,15 +218,15 @@ describe("campaign registry", () => {
   });
 });
 
-describe("campaign cheat", () => {
-  it("toggles after seven quick taps, and a slow tap starts the count again", () => {
-    const gesture = new CampaignCheatGestureV7();
+describe("developer mode switch", () => {
+  it("completes after seven quick taps, and a slow tap starts the count again", () => {
+    const gesture = new DevModeGestureV7();
     const results = [0, 300, 600, 900, 1200, 1500].map((at) => gesture.tap(at));
     expect(results.every((done) => !done)).toBe(true);
     expect(gesture.tap(1800)).toBe(true);
-    // The count starts afresh after a toggle.
+    // The count starts afresh after a gesture.
     expect(gesture.tap(1900)).toBe(false);
-    const slow = new CampaignCheatGestureV7();
+    const slow = new DevModeGestureV7();
     for (const at of [0, 300, 600, 900, 1200, 1500]) slow.tap(at);
     // A pause longer than 800 ms: this tap is the first of a new count.
     expect(slow.tap(3000)).toBe(false);
@@ -233,8 +235,8 @@ describe("campaign cheat", () => {
     expect(slow.tap(4800)).toBe(true);
   });
 
-  it("toggles when 'pulpwars' is typed, ignoring case and named keys", () => {
-    const gesture = new CampaignCheatGestureV7();
+  it("completes when 'pulpwars' is typed, ignoring case and named keys", () => {
+    const gesture = new DevModeGestureV7();
     const typed = [..."xxPulpWar"].map((key) => gesture.key(key));
     expect(typed.every((done) => !done)).toBe(true);
     expect(gesture.key("Shift")).toBe(false);
@@ -242,23 +244,35 @@ describe("campaign cheat", () => {
     expect(gesture.key("p")).toBe(false);
   });
 
-  it("reads the address and stores the switch, guarding storage", () => {
-    expect(campaignCheatFromSearchV7("?campaign-cheat=1")).toBe(true);
-    expect(campaignCheatFromSearchV7("?x=2&campaign-cheat=0")).toBe(false);
-    expect(campaignCheatFromSearchV7("?campaign-cheat=yes")).toBeNull();
-    expect(campaignCheatFromSearchV7("")).toBeNull();
+  it("reads ?dev= and the old ?campaign-cheat=, and stores the switch under a versioned key", () => {
+    expect(devModeFromSearchV7("?dev=1")).toBe(true);
+    expect(devModeFromSearchV7("?x=2&dev=0")).toBe(false);
+    expect(devModeFromSearchV7("?campaign-cheat=1")).toBe(true);
+    expect(devModeFromSearchV7("?campaign-cheat=0")).toBe(false);
+    // `dev` wins over the alias.
+    expect(devModeFromSearchV7("?dev=0&campaign-cheat=1")).toBe(false);
+    expect(devModeFromSearchV7("?dev=yes")).toBeNull();
+    expect(devModeFromSearchV7("")).toBeNull();
+    expect(DEV_MODE_STORAGE_KEY_V7).toBe("pulpWars.devMode.v1");
     const values = new Map<string, string>();
     const storage: StorageAdapter = {
       getItem: (key) => values.get(key) ?? null,
       setItem: (key, value) => void values.set(key, value),
       removeItem: (key) => void values.delete(key),
     };
-    expect(loadCampaignCheatV7(storage)).toBe(false);
-    saveCampaignCheatV7(storage, true);
-    expect(values.get(CAMPAIGN_CHEAT_STORAGE_KEY_V7)).toBe("1");
-    expect(loadCampaignCheatV7(storage)).toBe(true);
-    saveCampaignCheatV7(storage, false);
-    expect(values.has(CAMPAIGN_CHEAT_STORAGE_KEY_V7)).toBe(false);
+    expect(loadDevModeV7(storage)).toBe(false);
+    saveDevModeV7(storage, true);
+    expect(values.get(DEV_MODE_STORAGE_KEY_V7)).toBe("1");
+    expect(loadDevModeV7(storage)).toBe(true);
+    saveDevModeV7(storage, false);
+    expect(values.has(DEV_MODE_STORAGE_KEY_V7)).toBe(false);
+    // A browser that had the old campaign cheat on starts in developer
+    // mode; the next write drops the old key.
+    values.set(LEGACY_CAMPAIGN_CHEAT_STORAGE_KEY_V7, "1");
+    expect(loadDevModeV7(storage)).toBe(true);
+    saveDevModeV7(storage, false);
+    expect(values.has(LEGACY_CAMPAIGN_CHEAT_STORAGE_KEY_V7)).toBe(false);
+    expect(loadDevModeV7(storage)).toBe(false);
     const failing: StorageAdapter = {
       getItem: () => {
         throw new Error("denied");
@@ -270,8 +284,8 @@ describe("campaign cheat", () => {
         throw new Error("denied");
       },
     };
-    expect(loadCampaignCheatV7(failing)).toBe(false);
-    expect(() => saveCampaignCheatV7(failing, true)).not.toThrow();
-    expect(loadCampaignCheatV7(null)).toBe(false);
+    expect(loadDevModeV7(failing)).toBe(false);
+    expect(() => saveDevModeV7(failing, true)).not.toThrow();
+    expect(loadDevModeV7(null)).toBe(false);
   });
 });

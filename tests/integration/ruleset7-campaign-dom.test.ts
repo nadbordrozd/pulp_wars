@@ -666,6 +666,68 @@ describe("Ruleset 7 mission dialogs", () => {
     view.destroy();
   });
 
+  it("Victory names a faction the win unlocked for a new game, outside developer mode (pulp_wars-5xki)", () => {
+    const progress: Ruleset7CampaignProgressV7 = {
+      status: "OK",
+      completed: { HUMAN_6: won() },
+      lastWin: {
+        missionId: "HUMAN_6",
+        firstWin: true,
+        opened: ["ICE_FOLK"],
+        factions: ["ICE_FOLK"],
+      },
+      diagnostic: null,
+    };
+    const victory = (view: PlayerViewV7): MatchOutcomeV7 => ({
+      kind: "VICTORY",
+      winnerId: view.humanPlayerId,
+      cause: "PLACES_CAPTURED",
+    });
+    const view = mount(
+      new FakeController(
+        completeView("HUMAN_6", "ORIGINAL", victory),
+        progress,
+      ),
+    );
+    const line = required(
+      document.querySelector<HTMLElement>(
+        "[data-v7-region='faction-unlocked']",
+      ),
+    );
+    expect(line.textContent).toBe("New faction unlocked: Ice Folk");
+    expect(line.dataset.faction).toBe("ICE_FOLK");
+    expect(line.getAttribute("role")).toBe("status");
+    expect(
+      document.querySelector("[data-v7-region='dev-progress-note']"),
+    ).toBeNull();
+    view.destroy();
+    // Developer mode records no win: one line says so in place of the
+    // progress and unlock lines.
+    window.history.replaceState(null, "", "/?dev=1");
+    document.body.innerHTML = '<div id="app"></div>';
+    try {
+      const dev = mount(
+        new FakeController(
+          completeView("HUMAN_6", "ORIGINAL", victory),
+          progress,
+        ),
+      );
+      expect(
+        document.querySelector("[data-v7-region='faction-unlocked']"),
+      ).toBeNull();
+      expect(
+        document.querySelector("[data-v7-region='campaign-opened']"),
+      ).toBeNull();
+      expect(
+        document.querySelector("[data-v7-region='dev-progress-note']")
+          ?.textContent,
+      ).toBe("Developer mode: not saved to progress");
+      dev.destroy();
+    } finally {
+      window.history.replaceState(null, "", "/");
+    }
+  });
+
   it("Victory after the deadline for a star: the star is shown as missed", () => {
     const setup = required(
       missionMatchSetupV7(required(missionByIdV7("HUMAN_2")), "ORIGINAL"),
@@ -837,7 +899,6 @@ describe("Ruleset 7 mission dialogs", () => {
         "tutorial",
         "new-game",
         "campaign",
-        "gallery",
         "front-settings",
         "about",
       ]);

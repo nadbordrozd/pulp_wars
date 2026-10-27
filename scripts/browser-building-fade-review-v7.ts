@@ -174,6 +174,8 @@ async function mount(
 ): Promise<void> {
   const next = new URL(baseUrl.href);
   next.search = "";
+  // Developer mode (pulp_wars-5xki): the Gallery and every faction.
+  next.searchParams.set("dev", "1");
   next.searchParams.set("art", "chibi");
   next.searchParams.set("building-fade", fade);
   await evaluate(connection, `globalThis.__FADE_REVIEW_PRIOR__ = true`);

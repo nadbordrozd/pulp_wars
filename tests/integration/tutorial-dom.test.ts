@@ -141,7 +141,6 @@ describe("the Tutorial button of the main menu", () => {
       "tutorial",
       "new-game",
       "campaign",
-      "gallery",
       "front-settings",
       "about",
     ]);
@@ -191,7 +190,6 @@ describe("the Tutorial button of the main menu", () => {
       "new-game",
       "tutorial",
       "campaign",
-      "gallery",
       "front-settings",
       "about",
     ]);
@@ -224,7 +222,6 @@ describe("the Tutorial button of the main menu", () => {
       "new-game",
       "tutorial",
       "campaign",
-      "gallery",
       "front-settings",
       "about",
     ]);

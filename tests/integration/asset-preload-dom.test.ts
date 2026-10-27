@@ -47,6 +47,7 @@ import {
 import type { ChibiRasterEnvironmentV7 } from "../../src/render/canvas/chibi-art-resolver-v7";
 import { mountLoadingScreenV7 } from "../../src/render/dom/loading-screen-v7";
 import { titleSceneAssetUrlsV7 } from "../../src/render/title-scene-v7";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * The start of the game behind the asset preloader (bead pulp_wars-2yc.6):
@@ -646,6 +647,8 @@ describe("Ruleset 7 board entry and the factions' art", () => {
   });
 
   it("opens the Gallery when every faction's art is in", async () => {
+    // The Gallery is listed in developer mode only (pulp_wars-5xki).
+    window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
     const { preloader, requests } = manualPreloader();
     const starting = bootstrapPreloadedRuleset7App(document, {
       preloader,

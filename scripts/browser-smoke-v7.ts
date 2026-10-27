@@ -3477,6 +3477,9 @@ function smokeUrl(input: string): string {
   const url = new URL(input);
   url.searchParams.delete("ruleset");
   url.searchParams.set("browser-smoke", "1");
+  // Developer mode (pulp_wars-5xki): the smoke opens the Gallery and leads
+  // Ice Folk, which the normal game keeps for campaign winners.
+  url.searchParams.set("dev", "1");
   return url.href;
 }
 

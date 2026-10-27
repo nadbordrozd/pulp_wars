@@ -25,12 +25,15 @@ import {
   galleryBuildingPerFactionV7,
   galleryBuildingSubjectV7,
 } from "../../src/render/gallery-presentation-v7";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 let app: ReturnType<typeof bootstrapRuleset7App> | null = null;
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
+  // The Gallery is listed in developer mode only (pulp_wars-5xki).
+  window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
 });
 
 afterEach(() => {

@@ -23,6 +23,7 @@ import {
   randomOpponentFactionsV7,
 } from "../../src/render/quick-start-v7";
 import type { StorageAdapter } from "../../src/persistence/index";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * Quick start (bead `pulp_wars-2yc.54`): the new-game screen asks the game
@@ -402,7 +403,11 @@ describe("Quick start on the new-game screen", () => {
   });
 
   it("draws the opponents from every other tribe, and a tribe the player takes moves its opponent", () => {
-    boot(new MemoryStorage(), { randomDraw: () => 5 });
+    // Opponents are drawn from every faction, the locked ones included
+    // (pulp_wars-5xki); developer mode lets the player take any of them.
+    const settings = new MemoryStorage();
+    settings.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
+    boot(settings, { randomDraw: () => 5 });
     press("ai-count-8");
     const seats = (): string[] =>
       [...document.querySelectorAll<HTMLElement>(".v7-setup-seat")].map(

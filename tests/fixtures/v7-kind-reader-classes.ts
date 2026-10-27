@@ -424,6 +424,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dispatchUnguarded":
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggCards": "SEAT",
+  // pulp_wars-5xki: the debrief's "New faction unlocked" line names a
+  // faction the win unlocked, never a unit's kind.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#missionResults": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggPickPanel": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#hatchButton": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dwarfActionButtons":

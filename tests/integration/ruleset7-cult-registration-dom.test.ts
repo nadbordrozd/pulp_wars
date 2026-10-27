@@ -15,6 +15,7 @@ import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
 import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
 import { boardPlan, requiredElement, rig } from "../fixtures/v7-dom-rig";
 import { at, fieldV7 } from "../fixtures/v7-revision20";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * The Cult registration in the DOM (`pulp_wars-mch9.3`): the faction is
@@ -27,6 +28,9 @@ import { at, fieldV7 } from "../fixtures/v7-revision20";
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
+  // Every faction is offered in developer mode (pulp_wars-5xki locks
+  // Ice Folk, Candy and the Cultists outside it).
+  window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
 });
 
 function select(scene: ReturnType<typeof rig>, where: CoordV7): void {

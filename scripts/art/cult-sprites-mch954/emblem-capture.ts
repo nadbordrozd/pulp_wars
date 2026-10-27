@@ -29,6 +29,15 @@ const outIndex = args.indexOf("--out");
 const out = outIndex < 0 ? undefined : args[outIndex + 1];
 if (baseUrl === undefined || out === undefined)
   throw new Error("usage: emblem-capture.ts <dev-server-url> --out DIR");
+/**
+ * Developer mode (pulp_wars-5xki): the Gallery and the Cult pick are
+ * offered only there.
+ */
+function devUrl(href: string): string {
+  const url = new URL(href);
+  url.searchParams.set("dev", "1");
+  return url.href;
+}
 const chrome = process.env.CHROME_PATH;
 if (chrome === undefined) throw new Error("CHROME_PATH is required");
 const port = 11_340 + (process.pid % 60);
@@ -63,7 +72,7 @@ try {
     deviceScaleFactor: 2,
     mobile: false,
   });
-  await connection.send("Page.navigate", { url: baseUrl });
+  await connection.send("Page.navigate", { url: devUrl(baseUrl) });
   await waitFor(
     connection,
     `document.querySelector('[data-action="new-game"]') !== null`,
@@ -83,7 +92,7 @@ try {
   );
   await delay(600);
   await capture(connection, path.join(out, "setup-form-emblem.png"));
-  await connection.send("Page.navigate", { url: baseUrl });
+  await connection.send("Page.navigate", { url: devUrl(baseUrl) });
   await waitFor(
     connection,
     `document.querySelector('[data-action="gallery"]') !== null`,

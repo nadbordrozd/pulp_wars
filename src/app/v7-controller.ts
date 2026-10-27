@@ -19,6 +19,7 @@ import {
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
+  type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
   type PlayerId,
@@ -27,6 +28,7 @@ import {
   type ReplayFileV7,
   type RuleErrorV7,
 } from "../engine/index";
+import { factionsNewlyUnlockedV7 } from "../campaign/faction-locks-v7";
 import {
   campaignMissionV7,
   campaignNewlyOpenedV7,
@@ -107,6 +109,11 @@ export interface Ruleset7CampaignProgressV7 {
     readonly firstWin: boolean;
     /** Campaigns the win opened on the campaign map (`pulp_wars-hmyk.3`). */
     readonly opened?: readonly string[];
+    /**
+     * Factions the win unlocked for a new game's pick (`pulp_wars-5xki`):
+     * the debrief's "New faction unlocked" line.
+     */
+    readonly factions?: readonly FactionIdV7[];
   } | null;
   /** Why progress could not be read or written, for the details view. */
   readonly diagnostic: string | null;
@@ -256,6 +263,11 @@ export interface Ruleset7BrowserControllerOptions {
    * presentation guard's report, so the player sees the failure notice.
    */
   readonly onSubscriberFailure?: (where: string, error: unknown) => void;
+  /**
+   * Developer mode at start-up (`pulp_wars-5xki`): a completed mission
+   * save resumed in developer mode records no win either.
+   */
+  readonly developerMode?: boolean;
 }
 
 type SnapshotSubscriberV7 = (snapshot: Ruleset7BrowserSnapshot) => void;
@@ -306,6 +318,8 @@ export class Ruleset7BrowserController {
     ((where: string, error: unknown) => void) | null;
   readonly #campaign: CampaignProgressStoreV7;
   #campaignLastWin: Ruleset7CampaignProgressV7["lastWin"] = null;
+  /** Developer mode: mission wins are not recorded (`pulp_wars-5xki`). */
+  #developerMode = false;
   #campaignDiagnostic: string | null = null;
   readonly #tribeStars: TribeStarsStoreV7;
   #tribeStarsLastAward: Ruleset7TribeStarsV7["lastAward"] = null;
@@ -338,6 +352,7 @@ export class Ruleset7BrowserController {
   #maximumSliceMilliseconds = 0;
 
   constructor(options: Ruleset7BrowserControllerOptions = {}) {
+    this.#developerMode = options.developerMode === true;
     this.#saveWarning = options.initialSaveWarning ?? null;
     this.#savedHistoryVerifier = options.savedHistoryVerifier ?? null;
     this.#readClock = options.policyReadClock ?? defaultReadClockV7;
@@ -438,6 +453,16 @@ export class Ruleset7BrowserController {
       diagnostic:
         loaded.kind === "VALID" ? this.#campaignDiagnostic : loaded.diagnostic,
     });
+  }
+
+  /**
+   * Developer mode (`pulp_wars-5xki`, docs/product/CAMPAIGN.md section
+   * 25): while it is on, a mission win is not recorded in the campaign
+   * progress, so testing never shortcuts the campaign graph or the faction
+   * locks.
+   */
+  setDeveloperMode(on: boolean): void {
+    this.#developerMode = on;
   }
 
   /** Erases campaign progress (Reset, and the unreadable recovery). */
@@ -1223,12 +1248,14 @@ export class Ruleset7BrowserController {
 
   /**
    * Records the human's win of a chapter mission (CAMPAIGN.md section 4.1).
-   * Skirmishes, hidden fixture missions, and defeats record nothing.
+   * Skirmishes, hidden fixture missions, defeats, and wins in developer
+   * mode (section 25) record nothing.
    */
   #recordCampaignOutcome(state: GameStateV7): void {
     const outcome = state.outcome;
     const missionId = state.setup.mission?.id;
     if (
+      this.#developerMode ||
       outcome?.kind !== "VICTORY" ||
       outcome.winnerId !== state.humanPlayerId ||
       state.setup.mapType !== "MISSION" ||
@@ -1258,6 +1285,7 @@ export class Ruleset7BrowserController {
       missionId,
       firstWin: recorded.firstWin,
       opened: campaignNewlyOpenedV7(before, after),
+      factions: factionsNewlyUnlockedV7(before, after),
     };
   }
 

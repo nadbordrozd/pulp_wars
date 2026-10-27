@@ -549,6 +549,8 @@ async function showcase(
 function url(params: Record<string, string>): string {
   const next = new URL(baseUrl.href);
   next.search = "";
+  // Developer mode (pulp_wars-5xki): the Gallery and every faction.
+  next.searchParams.set("dev", "1");
   for (const [key, value] of Object.entries(params))
     next.searchParams.set(key, value);
   return next.href;

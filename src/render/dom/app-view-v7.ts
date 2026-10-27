@@ -71,11 +71,16 @@ import type {
   CampaignIdV7,
 } from "../../campaign/campaigns";
 import {
-  CampaignCheatGestureV7,
-  campaignCheatFromSearchV7,
-  loadCampaignCheatV7,
-  saveCampaignCheatV7,
-} from "../../campaign/cheat-v7";
+  DevModeGestureV7,
+  saveDevModeV7,
+  startupDevModeV7,
+} from "../../campaign/dev-mode-v7";
+import {
+  factionLockTextV7,
+  factionLockV7,
+  unlockedFactionV7,
+  type FactionLockV7,
+} from "../../campaign/faction-locks-v7";
 import {
   missionMarkersV7,
   missionObjectiveIconV7,
@@ -1148,6 +1153,7 @@ function syncFactionFieldsV7(
   fieldset: HTMLElement,
   draft: DraftV7,
   emblem: (faction: FactionIdV7) => HTMLElement,
+  locked: (faction: FactionIdV7) => boolean = () => false,
 ): void {
   const shown = draft.factions.slice(0, draft.aiCount + 1);
   shown.forEach((faction, seat) => {
@@ -1162,12 +1168,16 @@ function syncFactionFieldsV7(
       cell.style.setProperty("--player", factionColourV7(faction));
       cell.querySelector(".v7-faction-emblem")?.replaceWith(emblem(faction));
     }
+    // Faction locks (pulp_wars-5xki): "Your faction" does not offer a
+    // locked faction; an opponent may play any.
     for (const option of Array.from(field.options))
       option.disabled =
-        seat !== 0 &&
-        shown.some(
-          (other, otherSeat) => otherSeat !== seat && other === option.value,
-        );
+        seat === 0
+          ? option.value !== faction && locked(option.value as FactionIdV7)
+          : shown.some(
+              (other, otherSeat) =>
+                otherSeat !== seat && other === option.value,
+            );
     if (field.value !== faction) field.value = faction;
   });
   syncPickersV7(fieldset);
@@ -1621,7 +1631,7 @@ export type Ruleset7ControllerPortV7 = Pick<
   Partial<
     Pick<
       Ruleset7BrowserController,
-      "campaignProgress" | "resetCampaignProgress"
+      "campaignProgress" | "resetCampaignProgress" | "setDeveloperMode"
     >
   > &
   // Tribe stars (pulp_wars-kaw6.4); a port without them shows no stars and
@@ -1779,6 +1789,8 @@ export function feedbackSoundCuesV7(
 
 /** The main menu's first button, focused when the menu is entered. */
 const MENU_FIRST_V7 = ".v7-main-menu button";
+/** How long a front screen's visible notice ("Developer mode on") stays. */
+const FRONT_TOAST_MS_V7 = 2400;
 
 interface DraftV7 {
   /** Opponents: 1 up to one less than the faction count (map scale 6.1). */
@@ -2207,16 +2219,25 @@ export class Ruleset7DomAppView {
   /**
    * The campaign map (pulp_wars-hmyk.3): the campaign whose mission list
    * is open (null: the map), a line the map says after a tap on a closed
-   * plate, the testing cheat "All missions unlocked", and its gestures.
+   * plate.
    */
   #campaignId: CampaignIdV7 | null = null;
   #campaignNote = "";
   /** The tier of the plate the note is about: it stands under that row. */
   #campaignNoteTier = 0;
-  #campaignCheat = false;
+  /**
+   * Developer mode (`pulp_wars-5xki`, src/campaign/dev-mode-v7.ts): every
+   * campaign and mission open, the Gallery in the menu, every faction
+   * offered, nothing sent to the leaderboard or the play statistics. Its
+   * secret gestures, and the front screens' short visible notice (the
+   * front's live region is spoken only) with its timer.
+   */
+  #devMode = false;
+  readonly #devGesture = new DevModeGestureV7();
+  #frontToast = "";
+  #frontToastTimer: ReturnType<typeof setTimeout> | null = null;
   /** Campaign pictures that failed to load: their plates draw the portrait. */
   readonly #failedCampaignPictures = new Set<string>();
-  readonly #cheatGesture = new CampaignCheatGestureV7();
   #confirmCampaignReset = false;
   /** Front Settings: "Reset tribe stars" is waiting for confirmation. */
   #confirmStarsReset = false;
@@ -2404,19 +2425,16 @@ export class Ruleset7DomAppView {
     } catch {
       // Without storage the tutorial is offered as new on every visit.
     }
-    // The campaign's testing cheat: stored, or set by the address.
-    this.#campaignCheat = loadCampaignCheatV7(this.#settingsStorage);
+    // Developer mode: stored, or set by the address.
     let search = "";
     try {
       search = documentRoot.defaultView?.location.search ?? "";
     } catch {
       // No address: the stored switch stands.
     }
-    const fromAddress = campaignCheatFromSearchV7(search);
-    if (fromAddress !== null && fromAddress !== this.#campaignCheat) {
-      this.#campaignCheat = fromAddress;
-      saveCampaignCheatV7(this.#settingsStorage, fromAddress);
-    }
+    this.#devMode = startupDevModeV7(this.#settingsStorage, search);
+    this.#analytics.setDeveloperMode?.(this.#devMode);
+    this.#controller.setDeveloperMode?.(this.#devMode);
     this.#controllerSnapshot = controller.snapshot();
     this.#snapshot = this.#tutorialSnapshot(this.#controllerSnapshot);
     this.#document.addEventListener("keydown", this.#onKeyDown);
@@ -2488,6 +2506,7 @@ export class Ruleset7DomAppView {
   destroy(): void {
     if (this.#destroyed) return;
     this.#destroyed = true;
+    if (this.#frontToastTimer !== null) clearTimeout(this.#frontToastTimer);
     if (CHIBI_ECONOMY_ICONS.get(this.#document) === this.#economyIcons)
       CHIBI_ECONOMY_ICONS.delete(this.#document);
     this.#document.removeEventListener("keydown", this.#onKeyDown);
@@ -3094,6 +3113,18 @@ export class Ruleset7DomAppView {
       live(this.#document, "v7-live", this.#notice, "polite"),
       live(this.#document, "v7-alert", this.#error, "assertive"),
     );
+    // Developer mode (pulp_wars-5xki): "Developer mode on", seen briefly.
+    if (this.#frontToast !== "") {
+      const toast = text(
+        this.#document,
+        "p",
+        this.#frontToast,
+        "v7-toast v7-front-toast",
+      );
+      toast.dataset.v7Region = "front-toast";
+      toast.setAttribute("aria-hidden", "true");
+      shell.append(toast);
+    }
     if (this.#snapshot.saveWarning !== null)
       shell.append(
         text(
@@ -3191,7 +3222,10 @@ export class Ruleset7DomAppView {
   #mainMenu(resumable: boolean): HTMLElement {
     const main = el(this.#document, "main", "v7-front-screen v7-menu-screen");
     main.dataset.v7Front = "menu";
-    main.append(this.#brand());
+    const brand = this.#brand();
+    // Developer mode (pulp_wars-5xki): seven quick taps of the logo.
+    this.#listenForDevTaps(brand.querySelector<HTMLElement>("h1"));
+    main.append(brand);
     const nav = el(this.#document, "nav", "v7-main-menu");
     nav.setAttribute("aria-label", "Main menu");
     if (resumable) {
@@ -3261,8 +3295,14 @@ export class Ruleset7DomAppView {
       board.onclick = () => this.#openFrontPage("LEADERBOARD");
       boardItems.push(board);
     }
-    const gallery = this.#menuButton("Gallery", "gallery", "sight");
-    gallery.onclick = () => this.#openGallery();
+    // The Gallery is a developer's screen (pulp_wars-5xki): listed only in
+    // developer mode.
+    const galleryItems: HTMLButtonElement[] = [];
+    if (this.#devMode) {
+      const gallery = this.#menuButton("Gallery", "gallery", "sight");
+      gallery.onclick = () => this.#openGallery();
+      galleryItems.push(gallery);
+    }
     const settings = this.#menuButton("Settings", "front-settings", "gear");
     settings.onclick = () => this.#openFrontPage("SETTINGS");
     // The credits (bead pulp_wars-2yc.92), last in the stack.
@@ -3274,7 +3314,7 @@ export class Ruleset7DomAppView {
         play,
         campaign,
         ...boardItems,
-        gallery,
+        ...galleryItems,
         settings,
         about,
       );
@@ -3284,7 +3324,7 @@ export class Ruleset7DomAppView {
         tutorial,
         campaign,
         ...boardItems,
-        gallery,
+        ...galleryItems,
         settings,
         about,
       );
@@ -3421,15 +3461,15 @@ export class Ruleset7DomAppView {
       else this.#openFrontPage("MENU");
       return;
     }
-    // The campaign's testing cheat: "pulpwars" typed on its screen.
+    // Developer mode: "pulpwars" typed on the menu or the campaign screen.
     if (
-      this.#frontPage === "CAMPAIGN" &&
+      (this.#frontPage === "CAMPAIGN" || this.#frontPage === "MENU") &&
       !(target instanceof HTMLInputElement) &&
       !(target instanceof HTMLTextAreaElement) &&
       !(target instanceof HTMLSelectElement) &&
-      this.#cheatGesture.key(event.key)
+      this.#devGesture.key(event.key)
     ) {
-      this.#toggleCampaignCheat();
+      this.#enableDevMode();
       return;
     }
     const menu = this.#root.querySelector<HTMLElement>(".v7-main-menu");
@@ -3478,25 +3518,18 @@ export class Ruleset7DomAppView {
     const { main, panel } = this.#frontPanelScreen("campaign", "Campaign");
     main.classList.add("v7-campaign");
     main.dataset.v7Campaign = "true";
-    // The testing cheat (pulp_wars-hmyk.3): seven quick taps of the title.
+    // Developer mode (pulp_wars-5xki): seven quick taps of the title.
     const heading = panel.querySelector<HTMLElement>("#v7-front-title");
-    heading?.addEventListener("click", () => {
-      const now = this.#document.defaultView?.performance.now() ?? Date.now();
-      if (this.#cheatGesture.tap(now)) this.#toggleCampaignCheat();
-    });
-    if (this.#campaignCheat) {
-      const badge = button(
+    this.#listenForDevTaps(heading);
+    if (this.#devMode) {
+      const badge = text(
         this.#document,
+        "span",
         "All missions unlocked",
-        "campaign-cheat-off",
         "v7-campaign-cheat",
       );
-      badge.setAttribute(
-        "aria-label",
-        "All missions unlocked (testing). Turn off",
-      );
-      badge.title = "Testing: every mission can be picked. Tap to turn off.";
-      badge.onclick = () => this.#toggleCampaignCheat();
+      badge.dataset.v7Region = "campaign-dev";
+      badge.title = "Developer mode: every mission can be picked.";
       heading?.after(badge);
     }
     const progress = this.#campaignProgress();
@@ -3512,14 +3545,43 @@ export class Ruleset7DomAppView {
     return main;
   }
 
-  /** Turns "All missions unlocked" on or off, and remembers it. */
-  #toggleCampaignCheat(): void {
-    this.#campaignCheat = !this.#campaignCheat;
-    saveCampaignCheatV7(this.#settingsStorage, this.#campaignCheat);
+  /** Seven quick taps of `target` turn developer mode on. */
+  #listenForDevTaps(target: HTMLElement | null): void {
+    target?.addEventListener("click", () => {
+      const now = this.#document.defaultView?.performance.now() ?? Date.now();
+      if (this.#devGesture.tap(now)) this.#enableDevMode();
+    });
+  }
+
+  /**
+   * A secret gesture: developer mode on, remembered, and said in a short
+   * notice. Gestures only turn it on; Settings turns it off.
+   */
+  #enableDevMode(): void {
+    this.#setDevMode(true);
+    this.#showFrontToast("Developer mode on");
+  }
+
+  /** Sets developer mode and remembers it in this browser. */
+  #setDevMode(on: boolean): void {
+    this.#devMode = on;
+    saveDevModeV7(this.#settingsStorage, on);
+    this.#analytics.setDeveloperMode?.(on);
+    this.#controller.setDeveloperMode?.(on);
     this.#campaignNote = "";
-    this.#notice = this.#campaignCheat
-      ? "All missions unlocked."
-      : "Missions locked again.";
+    this.#notice = on ? "Developer mode on." : "Developer mode off.";
+    this.#render();
+  }
+
+  /** A short visible notice over a front screen, gone after a moment. */
+  #showFrontToast(message: string): void {
+    this.#frontToast = message;
+    if (this.#frontToastTimer !== null) clearTimeout(this.#frontToastTimer);
+    this.#frontToastTimer = setTimeout(() => {
+      this.#frontToastTimer = null;
+      this.#frontToast = "";
+      if (!this.#destroyed) this.#render();
+    }, FRONT_TOAST_MS_V7);
     this.#render();
   }
 
@@ -3557,7 +3619,7 @@ export class Ruleset7DomAppView {
    * greyed with a lock and says why.
    */
   #campaignMap(progress: Ruleset7CampaignProgressV7): HTMLElement {
-    const plates = campaignPlatesV7(progress.completed, this.#campaignCheat);
+    const plates = campaignPlatesV7(progress.completed, this.#devMode);
     const section = el(this.#document, "section", "v7-campaign-map");
     section.dataset.v7Region = "campaign-map";
     section.setAttribute("aria-label", "Campaigns");
@@ -3913,7 +3975,7 @@ export class Ruleset7DomAppView {
     for (const card of campaignMissionCardsV7(
       chapter,
       progress.completed,
-      this.#campaignCheat,
+      this.#devMode,
     )) {
       const item = el(this.#document, "li", "v7-mission-item");
       item.append(this.#missionCard(card));
@@ -4143,7 +4205,7 @@ export class Ruleset7DomAppView {
     const card = campaignMissionCardsV7(
       chapter,
       progress.completed,
-      this.#campaignCheat,
+      this.#devMode,
     ).find((candidate) => candidate.entry === entry);
     const opponents = card?.opponents ?? [];
     const allies = card?.allies ?? [];
@@ -4256,7 +4318,7 @@ export class Ruleset7DomAppView {
       chapter,
       entry,
       progress.completed,
-      this.#campaignCheat,
+      this.#devMode,
     );
     start.disabled = chosen === null || status === "LOCKED";
     start.onclick = () => {
@@ -4362,6 +4424,14 @@ export class Ruleset7DomAppView {
     header.classList.add("v7-title");
     header.append(this.#titleScene.root);
     header.append(text(this.#document, "h1", "Pulp Wars"));
+    // Developer mode (pulp_wars-5xki): a small tag in the corner.
+    if (this.#devMode) {
+      const tag = text(this.#document, "span", "DEV", "v7-dev-tag");
+      tag.dataset.v7Region = "dev-tag";
+      tag.title = "Developer mode is on. Settings turns it off.";
+      tag.setAttribute("aria-label", "Developer mode on");
+      header.append(tag);
+    }
     return header;
   }
 
@@ -4390,8 +4460,40 @@ export class Ruleset7DomAppView {
     body.id = "v7-front-settings";
     body.append(this.#displaySettings(), this.#tribeStarsSettings());
     if (this.#analytics.available) body.append(this.#analyticsSettings());
+    if (this.#devMode) body.append(this.#developerSettings());
     panel.append(body);
     return main;
+  }
+
+  /**
+   * Settings, while developer mode is on (pulp_wars-5xki): its switch.
+   * Turning it off returns to the normal game at once; progress is as it
+   * was, since developer mode never wrote to it.
+   */
+  #developerSettings(): HTMLElement {
+    const group = el(this.#document, "div", "v7-developer-settings");
+    group.dataset.v7Region = "developer-settings";
+    const toggle = button(
+      this.#document,
+      "Developer mode: on",
+      "developer-mode",
+      "v7-toggle",
+    );
+    toggle.setAttribute("aria-pressed", "true");
+    toggle.onclick = () => {
+      this.#frontFocus = '[data-action="front-back"]';
+      this.#setDevMode(false);
+    };
+    group.append(
+      toggle,
+      text(
+        this.#document,
+        "p",
+        "Every campaign and faction is open, and the Gallery is in the menu. Matches are not sent to the leaderboard.",
+        "v7-analytics-note",
+      ),
+    );
+    return group;
   }
 
   /**
@@ -4786,6 +4888,7 @@ export class Ruleset7DomAppView {
    * head start set under Advanced stays as set.
    */
   #setupForm(replace: boolean): HTMLFormElement {
+    this.#unlockOwnFaction();
     const form = this.#document.createElement("form");
     form.className = "v7-setup-form";
     const opponents = select(
@@ -4889,8 +4992,11 @@ export class Ruleset7DomAppView {
       )
         liveFactions.replaceWith(this.#factionFields());
       else if (liveFactions !== null)
-        syncFactionFieldsV7(liveFactions, this.#draft, (faction) =>
-          this.#factionEmblem(faction, "small"),
+        syncFactionFieldsV7(
+          liveFactions,
+          this.#draft,
+          (faction) => this.#factionEmblem(faction, "small"),
+          (faction) => this.#factionLock(faction) !== null,
         );
     });
     form.addEventListener("submit", (event) => {
@@ -4934,7 +5040,7 @@ export class Ruleset7DomAppView {
    * Advanced starts unpinned.
    */
   #quickDraft(base: DraftV7): DraftV7 {
-    const own = base.factions[0] ?? "ORIGINAL";
+    const own = this.#unlockedOwn(base.factions[0] ?? "ORIGINAL");
     const mapType = nextQuickMapTypeV7(
       loadQuickLastMapPreferenceV7(this.#settingsStorage) ?? this.#quickLastMap,
     );
@@ -5036,7 +5142,7 @@ export class Ruleset7DomAppView {
    * opponents' factions). The quick choices themselves stay.
    */
   #resetToRegular(): void {
-    const own = this.#draft.factions[0] ?? "ORIGINAL";
+    const own = this.#unlockedOwn(this.#draft.factions[0] ?? "ORIGINAL");
     const resolved = resolveSetupChoiceV7({
       mapType: this.#quickMap,
       opponents: this.#draft.aiCount,
@@ -5263,6 +5369,35 @@ export class Ruleset7DomAppView {
     const grid = el(this.#document, "div", "v7-tribe-grid");
     grid.setAttribute("role", "radiogroup");
     grid.setAttribute("aria-labelledby", heading.id);
+    // Faction locks (pulp_wars-5xki): how to unlock a greyed tribe, shown
+    // on hover, on keyboard focus and on a tap (a phone has no hover).
+    const tip = el(this.#document, "div", "v7-tribe-lock-tip");
+    tip.id = "v7-tribe-lock-tip";
+    tip.dataset.v7Region = "tribe-lock-tip";
+    tip.setAttribute("role", "tooltip");
+    tip.hidden = true;
+    const showTip = (card: HTMLButtonElement): void => {
+      const lock = this.#factionLock(card.dataset.faction as FactionIdV7);
+      if (lock === null) return;
+      tip.textContent = factionLockTextV7(lock);
+      tip.dataset.faction = lock.faction;
+      tip.hidden = false;
+      card.setAttribute("aria-describedby", tip.id);
+      // Under the card, kept inside the picker at either edge.
+      const box = section.getBoundingClientRect();
+      const at = card.getBoundingClientRect();
+      const width = tip.getBoundingClientRect().width;
+      const centre = at.left + at.width / 2 - box.left;
+      const left = Math.max(0, Math.min(centre - width / 2, box.width - width));
+      tip.style.left = `${Math.round(left)}px`;
+      tip.style.top = `${Math.round(at.bottom - box.top + 6)}px`;
+    };
+    const hideTip = (): void => {
+      tip.hidden = true;
+      delete tip.dataset.faction;
+      for (const card of grid.querySelectorAll("[aria-describedby]"))
+        card.removeAttribute("aria-describedby");
+    };
     for (const faction of FACTIONS) {
       const card = this.#document.createElement("button");
       card.type = "button";
@@ -5284,7 +5419,26 @@ export class Ruleset7DomAppView {
         ),
         stars,
       );
-      card.onclick = () => this.#pickTribe(form, faction);
+      card.onclick = () => {
+        // A locked tribe is not picked: the tap says how to unlock it.
+        if (this.#factionLock(faction) !== null) {
+          showTip(card);
+          return;
+        }
+        hideTip();
+        this.#pickTribe(form, faction);
+      };
+      card.addEventListener("pointerenter", (event) => {
+        if (event.pointerType === "mouse") showTip(card);
+      });
+      card.addEventListener("pointerleave", (event) => {
+        if (event.pointerType === "mouse" && tip.dataset.faction === faction)
+          hideTip();
+      });
+      card.addEventListener("focus", () => showTip(card));
+      card.addEventListener("blur", () => {
+        if (tip.dataset.faction === faction) hideTip();
+      });
       grid.append(card);
     }
     grid.addEventListener("keydown", (event) => {
@@ -5316,8 +5470,51 @@ export class Ruleset7DomAppView {
         card.tabIndex = index === next ? 0 : -1;
       cards[next]?.focus();
     });
-    section.append(bar, rules, note, grid);
+    section.append(bar, rules, note, grid, tip);
     return section;
+  }
+
+  /**
+   * Faction locks (pulp_wars-5xki, src/campaign/faction-locks-v7.ts): the
+   * faction's lock for the player's own pick of a new game, or null. Never
+   * locked in developer mode.
+   */
+  #factionLock(faction: FactionIdV7): FactionLockV7 | null {
+    return factionLockV7(
+      faction,
+      this.#campaignProgress().completed,
+      this.#devMode,
+    );
+  }
+
+  /** `wanted`, or the first faction the player may lead when it is locked. */
+  #unlockedOwn(wanted: FactionIdV7): FactionIdV7 {
+    return unlockedFactionV7(
+      wanted,
+      FACTIONS,
+      this.#campaignProgress().completed,
+      this.#devMode,
+    );
+  }
+
+  /**
+   * The draft never leads a locked faction (developer mode was turned off
+   * after one was picked): the player takes the first open one, and the
+   * opponents keep theirs.
+   */
+  #unlockOwnFaction(): void {
+    const own = this.#draft.factions[0] ?? "ORIGINAL";
+    const open = this.#unlockedOwn(own);
+    if (open === own) return;
+    this.#draft = {
+      ...this.#draft,
+      factions: distinctFactionsV7(setupMaxSeatCountV7(), [
+        open,
+        ...this.#draft.factions
+          .slice(1)
+          .map((faction) => (faction === open ? undefined : faction)),
+      ]),
+    };
   }
 
   /** Picks the human's tribe through the hidden "Your faction" select. */
@@ -5389,9 +5586,27 @@ export class Ruleset7DomAppView {
         );
       card.dataset.stars = String(stars);
       card.dataset.glow = String(glow);
+      // Faction locks (pulp_wars-5xki): greyed, with a lock, still
+      // focusable so its tooltip can be read.
+      const lock = this.#factionLock(faction);
+      card.dataset.locked = String(lock !== null);
+      if (lock === null) card.removeAttribute("aria-disabled");
+      else card.setAttribute("aria-disabled", "true");
+      const badge = card.querySelector(".v7-tribe-lock");
+      if (lock !== null && badge === null) {
+        const icon = uiIconV7(
+          this.#document,
+          "lock",
+          "v7-ui-icon v7-tribe-lock",
+        );
+        icon.setAttribute("aria-hidden", "true");
+        card.append(icon);
+      } else if (lock === null) badge?.remove();
       card.setAttribute(
         "aria-label",
-        tribeCardLabelV7(faction, stars, glow, mode),
+        lock === null
+          ? tribeCardLabelV7(faction, stars, glow, mode)
+          : `${FACTION_LABELS[faction] ?? title(faction)}, locked. ${factionLockTextV7(lock)}`,
       );
     }
     const note = picker.querySelector<HTMLElement>(".v7-tribe-records-note");
@@ -5734,8 +5949,11 @@ export class Ruleset7DomAppView {
       );
       fieldset.append(cell);
     }
-    syncFactionFieldsV7(fieldset, this.#draft, (faction) =>
-      this.#factionEmblem(faction, "small"),
+    syncFactionFieldsV7(
+      fieldset,
+      this.#draft,
+      (faction) => this.#factionEmblem(faction, "small"),
+      (faction) => this.#factionLock(faction) !== null,
     );
     return fieldset;
   }
@@ -12440,7 +12658,19 @@ export class Ruleset7DomAppView {
       result.append(
         text(this.#document, "p", entry.closing, "v7-campaign-story"),
       );
-      const lastWin = this.#campaignProgress().lastWin;
+      // Developer mode (pulp_wars-5xki): the win is not recorded, so it
+      // opens and unlocks nothing; one line says so instead.
+      if (this.#devMode) {
+        const note = text(
+          this.#document,
+          "p",
+          "Developer mode: not saved to progress",
+          "v7-dev-progress-note",
+        );
+        note.dataset.v7Region = "dev-progress-note";
+        result.append(note);
+      }
+      const lastWin = this.#devMode ? null : this.#campaignProgress().lastWin;
       // The campaigns this win opened on the map (pulp_wars-hmyk.3).
       const opened = (
         lastWin?.missionId === entry.missionId ? (lastWin.opened ?? []) : []
@@ -12458,6 +12688,25 @@ export class Ruleset7DomAppView {
             this.#document,
             "p",
             `New ${opened.length === 1 ? "campaign" : "campaigns"}: ${this.#campaignNames(opened)}`,
+          ),
+        );
+        result.append(notice);
+      }
+      // Faction locks (pulp_wars-5xki): the factions this win unlocked for
+      // a new game, one line each; developer mode has every one already.
+      const unlocked =
+        lastWin?.missionId === entry.missionId ? (lastWin.factions ?? []) : [];
+      for (const faction of unlocked) {
+        const notice = el(this.#document, "div", "v7-unlock-notice");
+        notice.dataset.v7Region = "faction-unlocked";
+        notice.dataset.faction = faction;
+        notice.setAttribute("role", "status");
+        notice.append(
+          this.#factionEmblem(faction, "small"),
+          text(
+            this.#document,
+            "p",
+            `New faction unlocked: ${FACTION_LABELS[faction] ?? title(faction)}`,
           ),
         );
         result.append(notice);
@@ -12542,7 +12791,8 @@ export class Ruleset7DomAppView {
    * being typed survives them; the focus inside it is given back.
    */
   #boardSubmitPanel(view: PlayerViewV7): HTMLElement | null {
-    if (!this.#publicBoard.available) return null;
+    // Developer mode (pulp_wars-5xki): testing never reaches the board.
+    if (!this.#publicBoard.available || this.#devMode) return null;
     const claim = leaderboardClaimV7(view);
     if (claim === null) return null;
     let state = this.#boardSubmit;
@@ -12956,9 +13206,14 @@ export class Ruleset7DomAppView {
             `#v7-faction-${seat}`,
           );
           if (field === null) return prior;
-          return FACTIONS.includes(field.value as FactionIdV7)
+          const chosen = FACTIONS.includes(field.value as FactionIdV7)
             ? (field.value as FactionIdV7)
             : "ORIGINAL";
+          // Faction locks (pulp_wars-5xki): the player never leads a
+          // locked faction in a new game.
+          return seat === 0 && this.#factionLock(chosen) !== null
+            ? this.#unlockedOwn(prior)
+            : chosen;
         }),
       ),
     };

@@ -45,7 +45,9 @@ ad_personalization: 'denied'})`. Then `js` and `config`, with
 
 ## Events
 
-Sent only while the player has accepted. Parameters are short lowercase words
+Sent only while the player has accepted, and never in developer mode
+(`pulp_wars-5xki`, [Campaign mode](product/CAMPAIGN.md) section 25: testing
+is not play). Parameters are short lowercase words
 and numbers; no names, save data or free text. Factions are their ids in lower
 case, with `ORIGINAL` sent as `human`.
 

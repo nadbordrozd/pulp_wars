@@ -5,7 +5,7 @@ import { bootstrapRuleset7App } from "../../src/app/index";
 import { campaignPictureAssetV7 } from "../../src/assets/campaign-pictures-manifest";
 import type * as CampaignsModule from "../../src/campaign/campaigns";
 import { CAMPAIGNS_V7, type CampaignIdV7 } from "../../src/campaign/campaigns";
-import { CAMPAIGN_CHEAT_STORAGE_KEY_V7 } from "../../src/campaign/cheat-v7";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 import { fixtureLastMissionV7 } from "../fixtures/v7-campaign-graph";
 import {
@@ -31,7 +31,7 @@ vi.mock("../../src/campaign/campaigns", async (importOriginal) => {
 /**
  * The campaign map (`pulp_wars-hmyk.3`, docs/product/CAMPAIGN.md section
  * 14): the unlock graph's states, locked against coming soon, a campaign's
- * mission list in order, and the testing cheat by taps, keys and address.
+ * mission list in order, and developer mode by taps, keys and address.
  */
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -384,21 +384,24 @@ describe("Ruleset 7 campaign map", () => {
     app.destroy();
   });
 
-  it("seven quick taps of the title unlock every mission, shown by a badge and remembered; again turns it off", async () => {
+  it("seven quick taps of the title turn developer mode on: every mission open, a badge, remembered; taps never turn it off", async () => {
     const app = bootstrapRuleset7App(document);
     await openMap();
     tapTitle(6);
     await settle();
     expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
+      document.querySelector('[data-v7-region="campaign-dev"]'),
     ).toBeNull();
     tapTitle(1);
     await settle();
-    const badge = requiredButton('[data-action="campaign-cheat-off"]');
-    expect(badge.textContent).toBe("All missions unlocked");
-    expect(window.localStorage.getItem(CAMPAIGN_CHEAT_STORAGE_KEY_V7)).toBe(
-      "1",
+    const badge = required(
+      document.querySelector<HTMLElement>('[data-v7-region="campaign-dev"]'),
     );
+    expect(badge.textContent).toBe("All missions unlocked");
+    expect(
+      document.querySelector('[data-v7-region="front-toast"]')?.textContent,
+    ).toBe("Developer mode on");
+    expect(window.localStorage.getItem(DEV_MODE_STORAGE_KEY_V7)).toBe("1");
     expect(plates()).toEqual({
       HUMANS: "open",
       UNDEAD: "open",
@@ -420,28 +423,27 @@ describe("Ruleset 7 campaign map", () => {
     ).toEqual(["open", "open"]);
     // The badge stays on every campaign screen.
     expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
+      document.querySelector('[data-v7-region="campaign-dev"]'),
     ).not.toBeNull();
     requiredButton('[data-action="mission-test_guard_raid"]').click();
     await settle();
     const start = requiredButton('[data-action="campaign-start"]');
     expect(start.disabled).toBe(false);
-    // Seven more taps turn it off.
+    // Seven more taps leave it on: only Settings turns it off.
     tapTitle(7);
     await settle();
     expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
-    ).toBeNull();
+      document.querySelector('[data-v7-region="campaign-dev"]'),
+    ).not.toBeNull();
+    expect(window.localStorage.getItem(DEV_MODE_STORAGE_KEY_V7)).toBe("1");
+    // The stored progress is untouched: developer mode is a view over it.
     expect(
-      window.localStorage.getItem(CAMPAIGN_CHEAT_STORAGE_KEY_V7),
+      window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).toBeNull();
-    expect(requiredButton('[data-action="campaign-start"]').disabled).toBe(
-      true,
-    );
     app.destroy();
   });
 
-  it("typing 'pulpwars' toggles it, and the badge turns it off", async () => {
+  it("typing 'pulpwars' turns it on, and Settings turns it off", async () => {
     const app = bootstrapRuleset7App(document);
     await openMap();
     for (const key of "pulpwars")
@@ -450,43 +452,55 @@ describe("Ruleset 7 campaign map", () => {
       );
     await settle();
     expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
+      document.querySelector('[data-v7-region="campaign-dev"]'),
     ).not.toBeNull();
     expect(plates().DINOSAURS).toBe("open");
-    requiredButton('[data-action="campaign-cheat-off"]').click();
+    requiredButton('[data-action="front-back"]').click();
     await settle();
+    requiredButton('[data-action="front-settings"]').click();
+    await settle();
+    requiredButton('[data-action="developer-mode"]').click();
+    await settle();
+    expect(document.querySelector('[data-action="developer-mode"]')).toBeNull();
+    expect(window.localStorage.getItem(DEV_MODE_STORAGE_KEY_V7)).toBeNull();
+    requiredButton('[data-action="front-back"]').click();
+    await settle();
+    await openMap();
     expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
+      document.querySelector('[data-v7-region="campaign-dev"]'),
     ).toBeNull();
     expect(plates().DINOSAURS).toBe("locked");
     app.destroy();
   });
 
-  it("?campaign-cheat=1 in the address turns it on, and =0 off", async () => {
-    window.history.replaceState(null, "", "/?campaign-cheat=1");
-    const on = bootstrapRuleset7App(document);
-    await openMap();
-    expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
-    ).not.toBeNull();
-    expect(plates().CULT).toBe("open");
-    on.destroy();
+  it("?dev=1 and the old ?campaign-cheat=1 in the address turn it on, and =0 off", async () => {
+    for (const parameter of ["dev", "campaign-cheat"]) {
+      document.body.innerHTML = '<div id="app"></div>';
+      window.history.replaceState(null, "", `/?${parameter}=1`);
+      const on = bootstrapRuleset7App(document);
+      await openMap();
+      expect(
+        document.querySelector('[data-v7-region="campaign-dev"]'),
+        parameter,
+      ).not.toBeNull();
+      expect(plates().CULT).toBe("open");
+      on.destroy();
 
-    document.body.innerHTML = '<div id="app"></div>';
-    window.history.replaceState(null, "", "/?campaign-cheat=0");
-    const off = bootstrapRuleset7App(document);
-    await openMap();
-    expect(
-      document.querySelector('[data-action="campaign-cheat-off"]'),
-    ).toBeNull();
-    expect(
-      window.localStorage.getItem(CAMPAIGN_CHEAT_STORAGE_KEY_V7),
-    ).toBeNull();
-    off.destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+      window.history.replaceState(null, "", `/?${parameter}=0`);
+      const off = bootstrapRuleset7App(document);
+      await openMap();
+      expect(
+        document.querySelector('[data-v7-region="campaign-dev"]'),
+        parameter,
+      ).toBeNull();
+      expect(window.localStorage.getItem(DEV_MODE_STORAGE_KEY_V7)).toBeNull();
+      off.destroy();
+    }
   });
 
-  it("with the cheat, a mission of a locked campaign starts", async () => {
-    window.localStorage.setItem(CAMPAIGN_CHEAT_STORAGE_KEY_V7, "1");
+  it("in developer mode, a mission of a locked campaign starts", async () => {
+    window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
     const app = bootstrapRuleset7App(document);
     await openMap();
     plate("DWARVES").click();

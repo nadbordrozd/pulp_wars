@@ -417,6 +417,44 @@
   font-size: var(--pw-fs-xs);
 }
 
+/*
+ * Developer mode (pulp_wars-5xki): its Settings switch, the small DEV tag
+ * in a front screen's corner, and the short "Developer mode on" notice.
+ */
+.v7-developer-settings {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  margin-top: 0.6rem;
+  padding-top: 1rem;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-dev-tag {
+  position: fixed;
+  z-index: 2;
+  top: max(0.5rem, env(safe-area-inset-top));
+  right: max(0.5rem, env(safe-area-inset-right));
+  padding: 0.1rem 0.45rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+/* At the foot of the screen, clear of the logo and the menu's stack. */
+.v7-front-shell > .v7-front-toast {
+  position: fixed;
+  top: auto;
+  bottom: max(1.25rem, calc(env(safe-area-inset-bottom) + 0.75rem));
+  margin: 0;
+}
+
 /* ---------- Loading screen (asset preload) ---------- */
 
 /*
@@ -1955,6 +1993,14 @@
 .v7-briefing-actions .primary-action {
   min-height: 3.4rem;
   font-size: var(--pw-fs-lg);
+}
+
+/* Developer mode (pulp_wars-5xki): a dev-mode win is not recorded. */
+.v7-dev-progress-note {
+  margin: 0;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-unlock-notice {
@@ -10310,6 +10356,57 @@ body:has(> #app [data-v7-gallery]) {
     var(--pw-glow-clear) 100%
   );
   filter: drop-shadow(0 0 4px var(--pw-glow));
+}
+
+/*
+ * Faction locks (pulp_wars-5xki): a locked tribe is greyed with a lock in
+ * its corner; its tooltip (under the card, kept inside the picker) says
+ * how to unlock it.
+ */
+.v7-tribe-picker {
+  position: relative;
+}
+
+.v7-tribe-card {
+  position: relative;
+}
+
+.v7-tribe-card[data-locked="true"] {
+  border-style: dashed;
+  background: var(--pw-surface-2);
+  color: var(--pw-text-2);
+  cursor: help;
+}
+
+.v7-tribe-card[data-locked="true"] > .v7-faction-emblem,
+.v7-tribe-card[data-locked="true"] > .v7-tribe-stars {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+.v7-tribe-card > .v7-tribe-lock {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.v7-tribe-lock-tip {
+  position: absolute;
+  z-index: 4;
+  width: max-content;
+  max-width: min(20rem, 100%);
+  padding: 0.35rem 0.6rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-ink);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-yellow);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
+  line-height: 1.3;
+  pointer-events: none;
 }
 
 /* Section 7, item 6: the Showcase and unusable records show no stars. */

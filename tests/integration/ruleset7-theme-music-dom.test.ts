@@ -17,6 +17,7 @@ import {
   type FakeAudioDeviceV1,
 } from "../fixtures/fake-audio-context";
 import { RecordingBoardHost } from "../fixtures/v7-dom-rig";
+import { DEV_MODE_STORAGE_KEY_V7 } from "../../src/campaign/dev-mode-v7";
 
 /**
  * Where the themes play (bead pulp_wars-2yc.27, docs/ui/SOUND.md "Where
@@ -101,6 +102,8 @@ function chooseFaction(faction: string): void {
 
 beforeEach(() => {
   window.localStorage.clear();
+  // The Gallery is listed in developer mode only (pulp_wars-5xki).
+  window.localStorage.setItem(DEV_MODE_STORAGE_KEY_V7, "1");
   fetched = [];
   vi.stubGlobal(
     "fetch",

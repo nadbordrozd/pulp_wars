@@ -437,6 +437,18 @@ describe("events", () => {
     );
   });
 
+  it("are not sent in developer mode (pulp_wars-5xki)", () => {
+    const fake = page({ stored: "granted" });
+    const analytics = createGameAnalyticsV7("LIVE", fake.browser);
+    analytics.setDeveloperMode?.(true);
+    analytics.matchStarted(SKIRMISH, "quick_start", null);
+    analytics.tutorialCompleted();
+    expect(fake.events()).toEqual([]);
+    analytics.setDeveloperMode?.(false);
+    analytics.tutorialCompleted();
+    expect(fake.events().map(([name]) => name)).toEqual(["tutorial_complete"]);
+  });
+
   it("are sent only with consent, never with names or free text", () => {
     const fake = page();
     const analytics = createGameAnalyticsV7("LIVE", fake.browser);
