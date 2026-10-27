@@ -42,7 +42,6 @@ import {
 } from "../../src/render/canvas/visual-direction-v7";
 import {
   FACTION_BUILDINGS_HELP_V7,
-  countsAsTextV7,
   factionBuildCommandV7,
   factionBuildingV7,
   factionBuildingsV7,
@@ -268,17 +267,15 @@ describe("faction building subjects and names", () => {
       "DWARF:WINDMILL": "Steam Pump",
     });
     for (const entry of named) {
-      expect(
-        entry.building.flavour.endsWith(countsAsTextV7(entry.improvement)),
-      ).toBe(true);
+      // Bead pulp_wars-a7eb: flavour only, no "Counts as a Farm." note.
+      expect(entry.building.flavour).not.toMatch(/counts? as/i);
       // No coordinates and no numbers: the rules keep theirs elsewhere.
       expect(entry.building.flavour).not.toMatch(/\d/);
       expect(entry.building.flavour.length).toBeLessThan(80);
     }
     expect(factionBuildingV7("FARM", "UNDEAD")?.flavour).toBe(
-      "Quiet plots, tended for later. Counts as a Farm.",
+      "Quiet plots, tended for later.",
     );
-    expect(countsAsTextV7("WINDMILL")).toBe("Counts as a Windmill.");
     expect(factionBuildingV7("FARM", "GOBLIN")).toBeNull();
     expect(factionBuildingV7("FARM", null)).toBeNull();
     expect(factionBuildingV7("FORGE", "UNDEAD")).toBeNull();

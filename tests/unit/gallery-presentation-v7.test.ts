@@ -343,8 +343,7 @@ describe("Gallery presentation", () => {
     expect(graveyard).toMatchObject({
       name: "Graveyard",
       factionName: "Undead",
-      description:
-        "Quiet plots, tended for later. Counts as a Farm. Built on Fertile Ground.",
+      description: "Quiet plots, tended for later. Built on Fertile Ground.",
       cost: 5,
       effects: ["+2 population"],
       technology: { id: "FARMING" },
@@ -360,7 +359,7 @@ describe("Gallery presentation", () => {
     expect(galleryBuildingDetailsV7("WINDMILL", "MARTIAN")).toMatchObject({
       name: "Solar Array",
       effects: [
-        "+1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn",
+        "+1 per adjacent farm; heals your units next to it at the start of your turn (up to 6)",
       ],
     });
   });
@@ -376,7 +375,7 @@ describe("Gallery presentation", () => {
     expect(galleryBuildingDetailsV7("WINDMILL", null)).toMatchObject({
       cost: 5,
       effects: [
-        "+1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn",
+        "+1 per adjacent farm; heals your units next to it at the start of your turn (up to 6)",
       ],
       technology: { id: "MILLING" },
     });

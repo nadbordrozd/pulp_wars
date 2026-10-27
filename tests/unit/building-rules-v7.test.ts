@@ -26,10 +26,20 @@ import {
   MILL_POPULATION_CAPS_V7,
   TECHNOLOGY_CARD_LINE_LIMIT_V7,
   buildCommandImprovementV7,
+  buildingHealingTextV7,
   buildingRuleTextV7,
 } from "../../src/render/building-rules-v7";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
-import { factionBuildingV7 } from "../../src/render/faction-buildings-v7";
+import { economicFormulaV7 } from "../../src/render/economy-presentation-v7";
+import {
+  FACTION_BUILDINGS_HELP_V7,
+  factionBuildingV7,
+  factionBuildingsV7,
+} from "../../src/render/faction-buildings-v7";
+import {
+  GALLERY_BUILDING_ROWS_V7,
+  galleryBuildingDetailsV7,
+} from "../../src/render/gallery-presentation-v7";
 import {
   allTechsV7,
   exploredAllV7,
@@ -111,7 +121,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Shipyard: one per city, upgrades one of your active Ports; +1 more population",
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Ice Folk Fishing
       // Hole.
-      "Fishing Hole: on your own ice in your borders; counts as a Farm; +1 population",
+      "Fishing Hole: on your own ice; feeds mills and Markets like a Farm; +1 population",
     ]);
     // The Ice Folk lines name their ice (and their Frost Garden).
     expect(
@@ -136,7 +146,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Workshop: one per city, land or ice, by a Frost Garden, Fishing Hole, Lumber Camp or Mine",
       "Market: one per city, land or ice, by a farm, Fishing Hole, camp, mine or mill; 1–3 Coins",
       "Monument: on land or your ice, built with an achievement, any number per city; +3 population",
-      "Fishing Hole: on your own ice in your borders; counts as a Frost Garden; +1 population",
+      "Fishing Hole: on your own ice; feeds mills and Markets like a Frost Garden; +1 population",
     ]);
     // Bead pulp_wars-5ti.27: and its Shipyard the Great Harbour.
     expect(buildingRuleTextV7("SHIPYARD", "ICE_FOLK")).toBe(
@@ -161,7 +171,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
     expect(lines("MILLING")).toEqual([
       "Build windmill",
       "Windmill: one per city, next to your Farms; +1 population for each, max 8",
-      "Windmills heal adjacent units for 6 HP at Start Turn",
+      "Windmills heal your units next to them at the start of your turn (up to 6)",
     ]);
     expect(lines("DRILL")).toEqual([
       "Build workshop",
@@ -388,5 +398,77 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
         buildingRuleTextV7(SPATIAL_ECONOMIC_ACTIONS_V7[kind].improvement, null),
       ).toContain("one per city, next to your ");
     }
+  });
+
+  // Bead pulp_wars-a7eb (the user, 2026-10-27): "the different versions of
+  // the windmill should all offer healing to their faction. also the
+  // descriptions say stuff such as 'counts as a windmill'. don't need this."
+  it("says on every faction's Windmill card and line that it heals (pulp_wars-a7eb)", () => {
+    const heal =
+      "Heals your units next to it at the start of your turn (up to 6)";
+    const names: Record<(typeof FACTION_IDS_V7)[number], string> = {
+      ORIGINAL: "Windmill",
+      UNDEAD: "Bone Mill",
+      GOBLIN: "Windmill",
+      DINOSAUR: "Grinding Stone",
+      MARTIAN: "Solar Array",
+      ICE_FOLK: "Windmill",
+      DWARF: "Steam Pump",
+      CANDY: "Windmill",
+      CULT: "Windmill",
+    };
+    expect(Object.keys(names).sort()).toEqual([...FACTION_IDS_V7].sort());
+    expect(buildingHealingTextV7("WINDMILL")).toBe(heal);
+    for (const improvement of IMPROVEMENT_IDS_V7)
+      if (improvement !== "WINDMILL")
+        expect(buildingHealingTextV7(improvement)).toBeNull();
+    for (const faction of FACTION_IDS_V7) {
+      const name = names[faction];
+      expect(factionBuildingV7("WINDMILL", faction)?.name ?? "Windmill").toBe(
+        name,
+      );
+      const milling = factionTreeV7(faction).nodes.find(
+        (node) => node.id === "MILLING",
+      );
+      if (milling === undefined) throw new Error(`${faction}: no Milling`);
+      const lines = cardLines(milling, faction);
+      expect(lines).toContain(
+        `${name}s heal your units next to them at the start of your turn (up to 6)`,
+      );
+      for (const line of lines) {
+        expect(line.length).toBeLessThanOrEqual(TECHNOLOGY_CARD_LINE_LIMIT_V7);
+        expect(line).not.toMatch(/counts? as/i);
+      }
+      // The Gallery's Windmill row: its effects say it heals.
+      expect(galleryBuildingDetailsV7("WINDMILL", faction).effects).toContain(
+        "+1 per adjacent farm; heals your units next to it at the start of your turn (up to 6)",
+      );
+    }
+    expect(
+      economicFormulaV7("WINDMILL", "ADJACENT_FRIENDLY_CONTRIBUTORS"),
+    ).toBe(
+      "Windmill: +1 per adjacent farm; heals your units next to it at the start of your turn (up to 6)",
+    );
+  });
+
+  it("has no 'counts as' note in any building text (pulp_wars-a7eb)", () => {
+    const texts = [
+      FACTION_BUILDINGS_HELP_V7,
+      ...factionBuildingsV7().map((entry) => entry.building.flavour),
+      ...[null, ...FACTION_IDS_V7].flatMap((faction) => [
+        ...IMPROVEMENT_IDS_V7.map((improvement) =>
+          buildingRuleTextV7(improvement, faction),
+        ),
+        ...GALLERY_BUILDING_ROWS_V7.flatMap((row) => {
+          const details = galleryBuildingDetailsV7(row, faction);
+          return [details.description, ...details.effects];
+        }),
+      ]),
+    ];
+    for (const text of texts) expect(text).not.toMatch(/counts? as/i);
+    // The Fishing Hole still says what it feeds, plainly.
+    expect(buildingRuleTextV7("FISHING_HOLE", "ICE_FOLK")).toBe(
+      "Fishing Hole: on your own ice; feeds mills and Markets like a Frost Garden; +1 population",
+    );
   });
 });

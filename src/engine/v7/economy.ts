@@ -19,6 +19,7 @@ import {
 } from "./curiosities";
 import type { DomainEventV7 } from "./events";
 import { missionDefinitionV7 } from "./missions/index";
+import { WINDMILL_HEAL_V7, windmillHealsUnitV7 } from "./recovery";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
 import {
@@ -1476,12 +1477,10 @@ function resolveWindmillHealingV7(
       .filter(
         (unit) =>
           unit.ownerId === playerId &&
-          unit.hp > 0 &&
-          // Revision 19 section 6.2: a Windmill never heals an Egg. The Dwarf
-          // revision section 7.2: nor a construct.
-          unit.form !== "EGG" &&
-          !unitRoleMechanicsV7(state, unit).construct &&
-          unit.hp < unit.maxHp &&
+          // Every faction's Windmill heals its owner's units, a Dwarf
+          // construct too (`pulp_wars-a7eb`, 7r118); never an Egg or a
+          // daemon.
+          windmillHealsUnitV7(unit) &&
           !assigned.has(unit.id) &&
           Math.max(
             Math.abs(unit.at.x - source.at.x),
@@ -1490,7 +1489,7 @@ function resolveWindmillHealingV7(
       )
       .sort((left, right) => left.id - right.id)
       .map((unit) => {
-        const amount = Math.min(6, unit.maxHp - unit.hp);
+        const amount = Math.min(WINDMILL_HEAL_V7, unit.maxHp - unit.hp);
         assigned.add(unit.id);
         amounts.set(unit.id, amount);
         return { unitId: unit.id, amount, hpAfter: unit.hp + amount };

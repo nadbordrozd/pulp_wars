@@ -31,8 +31,9 @@ import {
 /**
  * Faction building looks in the interface (epic pulp_wars-xdh, bead
  * pulp_wars-xdh.2, docs/ui/SCREEN_FLOW.md "Faction buildings"): the tile
- * dock and the build buttons name a building as its faction has it, add one
- * flavour line that says what it counts as, and the Help mentions it.
+ * dock and the build buttons name a building as its faction has it and add
+ * one flavour line (bead pulp_wars-a7eb: flavour only, no "Counts as a
+ * Farm." note); every faction's Windmill says it heals.
  */
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
@@ -58,6 +59,8 @@ function fixture(
   viewer: FactionIdV7,
   opponent: FactionIdV7,
   owner: "VIEWER" | "OPPONENT" = "VIEWER",
+  // Bead pulp_wars-a7eb: the second building may be a Windmill.
+  second: "FORGE" | "WINDMILL" = "FORGE",
 ): Fixture {
   const state = undeadUiArenaV7([], [], [viewer, opponent]);
   const live = viewForV7(state, state.humanPlayerId);
@@ -94,7 +97,7 @@ function fixture(
       return {
         ...tile,
         resource: null,
-        improvement: "FORGE",
+        improvement: second,
         territoryOwnerId: ownerId,
       };
     return tile;
@@ -148,9 +151,7 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     ).toBeNull();
     const details = openDockDetailsV7();
     const flavour = details.querySelector<HTMLElement>(".v7-building-flavour");
-    expect(flavour?.textContent).toBe(
-      "Quiet plots, tended for later. Counts as a Farm.",
-    );
+    expect(flavour?.textContent).toBe("Quiet plots, tended for later.");
     expect(flavour?.dataset.factionBuilding).toBe("UNDEAD:FARM");
     expect(details.querySelectorAll(".v7-building-flavour")).toHaveLength(1);
     closeDetailsV7();
@@ -226,7 +227,7 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     expect(dockTitle()).toBe("Graveyard");
     expect(
       openDockDetailsV7().querySelector(".v7-building-flavour")?.textContent,
-    ).toContain("Counts as a Farm.");
+    ).toBe("Quiet plots, tended for later.");
     second.app.destroy();
   });
 
@@ -242,16 +243,58 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     const graveyard = required<HTMLButtonElement>(
       '[data-action="command-build_farm"]',
     );
-    expect(graveyard.title).toBe(
-      "Graveyard · Quiet plots, tended for later. Counts as a Farm.",
-    );
+    expect(graveyard.title).toBe("Graveyard · Quiet plots, tended for later.");
     expect(graveyard.dataset.factionBuilding).toBe("true");
+    // Bead pulp_wars-a7eb: the faction's Windmill says it heals.
+    expect(
+      required<HTMLButtonElement>('[data-action="command-build_windmill"]')
+        .title,
+    ).toBe(
+      "Bone Mill · Grinds old bones into something useful. · Heals your units next to it at the start of your turn (up to 6)",
+    );
     const forge = required<HTMLButtonElement>(
       '[data-action="command-build_forge"]',
     );
     expect(forge.title).toBe("Forge");
     expect(forge.dataset.factionBuilding).toBeUndefined();
     app.destroy();
+  });
+
+  it("says in the dock of every faction's Windmill that it heals (pulp_wars-a7eb)", () => {
+    // The arena takes no Martian seat; the Solar Array's lines are checked
+    // in tests/unit/building-rules-v7.test.ts.
+    for (const [faction, name] of [
+      ["ORIGINAL", "Windmill"],
+      ["UNDEAD", "Bone Mill"],
+      ["DINOSAUR", "Grinding Stone"],
+      ["DWARF", "Steam Pump"],
+      ["GOBLIN", "Windmill"],
+      ["ICE_FOLK", "Windmill"],
+      ["CANDY", "Windmill"],
+      ["CULT", "Windmill"],
+    ] as const) {
+      document.body.innerHTML = '<div id="app"></div>';
+      const data = fixture(
+        faction,
+        faction === "ORIGINAL" ? "UNDEAD" : "ORIGINAL",
+        "VIEWER",
+        "WINDMILL",
+      );
+      const { app, host } = open(data);
+      host.callbacks?.onSelection({ kind: "TILE", at: data.forge });
+      expect(dockTitle()).toBe(name);
+      const details = openDockDetailsV7();
+      const healing = details.querySelector<HTMLElement>(
+        ".v7-building-healing",
+      );
+      expect(healing?.textContent).toBe(
+        "Heals your units next to it at the start of your turn (up to 6)",
+      );
+      expect(healing?.dataset.buildingHealing).toBe("WINDMILL");
+      expect(details.textContent).not.toMatch(/counts? as/i);
+      closeDetailsV7();
+      app.destroy();
+    }
   });
 
   it("keeps a match without such a faction exactly as it was", () => {
@@ -273,9 +316,8 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     app.destroy();
   });
 
-  it("keeps it out of the short Help; the building's own tooltip says what it counts as", () => {
-    // Bead pulp_wars-2yc.39: Help has no faction lines. A faction's building
-    // still says "Counts as a Farm." where the player meets it.
+  it("keeps it out of the short Help", () => {
+    // Bead pulp_wars-2yc.39: Help has no faction lines.
     const data = fixture("ORIGINAL", "UNDEAD");
     const { app } = open(data);
     required<HTMLButtonElement>('[data-action="compact-menu"]').click();

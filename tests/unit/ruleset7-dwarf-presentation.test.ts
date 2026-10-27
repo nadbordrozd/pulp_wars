@@ -278,7 +278,7 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
     ]);
     expect(dwarfRecruitNotesV7("FIGHTER", "ORIGINAL")).toEqual([]);
     expect(dwarfRecruitNotesV7("MARKSMAN", "DWARF")[0]).toContain(
-      "only an Engineer can repair it",
+      "an Engineer or a Steam Pump heals it",
     );
   });
 });

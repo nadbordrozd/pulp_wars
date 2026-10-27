@@ -4,6 +4,7 @@ import {
   MARKET_INCOME_CAP_V7,
   MONUMENT_POPULATION_V7,
   resourceConsumedByBuildingV7,
+  WINDMILL_HEAL_V7,
   type CommandV7,
   type ConsumableResourceV7,
   type FactionIdV7,
@@ -107,7 +108,8 @@ export function buildingRuleTextV7(
   const farm = nameV7("FARM", faction);
   const population = (amount: number): string => `+${amount} population`;
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the Ice
-  // Folk build on their own ice too, and a Fishing Hole counts as a Farm.
+  // Folk build on their own ice too, and a Fishing Hole feeds the buildings
+  // a Farm feeds.
   if (faction === "ICE_FOLK") {
     const ice = iceFolkBuildingRuleTextV7(improvement, name, farm);
     if (ice !== null) return ice;
@@ -151,7 +153,7 @@ export function buildingRuleTextV7(
     case "SHIPYARD":
       return `${name}: one per city, upgrades one of your active Ports; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
     case "FISHING_HOLE":
-      return `${name}: on your own ice in your borders; counts as a ${farm}; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}`;
+      return `${name}: on your own ice; feeds mills and Markets like a ${farm}; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}`;
   }
 }
 
@@ -185,6 +187,22 @@ function iceFolkBuildingRuleTextV7(
     default:
       return null;
   }
+}
+
+/**
+ * Bead pulp_wars-a7eb (the user, 2026-10-27: "the different versions of
+ * the windmill should all offer healing to their faction"): the healing
+ * line of a building, for every faction's Windmill (its Bone Mill, Grinding
+ * Stone, Solar Array, Steam Pump, ...), or null for a building that heals
+ * nothing. The tile dock shows it under the placement line and the build
+ * button's tooltip adds it (`windmillHealsUnitV7`, section 10).
+ */
+export function buildingHealingTextV7(
+  improvement: ImprovementIdV7,
+): string | null {
+  return improvement === "WINDMILL"
+    ? `Heals your units next to it at the start of your turn (up to ${WINDMILL_HEAL_V7})`
+    : null;
 }
 
 /**

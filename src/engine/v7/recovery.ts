@@ -1,4 +1,8 @@
-import { DEEP_WINTER_RECOVER_V7 } from "../rules/ruleset-v7";
+import {
+  DEEP_WINTER_RECOVER_V7,
+  unitIsSummonedV7,
+  type SummonedUnitRefV7,
+} from "../rules/ruleset-v7";
 import type { UnitActivationV7, UnitFormV7 } from "./types";
 
 /**
@@ -72,4 +76,32 @@ export function recoveryHealV7(facts: RecoveryFactsV7): number {
 /** The HP a Recover or an idle recovery restores now. */
 export function recoveryGainV7(facts: RecoveryFactsV7): number {
   return Math.min(recoveryHealV7(facts), facts.maxHp - facts.hp);
+}
+
+/** Section 10: the most a Windmill heals one unit at a Start Turn. */
+export const WINDMILL_HEAL_V7 = 6;
+
+/**
+ * Section 10 Windmill healing: whether a Windmill heals this unit of its
+ * owner when the unit is on one of the Windmill's eight neighbours at the
+ * owner's Start Turn (any form). Every faction's own Windmill (the Bone
+ * Mill, Grinding Stone, Solar Array, Steam Pump, ...) heals every own unit
+ * since `pulp_wars-a7eb` (`7r118`), the Dwarf constructs included (they were
+ * skipped before). Only an Egg (revision 19 section 6.2: nothing heals an
+ * Egg) and a summoned unit (a daemon never heals) are never healed. The
+ * engine (`resolveWindmillHealingV7`) and the Normal AI's staging read it.
+ */
+export function windmillHealsUnitV7(
+  unit: SummonedUnitRefV7 & {
+    readonly form: UnitFormV7;
+    readonly hp: number;
+    readonly maxHp: number;
+  },
+): boolean {
+  return (
+    unit.hp > 0 &&
+    unit.hp < unit.maxHp &&
+    unit.form !== "EGG" &&
+    !unitIsSummonedV7(unit)
+  );
 }

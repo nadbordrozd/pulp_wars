@@ -674,7 +674,7 @@ describe("Ruleset 7 public presentation", () => {
       economicFormulaV7("WORKSHOP", "DISTINCT_BASIC_TYPES"),
       economicFormulaV7("MARKET", "DISTINCT_ECONOMIC_FAMILIES"),
     ]).toEqual([
-      "Windmill: +1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn",
+      "Windmill: +1 per adjacent farm; heals your units next to it at the start of your turn (up to 6)",
       "Sawmill: +1 per adjacent lumber camp",
       "Forge: +1 per adjacent mine",
       "Workshop: +1, and +1 for each kind of farm, lumber camp or mine next to it",

@@ -961,7 +961,7 @@ describe("Ruleset 7 Gallery", () => {
     expect(required("#v7-gallery-detail-title").textContent).toBe("Graveyard");
     expect(required(".v7-gallery-detail-faction").textContent).toBe("Undead");
     expect(required(".v7-gallery-description").textContent).toBe(
-      "Quiet plots, tended for later. Counts as a Farm. Built on Fertile Ground.",
+      "Quiet plots, tended for later. Built on Fertile Ground.",
     );
     expect(required(".v7-gallery-detail").textContent).toContain(
       "+2 population",

@@ -10,9 +10,10 @@ import { FACTION_IMPROVEMENT_LOOKS_V7 } from "../assets/chibi-art-v7";
  * pulp_wars-xdh.2; docs/art/FACTION_BUILDINGS.md). A few improvements are
  * drawn, and named, in the look of the faction that owns the territory they
  * stand in: an Undead Farm is a Graveyard. It is presentation only: the
- * rules, the numbers and every rules text keep the generic building, and the
- * one flavour line ends "Counts as a Farm." so the vocabulary stays
- * learnable. The art subjects are in src/assets/chibi-ui-art-v7.ts
+ * rules and the numbers are the generic building's; the texts that name a
+ * building use the faction's own name, and the one flavour line is flavour
+ * only (bead pulp_wars-a7eb, the user, 2026-10-27: no "Counts as a Farm."
+ * note). The art subjects are in src/assets/chibi-ui-art-v7.ts
  * (factionImprovementSubjectV7). Every building named here has a look in
  * FACTION_IMPROVEMENT_LOOKS_V7, and every look but the Lumber Camps and the
  * Sawmills of bead pulp_wars-2yc.38 is named here: those are drawn per
@@ -21,31 +22,8 @@ import { FACTION_IMPROVEMENT_LOOKS_V7 } from "../assets/chibi-art-v7";
 export interface FactionBuildingV7 {
   /** The faction's name of the building ("Graveyard"). */
   readonly name: string;
-  /** One line; it ends with "Counts as a <generic building>." */
+  /** One line of flavour ("Quiet plots, tended for later."). */
   readonly flavour: string;
-}
-
-const GENERIC_NAMES: Readonly<Record<ImprovementIdV7, string>> = {
-  FARM: "Farm",
-  LUMBER_CAMP: "Lumber camp",
-  MINE: "Mine",
-  WINDMILL: "Windmill",
-  SAWMILL: "Sawmill",
-  FORGE: "Forge",
-  WORKSHOP: "Workshop",
-  MARKET: "Market",
-  MONUMENT: "Monument",
-  PORT: "Port",
-  SHIPYARD: "Shipyard",
-  FISHING_HOLE: "Fishing hole",
-};
-
-const article = (name: string): string =>
-  /^[AEIOU]/.test(name) ? `an ${name}` : `a ${name}`;
-
-/** "Counts as a Farm." */
-export function countsAsTextV7(improvement: ImprovementIdV7): string {
-  return `Counts as ${article(GENERIC_NAMES[improvement])}.`;
 }
 
 const building = (
@@ -54,7 +32,7 @@ const building = (
   flavour: string,
 ): readonly [ImprovementIdV7, FactionBuildingV7] => [
   improvement,
-  { name, flavour: `${flavour} ${countsAsTextV7(improvement)}` },
+  { name, flavour },
 ];
 
 const FACTION_BUILDINGS: Readonly<

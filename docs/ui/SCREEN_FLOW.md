@@ -3000,11 +3000,21 @@ as before.
   Milling) and every rules text keep the generic building ("+1 per
   adjacent farm").
 - **One flavour line.** The tile dock of a faction building shows one
-  muted line under its title that ends with what the building counts as:
-  "Quiet plots, tended for later. Counts as a Farm." The same line is the
-  build button's tooltip after its name, and leads the building's
-  description in the Gallery. No other text is added, and none names a
-  tile coordinate.
+  muted line under its title: "Quiet plots, tended for later." The same
+  line is the build button's tooltip after its name, and leads the
+  building's description in the Gallery. Since `pulp_wars-a7eb` (the user,
+  2026-10-27) it is flavour only, with no "Counts as a Farm." note. None
+  names a tile coordinate.
+- **Every faction's Windmill says it heals** (`pulp_wars-a7eb`). The tile
+  dock of a Windmill, whatever its faction's name (Bone Mill, Grinding
+  Stone, Solar Array, Steam Pump), adds the muted line "Heals your units
+  next to it at the start of your turn (up to 6)" under its placement
+  line; the build button's tooltip ends with the same line; the Milling
+  card says "Steam Pumps heal your units next to them at the start of your
+  turn (up to 6)" with the viewer's name; the Gallery's effect reads "+1
+  per adjacent farm; heals your units next to it at the start of your turn
+  (up to 6)"; and the Start Turn notice names the healer as its owner's
+  faction names it ("Steam Pump healed 2 units +9 HP").
 - **Art in the interface.** The tile dock, the build buttons and the
   technology cards that show a building (Farming, Milling, Sawmilling)
   show the same art as the board: the dock by the territory owner, the

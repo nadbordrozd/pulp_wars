@@ -221,7 +221,7 @@ export const NOT_DUG_IN_ARRIVED_V7 = "Not dug in: arrived this turn";
 export const DUG_IN_PREVIEW_V7 = "Dug in";
 export const CLOCKWORK_LABEL_V7 = "Clockwork";
 export const CLOCKWORK_INFO_V7 =
-  "Clockwork: full strength when attacking; only an Engineer can repair it";
+  "Clockwork: full strength when attacking; an Engineer or a Steam Pump heals it";
 export const CLOCKWORK_RECOVER_V7 = "Clockwork never recovers by itself";
 export const UNFLINCHING_PREVIEW_V7 = "Clockwork: full strength";
 export const GUNNER_TWO_SHOTS_V7 = `${GUNNER_UNMOVED_SHOTS_V7} shots if it stands still`;

@@ -3774,7 +3774,8 @@ a city save, a lethal follow-up/capture line, or greater realized target loss
 than the sacrificed unit. Catapults require a reachable land-form screen;
 Guards prefer defense; Knights and Raiders value flanks and capture openings;
 Captains compare Rally and Tend; wounded units compare recovery and owned
-Windmill staging. Shared land training, every assigned naval dock, and Land
+Windmill staging (every unit a Windmill heals, `windmillHealsUnitV7`: since
+`7r118`, `pulp_wars-a7eb`, a Dwarf construct too; never a daemon). Shared land training, every assigned naval dock, and Land
 Grant compete as one city action after reserve, capacity, and displacement
 eligibility are applied. Existing Ports and Shipyards are not torn down for a
 coastal rebuild; Shipyard uses its direct upgrade command.

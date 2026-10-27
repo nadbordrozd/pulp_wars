@@ -420,6 +420,7 @@ import {
 import {
   BUILD_CLEARS_FOREST_NOTE_V7,
   buildCommandImprovementV7,
+  buildingHealingTextV7,
   buildingRuleCoversYieldV7,
   buildingRuleTextV7,
   buildSiteNotesV7,
@@ -8664,8 +8665,7 @@ export class Ruleset7DomAppView {
           line.dataset.tileSite = site.kind.toLowerCase();
           details.append(line);
         }
-        // One flavour line; it ends "Counts as a Farm." so the generic
-        // building of every rules text stays learnable.
+        // One flavour line of the faction's own building.
         if (factionBuilding !== null) {
           const flavour = text(
             this.#document,
@@ -8687,6 +8687,18 @@ export class Ruleset7DomAppView {
           );
           rule.dataset.buildingRule = tile.improvement;
           details.append(rule);
+          // Bead pulp_wars-a7eb: every faction's Windmill says it heals.
+          const healing = buildingHealingTextV7(tile.improvement);
+          if (healing !== null) {
+            const line = text(
+              this.#document,
+              "p",
+              healing,
+              "v7-building-healing",
+            );
+            line.dataset.buildingHealing = tile.improvement;
+            details.append(line);
+          }
         }
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
@@ -9187,7 +9199,7 @@ export class Ruleset7DomAppView {
   ): void {
     const descriptive = [
       ...details.querySelectorAll<HTMLElement>(
-        ".v7-building-flavour, .v7-building-rule, .v7-curiosity-info > p:not(.v7-curiosity-status), .v7-dwarf-barricade-rule",
+        ".v7-building-flavour, .v7-building-rule, .v7-building-healing, .v7-curiosity-info > p:not(.v7-curiosity-status), .v7-dwarf-barricade-rule",
       ),
     ];
     if (descriptive.length === 0) return;
@@ -9328,8 +9340,8 @@ export class Ruleset7DomAppView {
       // marked unit; hovering or focusing it makes their marks prominent.
       if (command.kind === "TEND_WOUNDED" || command.kind === "RALLY")
         this.#linkAreaSupportButton(action, command.unitId, command.kind);
-      // Faction building looks (epic pulp_wars-xdh): the tooltip says what
-      // the faction's building counts as ("Counts as a Farm.").
+      // Faction building looks (epic pulp_wars-xdh): the tooltip adds the
+      // faction's flavour line.
       const factionBuilding = factionBuildCommandV7(
         command.kind,
         this.#viewerFaction(),
@@ -9338,6 +9350,13 @@ export class Ruleset7DomAppView {
         action.title = `${label} · ${factionBuilding.flavour}`;
         action.dataset.factionBuilding = "true";
       }
+      // Bead pulp_wars-a7eb: a Windmill's build tooltip says it heals.
+      const builtImprovement = buildCommandImprovementV7(command.kind);
+      const healing =
+        builtImprovement === null
+          ? null
+          : buildingHealingTextV7(builtImprovement);
+      if (healing !== null) action.title = `${action.title} · ${healing}`;
       // The Dwarf revision (section 16.1): a Dwarf Tend Wounded is Repair.
       if (
         command.kind === "TEND_WOUNDED" &&
@@ -19327,7 +19346,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r117",
+    rulesetId: "pulp-wars-poc-7r118",
     seed,
     width,
     height: width,
@@ -19568,7 +19587,8 @@ function effectDescription(
     case "OWNED_CITY_CAPACITY_BONUS":
       return `Cities support +${effect.capacity} unit`;
     case "ADJACENT_START_TURN_HEALING":
-      return `Windmills heal adjacent units for ${effect.amount} HP at Start Turn`;
+      // Bead pulp_wars-a7eb: the faction's own Windmill ("Steam Pumps").
+      return `${factionBuildingV7("WINDMILL", faction)?.name ?? "Windmill"}s heal your units next to them at the start of your turn (up to ${effect.amount})`;
     case "ARMS_INDUSTRY_DISCOUNT":
       // Revision 19: the Dinosaur Arms Industry also discounts Eggs.
       return faction === "DINOSAUR"
@@ -19952,6 +19972,9 @@ function hostile(view: PlayerViewV7, left: number, right: number): boolean {
 export function specialBoundaryNoticeV7(
   events: Ruleset7AcceptedBoundary["playerEvents"]["events"],
   viewerId: number,
+  // Bead pulp_wars-a7eb: the healer is named as its owner's faction names
+  // it ("Steam Pump healed 1 unit +6 HP").
+  view: Pick<PlayerViewV7, "players"> = { players: [] },
 ): string | null {
   const healing = events.filter(
     (event) => event.kind === "WINDMILL_HEALING_RESOLVED",
@@ -19966,7 +19989,12 @@ export function specialBoundaryNoticeV7(
             0,
           );
           const units = event.results.length;
-          return `Windmill healed ${units} ${units === 1 ? "unit" : "units"} +${total} HP`;
+          const mill =
+            factionBuildingV7(
+              "WINDMILL",
+              territoryFactionV7(view, event.playerId),
+            )?.name ?? "Windmill";
+          return `${mill} healed ${units} ${units === 1 ? "unit" : "units"} +${total} HP`;
         })
         .join(" · ")
     );
@@ -19994,7 +20022,7 @@ function boundaryNoticeV7(
   before: PlayerViewV7,
   after: PlayerViewV7,
 ): { readonly text: string | null; readonly toast: boolean } {
-  const special = specialBoundaryNoticeV7(events, after.viewer.id);
+  const special = specialBoundaryNoticeV7(events, after.viewer.id, after);
   const undead = undeadBoundaryNoticeV7(events, before, after);
   // Revision 17: explosions, Plunder, Troll regeneration and Berserk
   const goblin = goblinBoundaryNoticeV7(events, before, after);

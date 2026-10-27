@@ -4020,10 +4020,12 @@ html:has(.v7-match-shell) body {
 
 /* Faction building looks (epic pulp_wars-xdh): one flavour line.
  * Bead pulp_wars-2yc.89: a village's or chest's one line reads the same,
- * and (pulp_wars-2yc.90) so does where a building may be built. */
+ * and (pulp_wars-2yc.90) so does where a building may be built, and
+ * (pulp_wars-a7eb) what a Windmill heals. */
 .v7-tile-site-line,
 .v7-building-flavour,
-.v7-building-rule {
+.v7-building-rule,
+.v7-building-healing {
   flex-basis: 100%;
   margin: 0;
   color: var(--pw-text-2);

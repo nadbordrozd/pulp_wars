@@ -642,7 +642,7 @@ const ENTRIES = {
   ],
   CLOCKWORK: [
     "Clockwork",
-    "Hits at full strength even when damaged. It never heals by itself: only an Engineer repairs it.",
+    "Hits at full strength even when damaged. It never recovers by itself: an Engineer repairs it, and a Steam Pump next to it heals it.",
   ],
   TWIN_SHOT: [
     "Twin shot",

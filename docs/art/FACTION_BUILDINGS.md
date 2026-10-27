@@ -49,9 +49,10 @@ maybe. It is **purely visual**: no rule, number or tooltip value changes.
    name where the building itself is named (the board label, the tile dock
    title, the build button of that faction's viewer). Every rules text keeps
    its numbers; where a rule names the generic building ("+1 per adjacent
-   farm"), it stays, and the dock shows a one-line flavour description that
-   ends "Counts as a Farm." so the vocabulary stays learnable. Technology
-   names (Farming, Milling) do not change.
+   farm"), it stays, and the dock shows a one-line flavour description.
+   Technology names (Farming, Milling) do not change. (Until
+   `pulp_wars-a7eb`, 2026-10-27, the flavour line ended "Counts as a
+   Farm."; the user: "don't need this".)
 5. **Calm, faction-coloured, no player colour.** Replacements follow the
    [visual direction](VISUAL_DIRECTION_2026-10.md) for buildings (flat,
    muted, recede behind units) in the faction's fixed materials (its
@@ -108,17 +109,17 @@ sample; **bold** marks the first four that were made.
 
 ### The changes
 
-| Faction  | Building → name               | Look (one line)                                                                                  | Flavour description (rules text unchanged)                        | Why                                                         |
-| -------- | ----------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------- |
-| Undead   | Farm → **Graveyard**          | three rows of dark slate gravestones with moss, on mounds of dark earth with tiny violet flowers | "Quiet plots, tended for later. Counts as a Farm."                | the user's example; the Undead do not eat                   |
-| Undead   | Windmill → Bone Mill          | the same windmill in dark slate with ragged charcoal sails, charcoal roofs and violet windows    | "Grinds old bones into something useful. Counts as a Windmill."   | a grain mill beside a graveyard; cheap (an edit of today's) |
-| Martian  | Windmill → **Solar Array**    | three tilted navy solar panels on chrome stands, a mast with one small magenta light             | "Drinks the light of a lesser star. Counts as a Windmill."        | the user's example; sails are the opposite of a saucer      |
-| Martian  | Farm → Hydroponic Farm        | the vegetable beds in chrome troughs under small glass domes                                     | "Earth vegetables, under glass. Counts as a Farm."                | second priority; the plants keep the Farm readable          |
-| Dinosaur | Windmill → **Grinding Stone** | an upright grindstone with a wooden lever on a big flat millstone, a hide lean-to on bone poles  | "Push the pole, crush the grain. Counts as a Windmill."           | the worst anachronism: machinery in a stone-age camp        |
-| Dinosaur | Sawmill → Chopping Block      | a huge axe in a tree stump, a pile of split logs and a hide lean-to, no saw blade                | "A big stone axe and a bigger arm. Counts as a Sawmill."          | a steel circular saw in a stone-age camp                    |
-| Ice Folk | Farm → Frost Garden           | three rows of blue-green frost cabbages on thin banks of snow                                    | "Cabbages that like the cold. Counts as a Farm."                  | green open beds look wrong under the Ice Folk Snow          |
-| Dwarf    | Farm → **Mushroom Farm**      | four rows of tan and brown mushrooms on thin peat beds                                           | "Grown in the dark, eaten with ale. Counts as a Farm."            | the classic dwarf crop; still plainly a farm                |
-| Dwarf    | Windmill → Steam Pump         | a copper boiler with a domed top, an iron chimney puffing steam and a brass cog wheel            | "Hisses, clanks and keeps the pressure up. Counts as a Windmill." | steampunk; second priority                                  |
+| Faction  | Building → name               | Look (one line)                                                                                  | Flavour description (rules text unchanged)  | Why                                                         |
+| -------- | ----------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------- | ----------------------------------------------------------- |
+| Undead   | Farm → **Graveyard**          | three rows of dark slate gravestones with moss, on mounds of dark earth with tiny violet flowers | "Quiet plots, tended for later."            | the user's example; the Undead do not eat                   |
+| Undead   | Windmill → Bone Mill          | the same windmill in dark slate with ragged charcoal sails, charcoal roofs and violet windows    | "Grinds old bones into something useful."   | a grain mill beside a graveyard; cheap (an edit of today's) |
+| Martian  | Windmill → **Solar Array**    | three tilted navy solar panels on chrome stands, a mast with one small magenta light             | "Drinks the light of a lesser star."        | the user's example; sails are the opposite of a saucer      |
+| Martian  | Farm → Hydroponic Farm        | the vegetable beds in chrome troughs under small glass domes                                     | "Earth vegetables, under glass."            | second priority; the plants keep the Farm readable          |
+| Dinosaur | Windmill → **Grinding Stone** | an upright grindstone with a wooden lever on a big flat millstone, a hide lean-to on bone poles  | "Push the pole, crush the grain."           | the worst anachronism: machinery in a stone-age camp        |
+| Dinosaur | Sawmill → Chopping Block      | a huge axe in a tree stump, a pile of split logs and a hide lean-to, no saw blade                | "A big stone axe and a bigger arm."         | a steel circular saw in a stone-age camp                    |
+| Ice Folk | Farm → Frost Garden           | three rows of blue-green frost cabbages on thin banks of snow                                    | "Cabbages that like the cold."              | green open beds look wrong under the Ice Folk Snow          |
+| Dwarf    | Farm → **Mushroom Farm**      | four rows of tan and brown mushrooms on thin peat beds                                           | "Grown in the dark, eaten with ale."        | the classic dwarf crop; still plainly a farm                |
+| Dwarf    | Windmill → Steam Pump         | a copper boiler with a domed top, an iron chimney puffing steam and a brass cog wheel            | "Hisses, clanks and keeps the pressure up." | steampunk; second priority                                  |
 
 **Kept the same, on purpose.** The Goblins keep everything (the user: they
 can have the same farms; scrap-built versions would add clutter for little
@@ -297,8 +298,8 @@ faction (see [In the game](#8-in-the-game)).
   Grinding Stone) are a little more detailed and saturated than the calm
   shared set; none takes a player colour.
 - **Names in rules text** are settled (root, 2026-10-04): the board shows
-  the faction's name; rules text keeps the generic name with "Counts as a
-  Farm."
+  the faction's name; rules text keeps the generic name (the "Counts as a
+  Farm." note is gone since `pulp_wars-a7eb`).
 
 ## 7. Production breakdown (proposed beads)
 
@@ -394,8 +395,8 @@ save or identity changed.
   the name and the one flavour line of each building (the table of section
   3). The board label, the tile dock title, the viewer's build button and
   the Gallery cell use the name; the dock, the button's tooltip and the
-  Gallery description show the flavour line, which ends "Counts as a
-  Farm."; every rules text keeps the generic building.
+  Gallery description show the flavour line (no "Counts as" note since
+  `pulp_wars-a7eb`); every rules text keeps the generic building.
 - **Fallbacks.** The classic look and the LEGACY art set have no such
   rasters and draw the shared building and Grass; the names still follow
   the faction there.
@@ -578,7 +579,7 @@ Purely visual: no rule, command, save or identity changed.
   under the piece (a snow wall, a patch of soil). Light layer,
   `generate-image-v2`, seated; it makes a BUILDING or a RESOURCE.
 - **The Frost Garden keeps its name** and has a new flavour line, "Frost
-  flowers that like the cold. Counts as a Farm." (it has no cabbages now).
+  flowers that like the cold." (it has no cabbages now).
 - **PixelLab calls: 13**, all `generate-image-v2` through the chibi
   pipeline, 16 candidates each: the seven Monuments once each, the Frost
   Garden once, Fertile Ground twice, the Graveyard three times.

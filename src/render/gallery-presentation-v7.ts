@@ -840,7 +840,7 @@ const BUILDING_DESCRIPTIONS: Readonly<
   MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, any number per city. It keeps its builder's look for the whole match.`,
   PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
   SHIPYARD: "An upgraded Port. Ships cost less.",
-  FISHING_HOLE: "Cut in Ice Folk ice. Counts as a farm.",
+  FISHING_HOLE: "Cut in Ice Folk ice. Feeds mills and Markets like a farm.",
 };
 
 /**
@@ -880,7 +880,7 @@ export function galleryBuildingDetailsV7(
       technology: null,
     };
   row = improvement;
-  // A faction's own look: its flavour line ("... Counts as a Farm.") leads;
+  // A faction's own look: its flavour line leads;
   // the rules, effects and cost below are the generic building's.
   const own = factionBuildingV7(row, faction);
   const description =

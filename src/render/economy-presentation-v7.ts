@@ -3,6 +3,7 @@ import {
   MARKET_INCOME_CAP_V7,
   REWARD_UNIT_LEVEL_V7,
   TECHNOLOGY_RESEARCH_COST_V7,
+  WINDMILL_HEAL_V7,
 } from "../engine/index";
 
 /**
@@ -48,7 +49,8 @@ export function economicFormulaV7(
     improvement === "WINDMILL" &&
     formula === "ADJACENT_FRIENDLY_CONTRIBUTORS"
   )
-    return "Windmill: +1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn";
+    // Bead pulp_wars-a7eb: the healing in the shared style.
+    return `Windmill: +1 per adjacent farm; heals your units next to it at the start of your turn (up to ${WINDMILL_HEAL_V7})`;
   if (improvement === "SAWMILL" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
     return "Sawmill: +1 per adjacent lumber camp";
   if (improvement === "FORGE" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")

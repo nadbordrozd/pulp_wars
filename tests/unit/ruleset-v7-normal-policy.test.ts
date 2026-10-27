@@ -85,6 +85,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Cracked
       // Defense of a unit a Stegosaurus has shot (two pure rule helpers).
       "../engine/v7/ninth-unit",
+      // `pulp_wars-a7eb`: whether a Windmill heals a unit, and how much (a
+      // pure rule helper over a public unit).
+      "../engine/v7/recovery",
       // Tuning 3: `publicUnitHasTerrainCoverV7` (a pure public-view read).
       "../engine/v7/units",
       "../engine/v7/economy",
@@ -1336,7 +1339,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r117");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r118");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

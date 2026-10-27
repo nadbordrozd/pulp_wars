@@ -74,13 +74,13 @@ describe("siege rules: the identity", () => {
   // follow-ups (`pulp_wars-v642.5`) 7r83, so 7r80 is a prior
   // identity.
   it("was 7r80 after 7r79, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r117");
-    expect(PRIOR_RULESET_7_IDS.slice(-38, -36)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r118");
+    expect(PRIOR_RULESET_7_IDS.slice(-39, -37)).toEqual([
       "pulp-wars-poc-7r79",
       "pulp-wars-poc-7r80",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r117.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-38, -36)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r118.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-39, -37)).toEqual([
       "pulpWars.save.v7r79.current",
       "pulpWars.save.v7r80.current",
     ]);

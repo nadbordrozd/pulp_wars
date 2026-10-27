@@ -64,6 +64,7 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
 import { crackedDefense2V7, unitIsCrackedV7 } from "../engine/v7/ninth-unit";
+import { WINDMILL_HEAL_V7, windmillHealsUnitV7 } from "../engine/v7/recovery";
 import { publicUnitHasTerrainCoverV7 } from "../engine/v7/units";
 import {
   cooperativeAlliesV7,
@@ -27391,12 +27392,18 @@ function tacticalMovementObjectiveValueV7(
   return value;
 }
 
-function windmillStagingGainV7(
+/**
+ * The value of a Move that ends a wounded unit next to an own Windmill it
+ * was not next to: four times the HP the Windmill heals it at the next
+ * Start Turn. Every unit a Windmill heals counts (`pulp_wars-a7eb`, 7r118:
+ * a Dwarf construct too; never an Egg or a daemon). Exported for tests.
+ */
+export function windmillStagingGainV7(
   view: PlayerViewV7,
   actor: PublicUnitV7,
   to: CoordV7 | null,
 ): number {
-  if (to === null || actor.hp >= actor.maxHp) return 0;
+  if (to === null || !windmillHealsUnitV7(actor)) return 0;
   const ownedWindmills = view.board.tiles.filter(
     (tile) =>
       tile.explored &&
@@ -27407,7 +27414,9 @@ function windmillStagingGainV7(
     (tile) => distance(tile.at, actor.at) === 1,
   );
   const after = ownedWindmills.some((tile) => distance(tile.at, to) === 1);
-  return after && !before ? Math.min(6, actor.maxHp - actor.hp) * 4 : 0;
+  return after && !before
+    ? Math.min(WINDMILL_HEAL_V7, actor.maxHp - actor.hp) * 4
+    : 0;
 }
 
 function navalMovementObjectiveValueV7(

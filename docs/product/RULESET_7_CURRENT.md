@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r117`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r118`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,20 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r118` (`pulp_wars-a7eb`; the user, 2026-10-27: "the
+different versions of the windmill should all offer healing to their
+faction") makes **every faction's Windmill heal its own units**
+([section 10](#10-recovery-and-support)): the Undead Bone Mill, the
+Dinosaur Grinding Stone, the Martian Solar Array, and the Dwarf Steam Pump
+are the one `WINDMILL` improvement under their faction's name, and each
+heals its owner's units next to it at Start Turn by up to 6; the one change
+is that the Dwarf constructs (the Clockwork Gunner, the Whirligig, and the
+Brass Titan) are healed too (before, Windmill healing skipped them; they
+still never Recover or idle-recover). It still never heals an Egg or a
+daemon, and a captured Windmill heals its new owner's units. The Normal AI
+stages a wounded construct next to an own Windmill like any other unit,
+and never a daemon. A save, replay, or setup of `7r117` is rejected, and
+the browser autosave has a new key. Boards and missions are unchanged.
 `pulp-wars-poc-7r117` (`pulp_wars-mch9.61`; the user, 2026-10-26:
 "joining the chant of a star gazer should not require confirmation ...
 just as with the 'wait' action - this should be reversible. the player can
@@ -1786,10 +1800,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r117`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r118`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r117.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r118.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6317,7 +6331,7 @@ benefit of a Port connection.)
 | Recover or idle recovery, land                    | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below); never a Dwarf construct                             | explicit terminal `RECOVER`, or End Turn for a unit that did not move or act |
 | Recover or idle recovery, naval                   | 4 on or adjacent to an own active Port/Shipyard; otherwise illegal / 0                                                                                       | same                                                                         |
 | Embarked unit                                     | none                                                                                                                                                         | —                                                                            |
-| Windmill (Milling)                                | up to 6; never a Dwarf construct                                                                                                                             | Start Turn, once per unit                                                    |
+| Windmill (Milling)                                | up to 6, every own unit (a Dwarf construct too, since `7r118`); never an Egg or a daemon                                                                     | Start Turn, once per unit                                                    |
 | Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                                                    | Start Turn, after Windmill healing                                           |
 | Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine; the Shaman: 4 on a hatched dinosaur), and cures Plague, Bitten, and Frozen                                      | Captain, Shaman, or Engineer action, once per unit per owner turn            |
 | Sugar Toss (Gumball Gunner)                       | up to 2 on one own land-form unit within 2 tiles; cures nothing ([section 23.7](#237-the-redesign-abilities))                                                | Gunner action, once per target per owner turn                                |
@@ -6330,7 +6344,16 @@ benefit of a Port connection.)
   neighbors. A unit next to several Windmills heals once, assigned to the first
   Windmill in `(y, x)` order. Output does not matter, and healing needs no
   technology, so a captured Windmill heals its new owner's units even without
-  Milling. It skips Dwarf constructs.
+  Milling. **Every faction's Windmill heals** (`pulp_wars-a7eb`, `7r118`;
+  the user, 2026-10-27: "the different versions of the windmill should all
+  offer healing to their faction"): the Undead Bone Mill, the Dinosaur
+  Grinding Stone, the Martian Solar Array, and the Dwarf Steam Pump are the
+  Windmill under their faction's name, and each heals its owner's units,
+  the Dwarf constructs (the Clockwork Gunner, the Whirligig, and the Brass
+  Titan) included; before `7r118` it skipped them. It never heals an Egg
+  (no healing source does) or a daemon (a daemon never heals). One
+  predicate, `windmillHealsUnitV7`, decides it for the engine and the Normal
+  AI's staging next to an own Windmill.
 - **Restless (Undead):** a land-form unit of an Undead seat recovers only in
   its owner's territory. An explicit `RECOVER` elsewhere is rejected
   atomically with `RECOVER_NOT_LEGAL { reason: "RESTLESS" }` and is never
@@ -6371,8 +6394,9 @@ benefit of a Port connection.)
   that the two **constructs**, the Clockwork Gunner and the Brass Titan,
   never mend themselves: an explicit `RECOVER` is rejected with
   `RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }` and never offered, and idle
-  recovery and Windmill healing skip them. They heal only by an Engineer's
-  Repair and by a Promotion ([section 22.6](#226-clockwork)). A burrowed
+  recovery skips them. They heal by an Engineer's Repair, by a Windmill (a
+  Steam Pump; since `7r118`), and by a Promotion
+  ([section 22.6](#226-clockwork)). A burrowed
   unit is off the board and has moved, so it never recovers idle.
 - **Captain** (Human `CAPTAIN`): may Move, then use one primary action:
   Attack, Rally, or Tend Wounded. The Dinosaur Shaman has the same three
@@ -14689,9 +14713,11 @@ a target a turn, and no ordinary attack.
   Titan), Push, the Tractor Beam, Knockback, Kaboom and blasts, splash,
   Pierce, Sweep, Acid, and Lifesteal.
 - **Never mends itself:** no explicit Recover
-  (`RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }`, never offered), no idle
-  recovery, no Windmill healing. It heals only by an Engineer's Repair (+4,
-  it is a machine) and by a Promotion (a full heal to the new maximum). A
+  (`RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }`, never offered) and no idle
+  recovery. It heals by an Engineer's Repair (+4, it is a machine), by its
+  owner's Windmill (a Steam Pump; up to 6 at Start Turn, since `7r118`;
+  before, Windmill healing skipped it), and by a Promotion (a full heal to
+  the new maximum). A
   Gunner can be disbanded like any trainable unit (refund 1).
 - **The Clockwork Gunner's two shots.** When the Gunner fires its first
   shot its allowance is 2 (`GUNNER_UNMOVED_SHOTS_V7`, role mechanic
@@ -14947,7 +14973,7 @@ unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
 ```text
 reset activations and capture eligibility → city actions available →
 Mind Control cooldowns → Shield recharge → Cold Aura → SURFACING →
-Plague and its chain → hatching → Windmill healing (constructs skipped) →
+Plague and its chain → hatching → Windmill healing (constructs too) →
 Troll regeneration → income → rewards → achievements
 ```
 
