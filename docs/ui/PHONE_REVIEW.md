@@ -132,6 +132,24 @@ owns (a follow-up). A scene that picks a unit with the review's keyboard
 cursor stops the camera's glide to the marker (an arrow key takes the
 camera), so its marker may stand at the edge; a tap does not.
 
+Bead `pulp_wars-2yc.119` (one cue language, the real interface) added
+`tutorial-move-nudge` (every move of the Fighter highlighted, a tile other
+than the pulsing village tapped, its "Tap the glowing tile." nudge),
+`tutorial-crafting-chosen` (Crafting chosen, its Research button pulsing)
+and `tutorial-giant-road-move` (the cities took the Scouts, the Militia and
+the giant; the Road lesson walks the giant on the capital, from
+`tutorialFixtureV7('ROAD_MOVE', 'UNITS')`), and `tutorial-climb-picked`
+now picks the Fighter that won turn 1's fight. Every tutorial scene was run
+at 390 x 844 and a set of 22 at 1440 x 900. With the real docks the phone
+checks pass except where a unit has three actions beside a wide name
+(`tutorial-capture-picked`, `tutorial-rally-picked`: Capture or Rally,
+Disband, Wait): the compact card's action row scrolls sideways by design
+(bead `pulp_wars-2yc.86`), and the review flags the row and its last
+action reaching under the close button; any match with such a unit shows
+the same. At 1440 every docked scene has the close button over the last
+action by 5 px, the dock's known overlap (`pulp_wars-2yc.117`), which the
+real docks now show with Wait, Disband or Promote.
+
 ## Nine seats and the Cultists
 
 Bead `pulp_wars-mch9.20` offered the ninth faction, so the setup seats nine

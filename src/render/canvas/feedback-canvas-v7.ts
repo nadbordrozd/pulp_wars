@@ -252,6 +252,85 @@ export function firstStepMarkerWidthCssPxV7(zoom: number): number {
 }
 
 /**
+ * Bead pulp_wars-2yc.119, the tutorial's cue language: the ring round the
+ * tile of the marker. `TAP` (the thing to tap now, under the arrow) is a
+ * thick yellow rounded frame on an ink casing with a yellow glow, which
+ * swells and fades with `pulse` (0 to 1 and back; still at 0.5 in reduced
+ * motion). `LOOK` (what a read step talks about) is a still, dashed cream
+ * frame on an ink casing: something to look at, never to tap. Both sit
+ * inside the tile, so a neighbour's target mark is never touched, and both
+ * differ in colour and shape from every target mark (corner brackets).
+ */
+export function drawTutorialRingV7(
+  context: CanvasRenderingContext2D,
+  centreX: number,
+  centreY: number,
+  zoom: number,
+  style: "TAP" | "LOOK",
+  options: { readonly pulse?: number; readonly highContrast?: boolean } = {},
+): void {
+  const size = 128 * zoom;
+  const highContrast = options.highContrast === true;
+  const ink = highContrast ? "#000000" : FIRST_STEP_INK;
+  context.save();
+  context.lineJoin = "round";
+  if (style === "TAP") {
+    const pulse = Math.min(1, Math.max(0, options.pulse ?? 0.5));
+    const inset = (7 - 3 * pulse) * zoom;
+    const radius = 16 * zoom;
+    const side = size - inset * 2;
+    const path = (): void => {
+      context.beginPath();
+      context.roundRect(
+        centreX - side / 2,
+        centreY - side / 2,
+        side,
+        side,
+        radius,
+      );
+    };
+    // The glow, the casing, then the frame.
+    path();
+    context.shadowColor = `rgba(255, 207, 58, ${0.45 + 0.45 * pulse})`;
+    context.shadowBlur = (8 + 14 * pulse) * zoom;
+    context.strokeStyle = ink;
+    context.lineWidth = Math.max(4, (highContrast ? 11 : 9) * zoom);
+    context.stroke();
+    context.shadowBlur = 0;
+    context.shadowColor = "transparent";
+    path();
+    context.strokeStyle = highContrast ? "#ffffff" : FIRST_STEP_YELLOW;
+    context.lineWidth = Math.max(2.5, (highContrast ? 6.5 : 5.5) * zoom);
+    context.stroke();
+  } else {
+    const inset = 10 * zoom;
+    const side = size - inset * 2;
+    const radius = 22 * zoom;
+    const path = (): void => {
+      context.beginPath();
+      context.roundRect(
+        centreX - side / 2,
+        centreY - side / 2,
+        side,
+        side,
+        radius,
+      );
+    };
+    // No wash: what the line talks about stays in its own colours.
+    context.setLineDash([16 * zoom, 10 * zoom]);
+    path();
+    context.strokeStyle = ink;
+    context.lineWidth = Math.max(3.5, (highContrast ? 9 : 7.5) * zoom);
+    context.stroke();
+    path();
+    context.strokeStyle = highContrast ? "#ffffff" : "#fff3c4";
+    context.lineWidth = Math.max(2, (highContrast ? 5 : 4) * zoom);
+    context.stroke();
+  }
+  context.restore();
+}
+
+/**
  * First steps (bead pulp_wars-2yc.39): the marker that points at the next
  * useful thing, a fat yellow arrow with an ink keyline and a hard offset
  * shadow (the Newsstand recipe), pointing down at `tipY` (or, `UP`, up at

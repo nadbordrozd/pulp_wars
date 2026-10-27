@@ -35,7 +35,8 @@ import {
  * script on the real engine, for the unit tests, the DOM fixtures and the
  * screenshots: at each step the command the tutorial lets through, as the
  * interface sends it; Next on an explanation; the unit's card on the card
- * step; a reward that places no unit when a city grows. The opponent's
+ * step; when a city grows, one of the real panel's two rewards (the
+ * caller's pick, by default the one that places no unit). The opponent's
  * turns are the caller's (`idleTurn` ends them at once).
  */
 export function tutorialState(): GameStateV7 {
@@ -117,7 +118,35 @@ export interface TutorialPlayOptionsV7 {
    * of them in the script (the tolerance of a group).
    */
   readonly early?: readonly TutorialStepIdV7[];
+  /**
+   * Bead pulp_wars-2yc.119: the reward a growing city takes, of the two
+   * the real panel offers; absent, `quietRewardV7` (the one that places no
+   * unit, as before 2yc.119, so the fixtures' boards stay as they were).
+   */
+  readonly reward?: (choice: TutorialRewardChoiceV7) => RewardIdV7;
 }
+
+export interface TutorialRewardChoiceV7 {
+  readonly reachedLevel: number;
+  readonly candidates: readonly RewardIdV7[];
+}
+
+/** The rewards that place a free unit: the Scouts' Raider, Militia, giant. */
+export const UNIT_REWARDS_V7: readonly RewardIdV7[] = [
+  "SURVEY",
+  "MILITIA",
+  "JUGGERNAUT",
+];
+
+/** The reward of a level that places no unit (the first when both do not). */
+export const quietRewardV7 = (choice: TutorialRewardChoiceV7): RewardIdV7 =>
+  choice.candidates.find((reward) => !UNIT_REWARDS_V7.includes(reward)) ??
+  (choice.candidates[0] as RewardIdV7);
+
+/** The reward of a level that places a unit (the first when none does). */
+export const unitRewardV7 = (choice: TutorialRewardChoiceV7): RewardIdV7 =>
+  choice.candidates.find((reward) => UNIT_REWARDS_V7.includes(reward)) ??
+  (choice.candidates[0] as RewardIdV7);
 
 export function playTutorialV7(options: TutorialPlayOptionsV7): TutorialPlayV7 {
   let state = tutorialState();
@@ -140,8 +169,20 @@ export function playTutorialV7(options: TutorialPlayOptionsV7): TutorialPlayV7 {
     // A city grew: its reward is chosen first.
     if (view.pendingChoices.length > 0) {
       const allowed = tutorialCommandsV7(progress, view, offered);
-      const choice = allowed.find(
+      const pending = view.pendingChoices[0];
+      const choices = allowed.filter(
         (command) => command.kind === "CHOOSE_CITY_REWARD",
+      );
+      // Bead pulp_wars-2yc.119: the real panel, both of its choices.
+      if (
+        pending?.kind !== "CITY_REWARD" ||
+        choices.length !== pending.candidates.length
+      )
+        throw new Error("the reward panel is not the real one");
+      const wanted = (options.reward ?? quietRewardV7)(pending);
+      const choice = choices.find(
+        (command) =>
+          command.kind === "CHOOSE_CITY_REWARD" && command.reward === wanted,
       );
       if (choice?.kind !== "CHOOSE_CITY_REWARD")
         throw new Error("no reward is let through");

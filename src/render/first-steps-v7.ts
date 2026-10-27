@@ -271,6 +271,13 @@ export interface FirstStepMarkerV7 {
    * the marker's tile alone.
    */
   readonly frame?: readonly CoordV7[];
+  /**
+   * Bead pulp_wars-2yc.119, the tutorial's cue language: `TAP`, the thing
+   * to tap now, has the arrow and a pulsing ring round its tile; `LOOK`,
+   * what a read step talks about, has a still look-here ring and no arrow.
+   * Absent (the coach): the arrow alone.
+   */
+  readonly style?: "TAP" | "LOOK";
 }
 
 export interface FirstStepCueV7 {

@@ -165,6 +165,8 @@ const TUTORIAL_PLACE = {
   walker: { x: 4, y: 8 },
   village: { x: 5, y: 8 },
   attacker: { x: 3, y: 7 },
+  // Bead pulp_wars-2yc.119: the first Fighter stands here once it has won.
+  victor: { x: 4, y: 6 },
   fertile: { x: 1, y: 8 },
   windmill: { x: 2, y: 9 },
   forest: { x: 1, y: 7 },
@@ -195,6 +197,16 @@ const TUTORIAL_SCENES: readonly (readonly [
   ["tutorial-resources", "RESOURCES"],
   ["tutorial-move", "MOVE"],
   ["tutorial-move-picked", "MOVE", (c) => activate(c, TUTORIAL_PLACE.walker)],
+  // Bead pulp_wars-2yc.119: every move of the Fighter is highlighted; a
+  // tile other than the pulsing village is refused with a nudge.
+  [
+    "tutorial-move-nudge",
+    "MOVE",
+    async (c) => {
+      await activate(c, TUTORIAL_PLACE.walker);
+      await activate(c, { x: 4, y: 9 });
+    },
+  ],
   ["tutorial-train", "TRAIN"],
   [
     "tutorial-train-picked",
@@ -256,6 +268,15 @@ const TUTORIAL_SCENES: readonly (readonly [
   // Turn 4.
   ["tutorial-crafting", "CRAFTING"],
   ["tutorial-crafting-tech", "CRAFTING", (c) => click(c, "tech")],
+  // Crafting chosen: the pulse moves to its Research button.
+  [
+    "tutorial-crafting-chosen",
+    "CRAFTING",
+    async (c) => {
+      await click(c, "tech");
+      await click(c, "tech-drill");
+    },
+  ],
   ["tutorial-ore", "ORE"],
   [
     "tutorial-workshop-picked",
@@ -265,11 +286,7 @@ const TUTORIAL_SCENES: readonly (readonly [
   // Turn 5.
   ["tutorial-engineering-tech", "ENGINEERING", (c) => click(c, "tech")],
   ["tutorial-climb", "CLIMB"],
-  [
-    "tutorial-climb-picked",
-    "CLIMB",
-    (c) => activate(c, TUTORIAL_PLACE.village),
-  ],
+  ["tutorial-climb-picked", "CLIMB", (c) => activate(c, TUTORIAL_PLACE.victor)],
   ["tutorial-mine-picked", "MINE", (c) => activate(c, TUTORIAL_PLACE.ore)],
   // Turn 6.
   ["tutorial-road", "ROAD_NEAR"],
@@ -752,11 +769,11 @@ const SCENES: readonly Scene[] = [
       );
     },
   },
-  // The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115): its line at
-  // each lesson, with what the step asks for picked, the technology screen
-  // of the research steps, and the farewell after the Knight's last kill.
-  // Each state is the tutorial board with the script's commands applied; no
-  // AI runs.
+  // The tutorial (beads pulp_wars-0yxy, pulp_wars-2yc.115 and
+  // pulp_wars-2yc.119): its line at each lesson, with what the step asks
+  // for picked, the technology screen of the research steps, a refused
+  // tap's nudge, and the farewell after the Knight's last kill. Each state
+  // is the tutorial board with the script's commands applied; no AI runs.
   ...TUTORIAL_SCENES.map(([name, step, after]): Scene => ({
     name,
     match: true,
@@ -771,6 +788,23 @@ const SCENES: readonly Scene[] = [
       await after?.(c);
     },
   })),
+  // Bead pulp_wars-2yc.119: the cities took the rewards that place a unit
+  // (the Scouts' Raider, the Militia, the giant); the Road lesson walks the
+  // giant that now stands on the capital.
+  {
+    name: "tutorial-giant-road-move",
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-tutorial-ui.ts",
+        "tutorialFixtureV7('ROAD_MOVE', 'UNITS').state",
+        undefined,
+        "fixtures.tutorialFixtureV7('ROAD_MOVE', 'UNITS').storage",
+      );
+      await activate(c, TUTORIAL_PLACE.capital);
+    },
+  },
   {
     name: "match-menu",
     match: true,

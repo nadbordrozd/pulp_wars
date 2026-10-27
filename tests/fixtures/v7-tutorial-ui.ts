@@ -6,7 +6,13 @@ import {
   type TutorialProgressV7,
   type TutorialStepIdV7,
 } from "../../src/render/tutorial-v7";
-import { idleTurn, playTutorialV7, tutorialState } from "./v7-tutorial-play";
+import {
+  idleTurn,
+  playTutorialV7,
+  quietRewardV7,
+  tutorialState,
+  unitRewardV7,
+} from "./v7-tutorial-play";
 
 /**
  * The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115) at one of its
@@ -41,9 +47,20 @@ export interface TutorialFixtureV7 {
   readonly storage: TutorialStorageV7;
 }
 
-/** The tutorial with every step before `at` done. */
-export function tutorialFixtureV7(at: TutorialStepIdV7): TutorialFixtureV7 {
-  const play = playTutorialV7({ opponent: idleTurn, stopAt: at });
+/**
+ * The tutorial with every step before `at` done. `rewards`: the cities'
+ * picks of the real reward panel (bead pulp_wars-2yc.119), by default the
+ * ones that place no unit; `UNITS`, the Scouts, the Militia and the giant.
+ */
+export function tutorialFixtureV7(
+  at: TutorialStepIdV7,
+  rewards: "QUIET" | "UNITS" = "QUIET",
+): TutorialFixtureV7 {
+  const play = playTutorialV7({
+    opponent: idleTurn,
+    stopAt: at,
+    reward: rewards === "UNITS" ? unitRewardV7 : quietRewardV7,
+  });
   if (play.progress.step === null)
     throw new Error(`the tutorial ended before ${at}`);
   const storage = new TutorialStorageV7();

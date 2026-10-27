@@ -666,4 +666,145 @@ describe("the first-steps marker on the board", () => {
     drawFirstStepMarkerV7(context, 100, 100, 1, { highContrast: true });
     expect(fills.map((fill) => fill.colour)).toEqual(["#000000", "#ffffff"]);
   });
+
+  // Bead pulp_wars-2yc.119, the tutorial's cue language on the board.
+  /** A 2D context that records the rounded frames stroked and filled. */
+  function ringContext() {
+    const strokes: {
+      colour: string;
+      width: number;
+      dashed: boolean;
+      blur: number;
+      rect: [number, number, number, number] | null;
+    }[] = [];
+    const fills: string[] = [];
+    let rect: [number, number, number, number] | null = null;
+    let dash: number[] = [];
+    const context = {
+      fillStyle: "",
+      strokeStyle: "",
+      lineWidth: 1,
+      lineJoin: "miter",
+      shadowColor: "",
+      shadowBlur: 0,
+      save: () => undefined,
+      restore: () => undefined,
+      beginPath: () => {
+        rect = null;
+      },
+      roundRect: (x: number, y: number, w: number, h: number) => {
+        rect = [x, y, w, h];
+      },
+      setLineDash: (value: number[]) => {
+        dash = value;
+      },
+      moveTo: () => undefined,
+      lineTo: () => undefined,
+      closePath: () => undefined,
+      fill: () => fills.push(String(context.fillStyle)),
+      stroke: () =>
+        strokes.push({
+          colour: String(context.strokeStyle),
+          width: context.lineWidth,
+          dashed: dash.length > 0,
+          blur: context.shadowBlur,
+          rect,
+        }),
+    };
+    return {
+      context: context as unknown as CanvasRenderingContext2D,
+      strokes,
+      fills,
+    };
+  }
+
+  it("a tutorial tap marker has the arrow and a pulsing ring inside its tile", () => {
+    const { host, canvas } = mountHost({
+      kind: "TILE",
+      at: FRUIT,
+      motion: "HOP",
+      style: "TAP",
+    });
+    expect(canvas.dataset.firstStepStyle).toBe("tap");
+    expect(host.feedback.wantsAmbientFrames()).toBe(true);
+    // The pulse swells and fades over about a second.
+    const pulses = [0, 275, 550, 825].map(
+      (time) => host.feedback.firstStepMarkerFrame(time)?.pulse ?? -1,
+    );
+    expect(pulses[0]).toBeCloseTo(0);
+    expect(pulses[2]).toBeCloseTo(1);
+    expect(pulses[1]).toBeCloseTo(0.5);
+    let clock = 550;
+    vi.spyOn(window.performance, "now").mockImplementation(() => clock);
+    const { context, strokes, fills } = ringContext();
+    const camera = { offsetX: 40, offsetY: 20, zoom: 1 };
+    host.feedback.drawAbove(context, camera, () => null);
+    // The ring: an ink casing with a yellow glow, then the yellow frame,
+    // solid, inside the fruit's tile; then the arrow (its two fills).
+    const ring = strokes.filter((stroke) => stroke.rect !== null);
+    expect(ring.map((stroke) => stroke.colour)).toEqual(["#1a1410", "#ffcf3a"]);
+    expect(ring.every((stroke) => !stroke.dashed)).toBe(true);
+    expect(ring[0]?.blur).toBeGreaterThan(0);
+    const centre = projectGrid(FRUIT);
+    const [x, y, w, h] = ring[1]?.rect ?? [0, 0, 0, 0];
+    expect(x + w / 2).toBeCloseTo(camera.offsetX + centre.x);
+    expect(y + h / 2).toBeCloseTo(camera.offsetY + centre.y);
+    expect(w).toBeLessThan(TILE_WIDTH);
+    expect(w).toBeGreaterThan(TILE_WIDTH * 0.85);
+    expect(fills).toEqual(["#1a1410", "#ffcf3a"]);
+    // Fainter at the other end of the pulse.
+    clock = 0;
+    const faint = ringContext();
+    host.feedback.drawAbove(faint.context, camera, () => null);
+    expect(faint.strokes[0]?.blur).toBeLessThan(ring[0]?.blur ?? 0);
+    host.destroy();
+  });
+
+  it("a tutorial look marker is a still dashed ring with no arrow", () => {
+    const { host, canvas } = mountHost({
+      kind: "TILE",
+      at: FRUIT,
+      motion: "STILL",
+      style: "LOOK",
+    });
+    expect(canvas.dataset.firstStepStyle).toBe("look");
+    expect(canvas.dataset.firstStepMotion).toBe("still");
+    expect(host.feedback.wantsAmbientFrames()).toBe(false);
+    expect(host.feedback.firstStepMarkerFrame(150)).toEqual({
+      kind: "TILE",
+      at: FRUIT,
+      hopCssPx: 0,
+      style: "LOOK",
+      pulse: 0.5,
+    });
+    const { context, strokes, fills } = ringContext();
+    host.feedback.drawAbove(
+      context,
+      { offsetX: 0, offsetY: 0, zoom: 1 },
+      () => null,
+    );
+    // A dashed cream frame on an ink casing; no wash over the tile, no
+    // yellow arrow (nothing filled at all) and no glow.
+    expect(fills).toEqual([]);
+    expect(strokes.map((stroke) => stroke.colour)).toEqual([
+      "#1a1410",
+      "#fff3c4",
+    ]);
+    expect(strokes.every((stroke) => stroke.dashed)).toBe(true);
+    expect(strokes.every((stroke) => stroke.blur === 0)).toBe(true);
+    host.destroy();
+  });
+
+  it("a tutorial tap ring stands still in reduced motion", () => {
+    const { host, model } = mountHost({
+      kind: "UNIT",
+      at: FRUIT,
+      motion: "HOP",
+      style: "TAP",
+    });
+    host.update(model({ motion: "REDUCED" }));
+    for (const time of [0, 300, 550])
+      expect(host.feedback.firstStepMarkerFrame(time)?.pulse).toBe(0.5);
+    host.destroy();
+  });
 });

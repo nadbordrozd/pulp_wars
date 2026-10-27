@@ -5,6 +5,7 @@ import {
 } from "../../src/ai/v7";
 import {
   createPlayableGameV7,
+  effectiveRoleRuleV7,
   missionByIdV7,
   queryPlayerCommandsV7,
   type CommandV7,
@@ -15,7 +16,9 @@ import {
   NEW_TUTORIAL_PROGRESS_V7,
   TUTORIAL_FAREWELL_V7,
   TUTORIAL_MISSION_ID_V7,
+  TUTORIAL_NUDGES_V7,
   TUTORIAL_PLACES_V7,
+  TUTORIAL_REFUSED_V7,
   TUTORIAL_STEPS_V7,
   TUTORIAL_STORAGE_KEY_V7,
   acknowledgeTutorialV7,
@@ -32,6 +35,7 @@ import {
   tutorialCommandsV7,
   tutorialCueV7,
   tutorialExpectedCommandV7,
+  tutorialNudgeV7,
   type TutorialProgressV7,
   type TutorialStepIdV7,
 } from "../../src/render/tutorial-v7";
@@ -44,6 +48,8 @@ import {
   tileAt,
   tutorialState,
   unitAt,
+  unitRewardV7,
+  type TutorialRewardChoiceV7,
 } from "../fixtures/v7-tutorial-play";
 
 /**
@@ -88,7 +94,7 @@ function aiTurn(start: GameStateV7): GameStateV7 {
 describe("the tutorial board", () => {
   it("is the registered TUTORIAL_1 mission: Humans against Goblins, in no chapter", () => {
     const mission = missionByIdV7(TUTORIAL_MISSION_ID_V7);
-    expect(mission).toMatchObject({ revision: 3, hidden: true, size: 11 });
+    expect(mission).toMatchObject({ revision: 4, hidden: true, size: 11 });
     expect(mission?.seats.map((seat) => seat.faction)).toEqual([
       "ORIGINAL",
       "GOBLIN",
@@ -125,7 +131,8 @@ describe("the tutorial board", () => {
         resource: null,
         territoryOwnerId: view.viewer.id,
       });
-    // The mountains beside the village: one hides Ore until Crafting.
+    // The Ore mountain beside the village hides its Ore until Crafting; the
+    // bare mountain stands beside the lone Goblin's tile (revision 4).
     expect(tileAt(view, P.ore)).toMatchObject({
       terrain: "MOUNTAIN",
       resource: null,
@@ -451,9 +458,19 @@ describe("the tutorial cue", () => {
       next: false,
       technology: "DRILL",
     });
-    expect(cueAt("CRAFTING", state, null, { technologyOpen: true })?.line).toBe(
-      "Pick Crafting, then Research.",
-    );
+    expect(
+      cueAt("CRAFTING", state, null, { technologyOpen: true }),
+    ).toMatchObject({
+      line: "Pick Crafting, then Research.",
+      target: "TECHNOLOGY",
+    });
+    // Crafting chosen: its Research button is what pulses now.
+    expect(
+      cueAt("CRAFTING", state, null, {
+        technologyOpen: true,
+        selectedTechnology: "DRILL",
+      })?.target,
+    ).toBe("RESEARCH");
     expect(cueAt("ENGINEERING", state)?.technology).toBe("ENGINEERING");
     expect(
       cueAt("CRAFTING", state, null, { motion: "REDUCED" })?.buttonMotion,
@@ -466,6 +483,7 @@ describe("the tutorial cue", () => {
       kind: "TILE",
       at: P.fruit,
       motion: "HOP",
+      style: "TAP",
     });
     const picked = cueAt("HARVEST", state, { kind: "TILE", at: P.fruit });
     expect(picked?.marker).toBeNull();
@@ -478,6 +496,7 @@ describe("the tutorial cue", () => {
       kind: "UNIT",
       at: P.walker,
       motion: "HOP",
+      style: "TAP",
     });
     expect(
       cueAt("MOVE", state, { kind: "UNIT", unitId: unitId(state, P.walker) }),
@@ -540,7 +559,8 @@ describe("the tutorial cue", () => {
     });
     expect(cueAt("ORE", state)).toMatchObject({
       next: true,
-      marker: { kind: "TILE", at: P.ore, motion: "HOP" },
+      // A read step's marker is a still look-here ring (2yc.119).
+      marker: { kind: "TILE", at: P.ore, motion: "STILL", style: "LOOK" },
     });
     expect(cueAt("LINK", state)?.marker).toMatchObject({
       kind: "CITY",
@@ -551,6 +571,7 @@ describe("the tutorial cue", () => {
       kind: "UNIT",
       at: P.captain,
       motion: "HOP",
+      style: "TAP",
       frame: [P.knight, P.goblin1, P.goblin2, P.goblin3],
     });
     expect(cueAt("MOVE", state, null, { ready: false })).toBeNull();
@@ -564,6 +585,222 @@ describe("the tutorial cue", () => {
         motion: "FULL",
       }),
     ).toBeNull();
+  });
+});
+
+describe("the tutorial's cue language (bead pulp_wars-2yc.119)", () => {
+  const play = playTutorialV7({ opponent: idleTurn });
+  const view = (id: TutorialStepIdV7) => {
+    const found = play.views[id];
+    if (found === undefined) throw new Error(`no view at ${id}`);
+    return found;
+  };
+  const cue = (
+    id: TutorialStepIdV7,
+    extra: Partial<Parameters<typeof tutorialCueV7>[0]> = {},
+  ) => {
+    const at = view(id);
+    const found = tutorialCueV7({
+      progress: { completed: false, step: indexOf(id) },
+      view: at,
+      selection: null,
+      ready: true,
+      technologyOpen: false,
+      offered: queryPlayerCommandsV7(at),
+      motion: "FULL",
+      ...extra,
+    });
+    if (found === null) throw new Error(`no cue at ${id}`);
+    return found;
+  };
+  /** How many things pulse: a tap marker, a ringed button, a dock button. */
+  const pulsing = (found: ReturnType<typeof cue>): number =>
+    (found.marker?.style === "TAP" ? 1 : 0) +
+    (found.button === null ? 0 : 1) +
+    (found.target === "DOCK" ? 1 : 0) +
+    (found.target === "TECHNOLOGY" || found.target === "RESEARCH" ? 1 : 0) +
+    (found.target === "NEXT" ? 1 : 0);
+  /** The selection that is the first half of a two-step action. */
+  const picked = (
+    id: TutorialStepIdV7,
+  ): Parameters<typeof tutorialCueV7>[0]["selection"] => {
+    const expects = TUTORIAL_STEPS_V7[indexOf(id)]?.expects ?? null;
+    const at = view(id);
+    const unit = (place: CoordV7) => {
+      const found = unitAt(at, place);
+      if (found === undefined) throw new Error(`${id}: no unit`);
+      return { kind: "UNIT" as const, unitId: found.id };
+    };
+    switch (expects?.kind) {
+      case "TILE":
+        return { kind: "TILE", at: expects.at };
+      case "MOVE":
+      case "ATTACK":
+        return unit(expects.from);
+      case "RALLY":
+      case "CAPTURE":
+      case "UNIT_HELP":
+        return unit(expects.at);
+      case "TRAIN": {
+        const city = at.cities.find(
+          (item) =>
+            item.at.x === expects.city.x && item.at.y === expects.city.y,
+        );
+        if (city === undefined) throw new Error(`${id}: no city`);
+        return { kind: "CITY", cityId: city.id };
+      }
+      default:
+        return null;
+    }
+  };
+
+  it("a read step pulses Next and only Next; its marker is a still look-here ring", () => {
+    const reads = TUTORIAL_STEPS_V7.filter((step) => step.expects === null);
+    expect(reads.map((step) => step.id)).toEqual([
+      "RESOURCES",
+      "DETAILS_INFO",
+      "WINDMILL_INFO",
+      "ORE",
+      "LINK",
+      "REINFORCED",
+      "INSPIRED",
+    ]);
+    for (const step of reads) {
+      const found = cue(step.id);
+      expect(found, step.id).toMatchObject({
+        kind: "READ",
+        target: "NEXT",
+        next: true,
+        button: null,
+        command: null,
+        nudge: TUTORIAL_NUDGES_V7.NEXT,
+      });
+      expect(pulsing(found), step.id).toBe(1);
+      // Never the arrow on a read step: a still look-here ring, or nothing.
+      if (found.marker !== null)
+        expect(found.marker, step.id).toMatchObject({
+          style: "LOOK",
+          motion: "STILL",
+        });
+      // Its line asks for no tap.
+      expect(found.line, step.id).not.toMatch(/\b(tap|press)\b/i);
+    }
+  });
+
+  it("an action step pulses exactly its target, then the second target once the first is picked", () => {
+    const actions = TUTORIAL_STEPS_V7.filter((step) => step.expects !== null);
+    expect(actions).toHaveLength(29);
+    for (const step of actions) {
+      const found = cue(step.id);
+      expect(found.kind, step.id).toBe("ACTION");
+      expect(found.next, step.id).toBe(false);
+      expect(pulsing(found), step.id).toBe(1);
+      expect(found.target, step.id).not.toBe("NEXT");
+      if (found.marker !== null) {
+        expect(found.target, step.id).toBe("BOARD");
+        expect(found.marker.style, step.id).toBe("TAP");
+        expect(found.marker.motion, step.id).toBe("HOP");
+      }
+      // The line says what to tap.
+      expect(found.line, step.id).toMatch(/\b(Tap|tap|Open|End your turn)\b/);
+      const expects = step.expects;
+      if (expects === null) continue;
+      if (expects.kind === "END_TURN") {
+        expect(found.target, step.id).toBe("END_TURN");
+        continue;
+      }
+      if (expects.kind === "RESEARCH") {
+        expect(found.target, step.id).toBe("TECH");
+        expect(cue(step.id, { technologyOpen: true }).target).toBe(
+          "TECHNOLOGY",
+        );
+        const research = cue(step.id, {
+          technologyOpen: true,
+          selectedTechnology: expects.tech,
+        });
+        expect(research.target).toBe("RESEARCH");
+        expect(research.command).toEqual({
+          kind: "RESEARCH",
+          tech: expects.tech,
+        });
+        continue;
+      }
+      // The first half: the unit, city or tile is marked on the board.
+      expect(found.target, step.id).toBe("BOARD");
+      const second = cue(step.id, { selection: picked(step.id) });
+      expect(pulsing(second), step.id).toBe(1);
+      expect(second.line, step.id).toBe(step.selectedLine);
+      switch (expects.kind) {
+        case "MOVE":
+        case "ATTACK":
+          // The pulse moves to the destination on the board.
+          expect(second.target, step.id).toBe("BOARD");
+          expect(second.marker?.at, step.id).toEqual(
+            expects.kind === "MOVE" ? expects.to : expects.target,
+          );
+          expect(second.command?.kind, step.id).toBe(expects.kind);
+          expect(second.nudge, step.id).toBe(
+            expects.kind === "MOVE"
+              ? TUTORIAL_NUDGES_V7.TILE
+              : TUTORIAL_NUDGES_V7.UNIT,
+          );
+          break;
+        case "UNIT_HELP":
+          expect(second.target, step.id).toBe("UNIT_HELP");
+          expect(second.marker, step.id).toBeNull();
+          break;
+        default:
+          // The pulse moves to the dock's button for the command.
+          expect(second.target, step.id).toBe("DOCK");
+          expect(second.marker, step.id).toBeNull();
+          expect(second.command, step.id).not.toBeNull();
+          expect(
+            tutorialAcceptsV7(
+              { completed: false, step: indexOf(step.id) },
+              view(step.id),
+              second.command as CommandV7,
+            ),
+            step.id,
+          ).toBe(true);
+          expect(second.nudge, step.id).toBe(TUTORIAL_NUDGES_V7.BUTTON);
+      }
+    }
+  });
+
+  it("the nudge names where the glow is, and is the plain refusal with no cue", () => {
+    expect(cue("HARVEST").nudge).toBe(TUTORIAL_NUDGES_V7.TILE);
+    expect(cue("MOVE").nudge).toBe(TUTORIAL_NUDGES_V7.UNIT);
+    expect(cue("TRAIN").nudge).toBe(TUTORIAL_NUDGES_V7.CITY);
+    expect(cue("END_TURN_1").nudge).toBe(TUTORIAL_NUDGES_V7.BUTTON);
+    expect(cue("CRAFTING", { technologyOpen: true }).nudge).toBe(
+      TUTORIAL_NUDGES_V7.TECHNOLOGY,
+    );
+    expect(tutorialNudgeV7(cue("RESOURCES"))).toBe(TUTORIAL_NUDGES_V7.NEXT);
+    expect(tutorialNudgeV7(null)).toBe(TUTORIAL_REFUSED_V7);
+  });
+
+  it("the Road lesson names whatever unit a city's reward left on the capital", () => {
+    expect(cue("ROAD_MOVE").line).toBe(
+      "Roads also speed units up. Tap this Fighter.",
+    );
+    const giant = playTutorialV7({
+      opponent: idleTurn,
+      stopAt: "ROAD_MOVE",
+      reward: unitRewardV7,
+    });
+    const at = human(giant.state);
+    const found = tutorialCueV7({
+      progress: giant.progress,
+      view: at,
+      selection: null,
+      ready: true,
+      technologyOpen: false,
+      offered: queryPlayerCommandsV7(at),
+      motion: "FULL",
+    });
+    const label = effectiveRoleRuleV7("JUGGERNAUT", "ORIGINAL").label;
+    expect(unitAt(at, P.capital)?.role).toBe("JUGGERNAUT");
+    expect(found?.line).toBe(`Roads also speed units up. Tap this ${label}.`);
   });
 });
 
@@ -617,7 +854,8 @@ describe("the tutorial script on the real engine", () => {
     expect(tileAt(view, P.ore)?.improvement).toBe("MINE");
     expect(tileAt(view, P.roadNear)?.road).toBe(true);
     expect(tileAt(view, P.roadFar)?.road).toBe(true);
-    // City rewards came up and were chosen; none placed a unit.
+    // City rewards came up and were chosen (the fixture's pick: the ones
+    // that place no unit; every other pick is played below).
     expect(play.rewards).toEqual(["WALLS", "BOOM", "STOCKPILE", "TREASURY"]);
   });
 
@@ -634,7 +872,8 @@ describe("the tutorial script on the real engine", () => {
   it("Engineering opens the mountain to the Fighter beside it", () => {
     const climbsTo = (state: GameStateV7): boolean => {
       const view = human(state);
-      const fighter = unitAt(view, P.village);
+      // The Fighter that won turn 1's fight, on the Goblin's tile.
+      const fighter = unitAt(view, P.enemy);
       return queryPlayerCommandsV7(view).some(
         (command) =>
           command.kind === "MOVE" &&
@@ -775,7 +1014,7 @@ describe("the tutorial script on the real engine", () => {
     expect(tutorialAcceptsV7(early, view, { kind: "END_TURN" })).toBe(false);
   });
 
-  it("a city's reward is chosen freely, but never one that places a unit", () => {
+  it("a city's reward is the real panel: both choices are let through, and either may be taken", () => {
     const play = playTutorialV7({ opponent: idleTurn, stopAt: "END_TURN_2" });
     // The Farm took the capital to level 3 at the Farm step.
     const farm = play.pendingAt.FARM;
@@ -785,19 +1024,69 @@ describe("the tutorial script on the real engine", () => {
       "CHOOSE_CITY_REWARD",
       "CHOOSE_CITY_REWARD",
     ]);
-    const allowed = tutorialCommandsV7(farm.progress, farm.view, offered);
-    expect(allowed).toEqual([
-      expect.objectContaining({ kind: "CHOOSE_CITY_REWARD", reward: "WALLS" }),
-    ]);
+    expect(tutorialCommandsV7(farm.progress, farm.view, offered)).toEqual(
+      offered,
+    );
+    for (const command of offered)
+      expect(tutorialAcceptsV7(farm.progress, farm.view, command)).toBe(true);
     expect(reconcileTutorialV7(farm.progress, farm.view, offered)).toBe(
       farm.progress,
     );
-    const scouts = offered.find(
-      (command) =>
-        command.kind === "CHOOSE_CITY_REWARD" && command.reward === "SURVEY",
+  });
+
+  it("every pick of every reward panel, in either order of the turns, still completes the tutorial", () => {
+    // The panels: the capital's levels 3 (Scouts or Walls), 4 (Boom or the
+    // Economic Miracle) and 5 (the giant or the Treasury, after a Boom),
+    // and the second city's level 2 (Stockpile or Militia).
+    const levels = [2, 3, 4, 5];
+    const orders: readonly (readonly TutorialStepIdV7[])[] = [
+      [],
+      ["FARM", "LUMBER_CAMP", "MINE", "ROAD_FAR"],
+    ];
+    const seen = new Set<string>();
+    for (let mask = 0; mask < 1 << levels.length; mask += 1)
+      for (const early of orders) {
+        const pick = (choice: TutorialRewardChoiceV7) => {
+          const bit =
+            (mask >> levels.indexOf(Math.min(5, choice.reachedLevel))) & 1;
+          const reward = choice.candidates[bit] ?? choice.candidates[0];
+          if (reward === undefined) throw new Error("no candidate");
+          return reward;
+        };
+        const done = playTutorialV7({
+          opponent: idleTurn,
+          reward: pick,
+          early,
+        });
+        const label = `${String(mask)} ${early.join(",")}`;
+        expect(done.progress, label).toEqual({ completed: true, step: null });
+        expect(done.visited.length, label).toBe(
+          TUTORIAL_STEPS_V7.length - early.length,
+        );
+        // The Knight still kills the three Goblins: only the Goblin
+        // capital's own Fighter is left.
+        const enemies = done.state.units.filter(
+          (unit) => unit.ownerId !== done.state.humanPlayerId,
+        );
+        expect(
+          enemies.map((unit) => unit.at),
+          label,
+        ).toEqual([{ x: 8, y: 2 }]);
+        for (const reward of done.rewards) seen.add(reward);
+      }
+    // Every reward of the four panels was taken in some play.
+    expect([...seen].sort()).toEqual(
+      [
+        "BOOM",
+        "ECONOMIC_MIRACLE",
+        "JUGGERNAUT",
+        "MILITIA",
+        "STOCKPILE",
+        "SURVEY",
+        "TREASURY",
+        "WALLS",
+      ].sort(),
     );
-    if (scouts === undefined) throw new Error("no Scouts");
-    expect(tutorialAcceptsV7(farm.progress, farm.view, scouts)).toBe(false);
   });
 
   it("the one attack kills the lone Goblin, so nothing of the enemy is near on turn 2", () => {

@@ -13,9 +13,16 @@ import type { MissionDefinitionV7 } from "./types";
  * themselves. Everything is in place before any AI turn: Fruit and Fertile
  * Ground in the capital's land, a Forest for the Lumber Camp, a Fighter one
  * step from a village (move, then capture on turn 2), a lone Goblin next to
- * the other Fighter, an Ore mountain and a bare mountain beside the
- * village, and the Coins every lesson costs with a little to spare (no
- * other command is let through while the tutorial runs).
+ * the other Fighter (which takes its tile when it wins, and climbs the bare
+ * mountain beside it on turn 5), an Ore mountain beside the village, and
+ * the Coins every lesson costs with a little to spare (no other command is
+ * let through while the tutorial runs).
+ *
+ * Bead pulp_wars-2yc.119: a growing city offers its real two rewards, and
+ * either may be taken. The free units (the Scouts' Raider, the Militia,
+ * the giant) take their city's centre and push its occupant to a free tile
+ * beside it; none of those tiles is one a later lesson needs, and the
+ * Road lesson walks whatever unit then stands on the capital.
  *
  * The Goblins hold their corner until round 9 (`HOLD`), so nothing of
  * theirs comes near. A Knight and a Captain of the player's arrive at the
@@ -31,8 +38,8 @@ import type { MissionDefinitionV7 } from "./types";
  *    3   f.........f
  *    4   ...ff.....f
  *    5   ^^..fCK.ggg      C, K: the Captain and Knight (round 7); g: Goblins (round 7)
- *    6   ^...g......      g: the lone Goblin
- *    7   ff.F..^.v.f      F: your Fighter beside it; ^: a bare mountain; v: a village
+ *    6   ^..^g......      g: the lone Goblin; ^: the bare mountain beside it
+ *    7   ff.F....v.f      F: your Fighter beside it; v: a village
  *    8   feH.Fv....f      e: Fertile Ground; H: your capital; F: your Fighter; v: the village
  *    9   ^r.r..o...^      r: Fruit; o: Ore on a mountain
  *   10   ^^f...ff^^^
@@ -43,7 +50,11 @@ export const TUTORIAL_1_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-2yc.115`): the eight-turn tutorial (its
   // technologies and Coins, the economy's tiles, the mountains, the waves).
-  revision: 3,
+  // Revision 4 (`pulp_wars-2yc.119`): the bare mountain stands beside the
+  // tile where the first Fighter won its fight, not beside the village, so
+  // a Militia that takes the second city's centre (the real two-choice
+  // reward panel) never stands in the way of the climb.
+  revision: 4,
   hidden: true,
   size: 11,
   seed: 20261010,
@@ -54,8 +65,8 @@ export const TUTORIAL_1_V7: MissionDefinitionV7 = {
     "f.........f",
     "...ff.....f",
     "^^..f......",
-    "^..........",
-    "ff....^...f",
+    "^..^.......",
+    "ff........f",
     "f.........f",
     "^.....^...^",
     "^^f...ff^^^",

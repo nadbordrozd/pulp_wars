@@ -945,7 +945,6 @@ import {
   TUTORIAL_FAREWELL_V7,
   TUTORIAL_MISSION_ID_V7,
   TUTORIAL_NEXT_LABEL_V7,
-  TUTORIAL_REFUSED_V7,
   TUTORIAL_SKIP_LABEL_V7,
   TUTORIAL_STORAGE_KEY_V7,
   acknowledgeTutorialV7,
@@ -954,13 +953,14 @@ import {
   noteTutorialUnitHelpV7,
   parseTutorialProgressV7,
   reconcileTutorialV7,
+  sameTutorialCommandV7,
   serializeTutorialProgressV7,
   skipTutorialV7,
   startTutorialV7,
   tutorialAcceptsV7,
   tutorialActiveV7,
-  tutorialCommandsV7,
   tutorialCueV7,
+  tutorialNudgeV7,
   type TutorialCueV7,
   type TutorialProgressV7,
 } from "../tutorial-v7";
@@ -6241,23 +6241,8 @@ export class Ruleset7DomAppView {
         nothingUsefulLeftV7(this.#snapshot.offeredCommands)
       )
         end.dataset.nothingLeft = "true";
-      nav.append(end);
-    } else if (
-      tutorialForces &&
-      this.#controllerSnapshot.offeredCommands.some(
-        (candidate) => candidate.kind === "END_TURN",
-      )
-    ) {
-      // The tutorial: End turn stays in its place, closed until its step.
-      const end = button(
-        this.#document,
-        "End turn",
-        "end-turn",
-        "v7-hud-end-turn",
-      );
-      end.disabled = true;
-      end.dataset.tutorialGated = "true";
-      end.title = TUTORIAL_REFUSED_V7;
+      // The tutorial (bead pulp_wars-2yc.119): End turn is the real one at
+      // every step; before its own step a press is refused with a nudge.
       nav.append(end);
     }
     // The coach's line is the HUD's last child (bead pulp_wars-eu3r.9): on
@@ -6602,12 +6587,13 @@ export class Ruleset7DomAppView {
 
   /**
    * The tutorial (bead pulp_wars-0yxy): the snapshot the interface reads.
-   * While the tutorial forces the match, the offered commands are the
-   * step's one command (or none), so every highlight, button and End turn
-   * drawn from them follows. A step the engine does not offer on the
-   * player's turn ends the tutorial instead of trapping the player; that
-   * is not judged in the middle of the player's own command, when the
-   * step has not moved on yet.
+   * Since bead pulp_wars-2yc.119 it is the controller's own: the real
+   * interface draws every offered command (all of a unit's moves and
+   * attacks, every dock button, technology and reward), and a command
+   * that is not the step's is refused when sent (`#dispatchUnguarded`). A
+   * step the engine does not offer on the player's turn ends the tutorial
+   * instead of trapping the player; that is not judged in the middle of
+   * the player's own command, when the step has not moved on yet.
    */
   #tutorialSnapshot(
     snapshot: Ruleset7BrowserSnapshot,
@@ -6625,17 +6611,24 @@ export class Ruleset7DomAppView {
         this.#persistTutorial();
       }
     }
-    const offeredCommands = tutorialCommandsV7(
-      this.#tutorial,
-      snapshot.view,
-      snapshot.offeredCommands,
-    );
-    return offeredCommands === snapshot.offeredCommands
-      ? snapshot
-      : { ...snapshot, offeredCommands };
+    return snapshot;
   }
 
-  /** The tutorial's record changed: store it and filter the commands anew. */
+  /**
+   * Bead pulp_wars-2yc.119: whether the tutorial's cue rings this command's
+   * dock button (the step's own command, once its unit, city or tile is
+   * selected).
+   */
+  #tutorialRingsCommand(command: CommandV7): boolean {
+    const cue = this.#tutorialCue;
+    return (
+      cue !== null &&
+      cue.target === "DOCK" &&
+      sameTutorialCommandV7(cue.command, command)
+    );
+  }
+
+  /** The tutorial's record changed: store it and read the snapshot anew. */
   #setTutorial(progress: TutorialProgressV7): void {
     if (progress === this.#tutorial) return;
     this.#tutorial = progress;
@@ -6673,6 +6666,8 @@ export class Ruleset7DomAppView {
         this.#selectedUnitHelpId === null &&
         this.#dockDetailsKey === null,
       technologyOpen: this.#screen === "TECH",
+      selectedTechnology: this.#selectedTech,
+      offered: this.#controllerSnapshot.offeredCommands,
       motion: this.#motion,
     });
   }
@@ -6702,6 +6697,9 @@ export class Ruleset7DomAppView {
         "tutorial-next",
         "primary-action v7-tutorial-next",
       );
+      // A read step (bead pulp_wars-2yc.119): Next is the thing that pulses.
+      if (cue.target === "NEXT")
+        next.dataset.firstStep = cue.buttonMotion.toLowerCase();
       next.onclick = () => {
         this.#setTutorial(acknowledgeTutorialV7(this.#tutorial));
         // Play statistics (2yc.101): Next on the last step finishes it.
@@ -9754,6 +9752,10 @@ export class Ruleset7DomAppView {
           }
         }
       }
+      // The tutorial (bead pulp_wars-2yc.119): the step's own button in the
+      // real dock is the one that pulses.
+      if (this.#tutorialRingsCommand(command) && this.#tutorialCue !== null)
+        action.dataset.firstStep = this.#tutorialCue.buttonMotion.toLowerCase();
       if (blocked === null) {
         action.disabled = this.#localBusy();
         action.onclick =
@@ -10956,7 +10958,9 @@ export class Ruleset7DomAppView {
       const node = stage.querySelector<HTMLElement>(
         `[data-action="tech-${tutorial.technology.toLowerCase()}"]`,
       );
-      if (node !== null && this.#selectedTech !== tutorial.technology)
+      // Bead pulp_wars-2yc.119: the technology pulses, then, once it is
+      // chosen, its Research button (`#techDetail`).
+      if (node !== null && tutorial.target === "TECHNOLOGY")
         node.dataset.firstStep = tutorial.buttonMotion.toLowerCase();
     }
     const selected = graphLayout.nodes.find(
@@ -11110,6 +11114,11 @@ export class Ruleset7DomAppView {
         void this.#dispatch(command);
       };
       research.disabled = this.#localBusy();
+      // The tutorial's research step, the technology chosen (bead
+      // pulp_wars-2yc.119): its Research button pulses.
+      const cue = this.#tutorialCue;
+      if (cue?.target === "RESEARCH" && cue.technology === node.id)
+        research.dataset.firstStep = cue.buttonMotion.toLowerCase();
       detail.append(research);
     }
     return detail;
@@ -13084,10 +13093,11 @@ export class Ruleset7DomAppView {
     if (this.#localBusy()) return false;
     notePresentationActivityV7(`command ${command.kind}`);
     // The tutorial (bead pulp_wars-0yxy): only the step's command goes to
-    // the engine; anything else is refused here.
+    // the engine; anything else is refused here, with a nudge that says
+    // where the glow is (bead pulp_wars-2yc.119), and the step stays.
     const tutorialView = this.#controllerSnapshot.view;
     if (!tutorialAcceptsV7(this.#tutorial, tutorialView, command)) {
-      this.#showToast(TUTORIAL_REFUSED_V7);
+      this.#showToast(tutorialNudgeV7(this.#tutorialCue));
       this.#audio.play("ui.error");
       this.#render();
       return false;

@@ -15,6 +15,7 @@ import {
   drawPromotionMarkerV7,
   drawRoadPipGlowV7,
   drawSparkleBurstV7,
+  drawTutorialRingV7,
   promotionMarkerSizeCssPxV7,
   type BoardFeedbackFrameV7,
 } from "./feedback-canvas-v7";
@@ -126,7 +127,18 @@ export interface FirstStepMarkerFrameV7 {
    * at the tile from below it. Omitted when not.
    */
   readonly underNamePlate?: true;
+  /**
+   * Bead pulp_wars-2yc.119: the tutorial's ring round the tile (`TAP`: the
+   * arrow and a pulsing ring; `LOOK`: a still ring and no arrow), with
+   * the ring's pulse this frame (0 to 1; 0.5 when still). Omitted for the
+   * coach's arrow alone.
+   */
+  readonly style?: "TAP" | "LOOK";
+  readonly pulse?: number;
 }
+
+/** The tutorial ring's pulse period (about the HUD button's 1.1 s). */
+const TUTORIAL_RING_PERIOD_MS = 1_100;
 
 /**
  * Bead pulp_wars-2yc.84: how far under its tile's centre the tip of an
@@ -1008,6 +1020,14 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     const frame = this.firstStepMarkerFrame(now);
     if (frame === null) return;
     const at = worldToScreen(projectGrid(frame.at), camera);
+    // Bead pulp_wars-2yc.119: the tutorial's ring round the tile; a read
+    // step's look-here ring has no arrow.
+    if (frame.style !== undefined)
+      drawTutorialRingV7(context, at.x, at.y, camera.zoom, frame.style, {
+        pulse: frame.pulse ?? 0.5,
+        highContrast: this.#model?.highContrast ?? false,
+      });
+    if (frame.style === "LOOK") return;
     drawFirstStepMarkerV7(
       context,
       at.x,
@@ -1035,11 +1055,24 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     // below the tile, and hops down, away from it, like the arrow above.
     const underNamePlate =
       marker.kind === "TILE" && namePlateAboveV7(model.view, marker.at);
+    // The tutorial's ring pulses with the arrow's motion; a look-here ring,
+    // and every ring in reduced motion, stands still.
+    const still =
+      marker.style !== "TAP" ||
+      marker.motion !== "HOP" ||
+      model.motion === "REDUCED";
+    const phase =
+      (((now % TUTORIAL_RING_PERIOD_MS) + TUTORIAL_RING_PERIOD_MS) %
+        TUTORIAL_RING_PERIOD_MS) /
+      TUTORIAL_RING_PERIOD_MS;
+    const pulse = still ? 0.5 : 0.5 - 0.5 * Math.cos(phase * Math.PI * 2);
     return {
       kind: marker.kind,
       at: marker.at,
-      hopCssPx: underNamePlate ? Math.abs(hop) : hop,
+      hopCssPx:
+        marker.style === "LOOK" ? 0 : underNamePlate ? Math.abs(hop) : hop,
       ...(underNamePlate ? { underNamePlate } : {}),
+      ...(marker.style === undefined ? {} : { style: marker.style, pulse }),
     };
   }
 

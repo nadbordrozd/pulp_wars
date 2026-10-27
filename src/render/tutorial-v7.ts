@@ -2,7 +2,6 @@ import type {
   CommandV7,
   CoordV7,
   PlayerViewV7,
-  RewardIdV7,
   TechnologyIdV7,
   TileCommandKindV7,
   UnitId,
@@ -10,20 +9,23 @@ import type {
 } from "../engine/index";
 import type { BoardSelectionV7 } from "./canvas/board-renderer-v7";
 import type { FirstStepMarkerV7 } from "./first-steps-v7";
+import { unitLabelV7 } from "./undead-presentation-v7";
 
 /**
- * The tutorial (beads pulp_wars-0yxy and pulp_wars-2yc.115,
- * docs/ui/SCREEN_FLOW.md "Tutorial"): a guided first game on the
- * `TUTORIAL_1` mission board, eight turns long. It is a real match; while
- * it runs the interface offers only the commands of the step at hand.
+ * The tutorial (beads pulp_wars-0yxy, pulp_wars-2yc.115 and
+ * pulp_wars-2yc.119, docs/ui/SCREEN_FLOW.md "Tutorial"): a guided first
+ * game on the `TUTORIAL_1` mission board, eight turns long. It is a real
+ * match, shown with the real interface: every highlight, dock button,
+ * technology and reward the engine offers is drawn, and only the commands
+ * of the step at hand go through.
  *
  * This module is the pure part: the script, the record of how far this
  * browser profile is, the commands a step lets through, and the cue (a
- * line, a marker on the board, a ringed button) that says what to do. The
- * DOM (app-view-v7.ts) filters the commands the engine offers through
- * `tutorialCommandsV7` before anything is drawn from them and refuses any
- * other command before it reaches the engine. The engine knows nothing of
- * the tutorial: no rule changes with it.
+ * line, the one thing that pulses, a still look-here ring on a read step)
+ * that says what to do. The DOM (app-view-v7.ts) refuses any other
+ * command before it reaches the engine, with a nudge that says where the
+ * glow is. The engine knows nothing of the tutorial: no rule changes with
+ * it.
  */
 export const TUTORIAL_MISSION_ID_V7 = "TUTORIAL_1";
 
@@ -98,14 +100,21 @@ export type TutorialExpectationV7 =
 export interface TutorialStepV7 {
   readonly id: TutorialStepIdV7;
   readonly expects: TutorialExpectationV7 | null;
-  /** The line with nothing of the step selected. */
+  /**
+   * The line with nothing of the step selected. `{unit}` is the name of
+   * the unit the step names by its tile (a city's reward may have put a
+   * Raider or a giant there).
+   */
   readonly line: string;
   /** The line once the step's unit, city or tile is selected. */
   readonly selectedLine?: string;
   /** The line inside the technology screen (a research step). */
   readonly techLine?: string;
-  /** An explanation's marker: what it talks about on the board. */
-  readonly marker?: Omit<FirstStepMarkerV7, "motion" | "frame">;
+  /**
+   * A read step's marker: what it talks about on the board, drawn as a
+   * still look-here ring (bead pulp_wars-2yc.119).
+   */
+  readonly marker?: Omit<FirstStepMarkerV7, "motion" | "frame" | "style">;
   /**
    * Tiles the camera brings into view with the step's first marker (the
    * Knight's field on a phone): the marker's `frame`.
@@ -133,7 +142,9 @@ export const TUTORIAL_PLACES_V7 = {
   forest: { x: 1, y: 7 },
   ore: { x: 6, y: 9 },
   workshop: { x: 2, y: 7 },
-  peak: { x: 6, y: 7 },
+  // Bead pulp_wars-2yc.119: the bare mountain beside the lone Goblin's
+  // tile, where the first Fighter stands once it has won.
+  peak: { x: 3, y: 6 },
   roadNear: { x: 3, y: 8 },
   roadFar: { x: 4, y: 8 },
   knight: { x: 6, y: 5 },
@@ -284,7 +295,8 @@ export const TUTORIAL_STEPS_V7: readonly TutorialStepV7[] = [
   {
     id: "CLIMB",
     group: "TURN_5",
-    expects: { kind: "MOVE", from: P.village, to: P.peak },
+    // The Fighter that won turn 1's fight stands on the Goblin's tile.
+    expects: { kind: "MOVE", from: P.enemy, to: P.peak },
     line: "Mountains are open now. Tap this Fighter.",
     selectedLine: "Tap the mountain to climb it.",
   },
@@ -337,7 +349,7 @@ export const TUTORIAL_STEPS_V7: readonly TutorialStepV7[] = [
   {
     id: "ROAD_MOVE",
     expects: { kind: "MOVE", from: P.capital, to: P.roadFar },
-    line: "Roads also speed units up. Tap this Fighter.",
+    line: "Roads also speed units up. Tap this {unit}.",
     selectedLine: "On the Road it walks two tiles: tap here.",
   },
   {
@@ -356,7 +368,9 @@ export const TUTORIAL_STEPS_V7: readonly TutorialStepV7[] = [
   {
     id: "INSPIRED",
     expects: null,
-    line: "Your Knight is Inspired: its next attack hits harder. Tap it to see the chip.",
+    // A read step says nothing to tap (bead pulp_wars-2yc.119): the chip is
+    // on the Knight's card when the next step selects it.
+    line: "Your Knight is Inspired: its next attack hits harder. Its card shows the chip.",
     marker: { kind: "UNIT", at: P.knight },
   },
   {
@@ -632,21 +646,13 @@ function openSteps(progress: TutorialProgressV7): readonly {
 }
 
 /**
- * The city rewards a level brings stay free while the tutorial runs: the
- * choice is a dialog that blocks everything else. Only the rewards that
- * place no unit are let through (Stockpile, Walls, Boom, Economic Miracle,
- * Treasury), so no Militia, Scout, or giant stands where a lesson needs a
- * tile; every level offers one of them.
+ * The city rewards a level brings are the real choice (bead
+ * pulp_wars-2yc.119): the panel offers both of a level's rewards and
+ * either may be taken. The board is laid out so that neither choice
+ * breaks a later lesson (docs/ui/SCREEN_FLOW.md "Tutorial").
  */
-const UNIT_REWARDS_V7: readonly RewardIdV7[] = [
-  "MILITIA",
-  "SURVEY",
-  "JUGGERNAUT",
-];
-
-const freeRewardChoice = (command: CommandV7): boolean =>
-  command.kind === "CHOOSE_CITY_REWARD" &&
-  !UNIT_REWARDS_V7.includes(command.reward);
+const rewardChoice = (command: CommandV7): boolean =>
+  command.kind === "CHOOSE_CITY_REWARD";
 
 /**
  * The offered command the current step expects, or null: an explanation
@@ -668,12 +674,12 @@ export function tutorialExpectedCommandV7(
 }
 
 /**
- * The commands the interface may use now: all the engine offers when the
- * tutorial does not force this match, otherwise the step's one command
+ * The commands the tutorial lets through now: all the engine offers when
+ * the tutorial does not force this match, otherwise the step's one command
  * (and one for each open step of its group; none on an explanation or a
- * card), and a city reward's choices that place no unit. Everything the
- * interface draws from the offered commands (highlights, buttons, End
- * turn) follows from this.
+ * card), and both of a city reward's choices. The interface draws every
+ * offered command (bead pulp_wars-2yc.119: the real highlights, buttons
+ * and End turn); `tutorialAcceptsV7` refuses the others when sent.
  */
 export function tutorialCommandsV7(
   progress: TutorialProgressV7,
@@ -689,13 +695,7 @@ export function tutorialCommandsV7(
     if (command !== undefined && !allowed.includes(command))
       allowed.push(command);
   }
-  const rewards = offered.filter(
-    (command) => command.kind === "CHOOSE_CITY_REWARD",
-  );
-  const free = rewards.filter(freeRewardChoice);
-  // Every level offers a reward without a unit; were there none, the
-  // choice would still be the player's.
-  allowed.push(...(free.length > 0 ? free : rewards));
+  allowed.push(...offered.filter(rewardChoice));
   return allowed;
 }
 
@@ -706,7 +706,7 @@ export function tutorialAcceptsV7(
   command: CommandV7,
 ): boolean {
   if (view === null || !tutorialActiveV7(progress, view)) return true;
-  if (freeRewardChoice(command)) return true;
+  if (rewardChoice(command)) return true;
   return openSteps(progress).some(({ expects }) =>
     tutorialCommandMatchesV7(expects, view, command),
   );
@@ -809,20 +809,82 @@ export function reconcileTutorialV7(
     : skipTutorialV7(progress);
 }
 
+/**
+ * The cue language (bead pulp_wars-2yc.119, docs/ui/SCREEN_FLOW.md
+ * "Tutorial"): every step is one of two kinds.
+ *
+ * - An **action** step waits for a tap on the board or the HUD. Exactly one
+ *   thing pulses, the thing to tap now, and the line says what it is: the
+ *   unit, city or tile (`BOARD`: the yellow arrow over it and a pulsing
+ *   ring round its tile), then, a selection made, the next target of the
+ *   same step (the move's or attack's tile on the board, or the dock's
+ *   button for the command), or a HUD button, the unit's `?`, the
+ *   technology in the tree and then its Research button.
+ * - A **read** step waits for Next. Nothing on the board pulses: what it
+ *   talks about has a still "look here" ring, without the arrow, and the
+ *   Next button is what pulses.
+ */
+export type TutorialCueKindV7 = "ACTION" | "READ";
+
+/** The one thing that pulses. */
+export type TutorialCueTargetV7 =
+  /** A unit, city or tile on the board: the marker's. */
+  | "BOARD"
+  /** The dock's button for the step's command (`command`). */
+  | "DOCK"
+  /** The selected unit's `?`. */
+  | "UNIT_HELP"
+  /** The HUD's Tech button. */
+  | "TECH"
+  /** The technology to pick in the technology screen. */
+  | "TECHNOLOGY"
+  /** The chosen technology's Research button. */
+  | "RESEARCH"
+  /** The HUD's End turn button. */
+  | "END_TURN"
+  /** The line's Next button. */
+  | "NEXT";
+
+/** What refusing a command says, by what pulses (bead pulp_wars-2yc.119). */
+export const TUTORIAL_NUDGES_V7 = {
+  TILE: "Tap the glowing tile.",
+  UNIT: "Tap the glowing unit.",
+  CITY: "Tap the glowing city.",
+  BUTTON: "Tap the glowing button.",
+  TECHNOLOGY: "Tap the glowing technology.",
+  NEXT: "Read the line, then press Next.",
+} as const;
+
 export interface TutorialCueV7 {
   readonly step: TutorialStepIdV7;
   /** "3 / 36": the step's number, from 1, and how many there are. */
   readonly number: number;
   readonly count: number;
   readonly line: string;
+  readonly kind: TutorialCueKindV7;
+  /** The one thing that pulses now. */
+  readonly target: TutorialCueTargetV7;
+  /**
+   * The board's marker: on an action step (`style: "TAP"`) the unit, city
+   * or tile to tap when `target` is `BOARD`, else null; on a read step
+   * (`style: "LOOK"`, still) what the line talks about, or null.
+   */
   readonly marker: FirstStepMarkerV7 | null;
   /** The button to ring: a HUD button, or the selected unit's `?`. */
   readonly button: "TECH" | "END_TURN" | "UNIT_HELP" | null;
   readonly buttonMotion: "PULSE" | "STILL";
-  /** An explanation: the line has a Next button. */
+  /** A read step: the line has a Next button, and it pulses. */
   readonly next: boolean;
   /** The technology to pick in the technology screen, or null. */
   readonly technology: TechnologyIdV7 | null;
+  /**
+   * The offered command the step waits for, when its button is in the dock
+   * (`target` is `DOCK`) or its target on the board is the marker's: the
+   * interface rings the control that sends it. Null otherwise.
+   */
+  readonly command: CommandV7 | null;
+  /** What a refused command says: where the glow is. */
+  readonly nudge: string;
 }
 
 export interface TutorialCueInputV7 {
@@ -835,14 +897,37 @@ export interface TutorialCueInputV7 {
    */
   readonly ready: boolean;
   readonly technologyOpen: boolean;
+  /** The technology chosen in the technology screen, if any. */
+  readonly selectedTechnology?: TechnologyIdV7 | null;
+  /**
+   * Every command the engine offers the viewer now (the real interface
+   * draws them all); the step's own is found among them. Omitted: none.
+   */
+  readonly offered?: readonly CommandV7[];
   readonly motion: "FULL" | "REDUCED";
+}
+
+/** Whether two commands are the same command (the interface's buttons). */
+export function sameTutorialCommandV7(
+  left: CommandV7 | null,
+  right: CommandV7 | null,
+): boolean {
+  return (
+    left !== null &&
+    right !== null &&
+    (left === right || JSON.stringify(left) === JSON.stringify(right))
+  );
+}
+
+/** A line's `{unit}`: the name of the unit the step names by its tile. */
+function unitWord(view: PlayerViewV7, at: CoordV7 | null): string {
+  const unit = at === null ? undefined : ownUnitAt(view, at);
+  return unit === undefined ? "unit" : unitLabelV7(view, unit);
 }
 
 /**
  * The cue of the current step, or null: no tutorial, or the player cannot
- * act now. The marker points at what to tap next: the step's unit, city or
- * tile, then (a move, an attack) its target; an explanation's marker points
- * at what it talks about.
+ * act now. See `TutorialCueKindV7` for the language.
  */
 export function tutorialCueV7(input: TutorialCueInputV7): TutorialCueV7 | null {
   const { progress, view, selection } = input;
@@ -850,41 +935,65 @@ export function tutorialCueV7(input: TutorialCueInputV7): TutorialCueV7 | null {
   if (step === null || !input.ready || !tutorialActiveV7(progress, view))
     return null;
   const motion = input.motion === "FULL" ? "HOP" : "STILL";
-  const mark = (
+  const tap = (
     kind: FirstStepMarkerV7["kind"],
     at: CoordV7,
   ): FirstStepMarkerV7 =>
     step.frame === undefined
-      ? { kind, at, motion }
-      : { kind, at, motion, frame: step.frame };
+      ? { kind, at, motion, style: "TAP" }
+      : { kind, at, motion, style: "TAP", frame: step.frame };
   const unitSelected = (at: CoordV7): boolean =>
     selection?.kind === "UNIT" && selection.unitId === ownUnitAt(view, at)?.id;
+  const expects = step.expects;
+  const expected =
+    tutorialExpectedCommandV7(progress, view, input.offered ?? []) ?? null;
   let line = step.line;
   let marker: FirstStepMarkerV7 | null = null;
-  let button: TutorialCueV7["button"] = null;
-  const expects = step.expects;
+  let target: TutorialCueTargetV7 = "NEXT";
+  let command: CommandV7 | null = null;
   const selectedLine = step.selectedLine ?? step.line;
   switch (expects?.kind) {
     case undefined:
+      // A read step: a still look-here ring, never the arrow.
       if (step.marker !== undefined)
-        marker = mark(step.marker.kind, step.marker.at);
+        marker =
+          step.frame === undefined
+            ? { ...step.marker, motion: "STILL", style: "LOOK" }
+            : {
+                ...step.marker,
+                motion: "STILL",
+                style: "LOOK",
+                frame: step.frame,
+              };
       break;
     case "RESEARCH":
-      button = "TECH";
-      if (input.technologyOpen) line = step.techLine ?? step.line;
+      if (!input.technologyOpen) target = "TECH";
+      else {
+        line = step.techLine ?? step.line;
+        target =
+          input.selectedTechnology === expects.tech ? "RESEARCH" : "TECHNOLOGY";
+        command = expected;
+      }
       break;
     case "TILE":
-      if (selection?.kind === "TILE" && same(selection.at, expects.at))
+      if (selection?.kind === "TILE" && same(selection.at, expects.at)) {
         line = selectedLine;
-      else marker = mark("TILE", expects.at);
+        target = "DOCK";
+        command = expected;
+      } else {
+        target = "BOARD";
+        marker = tap("TILE", expects.at);
+      }
       break;
     case "MOVE":
     case "ATTACK": {
-      const target = expects.kind === "MOVE" ? expects.to : expects.target;
+      const to = expects.kind === "MOVE" ? expects.to : expects.target;
+      target = "BOARD";
       if (unitSelected(expects.from)) {
         line = selectedLine;
-        marker = mark(expects.kind === "MOVE" ? "TILE" : "UNIT", target);
-      } else marker = mark("UNIT", expects.from);
+        marker = tap(expects.kind === "MOVE" ? "TILE" : "UNIT", to);
+        command = expected;
+      } else marker = tap("UNIT", expects.from);
       break;
     }
     case "TRAIN":
@@ -893,35 +1002,86 @@ export function tutorialCueV7(input: TutorialCueInputV7): TutorialCueV7 | null {
         view.cities.some(
           (city) => city.id === selection.cityId && same(city.at, expects.city),
         )
-      )
+      ) {
         line = selectedLine;
-      else marker = mark("CITY", expects.city);
+        target = "DOCK";
+        command = expected;
+      } else {
+        target = "BOARD";
+        marker = tap("CITY", expects.city);
+      }
       break;
     case "END_TURN":
-      button = "END_TURN";
+      target = "END_TURN";
+      command = expected;
       break;
     case "RALLY":
     case "CAPTURE":
-      if (unitSelected(expects.at)) line = selectedLine;
-      else marker = mark("UNIT", expects.at);
+      if (unitSelected(expects.at)) {
+        line = selectedLine;
+        target = "DOCK";
+        command = expected;
+      } else {
+        target = "BOARD";
+        marker = tap("UNIT", expects.at);
+      }
       break;
     case "UNIT_HELP":
       if (unitSelected(expects.at)) {
         line = selectedLine;
-        button = "UNIT_HELP";
-      } else marker = mark("UNIT", expects.at);
+        target = "UNIT_HELP";
+      } else {
+        target = "BOARD";
+        marker = tap("UNIT", expects.at);
+      }
       break;
   }
+  // A line may name the unit the step is about by its kind ("Tap this
+  // {unit}."): whatever a city's reward put on that tile.
+  if (line.includes("{unit}")) {
+    const at =
+      expects?.kind === "MOVE" || expects?.kind === "ATTACK"
+        ? expects.from
+        : expects?.kind === "RALLY" ||
+            expects?.kind === "CAPTURE" ||
+            expects?.kind === "UNIT_HELP"
+          ? expects.at
+          : null;
+    line = line.replaceAll("{unit}", unitWord(view, at));
+  }
+  const nudge =
+    target === "NEXT"
+      ? TUTORIAL_NUDGES_V7.NEXT
+      : target === "TECHNOLOGY"
+        ? TUTORIAL_NUDGES_V7.TECHNOLOGY
+        : target === "BOARD" && marker !== null
+          ? TUTORIAL_NUDGES_V7[marker.kind]
+          : TUTORIAL_NUDGES_V7.BUTTON;
   return {
     step: step.id,
     number: (progress.step ?? 0) + 1,
     count: TUTORIAL_STEPS_V7.length,
     line,
+    kind: expects === null ? "READ" : "ACTION",
+    target,
     // Nothing is marked on a board behind the technology screen.
     marker: input.technologyOpen ? null : marker,
-    button,
+    button:
+      target === "TECH" || target === "END_TURN" || target === "UNIT_HELP"
+        ? target
+        : null,
     buttonMotion: input.motion === "FULL" ? "PULSE" : "STILL",
     next: expects === null,
     technology: expects?.kind === "RESEARCH" ? expects.tech : null,
+    command,
+    nudge,
   };
+}
+
+/**
+ * What a refused command says now: where the glow is, or the plain
+ * refusal when no cue is up.
+ */
+export function tutorialNudgeV7(cue: TutorialCueV7 | null): string {
+  return cue?.nudge ?? TUTORIAL_REFUSED_V7;
 }

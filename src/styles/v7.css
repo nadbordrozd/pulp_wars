@@ -10006,6 +10006,29 @@ body:has(> #app [data-v7-gallery]) {
   background: var(--pw-yellow);
 }
 
+/*
+ * The tutorial's cue language (bead pulp_wars-2yc.119): the one button to
+ * press now, in the real dock, the technology detail or the line (Next on
+ * a read step), is filled yellow with the same red ring, and pulses with
+ * the HUD buttons the coach points at.
+ */
+.v7-context-action[data-first-step],
+.v7-train-action[data-first-step],
+.v7-research-action[data-first-step] {
+  position: relative;
+  z-index: 1;
+  outline: var(--pw-line-w) solid var(--pw-accent);
+  outline-offset: 2px;
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+}
+
+/* Next sits on the yellow line: it keeps its own fill and takes the ring. */
+.v7-tutorial-next[data-first-step] {
+  outline: var(--pw-line-w) solid var(--pw-accent);
+  outline-offset: 2px;
+}
+
 /* Help: short sections, each under an icon and a heading. */
 .v7-help-section {
   display: grid;

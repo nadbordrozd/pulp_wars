@@ -11,8 +11,8 @@ import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v
 import { Ruleset7DomAppView } from "../../src/render/dom/app-view-v7";
 import {
   TUTORIAL_FAREWELL_V7,
+  TUTORIAL_NUDGES_V7,
   TUTORIAL_PLACES_V7,
-  TUTORIAL_REFUSED_V7,
   TUTORIAL_STEPS_V7,
   TUTORIAL_STORAGE_KEY_V7,
   parseTutorialProgressV7,
@@ -87,6 +87,27 @@ const settle = async (): Promise<void> => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
+/** The board's target on a tile (the real board has many). */
+function targetAt(host: RecordingBoardHost, at: CoordV7) {
+  return required(
+    boardPlan(host).targets.find(
+      (target) => target.at.x === at.x && target.at.y === at.y,
+    ),
+  );
+}
+
+/** The one control the tutorial rings in the dock (bead pulp_wars-2yc.119). */
+const ringed = (): HTMLButtonElement => {
+  const found = document.querySelectorAll<HTMLButtonElement>(
+    ".v7-context-action[data-first-step], .v7-train-action[data-first-step]",
+  );
+  expect(found).toHaveLength(1);
+  return required(found[0]);
+};
+
+const toast = (): string | null | undefined =>
+  document.querySelector('[data-v7-region="toast"]')?.textContent;
+
 function unitAt(controller: FixtureController, at: CoordV7) {
   const view = required(controller.snapshot().view);
   return required(
@@ -150,9 +171,11 @@ describe("the Tutorial button of the main menu", () => {
         window.localStorage.getItem(TUTORIAL_STORAGE_KEY_V7),
       ),
     ).toEqual({ completed: false, step: 0 });
-    // The real controller offers everything; the interface only the step.
+    // The real controller offers everything, and the interface draws it
+    // all (bead pulp_wars-2yc.119): End turn is the real one, not pulsing.
     expect(app.controller.snapshot().offeredCommands.length).toBeGreaterThan(5);
-    expect(requiredButton("end-turn").disabled).toBe(true);
+    expect(requiredButton("end-turn").disabled).toBe(false);
+    expect(requiredButton("end-turn").dataset.firstStep).toBeUndefined();
     // The first step is on the board: the Tech button is not pointed at.
     expect(requiredButton("tech").dataset.firstStep).toBeUndefined();
     app.destroy();
@@ -257,6 +280,7 @@ describe("the tutorial's line and cue", () => {
       kind: "TILE",
       at: TUTORIAL_PLACES_V7.fruit,
       motion: "HOP",
+      style: "TAP",
     });
     harvest.host.callbacks?.onSelection({
       kind: "TILE",
@@ -325,8 +349,6 @@ describe("the tutorial's line and cue", () => {
 describe("the tutorial's forcing", () => {
   it("research: only Crafting can be researched, its screen says so, and the Ore is then marked", async () => {
     const { controller, host, storage, app } = openAt("CRAFTING");
-    expect(requiredButton("end-turn").disabled).toBe(true);
-    expect(requiredButton("end-turn").dataset.tutorialGated).toBe("true");
     requiredButton("tech").click();
     const hint = requiredElement<HTMLElement>(
       '[data-v7-region="overlay-tech"] [data-v7-region="tutorial"]',
@@ -338,10 +360,19 @@ describe("the tutorial's forcing", () => {
     expect(
       requiredButton("tech-marksmanship").dataset.firstStep,
     ).toBeUndefined();
-    // Another technology: its details, and no Research button.
+    // Another technology: its real details and Research button, which is
+    // refused with a nudge (bead pulp_wars-2yc.119).
     requiredButton("tech-marksmanship").click();
-    expect(action("research-marksmanship")).toBeNull();
+    requiredButton("research-marksmanship").click();
+    await settle();
+    expect(controller.accepted).toEqual([]);
+    expect(
+      document.querySelector('[data-v7-region="toast"]')?.textContent,
+    ).toBe(TUTORIAL_NUDGES_V7.TECHNOLOGY);
+    // Crafting chosen: the pulse moves from it to its Research button.
     requiredButton("tech-drill").click();
+    expect(requiredButton("tech-drill").dataset.firstStep).toBeUndefined();
+    expect(requiredButton("research-drill").dataset.firstStep).toBe("pulse");
     requiredButton("research-drill").click();
     await waitUntil(() => controller.accepted.length === 1);
     await waitUntil(() => counter() === numberAt("ORE"));
@@ -369,58 +400,87 @@ describe("the tutorial's forcing", () => {
     app.destroy();
   });
 
-  it("harvest: the fruit has its action; the city trains nothing and another fruit has none", () => {
+  it("harvest: the real board and docks, the fruit's Harvest pulsing; anything else is refused with a nudge", async () => {
     const { controller, host, app } = openAt("HARVEST");
-    // The engine offers a train, a move and an attack now.
+    // The engine offers a train, a move and an attack now, and the
+    // interface is given all of it (bead pulp_wars-2yc.119).
     const offered = queryPlayerCommandsV7(required(controller.snapshot().view));
     expect(offered.map((command) => command.kind)).toEqual(
       expect.arrayContaining(["TRAIN", "MOVE", "ATTACK", "END_TURN"]),
     );
-    // The interface is given the harvest alone.
-    expect(host.lastModel?.offeredCommands).toEqual([
-      { kind: "HARVEST_FRUIT", at: TUTORIAL_PLACES_V7.fruit },
-    ]);
+    expect(host.lastModel?.offeredCommands).toEqual(
+      controller.snapshot().offeredCommands,
+    );
+    // The city's real dock: its train buttons, none pulsing, all refused.
     host.callbacks?.onSelection({
       kind: "CITY",
       cityId: capital(controller).id,
     });
-    expect(action("command-train")).toBeNull();
+    expect(lineText()).toBe(stepLine("HARVEST").line);
+    const train = requiredButton("command-train");
+    expect(train.dataset.firstStep).toBeUndefined();
+    train.click();
+    await settle();
+    expect(controller.accepted).toEqual([]);
+    expect(toast()).toBe(TUTORIAL_NUDGES_V7.TILE);
+    // The other fruit has its Harvest too, not pulsing.
     host.callbacks?.onSelection({ kind: "TILE", at: { x: 3, y: 9 } });
-    expect(action("command-harvest_fruit")).toBeNull();
+    expect(
+      requiredButton("command-harvest_fruit").dataset.firstStep,
+    ).toBeUndefined();
+    // A Fighter shows all of its moves.
     host.callbacks?.onSelection({
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.walker).id,
     });
-    expect(boardPlan(host).targets).toEqual([]);
+    expect(boardPlan(host).targets.length).toBeGreaterThan(1);
+    // The fruit: the marker goes, its Harvest is the one ringed button.
     host.callbacks?.onSelection({
       kind: "TILE",
       at: TUTORIAL_PLACES_V7.fruit,
     });
-    expect(requiredButton("command-harvest_fruit").disabled).toBe(false);
-    expect(requiredButton("end-turn").disabled).toBe(true);
+    expect(host.lastModel?.firstStepMarker).toBeNull();
+    const harvest = ringed();
+    expect(harvest.dataset.action).toBe("command-harvest_fruit");
+    expect(harvest.dataset.firstStep).toBe("pulse");
+    expect(harvest.disabled).toBe(false);
+    // End turn is the real one: there, pressable, refused before its step.
+    expect(requiredButton("end-turn").disabled).toBe(false);
+    harvest.click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "HARVEST_FRUIT",
+      at: TUTORIAL_PLACES_V7.fruit,
+    });
     app.destroy();
   });
 
-  it("refuses a command the step does not expect before it reaches the engine", async () => {
+  it("a selected unit shows all its real moves; only the pulsing one goes through, another gets a nudge", async () => {
     const { controller, host, app } = openAt("MOVE");
     const view = required(controller.snapshot().view);
     const walker = unitAt(controller, TUTORIAL_PLACES_V7.walker);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: walker.id });
-    // The board shows one target: the village.
-    const targets = boardPlan(host).targets;
-    expect(targets).toHaveLength(1);
-    expect(targets[0]).toMatchObject({
-      family: "MOVE",
-      at: TUTORIAL_PLACES_V7.village,
-    });
-    // A target the unforced board would have: another tile to move to.
+    // The board shows every target the unforced board would.
     const model = required(host.lastModel);
+    const unforced = buildBoardRenderPlanV7(
+      view,
+      queryPlayerCommandsV7(view),
+      model.interaction,
+    ).targets;
+    const targets = boardPlan(host).targets;
+    expect(targets.length).toBeGreaterThan(1);
+    expect(targets.map((target) => target.at)).toEqual(
+      unforced.map((target) => target.at),
+    );
+    // The village is the one that pulses: the arrow and the ring on it.
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.village,
+      style: "TAP",
+    });
+    // Another tile to move to: refused before the engine, with a nudge.
     const elsewhere = required(
-      buildBoardRenderPlanV7(
-        view,
-        queryPlayerCommandsV7(view),
-        model.interaction,
-      ).targets.find(
+      targets.find(
         (target) =>
           target.family === "MOVE" &&
           !(
@@ -432,32 +492,63 @@ describe("the tutorial's forcing", () => {
     host.callbacks?.onCommand(elsewhere);
     await settle();
     expect(controller.accepted).toEqual([]);
-    expect(
-      document.querySelector('[data-v7-region="toast"]')?.textContent,
-    ).toBe(TUTORIAL_REFUSED_V7);
+    expect(toast()).toBe(TUTORIAL_NUDGES_V7.TILE);
     expect(counter()).toBe(numberAt("MOVE"));
+    expect(stepLine("MOVE").selectedLine).toBe(lineText());
+    // End turn too, before its step.
+    requiredButton("end-turn").click();
+    await settle();
+    expect(controller.accepted).toEqual([]);
     // The step's own target goes through.
-    host.callbacks?.onCommand(required(targets[0]));
+    host.callbacks?.onCommand(targetAt(host, TUTORIAL_PLACES_V7.village));
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]?.kind).toBe("MOVE");
     await waitUntil(() => counter() === numberAt("TRAIN"));
     app.destroy();
   });
 
-  it("the explanation offers nothing but Next", async () => {
+  it("another unit selected: its real moves, and a nudge back to the pulsing unit", async () => {
+    const { controller, host, app } = openAt("MOVE");
+    const other = unitAt(controller, TUTORIAL_PLACES_V7.attacker);
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: other.id });
+    // The marker stays on the Fighter to move.
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "UNIT",
+      at: TUTORIAL_PLACES_V7.walker,
+      style: "TAP",
+    });
+    const move = required(
+      boardPlan(host).targets.find((target) => target.family === "MOVE"),
+    );
+    host.callbacks?.onCommand(move);
+    await settle();
+    expect(controller.accepted).toEqual([]);
+    expect(toast()).toBe(TUTORIAL_NUDGES_V7.UNIT);
+    app.destroy();
+  });
+
+  it("a read step: Next pulses, nothing on the board does, and a command is refused with a nudge to Next", async () => {
     const { controller, host, storage, app } = openAt("RESOURCES");
     expect(counter()).toBe(numberAt("RESOURCES"));
     expect(lineText()).toBe(stepLine("RESOURCES").line);
     expect(lineText()).toMatch(/Coins/);
     expect(lineText()).toMatch(/population/);
-    expect(host.lastModel?.offeredCommands).toEqual([]);
     expect(host.lastModel?.firstStepMarker).toBeNull();
-    expect(requiredButton("end-turn").disabled).toBe(true);
+    expect(requiredButton("tutorial-next").dataset.firstStep).toBe("pulse");
+    expect(requiredButton("end-turn").dataset.firstStep).toBeUndefined();
+    expect(requiredButton("tech").dataset.firstStep).toBeUndefined();
+    // The real city dock; its buttons are refused.
     host.callbacks?.onSelection({
       kind: "CITY",
       cityId: capital(controller).id,
     });
-    expect(action("command-train")).toBeNull();
+    expect(
+      document.querySelectorAll("[data-first-step]:not(.v7-tutorial-next)"),
+    ).toHaveLength(0);
+    requiredButton("command-train").click();
+    await settle();
+    expect(controller.accepted).toEqual([]);
+    expect(toast()).toBe(TUTORIAL_NUDGES_V7.NEXT);
     requiredButton("tutorial-next").click();
     expect(counter()).toBe(numberAt("MOVE"));
     expect(action("tutorial-next")).toBeNull();
@@ -469,14 +560,27 @@ describe("the tutorial's forcing", () => {
     app.destroy();
   });
 
-  it("End turn opens at its own step and is the only thing offered there", () => {
-    const { host, app } = openAt("END_TURN_1");
+  it("a read step's marker is a still look-here ring, never the arrow", () => {
+    const { host, app } = openAt("WINDMILL_INFO");
+    expect(host.lastModel?.firstStepMarker).toEqual({
+      kind: "TILE",
+      at: TUTORIAL_PLACES_V7.windmill,
+      motion: "STILL",
+      style: "LOOK",
+    });
+    expect(requiredButton("tutorial-next").dataset.firstStep).toBe("pulse");
+    app.destroy();
+  });
+
+  it("End turn pulses at its own step and goes through", async () => {
+    const { controller, app } = openAt("END_TURN_1");
     expect(counter()).toBe(numberAt("END_TURN_1"));
     const end = requiredButton("end-turn");
     expect(end.disabled).toBe(false);
-    expect(end.dataset.tutorialGated).toBeUndefined();
     expect(end.dataset.firstStep).toBe("pulse");
-    expect(host.lastModel?.offeredCommands).toEqual([{ kind: "END_TURN" }]);
+    end.click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({ kind: "END_TURN" });
     app.destroy();
   });
 
@@ -511,14 +615,18 @@ describe("the tutorial's forcing", () => {
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.walker).id,
     });
-    host.callbacks?.onCommand(required(boardPlan(host).targets[0]));
+    host.callbacks?.onCommand(targetAt(host, TUTORIAL_PLACES_V7.village));
     await waitUntil(() => counter() === numberAt("TRAIN"));
     host.callbacks?.onSelection({
       kind: "CITY",
       cityId: capital(controller).id,
     });
     expect(lineText()).toBe(stepLine("TRAIN").selectedLine);
-    requiredButton("command-train").click();
+    // The real city dock: every unit it can train, the Fighter's pulsing.
+    expect(
+      document.querySelectorAll('[data-action="command-train"]').length,
+    ).toBeGreaterThan(1);
+    ringed().click();
     await waitUntil(() => counter() === numberAt("DETAILS"));
     // The card: the Fighter, then its ringed ?; the card opens and the
     // explanation comes up once it is closed.
@@ -536,10 +644,14 @@ describe("the tutorial's forcing", () => {
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.attacker).id,
     });
-    const attack = boardPlan(host).targets;
-    expect(attack).toHaveLength(1);
-    expect(attack[0]).toMatchObject({ at: TUTORIAL_PLACES_V7.enemy });
-    host.callbacks?.onCommand(required(attack[0]));
+    // The Fighter's real targets: its moves and the Goblin, which pulses.
+    expect(boardPlan(host).targets.length).toBeGreaterThan(1);
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "UNIT",
+      at: TUTORIAL_PLACES_V7.enemy,
+      style: "TAP",
+    });
+    host.callbacks?.onCommand(targetAt(host, TUTORIAL_PLACES_V7.enemy));
     await waitUntil(() => counter() === numberAt("END_TURN_1"));
     expect(lineText()).toBe(stepLine("END_TURN_1").line);
     requiredButton("end-turn").click();
@@ -563,7 +675,6 @@ describe("the tutorial's forcing", () => {
       kind: "UNIT",
       at: TUTORIAL_PLACES_V7.attacker,
     });
-    expect(host.lastModel?.offeredCommands).toEqual([]);
     host.callbacks?.onSelection({
       kind: "UNIT",
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.attacker).id,
@@ -586,36 +697,82 @@ describe("the tutorial's forcing", () => {
     app.destroy();
   });
 
-  it("a city's reward comes up during the tutorial without the choices that place a unit", async () => {
+  it("two-step actions move the pulse: Capture and Rally ring their own dock button", () => {
+    const capture = openAt("CAPTURE");
+    capture.host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAt(capture.controller, TUTORIAL_PLACES_V7.village).id,
+    });
+    expect(capture.host.lastModel?.firstStepMarker).toBeNull();
+    expect(ringed().dataset.action).toBe("command-capture");
+    capture.app.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+
+    const rally = openAt("RALLY");
+    expect(rally.host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "UNIT",
+      at: TUTORIAL_PLACES_V7.captain,
+      style: "TAP",
+    });
+    rally.host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAt(rally.controller, TUTORIAL_PLACES_V7.captain).id,
+    });
+    expect(lineText()).toBe(stepLine("RALLY").selectedLine);
+    expect(rally.host.lastModel?.firstStepMarker).toBeNull();
+    expect(ringed().dataset.action).toBe("command-rally");
+    rally.app.destroy();
+  });
+
+  it("a city's reward is the real two-choice panel, and a unit reward may be taken", async () => {
     const { controller, host, app } = openAt("FARM");
     host.callbacks?.onSelection({
       kind: "TILE",
       at: TUTORIAL_PLACES_V7.fertile,
     });
-    requiredButton("command-build_farm").click();
+    ringed().click();
     await waitUntil(() => action("reward-walls") !== null);
-    // Level 3: Walls, never the Scouts and their Raider.
-    expect(action("reward-survey")).toBeNull();
-    requiredButton("reward-walls").click();
+    // Level 3: both of the real panel's rewards, Scouts and Walls; nothing
+    // pulses (the choice is the player's) and the line waits.
+    const rewards = [
+      ...document.querySelectorAll<HTMLButtonElement>(".v7-reward-action"),
+    ];
+    expect(rewards.map((item) => item.dataset.action)).toEqual([
+      "reward-survey",
+      "reward-walls",
+    ]);
+    for (const item of rewards) {
+      expect(item.disabled).toBe(false);
+      expect(item.dataset.firstStep).toBeUndefined();
+    }
+    expect(line()).toBeNull();
+    requiredButton("reward-survey").click();
     await waitUntil(() => controller.accepted.length === 2);
     expect(controller.accepted.map((command) => command.kind)).toEqual([
       "BUILD_FARM",
       "CHOOSE_CITY_REWARD",
     ]);
     await waitUntil(() => counter() === numberAt("END_TURN_2"));
+    // The Scouts' Raider took the capital's centre.
+    expect(unitAt(controller, TUTORIAL_PLACES_V7.capital).role).toBe("RAIDER");
     app.destroy();
   });
 
   it("a later step of the turn may come first; the line stays with the first", async () => {
     const { controller, host, storage, app } = openAt("WINDMILL");
-    // The board is given the Windmill's tile and the forest, nothing else.
-    expect(
-      host.lastModel?.offeredCommands.map((command) => command.kind),
-    ).toEqual(["BUILD_WINDMILL", "BUILD_LUMBER_CAMP"]);
+    // The Windmill's tile pulses; the forest's Lumber Camp, a later step
+    // of the turn, is let through too, without a pulse.
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      at: TUTORIAL_PLACES_V7.windmill,
+      style: "TAP",
+    });
     host.callbacks?.onSelection({
       kind: "TILE",
       at: TUTORIAL_PLACES_V7.forest,
     });
+    expect(
+      requiredButton("command-build_lumber_camp").dataset.firstStep,
+    ).toBeUndefined();
     requiredButton("command-build_lumber_camp").click();
     await waitUntil(() => controller.accepted.length === 1);
     await settle();
@@ -654,10 +811,12 @@ describe("the tutorial's forcing", () => {
       unitId: unitAt(controller, TUTORIAL_PLACES_V7.goblin2).id,
     });
     expect(lineText()).toBe(stepLine("OVERRUN_3").selectedLine);
-    const targets = boardPlan(host).targets;
-    expect(targets).toHaveLength(1);
-    expect(targets[0]).toMatchObject({ at: TUTORIAL_PLACES_V7.goblin3 });
-    host.callbacks?.onCommand(required(targets[0]));
+    expect(host.lastModel?.firstStepMarker).toMatchObject({
+      kind: "UNIT",
+      at: TUTORIAL_PLACES_V7.goblin3,
+      style: "TAP",
+    });
+    host.callbacks?.onCommand(targetAt(host, TUTORIAL_PLACES_V7.goblin3));
     await waitUntil(() => controller.accepted.length === 1);
     await waitUntil(() => line()?.dataset.tutorialStep === "done");
     expect(lineText()).toBe(TUTORIAL_FAREWELL_V7);

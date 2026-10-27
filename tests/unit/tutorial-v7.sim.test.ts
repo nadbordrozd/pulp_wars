@@ -8,7 +8,13 @@ import {
   TUTORIAL_PLACES_V7,
   TUTORIAL_STEPS_V7,
 } from "../../src/render/tutorial-v7";
-import { apply, human, playTutorialV7 } from "../fixtures/v7-tutorial-play";
+import {
+  apply,
+  human,
+  playTutorialV7,
+  quietRewardV7,
+  unitRewardV7,
+} from "../fixtures/v7-tutorial-play";
 
 /**
  * The tutorial (bead pulp_wars-2yc.115) played through its eight turns
@@ -16,7 +22,10 @@ import { apply, human, playTutorialV7 } from "../fixtures/v7-tutorial-play";
  * keeps it in its corner, so every step of the script stays legal, the
  * waves of round 7 arrive where the script needs them, and the Knight's
  * three kills come off. A simulation: the Normal AI plays seven turns of
- * the match, so it is in the sim tier (`npm run test:sim`).
+ * the match, so it is in the sim tier (`npm run test:sim`). Bead
+ * pulp_wars-2yc.119: once with the rewards that place no unit, once with
+ * the Scouts' Raider, the Militia and the giant (the real panel lets
+ * either be taken).
  */
 function aiTurn(start: GameStateV7): GameStateV7 {
   let state = start;
@@ -39,22 +48,28 @@ function aiTurn(start: GameStateV7): GameStateV7 {
 }
 
 describe("the tutorial against the Normal AI", () => {
-  it("every step is reached and done, and the Knight kills the three Goblins", () => {
-    const play = playTutorialV7({ opponent: aiTurn });
-    expect(play.visited).toEqual(TUTORIAL_STEPS_V7.map((step) => step.id));
-    expect(play.progress).toEqual({ completed: true, step: null });
-    expect(play.state.outcome).toBeNull();
-    expect(play.state.round).toBe(8);
-    const knight = play.state.units.find(
-      (unit) =>
-        unit.role === "KNIGHT" && unit.ownerId === play.state.humanPlayerId,
-    );
-    expect(knight?.kills).toBe(3);
-    expect(knight?.at).toEqual(TUTORIAL_PLACES_V7.goblin3);
-    // The Goblins kept to their corner: none of the player's units was hit.
-    for (const unit of play.state.units.filter(
-      (item) => item.ownerId === play.state.humanPlayerId,
-    ))
-      expect(unit.hp, unit.role).toBe(unit.maxHp);
-  });
+  it.each([
+    ["the rewards that place no unit", quietRewardV7],
+    ["the rewards that place a unit", unitRewardV7],
+  ])(
+    "every step is reached and done, and the Knight kills the three Goblins, with %s",
+    (_name, reward) => {
+      const play = playTutorialV7({ opponent: aiTurn, reward });
+      expect(play.visited).toEqual(TUTORIAL_STEPS_V7.map((step) => step.id));
+      expect(play.progress).toEqual({ completed: true, step: null });
+      expect(play.state.outcome).toBeNull();
+      expect(play.state.round).toBe(8);
+      const knight = play.state.units.find(
+        (unit) =>
+          unit.role === "KNIGHT" && unit.ownerId === play.state.humanPlayerId,
+      );
+      expect(knight?.kills).toBe(3);
+      expect(knight?.at).toEqual(TUTORIAL_PLACES_V7.goblin3);
+      // The Goblins kept to their corner: none of the player's units was hit.
+      for (const unit of play.state.units.filter(
+        (item) => item.ownerId === play.state.humanPlayerId,
+      ))
+        expect(unit.hp, unit.role).toBe(unit.maxHp);
+    },
+  );
 });

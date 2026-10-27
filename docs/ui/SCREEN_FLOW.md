@@ -568,12 +568,12 @@ its name and health, and a row of action buttons.
 
 #### Tutorial
 
-Beads `pulp_wars-0yxy` and `pulp_wars-2yc.115`. The main menu's
-**Tutorial** starts a guided first game: a real match (Humans against one
-Goblin AI seat) on the hand-built 11 x 11 mission board `TUTORIAL_1`
-(`src/engine/v7/missions/tutorial.ts`, revision 3), in which the player
-takes the steps of a script over eight turns and then plays on. The
-script, its record and its cue are the pure module
+Beads `pulp_wars-0yxy`, `pulp_wars-2yc.115` and `pulp_wars-2yc.119`. The
+main menu's **Tutorial** starts a guided first game: a real match (Humans
+against one Goblin AI seat) on the hand-built 11 x 11 mission board
+`TUTORIAL_1` (`src/engine/v7/missions/tutorial.ts`, revision 4), in which
+the player takes the steps of a script over eight turns and then plays on.
+The script, its record and its cue are the pure module
 `src/render/tutorial-v7.ts`; the engine knows nothing of it and no rule
 changes.
 
@@ -588,44 +588,88 @@ population bonus and show that units move faster on roads. ... And spread
 those actions over multiple turns". Turn 1 is the first tutorial's (less
 its research step, which moved to Crafting on turn 4), the rest is new.
 
-| Step | Turn | What the step lets through (Next: an explanation)                                 | Line (then, with the step's unit, city or tile selected)                                                                                                   |
-| ---: | ---: | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|    1 |    1 | Harvest Fruit on the fruit in the capital's land                                  | "Tap the fruit in your land." / "Press Harvest: it costs 2 Coins."                                                                                         |
-|    2 |    1 | Next                                                                              | "Coins pay for everything, and your cities earn them every turn. The fruit fed your city: fill its population and it grows and earns more."                |
-|    3 |    1 | Move the Fighter beside the village onto the village                              | "Tap this Fighter to move it." / "Tap the village to walk there."                                                                                          |
-|    4 |    1 | Train a Fighter in the capital                                                    | "Tap your city to train a unit." / "Train a Fighter for 2 Coins."                                                                                          |
-|    5 |    1 | The other Fighter's `?` card opened (no command)                                  | "Every unit has a card that tells you about it. Tap this Fighter." / "Press the ? beside its name."                                                        |
-|    6 |    1 | Next                                                                              | "The card lists what a unit can do and its numbers. Open it whenever a unit is new to you."                                                                |
-|    7 |    1 | Attack the lone Goblin with that Fighter                                          | "A Goblin! Tap this Fighter." / "Tap the Goblin to attack it."                                                                                             |
-|    8 |    1 | End turn                                                                          | "Each unit acts once a turn. End your turn."                                                                                                               |
-|    9 |    2 | Capture the village (either order with 10)                                        | "A unit that starts its turn on a village can take it. Tap this Fighter." / "Press Capture: the village becomes your city."                                |
-|   10 |    2 | Build a Farm on the Fertile Ground                                                | "This is fertile ground. Tap it." / "Build a Farm: +2 population for 5 Coins."                                                                             |
-|   11 |    2 | End turn                                                                          | "A city that fills its population grows a level. End your turn."                                                                                           |
-|   12 |    3 | Build a Windmill beside the Farm (either order with 14)                           | "A Windmill works the Farms beside it. Tap this tile." / "Build a Windmill for 5 Coins."                                                                   |
-|   13 |    3 | Next; the Windmill marked                                                         | "The Windmill gives +1 population for each Farm next to it."                                                                                               |
-|   14 |    3 | Build a Lumber Camp on the Forest                                                 | "Forests feed cities too. Tap this forest." / "Build a Lumber Camp: +1 population for 3 Coins."                                                            |
-|   15 |    3 | End turn                                                                          | "Buildings keep their population for good. End your turn."                                                                                                 |
-|   16 |    4 | Research Crafting                                                                 | "Technologies unlock new things. Open Tech." In the technology screen: "Pick Crafting, then Research."                                                     |
-|   17 |    4 | Next; the Ore it revealed marked                                                  | "Crafting revealed Ore on this mountain. A Mine on it needs Engineering, next turn."                                                                       |
-|   18 |    4 | Build a Workshop beside the Farm and the Lumber Camp                              | "Crafting also gives the Workshop. Tap this tile beside your Farm and Lumber Camp." / "Build a Workshop: +1, and +1 for each kind of building next to it." |
-|   19 |    4 | End turn                                                                          | "Your capital is growing fast. End your turn."                                                                                                             |
-|   20 |    5 | Research Engineering                                                              | "Engineering lets units climb mountains and opens Mines. Open Tech." In the technology screen: "Pick Engineering, then Research."                          |
-|   21 |    5 | Move the Fighter on the second city onto the bare mountain (either order with 22) | "Mountains are open now. Tap this Fighter." / "Tap the mountain to climb it."                                                                              |
-|   22 |    5 | Build a Mine on the Ore                                                           | "Now the Ore can be mined. Tap it." / "Build a Mine: +2 population for 5 Coins."                                                                           |
-|   23 |    5 | End turn                                                                          | "End your turn."                                                                                                                                           |
-|   24 |    6 | Build a Road beside the capital (either order with 25)                            | "Roads join your cities. Tap this tile." / "Build a Road for 2 Coins."                                                                                     |
-|   25 |    6 | Build a Road beside the second city                                               | "One more Road tile reaches your second city. Tap it." / "Build a Road for 2 Coins."                                                                       |
-|   26 |    6 | Next; the second city marked                                                      | "Joined to your capital by Road: +1 population here, and +1 in the capital."                                                                               |
-|   27 |    6 | End turn                                                                          | "End your turn."                                                                                                                                           |
-|   28 |    7 | Next; the Knight that arrived marked                                              | "Help has arrived: a Knight and a Captain. They fight next turn."                                                                                          |
-|   29 |    7 | Move the Fighter on the capital two tiles along the Road                          | "Roads also speed units up. Tap this Fighter." / "On the Road it walks two tiles: tap here."                                                               |
-|   30 |    7 | End turn                                                                          | "Goblins are coming. End your turn."                                                                                                                       |
-|   31 |    8 | The Captain's Rally                                                               | "Three Goblins! First tap your Captain." / "Press Rally: the units beside him get +1 Attack."                                                              |
-|   32 |    8 | Next; the Knight marked                                                           | "Your Knight is Inspired: its next attack hits harder. Tap it to see the chip."                                                                            |
-|   33 |    8 | Move the Knight up to the first Goblin                                            | "Knights move far. Tap the Knight." / "Ride up to the Goblins: tap here."                                                                                  |
-|   34 |    8 | The Knight attacks the first Goblin                                               | "Tap the Knight." / "Attack the first Goblin."                                                                                                             |
-|   35 |    8 | The Knight attacks the second (Overrun)                                           | "A kill lets a Knight attack again. Tap the Knight." / "A kill lets a Knight attack again: tap the next Goblin."                                           |
-|   36 |    8 | The Knight attacks the third                                                      | "Tap the Knight." / "And again: tap the last Goblin."                                                                                                      |
+The user, 2026-10-27: "the tutorial works but there are moments when it's
+not clear what one should click. Sometimes the thing you're supposed to
+do is pulsating other times it is not. sometimes there is an arrow
+pointing at a thing but what you're supposed to do is just click 'next'.
+review it and make it all consistent. when feasible use the normal
+gameplay mechanics eg. when choosing a reward for city level up it
+currently shows just a single reward unlike in real game where it shows 2
+choices. ... Also whenever possible show the real UI one would see in the
+game".
+
+##### The cue language
+
+Every step is one of two kinds, and each kind has one look (bead
+`pulp_wars-2yc.119`; `tutorialCueV7`, checked for every step by
+`tests/unit/tutorial-v7.test.ts`, "the tutorial's cue language"):
+
+- **An action step** waits for a tap on the board or in the HUD. Exactly
+  one thing pulses, the thing to tap now, and the line says what it is.
+  On the board that is the yellow arrow over the unit, city or tile with a
+  pulsing yellow ring round its tile (`style: "TAP"`); in the HUD, the
+  dock or the technology screen it is the button itself, filled yellow
+  with a red ring and pulsing (`[data-first-step="pulse"]`). Nothing else
+  pulses.
+- **A two-step action** (select, then act) moves the pulse: once the
+  step's unit, city or tile is selected, the line becomes the step's
+  second line and the pulse goes to the second target: the move's or the
+  attack's tile on the board (the arrow and the ring move there), or the
+  command's button in the real dock (Harvest, a Build, the Fighter's Train,
+  Capture, Rally), or the unit's `?`. A research step has three: the Tech
+  button, the technology in the tree, then its Research button.
+- **A read step** waits for **Next**. Nothing on the board pulses and no
+  arrow is drawn: what the line talks about has a still "look here" ring,
+  a dashed cream frame on a soft wash (`style: "LOOK"`), and **Next** is
+  what pulses. Its line asks for no tap.
+
+With Motion set to Reduced every pulse stands still: the rings and buttons
+keep their look without moving.
+
+| Step | Turn | What the step lets through (Next: a read step)                                                   | Cue: what pulses (then, selected)                    | Line (then, with the step's unit, city or tile selected)                                                                                                   |
+| ---: | ---: | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    1 |    1 | Harvest Fruit on the fruit in the capital's land                                                 | the fruit's tile (then Harvest in the dock)          | "Tap the fruit in your land." / "Press Harvest: it costs 2 Coins."                                                                                         |
+|    2 |    1 | Next                                                                                             | Next                                                 | "Coins pay for everything, and your cities earn them every turn. The fruit fed your city: fill its population and it grows and earns more."                |
+|    3 |    1 | Move the Fighter beside the village onto the village                                             | the Fighter (then the village's tile)                | "Tap this Fighter to move it." / "Tap the village to walk there."                                                                                          |
+|    4 |    1 | Train a Fighter in the capital                                                                   | the capital (then the Fighter's Train)               | "Tap your city to train a unit." / "Train a Fighter for 2 Coins."                                                                                          |
+|    5 |    1 | The other Fighter's `?` card opened (no command)                                                 | the Fighter (then its `?`)                           | "Every unit has a card that tells you about it. Tap this Fighter." / "Press the ? beside its name."                                                        |
+|    6 |    1 | Next                                                                                             | Next                                                 | "The card lists what a unit can do and its numbers. Open it whenever a unit is new to you."                                                                |
+|    7 |    1 | Attack the lone Goblin with that Fighter                                                         | the Fighter (then the Goblin)                        | "A Goblin! Tap this Fighter." / "Tap the Goblin to attack it."                                                                                             |
+|    8 |    1 | End turn                                                                                         | End turn                                             | "Each unit acts once a turn. End your turn."                                                                                                               |
+|    9 |    2 | Capture the village (either order with 10)                                                       | the Fighter (then Capture)                           | "A unit that starts its turn on a village can take it. Tap this Fighter." / "Press Capture: the village becomes your city."                                |
+|   10 |    2 | Build a Farm on the Fertile Ground                                                               | the Fertile Ground (then Build Farm)                 | "This is fertile ground. Tap it." / "Build a Farm: +2 population for 5 Coins."                                                                             |
+|   11 |    2 | End turn                                                                                         | End turn                                             | "A city that fills its population grows a level. End your turn."                                                                                           |
+|   12 |    3 | Build a Windmill beside the Farm (either order with 14)                                          | the tile (then Build Windmill)                       | "A Windmill works the Farms beside it. Tap this tile." / "Build a Windmill for 5 Coins."                                                                   |
+|   13 |    3 | Next                                                                                             | Next; the Windmill has the look-here ring            | "The Windmill gives +1 population for each Farm next to it."                                                                                               |
+|   14 |    3 | Build a Lumber Camp on the Forest                                                                | the Forest (then Build Lumber Camp)                  | "Forests feed cities too. Tap this forest." / "Build a Lumber Camp: +1 population for 3 Coins."                                                            |
+|   15 |    3 | End turn                                                                                         | End turn                                             | "Buildings keep their population for good. End your turn."                                                                                                 |
+|   16 |    4 | Research Crafting                                                                                | Tech (then Crafting, then its Research)              | "Technologies unlock new things. Open Tech." In the technology screen: "Pick Crafting, then Research."                                                     |
+|   17 |    4 | Next                                                                                             | Next; the Ore it revealed has the look-here ring     | "Crafting revealed Ore on this mountain. A Mine on it needs Engineering, next turn."                                                                       |
+|   18 |    4 | Build a Workshop beside the Farm and the Lumber Camp                                             | the tile (then Build Workshop)                       | "Crafting also gives the Workshop. Tap this tile beside your Farm and Lumber Camp." / "Build a Workshop: +1, and +1 for each kind of building next to it." |
+|   19 |    4 | End turn                                                                                         | End turn                                             | "Your capital is growing fast. End your turn."                                                                                                             |
+|   20 |    5 | Research Engineering                                                                             | Tech (then Engineering, then its Research)           | "Engineering lets units climb mountains and opens Mines. Open Tech." In the technology screen: "Pick Engineering, then Research."                          |
+|   21 |    5 | Move the Fighter that won turn 1's fight onto the bare mountain beside it (either order with 22) | the Fighter (then the mountain)                      | "Mountains are open now. Tap this Fighter." / "Tap the mountain to climb it."                                                                              |
+|   22 |    5 | Build a Mine on the Ore                                                                          | the Ore (then Build Mine)                            | "Now the Ore can be mined. Tap it." / "Build a Mine: +2 population for 5 Coins."                                                                           |
+|   23 |    5 | End turn                                                                                         | End turn                                             | "End your turn."                                                                                                                                           |
+|   24 |    6 | Build a Road beside the capital (either order with 25)                                           | the tile (then Build Road)                           | "Roads join your cities. Tap this tile." / "Build a Road for 2 Coins."                                                                                     |
+|   25 |    6 | Build a Road beside the second city                                                              | the tile (then Build Road)                           | "One more Road tile reaches your second city. Tap it." / "Build a Road for 2 Coins."                                                                       |
+|   26 |    6 | Next                                                                                             | Next; the second city has the look-here ring         | "Joined to your capital by Road: +1 population here, and +1 in the capital."                                                                               |
+|   27 |    6 | End turn                                                                                         | End turn                                             | "End your turn."                                                                                                                                           |
+|   28 |    7 | Next                                                                                             | Next; the Knight that arrived has the look-here ring | "Help has arrived: a Knight and a Captain. They fight next turn."                                                                                          |
+|   29 |    7 | Move the unit on the capital two tiles along the Road                                            | the unit (then the Road's far tile)                  | "Roads also speed units up. Tap this {unit}." / "On the Road it walks two tiles: tap here."                                                                |
+|   30 |    7 | End turn                                                                                         | End turn                                             | "Goblins are coming. End your turn."                                                                                                                       |
+|   31 |    8 | The Captain's Rally                                                                              | the Captain (then Rally)                             | "Three Goblins! First tap your Captain." / "Press Rally: the units beside him get +1 Attack."                                                              |
+|   32 |    8 | Next                                                                                             | Next; the Knight has the look-here ring              | "Your Knight is Inspired: its next attack hits harder. Its card shows the chip."                                                                           |
+|   33 |    8 | Move the Knight up to the first Goblin                                                           | the Knight (then the tile beside the Goblins)        | "Knights move far. Tap the Knight." / "Ride up to the Goblins: tap here."                                                                                  |
+|   34 |    8 | The Knight attacks the first Goblin                                                              | the Knight (then the first Goblin)                   | "Tap the Knight." / "Attack the first Goblin."                                                                                                             |
+|   35 |    8 | The Knight attacks the second (Overrun)                                                          | the Knight (then the second Goblin)                  | "A kill lets a Knight attack again. Tap the Knight." / "A kill lets a Knight attack again: tap the next Goblin."                                           |
+|   36 |    8 | The Knight attacks the third                                                                     | the Knight (then the last Goblin)                    | "Tap the Knight." / "And again: tap the last Goblin."                                                                                                      |
+
+`{unit}` in step 29 is the name of the unit on the capital: the Fighter
+trained on turn 1, or the Scouts' Raider or the giant a reward put there
+(below). Step 32 no longer says "Tap it to see the chip" (bead
+`pulp_wars-2yc.119`): a read step asks for no tap, and the chip is on the
+Knight's card when step 33 selects it.
 
 After step 36: "Three kills in one turn! Help in the Menu explains the
 rest; take the Goblin city to win.", which goes at the next command or its
@@ -642,38 +686,61 @@ dismiss, and the match is an ordinary one.
   cost 44 Coins over six turns and the income pays the rest, with 2 to
   spare at the tightest point (turn 5). The capital's land holds the
   Fruit, the Fertile Ground, a bare Forest, and the tiles of the Windmill,
-  the Workshop and the first Road; the village's holds the Ore mountain
-  and a bare mountain. The Goblins `HOLD` their corner until round 9, so
-  nothing of theirs comes near. At the start of round 7 a Knight and a
-  Captain of the player's arrive (a wave of seat 0) two tiles from where
-  three Goblins in a row arrive at the Goblins' turn of round 7; on turn 8
-  the Rally inspires the Knight, and its Attack 4 kills each 6-HP Goblin,
-  so Overrun carries it down the row. The field is explored from the
-  start, so the Goblins are seen.
-- **Forcing.** While the tutorial runs, the commands the interface reads
-  are the step's (none on an explanation or the card step): the board
-  highlights only those targets, the dock and the technology screen show
-  only those actions, and every other board pick and key does nothing. A
-  command that is not the step's is refused before it reaches the engine
-  ("Follow the tutorial step first."). **End turn** stays in its place,
-  disabled, until its step. Looking is free: any tile, unit or city can be
-  selected, and the menu, Help, Settings and the leaderboard open as usual.
+  the Workshop and the first Road; the village's holds the Ore mountain.
+  The bare mountain stands beside the lone Goblin's tile, where the first
+  Fighter stands once its attack has killed the Goblin (revision 4; it
+  stood beside the village before). The Goblins `HOLD` their corner until
+  round 9, so nothing of theirs comes near. At the start of round 7 a
+  Knight and a Captain of the player's arrive (a wave of seat 0) two tiles
+  from where three Goblins in a row arrive at the Goblins' turn of round
+  7; on turn 8 the Rally inspires the Knight, and its Attack 4 kills each
+  6-HP Goblin, so Overrun carries it down the row. The field is explored
+  from the start, so the Goblins are seen.
+- **The real interface** (bead `pulp_wars-2yc.119`). While the tutorial
+  runs the interface is the game's own: a selected unit shows all of its
+  moves and attacks, a city its whole train list, a tile every action it
+  offers, the technology screen every technology with its Research
+  button, End turn is in its place and pressable, and a city's level-up
+  shows the two-choice reward panel. Only the step's command (and that of
+  a later step of its group) goes to the engine; any other command is
+  refused before it reaches the engine with a short nudge that says where
+  the glow is: "Tap the glowing tile." (or unit, city), "Tap the glowing
+  button.", "Tap the glowing technology.", or on a read step "Read the
+  line, then press Next.". The step stays where it was. Looking is free:
+  any tile, unit or city can be selected, and the menu, Help, Settings and
+  the leaderboard open as usual. What the tutorial hid or replaced before
+  2yc.119, now restored: the board's highlights (only the step's target
+  was drawn), the dock (only the step's button), the city's train list
+  (only the Fighter), the technology screen's other Research buttons, End
+  turn (disabled until its step), and the reward panel (one choice).
 - **Steps in either order** (`group`). The two things of turns 2, 3, 5 and
-  6 may be done in either order: at the first, the second's command is let
-  through too (both are highlighted; the line and the marker stay with the
-  first), and a step done early is skipped when the script reaches it. An
-  explanation between them keeps its place (the Windmill's comes after the
-  Windmill). The record keeps the steps done early (`ahead`).
-- **A city's reward.** The lessons grow the cities (the capital to level 5,
-  the second city to level 2), and a reward choice blocks every other
-  command; the tutorial lets the choice through but only the rewards that
-  place no unit (Stockpile, Walls, Population Boom, Economic Miracle,
-  Treasury), so no Militia, Scout or giant stands on a tile a lesson
-  needs. Every level offers one of them.
+  6 may be done in either order: at the first, the second's command is
+  let through too (it does not pulse; the line, the arrow and the pulse
+  stay with the first), and a step done early is skipped when the script
+  reaches it. A read step between them keeps its place (the Windmill's
+  comes after the Windmill). The record keeps the steps done early
+  (`ahead`).
+- **A city's reward** is the real panel with its two choices, and either
+  may be taken; nothing in it pulses, since the choice is the player's.
+  The lessons grow the capital to level 3 at the Farm (Scouts or Walls),
+  to level 4 at the Workshop (Boom or the Economic Miracle) and, after a
+  Boom, to level 5 when the Road links the cities (the giant or the
+  Treasury), and the second city to level 2 at the Mine (Stockpile or
+  Militia). A reward's free unit takes its city's centre and pushes the
+  unit there to a free tile beside it; the board is laid out so that no
+  such tile is one a later lesson needs (the Scouts' push puts the trained
+  Fighter on the Forest, which can still take its Lumber Camp; the
+  Militia's puts the capturing Fighter beside the village, off the Road),
+  and the Road lesson moves whatever unit then stands on the capital.
+  Every one of the sixteen combinations of picks, in either order of the
+  turns, completes the tutorial (`tests/unit/tutorial-v7.test.ts`), and
+  the sim tier plays both the quiet picks and the unit picks against the
+  Normal AI. The Coins hold either way: Militia's 4 fewer Coins than
+  Stockpile still pay for the Roads.
 - **The card step.** Step 5 waits for the unit's `?` card, not a command:
   the Fighter is marked, then its `?` is filled yellow with a red ring
-  (`[data-first-step]`), and opening the card is the step; the
-  explanation comes up when the card is closed. The ring is on the dock's
+  and pulses (`[data-first-step]`), and opening the card is the step; the
+  read step comes up when the card is closed. The ring is on the dock's
   own button; the line stays in the HUD, so nothing covers it.
 - **The camera** (`#frameFirstStepMarker` in the board host): when the
   marker of the tutorial (or the coach) comes up on a new tile, the camera
@@ -685,16 +752,12 @@ dismiss, and the match is an ordinary one.
   ride the Goblins, and the arrival the Captain.
 - **The line** is the coach's yellow plate
   (`[data-v7-region="tutorial"]`, `role="status"`) with the step's number
-  ("12/36"), one or two short sentences, **Next** on an explanation and
+  ("12/36"), one or two short sentences, **Next** on a read step and
   **Skip tutorial**. The plate ignores the pointer; its buttons take it.
-  The board marker and the ring on the Tech or End turn button are the
-  coach's own, and point at what to tap next: the step's unit, city or
-  tile, then (a move, an attack) its target; an explanation's marker
-  points at what it talks about. In the technology screen the line stands
-  under the title and the technology has a red ring. The screen closes by
-  itself after the research. The first-steps coach is silent while the
-  tutorial runs and while its farewell is up; the commands the player
-  gives in the tutorial count for the coach's record.
+  In the technology screen the line stands under the title. The screen
+  closes by itself after the research. The first-steps coach is silent
+  while the tutorial runs and while its farewell is up; the commands the
+  player gives in the tutorial count for the coach's record.
 - **Skip tutorial** ends the forcing at once; the match goes on as an
   ordinary game (the Goblins still hold their corner until round 9, and
   the waves of round 7 still come).
@@ -709,7 +772,7 @@ dismiss, and the match is an ordinary one.
   or skipped, the step a running tutorial is at, and the steps done early;
   a missing or malformed value is a new profile). A tutorial left with
   Save & quit resumes at its step; Restart in the tutorial match starts it
-  over. A save of revision 2 is refused as stale.
+  over. A save of an earlier revision is refused as stale.
 - **The menu.** **Tutorial** is the second button, after New game. For a
   first-time player (no saved game, Hints on with nothing of the coach's
   record done, no mission won, the tutorial never finished or skipped) it is the first and the primary
@@ -723,10 +786,15 @@ dismiss, and the match is an ordinary one.
   the engine (`tests/fixtures/v7-tutorial-play.ts`) with an idle opponent
   and checks every step, the Ore after Crafting, the mountain move and the
   Mine after Engineering, the Road's +1 population each and its two-tile
-  reach, the Rally's Inspired and the Knight's three kills in one turn, and
-  four steps done in the other order; `tests/unit/tutorial-v7.sim.test.ts`
-  (sim tier) plays it against the Normal AI's Goblins;
-  `tests/integration/tutorial-dom.test.ts` drives the interface.
+  reach, the Rally's Inspired and the Knight's three kills in one turn,
+  four steps done in the other order, every pick of the reward panels, and
+  the cue language at every step (each step's kind against its cue);
+  `tests/unit/tutorial-v7.sim.test.ts` (sim tier) plays it against the
+  Normal AI's Goblins with either set of picks;
+  `tests/integration/tutorial-dom.test.ts` drives the interface (the full
+  highlights with only the pulsing target let through, the nudge, the
+  two-choice panel); `tests/integration/first-steps-canvas-dom.test.ts`
+  draws the tap and look-here rings.
 
 #### Help
 

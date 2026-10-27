@@ -1091,6 +1091,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const firstStep = this.feedback.firstStepMarkerFrame();
     const marked = this.#canvas;
     if (marked !== null) {
+      if (firstStep?.style === undefined) delete marked.dataset.firstStepStyle;
+      // Bead pulp_wars-2yc.119: the tutorial's ring, "tap" or "look".
+      else marked.dataset.firstStepStyle = firstStep.style.toLowerCase();
       if (firstStep === null) {
         delete marked.dataset.firstStepMarker;
         delete marked.dataset.firstStepMotion;
