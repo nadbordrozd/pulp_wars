@@ -56,6 +56,13 @@ const app =
         leaderboard: (
           await import("./app/leaderboard-v7")
         ).browserGameLeaderboardV7(import.meta.env.PROD),
+        // Online play (bead pulp_wars-eqc6.2, docs/MULTIPLAYER.md): the
+        // Firestore transport on the deployed site only; the two-tab local
+        // transport on the development server, a local preview and every
+        // automated run, so no test reaches the real project.
+        online: (await import("./online/browser")).browserOnlineTransportV7(
+          import.meta.env.PROD,
+        ),
       })
     : renderUnsupportedRuleset(route.value);
 export { app };

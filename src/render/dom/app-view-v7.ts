@@ -272,6 +272,17 @@ import {
 } from "../recovery-presentation-v7";
 import { downloadJsonFile } from "../../app/browser-download";
 import {
+  joinCodeFromSearchV7,
+  OnlineLobbySessionV7,
+  type OnlineMatchHandoffV7,
+  type OnlineTransportV7,
+} from "../../online/index";
+import {
+  browserCopyTextV7,
+  browserShareV7,
+  OnlineLobbyViewV7,
+} from "./online-lobby-view-v7";
+import {
   loadBoardSaturationV7,
   storeBoardSaturationV7,
 } from "../../app/board-saturation-v7";
@@ -1596,6 +1607,19 @@ export interface MountRuleset7AppOptions {
    * and a board in memory everywhere else.
    */
   readonly leaderboard?: GameLeaderboardV7;
+  /**
+   * Online play (bead pulp_wars-eqc6.2, docs/MULTIPLAYER.md section 10):
+   * the page's transport (`browserOnlineTransportV7`). Absent or null (most
+   * tests): the menu has no Play online.
+   */
+  readonly online?: OnlineTransportV7 | null;
+  /**
+   * The lobby's hand-off (docs/MULTIPLAYER.md section 10.4): called once
+   * in each browser when the host's Start has reached it, with the opened
+   * lockstep client. The in-match screen (`pulp_wars-eqc6.3`) plugs in at
+   * `#openOnlineMatch`; until then the lobby shows a placeholder.
+   */
+  readonly onOnlineMatchStarted?: (handoff: OnlineMatchHandoffV7) => void;
 }
 
 /** A fresh unsigned 32-bit map seed from the browser. */
@@ -1659,7 +1683,13 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
  * scene, and the screens its buttons open.
  */
 type FrontPageV7 =
-  "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS" | "ABOUT" | "LEADERBOARD";
+  | "MENU"
+  | "SETUP"
+  | "CAMPAIGN"
+  | "SETTINGS"
+  | "ABOUT"
+  | "LEADERBOARD"
+  | "ONLINE";
 
 /** The end screen's leaderboard form of one match (bead pulp_wars-2yc.104). */
 interface BoardSubmitStateV7 {
@@ -2282,6 +2312,11 @@ export class Ruleset7DomAppView {
   readonly #analytics: GameAnalyticsV7;
   /** The public leaderboard (bead pulp_wars-2yc.104); none unless passed. */
   readonly #publicBoard: GameLeaderboardV7;
+  /** Online play (bead pulp_wars-eqc6.2): the lobby, while a transport is. */
+  readonly #online: OnlineLobbySessionV7 | null;
+  #onlineView: OnlineLobbyViewV7 | null = null;
+  readonly #onOnlineMatchStarted:
+    ((handoff: OnlineMatchHandoffV7) => void) | undefined;
   /** The Leaderboard screen's open tab. */
   #boardTab: LeaderboardModeV7 = "DOMINATION";
   /** Each tab's last answer; "LOADING" while a request is out. */
@@ -2334,6 +2369,15 @@ export class Ruleset7DomAppView {
     this.#ownsAudio = options.audio === undefined;
     this.#analytics = options.analytics ?? NO_ANALYTICS_V7;
     this.#publicBoard = options.leaderboard ?? NO_LEADERBOARD_V7;
+    this.#onOnlineMatchStarted = options.onOnlineMatchStarted;
+    this.#online =
+      options.online === undefined || options.online === null
+        ? null
+        : new OnlineLobbySessionV7({
+            transport: options.online,
+            storage: this.#settingsStorage,
+            location: browserAddressV7(documentRoot),
+          });
     this.#audio =
       options.audio ??
       createBrowserGameAudioV1(documentRoot, this.#settingsStorage);
@@ -2429,6 +2473,13 @@ export class Ruleset7DomAppView {
       // No address: the stored switch stands.
     }
     this.#devMode = startupDevModeV7(this.#settingsStorage, search);
+    // A share link (`?join=CODE`, bead pulp_wars-eqc6.2) opens Play online
+    // at once: the lobby with its Join tap, or the lobby this browser
+    // already sits in.
+    if (this.#online !== null && joinCodeFromSearchV7(search) !== null) {
+      this.#frontPage = "ONLINE";
+      void this.#online.enter();
+    }
     this.#analytics.setDeveloperMode?.(this.#devMode);
     this.#controller.setDeveloperMode?.(this.#devMode);
     this.#controllerSnapshot = controller.snapshot();
@@ -2503,6 +2554,8 @@ export class Ruleset7DomAppView {
     if (this.#destroyed) return;
     this.#destroyed = true;
     if (this.#frontToastTimer !== null) clearTimeout(this.#frontToastTimer);
+    this.#onlineView?.destroy();
+    this.#online?.destroy();
     if (CHIBI_ECONOMY_ICONS.get(this.#document) === this.#economyIcons)
       CHIBI_ECONOMY_ICONS.delete(this.#document);
     this.#document.removeEventListener("keydown", this.#onKeyDown);
@@ -3205,6 +3258,9 @@ export class Ruleset7DomAppView {
         return this.#frontAbout();
       case "LEADERBOARD":
         return this.#frontLeaderboard();
+      case "ONLINE":
+        if (this.#online !== null) return this.#frontOnline(this.#online);
+        return this.#mainMenu(resumable);
       default:
         return this.#mainMenu(resumable);
     }
@@ -3280,6 +3336,19 @@ export class Ruleset7DomAppView {
     };
     const campaign = this.#menuButton("Campaign", "campaign", "flag");
     campaign.onclick = () => this.#openFrontPage("CAMPAIGN");
+    // Online play (bead pulp_wars-eqc6.2), right after New game: an open
+    // lobby is named on the button.
+    const onlineItems: HTMLButtonElement[] = [];
+    if (this.#online !== null) {
+      const online = this.#menuButton("Play online", "play-online", "globe");
+      const lobby = this.#online.state.code ?? this.#online.rememberedCode;
+      if (lobby !== null)
+        online.append(
+          text(this.#document, "span", `Room ${lobby}`, "v7-resume-summary"),
+        );
+      online.onclick = () => this.#openFrontPage("ONLINE");
+      onlineItems.push(online);
+    }
     // The public leaderboard (bead pulp_wars-2yc.104), after the campaign.
     const boardItems: HTMLButtonElement[] = [];
     if (this.#publicBoard.available) {
@@ -3308,6 +3377,7 @@ export class Ruleset7DomAppView {
       nav.append(
         tutorial,
         play,
+        ...onlineItems,
         campaign,
         ...boardItems,
         ...galleryItems,
@@ -3317,6 +3387,7 @@ export class Ruleset7DomAppView {
     else
       nav.append(
         play,
+        ...onlineItems,
         tutorial,
         campaign,
         ...boardItems,
@@ -3396,8 +3467,44 @@ export class Ruleset7DomAppView {
                 ? '[data-action="about"]'
                 : from === "LEADERBOARD"
                   ? '[data-action="public-leaderboard"]'
-                  : MENU_FIRST_V7;
+                  : from === "ONLINE"
+                    ? '[data-action="play-online"]'
+                    : MENU_FIRST_V7;
     this.#render();
+    // Play online resumes the lobby this browser sits in, if any.
+    if (page === "ONLINE") void this.#online?.enter();
+  }
+
+  /**
+   * Play online (bead pulp_wars-eqc6.2, docs/MULTIPLAYER.md section 10):
+   * the lobby screen in the front panel. Its view is kept for the page's
+   * life and draws itself as the lobby changes; Menu leaves the lobby
+   * open (Leave closes it).
+   */
+  #frontOnline(session: OnlineLobbySessionV7): HTMLElement {
+    const { main, panel } = this.#frontPanelScreen("online", "Play online");
+    main.classList.add("v7-online-screen");
+    this.#onlineView ??= new OnlineLobbyViewV7(this.#document, session, {
+      factionEmblem: (faction) => this.#factionEmblem(faction, "small"),
+      factionLocked: (faction) => this.#factionLock(faction) !== null,
+      copy: browserCopyTextV7(this.#document),
+      share: browserShareV7(this.#document),
+      reload: () => this.#document.defaultView?.location.reload(),
+      onStarted: (handoff) => this.#openOnlineMatch(handoff),
+    });
+    panel.append(this.#onlineView.root);
+    return main;
+  }
+
+  /**
+   * The lobby's hand-off point (docs/MULTIPLAYER.md section 10.4): the
+   * host's Start reached this browser, and `handoff.client` is the opened
+   * (not yet started) lockstep client. The in-match screen
+   * (`pulp_wars-eqc6.3`) takes over here; until it does, the lobby shows
+   * its "Game on!" placeholder and the page's hook hears of it.
+   */
+  #openOnlineMatch(handoff: OnlineMatchHandoffV7): void {
+    this.#onOnlineMatchStarted?.(handoff);
   }
 
   /**
@@ -3407,7 +3514,13 @@ export class Ruleset7DomAppView {
    */
   #frontPanelScreen(
     page:
-      "setup" | "campaign" | "settings" | "about" | "leaderboard" | "recovery",
+      | "setup"
+      | "campaign"
+      | "settings"
+      | "about"
+      | "leaderboard"
+      | "recovery"
+      | "online",
     titleText: string,
   ): { main: HTMLElement; panel: HTMLElement } {
     const main = el(this.#document, "main", "v7-front-screen v7-front-page");
@@ -20975,4 +21088,21 @@ function factionBadgeIcon(
       "v7-undead-badge v7-dinosaur-badge",
     );
   return uiIconV7(documentRoot, "goblin", "v7-undead-badge v7-goblin-badge");
+}
+
+/**
+ * The page's address for the online lobby (bead pulp_wars-eqc6.2): read,
+ * and replaced in place (`history.replaceState`, no reload), so an open
+ * lobby's `?join=CODE` survives a reload. Null outside a browser.
+ */
+function browserAddressV7(
+  documentRoot: Document,
+): { href(): string; replace(href: string): void } | null {
+  const browser = documentRoot.defaultView;
+  if (browser === null) return null;
+  return {
+    href: () => browser.location.href,
+    replace: (href) =>
+      browser.history.replaceState(browser.history.state, "", href),
+  };
 }

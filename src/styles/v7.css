@@ -987,6 +987,389 @@
   background: var(--pw-yellow);
 }
 
+/*
+ * Play online (pulp_wars-eqc6.2): one narrow panel. Home is Host a game and
+ * Join with code; the lobby is the room code over the share row, the seats,
+ * your faction, the host's Settings (closed by default) and Start.
+ */
+.v7-online-screen .v7-front-panel {
+  width: min(30rem, 100%);
+}
+
+.v7-online {
+  display: grid;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.v7-online p {
+  margin: 0;
+}
+
+.v7-online-lede,
+.v7-online-hint,
+.v7-online-wait {
+  color: var(--pw-text-2);
+}
+
+.v7-online-hint {
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-online-wait {
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-online label,
+.v7-online-field-name {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-online label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.v7-online .primary-action {
+  min-height: 3.2rem;
+  font-size: var(--pw-fs-lg);
+}
+
+.v7-online-join {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.v7-online-join-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.v7-online-join-row > input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  font-family: var(--pw-ui);
+  font-size: var(--pw-fs-base);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-online-join-row > #v7-online-code {
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-xl);
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.v7-online-join-row > #v7-online-code::placeholder {
+  color: var(--pw-line-soft);
+  opacity: 0.6;
+}
+
+.v7-online-join-button,
+.v7-online-secondary,
+.v7-online-icon-button {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: var(--pw-radius-sm);
+  box-shadow: var(--pw-shadow-sm);
+}
+
+.v7-online-join-button:hover:not(:disabled),
+.v7-online-secondary:hover:not(:disabled),
+.v7-online-icon-button:hover:not(:disabled) {
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+}
+
+.v7-online-icon-button {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.v7-online-divider {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v7-online-divider::before,
+.v7-online-divider::after {
+  content: "";
+  flex: 1;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line-soft);
+}
+
+.v7-online-playing-as {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.v7-online-link-button {
+  min-height: 32px;
+  padding: 0 0.5rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  text-decoration: underline;
+}
+
+.v7-online-problem {
+  color: var(--pw-loss);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-semi);
+}
+
+/* The room code: the screen's headline, letter-spaced to read aloud. */
+.v7-online-room {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 0.85rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+}
+
+.v7-online-code-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.v7-online-room-label {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v7-online-code {
+  color: var(--pw-accent);
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-4xl);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  user-select: all;
+}
+
+.v7-online-share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.v7-online-link {
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: all;
+}
+
+.v7-online-seats {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-online-seat {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.35rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-left: 0.4rem solid var(--player, var(--pw-line-soft));
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+}
+
+.v7-online-seat[data-mine="true"] {
+  box-shadow: var(--pw-shadow-sm);
+}
+
+.v7-online-seat[data-open="true"] {
+  border-style: dashed;
+  border-left-width: var(--pw-line-w-sm);
+  background: transparent;
+}
+
+.v7-online-seat[data-ai="true"] {
+  min-height: 2.6rem;
+  border-color: var(--pw-line-soft);
+  background: var(--pw-tint-1);
+}
+
+.v7-online-seat .v7-faction-emblem {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.v7-online-seat[data-ai="true"] .v7-faction-emblem {
+  width: 2rem;
+  height: 2rem;
+}
+
+.v7-online-random {
+  border: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  color: var(--pw-text-2);
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-lg);
+}
+
+.v7-online-seat-text {
+  display: grid;
+  min-width: 0;
+}
+
+.v7-online-seat-name {
+  overflow: hidden;
+  font-weight: var(--pw-fw-heavy);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-online-seat-pick {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-online-seat-chip[data-state="ready"] {
+  border-color: var(--pw-teal);
+  background: var(--pw-teal-fill);
+  color: var(--pw-teal);
+}
+
+.v7-online-settings-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+}
+
+.v7-online-summary {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-width: 0;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-online-settings {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+}
+
+.v7-online-settings[hidden] {
+  display: none;
+}
+
+.v7-online-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+}
+
+.v7-online-actions > :only-child {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.v7-online-message {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  padding: 0.55rem 0.75rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-online-message[hidden] {
+  display: none;
+}
+
+.v7-online-message[data-kind="error"] {
+  border-color: var(--pw-red);
+  background: var(--pw-red-fill);
+  color: var(--pw-red);
+}
+
+.v7-online-message p {
+  flex: 1 1 12rem;
+}
+
+.v7-online-offline {
+  color: var(--pw-amber);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-online-started {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.v7-online-started .v7-faction-emblem {
+  width: 4rem;
+  height: 4rem;
+}
+
+.v7-online-started-title {
+  color: var(--pw-accent);
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-3xl);
+}
+
+@media (max-width: 420px) {
+  .v7-online-code {
+    font-size: var(--pw-fs-3xl);
+  }
+}
+
 /* The public leaderboard (pulp_wars-2yc.104): two tabs over one list of
    rank, emblem, name, players (pulp_wars-2yc.112) and score. */
 .v7-public-board-screen .v7-front-panel {

@@ -15,3 +15,4 @@ export * from "./firestore-transport";
 export * from "./lockstep";
 export * from "./lobby";
 export * from "./browser";
+export * from "./lobby-session";
