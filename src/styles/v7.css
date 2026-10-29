@@ -1364,6 +1364,131 @@
   font-size: var(--pw-fs-3xl);
 }
 
+/* The match history (pulp_wars-eqc6.6): the record line over compact
+   rows of both emblems, "vs Bob", the details and a result chip (or
+   Resume). */
+.v7-online-history {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.75rem;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line-soft);
+}
+
+.v7-online-history-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.v7-online-history-title {
+  margin: 0;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-online-record {
+  font-weight: var(--pw-fw-heavy);
+}
+
+.v7-online-history-list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-online-history-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.3rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  border-left: 0.3rem solid var(--player, var(--pw-line-soft));
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+}
+
+.v7-online-history-factions {
+  display: flex;
+  align-items: center;
+}
+
+.v7-online-history-factions .v7-faction-emblem {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+.v7-online-history-factions .v7-faction-emblem + .v7-faction-emblem {
+  margin-left: -0.45rem;
+}
+
+.v7-online-history-who {
+  display: grid;
+  min-width: 0;
+}
+
+.v7-online-history-name {
+  overflow: hidden;
+  font-weight: var(--pw-fw-heavy);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-online-history-details {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+}
+
+.v7-online-history-result {
+  font-size: var(--pw-fs-xs);
+  white-space: nowrap;
+}
+
+.v7-online-history-row[data-result="won"] .v7-online-history-result,
+.v7-online-history-row[data-result="won-forfeit"] .v7-online-history-result {
+  border-color: var(--pw-teal);
+  background: var(--pw-teal-fill);
+  color: var(--pw-teal);
+}
+
+.v7-online-history-row[data-result="lost"] .v7-online-history-result,
+.v7-online-history-row[data-result="lost-forfeit"] .v7-online-history-result {
+  border-color: var(--pw-loss);
+  background: var(--pw-red-fill);
+  color: var(--pw-loss);
+}
+
+.v7-online-history-row[data-result="abandoned"] .v7-online-history-result {
+  color: var(--pw-text-2);
+}
+
+.v7-online-history-row[data-result="in-progress"] {
+  border-style: dashed;
+  border-left-style: solid;
+}
+
+.v7-online .v7-online-history-resume {
+  min-height: 2.1rem;
+  padding: 0 0.7rem;
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-online-history-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
 @media (max-width: 420px) {
   .v7-online-code {
     font-size: var(--pw-fs-3xl);

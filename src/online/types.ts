@@ -67,6 +67,13 @@ export interface OnlineMatchRecordV7 {
   /** ISO times; the server's on Firestore. */
   readonly createdAt: string;
   readonly updatedAt: string;
+  /**
+   * A forfeit (`pulp_wars-eqc6.5`): the seat (0 host, 1 guest) whose
+   * player gave the game up, and its uid. Absent until then; written once,
+   * with the status `FINISHED`.
+   */
+  readonly forfeitSeat?: number;
+  readonly forfeitUid?: string;
 }
 
 /** One move of the log, `matches/{code}/moves/{index}`. */
@@ -230,6 +237,12 @@ export interface OnlineTransportV7 {
   ): Promise<OnlineResultV7<readonly OnlineMoveRecordV7[]>>;
   /** A seated player gives up the match (or the host cancels the lobby). */
   abandonMatch(code: string): Promise<OnlineResultV7<OnlineMatchRecordV7>>;
+  /**
+   * A seated player forfeits a game in play (`pulp_wars-eqc6.5`): the
+   * match is `FINISHED` with `forfeitSeat` this player's seat, at once,
+   * on anyone's turn.
+   */
+  forfeitMatch(code: string): Promise<OnlineResultV7<OnlineMatchRecordV7>>;
   /**
    * Calls `listener` with the match now and whenever it changes (on
    * Firestore: polled, see {@link OnlineWatchOptionsV7}); `null` when the

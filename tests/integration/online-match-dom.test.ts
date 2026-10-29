@@ -15,6 +15,7 @@ import {
   createMemoryOnlineServerV7,
   hostOnlineMatchV7,
   joinOnlineMatchV7,
+  ONLINE_HISTORY_STORAGE_KEY_V7,
   ONLINE_LOBBY_STORAGE_KEY_V7,
   OnlineLockstepV7,
   startOnlineMatchV7,
@@ -189,9 +190,10 @@ describe("an online game on the match screen (pulp_wars-eqc6.3)", () => {
     await myTurn(game);
     const shell = document.querySelector<HTMLElement>(".v7-app-shell");
     expect(shell).not.toBeNull();
-    // No save is offered: the menu leaves the online game.
+    // No save is offered: the menu forfeits the online game.
     press("compact-menu");
-    expect(action("leave-online")?.textContent).toBe("Leave online game");
+    expect(action("forfeit-online")?.textContent).toBe("Forfeit");
+    expect(action("leave-online")).toBeNull();
     expect(action("main-menu")).toBeNull();
     press("compact-menu");
     const before = game.friend.moveCount;
@@ -268,25 +270,61 @@ describe("an online game on the match screen (pulp_wars-eqc6.3)", () => {
     await waitUntil(() => action("end-turn") !== null);
   });
 
-  it("leaves after a question: the friend's game is over, the code forgotten", async () => {
+  it("forfeits after a question, off my turn: my Defeat, Bo's game over, the code forgotten (pulp_wars-eqc6.5)", async () => {
     const game = await table();
     await boot(game);
+    await myTurn(game);
+    press("end-turn");
+    await waitUntil(() => status() === "Bo is moving…");
     press("compact-menu");
-    press("leave-online");
-    expect(region("online-leave-confirm")?.textContent).toContain(
-      "The game ends for Bo too.",
+    press("forfeit-online");
+    const question = region("online-forfeit-confirm");
+    expect(question?.querySelector(".v7-end-turn-question")?.textContent).toBe(
+      "Forfeit?",
     );
-    // Stay keeps playing.
-    press("online-leave-cancel");
-    expect(region("online-leave-confirm")).toBeNull();
+    expect(question?.textContent).toContain("Bo wins the game.");
+    // The safe answer has the focus.
+    await waitUntil(
+      () =>
+        document.activeElement?.getAttribute("data-action") ===
+        "online-forfeit-cancel",
+    );
+    // Keep playing keeps playing.
+    press("online-forfeit-cancel");
+    expect(region("online-forfeit-confirm")).toBeNull();
     press("compact-menu");
-    press("leave-online");
-    press("online-leave");
-    await waitUntil(() => document.querySelector(".v7-main-menu") !== null);
-    await game.friend.settled();
-    await waitUntil(() => game.friend.match.status === "ABANDONED");
+    press("forfeit-online");
+    press("online-forfeit");
+    await waitUntil(() => region("results") !== null);
+    expect(region("results")?.querySelector("h2")?.textContent).toBe("Defeat");
+    expect(region("online-result")?.textContent).toBe(
+      "You forfeited. Bo won the online game.",
+    );
+    expect(region("online-forfeit-confirm")).toBeNull();
+    // Recorded for everyone: Bo's client sees the forfeit.
+    await waitUntil(() => game.friend.forfeitedBy !== null);
+    expect(game.friend.forfeitedBy?.seat).toBe(0);
+    expect(game.server.match(game.match.code)?.status).toBe("FINISHED");
     expect(window.localStorage.getItem(ONLINE_LOBBY_STORAGE_KEY_V7)).toBeNull();
     expect(window.location.search).toBe("");
+    press("results-menu");
+    await waitUntil(() => document.querySelector(".v7-main-menu") !== null);
+  });
+
+  it("shows Victory when Bo forfeits on my turn (pulp_wars-eqc6.5)", async () => {
+    const game = await table();
+    await boot(game);
+    await myTurn(game);
+    const forfeited = await game.friend.forfeit();
+    expect(forfeited.ok).toBe(true);
+    await waitUntil(() => region("results") !== null);
+    expect(region("results")?.querySelector("h2")?.textContent).toBe("Victory");
+    expect(region("online-result")?.textContent).toBe("Bo forfeited.");
+    expect(action("end-turn")).toBeNull();
+    const winner = document.querySelector(
+      '.v7-result-seat[data-winner="true"] .v7-result-seat-name',
+    );
+    expect(winner?.textContent).toBe("You");
   });
 
   it("tells me when the friend leaves, with a way back to the menu", async () => {
@@ -353,6 +391,7 @@ function finishedClient(
       ],
     },
     desynced: false,
+    forfeitedBy: null,
     pendingMoves: 0,
     canAct: false,
     aiTurn: false,
@@ -367,6 +406,124 @@ function finishedClient(
   };
   return stub as unknown as OnlineLockstepV7;
 }
+
+describe("the match history in Play online (pulp_wars-eqc6.6)", () => {
+  /** This browser's app on the main menu (no link, nothing remembered). */
+  async function bootMenu(game: Table): Promise<void> {
+    app?.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    window.history.replaceState(null, "", "/");
+    window.localStorage.removeItem(ONLINE_LOBBY_STORAGE_KEY_V7);
+    app = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: new Host(),
+      randomSeed: () => 7,
+      randomDraw: () => 0,
+      online: game.server.transport("me"),
+    });
+    await waitUntil(() => action("play-online") !== null);
+    press("play-online");
+    await waitUntil(
+      () =>
+        document.querySelector<HTMLElement>(".v7-online")?.dataset.screen ===
+        "home",
+    );
+  }
+
+  function rows(): HTMLElement[] {
+    return [
+      ...document.querySelectorAll<HTMLElement>(".v7-online-history-row"),
+    ];
+  }
+
+  it("lists the match from its start, resumes it, and shows how it ended", async () => {
+    const game = await table();
+    await boot(game);
+    await myTurn(game);
+    // The tab is closed mid-game; later, Play online lists it In progress.
+    await bootMenu(game);
+    await waitUntil(() => rows().length === 1);
+    const row = rows()[0];
+    expect(row?.dataset.code).toBe(game.match.code);
+    expect(row?.dataset.result).toBe("in-progress");
+    expect(row?.querySelector(".v7-online-history-name")?.textContent).toBe(
+      "vs Bo",
+    );
+    expect(
+      row
+        ?.querySelector(".v7-online-history-details")
+        ?.textContent?.replace(/\u00a0/g, " "),
+    ).toBe("Today · Dry land 11 × 11 · Turn 1");
+    expect(row?.querySelectorAll(".v7-faction-emblem")).toHaveLength(2);
+    expect(region("online-history")?.textContent).toContain(
+      "Kept on this device.",
+    );
+    // No finished match yet: no record line.
+    expect(region("online-record")).toBeNull();
+    // Resume opens the match screen where the game is.
+    press(`online-resume-${game.match.code}`);
+    await waitUntil(() => hud() !== null);
+    await waitUntil(() => action("end-turn") !== null);
+    // Bo forfeits: Victory; Play again goes to Play online, which shows
+    // the result and the record.
+    expect((await game.friend.forfeit()).ok).toBe(true);
+    await waitUntil(() => region("results") !== null);
+    press("restart");
+    await waitUntil(
+      () =>
+        document.querySelector<HTMLElement>(".v7-online")?.dataset.screen ===
+        "home",
+    );
+    await waitUntil(() => rows()[0]?.dataset.result === "won-forfeit");
+    expect(
+      rows()[0]?.querySelector(".v7-online-history-result")?.textContent,
+    ).toBe("Won by forfeit");
+    expect(action(`online-resume-${game.match.code}`)).toBeNull();
+    expect(region("online-record")?.textContent).toBe("Record: 1 W · 0 L");
+  });
+
+  it("shows nothing for a malformed list, and the valid rows of a damaged one", async () => {
+    const game = await table();
+    const key = `${ONLINE_HISTORY_STORAGE_KEY_V7}.me`;
+    window.localStorage.setItem(key, "{oops");
+    await bootMenu(game);
+    expect(region("online-history")).toBeNull();
+    expect(action("online-host")).not.toBeNull();
+    const good = {
+      code: "QWERT",
+      uid: "me",
+      seat: 0,
+      startedAt: "2026-10-20T10:00:00.000Z",
+      updatedAt: "2026-10-20T11:00:00.000Z",
+      opponent: "Cy",
+      faction: "GOBLIN",
+      opponentFaction: "CANDY",
+      aiSeats: 2,
+      mapType: "PANGEA",
+      width: 16,
+      gameMode: "DOMINATION",
+      turns: 21,
+      result: "LOST",
+      score: 3120,
+    };
+    window.localStorage.setItem(
+      key,
+      JSON.stringify([good, { ...good, code: "BROKE", result: 5 }, "junk"]),
+    );
+    await bootMenu(game);
+    await waitUntil(() => rows().length === 1);
+    expect(rows()[0]?.dataset.result).toBe("lost");
+    expect(
+      rows()[0]
+        ?.querySelector(".v7-online-history-details")
+        ?.textContent?.replace(/\u00a0/g, " "),
+    ).toMatch(/Pangea 16 × 16 · 2 AI · Turn 21 · 3,120 pts$/);
+    expect(rows()[0]?.textContent).toContain(
+      "You led the Goblins; Cy the Candy",
+    );
+    expect(region("online-record")?.textContent).toBe("Record: 0 W · 1 L");
+  });
+});
 
 describe("the end of an online game (pulp_wars-eqc6.3)", () => {
   async function endScreen(winnerId: 1 | 2): Promise<void> {
@@ -413,6 +570,65 @@ describe("the end of an online game (pulp_wars-eqc6.3)", () => {
     );
     press("results-menu");
     await waitUntil(() => document.querySelector(".v7-main-menu") !== null);
+  });
+
+  it("names the players on the end screen and the leaderboard: You, the friend, AI 1 (pulp_wars-eqc6.4)", async () => {
+    const game = await table(1);
+    const created = createPlayableGameV7(game.match.setup ?? game.friend.setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const playing = created.state;
+    let client = finishedClient(playing, 0);
+    await boot(game, {
+      createOnlineMatchController: (handoff) => {
+        handoff.client.stop();
+        return new OnlineMatchControllerV7({ client });
+      },
+    });
+    // In play: the leaderboard names each seat as the lobby does, each row
+    // with its faction's emblem.
+    press("compact-menu");
+    press("leaderboard");
+    const rows = [...document.querySelectorAll(".v7-leaderboard-row")];
+    expect(
+      rows
+        .map((row) => row.querySelector(".v7-leaderboard-player")?.textContent)
+        .sort(),
+    ).toEqual(["AI 1", "Bo", "You"]);
+    for (const row of rows)
+      expect(row.querySelector(".v7-faction-emblem")).not.toBeNull();
+    // The turn strip's chips say the same names to a screen reader.
+    expect(
+      [...document.querySelectorAll(".v7-turn-chip .v7-sr-only")].map((node) =>
+        node.textContent?.replace(/, .*$/, ""),
+      ),
+    ).toEqual(expect.arrayContaining(["You", "Bo", "AI 1"]));
+    // The end screen: Bo won; the results list keeps the emblems.
+    client = finishedClient(
+      { ...playing, outcome: { kind: "VICTORY", winnerId: 2 as never } },
+      0,
+    );
+    await boot(game, {
+      createOnlineMatchController: (handoff) => {
+        handoff.client.stop();
+        return new OnlineMatchControllerV7({ client });
+      },
+    });
+    await waitUntil(() => region("results") !== null);
+    const seats = [...document.querySelectorAll(".v7-result-seat")];
+    expect(
+      seats
+        .map((row) => row.querySelector(".v7-result-seat-name")?.textContent)
+        .sort(),
+    ).toEqual(["AI 1", "Bo", "You"]);
+    for (const row of seats)
+      expect(row.querySelector(".v7-faction-emblem")).not.toBeNull();
+    const winner = document.querySelector(
+      '.v7-result-seat[data-winner="true"] .v7-result-seat-name',
+    );
+    expect(winner?.textContent).toBe("Bo");
+    expect(region("online-result")?.textContent).toBe(
+      "Bo won the online game.",
+    );
   });
 
   it("puts an eliminated player in a watching state with a way to leave", async () => {

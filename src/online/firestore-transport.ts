@@ -7,6 +7,7 @@ import { FirebaseAnonymousAuthV7, type FetchV7 } from "./firebase-auth";
 import {
   abandonMatchRecordV7,
   createMatchRecordV7,
+  forfeitMatchRecordV7,
   joinMatchRecordV7,
   patchLobbyRecordV7,
   startMatchRecordV7,
@@ -112,6 +113,13 @@ export function matchFieldsV7(
     },
     moveCount: integer(record.moveCount),
     turnSeat: integer(record.turnSeat),
+    // A forfeit's two fields exist only once written (pulp_wars-eqc6.5).
+    ...(record.forfeitSeat === undefined
+      ? {}
+      : { forfeitSeat: integer(record.forfeitSeat) }),
+    ...(record.forfeitUid === undefined
+      ? {}
+      : { forfeitUid: text(record.forfeitUid) }),
   };
 }
 
@@ -192,7 +200,13 @@ export function matchRecordFromDocumentV7(
     !ONLINE_MATCH_STATUSES_V7.includes(status as OnlineMatchStatusV7)
   )
     return null;
-  return record as OnlineMatchRecordV7;
+  // A forfeit (pulp_wars-eqc6.5): both fields or neither.
+  if (!("forfeitSeat" in fields) && !("forfeitUid" in fields))
+    return record as OnlineMatchRecordV7;
+  const forfeitSeat = fieldInteger(fields, "forfeitSeat");
+  const forfeitUid = fieldString(fields, "forfeitUid");
+  if (forfeitSeat === null || forfeitUid === null) return null;
+  return { ...(record as OnlineMatchRecordV7), forfeitSeat, forfeitUid };
 }
 
 /** A move document as a record, or null when a field is missing. */
@@ -569,6 +583,10 @@ export function createFirestoreOnlineTransportV7(
     abandonMatch: (code) =>
       changeMatch(code, (uid, before, now) =>
         abandonMatchRecordV7(uid, before, now),
+      ),
+    forfeitMatch: (code) =>
+      changeMatch(code, (uid, before, now) =>
+        forfeitMatchRecordV7(uid, before, now),
       ),
     async appendMove(code, move) {
       const session = await auth.session();

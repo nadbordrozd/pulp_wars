@@ -356,6 +356,104 @@ describe("the online match controller (pulp_wars-eqc6.3)", () => {
     expect(await waiting).toMatchObject({ ok: false, cancelled: true });
   });
 
+  it("forfeits on my turn: Defeat for me, Victory for the friend, at once (pulp_wars-eqc6.5)", async () => {
+    const table = await startedTable(1);
+    // Stubbed AI seat: it only ends its turn.
+    const endTurn = (): OnlineAiWorkV7 => ({
+      runSlice: () => ({ kind: "END_TURN" }),
+    });
+    const { first, second } = await sides(table, {
+      host: endTurn,
+      guest: endTurn,
+    });
+    expect(snap(first.controller).online).toMatchObject({
+      canForfeit: true,
+      forfeitWinner: second.name,
+      forfeit: null,
+    });
+    const waiting = second.controller.progressAiTurns();
+    expect(await first.controller.forfeit()).toBe(true);
+    const mine = snap(first.controller);
+    expect(mine.phase).toBe("COMPLETE");
+    expect(mine.offeredCommands).toEqual([]);
+    expect(mine.view?.outcome).toEqual({
+      kind: "VICTORY",
+      winnerId: second.playerId,
+    });
+    expect(mine.online).toMatchObject({
+      status: "FINISHED",
+      canForfeit: false,
+      forfeit: {
+        byMe: true,
+        by: first.name,
+        winner: second.name,
+        winnerIsMe: false,
+      },
+    });
+    await settle(first.client, second.client);
+    const theirs = snap(second.controller);
+    expect(theirs.phase).toBe("COMPLETE");
+    expect(theirs.view?.outcome).toEqual({
+      kind: "VICTORY",
+      winnerId: second.playerId,
+    });
+    expect(theirs.online.forfeit).toMatchObject({
+      byMe: false,
+      by: first.name,
+      winnerIsMe: true,
+    });
+    expect(theirs.ai.active).toBe(false);
+    expect(await waiting).toMatchObject({ ok: true });
+    // Recorded in the match: FINISHED with the forfeiting seat and uid.
+    expect(table.server.match(table.match.code)).toMatchObject({
+      status: "FINISHED",
+      forfeitSeat: first.playerId - 1,
+      forfeitUid: first.playerId === 1 ? "host-uid" : "guest-uid",
+    });
+    // Nothing more can be played on either side.
+    expect(
+      (await second.controller.dispatch({ kind: "END_TURN" })).accepted,
+    ).toBe(false);
+    expect(await second.controller.forfeit()).toBe(false);
+  });
+
+  it("forfeits off-turn too, and a reload shows the same end (pulp_wars-eqc6.5)", async () => {
+    const table = await startedTable();
+    const { first, second } = await sides(table);
+    // The second player, whose turn it is not, gives up.
+    expect(snap(second.controller).online.turn?.mine).toBe(false);
+    expect(snap(second.controller).online.canForfeit).toBe(true);
+    expect(await second.controller.forfeit()).toBe(true);
+    await settle(first.client, second.client);
+    expect(snap(first.controller).online.forfeit).toMatchObject({
+      byMe: false,
+      by: second.name,
+      winner: first.name,
+      winnerIsMe: true,
+    });
+    expect(snap(first.controller).offeredCommands).toEqual([]);
+    // Both tabs reload: the stored match says the same.
+    for (const side of [first, second]) {
+      side.controller.destroy();
+      const reloaded = await client(
+        side.playerId === 1 ? table.host : table.guest,
+        table.match.code,
+        side.playerId === 1 ? "host-uid" : "guest-uid",
+      );
+      expect(reloaded.forfeitedBy).toEqual({
+        seat: second.playerId - 1,
+        uid: second.playerId === 1 ? "host-uid" : "guest-uid",
+      });
+      const again = snap(controllerOf(reloaded).controller);
+      expect(again.phase).toBe("COMPLETE");
+      expect(again.view?.outcome).toEqual({
+        kind: "VICTORY",
+        winnerId: first.playerId,
+      });
+      expect(again.online.forfeit?.byMe).toBe(side === second);
+    }
+  });
+
   it("refuses the single-player lifecycle (no restart, no autosave)", async () => {
     const { first } = await sides(await startedTable());
     expect((await first.controller.restart()).ok).toBe(false);

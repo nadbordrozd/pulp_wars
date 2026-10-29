@@ -280,6 +280,7 @@ import { downloadJsonFile } from "../../app/browser-download";
 import {
   joinCodeFromSearchV7,
   OnlineLobbySessionV7,
+  OnlineMatchHistoryV7,
   type OnlineMatchHandoffV7,
   type OnlineTransportV7,
 } from "../../online/index";
@@ -1905,6 +1906,10 @@ export class Ruleset7DomAppView {
   #playbackMover: number | null = null;
   /** The "Leave online game?" question is up. */
   #onlineLeaveConfirm = false;
+  /** The "Forfeit?" question is up (`pulp_wars-eqc6.5`). */
+  #onlineForfeitConfirm = false;
+  /** A forfeit is on its way to the store. */
+  #onlineForfeiting = false;
   /** The "You're out" dialog was answered (Keep watching). */
   #onlineOutSeen = false;
   /** A leave is being sent. */
@@ -2360,6 +2365,8 @@ export class Ruleset7DomAppView {
   readonly #publicBoard: GameLeaderboardV7;
   /** Online play (bead pulp_wars-eqc6.2): the lobby, while a transport is. */
   readonly #online: OnlineLobbySessionV7 | null;
+  /** The online track record on this device (`pulp_wars-eqc6.6`). */
+  readonly #onlineHistory: OnlineMatchHistoryV7 | null;
   #onlineView: OnlineLobbyViewV7 | null = null;
   readonly #onOnlineMatchStarted:
     ((handoff: OnlineMatchHandoffV7) => void) | undefined;
@@ -2398,6 +2405,7 @@ export class Ruleset7DomAppView {
             ? {}
             : { aiProgressScheduler: options.aiProgressScheduler }),
           onSubscriberFailure: reportPresentationFailureV7,
+          history: this.#onlineHistory,
         }));
     this.#boardHost = options.boardHost ?? new CanvasBoardHostV7(documentRoot);
     this.#downloadSafeLog =
@@ -2426,6 +2434,10 @@ export class Ruleset7DomAppView {
     this.#analytics = options.analytics ?? NO_ANALYTICS_V7;
     this.#publicBoard = options.leaderboard ?? NO_LEADERBOARD_V7;
     this.#onOnlineMatchStarted = options.onOnlineMatchStarted;
+    this.#onlineHistory =
+      options.online === undefined || options.online === null
+        ? null
+        : new OnlineMatchHistoryV7(this.#settingsStorage, options.online.kind);
     this.#online =
       options.online === undefined || options.online === null
         ? null
@@ -2433,6 +2445,7 @@ export class Ruleset7DomAppView {
             transport: options.online,
             storage: this.#settingsStorage,
             location: browserAddressV7(documentRoot),
+            history: this.#onlineHistory,
           });
     this.#audio =
       options.audio ??
@@ -2784,6 +2797,7 @@ export class Ruleset7DomAppView {
     else if (this.#screen !== "MATCH") this.#closeOverlay();
     else if (this.#retryConfirm) this.#closeRetryConfirm();
     else if (this.#onlineLeaveConfirm) this.#closeOnlineLeaveConfirm();
+    else if (this.#onlineForfeitConfirm) this.#closeOnlineForfeitConfirm();
     else return false;
     return true;
   }
@@ -2834,6 +2848,10 @@ export class Ruleset7DomAppView {
           // Leave online game: Escape answers with Stay.
           event.preventDefault();
           this.#closeOnlineLeaveConfirm();
+        } else if (this.#onlineForfeitConfirm) {
+          // Forfeit: Escape answers with Keep playing.
+          event.preventDefault();
+          this.#closeOnlineForfeitConfirm();
         } else if (this.#endTurnConfirm) {
           // The Cultists: Escape answers the End Turn question with Back.
           event.preventDefault();
@@ -3605,6 +3623,8 @@ export class Ruleset7DomAppView {
     this.#releaseVictoryHold(false);
     this.#onlineMatch = online;
     this.#onlineLeaveConfirm = false;
+    this.#onlineForfeitConfirm = false;
+    this.#onlineForfeiting = false;
     this.#onlineOutSeen = false;
     this.#onlineLeaving = false;
     this.#onlineNoticeId = 0;
@@ -3703,13 +3723,26 @@ export class Ruleset7DomAppView {
     }
     if (online.status === "FINISHED" || online.status === "ABANDONED")
       this.#forgetOnline();
+    // A forfeit seen live (`pulp_wars-eqc6.5`) has no move to sound it:
+    // the winner hears the victory tune, everyone else the defeat tune.
+    if (
+      before !== undefined &&
+      before.forfeit === null &&
+      online.forfeit !== null
+    ) {
+      this.#onlineForfeitConfirm = false;
+      this.#audio.play(
+        online.forfeit.winnerIsMe ? "match.victory" : "match.defeat",
+      );
+    }
     this.#syncOnlineTitle(online);
     return (
       before === undefined ||
       before.status !== online.status ||
       before.reconnecting !== online.reconnecting ||
       before.turn?.seat !== online.turn?.seat ||
-      before.leftBy !== online.leftBy
+      before.leftBy !== online.leftBy ||
+      before.forfeit !== online.forfeit
     );
   }
 
@@ -3804,6 +3837,7 @@ export class Ruleset7DomAppView {
     this.#releaseVictoryHold(false);
     this.#onlineMatch = null;
     this.#onlineLeaveConfirm = false;
+    this.#onlineForfeitConfirm = false;
     this.#endYourTurnCue(false);
     this.#restoreTitle();
     online.destroy();
@@ -3839,6 +3873,40 @@ export class Ruleset7DomAppView {
   #closeOnlineLeaveConfirm(): void {
     this.#onlineLeaveConfirm = false;
     this.#pendingFocusAction = "compact-menu";
+    this.#render();
+  }
+
+  /** The match menu's Forfeit (`pulp_wars-eqc6.5`): asks first. */
+  #openOnlineForfeitConfirm(): void {
+    this.#compactMenuOpen = false;
+    this.#modalReturnAction = null;
+    this.#screen = "MATCH";
+    this.#onlineForfeitConfirm = true;
+    this.#pendingFocusAction = "online-forfeit-cancel";
+    this.#render();
+  }
+
+  #closeOnlineForfeitConfirm(): void {
+    this.#onlineForfeitConfirm = false;
+    this.#pendingFocusAction = "compact-menu";
+    this.#render();
+  }
+
+  /**
+   * Forfeits the online game (`pulp_wars-eqc6.5`): it ends at once for
+   * everyone; this screen stays and shows the Defeat (Play again, Main
+   * menu). A failure says so and keeps playing.
+   */
+  async #forfeitOnlineMatch(): Promise<void> {
+    const online = this.#onlineMatch;
+    if (online === null || this.#onlineForfeiting) return;
+    this.#onlineForfeiting = true;
+    this.#render();
+    const done = await online.forfeit();
+    this.#onlineForfeiting = false;
+    if (this.#destroyed || this.#onlineMatch !== online) return;
+    this.#onlineForfeitConfirm = false;
+    if (!done) this.#showToast("Couldn't forfeit. Check your connection.");
     this.#render();
   }
 
@@ -3893,6 +3961,12 @@ export class Ruleset7DomAppView {
       );
     if (this.#onlineLeaveConfirm && view.pendingChoices.length === 0)
       return this.#onlineLeaveDialog(online);
+    if (
+      this.#onlineForfeitConfirm &&
+      online.canForfeit &&
+      view.pendingChoices.length === 0
+    )
+      return this.#onlineForfeitDialog(online);
     if (
       online.status === "WATCHING" &&
       !this.#onlineOutSeen &&
@@ -4014,6 +4088,58 @@ export class Ruleset7DomAppView {
     leave.onclick = () =>
       void this.#leaveOnlineMatch("MENU", online.leaveEndsGame);
     answers.append(stay, leave);
+    modal.append(question, detail, answers);
+    return modal;
+  }
+
+  /**
+   * Forfeit? (`pulp_wars-eqc6.5`) Keep playing (safe, first and focused)
+   * and Forfeit (destructive): the match ends for everyone, the other
+   * human wins (nobody, when they are already out).
+   */
+  #onlineForfeitDialog(online: OnlineMatchSnapshotV7): HTMLElement {
+    const modal = el(
+      this.#document,
+      "section",
+      "v7-end-turn-confirm v7-online-leave-confirm",
+    );
+    modal.dataset.v7Region = "online-forfeit-confirm";
+    modal.setAttribute("role", "alertdialog");
+    modal.setAttribute("aria-modal", "true");
+    const question = text(
+      this.#document,
+      "p",
+      "Forfeit?",
+      "v7-end-turn-question",
+    );
+    question.id = "v7-online-forfeit-question";
+    const detail = text(
+      this.#document,
+      "p",
+      online.forfeitWinner === null
+        ? "The game ends. Nobody wins."
+        : `${online.forfeitWinner} wins the game.`,
+      "v7-retry-confirm-detail",
+    );
+    detail.id = "v7-online-forfeit-detail";
+    modal.setAttribute("aria-labelledby", question.id);
+    modal.setAttribute("aria-describedby", detail.id);
+    const answers = el(this.#document, "div", "button-row v7-end-turn-answers");
+    const stay = button(
+      this.#document,
+      "Keep playing",
+      "online-forfeit-cancel",
+    );
+    stay.onclick = () => this.#closeOnlineForfeitConfirm();
+    const forfeit = button(
+      this.#document,
+      this.#onlineForfeiting ? "Forfeiting…" : "Forfeit",
+      "online-forfeit",
+      "destructive",
+    );
+    forfeit.disabled = this.#onlineForfeiting;
+    forfeit.onclick = () => void this.#forfeitOnlineMatch();
+    answers.append(stay, forfeit);
     modal.append(question, detail, answers);
     return modal;
   }
@@ -7052,14 +7178,23 @@ export class Ruleset7DomAppView {
         menu.append(retry);
       }
       if (this.#snapshot.phase === "ACTIVE" && online !== null) {
-        // Online (`pulp_wars-eqc6.3`): no saving; leaving asks first.
+        // Online (`pulp_wars-eqc6.3`): no saving; leaving asks first. In
+        // the game it is Forfeit (`pulp_wars-eqc6.5`); out of it, Stop
+        // watching (or Leave, for an out host whose AI seats play on).
         const leave = button(
           this.#document,
-          online.leaveEndsGame ? "Leave online game" : "Stop watching",
-          "leave-online",
+          online.canForfeit
+            ? "Forfeit"
+            : online.leaveEndsGame
+              ? "Leave online game"
+              : "Stop watching",
+          online.canForfeit ? "forfeit-online" : "leave-online",
           "v7-menu-item v7-main-menu-action",
         );
-        leave.onclick = () => this.#openOnlineLeaveConfirm();
+        leave.onclick = () =>
+          online.canForfeit
+            ? this.#openOnlineForfeitConfirm()
+            : this.#openOnlineLeaveConfirm();
         menu.append(leave);
       } else if (this.#snapshot.phase === "ACTIVE") {
         const mainMenu = button(
@@ -12199,14 +12334,18 @@ export class Ruleset7DomAppView {
       row.dataset.status = entry.status.toLowerCase();
       if (entry.isViewer) row.dataset.viewer = "true";
       // Named by tribe, "You" for the viewer (bead pulp_wars-2yc.56): the
-      // name is the faction, so no separate faction chip.
+      // name is the faction, so no separate faction chip. Online
+      // (`pulp_wars-eqc6.4`) a row is named by its player ("Bob", "AI 1"),
+      // so the faction's emblem stands where the swatch was.
       const name = el(this.#document, "span", "v7-leaderboard-name");
       name.append(
-        el(this.#document, "span", "v7-player-swatch"),
+        this.#onlineMatch === null
+          ? el(this.#document, "span", "v7-player-swatch")
+          : this.#factionEmblem(entry.faction, "tiny"),
         text(
           this.#document,
           "span",
-          playerNameV7(view, entry.playerId),
+          this.#playerLabel(view, entry.playerId),
           "v7-leaderboard-player",
         ),
       );
@@ -13078,16 +13217,25 @@ export class Ruleset7DomAppView {
         online.names[
           (view.outcome?.kind === "VICTORY" ? view.outcome.winnerId : 0) - 1
         ];
+      // A forfeit (`pulp_wars-eqc6.5`) says who gave up.
+      const forfeit = online.forfeit;
       const line = text(
         this.#document,
         "p",
-        won
-          ? "You won the online game."
-          : view.outcome?.kind === "VICTORY" && winner !== undefined
-            ? `${winner} won the online game.`
-            : "Nobody won the online game.",
+        forfeit !== null
+          ? forfeit.byMe
+            ? forfeit.winner === null
+              ? "You forfeited."
+              : `You forfeited. ${forfeit.winner} won the online game.`
+            : `${forfeit.by} forfeited.`
+          : won
+            ? "You won the online game."
+            : view.outcome?.kind === "VICTORY" && winner !== undefined
+              ? `${winner} won the online game.`
+              : "Nobody won the online game.",
         "v7-online-result",
       );
+      if (forfeit !== null) line.dataset.forfeit = "true";
       line.dataset.v7Region = "online-result";
       result.append(line);
     }
@@ -13131,7 +13279,10 @@ export class Ruleset7DomAppView {
     const total = summary.players.find((entry) => entry.playerId === winnerId)
       ?.score.total;
     if (winner === undefined || total === undefined) return null;
-    const who = `${playerSubjectV7(view, winner.playerId)} win`;
+    const who =
+      this.#onlineMatch !== null && winner.playerId !== view.viewer.id
+        ? `${this.#playerLabel(view, winner.playerId)} wins`
+        : `${playerSubjectV7(view, winner.playerId)} win`;
     const verdict = text(
       this.#document,
       "p",
@@ -13202,6 +13353,23 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * A player as the lists name it (the leaderboard, the results, the turn
+   * strip): "You" for the viewer; in an online game (`pulp_wars-eqc6.4`)
+   * every other seat by its online name, the human's display name or "AI
+   * 1", "AI 2"..., as the lobby and the "Bob is moving…" line name them;
+   * otherwise by tribe ("Martians", bead pulp_wars-2yc.56).
+   */
+  #playerLabel(view: PlayerViewV7, playerId: number): string {
+    if (playerId !== view.viewer.id) {
+      const seat = view.players.find((player) => player.id === playerId)?.seat;
+      const name =
+        seat === undefined ? undefined : this.#onlineState()?.names[seat];
+      if (name !== undefined && name !== "") return name;
+    }
+    return playerNameV7(view, playerId);
+  }
+
+  /**
    * The end-of-game list (map scale section 10.3): every player once, as an
    * emblem with the faction's name, the winner's trophy, "Out" for players
    * who lost every city, the city count, and (score and modes, section 8)
@@ -13242,7 +13410,7 @@ export class Ruleset7DomAppView {
       const name = text(
         this.#document,
         "span",
-        playerNameV7(view, entry.playerId),
+        this.#playerLabel(view, entry.playerId),
         "v7-result-seat-name",
       );
       const cities = el(this.#document, "span", "v7-leaderboard-stat");
@@ -14384,7 +14552,7 @@ export class Ruleset7DomAppView {
       if (id === view.viewer.id) chip.dataset.viewer = "true";
       if (active) chip.setAttribute("aria-current", "true");
       chip.style.setProperty("--player", factionColourV7(player.faction));
-      const name = `${playerNameV7(view, id)}${
+      const name = `${this.#playerLabel(view, id)}${
         out ? ", out" : active ? ", playing now" : ""
       }`;
       chip.title = name;

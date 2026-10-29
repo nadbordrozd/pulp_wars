@@ -277,6 +277,38 @@ export function appendMoveRecordV7(
   });
 }
 
+/**
+ * `isForfeit` (`pulp_wars-eqc6.5`): a seated player gives up a game in
+ * play, for their own seat only, on anyone's turn: the status becomes
+ * `FINISHED` with `forfeitSeat` and `forfeitUid`, and nothing else
+ * changes.
+ */
+export function forfeitMatchRecordV7(
+  uid: string,
+  before: OnlineMatchRecordV7,
+  now: string,
+): OnlineResultV7<OnlineMatchRecordV7> {
+  if (before.status !== "ACTIVE")
+    return onlineErrorV7("NOT_ACTIVE", "The match is not being played.");
+  const seat =
+    uid === ""
+      ? null
+      : uid === before.hostUid
+        ? 0
+        : uid === before.guestUid
+          ? 1
+          : null;
+  if (seat === null)
+    return onlineErrorV7("FORBIDDEN", "Only a seated player can forfeit.");
+  return onlineOkV7({
+    ...before,
+    status: "FINISHED",
+    forfeitSeat: seat,
+    forfeitUid: uid,
+    updatedAt: now,
+  });
+}
+
 /** `isLeave`: a seated player abandons a lobby or a game in play. */
 export function abandonMatchRecordV7(
   uid: string,

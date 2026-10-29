@@ -4,9 +4,10 @@
 engine seats, the match store, three transports, the Firestore rules and the
 lockstep client; the lobby screens (`pulp_wars-eqc6.2`, section 10); the
 match itself on the match screen (`pulp_wars-eqc6.3`, section 11), from the
-lobby's hand-off to the end screen. The epic `pulp_wars-eqc6` holds the
-approved design. Before the first real game the user does the two console
-steps of section 1.
+lobby's hand-off to the end screen; forfeiting (`pulp_wars-eqc6.5`, section
+11.3); the track record (`pulp_wars-eqc6.6`, section 12). The epic
+`pulp_wars-eqc6` holds the approved design. Before the first real game the
+user does the two console steps of section 1.
 
 Two people play one skirmish, plus optional AI seats, from two browsers.
 Nothing runs on a server: a match is its setup plus an ordered log of
@@ -31,6 +32,9 @@ logins). Before online play works on the deployed site, in the
    the editor, paste the whole of
    [`firebase/firestore.rules`](../firebase/firestore.rules) in its place
    and press Publish. The leaderboard rules in it are unchanged.
+   **Paste them again after `pulp_wars-eqc6.5`** (2026-10-29): it added
+   the forfeit rule (`isForfeit`); until the new rules are published, a
+   Forfeit on the deployed site is refused ("Couldn't forfeit").
 
 No index is needed: moves are read by document name (`batchGet`), never by
 query. Nothing else is set up: the site's existing web config (the
@@ -109,10 +113,13 @@ against a real store).
 | `moveCount`                                        | moves in the log, the next move's index                                                                      |
 | `turnSeat`                                         | the seat whose driver may append the next move                                                               |
 | `createdAt`, `updatedAt`                           | the server's time (`REQUEST_TIME`)                                                                           |
+| `forfeitSeat`, `forfeitUid`                        | only after a forfeit (`pulp_wars-eqc6.5`): the seat (0 or 1) that gave up and its uid; the status `FINISHED` |
 
 `parseOnlineMatchV7(record)` gives the typed `OnlineMatchV7`: `seats`
 (`[host, guest]`, each `{ seat, uid, name, pick, ready }`), `options`,
-`setup` (validated, `humanSeats` exactly `[0, 1]`), `compatible`.
+`setup` (validated, `humanSeats` exactly `[0, 1]`), `compatible`, and
+`forfeit` (`{ seat, uid }` of a forfeited match whose uid is that seat's,
+else null).
 
 ### 4.2 The moves, `matches/{CODE}/moves/{index}`
 
@@ -156,6 +163,11 @@ before writing. In short:
   match's `moveCount` becomes one more (`getAfter` / `existsAfter`).
 - **Leave:** a seated player sets `ABANDONED` on a lobby or a game in
   play.
+- **Forfeit** (`isForfeit`, `pulp_wars-eqc6.5`): a seated player, on
+  anyone's turn, sets a game in play (`ACTIVE` only) to `FINISHED` and adds
+  `forfeitSeat` and `forfeitUid` for their own seat (0 with the host's uid,
+  1 with the guest's); nothing else changes. A forfeited match takes no
+  more moves (they need `ACTIVE`).
 - No deletes from browsers; moves are never changed. Size limits on every
   text field.
 
@@ -167,7 +179,7 @@ stubbed `fetch`. Expect to fix a rule or two on the first real games.
 
 `OnlineTransportV7` (`src/online/types.ts`): `signIn`, `createMatch`,
 `getMatch`, `joinMatch`, `updateLobby`, `startMatch`, `appendMove`,
-`getMoves(code, from, to)`, `abandonMatch`, and
+`getMoves(code, from, to)`, `abandonMatch`, `forfeitMatch`, and
 `watchMatch(code, listener, { intervalMs })` (returns the stop function).
 Every call returns `OnlineResultV7` (`{ ok: true, value }` or
 `{ ok: false, error: { code, message } }`); `NETWORK` is the retryable
@@ -233,8 +245,9 @@ client.stop(); // leaving the screen
     on `start`); `mine && ai` means run the AI for that seat;
     `!mine` means show "waiting for ..." (`match.seats[seat].name`, or an
     AI seat);
-  - `MATCH_FINISHED` `{ outcome }`, `MATCH_ABANDONED`, `MATCH_UPDATED`
-    `{ match }`;
+  - `MATCH_FINISHED` `{ outcome }`, `MATCH_ABANDONED`, `MATCH_FORFEITED`
+    `{ forfeit }` (also on `start` of a match that already was),
+    `MATCH_UPDATED` `{ match }`;
   - `MOVE_REJECTED` `{ index, error }` (the store refused an own move;
     the client resynchronizes);
   - `DESYNC` `{ index, reason, recovered, blame }` and `RESYNCED`;
@@ -256,6 +269,10 @@ client.stop(); // leaving the screen
   good move.
 - **Resume:** `open` replays the stored log (checking the last move's
   hash), so a reload or a later visit continues where the match is.
+- **Forfeit:** `client.forfeit()` (a seated player, any turn) and
+  `client.forfeitedBy`. An own move the store refuses because the match
+  is no longer in play (`NOT_ACTIVE`: a forfeit or a leave got there
+  first) is dropped without a `MOVE_REJECTED`, and the log is replayed.
 
 ### 7.1 For the in-match screen (`pulp_wars-eqc6.3`)
 
@@ -309,6 +326,8 @@ client.stop(); // leaving the screen
 - A match is locked to its ruleset: after a deploy that bumps the ruleset,
   matches in progress cannot be continued on the new build.
 - Nothing cleans up old matches yet (no deletes from browsers).
+- The track record (section 12) is per browser: there are no accounts, so
+  another device, another browser or cleared site data starts a new one.
 - No chat, public matchmaking, spectating UI, or notifications (v1 scope).
 - Cheating is possible (full state in each browser, and a client could log
   any command its rules allow); accepted for a friendly game.
@@ -484,15 +503,25 @@ hand-made turns, no match played to its end).
   "That move didn't reach the game. Back in step now." A recovered desync
   is silent (a toast in developer mode); one that cannot be recovered
   shows "Out of step" with **Reload** and **Leave**.
-- **Leaving:** the match menu's **Leave online game** (instead of Save &
-  quit) asks first ("The game ends for Bob too.") and abandons the match;
-  Restart match and Delete save are not offered. The other player gets
-  "Ada left the game" with **Main menu** and **Play online**.
+- **Forfeit** (`pulp_wars-eqc6.5`, section 11.3): the match menu's
+  **Forfeit** (instead of Save & quit) asks first and ends the game;
+  Restart match and Delete save are not offered.
+- **Leaving:** where there is nothing to forfeit, the menu has **Leave
+  online game**: an out host whose AI seats play on, or a tab out of step.
+  It asks first ("The game ends for Bob too.") and abandons the match. The
+  other player gets "Ada left the game" with **Main menu** and **Play
+  online**.
 - **Out:** a player whose tribe falls while the game goes on gets "You're
   out" with **Keep watching** and **Leave**; the turn line then says
   "You're out · Bob is moving…". An out guest's Leave is **Stop watching**
   (the host plays on); an out host with AI seats left ends the game by
   leaving, since the AI seats run in the host's browser.
+- **Names** (`pulp_wars-eqc6.4`): every list of players (the results,
+  the Leaderboard, the turn strip, a Perfection verdict) names the other
+  human by display name and the AI seats "AI 1", "AI 2"..., as the lobby
+  and the turn line do, with "You" for this player; each row keeps its
+  faction's emblem (on the Leaderboard it takes the colour swatch's
+  place). Single-player games still name rivals by tribe.
 - **End:** Victory to the winner, Defeat to everyone else, with "You won
   the online game." or "Bob won the online game."; the custom-game line
   (no stars) and no leaderboard form. **Play again** opens Play online
@@ -501,3 +530,78 @@ hand-made turns, no match played to its end).
   longer resumes it.
 - The victory tune plays only to the winner; the others hear the defeat
   tune.
+
+### 11.3 Forfeit (`pulp_wars-eqc6.5`)
+
+- **Where:** the match menu's **Forfeit**, at any time while this player
+  is in the game, also on the other side's turn. A knocked-out player has
+  nothing to forfeit (Stop watching, or Leave for an out host, as above);
+  the lobby's Leave (before Start) is unchanged.
+- **The question:** "Forfeit?", "Bob wins the game." (or "The game ends.
+  Nobody wins." when Bob is already out), with **Keep playing** (focused;
+  Escape) and **Forfeit**.
+- **What happens:** the match ends at once for everyone: the stored match
+  becomes `FINISHED` with `forfeitSeat` and `forfeitUid`
+  (`transport.forfeitMatch`), so both browsers, and any later reload, read
+  the same end. The AI seats stop; moves still on their way are dropped.
+  No engine command: the ruleset stays `pulp-wars-poc-7r120`, and the
+  match screen shows the end through the online controller (its view's
+  outcome is the forfeit's: a Victory for the other human, or a Defeat for
+  everyone when the other human was already out).
+- **The end screens:** the forfeiter sees Defeat, "You forfeited. Bob won
+  the online game."; the other human Victory, "Ada forfeited.", with the
+  victory wave and tune; Play again and Main menu as at any end. The code
+  is forgotten as for any finished match.
+- **Why the online layer:** a forfeit is a statement about the match, not
+  a move in the game: it happens on anyone's turn (the log only takes the
+  seat to move), and it needs no rules change or replay compatibility
+  work. The cost is that the engine's state never holds the outcome; the
+  match record does.
+
+## 12. The track record (`pulp_wars-eqc6.6`)
+
+Code: `src/online/match-history.ts` (`OnlineMatchHistoryV7`, no DOM), the
+recording in `OnlineMatchControllerV7` (option `history`), the settling and
+Resume in `OnlineLobbySessionV7` (`state.history`, `refreshHistory`,
+`resume`), and the list in `OnlineLobbyViewV7`. Tests:
+`tests/unit/online-match-history-v7.test.ts`, the "match history" part of
+`tests/integration/online-match-dom.test.ts`. The two-tab browser check
+of names, forfeit and history is
+`scripts/browser-online-match-review-v7.ts <dev-server-url> --forfeit-history`
+(at most two rounds of End turn, then a forfeit off-turn and both
+histories).
+
+- **Where it lives:** `localStorage`, `pulpWars.online.history.v1`, a JSON
+  list. There are no accounts (the anonymous uid lives in one browser), so
+  it is this device's record, and the screen says "Kept on this device.".
+  The two-tab local transport makes each tab its own player, so there each
+  uid has its own key (`pulpWars.online.history.v1.<uid>`) and two tabs
+  never write one list.
+- **An entry** (`OnlineHistoryEntryV7`), one per room code: `code`, `uid`,
+  `seat`, `startedAt` (when this browser first opened the match) and
+  `updatedAt`, `opponent` (the other human's name), `faction` and
+  `opponentFaction`, `aiSeats`, `mapType`, `width`, `gameMode`, `turns`
+  (the round reached), `result` and `score` (this player's total).
+- **Results:** `IN_PROGRESS`, `WON`, `LOST`, `WON_FORFEIT`, `LOST_FORFEIT`,
+  `ABANDONED` ("In progress", "Won", "Lost", "Won by forfeit", "Lost by
+  forfeit", "Abandoned"). A player whose tribe falls has Lost, also while
+  the others play on, and stays Lost if the match is then left or the
+  friend forfeits. A final result is never taken back to In progress.
+- **When it is written:** the match screen records the match when it opens
+  (In progress, so it can be resumed from the list) and again whenever the
+  round, the status or the result changes, from the log's game (not the
+  board's playback). An entry left In progress while the browser was away
+  is settled when Play online opens: up to five per visit are read from the
+  store (gone or left: Abandoned; forfeited: by forfeit; finished: the log
+  is replayed for the result, the turn and the score; still in play: left
+  as is).
+- **The list:** on Play online's home screen, under Join with code:
+  "Match history" with "Record: 5 W · 3 L" (wins and losses, forfeits
+  included; shown once a match has finished), then compact rows, newest
+  first: both factions' emblems, "vs Bob", "Today · Continents 14 × 14 ·
+  1 AI · Turn 12 · 1,240 pts" (the points once it is over), and a result
+  chip, or **Resume** for a match in progress (it opens the match screen
+  as the link would; a match that turns out to be over says "That game is
+  over." and its row is settled). Five rows, then "Show all N". At most
+  100 matches are kept (the newest); anything malformed in storage is
+  dropped without a word.

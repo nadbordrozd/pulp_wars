@@ -16,3 +16,4 @@ export * from "./lockstep";
 export * from "./lobby";
 export * from "./browser";
 export * from "./lobby-session";
+export * from "./match-history";

@@ -16,16 +16,22 @@ import process from "node:process";
  *    then each ends turns for at most three rounds. Captured: my turn, the
  *    "is moving…" line on the other side (desktop and phone).
  * 2. The guest's tab reloads mid-game and resumes.
- * 3. The host leaves (Leave online game): the guest sees "Ada left the
- *    game".
+ * 3. The host forfeits (Forfeit, `pulp_wars-eqc6.5`): the guest sees
+ *    Victory, "Ada forfeited.".
  * 4. Two humans and one AI seat: the humans end their turns and the
  *    host's tab plays the AI seat (at most two AI turns); the guest sees
- *    "AI 1 is moving…" and the AI's moves played back. The host leaves.
+ *    "AI 1 is moving…" and the AI's moves played back. The host forfeits.
  * 5. The end screen, Victory and Defeat, of a hand-built finished game
  *    (`openOnlineMatchForReview`; no match is played to its end).
  *
+ * `--forfeit-history` (beads pulp_wars-eqc6.4 to eqc6.6) runs only this,
+ * instead: two humans, at most two rounds of End turn; the Leaderboard
+ * with the players' names; the side whose turn it is not forfeits (the
+ * question, then Defeat on its side and Victory on the other); then both
+ * tabs open Play online's Match history.
+ *
  * Usage: tsx scripts/browser-online-match-review-v7.ts http://localhost:6173/
- *   [--output-dir=<dir>]
+ *   [--output-dir=<dir>] [--forfeit-history]
  * `CHROME_PATH` names the browser (the macOS Chrome by default).
  */
 
@@ -112,6 +118,21 @@ try {
   await reload(host);
   await setSize(host, DESKTOP);
 
+  if (args.includes("--forfeit-history")) {
+    await forfeitAndHistory(host);
+    const summary = { shots, notes, errors };
+    await writeFile(
+      path.join(outputDirectory, "summary.json"),
+      `${JSON.stringify(summary, null, 2)}\n`,
+    );
+    console.log(JSON.stringify(summary, null, 2));
+    // Done: close Chrome here, since nothing after this runs.
+    browser.kill();
+    await delay(300);
+    await rm(userData, { recursive: true, force: true }).catch(() => undefined);
+    process.exit(errors.length > 0 ? 1 : 0);
+  }
+
   let guest: Connection | undefined;
   if (!args.includes("--only-ai")) guest = await twoHumans(host);
 
@@ -166,14 +187,14 @@ try {
   await host.send("Emulation.setCPUThrottlingRate", { rate: 1 });
   notes.push(`AI turns seen on the guest: ${aiTurns}`);
   notes.push(`guest lines: ${[...lines].join(" / ")}`);
-  await leave(host);
+  await forfeit(host);
   await front(guest);
   await waitFor(
     guest,
-    `!!document.querySelector('[data-v7-region="online-left"]')`,
+    `!!document.querySelector('[data-v7-region="online-result"][data-forfeit="true"]')`,
     200,
   );
-  await click(guest, "online-left-menu");
+  await click(guest, "results-menu");
 
   // 5. The end screen of a hand-built finished game.
   await front(host);
@@ -260,22 +281,123 @@ async function twoHumans(host: Connection): Promise<Connection> {
   await capture(guest, "09-guest-resumed-after-reload-phone");
   await setSize(guest, DESKTOP);
 
-  // 3. The host leaves; the guest is told.
-  await leave(host);
+  // 3. The host forfeits; the guest wins.
+  await forfeit(host);
   await front(guest);
   await waitFor(
     guest,
-    `!!document.querySelector('[data-v7-region="online-left"]')`,
+    `!!document.querySelector('[data-v7-region="online-result"][data-forfeit="true"]')`,
     200,
   );
-  await capture(guest, "10-opponent-left-desktop");
+  await capture(guest, "10-opponent-forfeited-desktop");
   await setSize(guest, PHONE);
-  await capture(guest, "11-opponent-left-phone");
+  await capture(guest, "11-opponent-forfeited-phone");
   await setSize(guest, DESKTOP);
-  await click(guest, "online-left-menu");
+  await click(guest, "results-menu");
   await waitFor(guest, `!!document.querySelector('.v7-main-menu')`);
 
   return guest;
+}
+
+/**
+ * `--forfeit-history`: names, a forfeit off-turn, both end screens, both
+ * match histories. At most two rounds of End turn are played.
+ */
+async function forfeitAndHistory(host: Connection): Promise<void> {
+  const { guest } = await hostAndJoin(host, 0);
+  // Two rounds at most: each side ends its turn twice.
+  for (let turn = 0; turn < 3; turn += 1) {
+    const tab = (await isMyTurn(host)) ? host : guest;
+    const waiting = tab === host ? guest : host;
+    await front(tab);
+    await click(tab, "end-turn");
+    await front(waiting);
+    await waitFor(waiting, MY_TURN, 200);
+    notes.push(
+      `turn ${turn + 1}: ${tab === host ? "host" : "guest"} ended; now ${(await evaluate(waiting, STATUS)) as string}`,
+    );
+  }
+  const mover = (await isMyTurn(host)) ? host : guest;
+  const other = mover === host ? guest : host;
+  notes.push(`to move: ${mover === host ? "host (Ada)" : "guest (Bob)"}`);
+  // The players' lists name the people (pulp_wars-eqc6.4).
+  await front(mover);
+  await click(mover, "compact-menu");
+  await click(mover, "leaderboard");
+  await capture(mover, "20-leaderboard-names-desktop");
+  await setSize(mover, PHONE);
+  await capture(mover, "21-leaderboard-names-phone");
+  await setSize(mover, DESKTOP);
+  notes.push(
+    `leaderboard: ${(await evaluate(mover, `[...document.querySelectorAll('.v7-leaderboard-player')].map((node) => node.textContent).join(', ')`)) as string}`,
+  );
+  await evaluate(
+    mover,
+    `document.querySelector('[data-action="close-overlay"]')?.click()`,
+  );
+  await delay(300);
+  // The side whose turn it is not forfeits (pulp_wars-eqc6.5).
+  await front(other);
+  await waitFor(other, `(${STATUS}).endsWith('is moving…')`, 100);
+  await click(other, "compact-menu");
+  await capture(other, "22-menu-forfeit-desktop");
+  await click(other, "forfeit-online");
+  await capture(other, "23-forfeit-question-desktop");
+  await setSize(other, PHONE);
+  await capture(other, "24-forfeit-question-phone");
+  await setSize(other, DESKTOP);
+  await click(other, "online-forfeit");
+  await waitFor(
+    other,
+    `!!document.querySelector('[data-v7-region="results"]')`,
+    200,
+  );
+  await capture(other, "25-forfeiter-defeat-desktop");
+  await setSize(other, PHONE);
+  await capture(other, "26-forfeiter-defeat-phone");
+  await setSize(other, DESKTOP);
+  await front(mover);
+  await waitFor(
+    mover,
+    `!!document.querySelector('[data-v7-region="results"]')`,
+    200,
+  );
+  await delay(1500);
+  await capture(mover, "27-winner-victory-desktop");
+  await setSize(mover, PHONE);
+  await capture(mover, "28-winner-victory-phone");
+  await setSize(mover, DESKTOP);
+  for (const [tab, name] of [
+    [other, "forfeiter"],
+    [mover, "winner"],
+  ] as const)
+    notes.push(
+      `${name}: ${(await evaluate(tab, `document.querySelector('[data-v7-region="results"] h2')?.textContent + ' / ' + document.querySelector('[data-v7-region="online-result"]')?.textContent`)) as string}`,
+    );
+  // Both tabs: the menu, then Play online's Match history (eqc6.6).
+  let index = 29;
+  for (const [tab, name] of [
+    [other, "forfeiter"],
+    [mover, "winner"],
+  ] as const) {
+    await front(tab);
+    await click(tab, "results-menu");
+    await waitFor(tab, `!!document.querySelector('.v7-main-menu')`, 200);
+    await click(tab, "play-online");
+    await waitFor(
+      tab,
+      `!!document.querySelector('[data-v7-region="online-history"] .v7-online-history-row')`,
+      200,
+    );
+    await capture(tab, `${index}-history-${name}-desktop`);
+    await setSize(tab, PHONE);
+    await capture(tab, `${index + 1}-history-${name}-phone`, true);
+    await setSize(tab, DESKTOP);
+    index += 2;
+    notes.push(
+      `${name} history: ${(await evaluate(tab, `document.querySelector('[data-v7-region="online-history"]')?.innerText.replace(/\\s+/g, ' ')`)) as string}`,
+    );
+  }
 }
 
 /** Hosts a lobby with `aiSeats`, joins it in the guest tab, starts. */
@@ -372,13 +494,19 @@ async function research(connection: Connection): Promise<void> {
   await delay(300);
 }
 
-/** Leave online game, after its question. */
-async function leave(connection: Connection): Promise<void> {
+/** Forfeit, after its question; then back to the menu from the Defeat. */
+async function forfeit(connection: Connection): Promise<void> {
   await front(connection);
   await click(connection, "compact-menu");
-  await click(connection, "leave-online");
-  await capture(connection, `leave-question-${shots.length}`);
-  await click(connection, "online-leave");
+  await click(connection, "forfeit-online");
+  await capture(connection, `forfeit-question-${shots.length}`);
+  await click(connection, "online-forfeit");
+  await waitFor(
+    connection,
+    `!!document.querySelector('[data-v7-region="results"]')`,
+    200,
+  );
+  await click(connection, "results-menu");
   await waitFor(connection, `!!document.querySelector('.v7-main-menu')`, 200);
 }
 
@@ -401,7 +529,7 @@ async function openFinished(
       const client = {
         code: 'REVEW', uid: 'review', setup: state.setup, state, mySeat: 0,
         match: { status: 'FINISHED', seats: [{ seat: 0, name: 'Ada' }, { seat: 1, name: 'Bob' }] },
-        desynced: false, pendingMoves: 0, canAct: false, aiTurn: false, activeSeat: 0,
+        desynced: false, forfeitedBy: null, pendingMoves: 0, canAct: false, aiTurn: false, activeSeat: 0,
         on: () => () => {}, start: () => {}, stop: () => {},
       };
       globalThis.__PULP_WARS_APP__.view.openOnlineMatchForReview(new OnlineMatchControllerV7({ client }));

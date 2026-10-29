@@ -320,7 +320,34 @@ export interface OnlineMatchV7 {
   readonly turnSeat: number;
   readonly createdAt: string;
   readonly updatedAt: string;
+  /**
+   * The forfeit that finished the match (`pulp_wars-eqc6.5`): the seat
+   * (0 host, 1 guest) that gave up and its uid; null otherwise.
+   */
+  readonly forfeit: OnlineForfeitV7 | null;
   readonly record: OnlineMatchRecordV7;
+}
+
+/** Who forfeited a match (`pulp_wars-eqc6.5`). */
+export interface OnlineForfeitV7 {
+  readonly seat: number;
+  readonly uid: string;
+}
+
+/** A finished record's forfeit, when it is well formed, else null. */
+export function onlineForfeitOfV7(
+  record: OnlineMatchRecordV7,
+): OnlineForfeitV7 | null {
+  const { forfeitSeat: seat, forfeitUid: uid } = record;
+  if (
+    record.status !== "FINISHED" ||
+    (seat !== HOST_SEAT_V7 && seat !== GUEST_SEAT_V7) ||
+    typeof uid !== "string" ||
+    uid === "" ||
+    uid !== (seat === HOST_SEAT_V7 ? record.hostUid : record.guestUid)
+  )
+    return null;
+  return { seat, uid };
 }
 
 export function parseOnlineMatchV7(record: OnlineMatchRecordV7): OnlineMatchV7 {
@@ -358,6 +385,7 @@ export function parseOnlineMatchV7(record: OnlineMatchRecordV7): OnlineMatchV7 {
     turnSeat: record.turnSeat,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    forfeit: onlineForfeitOfV7(record),
     record,
   };
 }

@@ -351,6 +351,62 @@ describe("the Firestore REST transport", () => {
     ).toBe(false);
   });
 
+  it("forfeits with an update mask of the status and the two forfeit fields (pulp_wars-eqc6.5)", async () => {
+    const google = fakeGoogle();
+    const host = transportFor(google);
+    const created = await host.createMatch(CREATE);
+    if (!created.ok) throw new Error(created.error.code);
+    // A game in play: uid-1 hosts, someone else is seated.
+    const name = `${DOCS}/matches/${created.value.code}`;
+    const doc = google.docs.get(name) as Doc;
+    doc.fields.status = { stringValue: "ACTIVE" };
+    doc.fields.guestUid = { stringValue: "guest-uid" };
+    doc.fields.guestName = { stringValue: "Bo" };
+    const forfeited = await host.forfeitMatch(created.value.code);
+    expect(forfeited.ok && forfeited.value).toMatchObject({
+      status: "FINISHED",
+      forfeitSeat: 0,
+      forfeitUid: "uid-1",
+    });
+    const commit = google.calls.at(-1)?.body as {
+      writes: Record<string, unknown>[];
+    };
+    expect(commit.writes).toHaveLength(1);
+    expect(commit.writes[0]).toMatchObject({
+      update: {
+        fields: {
+          status: { stringValue: "FINISHED" },
+          forfeitSeat: { integerValue: "0" },
+          forfeitUid: { stringValue: "uid-1" },
+        },
+      },
+      updateMask: { fieldPaths: ["status", "forfeitSeat", "forfeitUid"] },
+      currentDocument: { exists: true },
+      updateTransforms: [
+        { fieldPath: "updatedAt", setToServerValue: "REQUEST_TIME" },
+      ],
+    });
+    // Read back, the match carries the forfeit; a second one is refused
+    // before any write.
+    const read = await host.getMatch(created.value.code);
+    expect(read.ok && read.value).toMatchObject({
+      status: "FINISHED",
+      forfeitSeat: 0,
+      forfeitUid: "uid-1",
+    });
+    const writes = google.calls.length;
+    const again = await host.forfeitMatch(created.value.code);
+    expect(!again.ok && again.error.code).toBe("NOT_ACTIVE");
+    expect(
+      google.calls.slice(writes).some((call) => call.url.includes(":commit")),
+    ).toBe(false);
+    // Half a forfeit is a malformed document.
+    const stored = google.docs.get(name) as Doc;
+    delete stored.fields.forfeitUid;
+    const broken = await host.getMatch(created.value.code);
+    expect(broken.ok).toBe(false);
+  });
+
   it("appends a move and bumps the count in one commit; a taken index is INDEX_TAKEN", async () => {
     const google = fakeGoogle();
     const transport = transportFor(google);

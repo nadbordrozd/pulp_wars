@@ -18,6 +18,7 @@ import {
   drivenSeatsOfUidV7,
   onlineSeatOfUidV7,
   parseOnlineMatchV7,
+  type OnlineForfeitV7,
   type OnlineMatchV7,
 } from "./match";
 import {
@@ -101,6 +102,11 @@ export type LockstepEventV7 =
   | { readonly kind: "RESYNCED"; readonly moveCount: number }
   | { readonly kind: "MATCH_FINISHED"; readonly outcome: MatchOutcomeV7 }
   | { readonly kind: "MATCH_ABANDONED" }
+  /**
+   * A seated player forfeited (`pulp_wars-eqc6.5`): the match is over for
+   * everyone (once, also on `start` of a match that already was).
+   */
+  | { readonly kind: "MATCH_FORFEITED"; readonly forfeit: OnlineForfeitV7 }
   /** The stored match changed (seats, status, move count). */
   | { readonly kind: "MATCH_UPDATED"; readonly match: OnlineMatchV7 }
   /** Requests failing (`ok: false`, retrying) or working again. */
@@ -312,6 +318,7 @@ export class OnlineLockstepV7 {
   #lastTurn: string | null = null;
   #finishedSent = false;
   #abandonedSent = false;
+  #forfeitSent = false;
   #failing = false;
   #stopped = false;
 
@@ -432,6 +439,10 @@ export class OnlineLockstepV7 {
   get verified(): boolean {
     return this.#untrusted.size === 0;
   }
+  /** Who forfeited the match (`pulp_wars-eqc6.5`), else null. */
+  get forfeitedBy(): OnlineForfeitV7 | null {
+    return this.#match.forfeit;
+  }
   /** True after an unrecoverable desync (the log does not reproduce). */
   get desynced(): boolean {
     return this.#desyncedAt !== null;
@@ -468,6 +479,7 @@ export class OnlineLockstepV7 {
     this.#emitTurn(true);
     // A match that is already over says so once, to the first listeners.
     this.#finish();
+    this.#noteEnd();
     this.#stopWatch = this.#transport.watchMatch(
       this.code,
       (record, error) => {
@@ -585,6 +597,19 @@ export class OnlineLockstepV7 {
     return onlineOkV7(parseOnlineMatchV7(result.value));
   }
 
+  /**
+   * Forfeits this player's seat (`pulp_wars-eqc6.5`), on anyone's turn:
+   * the match is `FINISHED` for everyone at once, the other human the
+   * winner. Resolves once `MATCH_FORFEITED` has been told. Own moves still
+   * on their way are dropped (the store refuses them now).
+   */
+  async forfeit(): Promise<OnlineResultV7<OnlineMatchV7>> {
+    const result = await this.#transport.forfeitMatch(this.code);
+    if (!result.ok) return result;
+    await this.#enqueue(() => this.#onRecord(result.value));
+    return onlineOkV7(parseOnlineMatchV7(result.value));
+  }
+
   // -------------------------------------------------------------------
 
   #enqueue(task: () => Promise<void> | void): Promise<void> {
@@ -610,7 +635,7 @@ export class OnlineLockstepV7 {
   }
 
   #emitTurn(force = false): void {
-    if (this.#state.outcome !== null) return;
+    if (this.#state.outcome !== null || this.#match.forfeit !== null) return;
     const seat = this.activeSeat;
     const mine = this.drivenSeats.includes(seat);
     const key = `${this.#state.round}:${seat}:${mine}`;
@@ -637,15 +662,25 @@ export class OnlineLockstepV7 {
     this.#finish();
   }
 
+  /** Tells, once each, that the stored match was left or forfeited. */
+  #noteEnd(): void {
+    const match = this.#match;
+    if (match.status === "ABANDONED" && !this.#abandonedSent) {
+      this.#abandonedSent = true;
+      this.#emit({ kind: "MATCH_ABANDONED" });
+    }
+    if (match.forfeit !== null && !this.#forfeitSent) {
+      this.#forfeitSent = true;
+      this.#emit({ kind: "MATCH_FORFEITED", forfeit: match.forfeit });
+    }
+  }
+
   async #onRecord(record: OnlineMatchRecordV7): Promise<void> {
     const before = this.#match;
     const match = parseOnlineMatchV7(record);
     this.#match = match;
     if (before.record !== record) this.#emit({ kind: "MATCH_UPDATED", match });
-    if (match.status === "ABANDONED" && !this.#abandonedSent) {
-      this.#abandonedSent = true;
-      this.#emit({ kind: "MATCH_ABANDONED" });
-    }
+    this.#noteEnd();
     if (before.driverUids.join() !== match.driverUids.join()) this.#emitTurn();
     // While this client's own moves are being appended, only they can
     // change the log; a conflict shows up as a refused append.
@@ -783,6 +818,7 @@ export class OnlineLockstepV7 {
       return null;
     }
     this.#match = parseOnlineMatchV7(read.value);
+    this.#noteEnd();
     const moves = await this.#transport.getMoves(
       this.code,
       0,
@@ -841,6 +877,15 @@ export class OnlineLockstepV7 {
         // An earlier try did reach the store before its answer was lost.
         this.#outbox.shift();
         continue;
+      }
+      if (result.error.code === "NOT_ACTIVE") {
+        // The match ended meanwhile (a forfeit, or a player left): the
+        // unsent moves are dropped and the log replayed, without a word.
+        this.#outbox = [];
+        await this.#enqueue(async () => {
+          await this.#resync();
+        });
+        return;
       }
       this.#outbox = [];
       this.#emit({

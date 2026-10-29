@@ -1,8 +1,8 @@
 // Firestore security rules for the pulp-wars Firebase project: the Pulp Wars
 // public leaderboard, collection `pulpWarsScores` (beads pulp_wars-2yc.104
 // and pulp_wars-2yc.105, docs/LEADERBOARD.md), and online multiplayer,
-// collection `matches` with its `moves` (bead pulp_wars-eqc6.1,
-// docs/MULTIPLAYER.md).
+// collection `matches` with its `moves` (beads pulp_wars-eqc6.1 and
+// pulp_wars-eqc6.5, docs/MULTIPLAYER.md).
 //
 // Paste the whole file into Firebase Console > Firestore Database > Rules and
 // press Publish. Online multiplayer also needs Firebase Console >
@@ -85,17 +85,19 @@ service cloud.firestore {
       // with `exists: false`, so a taken code is never overwritten).
       allow create: if signedIn() && isNewMatch(code, request.resource.data);
 
-      // Five kinds of change, each by a named player and touching only
+      // Six kinds of change, each by a named player and touching only
       // its own fields: the guest takes the free seat; either side edits
       // its own lobby fields; the host starts; the player to move appends
-      // a move (with the move document, below); a seated player leaves.
+      // a move (with the move document, below); a seated player leaves;
+      // a seated player forfeits.
       allow update: if signedIn() &&
                        (isGuestJoin() ||
                         isHostLobbyEdit() ||
                         isGuestLobbyEdit() ||
                         isStart() ||
                         isMoveBump(code) ||
-                        isLeave());
+                        isLeave() ||
+                        isForfeit());
 
       // Nobody deletes a match from a browser (old matches are cleaned up
       // in the console, or later by a scheduled job).
@@ -119,7 +121,8 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid is string;
     }
 
-    // The fields a match has, exactly.
+    // The fields a match has, exactly, when it is created. A forfeit later
+    // adds two more, `forfeitSeat` and `forfeitUid` (isForfeit).
     function matchKeys() {
       return ['code', 'rulesetId', 'status',
               'hostUid', 'hostName', 'hostPick',
@@ -278,6 +281,23 @@ service cloud.firestore {
              changed().hasOnly(['status', 'updatedAt']) &&
              request.resource.data.status == 'ABANDONED' &&
              request.resource.data.updatedAt == request.time;
+    }
+
+    // A seated player (host or guest) forfeits a game in play
+    // (pulp_wars-eqc6.5), on anyone's turn: the status becomes FINISHED
+    // and the two forfeit fields are added, naming the writer's own seat
+    // (0 the host, 1 the guest) and uid; nothing else changes. The other
+    // human wins; both browsers read the outcome from these fields.
+    function isForfeit() {
+      let before = resource.data;
+      let after = request.resource.data;
+      return before.status == 'ACTIVE' &&
+             changed().hasOnly(['status', 'forfeitSeat', 'forfeitUid', 'updatedAt']) &&
+             after.status == 'FINISHED' &&
+             after.forfeitUid == request.auth.uid &&
+             ((after.forfeitSeat == 0 && before.hostUid == request.auth.uid) ||
+              (after.forfeitSeat == 1 && before.guestUid == request.auth.uid)) &&
+             after.updatedAt == request.time;
     }
 
     // The move half of a move commit: the document ID is the match's

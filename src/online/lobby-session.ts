@@ -19,6 +19,11 @@ import {
 } from "./lobby";
 import { OnlineLockstepV7, type OnlineLockstepOptionsV7 } from "./lockstep";
 import {
+  onlineHistoryEntryV7,
+  type OnlineHistoryEntryV7,
+  type OnlineMatchHistoryV7,
+} from "./match-history";
+import {
   defaultOnlineOptionsV7,
   factionPickValidV7,
   onlineBoardSizeV7,
@@ -136,6 +141,11 @@ export interface OnlineLobbyStateV7 {
   /** Requests are failing (the watch could not read the match). */
   readonly offline: boolean;
   readonly handoff: OnlineMatchHandoffV7 | null;
+  /**
+   * This player's online matches on this device, newest first
+   * (`pulp_wars-eqc6.6`); empty without a track record.
+   */
+  readonly history: readonly OnlineHistoryEntryV7[];
 }
 
 /** The page's address, read and replaced (the browser's `history`). */
@@ -156,7 +166,14 @@ export interface OnlineLobbySessionOptionsV7 {
   >;
   /** The watch's poll interval on stores that poll (Firestore). */
   readonly pollMs?: () => number;
+  /** This player's track record (`pulp_wars-eqc6.6`). */
+  readonly history?: OnlineMatchHistoryV7 | null;
+  /** ISO time of a record; the clock by default. */
+  readonly now?: () => string;
 }
+
+/** The most In progress entries settled from the store per visit. */
+export const ONLINE_HISTORY_SETTLE_MAX_V7 = 5;
 
 /** The player-facing line of each failure. */
 export function onlineLobbyErrorTextV7(code: OnlineErrorCodeV7): string {
@@ -249,7 +266,11 @@ export class OnlineLobbySessionV7 {
   readonly #random: (() => number) | undefined;
   readonly #lockstep: OnlineLobbySessionOptionsV7["lockstep"];
   readonly #pollMs: (() => number) | undefined;
+  readonly #history: OnlineMatchHistoryV7 | null;
+  readonly #now: () => string;
   readonly #listeners = new Set<(state: OnlineLobbyStateV7) => void>();
+  /** Codes whose In progress entry was already checked against the store. */
+  readonly #settled = new Set<string>();
   #state: OnlineLobbyStateV7;
   #uid: string | null = null;
   #stopWatch: (() => void) | null = null;
@@ -266,6 +287,8 @@ export class OnlineLobbySessionV7 {
     this.#random = options.random;
     this.#lockstep = options.lockstep;
     this.#pollMs = options.pollMs;
+    this.#history = options.history ?? null;
+    this.#now = options.now ?? (() => new Date().toISOString());
     const name = this.#read(ONLINE_NAME_STORAGE_KEY_V7) ?? "";
     const fallback = this.#read(LEADERBOARD_NAME_STORAGE_KEY_V7) ?? "";
     const saved = [name, fallback]
@@ -284,6 +307,7 @@ export class OnlineLobbySessionV7 {
       shareLink: null,
       offline: false,
       handoff: null,
+      history: this.#readHistory(),
     };
   }
 
@@ -312,6 +336,7 @@ export class OnlineLobbySessionV7 {
    */
   async enter(): Promise<void> {
     if (this.#state.screen !== "HOME" || this.#state.busy !== null) return;
+    this.refreshHistory(true);
     let fromAddress: string | null;
     try {
       fromAddress =
@@ -615,6 +640,7 @@ export class OnlineLobbySessionV7 {
       handoff: null,
       options: this.#storedOptions(),
       pick: storedPick(this.#read(ONLINE_PICK_STORAGE_KEY_V7)),
+      history: this.#readHistory(),
     });
   }
 
@@ -624,7 +650,143 @@ export class OnlineLobbySessionV7 {
     this.#listeners.clear();
   }
 
+  /**
+   * Reads the track record again (`pulp_wars-eqc6.6`). `settle`: In
+   * progress matches this browser is not in now are checked against the
+   * store (a few per visit), so one that ended while the browser was away
+   * (a forfeit, a leave, the game's end) shows its result. The local
+   * transport keeps a list per tab, so it signs in first to know whose.
+   */
+  refreshHistory(settle = false): void {
+    if (this.#history === null || this.#destroyed) return;
+    if (this.#uid === null && this.#transport.kind !== "FIRESTORE") {
+      void this.#transport.signIn().then((identity) => {
+        if (!identity.ok || this.#destroyed) return;
+        this.#uid ??= identity.value.uid;
+        this.refreshHistory(settle);
+      });
+      return;
+    }
+    this.#set({ history: this.#readHistory() });
+    if (settle) void this.#settleHistory();
+  }
+
+  /**
+   * Resume from the match history: opens the match like its link would
+   * (the match screen, when it is still being played); one that is over
+   * says so, and its entry is settled.
+   */
+  async resume(code: string): Promise<void> {
+    if (this.#state.busy !== null) return;
+    if (this.#state.screen !== "HOME" && this.#state.screen !== "PREVIEW")
+      return;
+    await this.openLink(code);
+    if (this.#state.screen === "HOME") {
+      this.#settled.delete(code);
+      await this.#settleHistory([code]);
+    }
+  }
+
   // -------------------------------------------------------------------
+
+  #readHistory(): readonly OnlineHistoryEntryV7[] {
+    return (
+      this.#history?.entries(
+        this.#transport.kind === "FIRESTORE" ? null : this.#uid,
+      ) ?? []
+    );
+  }
+
+  /**
+   * Settles In progress entries from the store: a match that is over (or
+   * gone) gets its result; one still in play stays In progress. The open
+   * match (lobby or hand-off) is the match screen's to record.
+   */
+  async #settleHistory(codes?: readonly string[]): Promise<void> {
+    const history = this.#history;
+    if (history === null) return;
+    // Nothing In progress: no sign-in (on Firestore it may make an account).
+    if (!this.#readHistory().some((entry) => entry.result === "IN_PROGRESS"))
+      return;
+    const uid = await this.#signInQuietly();
+    if (uid === null) return;
+    const open = this.#state.code;
+    const due = history
+      .entries(this.#transport.kind === "FIRESTORE" ? null : uid)
+      .filter(
+        (entry) =>
+          entry.result === "IN_PROGRESS" &&
+          entry.uid === uid &&
+          entry.code !== open &&
+          (codes === undefined
+            ? !this.#settled.has(entry.code)
+            : codes.includes(entry.code)),
+      )
+      .slice(0, ONLINE_HISTORY_SETTLE_MAX_V7);
+    let changed = false;
+    for (const entry of due) {
+      this.#settled.add(entry.code);
+      const read = await this.#transport.getMatch(entry.code);
+      if (this.#destroyed) return;
+      if (!read.ok) continue;
+      if (read.value === null) {
+        history.record({
+          ...entry,
+          result: "ABANDONED",
+          updatedAt: this.#now(),
+        });
+        changed = true;
+        continue;
+      }
+      const match = parseOnlineMatchV7(read.value);
+      if (match.status === "ABANDONED") {
+        history.record({
+          ...entry,
+          result: "ABANDONED",
+          updatedAt: this.#now(),
+        });
+        changed = true;
+        continue;
+      }
+      if (match.status !== "FINISHED" || !match.compatible) continue;
+      // Over: the log says how it ended (and the turn and score).
+      const opened = await OnlineLockstepV7.open({
+        ...(this.#lockstep ?? {}),
+        transport: this.#transport,
+        code: entry.code,
+        uid,
+      });
+      if (this.#destroyed) return;
+      if (!opened.ok) continue;
+      const client = opened.value;
+      const seat = client.mySeat;
+      if (seat === null) continue;
+      history.record(
+        onlineHistoryEntryV7({
+          code: entry.code,
+          uid,
+          mySeat: seat,
+          opponent: entry.opponent,
+          state: client.state,
+          setup: client.setup,
+          status: match.status,
+          forfeit: match.forfeit,
+          now: this.#now(),
+        }),
+      );
+      changed = true;
+    }
+    if (changed) this.#set({ history: this.#readHistory() });
+  }
+
+  /** This browser's uid, signing in without a word on failure. */
+  async #signInQuietly(): Promise<string | null> {
+    if (this.#uid !== null) return this.#uid;
+    const identity = await this.#transport.signIn();
+    if (!identity.ok) return null;
+    this.#uid ??= identity.value.uid;
+    return this.#uid;
+  }
 
   /** The guest's pick for joining: Random when the host already has it. */
   #guestPickFor(match: OnlineMatchV7 | null): FactionPickV7 {
@@ -860,6 +1022,7 @@ export class OnlineLobbySessionV7 {
       offline: false,
       options: this.#storedOptions(),
       pick: storedPick(this.#read(ONLINE_PICK_STORAGE_KEY_V7)),
+      history: this.#readHistory(),
     });
   }
 

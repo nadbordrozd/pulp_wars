@@ -16,8 +16,10 @@ import {
   resolveOnlineFactionsV7,
 } from "../../src/online/match";
 import {
+  abandonMatchRecordV7,
   appendMoveRecordV7,
   createMatchRecordV7,
+  forfeitMatchRecordV7,
   joinMatchRecordV7,
   patchLobbyRecordV7,
   startMatchRecordV7,
@@ -394,6 +396,77 @@ describe("the match rules (mirror of firebase/firestore.rules)", () => {
     );
     expect(finished.ok && finished.value.match.status).toBe("FINISHED");
   });
+
+  it("lets a seated player forfeit a game in play, for their own seat only (pulp_wars-eqc6.5)", () => {
+    const active: OnlineMatchRecordV7 = {
+      ...lobby(),
+      status: "ACTIVE",
+      guestUid: "guest-uid",
+      guestName: "Bo",
+      setupJson: "{}",
+      driverUids: ["host-uid", "guest-uid", "host-uid"],
+      moveCount: 4,
+      turnSeat: 2,
+    };
+    const code = (result: ReturnType<typeof forfeitMatchRecordV7>) =>
+      result.ok ? "OK" : result.error.code;
+    // Either human, on anyone's turn (an AI seat is to move here).
+    const host = forfeitMatchRecordV7("host-uid", active, NOW);
+    expect(host.ok && host.value).toEqual({
+      ...active,
+      status: "FINISHED",
+      forfeitSeat: 0,
+      forfeitUid: "host-uid",
+      updatedAt: NOW,
+    });
+    const guest = forfeitMatchRecordV7("guest-uid", active, NOW);
+    expect(guest.ok && guest.value).toMatchObject({
+      status: "FINISHED",
+      forfeitSeat: 1,
+      forfeitUid: "guest-uid",
+      moveCount: 4,
+      turnSeat: 2,
+    });
+    if (!guest.ok) throw new Error(guest.error.code);
+    expect(parseOnlineMatchV7(guest.value).forfeit).toEqual({
+      seat: 1,
+      uid: "guest-uid",
+    });
+    // Strangers never; only from ACTIVE; once.
+    expect(code(forfeitMatchRecordV7("stranger", active, NOW))).toBe(
+      "FORBIDDEN",
+    );
+    expect(code(forfeitMatchRecordV7("", active, NOW))).toBe("FORBIDDEN");
+    expect(code(forfeitMatchRecordV7("host-uid", lobby(), NOW))).toBe(
+      "NOT_ACTIVE",
+    );
+    expect(code(forfeitMatchRecordV7("host-uid", guest.value, NOW))).toBe(
+      "NOT_ACTIVE",
+    );
+    // A forfeited match takes no more moves and cannot be left.
+    expect(
+      appendMoveRecordV7(
+        "host-uid",
+        guest.value,
+        {
+          index: 4,
+          seat: 2,
+          commandJson: '{"kind":"END_TURN"}',
+          stateHash: HASH,
+          nextTurnSeat: 0,
+          finished: false,
+        },
+        false,
+        NOW,
+      ).ok,
+    ).toBe(false);
+    expect(abandonMatchRecordV7("host-uid", guest.value, NOW).ok).toBe(false);
+    // A record whose forfeit names another seat's uid is not read as one.
+    expect(
+      parseOnlineMatchV7({ ...guest.value, forfeitUid: "host-uid" }).forfeit,
+    ).toBeNull();
+    expect(parseOnlineMatchV7(active).forfeit).toBeNull();
+  });
 });
 
 describe("firebase/firestore.rules for matches", () => {
@@ -441,5 +514,33 @@ describe("firebase/firestore.rules for matches", () => {
       "updatedAt",
     ])
       expect(rules).toContain(`'${field}'`);
+  });
+
+  it("lets a seated player forfeit for their own seat, from ACTIVE only (pulp_wars-eqc6.5)", () => {
+    const forfeit = block.slice(block.indexOf("function isForfeit() {"));
+    const body = forfeit.slice(0, forfeit.indexOf("\n    }\n"));
+    expect(block).toContain(
+      "isLeave() ||\n                        isForfeit());",
+    );
+    expect(body).toContain("before.status == 'ACTIVE'");
+    expect(body).toContain(
+      "changed().hasOnly(['status', 'forfeitSeat', 'forfeitUid', 'updatedAt'])",
+    );
+    expect(body).toContain("after.status == 'FINISHED'");
+    expect(body).toContain("after.forfeitUid == request.auth.uid");
+    expect(body).toContain(
+      "(after.forfeitSeat == 0 && before.hostUid == request.auth.uid)",
+    );
+    expect(body).toContain(
+      "(after.forfeitSeat == 1 && before.guestUid == request.auth.uid)",
+    );
+    expect(body).toContain("after.updatedAt == request.time");
+    // Nothing about whose turn it is: a forfeit is allowed on any turn.
+    expect(body).not.toContain("turnSeat");
+    // The other rules are unchanged: a move still keeps the status
+    // ACTIVE or FINISHED and touches only its four fields.
+    expect(block).toContain(
+      "changed().hasOnly(['moveCount', 'turnSeat', 'status', 'updatedAt'])",
+    );
   });
 });

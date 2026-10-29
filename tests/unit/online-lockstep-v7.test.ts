@@ -422,6 +422,52 @@ describe("the lockstep client (pulp_wars-eqc6.1)", () => {
     guest.stop();
   });
 
+  it("tells everyone of a forfeit, on anyone's turn, and drops moves the store refuses after it (pulp_wars-eqc6.5)", async () => {
+    const table = await startedTable(0);
+    const host = await open(table.host, table.match.code, "host-uid");
+    const guest = await open(table.guest, table.match.code, "guest-uid");
+    const seen: LockstepEventV7[] = [];
+    host.on((event) => seen.push(event));
+    guest.on((event) => seen.push(event));
+    host.start();
+    guest.start();
+    await settle(host, guest);
+    const mover = host.canAct ? host : guest;
+    const other = mover === host ? guest : host;
+    // The player not to move forfeits; the mover's move, already applied
+    // here, reaches the store after the forfeit and is refused.
+    const unit = mover.state.units.find(
+      (item) =>
+        item.ownerId === mover.state.turnOrder[mover.state.activeSeatIndex],
+    );
+    if (unit === undefined) throw new Error("no unit");
+    const forfeited = other.forfeit();
+    expect(mover.submit({ kind: "WAIT", unitId: unit.id }).accepted).toBe(true);
+    const result = await forfeited;
+    expect(result.ok && result.value.forfeit).toEqual({
+      seat: other === host ? 0 : 1,
+      uid: other === host ? "host-uid" : "guest-uid",
+    });
+    await settle(host, guest);
+    expect(
+      seen.filter((event) => event.kind === "MATCH_FORFEITED"),
+    ).toHaveLength(2);
+    expect(seen.some((event) => event.kind === "MOVE_REJECTED")).toBe(false);
+    for (const client of [host, guest]) {
+      expect(client.forfeitedBy?.seat).toBe(other === host ? 0 : 1);
+      expect(client.playable).toBe(false);
+      expect(client.pendingMoves).toBe(0);
+      expect(client.submit({ kind: "END_TURN" }).accepted).toBe(false);
+    }
+    // The log is what the store holds: both clients agree on it.
+    expect(mover.moveCount).toBe(table.server.moves(table.match.code).length);
+    expect(canonicalHash(mover.state)).toBe(canonicalHash(other.state));
+    // A second forfeit, or one by a stranger, is refused.
+    expect((await mover.forfeit()).ok).toBe(false);
+    host.stop();
+    guest.stop();
+  });
+
   it("refuses to open a lobby, a missing match, or another build's match", async () => {
     const server = createMemoryOnlineServerV7();
     const host = server.transport("host-uid");

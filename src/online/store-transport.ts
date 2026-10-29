@@ -2,6 +2,7 @@ import {
   abandonMatchRecordV7,
   appendMoveRecordV7,
   createMatchRecordV7,
+  forfeitMatchRecordV7,
   joinMatchRecordV7,
   patchLobbyRecordV7,
   startMatchRecordV7,
@@ -102,6 +103,8 @@ export function createStoreTransportV7(
       existing(code, (before) => startMatchRecordV7(uid, before, input, now())),
     abandonMatch: (code) =>
       existing(code, (before) => abandonMatchRecordV7(uid, before, now())),
+    forfeitMatch: (code) =>
+      existing(code, (before) => forfeitMatchRecordV7(uid, before, now())),
     appendMove: (code, move) =>
       write(code, () => {
         const before = store.getMatch(code);

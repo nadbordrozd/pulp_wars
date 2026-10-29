@@ -7,12 +7,16 @@ import {
 } from "../../engine/v7/types";
 import {
   ONLINE_AI_SEATS_MAX_V7,
+  ONLINE_HISTORY_RESULT_LABELS_V7,
+  onlineHistoryDateLabelV7,
+  onlineHistorySummaryV7,
   onlineMaxAiSeatsV7,
   onlineSizesV7,
   normalizeRoomCodeV7,
   GUEST_SEAT_V7,
   HOST_SEAT_V7,
   type FactionPickV7,
+  type OnlineHistoryEntryV7,
   type OnlineLobbySessionV7,
   type OnlineLobbyStateV7,
   type OnlineMatchHandoffV7,
@@ -21,7 +25,10 @@ import {
 import { factionColourV7 } from "../canvas/faction-colours-v7";
 import { QUICK_DIFFICULTY_LABELS_V7 } from "../quick-start-v7";
 import { ALLIANCE_LABELS_V7 } from "../score-presentation-v7";
-import { GAME_MODE_LABELS_V7 } from "../tribe-stars-presentation-v7";
+import {
+  GAME_MODE_LABELS_V7,
+  tribePluralV7,
+} from "../tribe-stars-presentation-v7";
 import { factionNameV7 } from "../undead-presentation-v7";
 import { pickerFieldV7, syncPickersV7, syncPickerV7 } from "./picker-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
@@ -70,6 +77,45 @@ export interface OnlineLobbyViewOptionsV7 {
   readonly reload?: () => void;
   /** Called once when the host's Start reached this browser. */
   readonly onStarted?: (handoff: OnlineMatchHandoffV7) => void;
+  /** Today, for the match history's dates (tests fix it). */
+  readonly now?: () => Date;
+}
+
+/** Match history rows shown before "Show all". */
+export const ONLINE_HISTORY_SHOWN_V7 = 5;
+
+/** "Record: 5 W · 3 L" (null before the first finished match). */
+export function onlineRecordLineV7(
+  entries: readonly OnlineHistoryEntryV7[],
+): string | null {
+  const { won, lost } = onlineHistorySummaryV7(entries);
+  return won + lost === 0 ? null : `Record: ${won} W · ${lost} L`;
+}
+
+/**
+ * A match history row's details: "Today · Continents 14 × 14 · 1 AI ·
+ * Turn 12 · 1,240 pts".
+ */
+export function onlineHistoryDetailsV7(
+  entry: OnlineHistoryEntryV7,
+  now: Date,
+): string {
+  const map =
+    ONLINE_MAP_LABELS_V7[entry.mapType as GeneratedMapTypeV7] ?? entry.mapType;
+  const parts = [
+    onlineHistoryDateLabelV7(entry.startedAt, now),
+    `${map} ${entry.width} × ${entry.width}`,
+  ];
+  if (entry.aiSeats > 0) parts.push(`${entry.aiSeats} AI`);
+  parts.push(`Turn ${entry.turns}`);
+  if (entry.score !== null && entry.result !== "IN_PROGRESS")
+    parts.push(`${entry.score.toLocaleString("en-US")} pts`);
+  // A line breaks only after a part's dot ("29 pts" stays whole, and no
+  // line starts with a dot).
+  return parts
+    .filter((part) => part !== "")
+    .map((part) => part.replace(/ /g, "\u00a0"))
+    .join("\u00a0· ");
 }
 
 /** A typed or pasted room code, cleaned as the player types it. */
@@ -117,6 +163,7 @@ export class OnlineLobbyViewV7 {
   #copiedTimer: ReturnType<typeof setTimeout> | null = null;
   #signature = "";
   #handedOff: OnlineMatchHandoffV7 | null = null;
+  #historyOpen = false;
 
   constructor(
     documentRoot: Document,
@@ -192,6 +239,8 @@ export class OnlineLobbyViewV7 {
       state.mySeat,
       state.offline,
       state.shareLink,
+      state.history,
+      this.#historyOpen,
       this.#settingsOpen,
       this.#editingName,
       this.#nameProblem,
@@ -272,7 +321,112 @@ export class OnlineLobbyViewV7 {
     join.append(label, row, hint);
     nodes.push(this.#divider(), join);
     nodes.push(this.#message(state));
+    const history = this.#history(state);
+    if (history !== null) nodes.push(history);
     return nodes;
+  }
+
+  /**
+   * The track record (`pulp_wars-eqc6.6`): "Record: 5 W · 3 L" and the
+   * Match history, newest first, a few rows until "Show all"; an In
+   * progress row has Resume. Kept on this device (no accounts). Null
+   * before the first online match.
+   */
+  #history(state: OnlineLobbyStateV7): HTMLElement | null {
+    const entries = state.history;
+    if (entries.length === 0) return null;
+    const now = this.#options.now?.() ?? new Date();
+    const section = this.#element("section", "v7-online-history");
+    section.dataset.v7Region = "online-history";
+    section.setAttribute("aria-labelledby", "v7-online-history-title");
+    const head = this.#element("div", "v7-online-history-head");
+    const title = this.#text("h3", "Match history", "v7-online-history-title");
+    title.id = "v7-online-history-title";
+    head.append(title);
+    const record = onlineRecordLineV7(entries);
+    if (record !== null) {
+      const line = this.#text("p", record, "v7-online-record");
+      line.dataset.v7Region = "online-record";
+      head.append(line);
+    }
+    section.append(head);
+    const list = this.#element("ol", "v7-online-history-list");
+    const shown = this.#historyOpen
+      ? entries
+      : entries.slice(0, ONLINE_HISTORY_SHOWN_V7);
+    for (const entry of shown) list.append(this.#historyRow(state, entry, now));
+    section.append(list);
+    const foot = this.#element("div", "v7-online-history-foot");
+    foot.append(this.#text("p", "Kept on this device.", "v7-online-hint"));
+    if (entries.length > ONLINE_HISTORY_SHOWN_V7) {
+      const more = this.#button(
+        this.#historyOpen ? "Show fewer" : `Show all ${entries.length}`,
+        "online-history-more",
+        "v7-online-link-button",
+      );
+      more.setAttribute("aria-expanded", String(this.#historyOpen));
+      more.onclick = () => {
+        this.#historyOpen = !this.#historyOpen;
+        this.render();
+      };
+      foot.append(more);
+    }
+    section.append(foot);
+    return section;
+  }
+
+  #historyRow(
+    state: OnlineLobbyStateV7,
+    entry: OnlineHistoryEntryV7,
+    now: Date,
+  ): HTMLElement {
+    const row = this.#element("li", "v7-online-history-row");
+    row.dataset.code = entry.code;
+    row.dataset.result = entry.result.toLowerCase().replace("_", "-");
+    row.style.setProperty("--player", factionColourV7(entry.faction));
+    const factions = this.#element("span", "v7-online-history-factions");
+    factions.setAttribute("aria-hidden", "true");
+    factions.append(
+      this.#options.factionEmblem(entry.faction),
+      this.#options.factionEmblem(entry.opponentFaction),
+    );
+    const who = this.#element("span", "v7-online-history-who");
+    who.append(
+      this.#text("span", `vs ${entry.opponent}`, "v7-online-history-name"),
+      this.#text(
+        "span",
+        onlineHistoryDetailsV7(entry, now),
+        "v7-online-history-details",
+      ),
+      this.#text(
+        "span",
+        `You led the ${tribePluralV7(entry.faction)}; ${entry.opponent} the ${tribePluralV7(entry.opponentFaction)}. Room ${entry.code}.`,
+        "v7-sr-only",
+      ),
+    );
+    row.append(factions, who);
+    if (entry.result === "IN_PROGRESS") {
+      const resume = this.#button(
+        state.busy === "OPEN" ? "Opening…" : "Resume",
+        `online-resume-${entry.code}`,
+        "v7-online-join-button v7-online-history-resume",
+      );
+      resume.disabled = state.busy !== null;
+      resume.setAttribute(
+        "aria-label",
+        `Resume the game against ${entry.opponent}`,
+      );
+      resume.onclick = () => void this.#session.resume(entry.code);
+      row.append(resume);
+    } else {
+      const chip = this.#text(
+        "span",
+        ONLINE_HISTORY_RESULT_LABELS_V7[entry.result],
+        "v7-chip v7-online-history-result",
+      );
+      row.append(chip);
+    }
+    return row;
   }
 
   #preview(state: OnlineLobbyStateV7): HTMLElement[] {

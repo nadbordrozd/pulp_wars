@@ -12,10 +12,16 @@ import {
   type CommandV7,
   type DomainEventV7,
   type GameStateV7,
+  type MatchOutcomeV7,
   type PlayerId,
   type PlayerViewV7,
 } from "../engine/index";
 import type { LockstepEventV7, OnlineLockstepV7 } from "../online/lockstep";
+import type { OnlineForfeitV7 } from "../online/match";
+import {
+  onlineHistoryEntryV7,
+  type OnlineMatchHistoryV7,
+} from "../online/match-history";
 import {
   commandIsOfferedV7,
   type Ruleset7AcceptedBoundary,
@@ -91,6 +97,28 @@ export interface OnlineMatchSnapshotV7 {
   readonly pendingMoves: number;
   /** The other human's name when they left the game, else null. */
   readonly leftBy: string | null;
+  /**
+   * A forfeit that ended the match (`pulp_wars-eqc6.5`): who gave up
+   * (`byMe` for this player) and the winner's name, null when the other
+   * human was already out (nobody wins); else null.
+   */
+  readonly forfeit: {
+    readonly seat: number;
+    readonly byMe: boolean;
+    readonly by: string;
+    readonly winner: string | null;
+    readonly winnerIsMe: boolean;
+  } | null;
+  /**
+   * This player may forfeit now (in the game, not out, not over): the
+   * match menu's Forfeit.
+   */
+  readonly canForfeit: boolean;
+  /**
+   * Who wins if this player forfeits now: the other human's name, or null
+   * when they are already out.
+   */
+  readonly forfeitWinner: string | null;
   /** True when this player left (abandoned) the game. */
   readonly leftByMe: boolean;
   /**
@@ -129,6 +157,14 @@ export interface OnlineMatchControllerOptionsV7 {
   readonly readClock?: () => number;
   /** Told what a subscriber threw (the controller swallows it). */
   readonly onSubscriberFailure?: (where: string, error: unknown) => void;
+  /**
+   * This player's track record (`pulp_wars-eqc6.6`): the match is recorded
+   * when it opens and updated as it goes and when it ends. None: nothing
+   * is recorded.
+   */
+  readonly history?: OnlineMatchHistoryV7 | null;
+  /** ISO time of a record; the clock by default. */
+  readonly now?: () => string;
 }
 
 /** The Normal AI for one command, as the single-player controller runs it. */
@@ -206,6 +242,10 @@ export class OnlineMatchControllerV7 {
   readonly #sliceMilliseconds: number;
   readonly #onSubscriberFailure:
     ((where: string, error: unknown) => void) | null;
+  readonly #history: OnlineMatchHistoryV7 | null;
+  readonly #now: () => string;
+  /** What the track record last heard (result, round, status). */
+  #historyKey: string | null = null;
   readonly #subscribers = new Set<
     (snapshot: Ruleset7BrowserSnapshot) => void
   >();
@@ -227,6 +267,10 @@ export class OnlineMatchControllerV7 {
   #reconnecting = false;
   #abandoned = false;
   #leftByMe = false;
+  /** The forfeit that ended the match, with its winner (if any). */
+  #forfeit: (OnlineForfeitV7 & { readonly winnerId: PlayerId | null }) | null =
+    null;
+  readonly #endViews = new WeakMap<GameStateV7, PlayerViewV7>();
   #fatal = false;
   #notice: OnlineMatchSnapshotV7["notice"] = null;
   #turnCue = 0;
@@ -248,12 +292,16 @@ export class OnlineMatchControllerV7 {
     this.#scheduler = options.aiProgressScheduler ?? defaultSchedulerV7;
     this.#sliceMilliseconds = options.policySliceMilliseconds ?? 4;
     this.#onSubscriberFailure = options.onSubscriberFailure ?? null;
+    this.#history = options.history ?? null;
+    this.#now = options.now ?? (() => new Date().toISOString());
     this.#state = client.state;
     this.#names = onlineSeatNamesV7(client);
     this.#fatal = client.desynced;
     this.#abandoned = client.match.status === "ABANDONED";
+    if (client.forfeitedBy !== null) this.#takeForfeit(client.forfeitedBy);
     this.#unlisten = client.on((event) => this.#onEvent(event));
     this.#noteMyTurn();
+    this.#syncHistory();
   }
 
   /** The lockstep client's code (the room code). */
@@ -285,9 +333,9 @@ export class OnlineMatchControllerV7 {
   }
 
   snapshot(): OnlineBrowserSnapshotV7 {
-    const view = this.#viewOf(this.#state);
+    const view = this.#presentedView();
     const myTurn = this.#myHumanTurn();
-    const over = this.#state.outcome !== null;
+    const over = this.#over();
     const stopped = this.#abandoned || this.#fatal;
     const offeredCommands =
       myTurn && !over && !stopped ? queryPlayerCommandsV7(view) : [];
@@ -319,12 +367,7 @@ export class OnlineMatchControllerV7 {
         accepted: false,
         reason: "CONTROLLER_DESTROYED",
       });
-    if (
-      this.#state.outcome !== null ||
-      this.#abandoned ||
-      this.#fatal ||
-      !this.#caughtUp()
-    )
+    if (this.#over() || this.#abandoned || this.#fatal || !this.#caughtUp())
       return Promise.resolve({ accepted: false, reason: "NO_ACTIVE_MATCH" });
     if (!this.#myHumanTurn())
       return Promise.resolve({ accepted: false, reason: "NOT_HUMAN_TURN" });
@@ -396,6 +439,20 @@ export class OnlineMatchControllerV7 {
     this.#settleWaiters();
     this.#emit();
     return true;
+  }
+
+  /**
+   * Forfeits (`pulp_wars-eqc6.5`), on anyone's turn: the match ends at
+   * once for everyone, this player's Defeat and the other human's Victory.
+   * False when it failed (offline, or the match was already over).
+   */
+  async forfeit(): Promise<boolean> {
+    if (this.#destroyed || this.#forfeit !== null) return false;
+    const result = await this.#client.forfeit();
+    if (!result.ok || this.#destroyed) return false;
+    if (this.#forfeit === null && result.value.forfeit !== null)
+      this.#onForfeit(result.value.forfeit);
+    return this.#forfeit !== null;
   }
 
   /** Reloading is the way out of a fatal desync; this only says so. */
@@ -509,7 +566,72 @@ export class OnlineMatchControllerV7 {
       case "MATCH_FINISHED":
         // Presented when its move is (the state's outcome).
         return;
+      case "MATCH_FORFEITED":
+        this.#onForfeit(event.forfeit);
+        return;
     }
+  }
+
+  /**
+   * A forfeit ends the match at once: whatever the board still had to
+   * play is skipped, the AI stops, and the end screen shows.
+   */
+  #onForfeit(forfeit: OnlineForfeitV7): void {
+    if (this.#forfeit !== null) return;
+    this.#queue = [];
+    this.#gateWait = null;
+    this.#stopAi();
+    this.#state = this.#client.state;
+    this.#takeForfeit(forfeit);
+    this.#settleWaiters();
+    this.#emit();
+  }
+
+  /**
+   * The forfeit's winner: the other human, unless they were already out
+   * (then nobody wins). The AI seats never play on.
+   */
+  #takeForfeit(forfeit: OnlineForfeitV7): void {
+    const state = this.#client.state;
+    const other = state.players.find(
+      (player) =>
+        player.seat === (forfeit.seat === 0 ? 1 : 0) &&
+        isHumanSeatV7(this.#client.setup, player.seat),
+    );
+    this.#forfeit = Object.freeze({
+      ...forfeit,
+      winnerId:
+        other === undefined || other.status === "ELIMINATED" ? null : other.id,
+    });
+  }
+
+  /** The match is over: by the rules, or by a forfeit. */
+  #over(): boolean {
+    return this.#state.outcome !== null || this.#forfeit !== null;
+  }
+
+  /**
+   * The view the screen draws: this player's, and after a forfeit with
+   * the outcome it gives (a Victory for the winner, else a Defeat), so the
+   * end screen reads it as it reads any other end.
+   */
+  #presentedView(): PlayerViewV7 {
+    const view = this.#viewOf(this.#state);
+    const forfeit = this.#forfeit;
+    if (forfeit === null || view.outcome !== null) return view;
+    const cached = this.#endViews.get(this.#state);
+    if (cached !== undefined) return cached;
+    const outcome: MatchOutcomeV7 =
+      forfeit.winnerId === null
+        ? {
+            kind: "DEFEAT",
+            humanId: this.#viewerId,
+            defeatedByPlayerId: (forfeit.seat + 1) as PlayerId,
+          }
+        : { kind: "VICTORY", winnerId: forfeit.winnerId };
+    const ended = Object.freeze({ ...view, outcome });
+    this.#endViews.set(this.#state, ended);
+    return ended;
   }
 
   /**
@@ -576,12 +698,12 @@ export class OnlineMatchControllerV7 {
     if (this.#abandoned || this.#fatal)
       return progressFailureV7(true, "the match stopped");
     if (!this.#caughtUp()) return null;
-    if (this.#state.outcome !== null || this.#myHumanTurn())
+    if (this.#over() || this.#myHumanTurn())
       return {
         ok: true,
         acceptedCommands: 0,
         playerEventBatches: [],
-        view: this.#viewOf(this.#state),
+        view: this.#presentedView(),
         policySlices: 0,
         maximumSliceMilliseconds: 0,
       };
@@ -601,7 +723,7 @@ export class OnlineMatchControllerV7 {
 
   /** Counts the start of each of this player's turns (the cue). */
   #noteMyTurn(): void {
-    if (!this.#myHumanTurn() || this.#state.outcome !== null) return;
+    if (!this.#myHumanTurn() || this.#over()) return;
     const key = `${this.#state.round}:${this.#client.activeSeat}`;
     if (key === this.#lastMyTurnKey) return;
     this.#lastMyTurnKey = key;
@@ -808,7 +930,7 @@ export class OnlineMatchControllerV7 {
   #onlineSnapshot(): OnlineMatchSnapshotV7 {
     const state = this.#state;
     const me = state.players.find((player) => player.id === this.#viewerId);
-    const over = state.outcome !== null;
+    const over = this.#over();
     const status: OnlineMatchStatusV7 = this.#fatal
       ? "DESYNCED"
       : over
@@ -820,8 +942,13 @@ export class OnlineMatchControllerV7 {
             : "PLAYING";
     const activeId = state.turnOrder[state.activeSeatIndex];
     const active = state.players.find((player) => player.id === activeId);
-    const otherHuman = this.#names[this.#mySeat === 0 ? 1 : 0] ?? "Your friend";
+    const otherSeat = this.#mySeat === 0 ? 1 : 0;
+    const otherHuman = this.#names[otherSeat] ?? "Your friend";
+    const otherOut =
+      state.players.find((player) => player.seat === otherSeat)?.status ===
+      "ELIMINATED";
     const host = this.#mySeat === 0;
+    const forfeit = this.#forfeit;
     const aiLeft = state.players.some(
       (player) =>
         player.status !== "ELIMINATED" &&
@@ -847,6 +974,22 @@ export class OnlineMatchControllerV7 {
       pendingMoves: this.#client.pendingMoves,
       leftBy: this.#abandoned && !this.#leftByMe ? otherHuman : null,
       leftByMe: this.#leftByMe,
+      forfeit:
+        forfeit === null
+          ? null
+          : Object.freeze({
+              seat: forfeit.seat,
+              byMe: forfeit.seat === this.#mySeat,
+              by: this.#names[forfeit.seat] ?? `Player ${forfeit.seat + 1}`,
+              winner:
+                forfeit.winnerId === null
+                  ? null
+                  : (this.#names[forfeit.winnerId - 1] ??
+                    `Player ${forfeit.winnerId}`),
+              winnerIsMe: forfeit.winnerId === this.#viewerId,
+            }),
+      canForfeit: status === "PLAYING",
+      forfeitWinner: otherOut ? null : otherHuman,
       notice: this.#notice,
       turnCue: this.#turnCue,
       // An out guest only stops watching; anyone else ends the game (the
@@ -872,8 +1015,43 @@ export class OnlineMatchControllerV7 {
     }
   }
 
+  /**
+   * The track record (`pulp_wars-eqc6.6`): written when the match opens,
+   * then whenever the round, the status or the result changes, from the
+   * game as the log has it (not as far as the board has played it).
+   */
+  #syncHistory(): void {
+    const history = this.#history;
+    if (history === null) return;
+    const client = this.#client;
+    const state = client.state;
+    const status = this.#abandoned ? "ABANDONED" : client.match.status;
+    const forfeit = this.#forfeit;
+    const key = `${state.round}:${status}:${forfeit?.seat ?? "-"}:${state.outcome?.kind ?? "-"}:${state.players.map((player) => player.status).join()}`;
+    if (key === this.#historyKey) return;
+    this.#historyKey = key;
+    try {
+      history.record(
+        onlineHistoryEntryV7({
+          code: client.code,
+          uid: client.uid,
+          mySeat: this.#mySeat,
+          opponent: this.#names[this.#mySeat === 0 ? 1 : 0] ?? "Your friend",
+          state,
+          setup: client.setup,
+          status,
+          forfeit,
+          now: this.#now(),
+        }),
+      );
+    } catch (error) {
+      this.#report("the track record", error);
+    }
+  }
+
   #emit(): void {
     if (this.#destroyed) return;
+    this.#syncHistory();
     this.#noteMyTurn();
     if (this.#subscribers.size === 0) return;
     const snapshot = this.snapshot();

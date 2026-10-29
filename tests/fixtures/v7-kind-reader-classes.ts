@@ -417,6 +417,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // is seat-level and no unit's kind is read.
   "src/render/first-steps-v7.ts::chooseFirstStepV7": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#leaderboard": "SEAT",
+  // pulp_wars-eqc6.6: a match history row shows the two humans' seat
+  // factions of a stored online match; no unit is read.
+  "src/render/dom/online-lobby-view-v7.ts::OnlineLobbyViewV7.#historyRow":
+    "SEAT",
   // The Goblin pass: the Scouts reward names the seat's own Raider-role
   // unit (a Goblin city's Wolf Rider).
   "src/render/dom/app-view-v7.ts::rewardLabel": "SEAT",
