@@ -284,6 +284,25 @@ describe("Ruleset 7 blocked actions in the interface", () => {
     app.destroy();
   });
 
+  it("draws Fortify with its PixelLab icon, not the brick glyph (pulp_wars-je3v)", () => {
+    const state = match({ garrison: 3 });
+    const { app, host } = open(state);
+    host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitIdAt(state, AT.second) as never,
+    });
+    const fortify = required<HTMLButtonElement>(
+      '[data-action="command-build_field_defense"]',
+    );
+    const icon = fortify.querySelector<HTMLImageElement>("img.v7-chibi-art");
+    expect(icon?.dataset.chibiSubject).toBe("ICON:ACTION:BUILD_FIELD_DEFENSE");
+    expect(fortify.querySelector(".v7-tactical-symbol")).toBeNull();
+    expect(fortify.querySelector(".v7-action-label")?.textContent).toBe(
+      "Fortify",
+    );
+    app.destroy();
+  });
+
   it("says a resource on land that is not the player's is outside the borders", () => {
     const { app, host } = open(match({ coins: 0 }));
     for (const at of [AT.neutralFruit, AT.enemyFruit]) {

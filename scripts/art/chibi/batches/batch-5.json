@@ -350,6 +350,16 @@
         "width": 32,
         "height": 32
       }
+    },
+    {
+      "id": "chibi-icon-action-fortify",
+      "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
     }
   ],
   "recipes": [
@@ -939,6 +949,149 @@
       "promptAddendum": "The plume, cape and surcoat are one flat bright red with a slightly darker red shade, never orange.",
       "negativeAddendum": "orange, orange-red shading, red-brown, gold trim",
       "notes": "knight-a shades its cape and surcoat with orange-red outside the key band, so a Teal Knight keeps orange-red folds; the addendum asks for flat key-red cloth."
+    },
+    {
+      "id": "icon-action-fortify-a",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "create-image-pixen",
+      "seed": 5960,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, feet, face, stakes, fence, spikes, sword",
+      "notes": "Bead pulp_wars-je3v: the Fortify button (BUILD_FIELD_DEFENSE) drew a code glyph of three bricks; first concept, a shield planted in front of sandbags."
+    },
+    {
+      "id": "icon-action-fortify-b",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "create-image-pixen",
+      "seed": 5961,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, feet, face, stakes, fence, spikes, sword",
+      "notes": "Bead pulp_wars-je3v: a second seed of the shield-and-sandbags concept."
+    },
+    {
+      "id": "icon-action-fortify-c",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "edit-image-pixen",
+      "seed": 5962,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-wait-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string. Nothing else: no hourglass, no helmet, no person. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-je3v: the shield-and-sandbags concept as a sibling edit of the clean Wait icon, as the icons of bead pulp_wars-2yc.118 were made."
+    },
+    {
+      "id": "icon-action-fortify-d",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "edit-image-pixen",
+      "seed": 5963,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-wait-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Bead pulp_wars-je3v: a second concept, the shield in front of a stone rampart, as a sibling edit of the clean Wait icon."
+    },
+    {
+      "id": "icon-action-fortify-e",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "edit-image-pixen",
+      "seed": 5964,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-fortify-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-action-fortify-a reads best (a planted kite shield with sandbags, three-quarter view like the other action icons) but stands on a grass plate: the ground-removal edit."
+    },
+    {
+      "id": "icon-action-fortify-f",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "create-image-pixen",
+      "seed": 5965,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, pedestal, stone slab",
+      "notes": "A third seed of the shield-and-sandbags creation, its negative naming the grass plate of fortify-a and the pedestal of fortify-b."
+    },
+    {
+      "id": "icon-action-fortify-g",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "create-image-pixen",
+      "seed": 5966,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, pedestal, stone slab",
+      "notes": "A fourth seed, as fortify-f."
+    },
+    {
+      "id": "icon-action-fortify-h",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "edit-image-pixen",
+      "seed": 5967,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-fortify-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+      "notes": "The ground-removal edit fortify-e cleared the grass but turned the cream sandbags into small dark brown spikes; this one paints the grass as more sandbags."
+    },
+    {
+      "id": "icon-action-fortify-i",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "edit-image-pixen",
+      "seed": 5968,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-fortify-e",
+        "candidate": 1
+      },
+      "editInstruction": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+      "notes": "fortify-e candidate 1 has a clean shield on no ground; its sandbags came out as dark brown spikes."
+    },
+    {
+      "id": "icon-action-fortify-j",
+      "asset": "chibi-icon-action-fortify",
+      "endpoint": "create-image-pixen",
+      "seed": 5969,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, pedestal, stone slab",
+      "promptAddendum": "The sandbags are plump, pale cream and clearly sacks, piled in a low curve on both sides of the shield's point; every shape has the same thick black outline; nothing under them.",
+      "notes": "A fifth creation: fortify-g drew good sandbags but brown, with a thin outline."
     }
   ]
 }

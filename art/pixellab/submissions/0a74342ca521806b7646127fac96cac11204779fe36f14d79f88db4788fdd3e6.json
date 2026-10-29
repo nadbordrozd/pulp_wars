@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-fortify-h",
+  "jobId": "18349f95-9fbc-4bbb-a9f7-f35200f22cf4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5",
+    "asset": "chibi-icon-action-fortify",
+    "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5967,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+    "editInstruction": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-action-fortify-a",
+      "candidate": 0,
+      "sha256": "0788dd0496de23560117fff682d43799c138dbe30fe6b19637e7b0a93fb4aae7"
+    }
+  }
+}

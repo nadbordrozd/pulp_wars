@@ -277,15 +277,19 @@ describe("CHIBI interface subjects", () => {
         "ORIGINAL",
       ),
     ).toBe("UNIT:EMBARKED_TRANSPORT");
-    for (const kind of ["MOVE", "BUILD_FIELD_DEFENSE"] as const)
-      expect(
-        commandSubjectV7(
-          kind === "MOVE"
-            ? { kind, unitId: 1 as never, path: [] }
-            : { kind, unitId: 1 as never },
-          "ORIGINAL",
-        ),
-      ).toBeNull();
+    expect(
+      commandSubjectV7(
+        { kind: "MOVE", unitId: 1 as never, path: [] },
+        "ORIGINAL",
+      ),
+    ).toBeNull();
+    // Fortify has its PixelLab icon since bead pulp_wars-je3v.
+    expect(
+      commandSubjectV7(
+        { kind: "BUILD_FIELD_DEFENSE", unitId: 1 as never },
+        "ORIGINAL",
+      ),
+    ).toBe("ICON:ACTION:BUILD_FIELD_DEFENSE");
     for (const command of commands)
       if (commandArtKeyV7(command) !== null)
         expect(commandSubjectV7(command, "ORIGINAL")).not.toBeNull();

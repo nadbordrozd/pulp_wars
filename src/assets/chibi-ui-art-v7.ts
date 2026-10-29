@@ -382,7 +382,9 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
 
 /**
  * Art of a command button, or null for commands drawn without art (Move and
- * Attack are map-targeted; Field Defense keeps its vector tactical symbol).
+ * Attack are map-targeted). Fortify (Build Field Defense) is
+ * `ICON:ACTION:BUILD_FIELD_DEFENSE` since bead pulp_wars-je3v; without the
+ * raster it keeps its vector tactical symbol.
  * Build commands show the chibi building, harvests the chibi resource,
  * training the faction's portrait, the Undead Rally is Frenzy and the Goblin
  * Rally is WAAAGH! (the Warboss's tin megaphone, bead pulp_wars-0ao.14).
@@ -408,8 +410,11 @@ export function commandSubjectV7(
   switch (command.kind) {
     case "MOVE":
     case "ATTACK":
-    case "BUILD_FIELD_DEFENSE":
       return null;
+    // Fortify is no improvement of the faction's look: its button shows its
+    // PixelLab icon, a shield planted in sandbags (bead pulp_wars-je3v).
+    case "BUILD_FIELD_DEFENSE":
+      return "ICON:ACTION:BUILD_FIELD_DEFENSE";
     case "RESEARCH":
       return technologySubjectV7(command.tech, faction);
     // Tuning 3 (`pulp_wars-w49.3`): a hired unit is shown as the unit.

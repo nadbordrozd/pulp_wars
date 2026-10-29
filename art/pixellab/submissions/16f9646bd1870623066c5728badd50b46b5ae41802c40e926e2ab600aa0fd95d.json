@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-fortify-e",
+  "jobId": "abf63bf7-e6b4-4e17-a43e-e6d15e55e655",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5",
+    "asset": "chibi-icon-action-fortify",
+    "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5964,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-fortify-a",
+      "candidate": 0,
+      "sha256": "0788dd0496de23560117fff682d43799c138dbe30fe6b19637e7b0a93fb4aae7"
+    }
+  }
+}

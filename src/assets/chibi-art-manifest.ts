@@ -952,6 +952,17 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-disband.png"),
   },
+  // Fortify, the BUILD_FIELD_DEFENSE command of every faction with Field
+  // Defense (bead pulp_wars-je3v): a kite shield planted in sandbags, which
+  // replaced the code glyph of three bricks on the dock button.
+  {
+    id: "chibi-icon-action-fortify",
+    subject: "ICON:ACTION:BUILD_FIELD_DEFENSE",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-fortify.png"),
+  },
   {
     id: "chibi-icon-action-pillage",
     subject: "ICON:ACTION:PILLAGE",

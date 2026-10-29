@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-fortify-i",
+  "jobId": "b382b884-a1d3-473f-b4b4-aaa3b250ae13",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5",
+    "asset": "chibi-icon-action-fortify",
+    "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5968,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-fortify-e",
+      "candidate": 1,
+      "sha256": "ffe5611f83d8698b91249cad21a0c1475e0c3fb5220d09f345bd71d8bdc2d559"
+    }
+  }
+}

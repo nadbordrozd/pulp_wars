@@ -1,0 +1,37 @@
+{
+  "id": "icon-action-fortify-d",
+  "jobId": "4f8f670d-5ef6-44fa-8ba8-f32c089873d6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5",
+    "asset": "chibi-icon-action-fortify",
+    "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5963,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-wait-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "7a7736b4bdf1f33ca935474570707e659178c5935ce13e966cd1e4e5edbc8617"
+    }
+  }
+}

@@ -852,6 +852,778 @@
         "reviewedAt": "2026-09-29T20:23:02.753Z"
       }
     },
+    "icon-action-fortify-a": {
+      "id": "icon-action-fortify-a",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "sync-f3d2ff18-6ca3-4bd5-b3e4-353c7f04998f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5960,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, feet, face, stakes, fence, spikes, sword"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword."
+      },
+      "submittedAt": "2026-10-29T16:35:40.873Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-a.png",
+      "rawSheetSha256": "0788dd0496de23560117fff682d43799c138dbe30fe6b19637e7b0a93fb4aae7",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.562,
+          "footprintWidthShare": 0.95,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-29T16:36:14.080Z",
+      "usageUsd": 0.00774021053314209,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The best design (a planted kite shield with sandbags, three-quarter view) but it stands on a green grass plate; kept as the source of the edits e and h.",
+        "reviewedAt": "2026-10-29T16:44:25.703Z"
+      }
+    },
+    "icon-action-fortify-b": {
+      "id": "icon-action-fortify-b",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "sync-a9a7daa1-d4f5-4170-84d5-3a83d63f5529",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5961,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, feet, face, stakes, fence, spikes, sword"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword."
+      },
+      "submittedAt": "2026-10-29T16:36:14.087Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-b.png",
+      "rawSheetSha256": "3d927627c230ca605cdab40421e585efc94d793d267ad2965644eed338f436bf",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-29T16:37:01.054Z",
+      "usageUsd": 0.008218616273668078,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A tilted shield on a grey stone pedestal: a plate, and the sandbags are lost.",
+        "reviewedAt": "2026-10-29T16:44:26.007Z"
+      }
+    },
+    "icon-action-fortify-c": {
+      "id": "icon-action-fortify-c",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "d38d2787-1700-4df2-9f9d-a1df7b384b4e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5962,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string. Nothing else: no hourglass, no helmet, no person. Thick black outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string. Nothing else: no hourglass, no helmet, no person. Thick black outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string. Nothing else: no hourglass, no helmet, no person. Thick black outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string. Nothing else: no hourglass, no helmet, no person. Thick black outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-wait-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "7a7736b4bdf1f33ca935474570707e659178c5935ce13e966cd1e4e5edbc8617"
+        }
+      },
+      "submittedAt": "2026-10-29T16:37:01.062Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-c.png",
+      "rawSheetSha256": "d9fe8f4b0f0b72e137444bd3217ae0756b1f96e9837b568066e4829664c54e1a",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0641,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.0641,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-29T16:37:32.180Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates draw the shield on a goblet-like stem over flat sandbags: reads as a trophy, flat front-on, unlike the other action icons.",
+        "reviewedAt": "2026-10-29T16:44:26.286Z"
+      }
+    },
+    "icon-action-fortify-d": {
+      "id": "icon-action-fortify-d",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "4f8f670d-5ef6-44fa-8ba8-f32c089873d6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5963,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+        "editInstruction": "Redraw it as a different object in the same style: one big light steel kite shield with a pale birch wooden rim standing upright with its point planted in the ground, in front of a short low rampart of big square beige cobblestone blocks with square crenellations. Nothing else: no hourglass, no helmet, no tower, no person. Thick black outline, flat colours, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-wait-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "7a7736b4bdf1f33ca935474570707e659178c5935ce13e966cd1e4e5edbc8617"
+        }
+      },
+      "submittedAt": "2026-10-29T16:37:32.189Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-d.png",
+      "rawSheetSha256": "69b2740b22ee821748f98e5e33a501b97627608bf5381bef10376c3bc0904d1e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2712,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.2712,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-29T16:38:33.660Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates hang a flat shield on a pole over a crenellated wall: a coat-of-arms sign, flat front-on, close to the Walls reward.",
+        "reviewedAt": "2026-10-29T16:44:36.680Z"
+      }
+    },
+    "icon-action-fortify-e": {
+      "id": "icon-action-fortify-e",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "abf63bf7-e6b4-4e17-a43e-e6d15e55e655",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5964,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the green grass and the ground under the shield and the sandbags, leaving that area transparent, so the shield point and the sandbags stand on nothing. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the cream sandbags on both sides, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-fortify-a",
+          "candidate": 0,
+          "sha256": "0788dd0496de23560117fff682d43799c138dbe30fe6b19637e7b0a93fb4aae7"
+        }
+      },
+      "submittedAt": "2026-10-29T16:39:02.799Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-e.png",
+      "rawSheetSha256": "24490125b35dfd0b78c885e2ebf44a55447f82351ace92c1a7c8cdcc6ac9a14a",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.4414,
+          "footprintWidthShare": 0.9,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.4414,
+          "footprintWidthShare": 0.9,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-29T16:39:39.059Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The grass is gone but the cream sandbags turned into small dark brown spikes that read as stakes or rubble.",
+        "reviewedAt": "2026-10-29T16:44:36.953Z"
+      }
+    },
+    "icon-action-fortify-f": {
+      "id": "icon-action-fortify-f",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "sync-9e4027df-b3ec-493b-a841-1839cf348ae1",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5965,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, pedestal, stone slab"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, stone slab",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, stone slab."
+      },
+      "submittedAt": "2026-10-29T16:39:39.062Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-f.png",
+      "rawSheetSha256": "bc304ef5891cab9509b0fa2a348e3c5a65ddf525a5f6e74aabf485b1768f4d93",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.3434,
+          "footprintWidthShare": 0.8788,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-29T16:40:20.459Z",
+      "usageUsd": 0.008710442304611207,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A small tilted shield with a diagonal stripe beside a pale rock heap, with green grass tufts; too small and muddled at 48 px.",
+        "reviewedAt": "2026-10-29T16:44:37.260Z"
+      }
+    },
+    "icon-action-fortify-g": {
+      "id": "icon-action-fortify-g",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "sync-ee633a26-ff1b-4c91-9b8a-dfcab3e0f9b5",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5966,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, pedestal, stone slab"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, stone slab",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, stone slab."
+      },
+      "submittedAt": "2026-10-29T16:40:20.462Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-g.png",
+      "rawSheetSha256": "56dd89aeeba4622ade9f9ab2ddd83c53bcde473ccd3f833cb97cbd1b558d2021",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1648,
+          "footprintWidthShare": 0.6757,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-29T16:40:58.444Z",
+      "usageUsd": 0.00790985843870375,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A good shield in front of sandbags, but the bags and the shield edge lack the thick black outline of the other icons, and the browns read muddy on the dark panel.",
+        "reviewedAt": "2026-10-29T16:44:37.562Z"
+      }
+    },
+    "icon-action-fortify-h": {
+      "id": "icon-action-fortify-h",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "18349f95-9fbc-4bbb-a9f7-f35200f22cf4",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5967,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+        "editInstruction": "Change only one thing: replace the green grass patch under the shield with more of the same plump pale cream cloth sandbags, so the point of the shield is planted in a low curved pile of cream sandbags that stands on nothing, with a transparent background below it. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe, the thick black outline and the art style exactly the same.",
+        "source": {
+          "recipe": "icon-action-fortify-a",
+          "candidate": 0,
+          "sha256": "0788dd0496de23560117fff682d43799c138dbe30fe6b19637e7b0a93fb4aae7"
+        }
+      },
+      "submittedAt": "2026-10-29T16:41:45.610Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-h.png",
+      "rawSheetSha256": "6ff252c0518c76683dd3373cf6dc9ee00a6795fe073cf5026139300cb32ae997",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3223,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3223,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-29T16:42:32.132Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Bead pulp_wars-je3v: a light steel kite shield with a pale birch rim and a cream stripe, its point planted in a low pile of cream sandbags; thick black outline, lit from the upper left, no ground. Reads as a shield dug in at 24 to 48 px on light and dark panels, and is clearly not the Barricade stakes or the Walls reward.",
+        "reviewedAt": "2026-10-29T16:44:38.679Z"
+      }
+    },
+    "icon-action-fortify-i": {
+      "id": "icon-action-fortify-i",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "b382b884-a1d3-473f-b4b4-aaa3b250ae13",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5968,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: redraw the small dark brown shapes at the lower left and the lower right of the shield as plump pale cream cloth sandbags, two stacked on each side, each tied with string, with a thick black outline. Do not redraw anything else: keep the light steel kite shield with its pale birch rim and cream stripe and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-fortify-e",
+          "candidate": 1,
+          "sha256": "ffe5611f83d8698b91249cad21a0c1475e0c3fb5220d09f345bd71d8bdc2d559"
+        }
+      },
+      "submittedAt": "2026-10-29T16:42:32.137Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-i.png",
+      "rawSheetSha256": "b6d1340f492d90dd375807177f0c797168bf3bf7566bef415dc6fa1c590d6dc8",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.109,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.109,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-29T16:43:03.470Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates draw the sandbags as tied sacks that read as money or flour bags, not as a defence.",
+        "reviewedAt": "2026-10-29T16:44:37.851Z"
+      }
+    },
+    "icon-action-fortify-j": {
+      "id": "icon-action-fortify-j",
+      "asset": "chibi-icon-action-fortify",
+      "jobId": "sync-a1bfb129-7644-43f6-b913-d588b796124d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-fortify",
+        "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5969,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The sandbags are plump, pale cream and clearly sacks, piled in a low curve on both sides of the shield's point; every shape has the same thick black outline; nothing under them.",
+            "negative": "person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, pedestal, stone slab"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image. The sandbags are plump, pale cream and clearly sacks, piled in a low curve on both sides of the shield's point; every shape has the same thick black outline; nothing under them.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, stone slab",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Fortify: one big light steel kite shield with a pale birch wooden rim and one wide cream stripe down its middle, standing upright with its point planted in the ground, and behind it a low curved wall of three chunky stacked cream cloth sandbags tied with string; no person, nothing else in the image. The sandbags are plump, pale cream and clearly sacks, piled in a low curve on both sides of the shield's point; every shape has the same thick black outline; nothing under them. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, feet, face, stakes, fence, spikes, sword, grass, ground, base, plate, stone slab."
+      },
+      "submittedAt": "2026-10-29T16:43:03.478Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-fortify-j.png",
+      "rawSheetSha256": "f5af103d80998b230b68d1c2c15f36c0ca2131a44648a96dd9712f7879a5f2fd",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-29T16:43:36.576Z",
+      "usageUsd": 0.00786273569530911,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The sandbags read as money bags beside a shield with a diagonal stripe; busier than the accepted take.",
+        "reviewedAt": "2026-10-29T16:44:38.120Z"
+      }
+    },
     "icon-action-pillage-a": {
       "id": "icon-action-pillage-a",
       "asset": "chibi-icon-action-pillage",
@@ -4857,6 +5629,50 @@
       },
       "notes": "Disband: an empty steel helmet left on the ground beside a small cloth bundle; the soldier has gone home; reads at 48 px.",
       "acceptedAt": "2026-09-29T20:23:02.752Z"
+    },
+    "chibi-icon-action-fortify": {
+      "id": "chibi-icon-action-fortify",
+      "subject": "ICON:ACTION:BUILD_FIELD_DEFENSE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-fortify-h",
+      "candidate": 1,
+      "candidateSha256": "ac665209eb81a9509d7554cb9dc9c45786bb3a6e7333e0ebb4824d8bf326332a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-fortify.png",
+        "sha256": "ac665209eb81a9509d7554cb9dc9c45786bb3a6e7333e0ebb4824d8bf326332a",
+        "pixelSha256": "ba3bf1ad86a121bfcd6a29456559437cea34b92e9421a72436b71fb903a118f6",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.3223,
+        "footprintWidthShare": 1,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-je3v: a light steel kite shield with a pale birch rim and a cream stripe, its point planted in a low pile of cream sandbags; thick black outline, lit from the upper left, no ground. Reads as a shield dug in at 24 to 48 px on light and dark panels, and is clearly not the Barricade stakes or the Walls reward.",
+      "acceptedAt": "2026-10-29T16:44:38.679Z"
     },
     "chibi-icon-action-pillage": {
       "id": "chibi-icon-action-pillage",

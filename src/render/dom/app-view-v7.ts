@@ -10304,7 +10304,9 @@ export class Ruleset7DomAppView {
         action.prepend(
           uiIconV7(this.#document, factionIcon, "v7-ui-icon v7-command-icon"),
         );
-      if (command.kind === "BUILD_FIELD_DEFENSE")
+      // Fortify shows its PixelLab icon since bead pulp_wars-je3v; the
+      // classic look (no raster) keeps the vector tactical symbol.
+      if (command.kind === "BUILD_FIELD_DEFENSE" && commandArt === null)
         action.prepend(
           createTacticalSymbolV7(
             this.#document,
