@@ -150,6 +150,47 @@ export function combatJuiceChestFixtureV7(seat: 0 | 1 = 0): GameStateV7 {
   );
 }
 
+/**
+ * Bead pulp_wars-es7b: a plain move that reveals a unit. The Human Fighter
+ * at (5, 2) walks to (5, 3), and its sight finds a Goblin Fighter at
+ * (6, 4) on ground the Human has not explored (the band x 3–7, y 4–5).
+ */
+export const COMBAT_JUICE_REVEAL_UI_V7 = {
+  mover: { x: 5, y: 2 },
+  to: { x: 5, y: 3 },
+  hidden: { x: 6, y: 4 },
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+/** The Human's turn, with fog over the Goblin the walk reveals. */
+export function combatJuiceRevealFixtureV7(): GameStateV7 {
+  const at = COMBAT_JUICE_REVEAL_UI_V7;
+  const arena = goblinArenaV7(
+    ["ORIGINAL", "GOBLIN"],
+    [
+      { seat: 0, role: "FIGHTER", at: at.mover },
+      { seat: 1, role: "FIGHTER", at: at.hidden },
+    ],
+    { activeSeat: 0 },
+  );
+  const fogged = (cell: CoordV7): boolean =>
+    cell.x >= 3 && cell.x <= 7 && cell.y >= 4 && cell.y <= 5;
+  return unlocked(
+    checkedV7({
+      ...arena,
+      players: arena.players.map((player) =>
+        player.id === arena.humanPlayerId
+          ? {
+              ...player,
+              explored: arena.board.tiles
+                .map((tile) => tile.at)
+                .filter((cell) => !fogged(cell)),
+            }
+          : player,
+      ),
+    }),
+  );
+}
+
 /** Achievements unlocked in advance, so no notice covers the board. */
 function unlocked(state: GameStateV7): GameStateV7 {
   return checkedV7({

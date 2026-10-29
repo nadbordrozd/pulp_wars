@@ -884,6 +884,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/martian-board-plan-v7.ts::martianPickTargetsV7": "BOARD",
     "src/render/canvas/presentation-plan-v7.ts::corePresentationPlanV7":
       "BOARD",
+    // `pulp_wars-es7b`: the units a reveal's crossfade draws, on the board.
+    "src/render/canvas/presentation-plan-v7.ts::visibilityCrossfadeFromV7":
+      "BOARD",
     "src/render/dinosaur-presentation-v7.ts::chargePreviewLinesV7": "BOARD",
     "src/render/dinosaur-presentation-v7.ts::dinosaurBoundaryNoticeV7": "BOARD",
     "src/render/dinosaur-presentation-v7.ts::dinosaurFieldDefenseBlockedV7":

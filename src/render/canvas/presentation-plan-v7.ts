@@ -2598,3 +2598,38 @@ export function bombFlightPathV7(
   }
   return path;
 }
+
+/**
+ * Bead pulp_wars-es7b: the view a `VISIBILITY_CROSSFADE` at `index` fades
+ * from. The board already shows every unit that walked or slid earlier in
+ * the boundary at its result, so the view before the boundary would draw
+ * such a unit faintly on its old tile as well as on its new one. The view
+ * before is kept for everything else (the revealed or concealed units and
+ * the ground); each unit that moved is as the view after has it, or gone
+ * when the view after no longer shows it. The view before itself when no
+ * unit has moved yet.
+ */
+export function visibilityCrossfadeFromV7(
+  steps: readonly CorePresentationStepV7[],
+  index: number,
+  before: PlayerViewV7,
+  after: PlayerViewV7,
+): PlayerViewV7 {
+  const moved = new Set<number>();
+  for (const step of steps.slice(0, index))
+    if (step.kind === "MOVE") moved.add(step.unitId);
+  if (moved.size === 0) return before;
+  const units = before.units.flatMap((unit) => {
+    if (!moved.has(unit.id)) return [unit];
+    const shown = after.units.find((candidate) => candidate.id === unit.id);
+    return shown === undefined ? [] : [shown];
+  });
+  // A unit that walked into sight is drawn whole at its end as well.
+  for (const unit of after.units)
+    if (
+      moved.has(unit.id) &&
+      !before.units.some((candidate) => candidate.id === unit.id)
+    )
+      units.push(unit);
+  return { ...before, units };
+}

@@ -147,6 +147,7 @@ import {
   corePresentationPlanV7,
   type CorePresentationStepV7,
   type PresentationStepCueV7,
+  visibilityCrossfadeFromV7,
 } from "./presentation-plan-v7";
 import { selectionJumpDurationMs } from "./selection-jump-presentation";
 import {
@@ -2393,9 +2394,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         await this.#animateImpact(step.to, 100 * durationScale);
         if (token !== this.#presentationToken) return;
       } else if (step.kind === "VISIBILITY_CROSSFADE") {
-        this.#crossfade = { before, after, progress: 0 };
+        // Bead pulp_wars-es7b: a unit that has walked stays whole at its
+        // end; only what the boundary reveals or hides fades.
+        const from = visibilityCrossfadeFromV7(steps, index, before, after);
+        this.#crossfade = { before: from, after, progress: 0 };
         await this.#animate(step.durationMs * durationScale, (progress) => {
-          this.#crossfade = { before, after, progress };
+          this.#crossfade = { before: from, after, progress };
           this.#draw();
         });
         if (token !== this.#presentationToken) return;
