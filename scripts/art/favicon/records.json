@@ -1,0 +1,704 @@
+{
+  "goblin-head-48-a": {
+    "id": "goblin-head-48-a",
+    "jobId": "sync-2cb5a730-4390-4986-bfe0-c10221e3d8f0",
+    "at": "2026-10-29T10:35:12.791Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 51001,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.007337310261196561,
+    "candidates": [
+      {
+        "file": "goblin-head-48-a-0.png",
+        "sha256": "94a03b8e63d9d26763ed3bf1bb45d93d5107b8a67a545e71ee84a9b194402b4a"
+      }
+    ]
+  },
+  "goblin-head-48-b": {
+    "id": "goblin-head-48-b",
+    "jobId": "sync-f3bb717d-7f67-4689-bfbd-80d1463bfeda",
+    "at": "2026-10-29T10:35:42.525Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 51002,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.007509051216973199,
+    "candidates": [
+      {
+        "file": "goblin-head-48-b-0.png",
+        "sha256": "a2dc0447159414e302561de5c6537f8e604b88c848811160ade94b9465597c92"
+      }
+    ]
+  },
+  "sword-shield-48-a": {
+    "id": "sword-shield-48-a",
+    "jobId": "sync-bf9c777c-1f3c-46e9-a980-4de9d15922eb",
+    "at": "2026-10-29T10:36:06.341Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a chunky cartoon heater shield in crimson red, colour #c4261c, with a thick bright gold rim, colour #f0b93f, and one big simple gold star in the middle, in front of two crossed oversized silver steel swords with gold crossguards, the blade tips poking out at the two top corners and the hilts at the two bottom corners; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, face, hand, skull, wings, crown, ribbon, banner, scroll.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 52001,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a chunky cartoon heater shield in crimson red, colour #c4261c, with a thick bright gold rim, colour #f0b93f, and one big simple gold star in the middle, in front of two crossed oversized silver steel swords with gold crossguards, the blade tips poking out at the two top corners and the hilts at the two bottom corners; nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.00715790515475803,
+    "candidates": [
+      {
+        "file": "sword-shield-48-a-0.png",
+        "sha256": "4ba0f7dd8779ffe5dfd26a177efd30121b10970a186dfc9d08510baa1f1033b5"
+      }
+    ]
+  },
+  "sword-shield-48-b": {
+    "id": "sword-shield-48-b",
+    "jobId": "sync-fa979046-cb18-40e6-92c7-40e8659e119c",
+    "at": "2026-10-29T10:36:31.187Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a chunky cartoon heater shield in crimson red, colour #c4261c, with a thick bright gold rim, colour #f0b93f, and one big simple gold star in the middle, in front of two crossed oversized silver steel swords with gold crossguards, the blade tips poking out at the two top corners and the hilts at the two bottom corners; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, face, hand, skull, wings, crown, ribbon, banner, scroll.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 52002,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a chunky cartoon heater shield in crimson red, colour #c4261c, with a thick bright gold rim, colour #f0b93f, and one big simple gold star in the middle, in front of two crossed oversized silver steel swords with gold crossguards, the blade tips poking out at the two top corners and the hilts at the two bottom corners; nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.007446256611082289,
+    "candidates": [
+      {
+        "file": "sword-shield-48-b-0.png",
+        "sha256": "d60cc23cdceaf06708b5a81a11bbcdc97fa1e20a142c933225b9114f19fcc352"
+      }
+    ]
+  },
+  "dino-head-48-a": {
+    "id": "dino-head-48-a",
+    "jobId": "sync-7fcf1cff-00e1-4642-95ad-fd89acef11c9",
+    "at": "2026-10-29T10:37:09.120Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute friendly T-rex, facing the viewer and turned a little to the right: an enormous boxy deep blue head, colour #3b6fb6, with a pale cream lower jaw, a wide open goofy grin with a row of big chunky cream teeth, big round friendly eyes with black pupils and a crest of small bright orange spikes over the brow; only the head and a short neck, no body, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, legs, arms, scary, horror, blood, red.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 53001,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute friendly T-rex, facing the viewer and turned a little to the right: an enormous boxy deep blue head, colour #3b6fb6, with a pale cream lower jaw, a wide open goofy grin with a row of big chunky cream teeth, big round friendly eyes with black pupils and a crest of small bright orange spikes over the brow; only the head and a short neck, no body, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.008359388298458524,
+    "candidates": [
+      {
+        "file": "dino-head-48-a-0.png",
+        "sha256": "5df7f4d53cbf9a7584b4e4260d4df7eb337063576917ba03d21d96e4028b5601"
+      }
+    ]
+  },
+  "dino-head-48-b": {
+    "id": "dino-head-48-b",
+    "jobId": "sync-90201fc9-e6df-47fb-9ca9-03ee857af210",
+    "at": "2026-10-29T10:38:00.013Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute friendly T-rex, facing the viewer and turned a little to the right: an enormous boxy deep blue head, colour #3b6fb6, with a pale cream lower jaw, a wide open goofy grin with a row of big chunky cream teeth, big round friendly eyes with black pupils and a crest of small bright orange spikes over the brow; only the head and a short neck, no body, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, legs, arms, scary, horror, blood, red.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 53002,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute friendly T-rex, facing the viewer and turned a little to the right: an enormous boxy deep blue head, colour #3b6fb6, with a pale cream lower jaw, a wide open goofy grin with a row of big chunky cream teeth, big round friendly eyes with black pupils and a crest of small bright orange spikes over the brow; only the head and a short neck, no body, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.00868529166115655,
+    "candidates": [
+      {
+        "file": "dino-head-48-b-0.png",
+        "sha256": "780f9a4f8de20735a745f6af0db84abe05cd36144ed0b34ad840d39ddd5ecd47"
+      }
+    ]
+  },
+  "goblin-head-48-c": {
+    "id": "goblin-head-48-c",
+    "jobId": "sync-6a9aa356-c177-4400-b829-cc75f05cbc39",
+    "at": "2026-10-29T10:39:10.519Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 51003,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.007331592745251126,
+    "candidates": [
+      {
+        "file": "goblin-head-48-c-0.png",
+        "sha256": "fc5e9053de99d5c346180aed90c3f793985f9878a0bbd462c12ef456ffe73b68"
+      }
+    ]
+  },
+  "goblin-head-32-a": {
+    "id": "goblin-head-32-a",
+    "jobId": "sync-d4f98666-0a08-48b1-bbfc-38c958dbc331",
+    "at": "2026-10-29T10:39:41.674Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51101,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.007729352898067898,
+    "candidates": [
+      {
+        "file": "goblin-head-32-a-0.png",
+        "sha256": "9ead18fa7848d1684ff8b313a3a15151a647dd230b8fb51d046acdb39edb4013"
+      }
+    ]
+  },
+  "goblin-head-32-b": {
+    "id": "goblin-head-32-b",
+    "jobId": "sync-3aa7ebaa-c5be-4883-8646-45d3cbcf878c",
+    "at": "2026-10-29T10:40:01.821Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51102,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.006715707408057319,
+    "candidates": [
+      {
+        "file": "goblin-head-32-b-0.png",
+        "sha256": "4d53152822b5e6a9fb1b37700db50c66ba7848e2347c6be4a5135b0d7b1e17b9"
+      }
+    ]
+  },
+  "goblin-head-32-c": {
+    "id": "goblin-head-32-c",
+    "jobId": "sync-92684109-e95e-44ab-b98d-a85553f8a49f",
+    "at": "2026-10-29T10:40:19.826Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51001,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image."
+        }
+      ]
+    },
+    "usageUsd": 0.006540038771099515,
+    "candidates": [
+      {
+        "file": "goblin-head-32-c-0.png",
+        "sha256": "ce0adc4230dd4cfcbe624ad9b5ef415ca65d9b2d9f8eb30fa6037e3b814be54e"
+      }
+    ]
+  },
+  "goblin-head-32-d": {
+    "id": "goblin-head-32-d",
+    "jobId": "sync-fccb7c52-cc93-460e-9742-95517c3459b5",
+    "at": "2026-10-29T10:42:04.081Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51201,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else."
+        }
+      ]
+    },
+    "usageUsd": 0.007435080236858791,
+    "candidates": [
+      {
+        "file": "goblin-head-32-d-0.png",
+        "sha256": "a7e1ba81c0b8f47eae32c363fd4693f3dac0cb5156e0595e55142b063e2c89da"
+      }
+    ]
+  },
+  "goblin-head-32-e": {
+    "id": "goblin-head-32-e",
+    "jobId": "sync-c56f3677-3a07-422a-8919-bce7af5525c2",
+    "at": "2026-10-29T10:42:44.820Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51202,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else."
+        }
+      ]
+    },
+    "usageUsd": 0.008758011870914035,
+    "candidates": [
+      {
+        "file": "goblin-head-32-e-0.png",
+        "sha256": "ca89098962e40b6e04f11df5cae417b309c5d32654b8fcbb2a0506a37ee5e375"
+      }
+    ]
+  },
+  "goblin-head-32-f": {
+    "id": "goblin-head-32-f",
+    "jobId": "sync-df8bb21b-13ee-416a-91b6-2755ff573357",
+    "at": "2026-10-29T10:43:20.507Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51203,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else."
+        }
+      ]
+    },
+    "usageUsd": 0.007703481674194336,
+    "candidates": [
+      {
+        "file": "goblin-head-32-f-0.png",
+        "sha256": "748ccd3b7125140365639b6163f08108a561bece420db88ae2bfb5275c4cd7fc"
+      }
+    ]
+  },
+  "goblin-head-32-g": {
+    "id": "goblin-head-32-g",
+    "jobId": "sync-283dac85-4ab4-47c0-a870-027b04088a58",
+    "at": "2026-10-29T10:43:38.823Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 32,
+        "height": 32
+      },
+      "no_background": true,
+      "seed": 51204,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else."
+        }
+      ]
+    },
+    "usageUsd": 0.006567209190792508,
+    "candidates": [
+      {
+        "file": "goblin-head-32-g-0.png",
+        "sha256": "c0d49077536434c083bb9f7e51f2b1516ab086531f8cf43a35cd1c66ff054698"
+      }
+    ]
+  },
+  "goblin-head-48-d": {
+    "id": "goblin-head-48-d",
+    "jobId": "sync-2fd86e5d-56e2-49a1-8d91-c7c1a35bd45c",
+    "at": "2026-10-29T10:44:23.889Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 51204,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else."
+        }
+      ]
+    },
+    "usageUsd": 0.006962364090813531,
+    "candidates": [
+      {
+        "file": "goblin-head-48-d-0.png",
+        "sha256": "02fe5c71f6676d3f5f8d3f5194dd152118caec07e77e58d50245cf85340ade23"
+      }
+    ]
+  },
+  "goblin-head-48-e": {
+    "id": "goblin-head-48-e",
+    "jobId": "sync-e2c02dee-9c7a-4d0c-a964-fb735f7390d8",
+    "at": "2026-10-29T10:44:53.108Z",
+    "request": {
+      "endpoint": "create-image-pixen",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, body, shoulders, hands, weapon, red cloth, skull, horror, grey skin.",
+      "image_size": {
+        "width": 48,
+        "height": 48
+      },
+      "no_background": true,
+      "seed": 51205,
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east",
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else."
+        }
+      ]
+    },
+    "usageUsd": 0.0075897940264807815,
+    "candidates": [
+      {
+        "file": "goblin-head-48-e-0.png",
+        "sha256": "26edd333ed443db180e7dd86fbf30d8eb8229d9532b2f4e58b38f4d368c599aa"
+      }
+    ]
+  }
+}

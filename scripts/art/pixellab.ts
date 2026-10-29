@@ -45,6 +45,7 @@ import { forestPieceProblems } from "./chibi-forest-pieces";
 import { mountainRangeProblems } from "./chibi-mountain-ranges";
 import { submergedSubmarineProblems } from "./naval-branch/submerged";
 import { campaignPictureProblems } from "./campaign-pictures";
+import { faviconProblems } from "./favicon";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -719,6 +720,8 @@ async function main(): Promise<void> {
       ...(await submergedSubmarineProblems(ROOT)),
       // The campaign pictures (pulp_wars-hmyk.13): the reviewed candidates.
       ...(await campaignPictureProblems(ROOT)),
+      // The favicon (pulp_wars-beh7): derived from its reviewed takes.
+      ...(await faviconProblems(ROOT)),
     ];
     if (chibiProblems.length > 0)
       throw new Error(

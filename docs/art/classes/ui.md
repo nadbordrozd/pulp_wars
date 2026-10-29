@@ -25,6 +25,31 @@
 > that art, its inventories, gates and review commands, is history (see the
 > [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-art-of-the-old-prototypes)).
 
+## Favicon (bead `pulp_wars-beh7`)
+
+The browser-tab and home-screen icon is the Goblin mascot's head: a
+cheerful lime goblin with a tan cap, ears out to the edges and big cream
+eyes, chosen over a sword-and-shield crest and a T-Rex head because its
+silhouette and face still read at 16 px. It comes from
+[`scripts/art/favicon.ts`](../../../scripts/art/favicon.ts) (recipes,
+review verdicts and the size derivation in `scripts/art/favicon/`), which
+records every PixelLab request like the other pipelines; the rejected
+takes stay outside the repository and only the two accepted takes are
+checked in, under `art/favicon/` with the contact sheet.
+
+| File (under `public/`) | Source                                                                    |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `favicon-48.png`       | the 48 px take, as generated                                              |
+| `favicon-32.png`       | a 32 px take, generated at its size (bolder outline, bigger eyes)         |
+| `favicon-16.png`       | the 32 px take halved by 2 x 2 area average, then recorded hand edits     |
+| `favicon.ico`          | the 16, 32 and 48 px images (PNG entries)                                 |
+| `apple-touch-icon.png` | the 48 px take enlarged 3x (whole pixels) on an opaque cream 180 px plate |
+
+`index.html` links all of them with root-relative URLs, which Vite
+prefixes with the GitHub Pages base in a build; the build's asset manifest
+lists them like any other file. `art:validate` derives every file again
+(`faviconProblems`).
+
 ## Ruleset-7 revision-9 action and status inventory
 
 The approved

@@ -1,0 +1,283 @@
+{
+  "bead": "pulp_wars-beh7",
+  "shared": {
+    "klass": "Class: one bold chunky game mascot sprite with a single clear subject and a big simple silhouette that still reads as a tiny browser tab picture of 16 pixels, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details. The subject fills almost the whole square with only a one or two pixel margin and floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+    "negative": "icon frame, round badge, medallion, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers",
+    "headOptions": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "itemOptions": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "goblin": "Subject: the head of a chunky cute cheeky goblin, the mascot of the game, facing the viewer and turned a little to the right: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways to the edges of the image, big round cream eyes with black pupils, a long pointy nose and a wide toothy grin, a small pale sand-buff leather cap; only the head and a short neck, no body, no hands, nothing else in the image.",
+    "goblinSmall": "Subject: the head of a chunky cute cheeky goblin facing the viewer, drawn very simply for a tiny 32 pixel picture: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two big pointed ears sticking straight out sideways to the edges of the image, two huge round cream eyes with big black pupils taking up a third of the face, a long pointy nose and a wide open grin with a red tongue, a tan leather cap tilted on top; only the head, nothing else.",
+    "goblinNegative": "body, shoulders, hands, weapon, red cloth, skull, horror, grey skin",
+    "crest": "Subject: a chunky cartoon heater shield in crimson red, colour #c4261c, with a thick bright gold rim, colour #f0b93f, and one big simple gold star in the middle, in front of two crossed oversized silver steel swords with gold crossguards, the blade tips poking out at the two top corners and the hilts at the two bottom corners; nothing else in the image.",
+    "crestNegative": "person, face, hand, skull, wings, crown, ribbon, banner, scroll",
+    "dino": "Subject: the head of a chunky cute friendly T-rex, facing the viewer and turned a little to the right: an enormous boxy deep blue head, colour #3b6fb6, with a pale cream lower jaw, a wide open goofy grin with a row of big chunky cream teeth, big round friendly eyes with black pupils and a crest of small bright orange spikes over the brow; only the head and a short neck, no body, nothing else in the image.",
+    "dinoNegative": "body, legs, arms, scary, horror, blood, red"
+  },
+  "recipes": [
+    {
+      "id": "goblin-head-48-a",
+      "concept": "GOBLIN_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 51001,
+      "subject": "@goblin",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "ACCEPTED (48 px, apple-touch): cheerful lime goblin, big cream eyes, ears to the edges, tan cap; the clearest silhouette of the concepts"
+      }
+    },
+    {
+      "id": "goblin-head-48-b",
+      "concept": "GOBLIN_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 51002,
+      "subject": "@goblin",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: neck and collar, small in its square, sleepy eyes"
+      }
+    },
+    {
+      "id": "goblin-head-48-c",
+      "concept": "GOBLIN_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 51003,
+      "subject": "@goblin",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: grumpy look, muddy olive skin"
+      }
+    },
+    {
+      "id": "goblin-head-32-a",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51101,
+      "subject": "@goblin",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: eyes too small to read at 16 px"
+      }
+    },
+    {
+      "id": "goblin-head-32-b",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51102,
+      "subject": "@goblin",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: dark teal skin, cut-off neck"
+      }
+    },
+    {
+      "id": "goblin-head-32-c",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51001,
+      "subject": "@goblin",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: a whole figure, not a head"
+      }
+    },
+    {
+      "id": "goblin-head-32-d",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51201,
+      "subject": "@goblinSmall",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: no black outline, red band on the cap"
+      }
+    },
+    {
+      "id": "goblin-head-32-e",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51202,
+      "subject": "@goblinSmall",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: round coin badge behind the head"
+      }
+    },
+    {
+      "id": "goblin-head-32-f",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51203,
+      "subject": "@goblinSmall",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: eyes muddy at 32 px"
+      }
+    },
+    {
+      "id": "goblin-head-32-g",
+      "concept": "GOBLIN_HEAD",
+      "width": 32,
+      "height": 32,
+      "seed": 51204,
+      "subject": "@goblinSmall",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "ACCEPTED (32 px, source of the 16 px): bold outline, huge eyes, open grin; the most readable at tab size"
+      }
+    },
+    {
+      "id": "goblin-head-48-d",
+      "concept": "GOBLIN_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 51204,
+      "subject": "@goblinSmall",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: small in its square, empty bottom third"
+      }
+    },
+    {
+      "id": "goblin-head-48-e",
+      "concept": "GOBLIN_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 51205,
+      "subject": "@goblinSmall",
+      "negative": "@goblinNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED: orange cap reads as a red hat, lopsided"
+      }
+    },
+    {
+      "id": "sword-shield-48-a",
+      "concept": "SWORD_SHIELD",
+      "width": 48,
+      "height": 48,
+      "seed": 52001,
+      "subject": "@crest",
+      "negative": "@crestNegative",
+      "options": "@itemOptions",
+      "review": {
+        "0": "REJECTED (concept): busy crest, a red and gold blob at 16 px"
+      }
+    },
+    {
+      "id": "sword-shield-48-b",
+      "concept": "SWORD_SHIELD",
+      "width": 48,
+      "height": 48,
+      "seed": 52002,
+      "subject": "@crest",
+      "negative": "@crestNegative",
+      "options": "@itemOptions",
+      "review": {
+        "0": "REJECTED (concept): as -a, and generic"
+      }
+    },
+    {
+      "id": "dino-head-48-a",
+      "concept": "DINO_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 53001,
+      "subject": "@dino",
+      "negative": "@dinoNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED (concept): neck cut by the bottom edge"
+      }
+    },
+    {
+      "id": "dino-head-48-b",
+      "concept": "DINO_HEAD",
+      "width": 48,
+      "height": 48,
+      "seed": 53002,
+      "subject": "@dino",
+      "negative": "@dinoNegative",
+      "options": "@headOptions",
+      "review": {
+        "0": "REJECTED (concept): cute and readable, but the goblin is the stronger mascot"
+      }
+    }
+  ],
+  "favicon": {
+    "large": {
+      "recipe": "goblin-head-48-a",
+      "candidate": 0
+    },
+    "small": {
+      "recipe": "goblin-head-32-g",
+      "candidate": 0
+    },
+    "tiny": {
+      "edits": [
+        [9, 1, "#c27848"],
+        [10, 2, "#9c5d34"],
+        [11, 2, "#9c5d34"],
+        [8, 3, "#311b0e"],
+        [9, 3, "#311b0e"],
+        [10, 3, "#311b0e"],
+        [11, 3, "#311b0e"],
+        [6, 6, "#f6f2d8"],
+        [7, 6, "#f6f2d8"],
+        [8, 6, "#22a83c"],
+        [6, 7, "#f6f2d8"],
+        [7, 7, "#17181c"],
+        [8, 7, "#22a83c"],
+        [8, 8, "#22a83c"],
+        [6, 8, "#f6f2d8"],
+        [7, 8, "#17181c"],
+        [6, 9, "#1a7e2d"],
+        [7, 9, "#1a7e2d"],
+        [11, 6, "#f6f2d8"],
+        [12, 6, "#f6f2d8"],
+        [11, 7, "#f6f2d8"],
+        [12, 7, "#17181c"],
+        [13, 7, "#17181c"],
+        [11, 8, "#f6f2d8"],
+        [12, 8, "#17181c"],
+        [13, 8, "#0f4c2d"],
+        [11, 9, "#1d621d"],
+        [12, 9, "#1d621d"],
+        [9, 13, "#0e5331"]
+      ]
+    },
+    "appleTouch": {
+      "size": 180,
+      "scale": 3,
+      "background": "#f6eedc"
+    }
+  }
+}
