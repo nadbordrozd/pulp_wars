@@ -285,7 +285,7 @@ describe("hosting", () => {
     const start = required<HTMLButtonElement>('[data-action="online-start"]');
     expect(start.disabled).toBe(false);
     start.click();
-    await waitUntil(() => screen() === "started");
+    await waitUntil(() => started.mock.calls.length > 0);
     await waitUntil(() => guest.state.screen === "STARTED");
     expect(started).toHaveBeenCalledTimes(1);
     const handoff = started.mock.calls[0]?.[0] as OnlineMatchHandoffV7;
@@ -295,10 +295,11 @@ describe("hosting", () => {
       "DWARF",
     ]);
     expect(handoff.client.setup.aiCount).toBe(3);
-    expect(required(".v7-online-started").textContent).toContain(
-      "You lead the Goblin.",
+    // The match screen takes the hand-off over (pulp_wars-eqc6.3).
+    await waitUntil(
+      () => document.querySelector('[data-v7-region="hud"]') !== null,
     );
-    handoff.client.stop();
+    expect(screen()).toBeUndefined();
   });
 
   it("Leave closes the lobby and clears the address", async () => {

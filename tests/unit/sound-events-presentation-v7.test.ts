@@ -1180,4 +1180,27 @@ describe("sounds of a boundary", () => {
       ]).essential,
     ).toEqual([{ id: "match.defeat", delayMs: 0 }]);
   });
+
+  it("plays the victory tune online only to the winner (pulp_wars-eqc6.3)", () => {
+    const online: PlayerViewV7 = {
+      ...view,
+      setup: { ...view.setup, humanSeats: [0, 1] },
+    };
+    const ended = (winnerId: PlayerId) =>
+      soundCuesForBoundaryV7(
+        online,
+        {
+          format: "pulp-wars-player-events",
+          version: 7,
+          viewerId: viewer,
+          commandIndex: view.commandIndex,
+          events: [
+            { kind: "MATCH_ENDED", outcome: { kind: "VICTORY", winnerId } },
+          ],
+        },
+        online,
+      ).essential;
+    expect(ended(viewer)).toEqual([{ id: "match.victory", delayMs: 0 }]);
+    expect(ended(other)).toEqual([{ id: "match.defeat", delayMs: 0 }]);
+  });
 });

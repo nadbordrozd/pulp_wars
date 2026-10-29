@@ -582,6 +582,42 @@ export class OnlineLobbySessionV7 {
     this.#home(null);
   }
 
+  /**
+   * The match is over or left (`pulp_wars-eqc6.3`): its code is forgotten
+   * and taken out of the address, so a reload no longer resumes it. The
+   * screen stays on the hand-off until {@link closeMatch}.
+   */
+  forgetMatch(): void {
+    if (this.#state.screen !== "STARTED") return;
+    this.#forget();
+    this.#clearCodeFromAddress();
+  }
+
+  /**
+   * The match screen let the hand-off go: back on the home screen (Host a
+   * game, Join with code), the code forgotten when `forget` (a game that
+   * is over or left; never when the match is only put aside).
+   */
+  closeMatch(forget = true): void {
+    if (this.#state.screen !== "STARTED") return;
+    if (forget) this.forgetMatch();
+    this.#epoch += 1;
+    this.#stopWatching();
+    this.#set({
+      screen: "HOME",
+      busy: null,
+      code: null,
+      match: null,
+      mySeat: null,
+      message: null,
+      shareLink: null,
+      offline: false,
+      handoff: null,
+      options: this.#storedOptions(),
+      pick: storedPick(this.#read(ONLINE_PICK_STORAGE_KEY_V7)),
+    });
+  }
+
   destroy(): void {
     this.#destroyed = true;
     this.#stopWatching();

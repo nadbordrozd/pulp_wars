@@ -3295,6 +3295,41 @@ html:has(.v7-match-shell) body {
   display: none;
 }
 
+/*
+ * Online play (pulp_wars-eqc6.3): requests failing and being retried, a
+ * small chip beside the turn line (compact HUD: no panel).
+ */
+.v7-online-connection {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0.2rem 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  white-space: nowrap;
+  box-shadow: var(--pw-shadow-sm);
+}
+
+/* The online "Your turn" cue: the turn line, lit for a moment. */
+.v7-turn-status[data-turn="cue"] {
+  background: var(--pw-yellow);
+  animation: v7-toast-in 180ms ease-out;
+}
+
+.v7-turn-status[data-turn="cue"]::before {
+  display: none;
+}
+
+.v7-online-result {
+  margin: 0;
+  font-weight: var(--pw-fw-bold);
+}
+
 .v7-turn-status[data-turn="human"] {
   position: absolute;
   width: 1px;

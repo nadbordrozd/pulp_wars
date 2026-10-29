@@ -2,10 +2,11 @@
 
 **Status:** the core (`pulp_wars-eqc6.1`, ruleset `pulp-wars-poc-7r120`):
 engine seats, the match store, three transports, the Firestore rules and the
-lockstep client; the lobby screens (`pulp_wars-eqc6.2`, section 10). The
-in-match screens (`pulp_wars-eqc6.3`) plug in at the lobby's hand-off
-(section 10.4). The epic
-`pulp_wars-eqc6` holds the approved design.
+lockstep client; the lobby screens (`pulp_wars-eqc6.2`, section 10); the
+match itself on the match screen (`pulp_wars-eqc6.3`, section 11), from the
+lobby's hand-off to the end screen. The epic `pulp_wars-eqc6` holds the
+approved design. Before the first real game the user does the two console
+steps of section 1.
 
 Two people play one skirmish, plus optional AI seats, from two browsers.
 Nothing runs on a server: a match is its setup plus an ordered log of
@@ -19,16 +20,27 @@ Code: `src/online/` (`index.ts` re-exports everything). Tests:
 ## 1. Console steps (the user, once)
 
 Agents never touch the live Firebase project (no requests, deploys or
-logins). Before online play works on the deployed site:
+logins). Before online play works on the deployed site, in the
+[Firebase Console](https://console.firebase.google.com/) of the
+`pulp-wars` project:
 
-1. **Enable Anonymous sign-in:** Firebase Console > Authentication >
-   Sign-in method > Add new provider > Anonymous > Enable > Save.
-2. **Publish the rules:** Firebase Console > Firestore Database > Rules,
-   paste the whole of [`firebase/firestore.rules`](../firebase/firestore.rules)
+1. **Enable Anonymous sign-in:** Authentication (press Get started if it
+   was never opened) > Sign-in method > Add new provider > Anonymous >
+   Enable > Save.
+2. **Publish the rules:** Firestore Database > Rules, select everything in
+   the editor, paste the whole of
+   [`firebase/firestore.rules`](../firebase/firestore.rules) in its place
    and press Publish. The leaderboard rules in it are unchanged.
 
 No index is needed: moves are read by document name (`batchGet`), never by
-query.
+query. Nothing else is set up: the site's existing web config (the
+leaderboard's) is used. To check: open the deployed site in two browsers
+(or a normal and a private window), host in one, join with the link in the
+other, and play a turn each. If Host a game says "Couldn't sign in to
+online play", step 1 is missing (or the API key's restrictions leave out
+the Identity Toolkit API); if moves snap back with "That move didn't
+reach the game", a rule refused them (section 5: the rules have never run
+against a real store).
 
 ## 2. Seats and factions
 
@@ -301,6 +313,12 @@ client.stop(); // leaving the screen
 - Cheating is possible (full state in each browser, and a client could log
   any command its rules allow); accepted for a friendly game.
 - The local transport's records stay in `localStorage` until cleared.
+- The host's browser runs the AI seats: while the host's tab is closed, an
+  AI seat's turn waits for it (the guest sees "AI 1 is moving…"); it goes
+  on when the host comes back.
+- An online game cannot be put aside for the menu (there is no save):
+  closing the tab is the way to pause, and a reload or Play online resumes
+  it.
 
 ## 10. The lobby screens (`pulp_wars-eqc6.2`)
 
@@ -392,11 +410,94 @@ interface OnlineMatchHandoffV7 {
 ```
 
 The lobby view calls its `onStarted` once per hand-off, which the app view
-routes to `#openOnlineMatch(handoff)`: the one place `pulp_wars-eqc6.3`
-replaces to show the match. Today it only calls the mount option
-`onOnlineMatchStarted(handoff)` (tests, and a hook for the page), and the
-lobby shows a "Game on!" placeholder. The session stops its own watch at
-the hand-off and keeps the remembered code, so a reload reaches the
-hand-off again; eqc6.3 decides when to forget it (`FINISHED` or
-`ABANDONED`). The view only hands off while it exists, i.e. once Play
-online has been opened in this page (always so for a seated player).
+routes to `#openOnlineMatch(handoff)`: it calls the mount option
+`onOnlineMatchStarted(handoff)` (tests, and a hook for the page) and puts
+the match on the match screen (section 11). The session stops its own watch
+at the hand-off and keeps the remembered code, so a reload reaches the
+hand-off again; the match screen forgets it (`session.forgetMatch()`) once
+the match is `FINISHED` or `ABANDONED`, and `session.closeMatch()` takes
+the session back to its home screen when the match screen closes. The view
+only hands off while it exists, i.e. once Play online has been opened in
+this page (always so for a seated player: the address carries `?join=CODE`
+for the whole match).
+
+## 11. The match screen (`pulp_wars-eqc6.3`)
+
+Code: `src/app/online-match-controller-v7.ts` (`OnlineMatchControllerV7`,
+no DOM), `src/render/dom/controller-switch-v7.ts` (`ControllerSwitchV7`)
+and the online parts of `src/render/dom/app-view-v7.ts`. Tests:
+`tests/unit/online-match-controller-v7.test.ts`,
+`tests/integration/online-match-dom.test.ts`; the two-tab browser check is
+`scripts/browser-online-match-review-v7.ts <dev-server-url>` (a few
+hand-made turns, no match played to its end).
+
+### 11.1 How it fits
+
+- **The same screen.** The online controller has the single-player
+  controller's port (snapshot, subscribe, accepted boundaries, dispatch,
+  `progressAiTurns`, Fast Forward, the calm-playback gate). The app view
+  holds a `ControllerSwitchV7`: at the hand-off it puts the online
+  controller in the single-player one's place, and gives it back when the
+  match screen closes. The board, the HUD, the dock, the technology tree,
+  the playback and its pacing and hurry are the single-player ones. The
+  single-player controller and its autosave are not touched while an
+  online game is open; campaign progress, tribe stars, analytics and the
+  leaderboard never hear of it.
+- **Drawn for this player.** Every view is `viewForV7(state, myPlayerId)`
+  with `humanPlayerId` set to this player (the stored one is always seat
+  0), so "You", the fog, the turn, the sounds and the end screen are this
+  player's.
+- **My turn:** the offered commands are this player's, and each command
+  goes through `client.submit` and is presented as the human's. Pending
+  choices (city rewards) are this player's own, as in single player.
+- **Everyone else's turn:** nothing is offered (look only: pan, zoom,
+  select and inspect, the technology tree read only); the AI flag is up,
+  so the HUD's turn line says "Bob is moving…" or "AI 1 is moving…" (AI
+  seats are named "AI 1", "AI 2"... in seat order, as in the lobby). Each
+  remote move is presented as an AI move: one boundary at a time through
+  the board's pacing gate, so the board never runs ahead of what the
+  player sees and long turns hurry as in single player. The turn line
+  names the player whose move the board is playing until it has caught
+  up, even when the game is already at this player's turn. Skip (Fast
+  Forward) shows only on an AI seat's turn.
+- **Host-run AI.** On an AI seat's turn (`client.aiTurn`) the host's
+  controller runs the Normal AI (`NormalPolicyWorkV7`, with the setup's
+  Easy personality and scale mode) on that seat's view, in slices on the
+  page's AI scheduler (`messageChannelAiSchedulerV7`), behind the same
+  pacing gate, and submits each command; the guest only plays them back.
+  An AI seat opening the turn order is run at once. An AI that fails ends
+  its seat's turn (a developer-mode toast says so) rather than stall the
+  game.
+- **Resume.** A reload reaches the hand-off again (section 10.4) and the
+  lockstep client replays the log; the match screen opens where the game
+  is. The single-player save is never written.
+
+### 11.2 What the players see
+
+- **Your turn:** the turn sound (as in single player) and the HUD's turn
+  line lit yellow, "Your turn", for 2.6 s, once the board has played the
+  moves before it. While the tab is hidden and it is this player's turn,
+  the tab's title is "Your turn · Pulp Wars".
+- **Connection:** while requests fail and are retried, a small
+  "Reconnecting…" chip beside the turn line (own moves are kept and sent
+  later). A refused own move: the client replays the log, and a toast says
+  "That move didn't reach the game. Back in step now." A recovered desync
+  is silent (a toast in developer mode); one that cannot be recovered
+  shows "Out of step" with **Reload** and **Leave**.
+- **Leaving:** the match menu's **Leave online game** (instead of Save &
+  quit) asks first ("The game ends for Bob too.") and abandons the match;
+  Restart match and Delete save are not offered. The other player gets
+  "Ada left the game" with **Main menu** and **Play online**.
+- **Out:** a player whose tribe falls while the game goes on gets "You're
+  out" with **Keep watching** and **Leave**; the turn line then says
+  "You're out · Bob is moving…". An out guest's Leave is **Stop watching**
+  (the host plays on); an out host with AI seats left ends the game by
+  leaving, since the AI seats run in the host's browser.
+- **End:** Victory to the winner, Defeat to everyone else, with "You won
+  the online game." or "Bob won the online game."; the custom-game line
+  (no stars) and no leaderboard form. **Play again** opens Play online
+  (host a new game), **Main menu** the menu. A finished or abandoned
+  match's code is forgotten and taken out of the address, so a reload no
+  longer resumes it.
+- The victory tune plays only to the winner; the others hear the defeat
+  tune.

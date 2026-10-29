@@ -807,12 +807,19 @@ export function soundCuesForBoundaryV7(
       case "ACHIEVEMENT_UNLOCKED":
         if (event.playerId === viewer) end.push("achievement.unlocked");
         break;
-      case "MATCH_ENDED":
-        // The same reading as the results dialog's title.
-        if (event.outcome.kind === "VICTORY") essential.push("match.victory");
-        else if (event.outcome.kind === "DEFEAT")
+      case "MATCH_ENDED": {
+        // The same reading as the results dialog's title. Online
+        // (`pulp_wars-eqc6.3`), a Victory is the winner's alone.
+        const online = after.setup.humanSeats !== undefined;
+        if (
+          event.outcome.kind === "VICTORY" &&
+          (!online || event.outcome.winnerId === viewer)
+        )
+          essential.push("match.victory");
+        else if (event.outcome.kind === "DEFEAT" || online)
           essential.push("match.defeat");
         break;
+      }
       default:
         break;
     }

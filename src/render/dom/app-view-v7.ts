@@ -37,11 +37,17 @@ import {
 } from "../../assets/art-keys-v7";
 import type {
   Ruleset7AcceptedBoundary,
+  Ruleset7AiProgressScheduler,
   Ruleset7BrowserController,
   Ruleset7BrowserSnapshot,
   Ruleset7CampaignProgressV7,
   Ruleset7TribeStarsV7,
 } from "../../app/v7-controller";
+import {
+  OnlineMatchControllerV7,
+  type OnlineMatchSnapshotV7,
+} from "../../app/online-match-controller-v7";
+import { ControllerSwitchV7 } from "./controller-switch-v7";
 import {
   ANALYTICS_CONSENT_TEXT_V7,
   NO_ANALYTICS_V7,
@@ -1616,10 +1622,20 @@ export interface MountRuleset7AppOptions {
   /**
    * The lobby's hand-off (docs/MULTIPLAYER.md section 10.4): called once
    * in each browser when the host's Start has reached it, with the opened
-   * lockstep client. The in-match screen (`pulp_wars-eqc6.3`) plugs in at
-   * `#openOnlineMatch`; until then the lobby shows a placeholder.
+   * lockstep client, before the match screen takes it over
+   * (`pulp_wars-eqc6.3`, `#openOnlineMatch`). Tests and a page hook.
    */
   readonly onOnlineMatchStarted?: (handoff: OnlineMatchHandoffV7) => void;
+  /**
+   * The online game's controller (`pulp_wars-eqc6.3`); tests inject one
+   * with a stubbed AI. By default an `OnlineMatchControllerV7` on the
+   * hand-off's client with `aiProgressScheduler`.
+   */
+  readonly createOnlineMatchController?: (
+    handoff: OnlineMatchHandoffV7,
+  ) => OnlineMatchControllerV7;
+  /** The AI's slice scheduler, for the host's AI seats of an online game. */
+  readonly aiProgressScheduler?: Ruleset7AiProgressScheduler;
 }
 
 /** A fresh unsigned 32-bit map seed from the browser. */
@@ -1751,6 +1767,9 @@ const WAVE_BANNER_NARROW_V7 = "(max-width: 599px)";
 /** The longest a level-up's reward dialog waits for its animation. */
 const REWARD_HOLD_LIMIT_MS_V7 = 2_500;
 
+/** How long the online "Your turn" cue stays lit (`pulp_wars-eqc6.3`). */
+export const YOUR_TURN_CUE_MS_V7 = 2_600;
+
 /**
  * Bead pulp_wars-2yc.93: the longest one boundary's playback may take
  * before the board is told to finish it (the longest real one, a long
@@ -1867,7 +1886,34 @@ type ScreenV7 =
 export class Ruleset7DomAppView {
   readonly #document: Document;
   readonly #root: HTMLElement;
-  readonly #controller: Ruleset7ControllerPortV7;
+  /**
+   * The single-player controller, or an online game's in its place
+   * (`pulp_wars-eqc6.3`).
+   */
+  readonly #controller: ControllerSwitchV7;
+  /** The open online game's controller, else null. */
+  #onlineMatch: OnlineMatchControllerV7 | null = null;
+  readonly #createOnlineMatchController: (
+    handoff: OnlineMatchHandoffV7,
+  ) => OnlineMatchControllerV7;
+  /** The "Your turn" cue is up (online), and the timer that ends it. */
+  #yourTurnCue = false;
+  #yourTurnCueTimer: number | null = null;
+  /** "Your turn" waits for the board to finish playing (online). */
+  #onlineTurnCuePending = false;
+  /** The player whose move the board is playing (online), else null. */
+  #playbackMover: number | null = null;
+  /** The "Leave online game?" question is up. */
+  #onlineLeaveConfirm = false;
+  /** The "You're out" dialog was answered (Keep watching). */
+  #onlineOutSeen = false;
+  /** A leave is being sent. */
+  #onlineLeaving = false;
+  /** The last online notice and turn cue shown. */
+  #onlineNoticeId = 0;
+  #onlineTurnCue = 0;
+  /** The page's own title while "Your turn" stands in for it. */
+  #onlineTitle: string | null = null;
   readonly #boardHost: BoardHostV7;
   readonly #downloadSafeLog: (source: string, filename: string) => void;
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
@@ -2342,7 +2388,17 @@ export class Ruleset7DomAppView {
   ) {
     this.#document = documentRoot;
     this.#root = root;
-    this.#controller = controller;
+    this.#controller = new ControllerSwitchV7(controller);
+    this.#createOnlineMatchController =
+      options.createOnlineMatchController ??
+      ((handoff) =>
+        new OnlineMatchControllerV7({
+          client: handoff.client,
+          ...(options.aiProgressScheduler === undefined
+            ? {}
+            : { aiProgressScheduler: options.aiProgressScheduler }),
+          onSubscriberFailure: reportPresentationFailureV7,
+        }));
     this.#boardHost = options.boardHost ?? new CanvasBoardHostV7(documentRoot);
     this.#downloadSafeLog =
       options.downloadSafeLog ??
@@ -2482,7 +2538,7 @@ export class Ruleset7DomAppView {
     }
     this.#analytics.setDeveloperMode?.(this.#devMode);
     this.#controller.setDeveloperMode?.(this.#devMode);
-    this.#controllerSnapshot = controller.snapshot();
+    this.#controllerSnapshot = this.#controller.snapshot();
     this.#snapshot = this.#tutorialSnapshot(this.#controllerSnapshot);
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
@@ -2501,8 +2557,8 @@ export class Ruleset7DomAppView {
     this.#unsubscribeFailures = subscribePresentationFailuresV7(() =>
       this.#onPresentationFailure(),
     );
-    this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
-      (boundary) => {
+    this.#unsubscribeAcceptedBoundary =
+      this.#controller.subscribeAcceptedBoundary((boundary) => {
         try {
           this.#queueBoundary(boundary);
         } catch (error) {
@@ -2511,10 +2567,9 @@ export class Ruleset7DomAppView {
           reportPresentationFailureV7("queueing a boundary", error);
           if (!this.#humanDispatchPending) this.#drainPresentationQueue();
         }
-      },
-    );
+      });
     // Calm playback (bead pulp_wars-2yc.59): the AI waits for the board.
-    controller.setAiPacingGate?.(this.#aiPacingGate);
+    this.#controller.setAiPacingGate(this.#aiPacingGate);
     this.#document.addEventListener(
       "visibilitychange",
       this.#onVisibilityChange,
@@ -2523,11 +2578,13 @@ export class Ruleset7DomAppView {
       this.#document.defaultView?.matchMedia?.(TECHNOLOGY_WIDE_TREE_MEDIA_V7) ??
       null;
     this.#wideTreeMedia?.addEventListener?.("change", this.#onWideTreeChange);
-    this.#unsubscribe = controller.subscribe((snapshot) => {
+    this.#unsubscribe = this.#controller.subscribe((snapshot) => {
       if (this.#destroyed) return;
       const prior = this.#snapshot;
       this.#controllerSnapshot = snapshot;
       this.#snapshot = this.#tutorialSnapshot(snapshot);
+      // Online play (`pulp_wars-eqc6.3`): its toasts, turn cue and title.
+      const onlineChanged = this.#noteOnlineSnapshot(prior, this.#snapshot);
       // The victory wave: a match won while watched holds its dialog.
       if (
         prior.phase === "ACTIVE" &&
@@ -2540,6 +2597,7 @@ export class Ruleset7DomAppView {
       // thrown into the controller's command.
       guardPresentationV7("the render of a game update", () => {
         if (
+          !onlineChanged &&
           prior.ai.active &&
           snapshot.ai.active &&
           prior.view?.commandIndex === snapshot.view?.commandIndex
@@ -2554,6 +2612,10 @@ export class Ruleset7DomAppView {
     if (this.#destroyed) return;
     this.#destroyed = true;
     if (this.#frontToastTimer !== null) clearTimeout(this.#frontToastTimer);
+    this.#onlineMatch?.destroy();
+    this.#onlineMatch = null;
+    this.#endYourTurnCue(false);
+    this.#restoreTitle();
     this.#onlineView?.destroy();
     this.#online?.destroy();
     if (CHIBI_ECONOMY_ICONS.get(this.#document) === this.#economyIcons)
@@ -2668,6 +2730,16 @@ export class Ruleset7DomAppView {
    * Review tooling (the browser bug hunt, bead pulp_wars-2yc.93): what holds
    * the interface busy, read without changing it.
    */
+  /**
+   * Review tooling (`pulp_wars-eqc6.3`, the browser check's end screen):
+   * shows an online game's controller as a hand-off would, e.g. one on a
+   * hand-built finished game. The game never calls it.
+   */
+  openOnlineMatchForReview(online: OnlineMatchControllerV7): void {
+    if (this.#destroyed) return;
+    this.#showOnlineMatch(online);
+  }
+
   busyStateForReview(): {
     readonly presentationActive: boolean;
     readonly presentationQueue: number;
@@ -2711,6 +2783,7 @@ export class Ruleset7DomAppView {
     else if (this.#dockDetailsKey !== null) this.#closeDockDetails();
     else if (this.#screen !== "MATCH") this.#closeOverlay();
     else if (this.#retryConfirm) this.#closeRetryConfirm();
+    else if (this.#onlineLeaveConfirm) this.#closeOnlineLeaveConfirm();
     else return false;
     return true;
   }
@@ -2757,6 +2830,10 @@ export class Ruleset7DomAppView {
           // Retry mission: Escape answers with Cancel.
           event.preventDefault();
           this.#closeRetryConfirm();
+        } else if (this.#onlineLeaveConfirm) {
+          // Leave online game: Escape answers with Stay.
+          event.preventDefault();
+          this.#closeOnlineLeaveConfirm();
         } else if (this.#endTurnConfirm) {
           // The Cultists: Escape answers the End Turn question with Back.
           event.preventDefault();
@@ -3497,14 +3574,448 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The lobby's hand-off point (docs/MULTIPLAYER.md section 10.4): the
-   * host's Start reached this browser, and `handoff.client` is the opened
-   * (not yet started) lockstep client. The in-match screen
-   * (`pulp_wars-eqc6.3`) takes over here; until it does, the lobby shows
-   * its "Game on!" placeholder and the page's hook hears of it.
+   * The lobby's hand-off point (docs/MULTIPLAYER.md sections 10.4 and 11):
+   * the host's Start reached this browser, or a reload found the match
+   * again, and `handoff.client` is the opened (not yet started) lockstep
+   * client. The match screen takes it over: an online controller stands in
+   * for the single-player one (whose autosave is left alone) and follows
+   * the match live.
    */
   #openOnlineMatch(handoff: OnlineMatchHandoffV7): void {
     this.#onOnlineMatchStarted?.(handoff);
+    // Out of the lobby view's own render first.
+    queueMicrotask(() => {
+      if (this.#destroyed || this.#onlineMatch !== null) return;
+      if (handoff.client.mySeat === null) return;
+      let online: OnlineMatchControllerV7;
+      try {
+        online = this.#createOnlineMatchController(handoff);
+      } catch (error) {
+        reportPresentationFailureV7("opening the online game", error);
+        return;
+      }
+      this.#showOnlineMatch(online);
+    });
+  }
+
+  /** Puts an online game's controller on the match screen and starts it. */
+  #showOnlineMatch(online: OnlineMatchControllerV7): void {
+    this.#onlineMatch?.destroy();
+    this.#cancelPresentations();
+    this.#releaseVictoryHold(false);
+    this.#onlineMatch = online;
+    this.#onlineLeaveConfirm = false;
+    this.#onlineOutSeen = false;
+    this.#onlineLeaving = false;
+    this.#onlineNoticeId = 0;
+    this.#onlineTurnCuePending = false;
+    this.#onlineTurnCue = 0;
+    this.#scoreBreakdownFor = null;
+    this.#boardSubmit = null;
+    this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
+    this.#selection = null;
+    this.#screen = "MATCH";
+    this.#compactMenuOpen = false;
+    this.#error = "";
+    this.#notice = "Online game.";
+    this.#toast = null;
+    this.#matchInstance += 1;
+    this.#controller.use(online);
+    online.start();
+    const status = online.snapshot().online.status;
+    if (status === "FINISHED" || status === "ABANDONED") this.#forgetOnline();
+    void this.#progressAi().then(() => {
+      if (
+        !this.#destroyed &&
+        this.#onlineMatch === online &&
+        this.#screen === "MATCH" &&
+        this.#snapshot.view?.pendingChoices.length === 0
+      )
+        this.#queueBoardFocus();
+    });
+  }
+
+  /**
+   * Online (`pulp_wars-eqc6.3`): another player's move was queued for, or
+   * started, its playback: the turn line names that player until the
+   * board has caught up (the game itself may already be at this player's
+   * turn). This player's own moves leave the line as it is.
+   */
+  #notePlaybackMover(boundary: Ruleset7AcceptedBoundary): void {
+    if (this.#onlineMatch === null) return;
+    const before = boundary.beforeView;
+    const mover = before.turnOrder[before.activeSeatIndex] ?? null;
+    if (mover === null || mover === before.viewer.id) return;
+    if (mover === this.#playbackMover) return;
+    this.#playbackMover = mover;
+    const status = this.#root.querySelector<HTMLElement>(".v7-turn-status");
+    if (status === null) return;
+    status.dataset.turn = "other";
+    this.#fillAiStatus(status);
+  }
+
+  /** The open online game's part of the snapshot, else null. */
+  #onlineState(): OnlineMatchSnapshotV7 | null {
+    if (this.#onlineMatch === null) return null;
+    const online = (
+      this.#snapshot as { readonly online?: OnlineMatchSnapshotV7 }
+    ).online;
+    return online ?? null;
+  }
+
+  /**
+   * Online play (`pulp_wars-eqc6.3`): a new notice is a toast, the start
+   * of this player's turn says "Your turn" (and puts it in the hidden
+   * tab's title), and a game that is over or left is forgotten. True when
+   * the online part changed in a way only a full render shows.
+   */
+  #noteOnlineSnapshot(
+    prior: Ruleset7BrowserSnapshot,
+    next: Ruleset7BrowserSnapshot,
+  ): boolean {
+    if (this.#onlineMatch === null) {
+      this.#restoreTitle();
+      return false;
+    }
+    const before = (prior as { readonly online?: OnlineMatchSnapshotV7 })
+      .online;
+    const online = (next as { readonly online?: OnlineMatchSnapshotV7 }).online;
+    if (online === undefined) return false;
+    const notice = online.notice;
+    if (notice !== null && notice.id !== this.#onlineNoticeId) {
+      this.#onlineNoticeId = notice.id;
+      if (!notice.dev || this.#devMode) this.#showToast(notice.text);
+    }
+    // A "Your turn" still up goes when the turn has passed on.
+    if (online.turn?.mine !== true) {
+      this.#onlineTurnCuePending = false;
+      this.#endYourTurnCue(false);
+    }
+    if (online.turnCue !== this.#onlineTurnCue) {
+      const first = this.#onlineTurnCue === 0;
+      this.#onlineTurnCue = online.turnCue;
+      // Said once the board has played the moves before it.
+      if (!first || online.turn?.mine === true) {
+        if (this.#presentationActive) this.#onlineTurnCuePending = true;
+        else this.#cueYourTurn();
+      }
+    }
+    if (online.status === "FINISHED" || online.status === "ABANDONED")
+      this.#forgetOnline();
+    this.#syncOnlineTitle(online);
+    return (
+      before === undefined ||
+      before.status !== online.status ||
+      before.reconnecting !== online.reconnecting ||
+      before.turn?.seat !== online.turn?.seat ||
+      before.leftBy !== online.leftBy
+    );
+  }
+
+  /** The finished or left game is not resumed by a reload. */
+  #forgetOnline(): void {
+    this.#online?.forgetMatch();
+  }
+
+  /**
+   * The "Your turn" cue (online): the HUD's turn line, otherwise hidden on
+   * this player's turn, shows "Your turn" highlighted for a moment (the
+   * compact HUD: no banner over the board). `render`: draw it now (else
+   * the render under way does).
+   */
+  #cueYourTurn(render = true): void {
+    const browser = this.#document.defaultView;
+    if (this.#yourTurnCueTimer !== null)
+      browser?.clearTimeout(this.#yourTurnCueTimer);
+    this.#yourTurnCue = true;
+    this.#yourTurnCueTimer =
+      browser?.setTimeout(() => {
+        this.#yourTurnCueTimer = null;
+        this.#endYourTurnCue(true);
+      }, YOUR_TURN_CUE_MS_V7) ?? null;
+    if (render) this.#render();
+  }
+
+  #endYourTurnCue(render: boolean): void {
+    if (this.#yourTurnCueTimer !== null)
+      this.#document.defaultView?.clearTimeout(this.#yourTurnCueTimer);
+    this.#yourTurnCueTimer = null;
+    if (!this.#yourTurnCue) return;
+    this.#yourTurnCue = false;
+    if (!render || this.#destroyed) return;
+    const status = this.#root.querySelector<HTMLElement>(
+      '.v7-turn-status[data-turn="cue"]',
+    );
+    if (status !== null) status.dataset.turn = "human";
+  }
+
+  /** "Your turn · Pulp Wars" in a hidden tab while it is this player's turn. */
+  #syncOnlineTitle(online: OnlineMatchSnapshotV7 | null): void {
+    const yours =
+      online !== null &&
+      online.status === "PLAYING" &&
+      online.turn?.mine === true &&
+      this.#document.visibilityState === "hidden";
+    if (!yours) {
+      this.#restoreTitle();
+      return;
+    }
+    if (this.#onlineTitle === null) this.#onlineTitle = this.#document.title;
+    this.#document.title = `Your turn · ${this.#onlineTitle || "Pulp Wars"}`;
+  }
+
+  #restoreTitle(): void {
+    if (this.#onlineTitle === null) return;
+    this.#document.title = this.#onlineTitle;
+    this.#onlineTitle = null;
+  }
+
+  /**
+   * Leaves the online game for `page` (the menu, or Play online for Play
+   * again). `abandon`: the game is given up for everyone first (Leave
+   * online game); a game that is over, left by the other player, or only
+   * watched by an out guest is simply closed.
+   */
+  async #leaveOnlineMatch(page: FrontPageV7, abandon: boolean): Promise<void> {
+    const online = this.#onlineMatch;
+    if (online === null || this.#onlineLeaving) return;
+    this.#onlineLeaveConfirm = false;
+    if (abandon) {
+      this.#onlineLeaving = true;
+      this.#render();
+      const left = await online.abandon();
+      this.#onlineLeaving = false;
+      if (this.#destroyed || this.#onlineMatch !== online) return;
+      if (!left) {
+        this.#error = "Couldn't reach the game. Try again.";
+        this.#render();
+        return;
+      }
+    }
+    this.#closeOnlineMatch(page);
+  }
+
+  /** Takes the online game off the screen; the single-player one is back. */
+  #closeOnlineMatch(page: FrontPageV7): void {
+    const online = this.#onlineMatch;
+    if (online === null) return;
+    this.#cancelPresentations();
+    this.#releaseVictoryHold(false);
+    this.#onlineMatch = null;
+    this.#onlineLeaveConfirm = false;
+    this.#endYourTurnCue(false);
+    this.#restoreTitle();
+    online.destroy();
+    this.#online?.closeMatch();
+    this.#matchInstance += 1;
+    this.#scoreBreakdownFor = null;
+    this.#boardSubmit = null;
+    this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
+    this.#selection = null;
+    this.#screen = "MATCH";
+    this.#compactMenuOpen = false;
+    this.#error = "";
+    this.#notice = "";
+    this.#toast = null;
+    this.#frontPage = page;
+    this.#frontFocus =
+      page === "ONLINE" ? '[data-action="front-back"]' : MENU_FIRST_V7;
+    this.#controller.use(null);
+    this.#render();
+  }
+
+  /** The match menu's Leave online game (or Stop watching): asks first. */
+  #openOnlineLeaveConfirm(): void {
+    this.#compactMenuOpen = false;
+    this.#modalReturnAction = null;
+    this.#screen = "MATCH";
+    this.#onlineLeaveConfirm = true;
+    this.#pendingFocusAction = "online-leave-cancel";
+    this.#render();
+  }
+
+  #closeOnlineLeaveConfirm(): void {
+    this.#onlineLeaveConfirm = false;
+    this.#pendingFocusAction = "compact-menu";
+    this.#render();
+  }
+
+  /**
+   * The online game's dialogs (`pulp_wars-eqc6.3`), at most one: the
+   * other player left; the game fell out of step for good; this player
+   * is out (Keep watching or Leave); the Leave question. Null otherwise.
+   */
+  #onlineDialog(
+    online: OnlineMatchSnapshotV7,
+    view: PlayerViewV7,
+  ): HTMLElement | null {
+    if (online.status === "ABANDONED" && online.leftBy !== null)
+      return this.#onlineNoticeDialog(
+        "online-left",
+        `${online.leftBy} left the game`,
+        "The online game is over. You can host a new one from Play online.",
+        [
+          [
+            "Main menu",
+            "online-left-menu",
+            true,
+            () => void this.#leaveOnlineMatch("MENU", false),
+          ],
+          [
+            "Play online",
+            "online-left-play",
+            false,
+            () => void this.#leaveOnlineMatch("ONLINE", false),
+          ],
+        ],
+      );
+    if (online.status === "DESYNCED")
+      return this.#onlineNoticeDialog(
+        "online-desync",
+        "Out of step",
+        "This tab's game no longer matches the stored one. Reload to load it again.",
+        [
+          [
+            "Reload",
+            "online-reload",
+            true,
+            () => this.#document.defaultView?.location.reload(),
+          ],
+          [
+            "Leave",
+            "online-desync-leave",
+            false,
+            () => this.#openOnlineLeaveConfirm(),
+          ],
+        ],
+      );
+    if (this.#onlineLeaveConfirm && view.pendingChoices.length === 0)
+      return this.#onlineLeaveDialog(online);
+    if (
+      online.status === "WATCHING" &&
+      !this.#onlineOutSeen &&
+      view.pendingChoices.length === 0
+    )
+      return this.#onlineNoticeDialog(
+        "online-out",
+        "You're out",
+        online.leaveEndsGame
+          ? "Your tribe has fallen. Watch the rest of the game; the AI players run in your browser, so stay to let it finish."
+          : `Your tribe has fallen. Watch ${online.names[online.mySeat === 0 ? 1 : 0] ?? "your friend"} play on, or leave.`,
+        [
+          [
+            "Keep watching",
+            "online-out-watch",
+            true,
+            () => {
+              this.#onlineOutSeen = true;
+              this.#pendingFocusAction = "compact-menu";
+              this.#render();
+            },
+          ],
+          [
+            "Leave",
+            "online-out-leave",
+            false,
+            () => {
+              this.#onlineOutSeen = true;
+              this.#openOnlineLeaveConfirm();
+            },
+          ],
+        ],
+      );
+    return null;
+  }
+
+  /** A short dialog: a title, one line, and its buttons (the first primary). */
+  #onlineNoticeDialog(
+    region: string,
+    title: string,
+    line: string,
+    actions: readonly (readonly [string, string, boolean, () => void])[],
+  ): HTMLElement {
+    // Compact, like the other in-match questions (no big title panel).
+    const modal = el(
+      this.#document,
+      "section",
+      "v7-end-turn-confirm v7-online-dialog",
+    );
+    modal.dataset.v7Region = region;
+    modal.setAttribute("role", "alertdialog");
+    modal.setAttribute("aria-modal", "true");
+    const heading = text(this.#document, "h2", title, "v7-end-turn-question");
+    heading.id = `v7-${region}-title`;
+    const lede = text(this.#document, "p", line, "v7-retry-confirm-detail");
+    lede.id = `v7-${region}-detail`;
+    modal.setAttribute("aria-labelledby", heading.id);
+    modal.setAttribute("aria-describedby", lede.id);
+    modal.append(heading, lede);
+    const answers = el(this.#document, "div", "button-row v7-end-turn-answers");
+    for (const [label, action, primary, onClick] of actions) {
+      const node = button(
+        this.#document,
+        label,
+        action,
+        primary ? "primary-action" : "",
+      );
+      if (primary) node.dataset.v7InitialFocus = "true";
+      node.onclick = onClick;
+      answers.append(node);
+    }
+    modal.append(answers);
+    return modal;
+  }
+
+  /**
+   * Leave online game? Stay (safe, first and focused) and Leave
+   * (destructive). Leaving ends the game for the other player, unless an
+   * out guest only stops watching.
+   */
+  #onlineLeaveDialog(online: OnlineMatchSnapshotV7): HTMLElement {
+    const modal = el(
+      this.#document,
+      "section",
+      "v7-end-turn-confirm v7-online-leave-confirm",
+    );
+    modal.dataset.v7Region = "online-leave-confirm";
+    modal.setAttribute("role", "alertdialog");
+    modal.setAttribute("aria-modal", "true");
+    const friend = online.names[online.mySeat === 0 ? 1 : 0] ?? "your friend";
+    const question = text(
+      this.#document,
+      "p",
+      online.leaveEndsGame ? "Leave the online game?" : "Stop watching?",
+      "v7-end-turn-question",
+    );
+    question.id = "v7-online-leave-question";
+    const detail = text(
+      this.#document,
+      "p",
+      online.leaveEndsGame
+        ? `The game ends for ${friend} too.`
+        : `${friend} plays on without you.`,
+      "v7-retry-confirm-detail",
+    );
+    detail.id = "v7-online-leave-detail";
+    modal.setAttribute("aria-labelledby", question.id);
+    modal.setAttribute("aria-describedby", detail.id);
+    const answers = el(this.#document, "div", "button-row v7-end-turn-answers");
+    const stay = button(this.#document, "Stay", "online-leave-cancel");
+    stay.onclick = () => this.#closeOnlineLeaveConfirm();
+    const leave = button(
+      this.#document,
+      this.#onlineLeaving ? "Leaving…" : "Leave",
+      "online-leave",
+      "destructive",
+    );
+    leave.disabled = this.#onlineLeaving;
+    leave.onclick = () =>
+      void this.#leaveOnlineMatch("MENU", online.leaveEndsGame);
+    answers.append(stay, leave);
+    modal.append(question, detail, answers);
+    return modal;
   }
 
   /**
@@ -6286,7 +6797,10 @@ export class Ruleset7DomAppView {
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
-    const humanTurn = active?.controller === "HUMAN";
+    // Online (`pulp_wars-eqc6.3`): the other human's turn is not "yours".
+    const humanTurn =
+      active?.controller === "HUMAN" &&
+      (this.#onlineMatch === null || activeId === view.viewer.id);
     // First steps (bead pulp_wars-2yc.39): the one cue of this render.
     // The tutorial (bead pulp_wars-0yxy) speaks instead of the coach while
     // it forces the match, and while its farewell line is up.
@@ -6362,15 +6876,20 @@ export class Ruleset7DomAppView {
       round.lastElementChild?.setAttribute("aria-hidden", "true");
     }
     const status = el(this.#document, "p", "v7-turn-status");
+    // Online: while another player's moves still play on the board, the
+    // line names them, though the game is already at this player's turn.
+    const yourTurn = humanTurn && this.#playbackMover === null;
     if (this.#snapshot.phase === "COMPLETE") status.textContent = "Game over";
-    else if (humanTurn) status.textContent = "Your turn";
+    else if (yourTurn) status.textContent = "Your turn";
     else this.#fillAiStatus(status);
     status.dataset.v7AiProgress = "true";
     status.dataset.turn =
       this.#snapshot.phase === "COMPLETE"
         ? "done"
-        : humanTurn
-          ? "human"
+        : yourTurn
+          ? this.#yourTurnCue && this.#onlineMatch !== null
+            ? "cue"
+            : "human"
           : "other";
     stats.append(economy);
     // The Cultists (bead pulp_wars-mch9.17, RULESET_7_CULTISTS.md section
@@ -6409,6 +6928,23 @@ export class Ruleset7DomAppView {
       stats.append(chip);
     }
     stats.append(round, status);
+    // Online (`pulp_wars-eqc6.3`): requests failing and being retried.
+    const online = this.#onlineState();
+    if (online?.reconnecting === true) {
+      const chip = text(
+        this.#document,
+        "p",
+        "Reconnecting…",
+        "v7-online-connection",
+      );
+      chip.dataset.v7Region = "online-connection";
+      chip.setAttribute("role", "status");
+      chip.title =
+        online.pendingMoves > 0
+          ? "Your moves are kept and will be sent."
+          : "Trying to reach the game again.";
+      stats.append(chip);
+    }
     const strip = this.#turnStrip(view);
     if (strip !== null) stats.append(strip);
     // A mission's objective (`pulp_wars-v642.1`): an icon, one line, and
@@ -6515,7 +7051,17 @@ export class Ruleset7DomAppView {
         retry.disabled = blocked;
         menu.append(retry);
       }
-      if (this.#snapshot.phase === "ACTIVE") {
+      if (this.#snapshot.phase === "ACTIVE" && online !== null) {
+        // Online (`pulp_wars-eqc6.3`): no saving; leaving asks first.
+        const leave = button(
+          this.#document,
+          online.leaveEndsGame ? "Leave online game" : "Stop watching",
+          "leave-online",
+          "v7-menu-item v7-main-menu-action",
+        );
+        leave.onclick = () => this.#openOnlineLeaveConfirm();
+        menu.append(leave);
+      } else if (this.#snapshot.phase === "ACTIVE") {
         const mainMenu = button(
           this.#document,
           "Save & quit",
@@ -6725,7 +7271,10 @@ export class Ruleset7DomAppView {
       view.pendingChoices.length === 0
     )
       nextChildren.push(this.#unitHelpModal);
-    if (this.#snapshot.ai.active) {
+    if (
+      this.#snapshot.ai.active &&
+      (online === null || online.turn === null || online.turn.ai)
+    ) {
       const fast = iconButton(
         this.#document,
         "skip",
@@ -6791,6 +7340,13 @@ export class Ruleset7DomAppView {
       this.#victoryHold === null
     )
       nextChildren.push(this.#results(view));
+    // Online (`pulp_wars-eqc6.3`): leaving, the other player gone, out of
+    // the game, out of step.
+    const onlineDialog =
+      online === null || showAchievementNotice
+        ? null
+        : this.#onlineDialog(online, view);
+    if (onlineDialog !== null) nextChildren.push(onlineDialog);
     if (this.#snapshot.phase === "ERROR") nextChildren.push(this.#errorPanel());
     if (this.#snapshot.saveWarning !== null) {
       const warning = text(
@@ -12087,7 +12643,8 @@ export class Ruleset7DomAppView {
       "destructive",
     );
     remove.onclick = () => void this.#deleteSave();
-    game.append(restart, remove);
+    // An online game (`pulp_wars-eqc6.3`) is neither restarted nor saved.
+    if (this.#onlineMatch === null) game.append(restart, remove);
     const setup = this.#snapshot.view?.setup;
     const seed = el(this.#document, "p", "v7-map-seed");
     seed.dataset.v7MapSeed = setup === undefined ? "" : String(setup.seed);
@@ -12472,17 +13029,18 @@ export class Ruleset7DomAppView {
     const score = queryScoreV7(view);
     const result = el(this.#document, "section", "v7-results");
     result.dataset.v7Region = "results";
-    result.dataset.outcome =
-      view.outcome?.kind === "VICTORY" ? "victory" : "defeat";
+    // Online (`pulp_wars-eqc6.3`): a Victory is the winner's; the other
+    // human sees Defeat.
+    const online = this.#onlineState();
+    const won =
+      view.outcome?.kind === "VICTORY" &&
+      (online === null || view.outcome.winnerId === view.viewer.id);
+    result.dataset.outcome = won ? "victory" : "defeat";
     result.dataset.mode = score.gameMode.toLowerCase();
     result.setAttribute("role", "dialog");
     result.setAttribute("aria-modal", "true");
     result.append(
-      text(
-        this.#document,
-        "h2",
-        view.outcome?.kind === "VICTORY" ? "Victory" : "Defeat",
-      ),
+      text(this.#document, "h2", won ? "Victory" : "Defeat"),
       text(
         this.#document,
         "p",
@@ -12513,8 +13071,27 @@ export class Ruleset7DomAppView {
       if (record !== null) panel.append(record);
       result.append(panel);
     }
-    // The public leaderboard (bead pulp_wars-2yc.104): a Regular win.
-    const board = this.#boardSubmitPanel(view);
+    if (online !== null) {
+      const winner =
+        online.names[
+          (view.outcome?.kind === "VICTORY" ? view.outcome.winnerId : 0) - 1
+        ];
+      const line = text(
+        this.#document,
+        "p",
+        won
+          ? "You won the online game."
+          : view.outcome?.kind === "VICTORY" && winner !== undefined
+            ? `${winner} won the online game.`
+            : "Nobody won the online game.",
+        "v7-online-result",
+      );
+      line.dataset.v7Region = "online-result";
+      result.append(line);
+    }
+    // The public leaderboard (bead pulp_wars-2yc.104): a Regular win. Never
+    // an online game.
+    const board = online === null ? this.#boardSubmitPanel(view) : null;
     if (board !== null) result.append(board);
     result.append(this.#resultSeats(view, score));
     const actions = el(this.#document, "div", "button-row");
@@ -12524,7 +13101,12 @@ export class Ruleset7DomAppView {
       "restart",
       "primary-action",
     );
-    restart.onclick = () => void this.#restart();
+    // Online: Play again is Play online (host a new game), never a
+    // single-player restart.
+    restart.onclick = () =>
+      void (online === null
+        ? this.#restart()
+        : this.#leaveOnlineMatch("ONLINE", false));
     // The dialog opens on Play again, as before the players' list held the
     // score toggles (pulp_wars-kaw6.3).
     restart.dataset.v7InitialFocus = "true";
@@ -13077,7 +13659,10 @@ export class Ruleset7DomAppView {
   /** "Main menu" on every end dialog (bead pulp_wars-2yc.18). */
   #resultsMenuButton(): HTMLButtonElement {
     const menu = button(this.#document, "Main menu", "results-menu");
-    menu.onclick = () => void this.#leaveFinishedMatch();
+    menu.onclick = () =>
+      void (this.#onlineMatch === null
+        ? this.#leaveFinishedMatch()
+        : this.#leaveOnlineMatch("MENU", false));
     return menu;
   }
 
@@ -13721,6 +14306,19 @@ export class Ruleset7DomAppView {
   }
   #aiStatusText(): string {
     const view = this.#snapshot.view;
+    // Online (`pulp_wars-eqc6.3`): "Bob is moving…", "AI 2 is moving…",
+    // for the player whose moves the board plays, else the one to move.
+    const online = this.#onlineState();
+    const mover =
+      this.#playbackMover !== null
+        ? (online?.names[this.#playbackMover - 1] ?? null)
+        : online !== null && online.turn !== null && !online.turn.mine
+          ? online.turn.name
+          : null;
+    if (online !== null && mover !== null) {
+      const moving = `${mover} is moving…`;
+      return online.status === "WATCHING" ? `You're out · ${moving}` : moving;
+    }
     const active =
       view === null
         ? undefined
@@ -13867,6 +14465,7 @@ export class Ruleset7DomAppView {
     }
     this.#audio.playCues(sounds.start);
     this.#presentationActive = true;
+    this.#notePlaybackMover(boundary);
     this.#presentationQueue.push({
       matchInstance: this.#matchInstance,
       boundary,
@@ -13901,6 +14500,7 @@ export class Ruleset7DomAppView {
         this.#releaseAiPacing();
         if (next === undefined) break;
         if (next.matchInstance !== this.#matchInstance) continue;
+        this.#notePlaybackMover(next.boundary);
         // Bead pulp_wars-2yc.93: a boundary whose playback throws is logged
         // and skipped (the board shows the game's view); the queue, the
         // locks and the AI go on. Before, the rejected tail held the
@@ -13964,6 +14564,11 @@ export class Ruleset7DomAppView {
       }
       if (this.#presentationQueue.length === 0) {
         this.#presentationActive = false;
+        this.#playbackMover = null;
+        if (this.#onlineTurnCuePending) {
+          this.#onlineTurnCuePending = false;
+          if (this.#onlineMatch !== null) this.#cueYourTurn(false);
+        }
         if (!this.#humanDispatchSettling)
           guardPresentationV7("the render after playback", () =>
             this.#render(),
@@ -14041,6 +14646,11 @@ export class Ruleset7DomAppView {
     this.#releaseAchievementNotices();
     this.#presentationQueue = [];
     this.#presentationActive = false;
+    this.#playbackMover = null;
+    if (this.#onlineTurnCuePending) {
+      this.#onlineTurnCuePending = false;
+      if (this.#onlineMatch !== null) this.#cueYourTurn(false);
+    }
     guardPresentationV7("finishing the board's playback", () =>
       this.#boardHost.finishPresentations?.(),
     );
@@ -14093,6 +14703,7 @@ export class Ruleset7DomAppView {
 
   readonly #onVisibilityChange = (): void => {
     this.#releaseAiPacing();
+    this.#syncOnlineTitle(this.#onlineState());
   };
 
   /**

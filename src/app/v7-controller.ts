@@ -1413,7 +1413,11 @@ function replayFromSaveV7(save: SaveEnvelopeV7): ReplayFileV7 {
   };
 }
 
-function commandIsOfferedV7(view: PlayerViewV7, command: CommandV7): boolean {
+/** Whether `command` is exactly one of the commands `view` offers. */
+export function commandIsOfferedV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): boolean {
   let encoded: string;
   let kind: CommandV7["kind"];
   try {
