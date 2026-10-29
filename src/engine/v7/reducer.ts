@@ -427,8 +427,10 @@ import {
   type NeutralBreedV7,
   TECHNOLOGY_IDS_V7,
   gameModeOfV7,
+  humanSeatsOfV7,
   isAfloatFormV7,
   isDaemonBreedV7,
+  isHumanPlayerIdV7,
   isNavalRoleV7,
   isNeutralOwnerV7,
   type AchievementIdV7,
@@ -8534,6 +8536,43 @@ function applyDisband(
   }
 }
 
+/**
+ * The result of a match after a capture changed the players' statuses
+ * (current rules section 3; online multiplayer, section 2.8,
+ * `pulp_wars-eqc6.1`): the match ends in a Defeat when no human seat is
+ * still in it (the defeater is the capturing `actor`), and in a Victory
+ * for the one seat left when only one is. Without `humanSeats` (one human,
+ * seat 0) that is exactly the long-standing rule: the human out is a
+ * Defeat, the human alone a Victory. With two humans an eliminated human
+ * watches while the other plays on; a Victory can then go only to a human
+ * seat, since the match is over once no human is left. An outcome already
+ * set is kept.
+ */
+export function eliminationOutcomeV7(
+  state: Pick<GameStateV7, "setup" | "humanPlayerId" | "outcome">,
+  players: readonly Pick<PlayerStateV7, "id" | "status">[],
+  actor: PlayerId,
+): GameStateV7["outcome"] {
+  if (state.outcome !== null) return state.outcome;
+  const human = (id: PlayerId): boolean =>
+    id === state.humanPlayerId || isHumanPlayerIdV7(state.setup, id);
+  const active = players.filter((item) => item.status === "ACTIVE");
+  const humansLeft =
+    humanSeatsOfV7(state.setup).length === 1
+      ? active.some((item) => item.id === state.humanPlayerId)
+      : active.some((item) => human(item.id));
+  if (!humansLeft)
+    return {
+      kind: "DEFEAT",
+      humanId: state.humanPlayerId,
+      defeatedByPlayerId: actor,
+    };
+  const last = active.length === 1 ? active[0] : undefined;
+  return last !== undefined && human(last.id)
+    ? { kind: "VICTORY", winnerId: last.id }
+    : null;
+}
+
 function applyCapture(
   original: GameStateV7,
   state: GameStateV7,
@@ -8868,19 +8907,7 @@ function applyCapture(
         ...iceEvents,
       );
     }
-    const active = players.filter((item) => item.status === "ACTIVE");
-    let outcome = state.outcome;
-    if (
-      players.find((item) => item.id === state.humanPlayerId)?.status ===
-      "ELIMINATED"
-    )
-      outcome = {
-        kind: "DEFEAT",
-        humanId: state.humanPlayerId,
-        defeatedByPlayerId: actor,
-      };
-    else if (active.length === 1 && active[0]?.id === state.humanPlayerId)
-      outcome = { kind: "VICTORY", winnerId: state.humanPlayerId };
+    const outcome = eliminationOutcomeV7(state, players, actor);
     if (outcome !== null) events.push({ kind: "MATCH_ENDED", outcome });
     return accepted(
       checked({
@@ -9042,8 +9069,10 @@ function applyEndTurn(
       const ranking = scoreRankingV7(scored, roundEnd.scores);
       const first = ranking[0];
       if (first === undefined) throw new RangeError("INVALID_STATE");
+      // Online multiplayer (`pulp_wars-eqc6.1`): any human seat ranked first
+      // wins; the human alone without `humanSeats`.
       const outcome: GameStateV7["outcome"] =
-        first === state.humanPlayerId
+        first === state.humanPlayerId || isHumanPlayerIdV7(state.setup, first)
           ? {
               kind: "VICTORY",
               winnerId: first,

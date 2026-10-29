@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r119" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r120" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -130,8 +130,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r116",
   "pulp-wars-poc-7r117",
   "pulp-wars-poc-7r118",
+  "pulp-wars-poc-7r119",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r119.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r120.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -908,6 +909,54 @@ export interface MatchSetupV7 {
    * a mission at all. Nothing in play reads it.
    */
   readonly gameKind?: GameKindV7;
+  /**
+   * Online multiplayer (`pulp_wars-eqc6.1`, `pulp-wars-poc-7r120`,
+   * docs/MULTIPLAYER.md): the seats people play, ascending, seat 0 first
+   * and at least two of them. Every other seat is an AI seat. An optional
+   * key: a setup without it has exactly one human seat, seat 0, and keeps
+   * its exact shape. `aiCount` stays the number of seats after seat 0 (the
+   * second human counts), so the board, seat, and faction checks are
+   * unchanged. Only a generated map takes it: never the Showcase, a
+   * mission, or a mirror setup, and a setup with it is never a Regular
+   * game. The seats it names start as `HUMAN` players, never get the AI
+   * head start or the Easy personality, are never Cooperative allies of
+   * the AI seats, and the match ends when no human seat is left or one
+   * seat stands (docs/product/RULESET_7_CURRENT.md section 2.8). Read it
+   * with {@link humanSeatsOfV7}.
+   */
+  readonly humanSeats?: readonly number[];
+}
+
+/** The human seats of a setup without `humanSeats`: seat 0 alone. */
+export const SOLO_HUMAN_SEATS_V7: readonly number[] = Object.freeze([0]);
+
+/**
+ * The seats people play (`MatchSetupV7.humanSeats`): seat 0 alone on every
+ * setup without the key.
+ */
+export function humanSeatsOfV7(
+  setup: Pick<MatchSetupV7, "humanSeats">,
+): readonly number[] {
+  return setup.humanSeats ?? SOLO_HUMAN_SEATS_V7;
+}
+
+/** Whether a person plays this seat (seat 0 on a setup without `humanSeats`). */
+export function isHumanSeatV7(
+  setup: Pick<MatchSetupV7, "humanSeats">,
+  seat: number,
+): boolean {
+  return humanSeatsOfV7(setup).includes(seat);
+}
+
+/**
+ * Whether a person plays this player (a seat's player ID is its seat number
+ * plus 1; the neutral owner and unknown IDs are no human seat).
+ */
+export function isHumanPlayerIdV7(
+  setup: Pick<MatchSetupV7, "humanSeats">,
+  playerId: number,
+): boolean {
+  return isHumanSeatV7(setup, playerId - 1);
 }
 
 /**

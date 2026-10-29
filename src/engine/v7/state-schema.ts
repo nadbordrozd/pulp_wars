@@ -54,6 +54,8 @@ import {
   REWARD_IDS_V7,
   RITUAL_KINDS_V7,
   RULESET_7_ID,
+  isHumanSeatV7,
+  isHumanPlayerIdV7,
   type RitualKindV7,
   TECHNOLOGY_IDS_V7,
   TERRAIN_IDS_V7,
@@ -446,7 +448,13 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     players[0]?.controller !== "HUMAN" ||
     players[0]?.id !== humanPlayerId ||
     players[0]?.color !== setup.humanColor ||
-    players.slice(1).some((player) => player.controller !== "AI") ||
+    // Online multiplayer (`pulp_wars-eqc6.1`): every human seat of the
+    // setup (seat 0 alone without `humanSeats`) is `HUMAN`, every other `AI`.
+    players.some(
+      (player) =>
+        player.controller !==
+        (isHumanSeatV7(setup, player.seat) ? "HUMAN" : "AI"),
+    ) ||
     !sameSet(
       turnOrder,
       players.map((player) => player.id),
@@ -3767,7 +3775,11 @@ function validateCrossReferences(value: CrossInput): boolean {
           : outcome.defeatedByPlayerId;
       if (
         outcome.ranking[0] !== first ||
-        (outcome.kind === "VICTORY") !== (first === value.humanPlayerId) ||
+        // Online multiplayer (`pulp_wars-eqc6.1`): a Victory exactly when
+        // a human seat ranks first (the human, without `humanSeats`).
+        (outcome.kind === "VICTORY") !==
+          (first === value.humanPlayerId ||
+            isHumanPlayerIdV7(value.setup, first)) ||
         !sameSet(
           outcome.ranking,
           players.map((player) => player.id),

@@ -102,14 +102,20 @@ type KindSetupV7 = Pick<
   | "aiHeadStart"
   | "allowDuplicateFactions"
   | "mission"
+  | "humanSeats"
 >;
 
-/** A skirmish: a generated map, not a mission, never a mirror setup. */
+/**
+ * A skirmish: a generated map, not a mission, never a mirror setup, and
+ * never an online match (`humanSeats`, `pulp_wars-eqc6.1`: it earns no
+ * tribe stars and no leaderboard place).
+ */
 function skirmishSetupV7(setup: KindSetupV7): boolean {
   return (
     isGeneratedMapTypeV7(setup.mapType) &&
     setup.mission === undefined &&
-    setup.allowDuplicateFactions === undefined
+    setup.allowDuplicateFactions === undefined &&
+    setup.humanSeats === undefined
   );
 }
 

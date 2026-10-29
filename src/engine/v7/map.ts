@@ -61,6 +61,7 @@ import {
   emptyCultStateV7,
   emptyGiantsStateV7,
   aiHeadStartCoinsV7,
+  isHumanSeatV7,
   type MonsterStateV7,
   type AiCountV7,
   type BiomeIdV7,
@@ -4910,19 +4911,21 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
   return Array.from({ length: setup.aiCount + 1 }, (_, seat) => {
     // Revision 13: each seat binds its setup faction and that faction's tree.
     const tree = factionTreeV7(setup.factions[seat] as FactionIdV7);
+    // Online multiplayer (`pulp_wars-eqc6.1`): every seat of `humanSeats`
+    // (seat 0 alone without it) is a human seat.
+    const human = isHumanSeatV7(setup, seat);
     return {
       id: playerId(seat + 1),
       seat,
-      controller: seat === 0 ? "HUMAN" : "AI",
+      controller: human ? "HUMAN" : "AI",
       color:
         seat === 0 ? setup.humanColor : (colors[seat - 1] as PlayerColorV7),
       faction: tree.faction,
       factionTreeId: tree.id,
       status: "ACTIVE",
       // AI head start (`pulp_wars-w49.39`): every AI seat starts with the
-      // setup's extra Coins; seat 0 never does.
-      coins:
-        RULESET_7.startingCoins + (seat === 0 ? 0 : aiHeadStartCoinsV7(setup)),
+      // setup's extra Coins; a human seat never does.
+      coins: RULESET_7.startingCoins + (human ? 0 : aiHeadStartCoinsV7(setup)),
       researchedTechs: tree.startingTechIds,
       explored: [],
       spoilsClaimedCityIds: [],

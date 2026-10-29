@@ -138,6 +138,7 @@ import {
   cityHasWallsV7,
   cityOfferedPopulationV7,
   isDaemonBreedV7,
+  isHumanPlayerIdV7,
   isNeutralOwnerV7,
   type CoordV7,
   type ImprovementIdV7,
@@ -26338,13 +26339,16 @@ function captureEndsMatchV7(
     (entry) => entry.playerId === targetOwnerId,
   );
   if (target?.status !== "ACTIVE" || target.cityCount !== 1) return false;
-  if (targetOwnerId === view.humanPlayerId) return true;
   const survivors = view.leaderboard.filter(
     (entry) => entry.status === "ACTIVE" && entry.playerId !== targetOwnerId,
   );
-  return (
-    survivors.length === 1 && survivors[0]?.playerId === view.humanPlayerId
-  );
+  // The engine's end rule (`eliminationOutcomeV7`): no human seat left, or
+  // one human seat standing alone. Without `humanSeats` the human is the
+  // only human seat.
+  const human = (id: PlayerId): boolean =>
+    id === view.humanPlayerId || isHumanPlayerIdV7(view.setup, id);
+  if (!survivors.some((entry) => human(entry.playerId))) return true;
+  return survivors.length === 1 && human(survivors[0]?.playerId as PlayerId);
 }
 
 function* scoreCommandSteps(

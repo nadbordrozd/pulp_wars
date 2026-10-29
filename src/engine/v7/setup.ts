@@ -128,6 +128,44 @@ function splitAiHeadStartV7(input: unknown): {
 }
 
 /**
+ * Online multiplayer (`pulp_wars-eqc6.1`, 7r120): the optional `humanSeats`
+ * key. A setup without it has one human seat (seat 0) and keeps that exact
+ * shape.
+ */
+const HUMAN_SEATS_KEY_V7 = "humanSeats";
+
+/**
+ * The setup's keys without `humanSeats`, and the seats (null when the key
+ * is present but not an ascending list of at least two whole seat numbers
+ * starting at 0; the seat count is checked once the rest is valid).
+ */
+function splitHumanSeatsV7(input: unknown): {
+  readonly rest: unknown;
+  readonly humanSeats: readonly number[] | undefined | null;
+} {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    !Object.prototype.hasOwnProperty.call(input, HUMAN_SEATS_KEY_V7)
+  )
+    return { rest: input, humanSeats: undefined };
+  const { humanSeats, ...rest } = input as { readonly humanSeats?: unknown };
+  if (
+    !isDenseArrayV7(humanSeats) ||
+    humanSeats.length < 2 ||
+    humanSeats[0] !== 0 ||
+    !humanSeats.every(
+      (seat, index) =>
+        typeof seat === "number" &&
+        Number.isSafeInteger(seat) &&
+        (index === 0 || seat > (humanSeats[index - 1] as number)),
+    )
+  )
+    return { rest, humanSeats: null };
+  return { rest, humanSeats: [...(humanSeats as readonly number[])] };
+}
+
+/**
  * Difficulty (`pulp_wars-2yc.69`): `aiDifficulty` is `NORMAL` or another
  * level of `DIFFICULTIES_V7` (`EASY` since `pulp_wars-q6cc`). The setup
  * without the other name (read as `NORMAL` by the shape checks), and the
@@ -267,9 +305,36 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * head start on the board (`setupDifficultyAllowedV7`). The optional `gameKind`
  * (`pulp_wars-2yc.103`) is `REGULAR` or `CUSTOM`, never on a mission and
  * `REGULAR` only on a generated map without the mirror flag; a setup
- * without it is returned without the key.
+ * without it is returned without the key. The optional `humanSeats`
+ * (`pulp_wars-eqc6.1`, online multiplayer) is an ascending list of at
+ * least two seats starting with 0, each a seat of the setup, only on a
+ * generated map without the mirror flag and never with `gameKind`
+ * `REGULAR`; a setup without it is returned without the key.
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
+  // Online multiplayer (`pulp_wars-eqc6.1`, 7r120): `humanSeats` is
+  // optional; with it, the seats are within the setup's seats, the map is
+  // generated, and the setup is never a mirror or a Regular game.
+  const { rest, humanSeats } = splitHumanSeatsV7(input);
+  if (humanSeats === null)
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  const result = validateSetupWithoutHumanSeatsV7(rest);
+  if (!result.ok || humanSeats === undefined) return result;
+  const setup = result.setup;
+  if (
+    setup.mapType === "SHOWCASE" ||
+    setup.mapType === "MISSION" ||
+    setup.allowDuplicateFactions === true ||
+    setup.gameKind === "REGULAR" ||
+    humanSeats.some((seat) => seat > setup.aiCount)
+  )
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  return { ok: true, setup: { ...setup, humanSeats } };
+}
+
+function validateSetupWithoutHumanSeatsV7(
+  input: unknown,
+): MatchSetupValidationV7 {
   // Regular and custom games (`pulp_wars-2yc.103`): `gameKind` is optional,
   // never on a `MISSION` setup, and `REGULAR` only on a generated map
   // without the mirror flag.

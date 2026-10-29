@@ -843,11 +843,13 @@ describe("where the real store is used", () => {
 describe("the security rules", () => {
   const rules = readFileSync("firebase/firestore.rules", "utf8");
 
-  it("hold only the Pulp Wars block and the catch-all deny", () => {
+  it("hold only the Pulp Wars blocks and the catch-all deny", () => {
     expect(rules).toContain("pulp-wars Firebase project");
     expect(rules).not.toMatch(/vibe.crawler/i);
     expect(rules).not.toContain("match /leaderboard/");
-    expect(rules.match(/^\s*match \//gm)).toHaveLength(3);
+    // The database, the leaderboard, online matches and their moves
+    // (pulp_wars-eqc6.1), and the catch-all.
+    expect(rules.match(/^\s*match \//gm)).toHaveLength(5);
     expect(rules).toMatch(
       /match \/\{document=\*\*\} \{\s+allow read, write: if false;/,
     );

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r119`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r120`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,19 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r120` (`pulp_wars-eqc6.1`; the user, 2026-10-29: "online
+multiplayer ... just 2 human players in a skirmish type map plus optional AI
+players") adds **online seats**
+([section 2.8](#28-online-multiplayer-seats)): an optional setup key
+`humanSeats` (`[0, 1]` for an online match) names the seats people play.
+Those seats start as `HUMAN` players, never get the AI head start or the
+Easy personality, and are never Cooperative allies of the AI seats; the
+match ends when no human seat is left (a Defeat) or one seat stands (its
+Victory), so an eliminated human watches while the other plays on, and in
+Perfection any human ranked first wins. Such a setup is never a Regular
+game. A setup without the key is unchanged in shape and in play. A save,
+replay, or setup of `7r119` is rejected, and the browser autosave has a new
+key. Boards and missions are unchanged.
 `pulp-wars-poc-7r119` (`pulp_wars-befg` and `pulp_wars-cln2`; the user,
 2026-10-27) makes **the Whirligig's attack its Whirl**
 ([section 22.15](#2215-the-whirligig-whirl)): an attack on an adjacent
@@ -1813,10 +1826,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r119`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r120`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r119.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r120.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4414,6 +4427,34 @@ log says "Sea Serpent bit your Battleship" and "Sea Serpent slain: +15
 Coins bounty"; the bite plays `attack.serpent` (a hiss and a splash). The
 Gallery's Curiosities tab shows it in the fifth cell of its third row.
 
+### 2.8 Online multiplayer seats
+
+Online multiplayer (`pulp_wars-eqc6.1`, `pulp-wars-poc-7r120`;
+[docs/MULTIPLAYER.md](../MULTIPLAYER.md)) seats two people at one match.
+
+- **Setup.** The optional key `humanSeats` is an ascending list of at least
+  two seats starting with 0, each a seat of the setup (`aiCount` still
+  counts every seat after seat 0, the second human included). Only a
+  generated map takes it: never the Showcase, a mission, or a mirror setup,
+  and never `gameKind` `REGULAR`; such a setup is always a custom game
+  (no tribe stars, no leaderboard). An online match uses `[0, 1]`: the host
+  is seat 0 (its colour is `humanColor`) and the guest seat 1. A setup
+  without the key has the one human seat 0 and is unchanged.
+- **Seats.** Every seat of `humanSeats` starts as a `HUMAN` player and
+  every other seat as `AI` (the state schema holds it). Only AI seats get
+  the AI head start (`aiHeadStart`) and, on an `EASY` setup, the Easy
+  personality.
+- **Relationships.** In Cooperative mode the AI seats are allies of each
+  other and of no human seat; the human seats are hostile to each other in
+  both modes.
+- **The end.** The match ends in a Defeat (`humanId` seat 0's player,
+  the defeater the capturing player) when no human seat is still in it,
+  and in a Victory for the one seat left when only one is (a human seat,
+  since the match ends first otherwise). In Perfection the round-30 ranking
+  decides as usual and any human seat ranked first is the winner.
+  Everything else (turn order, the first Start Turn, the score) is the
+  ordinary rules.
+
 ## 3. Players, turns, and victory
 
 - Every seat starts with 3 Coins (`RULESET_7.startingCoins`; 5 before
@@ -4442,7 +4483,8 @@ Gallery's Curiosities tab shows it in the fifth cell of its third row.
   is the ordinary rules.
 - **Relationships:** in Rival mode every pair of players is hostile. In
   Cooperative mode all AI seats are formal allies of each other and hostile to
-  the human. A mission that names teams replaces both
+  the human (to every human seat of an online match,
+  [section 2.8](#28-online-multiplayer-seats)). A mission that names teams replaces both
   ([section 2.6](#26-mission-setup), `pulp-wars-poc-7r82`): seats of one
   team are allies, and an AI seat may be the human's ally. Allies cannot attack each other, capture each other's cities, or
   enter each other's territory; they share nothing else. Both modes mean
@@ -4553,7 +4595,11 @@ Gallery's Curiosities tab shows it in the fifth cell of its third row.
   from its removed Liches and the bites it inflicted end
   ([section 17](#17-undead-faction-rules)).
 - **Outcome:** the human wins when every other player is eliminated and loses
-  immediately when eliminated. There is no draw. In Domination there is no
+  immediately when eliminated. With two human seats (an online match,
+  [section 2.8](#28-online-multiplayer-seats)) the match ends when no human
+  seat is left (a Defeat) or when one seat is the last (its Victory, which
+  then is a human seat's); an eliminated human's turns are skipped while
+  the other human plays on. There is no draw. In Domination there is no
   score or turn-limit victory; in Perfection the match also ends after
   round 30 and the highest score wins
   ([section 3.1](#31-score-play-modes-and-stars)). The rule is the same with

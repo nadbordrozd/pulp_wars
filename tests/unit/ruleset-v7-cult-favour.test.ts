@@ -153,14 +153,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r119");
-    expect(PRIOR_RULESET_7_IDS.slice(-48, -46)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r120");
+    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r119.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-48, -46)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r120.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -47)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);

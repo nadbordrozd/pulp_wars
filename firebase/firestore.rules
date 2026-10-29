@@ -1,9 +1,12 @@
 // Firestore security rules for the pulp-wars Firebase project: the Pulp Wars
 // public leaderboard, collection `pulpWarsScores` (beads pulp_wars-2yc.104
-// and pulp_wars-2yc.105, docs/LEADERBOARD.md).
+// and pulp_wars-2yc.105, docs/LEADERBOARD.md), and online multiplayer,
+// collection `matches` with its `moves` (bead pulp_wars-eqc6.1,
+// docs/MULTIPLAYER.md).
 //
 // Paste the whole file into Firebase Console > Firestore Database > Rules and
-// press Publish.
+// press Publish. Online multiplayer also needs Firebase Console >
+// Authentication > Sign-in method > Anonymous enabled.
 
 rules_version = '2';
 service cloud.firestore {
@@ -58,6 +61,249 @@ service cloud.firestore {
 
              // The server's time of the write (a REQUEST_TIME transform).
              data.timestamp == request.time;
+    }
+
+    // ---------------------------------------------------------------------
+    // Online multiplayer (pulp_wars-eqc6.1, docs/MULTIPLAYER.md section 5).
+    //
+    // A match is `matches/{code}`, its document ID the room code. Its
+    // moves are `matches/{code}/moves/{index}`, index 0, 1, 2, ... Every
+    // browser signs in anonymously (Firebase Anonymous Auth), so
+    // `request.auth.uid` names the player. Cheating is not guarded against
+    // (both browsers hold the whole game); these rules keep honest clients
+    // from clobbering each other and strangers from vandalizing a match.
+    // The TypeScript mirror in src/online/match-rules.ts applies the same
+    // checks to the in-memory and two-tab transports.
+    // ---------------------------------------------------------------------
+    match /matches/{code} {
+      // Anyone signed in may read a match whose code they know. Listing
+      // the collection is refused, so codes cannot be browsed.
+      allow get: if signedIn();
+      allow list: if false;
+
+      // The host creates a lobby under a fresh code (the client writes
+      // with `exists: false`, so a taken code is never overwritten).
+      allow create: if signedIn() && isNewMatch(code, request.resource.data);
+
+      // Five kinds of change, each by a named player and touching only
+      // its own fields: the guest takes the free seat; either side edits
+      // its own lobby fields; the host starts; the player to move appends
+      // a move (with the move document, below); a seated player leaves.
+      allow update: if signedIn() &&
+                       (isGuestJoin() ||
+                        isHostLobbyEdit() ||
+                        isGuestLobbyEdit() ||
+                        isStart() ||
+                        isMoveBump(code) ||
+                        isLeave());
+
+      // Nobody deletes a match from a browser (old matches are cleaned up
+      // in the console, or later by a scheduled job).
+      allow delete: if false;
+
+      match /moves/{index} {
+        // Read one move at a time (batchGet); listing is refused.
+        allow get: if signedIn();
+        allow list: if false;
+
+        // Only the next move, by the driver of the seat to move, in the
+        // same commit that moves the match on to the next index.
+        allow create: if signedIn() && isValidMove(code, index, request.resource.data);
+
+        // A move is never changed or removed.
+        allow update, delete: if false;
+      }
+    }
+
+    function signedIn() {
+      return request.auth != null && request.auth.uid is string;
+    }
+
+    // The fields a match has, exactly.
+    function matchKeys() {
+      return ['code', 'rulesetId', 'status',
+              'hostUid', 'hostName', 'hostPick',
+              'guestUid', 'guestName', 'guestPick', 'guestReady',
+              'optionsJson', 'setupJson', 'driverUids',
+              'moveCount', 'turnSeat', 'createdAt', 'updatedAt'];
+    }
+
+    // A display name: the leaderboard's pattern, 1 to 16 characters.
+    function isName(name) {
+      return name is string &&
+             name.size() >= 1 &&
+             name.size() <= 16 &&
+             name.matches("^[A-Za-z0-9.,!?'_-]([A-Za-z0-9 .,!?'_-]{0,14}[A-Za-z0-9.,!?'_-])?$");
+    }
+
+    // A faction pick: one of the nine factions, or RANDOM.
+    function isPick(pick) {
+      return pick in ['RANDOM', 'ORIGINAL', 'UNDEAD', 'GOBLIN', 'DINOSAUR', 'MARTIAN', 'ICE_FOLK', 'DWARF', 'CANDY', 'CULT'];
+    }
+
+    // A JSON text field (options, setup, command) of bounded size.
+    function isJson(text, maxSize) {
+      return text is string && text.size() >= 2 && text.size() <= maxSize;
+    }
+
+    // What changed in this update.
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // A new lobby: a five-letter code (A to Z without I and O) that is
+    // also the `code` field, created by its host, the guest seat free, no
+    // setup, no moves, and both times the server's.
+    function isNewMatch(code, data) {
+      return data.keys().hasAll(matchKeys()) &&
+             data.keys().hasOnly(matchKeys()) &&
+             code.matches('^[A-HJ-NP-Z]{5}$') &&
+             data.code == code &&
+             data.rulesetId is string &&
+             data.rulesetId.matches('^pulp-wars-[a-z0-9-]{1,24}$') &&
+             data.status == 'LOBBY' &&
+             data.hostUid == request.auth.uid &&
+             isName(data.hostName) &&
+             isPick(data.hostPick) &&
+             data.guestUid == '' &&
+             data.guestName == '' &&
+             data.guestPick == 'RANDOM' &&
+             data.guestReady == false &&
+             isJson(data.optionsJson, 2000) &&
+             data.setupJson == '' &&
+             data.driverUids == [] &&
+             data.moveCount == 0 &&
+             data.turnSeat == 0 &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    // The guest takes the free seat of a lobby, once: only while it is
+    // free, only for themselves, and never the host.
+    function isGuestJoin() {
+      let after = request.resource.data;
+      return resource.data.status == 'LOBBY' &&
+             resource.data.guestUid == '' &&
+             resource.data.hostUid != request.auth.uid &&
+             after.guestUid == request.auth.uid &&
+             changed().hasOnly(['guestUid', 'guestName', 'guestPick', 'guestReady', 'updatedAt']) &&
+             isName(after.guestName) &&
+             isPick(after.guestPick) &&
+             after.guestReady is bool &&
+             after.updatedAt == request.time;
+    }
+
+    // The host changes its name, its pick, or the options, in the lobby.
+    function isHostLobbyEdit() {
+      let after = request.resource.data;
+      return resource.data.status == 'LOBBY' &&
+             resource.data.hostUid == request.auth.uid &&
+             changed().hasOnly(['hostName', 'hostPick', 'optionsJson', 'updatedAt']) &&
+             isName(after.hostName) &&
+             isPick(after.hostPick) &&
+             isJson(after.optionsJson, 2000) &&
+             after.updatedAt == request.time;
+    }
+
+    // The seated guest changes its name, pick or ready flag in the lobby,
+    // or leaves the seat free again (all four guest fields reset).
+    function isGuestLobbyEdit() {
+      let after = request.resource.data;
+      return resource.data.status == 'LOBBY' &&
+             resource.data.guestUid != '' &&
+             resource.data.guestUid == request.auth.uid &&
+             changed().hasOnly(['guestUid', 'guestName', 'guestPick', 'guestReady', 'updatedAt']) &&
+             after.updatedAt == request.time &&
+             ((after.guestUid == request.auth.uid &&
+               isName(after.guestName) &&
+               isPick(after.guestPick) &&
+               after.guestReady is bool) ||
+              (after.guestUid == '' &&
+               after.guestName == '' &&
+               after.guestPick == 'RANDOM' &&
+               after.guestReady == false));
+    }
+
+    // The host starts a lobby whose guest seat is taken: the status
+    // becomes ACTIVE with the resolved setup, the drivers (seat 0 and the
+    // AI seats the host's uid, seat 1 the guest's; at most nine seats) and
+    // the first seat to move.
+    function isStart() {
+      let before = resource.data;
+      let after = request.resource.data;
+      return before.status == 'LOBBY' &&
+             before.hostUid == request.auth.uid &&
+             before.guestUid != '' &&
+             changed().hasOnly(['status', 'setupJson', 'driverUids', 'turnSeat', 'updatedAt']) &&
+             after.status == 'ACTIVE' &&
+             isJson(after.setupJson, 8000) &&
+             after.driverUids is list &&
+             after.driverUids.size() >= 2 &&
+             after.driverUids.size() <= 9 &&
+             after.driverUids[0] == before.hostUid &&
+             after.driverUids[1] == before.guestUid &&
+             after.driverUids.hasOnly([before.hostUid, before.guestUid]) &&
+             after.turnSeat is int &&
+             after.turnSeat >= 0 &&
+             after.turnSeat < after.driverUids.size() &&
+             after.updatedAt == request.time;
+    }
+
+    // The match half of a move commit: by the driver of the seat to move,
+    // `moveCount` up by exactly one, and the move document of the old
+    // `moveCount` written in the same commit (existsAfter). The status
+    // stays ACTIVE or becomes FINISHED (the move ended the game); the
+    // next seat to move is any seat.
+    function isMoveBump(code) {
+      let before = resource.data;
+      let after = request.resource.data;
+      return before.status == 'ACTIVE' &&
+             before.driverUids[before.turnSeat] == request.auth.uid &&
+             changed().hasOnly(['moveCount', 'turnSeat', 'status', 'updatedAt']) &&
+             after.moveCount == before.moveCount + 1 &&
+             existsAfter(/databases/$(database)/documents/matches/$(code)/moves/$(string(before.moveCount))) &&
+             after.turnSeat is int &&
+             after.turnSeat >= 0 &&
+             after.turnSeat < before.driverUids.size() &&
+             after.status in ['ACTIVE', 'FINISHED'] &&
+             after.updatedAt == request.time;
+    }
+
+    // A seated player (host or guest) gives up a lobby or a game in play:
+    // only the status changes, to ABANDONED, for everyone.
+    function isLeave() {
+      return resource.data.status in ['LOBBY', 'ACTIVE'] &&
+             (resource.data.hostUid == request.auth.uid ||
+              (resource.data.guestUid != '' && resource.data.guestUid == request.auth.uid)) &&
+             changed().hasOnly(['status', 'updatedAt']) &&
+             request.resource.data.status == 'ABANDONED' &&
+             request.resource.data.updatedAt == request.time;
+    }
+
+    // The move half of a move commit: the document ID is the match's
+    // current `moveCount` in plain decimal (so "7", never "07"), written by
+    // the driver of the seat to move for that seat, while the match is in
+    // play; the command is bounded JSON, the hash 64 hex digits, the time
+    // the server's; and after the commit the match's `moveCount` is one
+    // more (getAfter), so the two writes stand or fall together. A second
+    // writer of the same index fails: the document exists (the client
+    // writes with `exists: false`) and `moveCount` has moved on.
+    function isValidMove(code, index, data) {
+      let game = get(/databases/$(database)/documents/matches/$(code)).data;
+      let after = getAfter(/databases/$(database)/documents/matches/$(code)).data;
+      return game.status == 'ACTIVE' &&
+             index == string(game.moveCount) &&
+             data.keys().hasAll(['index', 'seat', 'uid', 'commandJson', 'stateHash', 'createdAt']) &&
+             data.keys().hasOnly(['index', 'seat', 'uid', 'commandJson', 'stateHash', 'createdAt']) &&
+             data.index == game.moveCount &&
+             data.seat == game.turnSeat &&
+             game.driverUids[game.turnSeat] == request.auth.uid &&
+             data.uid == request.auth.uid &&
+             isJson(data.commandJson, 4000) &&
+             data.stateHash is string &&
+             data.stateHash.matches('^[0-9a-f]{64}$') &&
+             data.createdAt == request.time &&
+             after.moveCount == game.moveCount + 1;
     }
 
     // Deny access to all other collections

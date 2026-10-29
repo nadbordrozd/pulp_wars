@@ -5,7 +5,11 @@ import {
   randomState,
   seedFromText,
 } from "../engine/random/random";
-import { isNeutralOwnerV7, type CoordV7 } from "../engine/v7/types";
+import {
+  isHumanPlayerIdV7,
+  isNeutralOwnerV7,
+  type CoordV7,
+} from "../engine/v7/types";
 import type { PlayerViewV7 } from "../engine/v7/view";
 
 /**
@@ -127,13 +131,15 @@ export const EASY_HOME_RADIUS_V7 = 2;
 
 /**
  * The personality of the viewer's seat: Easy for an AI seat of an `EASY`
- * setup, Normal otherwise.
+ * setup, Normal otherwise. A human seat of an online match (`humanSeats`,
+ * `pulp_wars-eqc6.1`) is never an AI seat.
  */
 export function aiPersonalityForViewV7(
   view: Pick<PlayerViewV7, "setup" | "viewer" | "humanPlayerId">,
 ): AiPersonalityV7 {
   return view.setup.aiDifficulty === "EASY" &&
-    view.viewer.id !== view.humanPlayerId
+    view.viewer.id !== view.humanPlayerId &&
+    !isHumanPlayerIdV7(view.setup, view.viewer.id)
     ? EASY_AI_PERSONALITY_V7
     : NORMAL_AI_PERSONALITY_V7;
 }

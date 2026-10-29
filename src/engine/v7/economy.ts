@@ -25,6 +25,7 @@ import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
 import {
   cityOfferedPopulationV7,
   isAfloatFormV7,
+  isHumanPlayerIdV7,
   isNeutralOwnerV7,
   type MatchSetupV7,
   type CityStateV7,
@@ -232,7 +233,8 @@ export function arePlayersAlliedV7(
  * THE Cooperative alliance rule (current rules section 3), shared by the
  * canonical relationship helpers and every public copy (movement, queries,
  * the Normal AI): two different seats are allies exactly in a Cooperative
- * match when neither is the human. Map curiosities (section 8.1): the
+ * match when neither is the human (nor a human seat of an online match's
+ * `humanSeats`, `pulp_wars-eqc6.1`). Map curiosities (section 8.1): the
  * neutral owner is never allied to anyone, in either mode.
  *
  * Mission teams (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`;
@@ -242,7 +244,9 @@ export function arePlayersAlliedV7(
  * argument is the setup (the mode alone still means a match without teams).
  */
 export function cooperativeAlliesV7(
-  setup: MatchSetupV7["aiMode"] | Pick<MatchSetupV7, "aiMode" | "mission">,
+  setup:
+    | MatchSetupV7["aiMode"]
+    | Pick<MatchSetupV7, "aiMode" | "mission" | "humanSeats">,
   humanPlayerId: number,
   left: number,
   right: number,
@@ -261,7 +265,10 @@ export function cooperativeAlliesV7(
   return (
     (typeof setup === "string" ? setup : setup.aiMode) === "COOPERATIVE" &&
     left !== humanPlayerId &&
-    right !== humanPlayerId
+    right !== humanPlayerId &&
+    // Online multiplayer (`pulp_wars-eqc6.1`): no human seat is an ally.
+    (typeof setup === "string" ||
+      (!isHumanPlayerIdV7(setup, left) && !isHumanPlayerIdV7(setup, right)))
   );
 }
 
