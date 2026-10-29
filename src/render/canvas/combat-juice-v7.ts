@@ -359,10 +359,47 @@ export function combatJuiceDeathsV7(
 }
 
 /**
- * The units of a boundary that pop in: trained (a land or a naval unit), a
- * city's reward (the giant too) and a summoned daemon, new in the view
- * after it and on a tile the viewer has explored. Other arrivals keep their
- * own cue (an Egg laid, a hatchling, the risen dead, an assembled Gunner).
+ * Whether a projected event other than its reveal names `unitId`: a move,
+ * a gate, a beam, a push, a hit or any cue of its own. A field named
+ * `unitId` or `…UnitId`, a list named `unitIds` or `…UnitIds`, or an entry
+ * of a list (`results`) that names it. The reward's own push
+ * (`UNIT_SPAWN_DISPLACED`) does not count for the unit it brings in.
+ */
+function eventNamesUnitV7(event: object, unitId: number): boolean {
+  if ("kind" in event && event.kind === "UNIT_SPAWN_DISPLACED")
+    return "displacedUnitId" in event && event.displacedUnitId === unitId;
+  for (const [key, value] of Object.entries(event)) {
+    if (/(^u|U)nitId$/.test(key) && value === unitId) return true;
+    if (Array.isArray(value))
+      for (const entry of value as readonly unknown[]) {
+        if (/(^u|U)nitIds$/.test(key) && entry === unitId) return true;
+        if (
+          typeof entry === "object" &&
+          entry !== null &&
+          eventNamesUnitV7(entry, unitId)
+        )
+          return true;
+      }
+  }
+  return false;
+}
+
+/**
+ * The units of a boundary that pop in, new in the view after it and on a
+ * tile the viewer has explored:
+ *
+ * - the viewer's own trained unit (a land or a naval unit), a city's
+ *   reward (the giant, a Militia, a held reward placed at the turn's
+ *   start, one that pushed the unit on the center aside) and the unit a
+ *   treasure chest gives (bead pulp_wars-b9mc), and a summoned daemon;
+ * - another seat's new unit (an AI's recruit, reward or chest unit, whose
+ *   event only its owner receives) on a tile the viewer had explored
+ *   before the boundary, which no event but its reveal names: it did not
+ *   walk, jump or come through a gate out of the fog, and it has no cue
+ *   of its own (bead pulp_wars-b9mc).
+ *
+ * Other arrivals keep their own cue (an Egg laid, a hatchling, the risen
+ * dead, an assembled Gunner).
  */
 export function combatJuiceSpawnsV7(
   before: PlayerViewV7,
@@ -370,15 +407,30 @@ export function combatJuiceSpawnsV7(
   envelope: PlayerEventEnvelopeV7,
 ): readonly CombatJuiceUnitV7[] {
   const spawns: CombatJuiceUnitV7[] = [];
+  const exploredBefore = new Set(
+    before.board.tiles
+      .filter((tile) => tile.explored)
+      .map((tile) => `${tile.at.x},${tile.at.y}`),
+  );
   for (const event of envelope.events) {
     const unitId =
       event.kind === "UNIT_TRAINED" ||
       event.kind === "NAVAL_UNIT_TRAINED" ||
       event.kind === "UNIT_REWARD_GRANTED"
         ? event.unitId
-        : event.kind === "DAEMON_SUMMONED"
-          ? event.daemonUnitId
-          : null;
+        : event.kind === "TREASURE_CAPTURED"
+          ? event.spawnedUnitId
+          : event.kind === "DAEMON_SUMMONED"
+            ? event.daemonUnitId
+            : event.kind === "UNIT_REVEALED" &&
+                exploredBefore.has(`${event.at.x},${event.at.y}`) &&
+                !envelope.events.some(
+                  (other) =>
+                    other.kind !== "UNIT_REVEALED" &&
+                    eventNamesUnitV7(other, event.unitId),
+                )
+              ? event.unitId
+              : null;
     if (unitId === null || spawns.some((entry) => entry.unitId === unitId))
       continue;
     const unit = after.units.find((candidate) => candidate.id === unitId);

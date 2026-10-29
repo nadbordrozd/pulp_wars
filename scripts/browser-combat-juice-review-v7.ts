@@ -15,14 +15,16 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * (390 x 844) widths, full and reduced motion: the Knight's kill (damage
  * number, death poof), the Fighter's hit on a Guard and its retaliation, training
  * a unit (spawn pop) and the Goblin Bomb Chucker's shot with its splash (the
- * enemy turn's playback). The page's clock and animation frames are
+ * enemy turn's playback). Bead pulp_wars-b9mc adds the same spawn pop for
+ * the level-6 giant (its Guard pushed off the center first), a treasure
+ * chest's unit, and a Goblin chest unit played back to the human. The page's clock and animation frames are
  * replaced by a stepped clock while a sequence plays, so each frame is
  * taken at an exact time. Each sequence is also laid out as one contact
  * sheet, cropped round the action and enlarged. Chrome runs headless and
  * muted. It needs the Vite dev server, because the fixtures are imported
  * from `tests/fixtures`.
  *
- * Usage: tsx scripts/browser-combat-juice-review-v7.ts http://localhost:6173/ [--output-dir=<new-dir>] [--only=kill,trade,train,enemy]
+ * Usage: tsx scripts/browser-combat-juice-review-v7.ts http://localhost:6173/ [--output-dir=<new-dir>] [--only=kill,trade,train,enemy,reward,chest,enemy-chest]
  */
 
 interface DebugTarget {
@@ -117,6 +119,9 @@ try {
       if (wanted("trade")) await trade(connection, size, motion);
       if (wanted("train")) await train(connection, size, motion);
       if (wanted("enemy")) await enemy(connection, size, motion);
+      if (wanted("reward")) await reward(connection, size, motion);
+      if (wanted("chest")) await chest(connection, size, motion, 0);
+      if (wanted("enemy-chest")) await chest(connection, size, motion, 1);
     }
   }
   if (errors.length > 0)
@@ -191,6 +196,49 @@ async function enemy(
     [at.bombChucker, at.bombTarget, at.bombSplash],
     `(() => { const view = ${REVIEW}.snapshotView(); const id = (at) => view.units.find((unit) => unit.at.x === at.x && unit.at.y === at.y).id; return ${REVIEW}.controller.dispatchAs(${REVIEW}.goblinId(), { kind: 'ATTACK', unitId: id(${JSON.stringify(at.bombChucker)}), targetUnitId: id(${JSON.stringify(at.bombTarget)}) }); })()`,
     motion === "full" ? 34 : 22,
+  );
+}
+
+async function reward(
+  connection: Connection,
+  size: Size,
+  motion: Motion,
+): Promise<void> {
+  const at = await mount(connection, "combatJuiceRewardFixtureV7");
+  // The reward's chooser stays away while the board is dragged into place
+  // (on a phone the drag would tap it): the choice comes back just before
+  // the command.
+  await evaluate(
+    connection,
+    `(() => { const held = ${REVIEW}.state(); ${REVIEW}.heldState = held; ${REVIEW}.rewardCommand = ${REVIEW}.fixtures.combatJuiceRewardCommandV7(held); ${REVIEW}.replaceState({ ...held, pendingChoices: [] }); return true; })()`,
+  );
+  await sequence(
+    connection,
+    `reward-${size}-${motion}`,
+    [at.capital, at.pushedTo],
+    `(${REVIEW}.replaceState(${REVIEW}.heldState), ${REVIEW}.controller.dispatch(${REVIEW}.rewardCommand).then((result) => { if (!result.accepted) throw new Error('reward rejected: ' + JSON.stringify(result.error)); }))`,
+    motion === "full" ? 22 : 14,
+  );
+}
+
+async function chest(
+  connection: Connection,
+  size: Size,
+  motion: Motion,
+  seat: 0 | 1,
+): Promise<void> {
+  const at = await mount(connection, "combatJuiceChestFixtureV7", seat);
+  const name = seat === 0 ? "chest" : "enemy-chest";
+  const dispatch =
+    seat === 0
+      ? `${REVIEW}.controller.dispatch`
+      : `((command) => ${REVIEW}.controller.dispatchAs(${REVIEW}.goblinId(), command))`;
+  await sequence(
+    connection,
+    `${name}-${size}-${motion}`,
+    [at.chestMover, at.chest, { x: at.chest.x - 1, y: at.chestMover.y }],
+    `(() => { const view = ${REVIEW}.snapshotView(); const id = (at) => view.units.find((unit) => unit.at.x === at.x && unit.at.y === at.y).id; return ${dispatch}({ kind: 'MOVE', unitId: id(${JSON.stringify(at.chestMover)}), path: [${JSON.stringify(at.chest)}] }); })()`,
+    motion === "full" ? 24 : 14,
   );
 }
 
@@ -429,6 +477,7 @@ function url(params: Record<string, string>): string {
 async function mount(
   connection: Connection,
   fixture: string,
+  ...fixtureArgs: readonly unknown[]
 ): Promise<Record<string, Coord>> {
   await navigate(connection, url({ art: "chibi" }));
   await waitFor(
@@ -444,7 +493,7 @@ async function mount(
       const { CanvasBoardHostV7 } = await import('/src/render/canvas/board-host-v7.ts');
       globalThis.__PULP_WARS_APP__?.destroy();
       globalThis.__JUICE_REVIEW__?.view?.destroy?.();
-      let state = fixtures[${JSON.stringify(fixture)}]();
+      let state = fixtures[${JSON.stringify(fixture)}](...${JSON.stringify(fixtureArgs)});
       const viewer = state.humanPlayerId;
       const subscribers = new Set();
       const boundarySubscribers = new Set();
@@ -487,8 +536,12 @@ async function mount(
       const boardHost = new CanvasBoardHostV7(document);
       const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null });
       globalThis.__JUICE_REVIEW__ = {
-        boardHost, view, controller, at: fixtures.COMBAT_JUICE_UI_V7,
+        boardHost, view, controller, fixtures,
+        at: { ...fixtures.COMBAT_JUICE_UI_V7, ...fixtures.COMBAT_JUICE_REWARD_UI_V7 },
         snapshotView: () => snapshot().view,
+        state: () => state,
+        // Shows another state (no command), as a subscriber would see it.
+        replaceState(next) { state = next; const shown = snapshot(); for (const subscriber of subscribers) subscriber(shown); },
         goblinId: () => state.players.find((player) => player.id !== viewer).id,
       };
     })()`,

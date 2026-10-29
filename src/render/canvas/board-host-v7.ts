@@ -303,6 +303,7 @@ import {
   drawCombatJuiceUnitsV7,
   type CombatJuiceEntryV7,
   type CombatJuiceSpriteV7,
+  type CombatJuiceUnitV7,
 } from "./combat-juice-v7";
 import {
   createWaterBlendArtV7,
@@ -736,6 +737,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly steps: readonly CorePresentationStepV7[];
     readonly durationScale: number;
     fired: boolean;
+    /**
+     * Bead pulp_wars-b9mc: the boundary's last walk or slide (-1 for none).
+     * Its pops wait, their units left out, until it ends: a chest's unit
+     * drops once the opener stands on the chest, a reward unit once the
+     * unit it pushes has slid off the center.
+     */
+    readonly lastMoveIndex: number;
+    movesDone: boolean;
+    pendingPops: readonly CombatJuiceUnitV7[];
   } | null = null;
   /** The units the board leaves out while a cue draws them. */
   #juiceHidden: ReadonlySet<number> = new Set();
@@ -1667,6 +1677,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       steps,
       durationScale: baseDurationScale,
       fired: false,
+      lastMoveIndex: steps.reduce(
+        (last, step, index) => (step.kind === "MOVE" ? index : last),
+        -1,
+      ),
+      movesDone: false,
+      pendingPops: [],
     };
     if (steps.length === 0) {
       // Nothing to play (a captured city's land ripples on its own): the
@@ -1685,6 +1701,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       !hurry.matters &&
       boundaryOffscreenV7(steps, this.#camera, this.#viewport)
     ) {
+      // No walk plays: the pops start with the result.
+      this.#juiceBoundary.movesDone = true;
       this.#fireBoundaryJuice();
       this.#animatedUnit = null;
       this.#heldUnits = NO_HELD_UNITS;
@@ -2144,6 +2162,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#lastFollowMove = { unitId: step.unitId, endedAt: this.#now() };
         this.#animatedUnit = null;
         this.#presentedView = after;
+        if (index === this.#juiceBoundary?.lastMoveIndex)
+          this.#releaseBoundaryPops();
       } else if (step.kind === "DINOSAUR") {
         // Hatching shows the Egg first; every other cue shows the result.
         this.#presentedView = step.effect === "HATCH" ? before : after;
@@ -2511,6 +2531,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#heldUnits = NO_HELD_UNITS;
     this.#presentedView = options.holdResult?.() === true ? after : null;
     this.#fireBoundaryJuice();
+    this.#releaseBoundaryPops();
     this.#draw();
     this.#pumpCombatJuice();
   }
@@ -4611,7 +4632,35 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           : this.#juiceSprite(before, unit, death.at, true),
       );
     }
-    for (const spawn of combatJuiceSpawnsV7(before, after, envelope)) {
+    const spawns = combatJuiceSpawnsV7(before, after, envelope);
+    // Bead pulp_wars-b9mc: while a walk or a slide of the boundary has yet
+    // to end, its pops wait for it (left out of the board meanwhile).
+    if (!still && !boundary.movesDone && boundary.lastMoveIndex >= 0)
+      boundary.pendingPops = spawns;
+    else this.#addPops(spawns, now);
+    // Reduced motion shows the result at once: every number with it, still.
+    if (still)
+      for (const index of steps.keys())
+        for (const hit of combatJuiceHitsForStepV7(steps, index, envelope))
+          this.#combatJuice.addFloat(
+            hit.at,
+            hit.amount,
+            now,
+            DAMAGE_FLOAT_V7.reducedHoldMs,
+            true,
+          );
+    this.#pumpCombatJuice();
+  }
+
+  /** Combat juice: spawn pops of the playing boundary, starting at `now`. */
+  #addPops(spawns: readonly CombatJuiceUnitV7[], now: number): void {
+    const boundary = this.#juiceBoundary;
+    const model = this.#model;
+    if (boundary === null || model === null) return;
+    const still = model.motion === "REDUCED";
+    const scale = combatJuiceScaleV7(boundary.durationScale);
+    const after = boundary.after;
+    for (const spawn of spawns) {
       const unit = after.units.find(
         (candidate) => candidate.id === spawn.unitId,
       );
@@ -4627,17 +4676,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           : this.#juiceSprite(after, unit, spawn.at, false),
       );
     }
-    // Reduced motion shows the result at once: every number with it, still.
-    if (still)
-      for (const index of steps.keys())
-        for (const hit of combatJuiceHitsForStepV7(steps, index, envelope))
-          this.#combatJuice.addFloat(
-            hit.at,
-            hit.amount,
-            now,
-            DAMAGE_FLOAT_V7.reducedHoldMs,
-            true,
-          );
+  }
+
+  /**
+   * Bead pulp_wars-b9mc: the boundary's last walk or slide has ended (or
+   * the boundary has played): the pops that waited for it start now.
+   */
+  #releaseBoundaryPops(): void {
+    const boundary = this.#juiceBoundary;
+    if (boundary === null || boundary.movesDone) return;
+    boundary.movesDone = true;
+    const pending = boundary.pendingPops;
+    if (pending.length === 0) return;
+    boundary.pendingPops = [];
+    this.#addPops(pending, this.#now());
     this.#pumpCombatJuice();
   }
 
@@ -4686,7 +4738,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             : [],
         ),
       );
-    return this.#combatJuice.hiddenUnitIds(nowMs);
+    const hidden = this.#combatJuice.hiddenUnitIds(nowMs);
+    const waiting = this.#juiceBoundary?.pendingPops ?? [];
+    if (waiting.length === 0) return hidden;
+    // Bead pulp_wars-b9mc: a pop that waits for a walk keeps its unit out.
+    return new Set([...hidden, ...waiting.map((spawn) => spawn.unitId)]);
   }
 
   /**

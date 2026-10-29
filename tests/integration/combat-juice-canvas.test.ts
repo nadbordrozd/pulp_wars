@@ -13,12 +13,22 @@ import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import {
   DAMAGE_FLOAT_V7,
   DEATH_POOF_V7,
+  SPAWN_POP_V7,
 } from "../../src/render/canvas/combat-juice-v7";
 import {
+  corePresentationPlanV7,
+  type CorePresentationStepV7,
+} from "../../src/render/canvas/presentation-plan-v7";
+import {
+  COMBAT_JUICE_REWARD_UI_V7,
   COMBAT_JUICE_UI_V7,
+  combatJuiceChestFixtureV7,
   combatJuiceEnemyTurnFixtureV7,
   combatJuiceFixtureV7,
+  combatJuiceRewardCommandV7,
+  combatJuiceRewardFixtureV7,
 } from "../fixtures/v7-combat-juice-ui";
+import { seatIdV7 } from "../fixtures/v7-goblin-arena";
 
 /**
  * Bead pulp_wars-2yc.80: on the real board host, a hit floats its number
@@ -36,6 +46,7 @@ afterEach(() => {
 });
 
 const at = COMBAT_JUICE_UI_V7;
+const chestAt = COMBAT_JUICE_REWARD_UI_V7;
 
 function unitIdAt(state: GameStateV7, cell: CoordV7): number {
   const unit = state.units.find(
@@ -306,6 +317,96 @@ describe("Combat juice on the board host", () => {
     const timeline = [...playback, ...rest];
     expect(timeline.some((frame) => frame.floats === "2")).toBe(true);
     expect(timeline.at(-1)?.floats).toBeUndefined();
+    scene.host.destroy();
+  });
+
+  it.each([
+    ["the viewer's own", 0],
+    ["an enemy's", 1],
+  ] as const)(
+    "drops %s chest unit once the opener has walked onto the chest",
+    async (_label, seat) => {
+      const state = combatJuiceChestFixtureV7(seat);
+      const actor = seatIdV7(state, seat);
+      const result = applyCommandV7(state, actor, {
+        kind: "MOVE",
+        unitId: unitIdAt(state, chestAt.chestMover) as never,
+        path: [chestAt.chest],
+      });
+      if (!result.accepted) throw new Error(result.error.code);
+      const viewer = state.humanPlayerId;
+      const played = {
+        before: viewForV7(state, viewer),
+        after: viewForV7(result.state, viewer),
+        envelope: projectEventsV7(state, result.state, viewer, result.events),
+      };
+      const walk = corePresentationPlanV7(
+        played.before,
+        played.envelope,
+        played.after,
+      ).find((step) => step.kind === "MOVE");
+      if (walk === undefined) throw new Error("no walk");
+      const scene = setUp(played, "FULL");
+      let finished = false;
+      void scene.host
+        .presentBoundary(played.before, played.after, played.envelope)
+        .then(() => {
+          finished = true;
+        });
+      const playback = await play(scene, () => finished);
+      const rest = await play(scene, () => scene.frames.size === 0);
+      const timeline = [
+        ...playback,
+        ...rest.map((frame) => ({
+          ...frame,
+          ms: frame.ms + (playback.at(-1)?.ms ?? 0),
+        })),
+      ];
+      // The pop waits for the walk, then plays its length and ends.
+      const popped = timeline.filter((frame) => frame.units === "1");
+      expect(popped[0]?.ms).toBeGreaterThanOrEqual(walk.durationMs);
+      expect(popped.length * 16).toBeGreaterThan(SPAWN_POP_V7.durationMs - 48);
+      expect(timeline.at(-1)?.units).toBeUndefined();
+      scene.host.destroy();
+    },
+  );
+
+  it("drops the giant on the center after its Guard has slid off", async () => {
+    const state = combatJuiceRewardFixtureV7();
+    const result = applyCommandV7(
+      state,
+      state.humanPlayerId,
+      combatJuiceRewardCommandV7(state),
+    );
+    if (!result.accepted) throw new Error(result.error.code);
+    const viewer = state.humanPlayerId;
+    const played = {
+      before: viewForV7(state, viewer),
+      after: viewForV7(result.state, viewer),
+      envelope: projectEventsV7(state, result.state, viewer, result.events),
+    };
+    const slide = corePresentationPlanV7(
+      played.before,
+      played.envelope,
+      played.after,
+    ).find(
+      (step): step is Extract<CorePresentationStepV7, { kind: "MOVE" }> =>
+        step.kind === "MOVE" && step.pushSlide === true,
+    );
+    if (slide === undefined) throw new Error("no slide");
+    const scene = setUp(played, "FULL");
+    let finished = false;
+    void scene.host
+      .presentBoundary(played.before, played.after, played.envelope)
+      .then(() => {
+        finished = true;
+      });
+    const playback = await play(scene, () => finished);
+    const rest = await play(scene, () => scene.frames.size === 0);
+    const popped = [...playback, ...rest].filter(
+      (frame) => frame.units === "1",
+    );
+    expect(popped[0]?.ms).toBeGreaterThanOrEqual(slide.durationMs);
     scene.host.destroy();
   });
 
