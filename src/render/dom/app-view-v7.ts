@@ -1054,6 +1054,7 @@ import {
   soundTestPanelV7,
 } from "./sound-panel-v7";
 import { CoinFlightLayerV7 } from "./coin-flight-layer-v7";
+import { finishedMatchSnapshotV7 } from "../finished-match-v7";
 import { feedbackPlanV7 } from "../feedback-plan-v7";
 import {
   guardPresentationV7,
@@ -6811,8 +6812,11 @@ export class Ruleset7DomAppView {
   #tutorialSnapshot(
     snapshot: Ruleset7BrowserSnapshot,
   ): Ruleset7BrowserSnapshot {
-    if (snapshot.phase !== "ACTIVE" || !isTutorialMatchV7(snapshot.view))
-      return snapshot;
+    // Bead pulp_wars-2ha0: a finished match is drawn without the city
+    // reward its winning capture may have queued; nothing can choose it,
+    // and its dialog made the Victory dialog inert.
+    if (snapshot.phase !== "ACTIVE") return finishedMatchSnapshotV7(snapshot);
+    if (!isTutorialMatchV7(snapshot.view)) return snapshot;
     if (!this.#humanDispatchPending) {
       const progress = reconcileTutorialV7(
         this.#tutorial,
