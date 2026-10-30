@@ -5540,7 +5540,7 @@ empty.
 | G2 Boats for Bones            | Pangea 14, seed 6       | 20261502   | Goblins; Undead                                      | Capture Wreckers' Cove by round 18              | by round 15; no city lost  |
 | G3 Here Be Monsters           | Archipelago 16, seed 2  | 20261503   | Goblins; Dinosaurs                                   | Kill Snapjaw by round 16                        | by round 12; no city lost  |
 | G4 The Inside Job             | Archipelago 16, seed 74 | 20261504   | Goblins; Humans; Dinosaurs (rivals)                  | Capture Port Kessler by round 20 (the Moon Gun) | by round 16; Snikkit lives |
-| G5 Everybody Wants the Tongue | Archipelago 16, seed 10 | 20261505   | Goblins; Humans; Martians (rivals)                   | Hold Smuggler's Rock for 16 rounds              | no city lost; Mogga lives  |
+| G5 Everybody Wants the Tongue | Archipelago 16, seed 10 | 20261505   | Goblins; Humans; Martians (rivals)                   | Hold Smuggler's Rock for 16 rounds              | Landing held; Mogga lives  |
 | G6 The Big Getaway            | Pangea 20, seed 5       | 20261506   | Goblins and Dwarves (ally); Cult and Undead (teamed) | Escort the Getaway to the Ironbraid Gate by 20  | by round 16; no city lost  |
 
 ### 19.2 Hand play
@@ -5935,6 +5935,77 @@ A narrow first-try win in round 28 of 30 and a second attempt going worse
 put the fight where retune 4 wants it. The win came on the clock's last
 turns, so the clock went from 30 to 32: a good win (about round 21) is
 then about two-thirds of it, and the speed star is round 24.
+
+### 19.7 G5: the beachheads (`pulp_wars-mv96`)
+
+The user, 2026-10-30: "mission 5 of the goblin campaign is both too easy
+and there is not enough to do. You're just on this tight island and there
+is no need or opportunity to do anything except turtle up." Retune 4 left
+the crew alone on the Rock's island against landing parties, with nothing
+to take but one village, and its second star (no city lost) was free with
+the Rock protected. G5 is now revision 6, re-pinned in both pin tables.
+This supersedes section 19.5's G5 row; the board, the clock (hold 16), the
+waves and the crew's start are unchanged.
+
+- **The enemy is on the island.** The island's two generator villages are
+  beachhead towns. The **Baron's Landing** (level 1, the western village)
+  is the loyalists': a Guard, two rifles and two Fighters, three tiles
+  from the Rock; their landing parties of rounds 7 and 11 come ashore on
+  its beach. The **Saucer Field** (level 1, the eastern village) is the
+  Martians': a Shield Projector, a Brain, a Ray Gunner and a Grunt, three
+  tiles from the Rock; their Brains of rounds 5 and 9 beam down there.
+  Each town trains men every turn from its seat's whole economy (the
+  loyalists' camp and Ray Hollow stay on their islands with two men and
+  three saucers). Enemies 14 to 4 at the start (were 10 to 4).
+- **The directives.** Each seat plays `GUARD` on its beachhead (the
+  loyalists keep two, the Martians one). The loyalists' others play
+  `RUSH`; the Martians' others `ASSAULT` the Rock.
+- **Things to take.** The Landing is the second star (`HOLD_PLACE`,
+  replacing `KEEP_CITIES`, which the protected Rock made free), and
+  either town gives the crew a shore for a Port (the Rock has no water in
+  its land). **Gull Islet** is new: one Grass tile raised in the strait
+  (a `TERRAIN` edit) with a village on it (the one `VILLAGE` edit that
+  adds a village; the natural-maps test allows it for G5 alone). Its
+  shallows link the island to the Martians' island, so Fire Rafts
+  (Shorecraft, 5 Coins) reach the islet and Ray Hollow without
+  Navigation. Eliminating every enemy still wins early.
+- **Text.** The briefing names the two camps; the hints are the Brain,
+  "both camps train men every turn: break one early", and "a captured
+  shore can build a Port". The objective line is unchanged.
+
+**Hand play** (`play-text`, two attempts authorised, on the final
+definition):
+
+- **Attempt a: won (held), 1 star of 3.** Mogga killed the Saucer Field's
+  Brain in round 2 with a Gang Up and advanced beside the Field; the Ray
+  Gunner, the Shield Projector and a saucer killed him that turn. The Ray
+  Gunner had killed the Bomb Chucker in round 1. A Workshop and two farms
+  made the Rock level 5 (a Troll) in round 5; the Troll killed a Ray
+  Gunner, Grunts and a Shock Trooper and died in round 12. The Martians
+  levelled the Field to 3 (Walls, Shock Troopers); both waves of round 7
+  and the raft crews were held two rounds (no calm ground) and landed
+  beside the Rock in rounds 9 and 14. From round 12 the crew trained a
+  Brute on the centre each turn and was down to one Brute when round 16
+  ended. The Landing was never attacked.
+- **Attempt b: won (held), 1 star of 3.** Mogga again died in round 2
+  after killing the Brain; the Chucker died in round 1 out of the Ray
+  Gunner's reach to a Grunt (range 2) and a moved heat ray. Troll in round
+  5; rallied Grunts killed both Brutes in round 6. From round 7 the crew
+  only trained Brutes on the centre and struck with the Troll; it ended
+  with the Troll alone (21 of 40 HP) and 45 Coins unspent.
+
+What it showed: the Martian beachhead is the danger (Ray Gunners and
+rallied Grunts shoot from two tiles and kill a Brute or the Ogre a turn),
+Mogga's star needs him kept back from the Field, and the crew is worn to
+one unit by round 16. The Rock never fell in either run because the
+Martians' army is ranged and never steps onto the centre, and the
+loyalists under `RUSH` stayed at the Landing; both wins were passive
+holds that a capture would have ended. Two narrow 1-star wins put it
+where the campaign wants it, so the definition stays as played. **The
+lever if it proves too easy:** set the loyalists' others to `ASSAULT` on
+the Rock (as the Martians'), which brings melee men that can take the
+centre; it was not hand played and could overshoot, so ease the round-11
+landing party with it if needed.
 
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 

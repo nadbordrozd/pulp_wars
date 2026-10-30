@@ -152,10 +152,11 @@ describe("The Big Score", () => {
         byRound: 32,
         bonus: ["WITHIN_ROUNDS 24", "UNIT_ALIVE"],
       },
+      // G5 (`pulp_wars-mv96`): the second star is the Baron's Landing.
       {
         kind: "SURVIVE",
         byRound: undefined,
-        bonus: ["KEEP_CITIES", "UNIT_ALIVE"],
+        bonus: ["HOLD_PLACE", "UNIT_ALIVE"],
       },
       {
         kind: "ESCORT",
@@ -167,6 +168,7 @@ describe("The Big Score", () => {
       kind: "SURVIVE",
       rounds: 16,
       protect: [{ place: "SMUGGLERS_ROCK" }],
+      bonus: [{ kind: "HOLD_PLACE", place: "BARONS_LANDING" }, {}],
     });
     expect(mission("GOBLIN_6").objective).toMatchObject({
       unit: "GETAWAY",
@@ -286,11 +288,41 @@ describe("The Big Score", () => {
     ]);
     expect(g4.forbiddenTechnologies).toContain("SHORECRAFT");
     expect(g4.reinforcements ?? []).toEqual([]);
-    // G5: the loyalists rush (their first landing party ashore at the
-    // start), the saucers go for the Rock, four enemy waves, and the raft
-    // crews row in in round 12.
-    expect(seat("GOBLIN_5", 1).directive).toEqual({ kind: "RUSH" });
-    expect(seat("GOBLIN_5", 2).directive).toMatchObject({ kind: "ASSAULT" });
+    // G5 (`pulp_wars-mv96`): both enemies hold a beachhead town on the
+    // Rock's island, keep a garrison in it and send the rest at the Rock;
+    // Gull Islet's village is the island's one free village, in the strait;
+    // four enemy waves, and the raft crews row in in round 12.
+    const g5 = mission("GOBLIN_5");
+    const rock = { x: 8, y: 13 };
+    const onRockIsland = (at: { x: number; y: number }) => at.y >= 10;
+    expect(g5.seats[0]?.cities.map((city) => city.at)).toEqual([rock]);
+    for (const index of [1, 2]) {
+      expect(
+        seat("GOBLIN_5", index).cities.filter((city) => onRockIsland(city.at)),
+        `seat ${String(index)}`,
+      ).toHaveLength(1);
+    }
+    // The loyalists keep two at the Landing and rush with the rest; the
+    // Martians keep one at the Field and assault the Rock with the rest.
+    expect(seat("GOBLIN_5", 1).directive).toMatchObject({
+      kind: "GUARD",
+      garrison: 2,
+      others: { kind: "RUSH" },
+    });
+    expect(seat("GOBLIN_5", 2).directive).toMatchObject({
+      kind: "GUARD",
+      garrison: 1,
+      others: { kind: "ASSAULT", target: rock },
+    });
+    expect(g5.landmarks).toContainEqual({
+      tag: "BARONS_LANDING",
+      at: seat("GOBLIN_5", 1).cities[1]?.at,
+    });
+    expect(g5.villages).toEqual([{ x: 8, y: 8 }]);
+    expect(seat("GOBLIN_5", 0).forbiddenTechnologies ?? []).not.toContain(
+      "SHORECRAFT",
+    );
+    expect(g5.forbiddenTechnologies).not.toContain("SHORECRAFT");
     expect(
       (mission("GOBLIN_5").reinforcements ?? [])
         .filter((wave) => wave.seat !== 0)

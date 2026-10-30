@@ -105,18 +105,19 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       name: "Everybody Wants the Tongue",
       format: "SURVIVE",
       briefing:
-        "The crate hums. Snikkit says it is just iron; Mogga says it is singing. Either way, flying saucers have been circling Smuggler's Rock since you landed with it, the Baron's last loyal men want their master's money back, and the getaway rafts will not be ready for sixteen days. Dig in on the Rock and keep the loot.",
+        "The crate hums. Snikkit says it is just iron; Mogga says it is singing. Saucers have set down at the island's east end, the Baron's last loyal men have built a landing at its west end, and both want the loot. The getaway rafts will not be ready for sixteen days. Hold the Rock, and do not let them dig in.",
       objective: "Hold Smuggler's Rock for 16 turns.",
       hints: Object.freeze([
         "Never stand beside a Brain: it takes your Goblins.",
-        "An Orc Brute on a Field Defense is a wall.",
-        "Keep the beach clear: the raft crews row in on turn 12.",
+        "Both camps train men every turn. Break one early.",
+        "A captured shore can build a Port; Fire Rafts sail.",
       ]),
       closing:
         "On the sixteenth night the rafts are ready, and the crew sails home with the gold, the crate, and three saucer pilots who surrendered to Mogga. On the quay at home a polite man in a grey coat is waiting.",
       names: Object.freeze({
         MOGGA: "Mogga the Ogre",
         SMUGGLERS_ROCK: "Smuggler's Rock",
+        BARONS_LANDING: "the Baron's Landing",
       }),
     }),
     Object.freeze({

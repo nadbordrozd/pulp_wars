@@ -1316,6 +1316,13 @@ describe("natural maps", () => {
       // fort raised out of the lake (`pulp_wars-hmyk.11`).
       CANDY_2: 3,
       CANDY_3: 1,
+      // Gull Islet raised in the strait (`pulp_wars-mv96`).
+      GOBLIN_5: 1,
+    };
+    // A village added on land a mission raised for it.
+    const addedVillages: Readonly<Record<string, number>> = {
+      // Gull Islet's village (`pulp_wars-mv96`).
+      GOBLIN_5: 1,
     };
     for (const mission of natural) {
       const source = mission.source as NonNullable<
@@ -1327,18 +1334,25 @@ describe("natural maps", () => {
       expect(source.size).toBe(mission.size);
       expect(source.seats).toBe(mission.seats.length);
       // Terrain is changed where a mission's story needs it (a neck, a
-      // Rift, a clearing); every other edit removes a village, a chest or a
-      // resource (`pulp_wars-hmyk.4`: the Pearls the Redcaps cashed in H5,
-      // the Game under Kessler Hall in H6).
+      // Rift, a clearing, an islet); every other edit removes a village, a
+      // chest or a resource (`pulp_wars-hmyk.4`: the Pearls the Redcaps
+      // cashed in H5, the Game under Kessler Hall in H6), or adds a village
+      // on raised land (G5's Gull Islet).
       expect(
         source.edits.filter((edit) => edit.kind === "TERRAIN").length,
         mission.id,
       ).toBe(terrainEdits[mission.id] ?? 0);
       expect(
+        source.edits.filter((edit) => edit.kind === "VILLAGE" && edit.present)
+          .length,
+        mission.id,
+      ).toBe(addedVillages[mission.id] ?? 0);
+      expect(
         source.edits.every(
           (edit) =>
             edit.kind === "TERRAIN" ||
             (edit.kind === "RESOURCE" && edit.resource === ".") ||
+            (edit.kind === "VILLAGE" && edit.present) ||
             ((edit.kind === "VILLAGE" || edit.kind === "CHEST") &&
               !edit.present),
         ),

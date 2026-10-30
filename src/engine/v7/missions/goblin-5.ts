@@ -6,29 +6,23 @@ import type { MissionDefinitionV7 } from "./types";
  * vault's loot and a long iron crate that hums, and must hold Smuggler's
  * Rock for 16 rounds until the getaway rafts are ready, against the
  * Baron's last loyal men and Martian saucers that want the crate. Step 5
- * of 6: a hold-out.
+ * of 6: a hold-out with a break-out.
  *
  * The board is the map generator's (Archipelago 16, seed 10, three seats):
  * three islands. Smuggler's Rock, walled, on the southern one; the
  * loyalists' jungle camp on the north-western; the Martian outpost of Ray
- * Hollow on the north-eastern. The loyalists come ashore in landing
- * parties; the saucers fly over the water and carry Brains, and a Brain
- * takes over any goblin left standing beside it. Goblins have no healers,
- * so a long siege wears them thin: wall the Rock, regenerate behind Orc
- * Brutes, and kill every Brain before it reaches the line. The getaway
- * rafts' crew comes early, in round 12, to help dig in.
+ * Hollow on the north-eastern.
  *
- * The fourth retune (`pulp_wars-hmyk.29`, CAMPAIGN.md section 19.5, hand
- * played) eases the third (a lean Rock against seven announced waves): the
- * Rock has Mogga, a Brute, a Goblin and a Chucker, five technologies, 5
- * Coins and the eastern village back. The loyalists' first landing party
- * is ashore at the start (their camp is level 2 with 6 Coins), and two
- * more parties land in rounds 7 and 11; the Martians have a Brain and three
- * saucers with 6 Coins and drop in rounds 5 and 9. The raft crews row in
- * in round 12. The sixteen rounds stay. A wave never lands beside a
- * hostile unit: with the beach taken it once came in on the far islands;
- * since `pulp_wars-hmyk.35` it lands within 3 tiles of its beach, or waits
- * up to two rounds and then lands on the nearest free tile.
+ * Revision 6 (`pulp_wars-mv96`, CAMPAIGN.md section 19.7): the user found
+ * revision 5 too easy and with nothing to do but turtle. The enemy is now
+ * on the Rock's island from the start, in two beachhead towns that train
+ * men every turn: the Baron's Landing on the western end (the loyalists'
+ * landing parties come ashore there) and the Saucer Field on the eastern
+ * end (the Martians' Brains beam down there). Each keeps a garrison and
+ * sends the rest at the Rock. Taking the Landing is the second star, and
+ * either town gives the crew a shore for a Port: Gull Islet, a new village
+ * in the strait, is a Fire Raft's hop away, and its shallows reach the
+ * Martians' island. Eliminating every enemy still wins early.
  *
  * ```text
  *      x 0123456789012345
@@ -40,11 +34,11 @@ import type { MissionDefinitionV7 } from "./types";
  *    5   ~.f..f.~~~ff~~~~
  *    6   ~~~.~~~~~~.~~.~.
  *    7   ~~~~~~~~~~~~~~~~
- *    8   ~~~~~~~~~~~~~~~~
+ *    8   ~~~~~~~~v~~~~~~~      v: Gull Islet, a village
  *    9   ~~~~~~~~~~~~~~~~
  *   10   ~~~~~~.~~.^~~~~~
- *   11   ~~~...f~f.~f~~~~
- *   12   ~~~~.~~..f.v~~~~      v: a village
+ *   11   ~~~..B.~f.~f~~~~      B: the Baron's Landing, the loyalists'
+ *   12   ~~~~.~~..f.M~~~~      M: the Saucer Field, the Martians'
  *   13   ~~~f~~..S...~~~~      S: Smuggler's Rock, yours
  *   14   ~~~~^~~.....~~~~
  *   15   ~~~~~~.....~~~~~
@@ -61,7 +55,10 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
   // now lands within 3 tiles of its tiles or waits (up to two rounds)
   // instead of coming in on the far islands, so the same waves play out
   // differently.
-  revision: 5,
+  // Revision 6 (`pulp_wars-mv96`, the beachheads): the Baron's Landing and
+  // the Saucer Field on the Rock's island, Gull Islet in the strait, the
+  // Landing as the second star.
+  revision: 6,
   seed: 20261505,
   // <map>
   size: 16,
@@ -70,15 +67,21 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
     size: 16,
     seats: 3,
     seed: 10,
-    // Only the southern island's eastern village is left: the others would
-    // be free towns for the loyalists and the Martians, and one would stand
-    // on the Rock's western shore.
+    // The northern villages are gone (free towns for the loyalists and the
+    // Martians, out of the crew's reach). The Rock's island's two villages
+    // are the beachheads: the Baron's Landing on the western one, the
+    // Saucer Field on the eastern one. Gull Islet is new: one tile of land
+    // in the strait, with a village, whose shallows let Fire Rafts cross to
+    // the Martians' island.
     edits: [
       { kind: "VILLAGE", at: { x: 13, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 2 }, present: false },
       { kind: "VILLAGE", at: { x: 1, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 4, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 5, y: 11 }, present: false },
+      { kind: "VILLAGE", at: { x: 11, y: 12 }, present: false },
+      { kind: "TERRAIN", at: { x: 8, y: 8 }, terrain: "." },
+      { kind: "VILLAGE", at: { x: 8, y: 8 }, present: true },
     ],
   },
   terrain: [
@@ -90,7 +93,7 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
     "~.f..f.~~~ff~~~~",
     "~~~.~~~~~~.~~.~.",
     "~~~~~~~~~~~~~~~~",
-    "~~~~~~~~~~~~~~~~",
+    "~~~~~~~~.~~~~~~~",
     "~~~~~~~~~~~~~~~~",
     "~~~~~~.~~.^~~~~~",
     "~~~...f~f.~f~~~~",
@@ -136,7 +139,7 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
     "PPPPPPPPPPPPPPPP",
   ],
-  villages: [{ x: 11, y: 12 }],
+  villages: [{ x: 8, y: 8 }],
   treasureChests: [
     { x: 13, y: 2 },
     { x: 15, y: 4 },
@@ -172,14 +175,14 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 7, y: 13 } },
         { role: "MARKSMAN", at: { x: 9, y: 14 } },
       ],
-      // The Rock and the water round it.
-      reveal: { radius: 3, rects: [{ x0: 4, y0: 10, x1: 12, y1: 15 }] },
+      // The Rock's island and the islet: both beachheads are known.
+      reveal: { radius: 3, rects: [{ x0: 3, y0: 8, x1: 12, y1: 15 }] },
     },
     {
-      // Kessler's last loyal men: a jungle camp on the north-western island,
-      // who come ashore in landing parties.
+      // Kessler's last loyal men: the jungle camp on the north-western
+      // island, and the Baron's Landing, their beachhead on the Rock's own
+      // island, where every landing party comes ashore.
       faction: "ORIGINAL",
-      // Retune 4: a level 2 camp, two men at home, 6 Coins.
       coins: 6,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
@@ -189,18 +192,26 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        {
+          name: "Baron's Landing",
+          // Level 1: its one bare Grass tile holds no more.
+          at: { x: 5, y: 11 },
+          level: 1,
+          rewards: [],
+        },
       ],
       units: [
         { role: "GUARD", at: { x: 2, y: 2 } },
         { role: "FIGHTER", at: { x: 3, y: 2 } },
-        // Retune 4: the first landing party is ashore at the start, on the
-        // Rock's western shore.
-        { role: "FIGHTER", at: { x: 4, y: 12 } },
-        { role: "FIGHTER", at: { x: 3, y: 11 } },
-        { role: "MARKSMAN", at: { x: 4, y: 11 } },
-        { role: "GUARD", at: { x: 5, y: 11 } },
+        // The Landing: a Guard and a rifle hold it, the rest march.
+        { role: "GUARD", at: { x: 5, y: 11 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 4, y: 11 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 6, y: 10 }, home: 1 },
+        { role: "FIGHTER", at: { x: 4, y: 12 }, home: 1 },
+        { role: "FIGHTER", at: { x: 6, y: 11 }, home: 1 },
       ],
-      reveal: { radius: 2 },
+      // The Landing knows the Rock it marches on.
+      reveal: { radius: 2, rects: [{ x0: 3, y0: 9, x1: 9, y1: 15 }] },
       forbiddenTechnologies: [
         "SHORECRAFT",
         "NAVIGATION",
@@ -212,12 +223,20 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      directive: { kind: "RUSH" },
+      // Two hold the Landing; everyone else rushes the Rock. In hand play
+      // the rest mostly dug in at the Landing and shot at the walls; if the
+      // hold proves too easy, `ASSAULT` on the Rock is the lever.
+      directive: {
+        kind: "GUARD",
+        zone: [{ x0: 4, y0: 10, x1: 6, y1: 12 }],
+        garrison: 2,
+        others: { kind: "RUSH" },
+      },
     },
     {
-      // The Martians of Ray Hollow: saucers over the water, and Brains.
+      // The Martians: the saucers of Ray Hollow on the north-eastern
+      // island, and the Saucer Field, where they set down on the Rock's.
       faction: "MARTIAN",
-      // Retune 4: a Brain and three saucers, 6 Coins.
       coins: 6,
       technologies: ["SCOUTING", "GATHERING", "ADMINISTRATION"],
       cities: [
@@ -227,12 +246,23 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
           level: 1,
           rewards: [],
         },
+        {
+          name: "Saucer Field",
+          at: { x: 11, y: 12 },
+          level: 1,
+          rewards: [],
+        },
       ],
       units: [
         { role: "RAIDER", at: { x: 13, y: 4 } },
         { role: "RAIDER", at: { x: 11, y: 5 } },
-        { role: "CAPTAIN", at: { x: 13, y: 3 } },
         { role: "RAIDER", at: { x: 12, y: 4 } },
+        // The Field: a Shield Projector holds it; a Brain, a Ray Gunner and
+        // a Grunt go for the crate.
+        { role: "GUARD", at: { x: 11, y: 12 }, home: 1 },
+        { role: "CAPTAIN", at: { x: 11, y: 11 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 11, y: 13 }, home: 1 },
+        { role: "FIGHTER", at: { x: 10, y: 13 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 10, x1: 11, y1: 15 }] },
       forbiddenTechnologies: [
@@ -246,15 +276,22 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // Every saucer flies at the Rock.
-      directive: { kind: "ASSAULT", target: { x: 8, y: 13 } },
+      // One holds the Field; every saucer and the rest fly at the Rock.
+      directive: {
+        kind: "GUARD",
+        zone: [{ x0: 10, y0: 11, x1: 12, y1: 13 }],
+        garrison: 1,
+        others: { kind: "ASSAULT", target: { x: 8, y: 13 } },
+      },
     },
   ],
   forbiddenTechnologies: [],
-  landmarks: [{ tag: "SMUGGLERS_ROCK", at: { x: 8, y: 13 } }],
+  landmarks: [
+    { tag: "SMUGGLERS_ROCK", at: { x: 8, y: 13 } },
+    { tag: "BARONS_LANDING", at: { x: 5, y: 11 } },
+  ],
   reinforcements: [
-    // The loyalists' landing parties, on the Rock's western shore (retune
-    // 4: the first is ashore at the start, two more come).
+    // The loyalists' landing parties, on the Landing's beach.
     {
       seat: 1,
       round: 7,
@@ -262,7 +299,7 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 4, y: 12 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
         { role: "MARKSMAN", at: { x: 4, y: 11 } },
-        { role: "FIGHTER", at: { x: 5, y: 11 } },
+        { role: "FIGHTER", at: { x: 6, y: 10 } },
       ],
       line: "More loyalists wade in with a lawyer, a flag and a grudge.",
       announce: true,
@@ -274,19 +311,19 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 4, y: 12 } },
         { role: "MARKSMAN", at: { x: 3, y: 11 } },
         { role: "MARKSMAN", at: { x: 4, y: 11 } },
-        { role: "GUARD", at: { x: 5, y: 11 } },
+        { role: "GUARD", at: { x: 6, y: 10 } },
       ],
       line: "The pay-clerk lands his escort. The Baron wants the crate by supper.",
       announce: true,
     },
-    // Martians beamed down on the island's eastern end.
+    // Martians beamed down at the Saucer Field.
     {
       seat: 2,
       round: 5,
       units: [
         { role: "CAPTAIN", at: { x: 11, y: 11 } },
-        { role: "FIGHTER", at: { x: 11, y: 13 } },
-        { role: "FIGHTER", at: { x: 10, y: 15 } },
+        { role: "FIGHTER", at: { x: 11, y: 14 } },
+        { role: "FIGHTER", at: { x: 10, y: 14 } },
       ],
       line: "A saucer sets down a Brain and a few very polite Grunts.",
       announce: true,
@@ -296,9 +333,9 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
       round: 9,
       units: [
         { role: "CAPTAIN", at: { x: 11, y: 11 } },
-        { role: "MARKSMAN", at: { x: 11, y: 13 } },
+        { role: "MARKSMAN", at: { x: 11, y: 14 } },
         { role: "RAIDER", at: { x: 10, y: 15 } },
-        { role: "FIGHTER", at: { x: 11, y: 14 } },
+        { role: "FIGHTER", at: { x: 10, y: 14 } },
       ],
       line: "Another Brain beams down. It would like a word about the crate.",
       announce: true,
@@ -317,11 +354,15 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
       announce: true,
     },
   ],
-  // Hold the Rock for 16 rounds. The stars: no city lost, and Mogga lives.
+  // Hold the Rock for 16 rounds. The stars: the Baron's Landing is the
+  // crew's at the end, and Mogga lives.
   objective: {
     kind: "SURVIVE",
     rounds: 16,
     protect: [{ place: "SMUGGLERS_ROCK" }],
-    bonus: [{ kind: "KEEP_CITIES" }, { kind: "UNIT_ALIVE", unit: "MOGGA" }],
+    bonus: [
+      { kind: "HOLD_PLACE", place: "BARONS_LANDING" },
+      { kind: "UNIT_ALIVE", unit: "MOGGA" },
+    ],
   },
 };

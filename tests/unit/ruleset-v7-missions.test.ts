@@ -154,8 +154,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "740a88c4f192f3779cf7bd5d5c09a1891b06b092b2ddf1addf81a48a92636ac0",
   "GOBLIN_4@5:GOBLIN":
     "4076610af2a728139eeaff8fe7d4aa72450d5132dbd411957f5049474e0fe179",
-  "GOBLIN_5@5:GOBLIN":
-    "2a2bbdf349bc443bcb844798336b9b19015b912337ffbf8c04278b86b21cd9f1",
+  // Revision 6 (`pulp_wars-mv96`): the beachheads and Gull Islet.
+  "GOBLIN_5@6:GOBLIN":
+    "4621657b5831fb074de13e35050fd93e04ab8a63cfac347d672fc07f8ae9d66a",
   "GOBLIN_6@4:GOBLIN":
     "b0cedc1ddaad37c163c4b563562d2b53e61b77cdcd2dca6d19094ccd6a0cff78",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
@@ -519,8 +520,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "890b6b53325f65ec199a8ae4544035d985853cdb0775398858f324fc82373558",
   "GOBLIN_3@4:GOBLIN":
     "215984be8f6726f7ef57407eb6b6a255f4cab2bc530e7dd42b03fcfd821e709f",
-  "GOBLIN_5@5:GOBLIN":
-    "595e27c6c6c9005a3d7a565dc7958257dcf39588ce1c24fd865955a084ac5f41",
+  "GOBLIN_5@6:GOBLIN":
+    "6be57aa25073a2369ba8fc1057560d48758acff1fc6e984d2186df2bc76ee13d",
   "GOBLIN_6@4:GOBLIN":
     "59538848d285ae75acd398bd38104664225ecee0d90b9a5c02a3b8ba1637ab2d",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
