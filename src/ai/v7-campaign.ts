@@ -18,6 +18,7 @@ import type {
   PublicCityV7,
   PublicUnitV7,
 } from "../engine/v7/view";
+import { barricadeRouteMarksV7, landRouteStepsV7 } from "./v7-barricades";
 import {
   explorationGoalV7,
   explorationHomeDangerV7,
@@ -440,37 +441,12 @@ export function campaignPlanForPolicyV7(
     x: index % width,
     y: Math.floor(index / width),
   });
-  const search = (sources: readonly number[]): Int16Array => {
-    const steps = new Int16Array(size).fill(-1);
-    const queue = new Int32Array(size);
-    let tail = 0;
-    for (const source of sources)
-      if (steps[source] === -1) {
-        steps[source] = 0;
-        queue[tail] = source;
-        tail += 1;
-      }
-    for (let head = 0; head < tail; head += 1) {
-      const current = queue[head] as number;
-      const next = (steps[current] as number) + 1;
-      const x = current % width;
-      const y = (current - x) / width;
-      for (let dy = -1; dy <= 1; dy += 1) {
-        const ny = y + dy;
-        if (ny < 0 || ny >= height) continue;
-        for (let dx = -1; dx <= 1; dx += 1) {
-          const nx = x + dx;
-          if (nx < 0 || nx >= width) continue;
-          const index = ny * width + nx;
-          if (steps[index] !== -1 || enterable[index] !== 1) continue;
-          steps[index] = next;
-          queue[tail] = index;
-          tail += 1;
-        }
-      }
-    }
-    return steps;
-  };
+  // Barricades in the way (`pulp_wars-54fb`, `src/ai/v7-barricades.ts`):
+  // an own or allied Barricade is a wall, and a hostile one is crossed only
+  // when the way round is more than `BARRICADE_DETOUR_STEPS_V7` longer.
+  const barricadeMarks = barricadeRouteMarksV7(view, facts.isHostile);
+  const search = (sources: readonly number[]): Int16Array =>
+    landRouteStepsV7(width, height, enterable, sources, barricadeMarks);
   const field = (sources: readonly number[]): RouteFieldV7 =>
     new RouteFieldV7(width, height, search(sources));
   /** The Ice Folk revision: a route with every explored Mountain enterable. */

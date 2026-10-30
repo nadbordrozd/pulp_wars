@@ -1,5 +1,53 @@
 # Greedy Normal AI
 
+## Barricades in the way (`pulp_wars-54fb`)
+
+In Dwarf mission 1 the dead never attacked the Barricades Tobbin stood on
+Copperstep's four land approaches. The policy gave `ATTACK_BARRICADE` no
+score at all (no candidate), and the campaign routes ran through Barricade
+tiles as if they were open, so a unit walked up to the wall and then had
+no Move that made progress and nothing else to do. This bead gives every
+seat one rule for Barricades, in `src/ai/v7-barricades.ts`. No rule
+changed and the identity did not move.
+
+**The rule.** A land route goes round a hostile Barricade when the way
+round is at most `BARRICADE_DETOUR_STEPS_V7` (3) steps longer, and through
+it otherwise; a unit whose route runs through a hostile Barricade in its
+range attacks it.
+
+- **The routes.** The campaign plan's job fields and a directive's zone
+  fields (`landRouteStepsV7`) never enter a known Barricade of the seat or
+  an ally (nobody can break it), and pay `BARRICADE_CROSSING_COST_V7` (5:
+  the step, the 3 steps of detour, and one more) to step onto a known
+  hostile one. The shortest route therefore goes round whenever the way
+  round adds 3 steps or fewer, and through the Barricade when every way
+  round is longer or there is none. A unit marching on a walled town still
+  gets its job and walks up to the wall.
+- **The attack.** A hostile Barricade the unit can hit now is on its route
+  (`barricadeOnRouteV7`) when the route's cost from the Barricade plus the
+  Chebyshev distance to it is no more than the route's cost from the unit.
+  Such an attack scores at `BARRICADE_BREACH_PRIORITY_V7` (890): below
+  every attack on a unit (900 and up) and every engagement, above the
+  approach Moves (700 to 762), which make no progress at a wall. Of two
+  Barricades on the route the weakest goes first (strategic value minus
+  its HP), then the most damage (10 a point, 20 more for breaking it).
+- **What is never hit.** A Barricade beside the route, behind the unit,
+  or one the route goes round; a unit without a campaign job hits none.
+
+With no Barricade in the view nothing changes: the searches are the plain
+breadth-first searches they were and no `ATTACK_BARRICADE` is offered.
+
+**How it was made.** Under the rule of no simulations: each rule is shown
+on hand-drawn route boards and on DWARF_1's own board (its four approaches,
+a walled Copperstep, one open approach, a Barricade behind the unit), one
+decision each, in `tests/unit/ruleset-v7-barricade-ai.test.ts`. The
+numbers are first values, not tuned by play.
+
+**What it does not do.** The AI still never builds a Barricade, and the
+army's assault still masses outside a defended town before it commits
+(a walled town is no exception); once its units stand at the wall they
+break it.
+
 ## The exploration plan (`pulp_wars-nc6`)
 
 The [campaign plan](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01)

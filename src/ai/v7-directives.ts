@@ -14,6 +14,7 @@ import type {
 } from "../engine/v7/missions/types";
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import { barricadeRouteMarksV7, landRouteStepsV7 } from "./v7-barricades";
 import { RouteFieldV7, type CampaignDirectiveV7 } from "./v7-campaign";
 import { aiPersonalityForViewV7 } from "./v7-personality";
 
@@ -205,36 +206,19 @@ function zoneRouteFieldV7(
     )
       enterable[index] = 1;
   }
-  const steps = new Int16Array(size).fill(-1);
-  const queue = new Int32Array(size);
-  let tail = 0;
+  const sources: number[] = [];
   for (let index = 0; index < size; index += 1) {
     const at = { x: index % width, y: Math.floor(index / width) };
-    if (enterable[index] === 1 && zoneContainsV7(zone, at)) {
-      steps[index] = 0;
-      queue[tail] = index;
-      tail += 1;
-    }
+    if (enterable[index] === 1 && zoneContainsV7(zone, at)) sources.push(index);
   }
-  for (let head = 0; head < tail; head += 1) {
-    const current = queue[head] as number;
-    const next = (steps[current] as number) + 1;
-    const x = current % width;
-    const y = (current - x) / width;
-    for (let dy = -1; dy <= 1; dy += 1) {
-      const ny = y + dy;
-      if (ny < 0 || ny >= height) continue;
-      for (let dx = -1; dx <= 1; dx += 1) {
-        const nx = x + dx;
-        if (nx < 0 || nx >= width) continue;
-        const index = ny * width + nx;
-        if (steps[index] !== -1 || enterable[index] !== 1) continue;
-        steps[index] = next;
-        queue[tail] = index;
-        tail += 1;
-      }
-    }
-  }
+  // Barricades in the way (`pulp_wars-54fb`): as the campaign routes.
+  const steps = landRouteStepsV7(
+    width,
+    height,
+    enterable,
+    sources,
+    barricadeRouteMarksV7(view, (ownerId) => !allied(view, ownerId)),
+  );
   return new RouteFieldV7(width, height, steps);
 }
 

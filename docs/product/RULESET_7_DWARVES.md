@@ -3199,7 +3199,10 @@ the current rules:
   never makes a single attack with a Whirligig while it can Whirl; its
   positional value counts every adjacent target (nothing strikes back). It
   never builds or attacks a Barricade and routes around them through the
-  public movement queries. These are follow-ups for the AI pass.
+  public movement queries. These are follow-ups for the AI pass. Since
+  `pulp_wars-54fb` it attacks a hostile Barricade in its way
+  ([Normal AI, Barricades in the way](../architecture/NORMAL_AI.md#barricades-in-the-way-pulp_wars-54fb));
+  it still never builds one.
 
 ### 24.2 Interface (`pulp_wars-w49.34`)
 

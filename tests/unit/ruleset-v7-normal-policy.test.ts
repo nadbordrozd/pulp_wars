@@ -115,6 +115,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // public previews only; it imports no reducer).
       "./v7-cult-channel",
       "./v7-campaign",
+      // pulp_wars-54fb: Barricades in the way (route searches over the
+      // public view; it imports no reducer).
+      "./v7-barricades",
       "./v7-endgame",
       // pulp_wars-68k.6: the siege of a single-file front (public view only).
       "./v7-chokepoint",

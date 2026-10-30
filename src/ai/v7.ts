@@ -66,7 +66,7 @@ import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
 import { crackedDefense2V7, unitIsCrackedV7 } from "../engine/v7/ninth-unit";
 import { WINDMILL_HEAL_V7, windmillHealsUnitV7 } from "../engine/v7/recovery";
-import { publicUnitHasTerrainCoverV7 } from "../engine/v7/units";
+import { barricadeAtV7, publicUnitHasTerrainCoverV7 } from "../engine/v7/units";
 import {
   cooperativeAlliesV7,
   marketCoinsV7,
@@ -98,6 +98,7 @@ import {
   createPublicRedevelopmentPossibilityWorkV7,
   previewAttackExplosionsV7,
   previewAssembleV7,
+  previewAttackBarricadeV7,
   previewBombRunV7,
   previewZapV7,
   previewZapChainOddsV7,
@@ -345,6 +346,10 @@ import {
   type CampaignJobV7,
   type CampaignPlanV7,
 } from "./v7-campaign";
+import {
+  BARRICADE_BREACH_PRIORITY_V7,
+  barricadeOnRouteV7,
+} from "./v7-barricades";
 import {
   ENDGAME_APPROACH_PRIORITY_V7,
   ENDGAME_VACATE_PRIORITY_V7,
@@ -15501,6 +15506,31 @@ function scoreCommandWithContext(
     priority = neutral + iced >= 4 ? 1170 : 720;
     immediateValue = -6;
     strategicValue = neutral * 3 + iced * 2;
+  }
+
+  // Barricades in the way (`pulp_wars-54fb`, `src/ai/v7-barricades.ts`): a
+  // unit hits a hostile Barricade only when its campaign route runs through
+  // it (the route goes round one whenever the way round is at most
+  // `BARRICADE_DETOUR_STEPS_V7` longer). Nothing answers the hit, so the
+  // value is the damage, the most to the weakest Barricade.
+  if (command.kind === "ATTACK_BARRICADE" && actor !== undefined) {
+    const route = context.tactical.campaign?.assignmentByUnitId.get(
+      actor.id,
+    )?.field;
+    const barricade = barricadeAtV7(view, command.at);
+    // The public preview (exact damage) is read only for a Barricade on the
+    // route, so a board with Barricades off every route costs nothing more.
+    const preview =
+      route !== undefined &&
+      barricade !== undefined &&
+      barricadeOnRouteV7(route, actor.at, barricade.at)
+        ? previewAttackBarricadeV7(view, command)
+        : null;
+    if (barricade !== undefined && preview !== null) {
+      priority = BARRICADE_BREACH_PRIORITY_V7;
+      immediateValue = 10 * preview.damage + (preview.destroys ? 20 : 0);
+      strategicValue = -barricade.hp;
+    }
   }
 
   if (command.kind === "ATTACK") {
