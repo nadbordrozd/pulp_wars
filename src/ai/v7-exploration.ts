@@ -8,6 +8,12 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import {
+  BARRICADE_CROSSING_COST_V7,
+  barricadeRouteMarksV7,
+  landRouteStepsV7,
+  type BarricadeRouteMarksV7,
+} from "./v7-barricades";
 
 /**
  * Normal AI exploration plan (`pulp_wars-nc6`): where a scout goes, how
@@ -106,6 +112,15 @@ export interface ExplorationSurveyV7 {
   readonly frontier: (terrain: ExplorationTerrainV7) => readonly number[];
   /** The unexplored tiles within `radius` of a tile. */
   readonly unexploredWithin: (index: number, radius: number) => number;
+  /**
+   * Barricades in the way (`pulp_wars-ovqq`, `src/ai/v7-barricades.ts`):
+   * the route marks of the known Barricades, or null with none. An own or
+   * allied one is never enterable; stepping onto a hostile one costs
+   * `BARRICADE_CROSSING_COST_V7` steps, on the way to a frontier tile and
+   * onto one, so a scout explores through it only when every way round is
+   * dearer.
+   */
+  readonly barricades: BarricadeRouteMarksV7 | null;
 }
 
 export interface ExplorationGoalV7 {
@@ -162,6 +177,7 @@ export function explorationSurveyV7(
       unexplored += 1;
     }
   }
+  const barricades = barricadeRouteMarksV7(view, facts.isHostile);
   const threat = new Uint8Array(size);
   for (const unit of view.units) {
     if (unit.hp <= 0 || !facts.isHostile(unit.ownerId)) continue;
@@ -200,7 +216,8 @@ export function explorationSurveyV7(
           tile.territoryOwnerId !== null &&
           tile.territoryOwnerId !== view.viewer.id &&
           facts.isAllied(tile.territoryOwnerId)
-        )
+        ) &&
+        barricades?.[index] !== 2
       )
         result[index] = 1;
     }
@@ -266,6 +283,7 @@ export function explorationSurveyV7(
     enterable,
     frontier,
     unexploredWithin,
+    barricades,
   };
 }
 
@@ -273,7 +291,8 @@ export function explorationSurveyV7(
  * Half-points of movement from `start` to every tile over `enter`, a step
  * costing two and a Glide step (Snow onto Snow, for a unit that glides)
  * one; -1 where no route exists. A tile of `blocked` is never entered; the
- * start tile is always left.
+ * start tile is always left. A step onto a hostile Barricade (`marks`)
+ * costs `BARRICADE_CROSSING_COST_V7` steps.
  */
 function costsFrom(
   view: PlayerViewV7,
@@ -281,6 +300,7 @@ function costsFrom(
   blocked: Uint8Array | null,
   start: number,
   glides: boolean,
+  marks: BarricadeRouteMarksV7 | null,
 ): Int32Array {
   const { width, height, tiles } = view.board;
   const size = width * height;
@@ -290,8 +310,9 @@ function costsFrom(
     return tile !== undefined && tile.explored && tile.snow === true;
   };
   costs[start] = 0;
-  // Costs are one or two, so a tile may be improved once after it was
-  // first reached: a plain work list settles in a few passes.
+  // Costs are one or two (or a Barricade's crossing), so a tile may be
+  // improved after it was first reached: a plain work list settles in a
+  // few passes.
   const queue: number[] = [start];
   for (let head = 0; head < queue.length; head += 1) {
     const current = queue[head] as number;
@@ -307,7 +328,13 @@ function costsFrom(
         const index = ny * width + nx;
         if (enter[index] !== 1 || (blocked !== null && blocked[index] === 1))
           continue;
-        const cost = base + (glides && snow(current) && snow(index) ? 1 : 2);
+        const cost =
+          base +
+          (marks?.[index] === 1
+            ? 2 * BARRICADE_CROSSING_COST_V7
+            : glides && snow(current) && snow(index)
+              ? 1
+              : 2);
         const known = costs[index] as number;
         if (known >= 0 && known <= cost) continue;
         costs[index] = cost;
@@ -318,7 +345,10 @@ function costsFrom(
   return costs;
 }
 
-/** Steps to `goal` by tile over `enter` (-1: no route). */
+/**
+ * Steps to `goal` by tile over `enter` (-1: no route); with `marks` a
+ * hostile Barricade costs `BARRICADE_CROSSING_COST_V7` (`landRouteStepsV7`).
+ */
 function stepsTo(
   width: number,
   height: number,
@@ -327,8 +357,19 @@ function stepsTo(
   goal: number,
   /** A tile that is entered although it is blocked (where the scout stands). */
   open: number,
+  marks: BarricadeRouteMarksV7 | null,
 ): Int16Array {
   const size = width * height;
+  if (marks !== null) {
+    const route = new Uint8Array(size);
+    for (let index = 0; index < size; index += 1)
+      if (
+        index === open ||
+        (enter[index] === 1 && (blocked === null || blocked[index] !== 1))
+      )
+        route[index] = 1;
+    return landRouteStepsV7(width, height, route, [goal], marks);
+  }
   const steps = new Int16Array(size).fill(-1);
   const queue = new Int32Array(size);
   let tail = 0;
@@ -408,6 +449,7 @@ export function explorationGoalV7(
     survey.threat,
     start,
     profile.glides,
+    survey.barricades,
   );
   for (const tier of tiers) {
     let best = -1;
@@ -447,11 +489,26 @@ export function explorationGoalV7(
         index: best,
         at: coordOf(best),
         safe: true,
-        steps: stepsTo(width, height, enter, survey.threat, best, start),
+        steps: stepsTo(
+          width,
+          height,
+          enter,
+          survey.threat,
+          best,
+          start,
+          survey.barricades,
+        ),
       };
   }
   if (!options.allowUnsafe) return null;
-  const costs = costsFrom(view, enter, null, start, profile.glides);
+  const costs = costsFrom(
+    view,
+    enter,
+    null,
+    start,
+    profile.glides,
+    survey.barricades,
+  );
   for (const tier of tiers) {
     let best = -1;
     let bestCost = Number.POSITIVE_INFINITY;
@@ -472,7 +529,15 @@ export function explorationGoalV7(
         index: best,
         at: coordOf(best),
         safe: false,
-        steps: stepsTo(width, height, enter, null, best, start),
+        steps: stepsTo(
+          width,
+          height,
+          enter,
+          null,
+          best,
+          start,
+          survey.barricades,
+        ),
       };
   }
   return null;

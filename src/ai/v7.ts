@@ -348,6 +348,8 @@ import {
 } from "./v7-campaign";
 import {
   BARRICADE_BREACH_PRIORITY_V7,
+  BARRICADE_CHOKE_PRIORITY_V7,
+  barricadeChokeValueV7,
   barricadeOnRouteV7,
 } from "./v7-barricades";
 import {
@@ -15509,10 +15511,12 @@ function scoreCommandWithContext(
   }
 
   // Barricades in the way (`pulp_wars-54fb`, `src/ai/v7-barricades.ts`): a
-  // unit hits a hostile Barricade only when its campaign route runs through
-  // it (the route goes round one whenever the way round is at most
-  // `BARRICADE_DETOUR_STEPS_V7` longer). Nothing answers the hit, so the
-  // value is the damage, the most to the weakest Barricade.
+  // unit hits a hostile Barricade only when its route runs through it (the
+  // route goes round one whenever the way round is at most
+  // `BARRICADE_DETOUR_STEPS_V7` longer): its campaign job's route (an
+  // exploration goal's too) or, in the endgame siege, its route to the
+  // target (`pulp_wars-ovqq`). Nothing answers the hit, so the value is the
+  // damage, the most to the weakest Barricade.
   if (command.kind === "ATTACK_BARRICADE" && actor !== undefined) {
     const route = context.tactical.campaign?.assignmentByUnitId.get(
       actor.id,
@@ -15520,16 +15524,33 @@ function scoreCommandWithContext(
     const barricade = barricadeAtV7(view, command.at);
     // The public preview (exact damage) is read only for a Barricade on the
     // route, so a board with Barricades off every route costs nothing more.
-    const preview =
-      route !== undefined &&
+    const onRoute =
       barricade !== undefined &&
-      barricadeOnRouteV7(route, actor.at, barricade.at)
-        ? previewAttackBarricadeV7(view, command)
-        : null;
+      ((route !== undefined &&
+        barricadeOnRouteV7(route, actor.at, barricade.at)) ||
+        endgameBarricadeOnRouteV7(context, actor, barricade.at));
+    const preview = onRoute ? previewAttackBarricadeV7(view, command) : null;
     if (barricade !== undefined && preview !== null) {
       priority = BARRICADE_BREACH_PRIORITY_V7;
       immediateValue = 10 * preview.damage + (preview.destroys ? 20 : 0);
       strategicValue = -barricade.hp;
+    }
+  }
+
+  // Barricades on a choke (`pulp_wars-ovqq`): a Dwarf Engineer closes an
+  // open approach of a threatened own city that has two or three, the one
+  // nearest the attackers first, and always leaves one open. Any other
+  // Barricade stays unscored (never built).
+  if (command.kind === "BUILD_BARRICADE") {
+    const choke = barricadeChokeValueV7(
+      view,
+      command.to,
+      (ownerId) => isHostile(view, ownerId),
+      (unit) => unitRoleRuleV7(view, unit).attack2 > 0,
+    );
+    if (choke !== null) {
+      priority = BARRICADE_CHOKE_PRIORITY_V7;
+      strategicValue = choke;
     }
   }
 
@@ -19683,6 +19704,38 @@ const ENDGAME_TRAINING_BIAS_V7 = 16;
  */
 function passesOwnUnitsV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return unit.form === "LAND" && unitRoleRuleV7(view, unit).move >= 2;
+}
+
+/**
+ * Barricades in the way (`pulp_wars-ovqq`): whether the hostile Barricade
+ * on `at` lies on the endgame route of a capturer or siege unit (the units
+ * the endgame moves), whose field goes round a Barricade when that is
+ * cheap. False outside the endgame.
+ */
+function endgameBarricadeOnRouteV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  const plan = context.endgame;
+  if (plan === null || actor.form !== "LAND") return false;
+  const view = context.view;
+  if (
+    !canCaptureV7(view, actor) &&
+    !policySiegeRuleV7(unitRoleRuleV7(view, actor))
+  )
+    return false;
+  const passes = passesOwnUnitsV7(view, actor);
+  return barricadeOnRouteV7(
+    {
+      get: (from) => {
+        const steps = endgameRouteDistanceV7(plan, view, from, passes);
+        return Number.isFinite(steps) ? steps : undefined;
+      },
+    },
+    actor.at,
+    at,
+  );
 }
 
 /** Own units matching `wanted` that can route to an endgame target. */

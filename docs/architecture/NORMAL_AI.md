@@ -1,5 +1,69 @@
 # Greedy Normal AI
 
+## Barricades in skirmish (`pulp_wars-ovqq`)
+
+The user asked for the AI to treat Barricades sensibly in skirmish games.
+A skirmish seat's units already follow the campaign plan's job routes,
+which `pulp_wars-54fb` (below) taught the Barricade rule, so a city walled
+by a Dwarf player was already broken into. Two other route searches still
+read a Barricade's tile as open ground, and the AI never built one. This
+bead puts the same rule into those searches, all through the helpers of
+`src/ai/v7-barricades.ts`. No rule changed and the identity did not move.
+
+- **The scouts' routes** (`src/ai/v7-exploration.ts`). A scout's way to a
+  frontier tile, and the tile it picks, came from the exploration survey's
+  own searches (the half-point cost search and the goal's step field). An
+  own or allied Barricade is now never enterable there, and stepping onto
+  a hostile one costs `BARRICADE_CROSSING_COST_V7` steps, in both searches.
+  A scout used to pick a Barricade on the frontier as its goal (the first
+  tile in index order) and hit it with an open frontier tile beside it; it
+  now goes round, and breaks through only when the Barricade is the only
+  way on (the explore job's field is a route like any other, so the
+  attack rule applies to it unchanged).
+- **The endgame siege's routes** (`src/ai/v7-endgame.ts`). Both endgame
+  fields (units are walls; a Move-2 unit passes its own) now pay the
+  crossing cost too (`landRouteStepsV7` over the same tiles), so the siege
+  no longer draws capturers to a walled side of the last city when an open
+  side is at most three steps further. A capturer or siege unit whose
+  endgame route runs through a hostile Barricade in its range breaks it
+  (`endgameBarricadeOnRouteV7` in `src/ai/v7.ts`), as a unit does on its
+  campaign route; that covers a way round its own units block.
+- **The choke** (`barricadeChokeValueV7`). A Dwarf Engineer builds a
+  Barricade on an open land approach (explored Grass or Forest, no site,
+  no Barricade) of an own city next to it when that city has two or three
+  such approaches and a visible hostile land unit that can attack stands
+  within `BARRICADE_CHOKE_THREAT_RADIUS_V7` (3) of it. The approach nearest
+  the attackers goes first (strategic value minus that distance), at
+  `BARRICADE_CHOKE_PRIORITY_V7` (880): below every attack on a unit and the
+  breach, above the routine Moves. It never closes the last approach, so
+  the seat's own units still get in; any other Barricade is not built.
+
+What did not change: the siege of a single-file front
+(`src/ai/v7-chokepoint.ts`) still finds its corridor with its plain
+breadth-first search (its run detection counts single steps); a unit at a
+Barricade in such a corridor breaks it by its campaign route. A unit with
+no campaign job and no endgame route (a garrison, a defender holding a
+threatened own city, a unit going by sea) hits no Barricade.
+
+**Cost.** With no Barricade in the view every search is the plain search it
+was and every decision is byte-identical; the marks are one pass over the
+view's Barricades per survey or plan, and the breach check reads the
+endgame field only for an offered `ATTACK_BARRICADE`.
+
+**How it was made.** Under the rule of no simulations, in
+`tests/unit/ruleset-v7-barricade-skirmish-ai.test.ts`, on a hand-built
+Human-against-Dwarf skirmish board, one decision each: a capital sealed by
+two Barricades is broken into; with one approach open the Fighter walks in
+by it; a Barricade off every route changes no decision; a scout goes round
+a Barricade on the frontier and breaks through when both ways on are
+barricaded; the endgame field goes round a Barricade and crosses it when
+the way round is closed; a capturer whose endgame route runs through a
+Barricade breaks it; the Engineer closes the approach the attack comes by,
+and builds nothing with one approach left, with no threat, or on open
+ground. Five Barricade-free states (the walled city, fog, the endgame, a
+gap in a wall, the Dwarf seat) keep the decision fingerprints taken before
+the change.
+
 ## Barricades in the way (`pulp_wars-54fb`)
 
 In Dwarf mission 1 the dead never attacked the Barricades Tobbin stood on
@@ -43,7 +107,9 @@ a walled Copperstep, one open approach, a Barricade behind the unit), one
 decision each, in `tests/unit/ruleset-v7-barricade-ai.test.ts`. The
 numbers are first values, not tuned by play.
 
-**What it does not do.** The AI still never builds a Barricade, and the
+**What it does not do.** The AI still never built a Barricade (until
+`pulp_wars-ovqq`, above, let a Dwarf Engineer narrow a threatened city's
+choke), and the
 army's assault still masses outside a defended town before it commits
 (a walled town is no exception); once its units stand at the wall they
 break it.

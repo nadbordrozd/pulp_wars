@@ -3201,8 +3201,11 @@ the current rules:
   never builds or attacks a Barricade and routes around them through the
   public movement queries. These are follow-ups for the AI pass. Since
   `pulp_wars-54fb` it attacks a hostile Barricade in its way
-  ([Normal AI, Barricades in the way](../architecture/NORMAL_AI.md#barricades-in-the-way-pulp_wars-54fb));
-  it still never builds one.
+  ([Normal AI, Barricades in the way](../architecture/NORMAL_AI.md#barricades-in-the-way-pulp_wars-54fb)),
+  and since `pulp_wars-ovqq` its scouts and its endgame siege route by the
+  same rule and an Engineer closes an approach of a threatened city with
+  two or three, never the last
+  ([Normal AI, Barricades in skirmish](../architecture/NORMAL_AI.md#barricades-in-skirmish-pulp_wars-ovqq)).
 
 ### 24.2 Interface (`pulp_wars-w49.34`)
 

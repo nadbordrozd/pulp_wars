@@ -263,6 +263,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-exploration.ts::explorationSurveyV7": "BOARD",
     "src/ai/v7-endgame.ts::endgamePlanForPolicyV7": "BOARD",
     "src/ai/v7-endgame.ts::routeDistances": "BOARD",
+    // Barricades in skirmish (`pulp_wars-ovqq`): the hostile units on the
+    // board near a city whose choke an Engineer narrows (a burrowed unit
+    // attacks nobody from its mound).
+    "src/ai/v7-barricades.ts::barricadeChokeValueV7": "BOARD",
     "src/ai/v7-goblin.ts::explosionChainValueV7": "BOARD",
     "src/ai/v7-goblin.ts::gangUpForPolicyV7": "BOARD",
     "src/ai/v7-goblin.ts::hypotheticalBlastV7": "BOARD",

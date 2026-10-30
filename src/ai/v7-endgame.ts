@@ -1,6 +1,11 @@
 import type { CityId, PlayerId } from "../engine/model/ids";
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicCityV7 } from "../engine/v7/view";
+import {
+  barricadeRouteMarksV7,
+  landRouteStepsV7,
+  type BarricadeRouteMarksV7,
+} from "./v7-barricades";
 
 /**
  * Normal AI endgame siege helpers (`pulp_wars-1mc`).
@@ -139,11 +144,15 @@ export function endgamePlanForPolicyV7(
     );
   }
   if (sources.length === 0) return null;
+  // Barricades in the way (`pulp_wars-ovqq`, `src/ai/v7-barricades.ts`):
+  // an own or allied Barricade is a wall, and a hostile one is crossed only
+  // when the way round is more than `BARRICADE_DETOUR_STEPS_V7` longer.
+  const marks = barricadeRouteMarksV7(view, isHostile);
   return {
     targets,
     targetCityIds: new Set(targets.map((city) => city.id)),
-    routeDistanceByKey: routeDistances(view, sources, false),
-    passRouteDistanceByKey: routeDistances(view, sources, true),
+    routeDistanceByKey: routeDistances(view, sources, false, marks),
+    passRouteDistanceByKey: routeDistances(view, sources, true, marks),
   };
 }
 
@@ -197,6 +206,7 @@ function routeDistances(
   view: PlayerViewV7,
   sources: readonly CoordV7[],
   passesOwnUnits: boolean,
+  marks: BarricadeRouteMarksV7 | null,
 ): ReadonlyMap<string, number> {
   const { width, height } = view.board;
   const occupied = new Set(
@@ -204,6 +214,34 @@ function routeDistances(
       .filter((unit) => !passesOwnUnits || unit.ownerId !== view.viewer.id)
       .map((unit) => key(unit.at)),
   );
+  if (marks !== null) {
+    // The same field over the same tiles, a hostile Barricade at its
+    // crossing cost (`landRouteStepsV7`).
+    const enterable = new Uint8Array(width * height);
+    for (let y = 0; y < height; y += 1)
+      for (let x = 0; x < width; x += 1) {
+        const at = { x, y };
+        if (!occupied.has(key(at)) && enterableLand(view, at))
+          enterable[y * width + x] = 1;
+      }
+    const steps = landRouteStepsV7(
+      width,
+      height,
+      enterable,
+      sources.map((at) => at.y * width + at.x),
+      marks,
+    );
+    const field = new Map<string, number>();
+    for (let index = 0; index < steps.length; index += 1) {
+      const value = steps[index] as number;
+      if (value >= 0)
+        field.set(
+          key({ x: index % width, y: Math.floor(index / width) }),
+          value,
+        );
+    }
+    return field;
+  }
   const distances = new Map<string, number>();
   const queue: CoordV7[] = [];
   for (const at of sources) {

@@ -1,8 +1,7 @@
 import type { PlayerId } from "../engine/model/ids";
-import { barricadesOfV7 } from "../engine/v7/units";
+import { barricadeAtV7, barricadesOfV7 } from "../engine/v7/units";
 import type { CoordV7 } from "../engine/v7/types";
-import type { PlayerViewV7 } from "../engine/v7/view";
-import type { RouteFieldV7 } from "./v7-campaign";
+import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 /**
  * Barricades in the way (`pulp_wars-54fb`, docs/architecture/NORMAL_AI.md
@@ -16,16 +15,22 @@ import type { RouteFieldV7 } from "./v7-campaign";
  * Barricade in its range attacks it.**
  *
  * - **The routes** (the campaign plan's job fields and a directive's zone
- *   fields): a known Barricade of the viewer or an ally is a wall (nobody
- *   can break it); stepping onto a known hostile Barricade costs
- *   `BARRICADE_CROSSING_COST_V7` (its step and `BARRICADE_DETOUR_STEPS_V7`
- *   and one more), so the shortest route goes round it unless every way
- *   round is longer by more than `BARRICADE_DETOUR_STEPS_V7`.
+ *   fields; since `pulp_wars-ovqq` also a scout's exploration route and the
+ *   endgame siege's route fields): a known Barricade of the viewer or an
+ *   ally is a wall (nobody can break it); stepping onto a known hostile
+ *   Barricade costs `BARRICADE_CROSSING_COST_V7` (its step and
+ *   `BARRICADE_DETOUR_STEPS_V7` and one more), so the shortest route goes
+ *   round it unless every way round is longer by more than
+ *   `BARRICADE_DETOUR_STEPS_V7`.
  * - **The attack** (`barricadeOnRouteV7`): a hostile Barricade the unit can
- *   hit now lies on its route when the route's cost from the Barricade
- *   plus the Chebyshev distance to it is no more than the route's cost from
- *   the unit. A Barricade beside the route, behind the unit, or one the
- *   route goes round is never on it, so it is never hit.
+ *   hit now lies on its route (its campaign job's, or in the endgame siege
+ *   its endgame route) when the route's cost from the Barricade plus the
+ *   Chebyshev distance to it is no more than the route's cost from the
+ *   unit. A Barricade beside the route, behind the unit, or one the route
+ *   goes round is never on it, so it is never hit.
+ * - **The choke** (`barricadeChokeValueV7`, `pulp_wars-ovqq`): a Dwarf
+ *   Engineer closes an open approach of a threatened own city that has two
+ *   or three, and never the last one.
  *
  * With no Barricade in the view nothing changes: the searches are the plain
  * breadth-first searches they were.
@@ -51,6 +56,14 @@ export const BARRICADE_CROSSING_COST_V7 = BARRICADE_DETOUR_STEPS_V7 + 2;
  * approach Moves (700 to 762), which make no progress at a wall.
  */
 export const BARRICADE_BREACH_PRIORITY_V7 = 890;
+
+/**
+ * Route costs to a goal by tile, undefined where no route exists: a
+ * campaign or exploration field (`RouteFieldV7`) or the endgame field.
+ */
+export interface RouteStepsV7 {
+  get(at: CoordV7): number | undefined;
+}
 
 /** Per tile: 0 open, 1 a hostile Barricade (costly), 2 a wall. */
 export type BarricadeRouteMarksV7 = Uint8Array;
@@ -166,7 +179,7 @@ export function landRouteStepsV7(
  * route.
  */
 export function barricadeOnRouteV7(
-  field: RouteFieldV7,
+  field: RouteStepsV7,
   from: CoordV7,
   barricade: CoordV7,
 ): boolean {
@@ -178,4 +191,85 @@ export function barricadeOnRouteV7(
     Math.abs(from.y - barricade.y),
   );
   return there + gap <= here;
+}
+
+/**
+ * A Dwarf Engineer's Barricade on a choke (`pulp_wars-ovqq`): a hostile
+ * land unit that can attack stands within this distance of the own city.
+ */
+export const BARRICADE_CHOKE_THREAT_RADIUS_V7 = 3;
+
+/**
+ * A city with at most this many open land approaches is a choke worth
+ * narrowing (and one approach always stays open, so the seat's own units
+ * still get in).
+ */
+export const BARRICADE_CHOKE_APPROACHES_V7 = 3;
+
+/**
+ * The priority of a Barricade on a threatened city's choke: below every
+ * attack on a unit (900 and up) and the breach (890), above the routine
+ * Moves (700 to 762).
+ */
+export const BARRICADE_CHOKE_PRIORITY_V7 = 880;
+
+/**
+ * The value of a Barricade on `to` that narrows a threatened own city's
+ * choke (`pulp_wars-ovqq`), or null when it narrows none: `to` is one of
+ * the open land approaches (explored Grass or Forest with no site and no
+ * Barricade) of an own city next to it, that city has two to
+ * `BARRICADE_CHOKE_APPROACHES_V7` of them (so one stays open), and a
+ * visible hostile land unit that can attack stands within
+ * `BARRICADE_CHOKE_THREAT_RADIUS_V7` of the city. The value is minus the
+ * distance from `to` to the nearest such unit: the approach the attack
+ * comes by is closed first.
+ */
+export function barricadeChokeValueV7(
+  view: PlayerViewV7,
+  to: CoordV7,
+  isHostile: (ownerId: PlayerId) => boolean,
+  canAttack: (unit: PublicUnitV7) => boolean,
+): number | null {
+  const { width, height, tiles } = view.board;
+  const chebyshev = (left: CoordV7, right: CoordV7): number =>
+    Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+  const approach = (at: CoordV7): boolean => {
+    if (at.x < 0 || at.y < 0 || at.x >= width || at.y >= height) return false;
+    const tile = tiles[at.y * width + at.x];
+    return (
+      tile !== undefined &&
+      tile.explored &&
+      tile.site === null &&
+      (tile.terrain === "GRASS" || tile.terrain === "FOREST") &&
+      barricadeAtV7(view, at) === undefined
+    );
+  };
+  if (!approach(to)) return null;
+  let best: number | null = null;
+  for (const city of view.cities) {
+    if (city.ownerId !== view.viewer.id || chebyshev(city.at, to) !== 1)
+      continue;
+    let open = 0;
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1)
+        if (
+          (dx !== 0 || dy !== 0) &&
+          approach({ x: city.at.x + dx, y: city.at.y + dy })
+        )
+          open += 1;
+    if (open < 2 || open > BARRICADE_CHOKE_APPROACHES_V7) continue;
+    let nearest = Number.POSITIVE_INFINITY;
+    for (const unit of view.units)
+      if (
+        unit.hp > 0 &&
+        unit.form === "LAND" &&
+        isHostile(unit.ownerId) &&
+        chebyshev(unit.at, city.at) <= BARRICADE_CHOKE_THREAT_RADIUS_V7 &&
+        canAttack(unit)
+      )
+        nearest = Math.min(nearest, chebyshev(unit.at, to));
+    if (Number.isFinite(nearest) && (best === null || -nearest > best))
+      best = -nearest;
+  }
+  return best;
 }

@@ -809,7 +809,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // The frozen sea redesign (`pulp_wars-5ti.26`): the units whose Moves
     // keep the ice they pass under from a Crack are land-form movers (an
     // Egg makes no Move, and a unit afloat never enters ice).
-    "src/ai/v7.ts": 57,
+    // Barricades in skirmish (`pulp_wars-ovqq`): the unit whose endgame
+    // route runs through a Barricade is a land-form attacker (an Egg never
+    // attacks, and an embarked unit has no endgame land route).
+    "src/ai/v7.ts": 58,
     // The giants' signatures (`pulp_wars-w49.31`): a giant has its
     // signature in land form only (section 6.0, G2), and so has a Troll
     // that throws; the unit a crush is added to, the unit lined up behind
