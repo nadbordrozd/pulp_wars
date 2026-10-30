@@ -8,15 +8,16 @@ import { MARKETING_SCENE_V7 } from "../../tests/fixtures/v7-marketing-scene";
 import { ruleset7FixtureMountExpressionV7 } from "../browser-undead-fixture-v7";
 
 /**
- * Marketing screenshots (bead pulp_wars-mxwn): the hand-built three-way war
- * of `tests/fixtures/v7-marketing-scene.ts` (the Martians, the player,
- * against the Undead and the Dinosaurs in round 19) mounted in the real game
- * UI (the chibi art set, the current HUD) and captured in muted headless
- * Chrome with the game's sound and music off. Nothing is simulated: no AI
- * turn runs and no command is sent. The landscape and portrait shots select
- * the Tripod, so its moves and its attack on a Skeleton (with the preview)
- * show on the board and the unit dock is open; the close-up selects
- * nothing. It needs the Vite dev server, because the scene is imported from
+ * Marketing screenshots (beads pulp_wars-mxwn, pulp_wars-n3lv): the
+ * three-way war of `tests/fixtures/v7-marketing-scene.ts` (the Martians,
+ * the player, against the Undead and the Dinosaurs in round 19, on the
+ * generator's Pangea board of seed 24) mounted in the real game UI (the
+ * chibi art set, the current HUD) and captured in muted headless Chrome
+ * with the game's sound and music off. Nothing is simulated: no AI turn
+ * runs and no command is sent. The landscape and portrait shots select the
+ * Tripod, so its moves and its attack on a Raptor (with the preview) show
+ * on the board and the unit dock is open; the close-up selects nothing. It
+ * needs the Vite dev server, because the scene is imported from
  * `tests/fixtures`.
  *
  * Usage:
@@ -54,8 +55,8 @@ interface Shot {
   /** The unit to select (its tile), or null for none. */
   readonly select: { readonly x: number; readonly y: number } | null;
   /**
-   * Without a selection: a CSS point on unexplored ground outside the crop
-   * to tap, which lets the board's cursor go (default none).
+   * Without a selection: a CSS point outside the crop to tap (then Escape),
+   * which takes the board's cursor box off the capital (default none).
    */
   readonly letGo?: { readonly x: number; readonly y: number };
   /** A crop of the capture, in CSS px, before scaling (default none). */
@@ -69,23 +70,24 @@ interface Shot {
 
 const SHOTS: readonly Shot[] = [
   // Landscape for posts: zoom 1 (80 px tiles), all five cities, the front
-  // in the middle, a strip of fog on the east edge.
+  // in the middle, the fog's ragged edge in the east and south-west.
   {
     name: "pulp-wars-martians-vs-undead-dinosaurs-1920x1080",
     css: { width: 1600, height: 900 },
     mobile: false,
     out: { width: 1920, height: 1080 },
-    centre: { x: 10, y: 9 },
+    centre: { x: 9.5, y: 10.6 },
     zoom: 1,
     select: MARKETING_SCENE_V7.tripod,
   },
-  // Portrait (4:5) for Instagram-style posts: the whole war at zoom 0.75.
+  // Portrait (4:5) for Instagram-style posts at zoom 0.75: four cities
+  // (the harbour is off the west edge), the board from fog to fog.
   {
     name: "pulp-wars-martians-vs-undead-dinosaurs-1080x1350",
-    css: { width: 792, height: 990 },
+    css: { width: 900, height: 1125 },
     mobile: false,
     out: { width: 1080, height: 1350 },
-    centre: { x: 10.1, y: 9.4 },
+    centre: { x: 9.5, y: 10.3 },
     zoom: 0,
     select: MARKETING_SCENE_V7.tripod,
   },
@@ -96,7 +98,7 @@ const SHOTS: readonly Shot[] = [
     css: { width: 1600, height: 900 },
     mobile: false,
     out: { width: 1200, height: 675 },
-    centre: { x: 11, y: 7.4 },
+    centre: { x: 10.3, y: 10.5 },
     zoom: 2,
     select: null,
     letGo: { x: 1590, y: 450 },
@@ -297,10 +299,16 @@ async function captureShot(connection: Connection, shot: Shot): Promise<void> {
   }
   await frame(connection, shot);
   if (shot.letGo !== undefined) {
-    // A tap on unexplored ground outside the shot lets the cursor go, as
-    // after a player's tap, so no cursor box sits on the capital.
+    // A tap outside the crop moves the cursor there, as a player's tap
+    // would, so no cursor box sits on the capital; Escape then closes the
+    // tapped tile's dock.
     await drag(connection, shot.letGo, shot.letGo);
-    await delay(1_500);
+    await delay(600);
+    await evaluate(
+      connection,
+      `(() => { for (let index = 0; index < 3; index += 1) document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); })()`,
+    );
+    await delay(900);
   }
   await delay(1_200);
   const response = (await connection.send("Page.captureScreenshot", {
@@ -345,7 +353,9 @@ async function frame(connection: Connection, shotInput: Shot): Promise<void> {
     const height = (await evaluate(connection, `innerHeight`)) as number;
     const dx = width / 2 - at.x;
     const dy = height / 2 - at.y;
-    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+    // A drag of 6 px or less is a tap on a tile (which would select it),
+    // so a small remainder is left alone.
+    if (Math.hypot(dx, dy) < 12) return;
     // Drag from a point clear of the HUD and the dock.
     const from = {
       x: Math.min(Math.max(width / 2 - dx / 2, 40), width - 40),
