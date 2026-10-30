@@ -19,14 +19,17 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * the level-6 giant (its Guard pushed off the center first), a treasure
  * chest's unit, and a Goblin chest unit played back to the human. Bead
  * pulp_wars-es7b adds a plain move that reveals a Goblin in the fog (the
- * walker must stay whole at its end through the reveal's crossfade). The page's clock and animation frames are
+ * walker must stay whole at its end through the reveal's crossfade). Bead
+ * pulp_wars-t471 adds a Goblin Raider that walks out of the fog onto
+ * Fertile Ground (its reveal's crossfade plays before its walk and must
+ * not show it on that ground first). The page's clock and animation frames are
  * replaced by a stepped clock while a sequence plays, so each frame is
  * taken at an exact time. Each sequence is also laid out as one contact
  * sheet, cropped round the action and enlarged. Chrome runs headless and
  * muted. It needs the Vite dev server, because the fixtures are imported
  * from `tests/fixtures`.
  *
- * Usage: tsx scripts/browser-combat-juice-review-v7.ts http://localhost:6173/ [--output-dir=<new-dir>] [--only=kill,trade,train,enemy,reward,chest,enemy-chest,reveal]
+ * Usage: tsx scripts/browser-combat-juice-review-v7.ts http://localhost:6173/ [--output-dir=<new-dir>] [--only=kill,trade,train,enemy,reward,chest,enemy-chest,reveal,fog-walker]
  */
 
 interface DebugTarget {
@@ -125,6 +128,7 @@ try {
       if (wanted("chest")) await chest(connection, size, motion, 0);
       if (wanted("enemy-chest")) await chest(connection, size, motion, 1);
       if (wanted("reveal")) await reveal(connection, size, motion);
+      if (wanted("fog-walker")) await fogWalker(connection, size, motion);
     }
   }
   if (errors.length > 0)
@@ -256,6 +260,21 @@ async function reveal(
     `reveal-${size}-${motion}`,
     [at.mover, at.to, at.hidden],
     `(() => { const view = ${REVIEW}.snapshotView(); const id = (at) => view.units.find((unit) => unit.at.x === at.x && unit.at.y === at.y).id; return ${REVIEW}.controller.dispatch({ kind: 'MOVE', unitId: id(${JSON.stringify(at.mover)}), path: [${JSON.stringify(at.to)}] }); })()`,
+    motion === "full" ? 24 : 14,
+  );
+}
+
+async function fogWalker(
+  connection: Connection,
+  size: Size,
+  motion: Motion,
+): Promise<void> {
+  const at = await mount(connection, "combatJuiceFogWalkerFixtureV7");
+  await sequence(
+    connection,
+    `fog-walker-${size}-${motion}`,
+    [at.watcher, at.walkerStep, at.fertile],
+    `(() => { const view = ${REVIEW}.state(); const unit = view.units.find((candidate) => candidate.at.x === ${at.walkerStart.x} && candidate.at.y === ${at.walkerStart.y}); return ${REVIEW}.controller.dispatchAs(${REVIEW}.goblinId(), { kind: 'MOVE', unitId: unit.id, path: [${JSON.stringify(at.walkerStep)}, ${JSON.stringify(at.fertile)}] }); })()`,
     motion === "full" ? 24 : 14,
   );
 }
@@ -555,7 +574,7 @@ async function mount(
       const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null });
       globalThis.__JUICE_REVIEW__ = {
         boardHost, view, controller, fixtures,
-        at: { ...fixtures.COMBAT_JUICE_UI_V7, ...fixtures.COMBAT_JUICE_REWARD_UI_V7, ...fixtures.COMBAT_JUICE_REVEAL_UI_V7 },
+        at: { ...fixtures.COMBAT_JUICE_UI_V7, ...fixtures.COMBAT_JUICE_REWARD_UI_V7, ...fixtures.COMBAT_JUICE_REVEAL_UI_V7, ...fixtures.COMBAT_JUICE_FOG_WALKER_UI_V7 },
         snapshotView: () => snapshot().view,
         state: () => state,
         // Shows another state (no command), as a subscriber would see it.

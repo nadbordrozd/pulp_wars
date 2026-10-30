@@ -12,9 +12,11 @@ import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import {
+  COMBAT_JUICE_FOG_WALKER_UI_V7,
   COMBAT_JUICE_REVEAL_UI_V7,
   COMBAT_JUICE_REWARD_UI_V7,
   combatJuiceChestFixtureV7,
+  combatJuiceFogWalkerFixtureV7,
   combatJuiceRevealFixtureV7,
 } from "../fixtures/v7-combat-juice-ui";
 import { seatIdV7 } from "../fixtures/v7-goblin-arena";
@@ -74,12 +76,16 @@ async function playMove(
   seat: 0 | 1,
   from: CoordV7,
   to: CoordV7,
+  options: {
+    readonly path?: readonly CoordV7[];
+    readonly kinds?: readonly string[];
+  } = {},
 ) {
   const moverId = unitIdAt(state, from);
   const result = applyCommandV7(state, seatIdV7(state, seat), {
     kind: "MOVE",
     unitId: moverId as never,
-    path: [to],
+    path: [...(options.path ?? [to])],
   });
   if (!result.accepted) throw new Error(result.error.code);
   const viewer = state.humanPlayerId;
@@ -89,7 +95,7 @@ async function playMove(
   const kinds = corePresentationPlanV7(before, envelope, after).map(
     (step) => step.kind,
   );
-  expect(kinds).toEqual(["MOVE", "VISIBILITY_CROSSFADE"]);
+  expect(kinds).toEqual(options.kinds ?? ["MOVE", "VISIBILITY_CROSSFADE"]);
   const revealedIds = after.units
     .filter((unit) => !before.units.some((other) => other.id === unit.id))
     .map((unit) => unit.id);
@@ -176,7 +182,26 @@ async function playMove(
       ? [{ fadeFrom, fadeTo: drawn }]
       : [];
   });
-  return { moverId, revealedIds, fades };
+  // The board frames after the last crossfade: where the walker is drawn.
+  let lastFade = -1;
+  played.forEach((drawn, index) => {
+    if (!drawn.board && played[index - 1]?.board === true) lastFade = index;
+  });
+  const walkFrames = played
+    .slice(lastFade + 1)
+    .filter((drawn) => drawn.board)
+    .map((drawn) => drawn.units);
+  const fertileAfter = after.board.tiles.find(
+    (tile) => tile.at.x === to.x && tile.at.y === to.y,
+  );
+  return {
+    moverId,
+    revealedIds,
+    fades,
+    walkFrames,
+    fertileAfter:
+      fertileAfter?.explored === true ? fertileAfter.resource : null,
+  };
 }
 
 describe("The reveal crossfade after a move", () => {
@@ -221,4 +246,34 @@ describe("The reveal crossfade after a move", () => {
       }
     },
   );
+
+  it("never draws a walker that comes out of the fog on its last tile before it walks there", async () => {
+    // Bead pulp_wars-t471: the reveal comes first in the boundary, so its
+    // crossfade played before the walk and faded to the view after, with
+    // the Raider already standing on the Fertile Ground it then walked
+    // onto: a faint Raider over that ground, then a jump back to its first
+    // tile. Now it fades in where its walk starts, and walks on.
+    const at = COMBAT_JUICE_FOG_WALKER_UI_V7;
+    const { moverId, fades, walkFrames, fertileAfter } = await playMove(
+      combatJuiceFogWalkerFixtureV7(),
+      1,
+      at.walkerStart,
+      at.fertile,
+      {
+        path: [at.walkerStep, at.fertile],
+        kinds: ["VISIBILITY_CROSSFADE", "MOVE"],
+      },
+    );
+    expect(fertileAfter).toBe("FERTILE_GROUND");
+    expect(fades.length).toBeGreaterThan(0);
+    for (const { fadeFrom, fadeTo } of fades) {
+      expect(fadeFrom.units.has(moverId)).toBe(false);
+      expect(fadeTo.units.get(moverId)).toEqual(at.walkerStep);
+    }
+    // The walk then starts where the crossfade left it.
+    const first = walkFrames[0]?.get(moverId);
+    expect(first?.x).toBe(at.walkerStep.x);
+    expect(first?.y).toBeCloseTo(at.walkerStep.y, 1);
+    expect(walkFrames.at(-1)?.get(moverId)).toEqual(at.fertile);
+  });
 });

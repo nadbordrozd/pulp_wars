@@ -887,6 +887,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // `pulp_wars-es7b`: the units a reveal's crossfade draws, on the board.
     "src/render/canvas/presentation-plan-v7.ts::visibilityCrossfadeFromV7":
       "BOARD",
+    // `pulp_wars-t471`: the units a crossfade fades to, on the board.
+    "src/render/canvas/presentation-plan-v7.ts::crossfadeToV7": "BOARD",
     "src/render/dinosaur-presentation-v7.ts::chargePreviewLinesV7": "BOARD",
     "src/render/dinosaur-presentation-v7.ts::dinosaurBoundaryNoticeV7": "BOARD",
     "src/render/dinosaur-presentation-v7.ts::dinosaurFieldDefenseBlockedV7":

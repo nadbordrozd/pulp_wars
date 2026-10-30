@@ -191,6 +191,70 @@ export function combatJuiceRevealFixtureV7(): GameStateV7 {
   );
 }
 
+/**
+ * Bead pulp_wars-t471: an enemy walks out of the fog onto Fertile Ground.
+ * The Goblin Raider at (5, 6), on ground the Human has not explored (rows
+ * 6 and below), takes its two steps to (5, 5) and onto the Fertile Ground
+ * at (5, 4); the Human Fighter at (5, 2) sees it arrive. Its reveal comes
+ * first in the boundary, so the reveal's crossfade plays before its walk.
+ */
+export const COMBAT_JUICE_FOG_WALKER_UI_V7 = {
+  watcher: { x: 5, y: 2 },
+  walkerStart: { x: 5, y: 6 },
+  walkerStep: { x: 5, y: 5 },
+  fertile: { x: 5, y: 4 },
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+/** The Goblin's turn, with the Raider in the Human's fog. */
+export function combatJuiceFogWalkerFixtureV7(): GameStateV7 {
+  const at = COMBAT_JUICE_FOG_WALKER_UI_V7;
+  const arena = goblinArenaV7(
+    ["ORIGINAL", "GOBLIN"],
+    [
+      { seat: 0, role: "FIGHTER", at: at.watcher },
+      { seat: 1, role: "RAIDER", at: at.walkerStart },
+    ],
+    { activeSeat: 1 },
+  );
+  const walked = new Set(
+    [at.walkerStart, at.walkerStep, at.fertile].map(
+      (cell) => `${cell.x},${cell.y}`,
+    ),
+  );
+  return unlocked(
+    checkedV7({
+      ...arena,
+      board: {
+        ...arena.board,
+        tiles: arena.board.tiles.map((tile) =>
+          walked.has(`${tile.at.x},${tile.at.y}`)
+            ? {
+                ...tile,
+                terrain: "GRASS" as const,
+                biome: "PLAINS" as const,
+                resource:
+                  tile.at.x === at.fertile.x && tile.at.y === at.fertile.y
+                    ? ("FERTILE_GROUND" as const)
+                    : null,
+                improvement: null,
+              }
+            : tile,
+        ),
+      },
+      players: arena.players.map((player) =>
+        player.id === arena.humanPlayerId
+          ? {
+              ...player,
+              explored: arena.board.tiles
+                .map((tile) => tile.at)
+                .filter((cell) => cell.y < at.walkerStart.y),
+            }
+          : player,
+      ),
+    }),
+  );
+}
+
 /** Achievements unlocked in advance, so no notice covers the board. */
 function unlocked(state: GameStateV7): GameStateV7 {
   return checkedV7({

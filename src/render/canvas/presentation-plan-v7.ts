@@ -2608,6 +2608,11 @@ export function bombFlightPathV7(
  * the ground); each unit that moved is as the view after has it, or gone
  * when the view after no longer shows it. The view before itself when no
  * unit has moved yet.
+ *
+ * Bead pulp_wars-t471: every crossfade of the boundary's steps (a reveal,
+ * a build, a disband, a wave of reinforcements) fades from this view, and
+ * a unit with a walk still to come in the boundary stands where that walk
+ * starts (`crossfadeToV7` is the view it fades to).
  */
 export function visibilityCrossfadeFromV7(
   steps: readonly CorePresentationStepV7[],
@@ -2618,7 +2623,9 @@ export function visibilityCrossfadeFromV7(
   const moved = new Set<number>();
   for (const step of steps.slice(0, index))
     if (step.kind === "MOVE") moved.add(step.unitId);
-  if (moved.size === 0) return before;
+  const waiting = walkStartsAfterV7(steps, index);
+  if (moved.size === 0 && !standsElsewhereV7(before.units, waiting))
+    return before;
   const units = before.units.flatMap((unit) => {
     if (!moved.has(unit.id)) return [unit];
     const shown = after.units.find((candidate) => candidate.id === unit.id);
@@ -2631,5 +2638,76 @@ export function visibilityCrossfadeFromV7(
       !before.units.some((candidate) => candidate.id === unit.id)
     )
       units.push(unit);
-  return { ...before, units };
+  return { ...before, units: atWalkStartsV7(units, waiting) };
+}
+
+/**
+ * Bead pulp_wars-t471: the view a crossfade at `index` of the boundary's
+ * steps fades to. The view after has every unit at its result, so a unit
+ * whose walk is still to come in the boundary (an enemy that comes out of
+ * the fog: its reveal's crossfade plays before its walk) faded in on the
+ * tile it then walked onto, the ground of that tile (Fertile Ground, say)
+ * showing through it, and jumped back to its walk's first tile when the
+ * walk began. Such a unit now stands where its next walk starts, as the
+ * view after has it (or, when its walk ends out of sight, as the view
+ * before has it); everything else is the view after. The view after
+ * itself when no unit walks later.
+ */
+export function crossfadeToV7(
+  steps: readonly CorePresentationStepV7[],
+  index: number,
+  before: PlayerViewV7,
+  after: PlayerViewV7,
+): PlayerViewV7 {
+  const waiting = walkStartsAfterV7(steps, index);
+  const gone = before.units.filter(
+    (unit) =>
+      waiting.has(unit.id) &&
+      !after.units.some((candidate) => candidate.id === unit.id),
+  );
+  if (gone.length === 0 && !standsElsewhereV7(after.units, waiting))
+    return after;
+  return {
+    ...after,
+    units: atWalkStartsV7([...after.units, ...gone], waiting),
+  };
+}
+
+/** The first tile of each unit's first walk after step `index`. */
+function walkStartsAfterV7(
+  steps: readonly CorePresentationStepV7[],
+  index: number,
+): ReadonlyMap<number, CoordV7> {
+  const starts = new Map<number, CoordV7>();
+  for (const step of steps.slice(index + 1)) {
+    if (step.kind !== "MOVE" || starts.has(step.unitId)) continue;
+    const start = step.path[0];
+    if (start !== undefined) starts.set(step.unitId, start);
+  }
+  return starts;
+}
+
+/** Whether a unit of `units` is off the tile its next walk starts on. */
+function standsElsewhereV7(
+  units: PlayerViewV7["units"],
+  starts: ReadonlyMap<number, CoordV7>,
+): boolean {
+  return units.some((unit) => {
+    const start = starts.get(unit.id);
+    return start !== undefined && !same(start, unit.at);
+  });
+}
+
+/** `units` with each unit that walks later on its walk's first tile. */
+function atWalkStartsV7(
+  units: PlayerViewV7["units"],
+  starts: ReadonlyMap<number, CoordV7>,
+): PlayerViewV7["units"] {
+  if (starts.size === 0) return units;
+  return units.map((unit) => {
+    const start = starts.get(unit.id);
+    return start === undefined || same(start, unit.at)
+      ? unit
+      : { ...unit, at: start };
+  });
 }

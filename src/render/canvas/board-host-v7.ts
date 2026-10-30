@@ -147,6 +147,7 @@ import {
   corePresentationPlanV7,
   type CorePresentationStepV7,
   type PresentationStepCueV7,
+  crossfadeToV7,
   visibilityCrossfadeFromV7,
 } from "./presentation-plan-v7";
 import { selectionJumpDurationMs } from "./selection-jump-presentation";
@@ -2341,9 +2342,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#draw();
         this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
-        this.#crossfade = { before, after, progress: 0 };
+        // Bead pulp_wars-t471: every crossfade of the steps starts from the
+        // board as it stands: a walk already played is at its end, one
+        // still to come at its start.
+        const from = visibilityCrossfadeFromV7(steps, index, before, after);
+        const to = crossfadeToV7(steps, index, before, after);
+        this.#crossfade = { before: from, after: to, progress: 0 };
         await this.#animate(step.durationMs * durationScale, (progress) => {
-          this.#crossfade = { before, after, progress };
+          this.#crossfade = { before: from, after: to, progress };
           this.#draw();
         });
         if (token !== this.#presentationToken) return;
@@ -2396,10 +2402,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       } else if (step.kind === "VISIBILITY_CROSSFADE") {
         // Bead pulp_wars-es7b: a unit that has walked stays whole at its
         // end; only what the boundary reveals or hides fades.
+        // Bead pulp_wars-t471: and a unit whose walk comes after the
+        // reveal (an enemy out of the fog) fades in where that walk starts,
+        // never on the tile it is about to walk onto.
         const from = visibilityCrossfadeFromV7(steps, index, before, after);
-        this.#crossfade = { before: from, after, progress: 0 };
+        const to = crossfadeToV7(steps, index, before, after);
+        this.#crossfade = { before: from, after: to, progress: 0 };
         await this.#animate(step.durationMs * durationScale, (progress) => {
-          this.#crossfade = { before: from, after, progress };
+          this.#crossfade = { before: from, after: to, progress };
           this.#draw();
         });
         if (token !== this.#presentationToken) return;
@@ -2407,10 +2417,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#presentedView = after;
       } else if (step.kind === "DISBAND") {
         // Tuning 7: the disbanded unit fades out where it stood.
-
-        this.#crossfade = { before, after, progress: 0 };
+        const from = visibilityCrossfadeFromV7(steps, index, before, after);
+        const to = crossfadeToV7(steps, index, before, after);
+        this.#crossfade = { before: from, after: to, progress: 0 };
         await this.#animate(step.durationMs * durationScale, (progress) => {
-          this.#crossfade = { before, after, progress };
+          this.#crossfade = { before: from, after: to, progress };
           this.#draw();
         });
         if (token !== this.#presentationToken) return;
@@ -2419,11 +2430,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       } else if (step.kind === "REINFORCEMENT") {
         // `pulp_wars-hmyk.18`: the wave fades in where the camera came to,
         // then holds a beat so it is seen before the turn goes on.
-        this.#crossfade = { before, after, progress: 0 };
+        const from = visibilityCrossfadeFromV7(steps, index, before, after);
+        const to = crossfadeToV7(steps, index, before, after);
+        this.#crossfade = { before: from, after: to, progress: 0 };
         await this.#animate(
           REINFORCEMENT_FADE_MS_V7 * durationScale,
           (progress) => {
-            this.#crossfade = { before, after, progress };
+            this.#crossfade = { before: from, after: to, progress };
             this.#draw();
           },
         );
