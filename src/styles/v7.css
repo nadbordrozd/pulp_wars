@@ -2503,11 +2503,20 @@
   font-size: var(--pw-fs-lg);
 }
 
-/* Developer mode (pulp_wars-5xki): a dev-mode win is not recorded. */
-.v7-dev-progress-note {
+/*
+ * A win the campaign did not record (pulp_wars-6o5t): one developer mode
+ * did not record (pulp_wars-5xki) or the browser's storage refused. A
+ * warning at the body size, never a quiet grey line.
+ */
+.v7-dev-progress-note,
+.v7-campaign-unsaved {
   margin: 0;
-  color: var(--pw-text-2);
-  font-size: var(--pw-fs-xs);
+  padding: 0.45rem 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-amber);
+  border-radius: var(--pw-radius);
+  background: var(--pw-amber-fill);
+  color: var(--pw-amber);
+  font-size: var(--pw-fs-base);
   font-weight: var(--pw-fw-bold);
 }
 

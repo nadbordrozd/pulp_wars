@@ -701,12 +701,12 @@ describe("Ruleset 7 mission dialogs", () => {
       document.querySelector("[data-v7-region='dev-progress-note']"),
     ).toBeNull();
     view.destroy();
-    // Developer mode records no win: one line says so in place of the
-    // progress and unlock lines.
+    // Developer mode (pulp_wars-6o5t): a win the controller recorded (the
+    // normal game had the mission open) gets the normal game's notices.
     window.history.replaceState(null, "", "/?dev=1");
     document.body.innerHTML = '<div id="app"></div>';
     try {
-      const dev = mount(
+      const recorded = mount(
         new FakeController(
           completeView("HUMAN_6", "ORIGINAL", victory),
           progress,
@@ -714,18 +714,81 @@ describe("Ruleset 7 mission dialogs", () => {
       );
       expect(
         document.querySelector("[data-v7-region='faction-unlocked']"),
+      ).not.toBeNull();
+      expect(
+        document.querySelector("[data-v7-region='dev-progress-note']"),
+      ).toBeNull();
+      recorded.destroy();
+      // A win it did not record (only developer mode opened the mission):
+      // one clearly visible line says so in place of the notices.
+      document.body.innerHTML = '<div id="app"></div>';
+      const dev = mount(
+        new FakeController(completeView("HUMAN_6", "ORIGINAL", victory), {
+          ...progress,
+          lastWin: null,
+        }),
+      );
+      expect(
+        document.querySelector("[data-v7-region='faction-unlocked']"),
       ).toBeNull();
       expect(
         document.querySelector("[data-v7-region='campaign-opened']"),
       ).toBeNull();
-      expect(
-        document.querySelector("[data-v7-region='dev-progress-note']")
-          ?.textContent,
-      ).toBe("Developer mode: not saved to progress");
+      const note = required(
+        document.querySelector<HTMLElement>(
+          "[data-v7-region='dev-progress-note']",
+        ),
+      );
+      expect(note.textContent).toBe("Developer mode: not saved to progress");
+      expect(note.classList.contains("v7-dev-progress-note")).toBe(true);
+      expect(note.getAttribute("role")).toBe("status");
       dev.destroy();
     } finally {
       window.history.replaceState(null, "", "/");
     }
+  });
+
+  it("Victory says a win the storage refused was not saved (pulp_wars-6o5t)", () => {
+    const victory = (view: PlayerViewV7): MatchOutcomeV7 => ({
+      kind: "VICTORY",
+      winnerId: view.humanPlayerId,
+      cause: "ESCORT_ARRIVED",
+    });
+    const unsaved = (missionId: string): Ruleset7CampaignProgressV7 => ({
+      status: "OK",
+      completed: {},
+      lastWin: null,
+      diagnostic: "Unable to write campaign progress: QuotaExceededError",
+      unsavedWin: missionId,
+    });
+    const view = mount(
+      new FakeController(
+        completeView("GOBLIN_6", "GOBLIN", victory),
+        unsaved("GOBLIN_6"),
+      ),
+    );
+    const line = required(
+      document.querySelector<HTMLElement>(
+        "[data-v7-region='campaign-unsaved']",
+      ),
+    );
+    expect(line.textContent).toBe(
+      "This win couldn't be saved in this browser, so the campaign won't show it.",
+    );
+    expect(line.getAttribute("role")).toBe("status");
+    view.destroy();
+    // Another mission's failure says nothing about this win.
+    document.body.innerHTML = '<div id="app"></div>';
+    const other = mount(
+      new FakeController(
+        completeView("GOBLIN_6", "GOBLIN", victory),
+        unsaved("GOBLIN_5"),
+      ),
+    );
+    expect(
+      document.querySelector("[data-v7-region='campaign-unsaved']"),
+    ).toBeNull();
+    other.destroy();
   });
 
   it("Victory after the deadline for a star: the star is shown as missed", () => {

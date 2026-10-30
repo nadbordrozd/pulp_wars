@@ -30,6 +30,7 @@ import {
 } from "../engine/index";
 import { factionsNewlyUnlockedV7 } from "../campaign/faction-locks-v7";
 import {
+  campaignMissionOpenNormallyV7,
   campaignMissionV7,
   campaignNewlyOpenedV7,
   type CampaignCompletedV7,
@@ -117,6 +118,13 @@ export interface Ruleset7CampaignProgressV7 {
   } | null;
   /** Why progress could not be read or written, for the details view. */
   readonly diagnostic: string | null;
+  /**
+   * The mission whose latest win this controller could not record
+   * (`pulp_wars-6o5t`): unreadable progress or a storage that refused the
+   * write. The Victory dialog says so instead of passing over it. Null
+   * once a win is recorded or progress is reset; absent in old ports.
+   */
+  readonly unsavedWin?: string | null;
 }
 
 /**
@@ -321,6 +329,7 @@ export class Ruleset7BrowserController {
   /** Developer mode: mission wins are not recorded (`pulp_wars-5xki`). */
   #developerMode = false;
   #campaignDiagnostic: string | null = null;
+  #campaignUnsavedWin: string | null = null;
   readonly #tribeStars: TribeStarsStoreV7;
   #tribeStarsLastAward: Ruleset7TribeStarsV7["lastAward"] = null;
   #tribeStarsDiagnostic: string | null = null;
@@ -452,14 +461,15 @@ export class Ruleset7BrowserController {
       lastWin: this.#campaignLastWin,
       diagnostic:
         loaded.kind === "VALID" ? this.#campaignDiagnostic : loaded.diagnostic,
+      unsavedWin: this.#campaignUnsavedWin,
     });
   }
 
   /**
    * Developer mode (`pulp_wars-5xki`, docs/product/CAMPAIGN.md section
-   * 25): while it is on, a mission win is not recorded in the campaign
-   * progress, so testing never shortcuts the campaign graph or the faction
-   * locks.
+   * 25.1): while it is on, a mission win is recorded only when the mission
+   * is open in the normal game too (`pulp_wars-6o5t`), so testing never
+   * shortcuts the campaign graph or the faction locks.
    */
   setDeveloperMode(on: boolean): void {
     this.#developerMode = on;
@@ -475,6 +485,7 @@ export class Ruleset7BrowserController {
     }
     this.#campaignLastWin = null;
     this.#campaignDiagnostic = null;
+    this.#campaignUnsavedWin = null;
     return true;
   }
 
@@ -1248,14 +1259,16 @@ export class Ruleset7BrowserController {
 
   /**
    * Records the human's win of a chapter mission (CAMPAIGN.md section 4.1).
-   * Skirmishes, hidden fixture missions, defeats, and wins in developer
-   * mode (section 25) record nothing.
+   * Skirmishes, hidden fixture missions and defeats record nothing. In
+   * developer mode (section 25.1, `pulp_wars-6o5t`) a win is recorded only
+   * when the mission is open in the normal game too; a win of a mission
+   * only developer mode opened is not, and `lastWin` is cleared so the
+   * Victory dialog says so.
    */
   #recordCampaignOutcome(state: GameStateV7): void {
     const outcome = state.outcome;
     const missionId = state.setup.mission?.id;
     if (
-      this.#developerMode ||
       outcome?.kind !== "VICTORY" ||
       outcome.winnerId !== state.humanPlayerId ||
       state.setup.mapType !== "MISSION" ||
@@ -1264,6 +1277,19 @@ export class Ruleset7BrowserController {
       return;
     const found = campaignMissionV7(missionId);
     if (found === null) return;
+    if (this.#developerMode) {
+      const loaded = this.#campaign.load();
+      if (
+        loaded.kind === "VALID" &&
+        !campaignMissionOpenNormallyV7(
+          missionId,
+          campaignCompletionsV7(loaded.progress),
+        )
+      ) {
+        this.#campaignLastWin = null;
+        return;
+      }
+    }
     const stars = Math.min(3, Math.max(1, missionStatusV7(state)?.stars ?? 1));
     const recorded = this.#campaign.recordWin(
       found.campaign.id,
@@ -1276,9 +1302,12 @@ export class Ruleset7BrowserController {
     );
     if (!recorded.ok) {
       this.#campaignDiagnostic = recorded.diagnostic;
+      this.#campaignUnsavedWin = missionId;
+      this.#campaignLastWin = null;
       return;
     }
     this.#campaignDiagnostic = null;
+    this.#campaignUnsavedWin = null;
     const before = campaignCompletionsV7(recorded.before);
     const after = campaignCompletionsV7(recorded.progress);
     this.#campaignLastWin = {

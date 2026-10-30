@@ -13522,9 +13522,18 @@ export class Ruleset7DomAppView {
       result.append(
         text(this.#document, "p", entry.closing, "v7-campaign-story"),
       );
-      // Developer mode (pulp_wars-5xki): the win is not recorded, so it
-      // opens and unlocks nothing; one line says so instead.
-      if (this.#devMode) {
+      const progress = this.#campaignProgress();
+      // Whether the controller recorded this win (pulp_wars-6o5t): it
+      // clears `lastWin` for a win it did not record.
+      const lastWin =
+        progress.lastWin?.missionId === entry.missionId
+          ? progress.lastWin
+          : null;
+      const unsavedWin = progress.unsavedWin === entry.missionId;
+      // Developer mode (pulp_wars-5xki, pulp_wars-6o5t): a win of a
+      // mission only developer mode opened is not recorded, so it opens and
+      // unlocks nothing; one clearly visible line says so instead.
+      if (this.#devMode && lastWin === null && !unsavedWin) {
         const note = text(
           this.#document,
           "p",
@@ -13532,13 +13541,24 @@ export class Ruleset7DomAppView {
           "v7-dev-progress-note",
         );
         note.dataset.v7Region = "dev-progress-note";
+        note.setAttribute("role", "status");
         result.append(note);
       }
-      const lastWin = this.#devMode ? null : this.#campaignProgress().lastWin;
+      // The win could not be written (pulp_wars-6o5t): unreadable progress
+      // or a browser storage that refused it. Said here, not passed over.
+      if (unsavedWin) {
+        const unsaved = text(
+          this.#document,
+          "p",
+          "This win couldn't be saved in this browser, so the campaign won't show it.",
+          "v7-campaign-unsaved",
+        );
+        unsaved.dataset.v7Region = "campaign-unsaved";
+        unsaved.setAttribute("role", "status");
+        result.append(unsaved);
+      }
       // The campaigns this win opened on the map (pulp_wars-hmyk.3).
-      const opened = (
-        lastWin?.missionId === entry.missionId ? (lastWin.opened ?? []) : []
-      ).flatMap((id) => {
+      const opened = (lastWin?.opened ?? []).flatMap((id) => {
         const campaign = campaignByIdV7(id);
         return campaign === null ? [] : [campaign];
       });
@@ -13558,8 +13578,7 @@ export class Ruleset7DomAppView {
       }
       // Faction locks (pulp_wars-5xki): the factions this win unlocked for
       // a new game, one line each; developer mode has every one already.
-      const unlocked =
-        lastWin?.missionId === entry.missionId ? (lastWin.factions ?? []) : [];
+      const unlocked = lastWin?.factions ?? [];
       for (const faction of unlocked) {
         const notice = el(this.#document, "div", "v7-unlock-notice");
         notice.dataset.v7Region = "faction-unlocked";

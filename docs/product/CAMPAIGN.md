@@ -528,6 +528,12 @@ version 1 below is migrated; see [section 14.4](#144-progress-version-2).)
   replayed win only lowers `bestRounds`). It also runs when a completed
   mission save is resumed, so closing the tab during the dialog loses
   nothing.
+- **A win that cannot be written** (`pulp_wars-6o5t`): when the progress is
+  unreadable or the browser's storage refuses the write, the Victory dialog
+  says "This win couldn't be saved in this browser, so the campaign won't
+  show it." instead of passing over it. Developer mode records only the
+  wins the normal game could have had ([section 25.1](#251-developer-mode))
+  and says "Developer mode: not saved to progress" for the others.
 - **Unreadable progress** (invalid JSON or shape): the campaign screen says
   "Campaign progress can't be read." with a Reset button (the save-recovery
   pattern) and records nothing until reset; skirmish is unaffected.
@@ -7599,14 +7605,20 @@ section 14.5 and keeps its gestures (`src/campaign/dev-mode-v7.ts`):
   the main menu lists the **Gallery**; every faction can be picked in a new
   game; the end screen never offers **Submit to the leaderboard**; the play
   statistics send no event ([ANALYTICS.md](../ANALYTICS.md)).
-- **A view, not a write.** Developer mode never writes campaign progress:
-  a mission won while it is on is not recorded (the controller is told at
-  start-up and on every switch, so a completed mission save resumed in
-  developer mode records nothing either), so testing never shortcuts the
-  campaign graph or the faction locks. Its Victory dialog shows
-  "Developer mode: not saved to progress" in place of the campaigns and
-  faction notices. A skirmish win still records its tribe stars, which
-  unlock nothing.
+- **Only wins the normal game could have had** (`pulp_wars-6o5t`, which
+  supersedes "a view, not a write"). A mission won while developer mode is
+  on is recorded, like any win, when the mission is also open in the
+  normal game: its campaign is open (or done) by the campaign graph, and
+  the mission is mission 1, follows a won mission, or was won before. A
+  win of a mission that only developer mode opened is not recorded, so
+  testing never shortcuts the campaign graph or the faction locks. The
+  controller is told at start-up and on every switch, and the same rule
+  holds when a completed mission save is resumed. A recorded win's Victory
+  dialog is the normal game's, with its campaigns and faction notices; an
+  unrecorded one shows "Developer mode: not saved to progress" in their
+  place as a clearly visible warning (body size, amber on its pale fill,
+  boxed), not a quiet grey line. A skirmish win still records its tribe
+  stars, which unlock nothing.
 
 ### 25.2 The normal game
 

@@ -265,6 +265,29 @@ export function campaignFactionChoicesV7(
 }
 
 /**
+ * True when the mission is open in the normal game (`pulp_wars-6o5t`,
+ * docs/product/CAMPAIGN.md section 25.1): its campaign is open or done
+ * whatever developer mode says, and the mission is open or done there
+ * (mission 1, or the previous mission won). A developer-mode win of such
+ * a mission is recorded: it shortcuts neither the campaign graph nor the
+ * faction locks. False for a mission in no chapter.
+ */
+export function campaignMissionOpenNormallyV7(
+  missionId: string,
+  completed: CampaignCompletedV7,
+): boolean {
+  const found = campaignMissionV7(missionId);
+  if (found === null) return false;
+  const plate = campaignPlatesV7(completed).find(
+    (candidate) => candidate.campaign.id === found.campaign.id,
+  );
+  return (
+    (plate?.status === "OPEN" || plate?.status === "DONE") &&
+    campaignMissionStatusV7(found.chapter, found.entry, completed) !== "LOCKED"
+  );
+}
+
+/**
  * The mission after this one in its chapter, or null after the last built
  * one: a mission that is designed but not built is nothing to go on to.
  */

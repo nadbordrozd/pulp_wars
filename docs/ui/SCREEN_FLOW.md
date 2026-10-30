@@ -3463,9 +3463,12 @@ differ, this is current:
   offer every faction.
 - **Victory.** The win that unlocks a faction adds "New faction unlocked:
   Ice Folk" with its emblem, after the campaigns notice. In developer mode
-  a mission win is not recorded: the dialog shows a small grey line,
-  "Developer mode: not saved to progress", and no campaigns or faction
-  notice.
+  a win is recorded only when the mission is open in the normal game too
+  (`pulp_wars-6o5t`); otherwise the dialog shows a warning line (body
+  size, amber on its pale fill, boxed), "Developer mode: not saved to
+  progress", and no campaigns or faction notice. A win the browser's
+  storage refused (or unreadable progress) shows, in the same style, "This win couldn't be saved in this browser,
+  so the campaign won't show it." (`pulp_wars-6o5t`).
 
 **Retry mission (`pulp_wars-hmyk.24`).** A mission starts over from the
 game, without the main menu. Where the lists above differ, this is current:
