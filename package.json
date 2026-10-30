@@ -86,6 +86,7 @@
     "validate:ruleset7-map-scale": "tsx scripts/validate-ruleset7-map-scale.ts",
     "validate:ruleset7-naval-playable": "tsx scripts/validate-ruleset7-naval-playable.ts",
     "balance:ruleset7-undead": "tsx scripts/ruleset7-undead-balance-matrix.ts",
+    "balance:faction-tournament": "tsx scripts/balance/faction-tournament-v7.ts",
     "probe:martian-mobility": "tsx scripts/ruleset7-martian-mobility-probe.ts",
     "play:text": "tsx scripts/play-text-v7.ts",
     "test": "vitest run",

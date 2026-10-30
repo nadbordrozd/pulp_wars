@@ -1008,3 +1008,41 @@ node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch ai2 --out <dir> --
 node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch random2 --out <dir> --jobs 8
 node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch missions2 --out <dir> --jobs 8
 ```
+
+## Faction strength tournament (`pulp_wars-hblo`)
+
+`npm run balance:faction-tournament` (`scripts/balance/faction-tournament-v7.ts`)
+plays whole Normal-AI matches, so it runs only when the user authorises
+simulations. It measures; it changes no rule and no AI. Phase A is a 1v1
+round robin of every faction (each pairing `--games-per-pairing` times, both
+seat orders, maps rotating through `--map-types`); phase B is `--ffa-games`
+free-for-alls of `--ffa-seats` seats whose factions are drawn so that each
+appears equally often. Every match is a default skirmish: Domination, Normal
+difficulty with no head start, Free-for-all, curiosities on, and the quick
+start's board size for the map and the seat count. Every seat is named in
+`humanSeats`, so the engine ends a free-for-all only when one seat stands
+(rather than when seat 0 falls) and no seat is special. A match still
+running at the round cap (`--max-rounds`, `--ffa-max-rounds`) is decided by
+the game's own score and recorded as capped, apart from real wins.
+
+After each match a child process replays the accepted command log
+(`faction-tournament-telemetry-v7.ts`) and records per seat: the commands
+offered (`queryPlayerCommandsV7`, sampled before every command with
+`--offer-sampling every`) against the ones chosen, per turn; the research
+order; Coins at each End Turn; cities per round, capital loss, elimination,
+captures and embarkations; plus the headless role inventories and the
+faction ability blocks. The report (`faction-tournament-report-v7.ts`)
+writes `aggregate.json`, a self-contained `report.html` (Bradley–Terry
+ratings with bootstrap intervals, Wilson win-rate intervals, the
+head-to-head matrix, free-for-all placements, and per-faction diagnostic
+cards that flag units and faction-specific commands the AI is offered but
+rarely uses) and `summary.md`. An optional `<out>/verdicts.json`
+(`{ "headline": [], "factions": {}, "caveats": [] }`) adds a hand-written
+read. `--out` must be outside the repository; a rerun skips finished
+matches, and `--report-only` rebuilds the report. The pure helpers
+(`faction-tournament-stats-v7.ts`) have unit tests in
+`tests/unit/faction-tournament-stats-v7.test.ts`.
+
+```bash
+npm run balance:faction-tournament -- --out <dir outside the repo> --games-per-pairing 30 --ffa-games 108 --max-rounds 60 --ffa-max-rounds 90 --jobs 8
+```
