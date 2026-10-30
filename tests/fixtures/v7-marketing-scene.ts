@@ -128,7 +128,7 @@ const MARTIAN_HISTORY_V7: readonly {
   { at: { x: 2, y: 17 }, sight: 1 },
 ];
 
-function sightRect(at: CoordV7, sight: number): RectV7 {
+export function sightRect(at: CoordV7, sight: number): RectV7 {
   return {
     x0: Math.max(0, at.x - sight),
     y0: Math.max(0, at.y - sight),
@@ -137,7 +137,7 @@ function sightRect(at: CoordV7, sight: number): RectV7 {
   };
 }
 
-const MARTIAN_TECHS_V7: readonly TechnologyIdV7[] = [
+export const MARTIAN_TECHS_V7: readonly TechnologyIdV7[] = [
   "GATHERING",
   "FARMING",
   "MILLING",
@@ -157,7 +157,7 @@ const MARTIAN_TECHS_V7: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
 ];
 
-const UNDEAD_TECHS_V7: readonly TechnologyIdV7[] = [
+export const UNDEAD_TECHS_V7: readonly TechnologyIdV7[] = [
   "GATHERING",
   "FARMING",
   "ADMINISTRATION",
@@ -174,7 +174,7 @@ const UNDEAD_TECHS_V7: readonly TechnologyIdV7[] = [
   "FORTIFICATION",
 ];
 
-const DINOSAUR_TECHS_V7: readonly TechnologyIdV7[] = [
+export const DINOSAUR_TECHS_V7: readonly TechnologyIdV7[] = [
   "GATHERING",
   "FARMING",
   "HUNTING",
@@ -327,14 +327,16 @@ export const MARKETING_SCENE_MISSION_V7: MissionDefinitionV7 = {
 };
 
 /**
- * The skirmish setup the generated board belongs to (Pangea, 20 x 20, seed
- * 24, two AI seats): the match reads like one the player started from the
- * menu, so no mission objective, story name or campaign chrome appears.
+ * The skirmish setup a generated board belongs to (its map type and seed,
+ * 20 x 20, two AI seats): the match reads like one the player started from
+ * the menu, so no mission objective, story name or campaign chrome appears.
  */
-export function marketingSceneSetupV7(): MatchSetupV7 {
+export function marketingSkirmishSetupV7(
+  map: MissionMapSourceV7,
+): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
-    seed: MARKETING_SCENE_MAP_V7.seed,
+    seed: map.seed,
     width: 20,
     height: 20,
     aiCount: 2,
@@ -342,59 +344,82 @@ export function marketingSceneSetupV7(): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "LIME",
     factions: ["MARTIAN", "UNDEAD", "DINOSAUR"],
-    mapType: "PANGEA",
+    mapType: map.mapType,
     mapGenerationRevision: MAP_GENERATION_REVISION_V7,
     curiosities: false,
   };
 }
 
-/** The wear of the war, by tile: HP lost. */
-const WOUNDS_V7: readonly { readonly at: CoordV7; readonly lost: number }[] = [
-  { at: { x: 10, y: 10 }, lost: 6 }, // the Vampire, bloodied
-  { at: { x: 9, y: 12 }, lost: 7 }, // the Raptor under the Tripod's ray
-  { at: { x: 10, y: 12 }, lost: 9 }, // the T-Rex
-  { at: { x: 7, y: 9 }, lost: 4 }, // the Shield Projector
-  { at: { x: 8, y: 9 }, lost: 3 }, // a Ray Gunner
-  { at: { x: 11, y: 9 }, lost: 4 }, // a Skeleton
-  { at: { x: 12, y: 12 }, lost: 7 }, // the Triceratops
-  { at: { x: 14, y: 11 }, lost: 4 }, // a Raptor fighting the Ghoul
-  { at: { x: 13, y: 11 }, lost: 6 }, // the Ghoul
-];
-/** Veterans: the Mothership and the Vampire. */
-const VETERANS_V7: readonly CoordV7[] = [
-  { x: 9, y: 11 },
-  { x: 10, y: 10 },
-];
-/** Martian Shields spent in the fighting: tile and Shield left. */
-const SHIELDS_LEFT_V7: readonly {
-  readonly at: CoordV7;
-  readonly shield: number;
-}[] = [
-  { at: { x: 7, y: 9 }, shield: 1 },
-  { at: { x: 8, y: 9 }, shield: 0 },
-  { at: { x: 7, y: 13 }, shield: 1 },
-];
-/** Martian units that already acted this turn. */
-const ACTED_V7: readonly CoordV7[] = [
-  { x: 8, y: 9 },
-  { x: 7, y: 6 },
-];
+/** The v2 scene's setup: Pangea, seed 24. */
+export function marketingSceneSetupV7(): MatchSetupV7 {
+  return marketingSkirmishSetupV7(MARKETING_SCENE_MAP_V7);
+}
+
+/** The wear of a long war on a built scene, by tile. */
+export interface MarketingWearV7 {
+  /** HP lost. */
+  readonly wounds: readonly { readonly at: CoordV7; readonly lost: number }[];
+  /** Promoted units (not a growing role). */
+  readonly veterans: readonly CoordV7[];
+  /** Martian Shields spent in the fighting: tile and Shield left. */
+  readonly shieldsLeft: readonly {
+    readonly at: CoordV7;
+    readonly shield: number;
+  }[];
+  /** Martian units that already acted this turn. */
+  readonly acted: readonly CoordV7[];
+  /** The Martians' Coins. */
+  readonly coins: number;
+}
+
+const V2_WEAR_V7: MarketingWearV7 = {
+  wounds: [
+    { at: { x: 10, y: 10 }, lost: 6 }, // the Vampire, bloodied
+    { at: { x: 9, y: 12 }, lost: 7 }, // the Raptor under the Tripod's ray
+    { at: { x: 10, y: 12 }, lost: 9 }, // the T-Rex
+    { at: { x: 7, y: 9 }, lost: 4 }, // the Shield Projector
+    { at: { x: 8, y: 9 }, lost: 3 }, // a Ray Gunner
+    { at: { x: 11, y: 9 }, lost: 4 }, // a Skeleton
+    { at: { x: 12, y: 12 }, lost: 7 }, // the Triceratops
+    { at: { x: 14, y: 11 }, lost: 4 }, // a Raptor fighting the Ghoul
+    { at: { x: 13, y: 11 }, lost: 6 }, // the Ghoul
+  ],
+  // The Mothership and the Vampire.
+  veterans: [
+    { x: 9, y: 11 },
+    { x: 10, y: 10 },
+  ],
+  shieldsLeft: [
+    { at: { x: 7, y: 9 }, shield: 1 },
+    { at: { x: 8, y: 9 }, shield: 0 },
+    { at: { x: 7, y: 13 }, shield: 1 },
+  ],
+  acted: [
+    { x: 8, y: 9 },
+    { x: 7, y: 6 },
+  ],
+  coins: 37,
+};
 
 function same(left: CoordV7, right: CoordV7): boolean {
   return left.x === right.x && left.y === right.y;
 }
 
-/** The scene: the built mission state, dated and worn, schema-checked. */
-export function marketingSceneStateV7(): GameStateV7 {
-  const built = buildMissionStateV7(
-    MARKETING_SCENE_MISSION_V7,
-    marketingSceneSetupV7(),
-  );
+/**
+ * A marketing scene: `mission` built for the skirmish setup of its map,
+ * dated to round 19 and worn by `wear`, checked against the state schema.
+ */
+export function marketingSceneFromV7(
+  mission: MissionDefinitionV7,
+  map: MissionMapSourceV7,
+  wear: MarketingWearV7,
+): GameStateV7 {
+  const built = buildMissionStateV7(mission, marketingSkirmishSetupV7(map));
   const martian = built.players[0]?.id;
   const units = built.units.map((unit): UnitStateV7 => {
-    const wound = WOUNDS_V7.find((entry) => same(entry.at, unit.at));
-    const veteran = VETERANS_V7.some((at) => same(at, unit.at));
-    const acted = ACTED_V7.some((at) => same(at, unit.at));
+    const wound = wear.wounds.find((entry) => same(entry.at, unit.at));
+    const veteran = wear.veterans.some((at) => same(at, unit.at));
+    const acted = wear.acted.some((at) => same(at, unit.at));
     const promotion = veteran ? PROMOTION_HP_V7 : 0;
     return {
       ...unit,
@@ -419,7 +444,7 @@ export function marketingSceneStateV7(): GameStateV7 {
   });
   const shields = built.shields.flatMap((entry) => {
     const unit = units.find((item) => item.id === entry.unitId);
-    const left = SHIELDS_LEFT_V7.find(
+    const left = wear.shieldsLeft.find(
       (item) => unit !== undefined && same(item.at, unit.at),
     );
     if (left === undefined) return [entry];
@@ -432,10 +457,19 @@ export function marketingSceneStateV7(): GameStateV7 {
     units,
     shields,
     players: built.players.map((player) =>
-      player.id === martian ? { ...player, coins: 37 } : player,
+      player.id === martian ? { ...player, coins: wear.coins } : player,
     ),
   });
   if (state === null)
-    throw new Error("The marketing scene does not pass the state schema");
+    throw new Error(`The scene ${mission.id} does not pass the state schema`);
   return state;
+}
+
+/** The v2 scene: the built mission state, dated and worn, schema-checked. */
+export function marketingSceneStateV7(): GameStateV7 {
+  return marketingSceneFromV7(
+    MARKETING_SCENE_MISSION_V7,
+    MARKETING_SCENE_MAP_V7,
+    V2_WEAR_V7,
+  );
 }

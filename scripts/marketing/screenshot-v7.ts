@@ -5,6 +5,10 @@ import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
 import { MARKETING_SCENE_V7 } from "../../tests/fixtures/v7-marketing-scene";
+import {
+  MARKETING_TAKE2_V7,
+  MARKETING_TAKE3_V7,
+} from "../../tests/fixtures/v7-marketing-takes";
 import { ruleset7FixtureMountExpressionV7 } from "../browser-undead-fixture-v7";
 
 /**
@@ -68,41 +72,155 @@ interface Shot {
   };
 }
 
-const SHOTS: readonly Shot[] = [
-  // Landscape for posts: zoom 1 (80 px tiles), all five cities, the front
-  // in the middle, the fog's ragged edge in the east and south-west.
+type SceneId = "v2" | "take2" | "take3";
+
+/** How long the title screen's intro takes to settle. */
+const TITLE_SETTLE_MILLISECONDS = 6_000;
+
+/** A scene: the fixture the browser mounts and the shots taken of it. */
+interface Scene {
+  /** The fixture module, as the dev server serves it. */
+  readonly module: string;
+  /** The state function the module exports. */
+  readonly fixture: string;
+  readonly shots: readonly Shot[];
+}
+
+const PREFIX = "pulp-wars-martians-vs-undead-dinosaurs";
+
+const SCENES: Readonly<Record<SceneId, Scene>> = {
+  // v2 (pulp_wars-n3lv): Pangea seed 24, the Tripod's strike on a Raptor.
+  v2: {
+    module: "/tests/fixtures/v7-marketing-scene.ts",
+    fixture: "marketingSceneStateV7",
+    shots: [
+      // Landscape for posts: zoom 1 (80 px tiles), all five cities, the
+      // front in the middle, the fog's ragged edge in the east and
+      // south-west.
+      {
+        name: `${PREFIX}-1920x1080`,
+        css: { width: 1600, height: 900 },
+        mobile: false,
+        out: { width: 1920, height: 1080 },
+        centre: { x: 9.5, y: 10.6 },
+        zoom: 1,
+        select: MARKETING_SCENE_V7.tripod,
+      },
+      // Portrait (4:5) for Instagram-style posts at zoom 0.75: four cities
+      // (the harbour is off the west edge), the board from fog to fog.
+      {
+        name: `${PREFIX}-1080x1350`,
+        css: { width: 900, height: 1125 },
+        mobile: false,
+        out: { width: 1080, height: 1350 },
+        centre: { x: 9.5, y: 10.3 },
+        zoom: 0,
+        select: MARKETING_SCENE_V7.tripod,
+      },
+      // A close-up of the front line at zoom 1.5, below the HUD, nothing
+      // selected (so no dock): the link-card size.
+      {
+        name: `${PREFIX}-1200x675`,
+        css: { width: 1600, height: 900 },
+        mobile: false,
+        out: { width: 1200, height: 675 },
+        centre: { x: 10.3, y: 10.5 },
+        zoom: 2,
+        select: null,
+        letGo: { x: 1590, y: 450 },
+        crop: { left: 80, top: 70, width: 1440, height: 810 },
+      },
+    ],
+  },
+  // Take 2 (pulp_wars-vbi9): Lakes seed 13, the siege of the Undead city
+  // across the isthmus, a Saucer's strike on a Skeleton.
+  take2: {
+    module: "/tests/fixtures/v7-marketing-takes.ts",
+    fixture: "marketingTake2StateV7",
+    shots: [
+      {
+        name: `${PREFIX}-take2-1920x1080`,
+        css: { width: 1600, height: 900 },
+        mobile: false,
+        out: { width: 1920, height: 1080 },
+        centre: { x: 10.3, y: 8.4 },
+        zoom: 1,
+        select: MARKETING_TAKE2_V7.saucer,
+      },
+      {
+        name: `${PREFIX}-take2-1200x675`,
+        css: { width: 1600, height: 900 },
+        mobile: false,
+        out: { width: 1200, height: 675 },
+        centre: { x: 12.2, y: 6.3 },
+        zoom: 2,
+        select: null,
+        letGo: { x: 1595, y: 450 },
+        crop: { left: 0, top: 70, width: 1440, height: 810 },
+      },
+    ],
+  },
+  // Take 3 (pulp_wars-vbi9): Continents seed 14, see the fixture.
+  take3: {
+    module: "/tests/fixtures/v7-marketing-takes.ts",
+    fixture: "marketingTake3StateV7",
+    shots: [
+      {
+        name: `${PREFIX}-take3-1920x1080`,
+        css: { width: 1600, height: 900 },
+        mobile: false,
+        out: { width: 1920, height: 1080 },
+        centre: { x: 10.5, y: 5.8 },
+        zoom: 1,
+        select: MARKETING_TAKE3_V7.selected,
+      },
+      {
+        name: `${PREFIX}-take3-1200x675`,
+        css: { width: 1600, height: 900 },
+        mobile: false,
+        out: { width: 1200, height: 675 },
+        centre: { x: 13.5, y: 4.7 },
+        zoom: 2,
+        select: null,
+        letGo: { x: 1595, y: 450 },
+        crop: { left: 0, top: 70, width: 1440, height: 810 },
+      },
+    ],
+  },
+};
+
+/**
+ * The title screen (pulp_wars-vbi9): the main menu as a new player first
+ * sees it, on fresh storage (no save to resume, no online room), sound and
+ * music off.
+ */
+const TITLE_SHOTS: readonly Shot[] = [
   {
-    name: "pulp-wars-martians-vs-undead-dinosaurs-1920x1080",
+    name: "pulp-wars-title-screen-1920x1080",
     css: { width: 1600, height: 900 },
     mobile: false,
     out: { width: 1920, height: 1080 },
-    centre: { x: 9.5, y: 10.6 },
-    zoom: 1,
-    select: MARKETING_SCENE_V7.tripod,
+    centre: { x: 0, y: 0 },
+    zoom: 0,
+    select: null,
   },
-  // Portrait (4:5) for Instagram-style posts at zoom 0.75: four cities
-  // (the harbour is off the west edge), the board from fog to fog.
   {
-    name: "pulp-wars-martians-vs-undead-dinosaurs-1080x1350",
-    css: { width: 900, height: 1125 },
+    name: "pulp-wars-title-screen-1080x1350",
+    css: { width: 864, height: 1080 },
     mobile: false,
     out: { width: 1080, height: 1350 },
-    centre: { x: 9.5, y: 10.3 },
+    centre: { x: 0, y: 0 },
     zoom: 0,
-    select: MARKETING_SCENE_V7.tripod,
+    select: null,
   },
-  // A close-up of the front line at zoom 1.5, below the HUD, nothing
-  // selected (so no dock): the link-card size.
   {
-    name: "pulp-wars-martians-vs-undead-dinosaurs-1200x675",
+    name: "pulp-wars-title-screen-1200x675",
     css: { width: 1600, height: 900 },
     mobile: false,
     out: { width: 1200, height: 675 },
-    centre: { x: 10.3, y: 10.5 },
-    zoom: 2,
+    centre: { x: 0, y: 0 },
+    zoom: 0,
     select: null,
-    letGo: { x: 1590, y: 450 },
-    crop: { left: 80, top: 70, width: 1440, height: 810 },
   },
 ];
 
@@ -120,6 +238,24 @@ const only = args
   .find((argument) => argument.startsWith("--only="))
   ?.slice("--only=".length)
   .split(",");
+/** `--scene=v2,take2,take3,title` or `--scene=all` (default v2). */
+const sceneArgument =
+  args
+    .find((argument) => argument.startsWith("--scene="))
+    ?.slice("--scene=".length) ?? "v2";
+const scenes: readonly (SceneId | "title")[] =
+  sceneArgument === "all"
+    ? ["v2", "take2", "take3", "title"]
+    : sceneArgument.split(",").map((part) => {
+        if (
+          part !== "v2" &&
+          part !== "take2" &&
+          part !== "take3" &&
+          part !== "title"
+        )
+          throw new Error(`Unknown scene ${part}`);
+        return part;
+      });
 /** `--select=x,y` or `--select=none`: try another selection. */
 const selectArgument = args
   .find((argument) => argument.startsWith("--select="))
@@ -216,10 +352,17 @@ try {
   });
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
-  for (const shot of SHOTS) {
-    if (only !== undefined && !only.some((part) => shot.name.includes(part)))
+  const wanted = (shot: Shot): boolean =>
+    only === undefined || only.some((part) => shot.name.includes(part));
+  for (const id of scenes) {
+    if (id === "title") {
+      for (const shot of TITLE_SHOTS.filter(wanted))
+        await captureTitle(connection, shot);
       continue;
-    await captureShot(connection, shot);
+    }
+    const scene = SCENES[id];
+    for (const shot of scene.shots.filter(wanted))
+      await captureShot(connection, scene, shot);
   }
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
@@ -230,7 +373,39 @@ try {
   await rm(userData, { recursive: true, force: true, maxRetries: 5 });
 }
 
-async function captureShot(connection: Connection, shot: Shot): Promise<void> {
+/**
+ * The title screen: fresh storage (no save, no online room, no developer
+ * option), sound and music off, the main menu after its intro has played.
+ */
+async function captureTitle(connection: Connection, shot: Shot): Promise<void> {
+  const css = cssOverride ?? shot.css;
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width: css.width,
+    height: css.height,
+    deviceScaleFactor: DPR,
+    mobile: shot.mobile,
+  });
+  await navigate(connection, baseUrl.href);
+  await evaluate(
+    connection,
+    `(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem('pulpWars.audio.v1', JSON.stringify({ enabled: false, volume: 0 }));
+      localStorage.setItem('pulpWars.music.v1', JSON.stringify({ enabled: false, volume: 0 }));
+    })()`,
+  );
+  await navigate(connection, baseUrl.href);
+  await waitFor(connection, `globalThis.__PULP_WARS_APP__ !== undefined`);
+  await delay(TITLE_SETTLE_MILLISECONDS);
+  await save(connection, shot);
+}
+
+async function captureShot(
+  connection: Connection,
+  scene: Scene,
+  shot: Shot,
+): Promise<void> {
   const css = cssOverride ?? shot.css;
   await connection.send("Emulation.setDeviceMetricsOverride", {
     width: css.width,
@@ -258,10 +433,10 @@ async function captureShot(connection: Connection, shot: Shot): Promise<void> {
   await evaluate(
     connection,
     ruleset7FixtureMountExpressionV7({
-      module: "/tests/fixtures/v7-marketing-scene.ts",
-      fixture: "marketingSceneStateV7",
+      module: scene.module,
+      fixture: scene.fixture,
       global: "__MARKETING_SHOT__",
-      extras: "scene: fixtures.MARKETING_SCENE_V7",
+      extras: "",
       settingsStorage: "localStorage",
     }),
     true,
@@ -311,6 +486,11 @@ async function captureShot(connection: Connection, shot: Shot): Promise<void> {
     await delay(900);
   }
   await delay(1_200);
+  await save(connection, shot);
+}
+
+/** Captures the page and writes the shot, cropped and scaled. */
+async function save(connection: Connection, shot: Shot): Promise<void> {
   const response = (await connection.send("Page.captureScreenshot", {
     format: "png",
   })) as { readonly data?: string };
