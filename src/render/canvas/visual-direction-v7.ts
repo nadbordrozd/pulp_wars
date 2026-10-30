@@ -19,6 +19,7 @@ import {
   type CameraState,
   type TileEdge,
 } from "./geometry";
+import type { NavalWaterlineStyleV7 } from "./naval-waterline-v7";
 import { parseHexColourV7 } from "./owner-recolour-v7";
 import {
   drawReadyGroundCueV7,
@@ -159,6 +160,13 @@ export interface BoardVisualDirectionV7 {
    * pale blue. Omitted, they are drawn as in the classic look.
    */
   readonly undeadAccent?: "VIOLET";
+  /**
+   * Ships sitting in the water (bead pulp_wars-oiu5,
+   * naval-waterline-v7.ts): the ship sprites listed there are drawn sunk to
+   * their waterline, the hull under it a ghost (GHOST, the live look) or
+   * hidden (CUT), with foam on the line. Omitted, ships are drawn whole.
+   */
+  readonly navalWaterline?: NavalWaterlineStyleV7;
 }
 
 /** Draws exactly like no direction at all (used to test the wiring). */
@@ -334,6 +342,8 @@ export const LIVE_DIRECTION_V7: BoardVisualDirectionV7 = {
   chrome: { ...HUMAN_DEMO_DIRECTION_V7.chrome, ready: "GROUND" },
   // Undead (bead pulp_wars-3tq.12): the faction's magic is violet.
   undeadAccent: "VIOLET",
+  // Bead pulp_wars-oiu5: ships sit in the water, the hull under it a ghost.
+  navalWaterline: "GHOST",
 };
 
 /**

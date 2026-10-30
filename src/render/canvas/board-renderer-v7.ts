@@ -228,6 +228,10 @@ import {
 } from "./naval-board-plan-v7";
 import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
 import {
+  drawNavalWaterlineSpriteV7,
+  navalWaterlineOfV7,
+} from "./naval-waterline-v7";
+import {
   addCuriosityRangeEntriesV7,
   curiosityPickTargetsV7,
   type CuriosityPickV7,
@@ -4665,7 +4669,29 @@ export function drawBoardV7(input: {
                   (chibiMasterScale(camera) * drawnScale * devicePixelRatio) /
                     chibiReady.density,
                 );
-          context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
+          // Bead pulp_wars-oiu5 (a prototype): a listed ship sits in the
+          // water, sunk to its waterline; never in a city, iced or frozen
+          // (the rime and the casing follow the whole sprite).
+          const waterline =
+            entry.kind === "UNIT" &&
+            direction?.navalWaterline !== undefined &&
+            !garrisoned &&
+            entry.icebound === undefined &&
+            (entry.iceFolk?.frozen ?? null) === null &&
+            shatterCue === null
+              ? navalWaterlineOfV7(chibiReady.asset.id, image, chibiReady.asset)
+              : null;
+          if (waterline !== null && direction?.navalWaterline !== undefined)
+            rect = drawNavalWaterlineSpriteV7(
+              context,
+              drooped,
+              rect,
+              chibiReady.asset.height,
+              waterline,
+              direction.navalWaterline,
+            );
+          else
+            context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
           context.restore();
           if (entry.kind === "UNIT" && entry.martian?.controlled === true) {
             const anchor = spriteHeadAnchorV7(image);
