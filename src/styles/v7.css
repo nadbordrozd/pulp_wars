@@ -1196,6 +1196,68 @@
   user-select: all;
 }
 
+/* The host's join QR code (pulp_wars-hyan): beside the code and the share
+   row; on phones it opens under them from Show QR code. Black on white
+   whatever the theme, so phone cameras read it. */
+.v7-online-room[data-qr] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.85rem;
+}
+
+.v7-online-room[data-qr] > :not(.v7-online-qr) {
+  grid-column: 1;
+}
+
+.v7-online-qr {
+  display: grid;
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  gap: 0.25rem;
+  justify-items: center;
+  align-self: start;
+  margin: 0;
+}
+
+.v7-qr-code {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--pw-radius-sm);
+}
+
+.v7-online-qr-caption {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-online .v7-online-qr-toggle {
+  display: none;
+  justify-self: start;
+  padding-left: 0;
+}
+
+@media (max-width: 560px) {
+  .v7-online-room[data-qr] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v7-online .v7-online-qr-toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .v7-online-qr {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: center;
+  }
+
+  .v7-online-room[data-qr="closed"] > .v7-online-qr {
+    display: none;
+  }
+}
+
 .v7-online-seats {
   display: grid;
   gap: 0.4rem;

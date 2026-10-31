@@ -31,13 +31,14 @@ import {
 } from "../tribe-stars-presentation-v7";
 import { factionNameV7 } from "../undead-presentation-v7";
 import { pickerFieldV7, syncPickersV7, syncPickerV7 } from "./picker-v7";
+import { qrCodeSvgV7 } from "./qr-code-svg-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 
 /**
  * The Play online screen (`pulp_wars-eqc6.2`, docs/MULTIPLAYER.md
  * section 10): the home screen (Host a game, Join with code), the lobby
  * seen through a share link (one Join tap), and the lobby itself (the room
- * code, the link with Copy and Share, the seats, your faction, the host's
+ * code, the link with Copy and Share, the host's join QR code, the seats, your faction, the host's
  * Settings and Start). It draws an {@link OnlineLobbySessionV7} and calls
  * its actions; the app view puts {@link OnlineLobbyViewV7.root} in its
  * front panel.
@@ -164,6 +165,8 @@ export class OnlineLobbyViewV7 {
   #signature = "";
   #handedOff: OnlineMatchHandoffV7 | null = null;
   #historyOpen = false;
+  /** Phones: the join QR code is behind Show QR code (closed by default). */
+  #qrOpen = false;
 
   constructor(
     documentRoot: Document,
@@ -245,6 +248,7 @@ export class OnlineLobbyViewV7 {
       this.#editingName,
       this.#nameProblem,
       this.#copied,
+      this.#qrOpen,
     ]);
     if (!force && signature === this.#signature) return;
     this.#signature = signature;
@@ -587,7 +591,11 @@ export class OnlineLobbyViewV7 {
     return block;
   }
 
-  /** The room code, big, and (in the lobby) the link with Copy and Share. */
+  /**
+   * The room code, big, and (in the lobby) the link with Copy and Share;
+   * the host, while the guest seat is open, also gets the link as a QR
+   * code beside them (on phones behind Show QR code).
+   */
   #room(state: OnlineLobbyStateV7, sharing: boolean): HTMLElement {
     const room = this.#element("section", "v7-online-room");
     room.dataset.v7Region = "online-room";
@@ -634,6 +642,31 @@ export class OnlineLobbyViewV7 {
     );
     status.setAttribute("aria-live", "polite");
     room.append(status);
+    const guestSeat = state.match?.seats[GUEST_SEAT_V7];
+    if (state.mySeat !== HOST_SEAT_V7 || guestSeat?.uid !== "") return room;
+    room.dataset.qr = this.#qrOpen ? "open" : "closed";
+    const toggle = this.#button(
+      this.#qrOpen ? "Hide QR code" : "Show QR code",
+      "online-qr-toggle",
+      "v7-online-link-button v7-online-qr-toggle",
+    );
+    toggle.setAttribute("aria-expanded", String(this.#qrOpen));
+    toggle.setAttribute("aria-controls", "v7-online-qr");
+    toggle.onclick = () => {
+      this.#qrOpen = !this.#qrOpen;
+      this.render();
+    };
+    const figure = this.#element("figure", "v7-online-qr");
+    figure.id = "v7-online-qr";
+    figure.append(
+      qrCodeSvgV7(
+        this.#document,
+        link,
+        `QR code of the join link for room ${code.split("").join(" ")}`,
+      ),
+      this.#text("figcaption", "Scan to join", "v7-online-qr-caption"),
+    );
+    room.append(toggle, figure);
     return room;
   }
 

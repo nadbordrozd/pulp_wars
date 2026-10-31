@@ -14,10 +14,13 @@ import process from "node:process";
  * host opens Settings and adds AI seats, and starts. A third tab tries
  * Join with code (an unknown code, then the full lobby). Each step is
  * captured at desktop (1280 x 800) and phone (390 x 844) widths. No match
- * is played: the run ends at the hand-off ("Game on!").
+ * is played: the run ends at the hand-off ("Game on!"). The host's
+ * waiting lobby is also captured with its join QR code (pulp_wars-hyan) at
+ * both widths, the phone one closed and opened; `--host-only` stops there,
+ * before any guest joins.
  *
  * Usage: tsx scripts/browser-online-lobby-review-v7.ts http://localhost:6173/
- *   [--output-dir=<dir>]
+ *   [--output-dir=<dir>] [--host-only]
  * `CHROME_PATH` names the browser (the macOS Chrome by default).
  */
 
@@ -48,6 +51,7 @@ const outputDirectory =
     ?.slice("--output-dir=".length) ??
   (await mkdtemp(path.join(tmpdir(), "pulp-wars-online-lobby-")));
 await mkdir(outputDirectory, { recursive: true });
+const hostOnly = args.includes("--host-only");
 const chrome =
   process.env.CHROME_PATH ??
   [
@@ -125,9 +129,26 @@ try {
     `document.querySelector('.v7-online-link').dataset.link`,
   )) as string;
   await capture(host, "04-host-lobby-waiting-desktop");
+  const qrPayload = (await evaluate(
+    host,
+    `document.querySelector('#v7-online-qr svg')?.dataset.payload ?? null`,
+  )) as string | null;
+  if (qrPayload !== link)
+    errors.push(`The QR code holds ${String(qrPayload)}, not ${link}`);
+  await setSize(host, PHONE);
+  await capture(host, "04b-host-lobby-waiting-phone");
+  await click(host, "online-qr-toggle");
+  await capture(host, "04c-host-lobby-qr-open-phone", true);
+  await click(host, "online-qr-toggle");
+  await setSize(host, DESKTOP);
   await click(host, "online-copy-link");
   await delay(200);
   await capture(host, "05-host-lobby-copied-desktop");
+  if (hostOnly) {
+    await finish({ code, link, qrPayload, shots, errors });
+    await closeBrowser();
+    process.exit(errors.length > 0 ? 1 : 0);
+  }
 
   // The guest: a new tab opening the share link, no name saved.
   await evaluate(host, `localStorage.removeItem('pulpWars.online.name.v1')`);
@@ -222,25 +243,27 @@ try {
   );
   await capture(host, "17-host-started-desktop");
   await capture(guest, "18-guest-started-desktop");
-  const summary = {
-    code,
-    link,
-    shots,
-    errors,
-  };
+  await finish({ code, link, qrPayload, shots, errors });
+} finally {
+  await closeBrowser();
+}
+
+// ---------------------------------------------------------------------
+
+async function finish(summary: object): Promise<void> {
   await writeFile(
     path.join(outputDirectory, "summary.json"),
     `${JSON.stringify(summary, null, 2)}\n`,
   );
   console.log(JSON.stringify(summary, null, 2));
   if (errors.length > 0) process.exitCode = 1;
-} finally {
+}
+
+async function closeBrowser(): Promise<void> {
   browser.kill();
   await delay(300);
   await rm(userData, { recursive: true, force: true }).catch(() => undefined);
 }
-
-// ---------------------------------------------------------------------
 
 async function openTab(): Promise<Connection> {
   const created = await fetch(`http://localhost:${port}/json/new?about:blank`, {

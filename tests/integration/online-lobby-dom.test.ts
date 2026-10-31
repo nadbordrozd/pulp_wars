@@ -200,6 +200,62 @@ describe("hosting", () => {
     ).toEqual([]);
   });
 
+  it("shows the host the join link as a QR code until the friend sits down", async () => {
+    window.localStorage.setItem(ONLINE_NAME_STORAGE_KEY_V7, "Ada");
+    const server = createMemoryOnlineServerV7();
+    boot(server);
+    press("play-online");
+    press("online-host");
+    await waitUntil(() => screen() === "lobby");
+    const code = required(".v7-online-code").textContent ?? "";
+    const link = required(".v7-online-link").dataset.link;
+    // Beside the code and Copy link, in the room panel.
+    const room = required('[data-v7-region="online-room"]');
+    const qr = required<SVGSVGElement>(
+      '[data-v7-region="online-room"] #v7-online-qr svg.v7-qr-code',
+    );
+    expect(qr.dataset.payload).toBe(link);
+    expect(qr.dataset.payload).toBe(`http://localhost:3000/?join=${code}`);
+    expect(qr.getAttribute("role")).toBe("img");
+    expect(qr.getAttribute("aria-label")).toBe(
+      `QR code of the join link for room ${code.split("").join(" ")}`,
+    );
+    expect(qr.querySelector("title")?.textContent).toBe(
+      qr.getAttribute("aria-label"),
+    );
+    expect(required("#v7-online-qr figcaption").textContent).toBe(
+      "Scan to join",
+    );
+    // Phones: Show QR code opens it (the CSS hides it while closed).
+    expect(room.dataset.qr).toBe("closed");
+    const toggle = required('[data-action="online-qr-toggle"]');
+    expect(toggle.textContent).toBe("Show QR code");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(toggle.getAttribute("aria-controls")).toBe("v7-online-qr");
+    press("online-qr-toggle");
+    expect(required('[data-v7-region="online-room"]').dataset.qr).toBe("open");
+    expect(
+      required('[data-action="online-qr-toggle"]').getAttribute(
+        "aria-expanded",
+      ),
+    ).toBe("true");
+    expect(required('[data-action="online-qr-toggle"]').textContent).toBe(
+      "Hide QR code",
+    );
+    // Once the guest seat is taken there is nobody left to invite.
+    const guest = friend(server, "friend", "Bob");
+    await guest.join(code);
+    await waitUntil(() => document.querySelector("#v7-online-qr") === null);
+    expect(
+      document.querySelector('[data-action="online-qr-toggle"]'),
+    ).toBeNull();
+    expect(
+      required('[data-v7-region="online-room"]').dataset.qr,
+    ).toBeUndefined();
+    await guest.leave();
+    await waitUntil(() => document.querySelector("#v7-online-qr") !== null);
+  });
+
   it("asks a name first when none is saved", async () => {
     boot(createMemoryOnlineServerV7());
     press("play-online");
@@ -335,6 +391,7 @@ describe("joining", () => {
     expect(required('.v7-online-seat[data-seat="0"]').textContent).toContain(
       "Candy",
     );
+    expect(document.querySelector("#v7-online-qr")).toBeNull();
     // No saved name: the field is asked for on the same screen.
     const name = required<HTMLInputElement>("#v7-online-name");
     name.value = "Bob";
@@ -344,6 +401,8 @@ describe("joining", () => {
     expect(required("#v7-online-wait").textContent).toBe(
       "Waiting for Ada to start…",
     );
+    // The QR code is the host's invitation; the guest has none.
+    expect(document.querySelector("#v7-online-qr")).toBeNull();
     expect(document.querySelector('[data-action="online-start"]')).toBeNull();
     expect(
       document.querySelector('[data-action="online-settings"]'),

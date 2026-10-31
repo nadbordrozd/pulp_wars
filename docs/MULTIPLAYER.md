@@ -350,7 +350,8 @@ transport as the mount option `online` (`src/main.ts`:
 has no Play online. Tests: `tests/unit/online-lobby-session-v7.test.ts`,
 `tests/integration/online-lobby-dom.test.ts`; the two-tab browser check is
 `scripts/browser-online-lobby-review-v7.ts <dev-server-url>` (no match is
-played).
+played; `--host-only` stops after the host's waiting lobby and its QR code
+at desktop and phone widths).
 
 ### 10.1 The flow
 
@@ -363,7 +364,8 @@ played).
   Hosting is two taps from the menu: Play online, Host a game.
 - **Lobby (host and guest):** the room code, big; the share link with
   **Copy link** and, where the browser has the Web Share API, **Share**;
-  the seats (name, faction or Random with its emblem, Host / Ready / open
+  for the host, while the guest seat is open, the same link as a **QR
+  code** (`pulp_wars-hyan`, below); the seats (name, faction or Random with its emblem, Host / Ready / open
   seat), the AI seats as "AI · random"; **Your faction** (Random or a
   faction; the other human's faction is "taken", one locked for this player
   is "locked"); the settings summary line. The host has a **Settings**
@@ -378,6 +380,29 @@ played).
   too) opens Play online at once on the lobby preview: "NAME invited you to
   a game", the code, the seats and the settings, the name field only if no
   name is saved, and **Join** / **Not now**.
+- **Join QR code** (`pulp_wars-hyan`): a friend with a phone points its
+  camera at the host's screen and opens the share link, so the link
+  preview above follows. The code holds exactly the Copy link text
+  (`shareLinkV7`) and is shown only to the host while the guest seat is
+  open (once the friend sits down there is nobody left to invite; it comes
+  back if the guest leaves). On wide screens it sits beside the room code
+  and the share buttons, captioned "Scan to join"; under 560 px it is
+  behind a **Show QR code** / **Hide QR code** toggle (closed by default,
+  `aria-expanded`) and opens under them. It is an SVG
+  (`qrCodeSvgV7`, `src/render/dom/qr-code-svg-v7.ts`) with `role="img"`
+  and the label "QR code of the join link for room A B C D E", black
+  modules on white with the four-module quiet zone whatever the theme, a
+  whole number of CSS pixels per module (148 px for a `localhost` link,
+  164 px for the GitHub Pages one, never more than 180). The encoder is
+  in the repository (`src/online/qr-code.ts`, no dependency and no network
+  service): byte mode, error correction level M, versions 1 to 10 (up to
+  213 bytes), lowest-penalty mask. On a development server the link is a
+  `localhost` address, which a phone cannot open: scan the deployed
+  site's code, or serve on a LAN address. Tests:
+  `tests/unit/online-qr-code-v7.test.ts` (a reader written from the
+  standard's tables reads the symbols back; two symbols are pinned by
+  digest after macOS Core Image decoded them to their links) and the lobby
+  DOM test.
 - **Error lines** (`onlineLobbyErrorTextV7`): `RULESET_MISMATCH` "Your
   friend is on a different version — reload to update." (with Reload),
   `SEAT_TAKEN` "That game is full.", `NOT_FOUND` "No game has that code.
