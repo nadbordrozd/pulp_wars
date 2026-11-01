@@ -57,7 +57,9 @@ export const DWARF_5_V7: MissionDefinitionV7 = {
   // against two navies that grow in four announced waves.
   // Revision 4 (`pulp_wars-hmyk.30`, the fourth retune): the only
   // Ironclad, rafts in the strait, no waves, 20 rounds.
-  revision: 4,
+  // Revision 5 (`pulp_wars-as6z`): the village up the coast a tile further
+  // from Anvil Bay.
+  revision: 5,
   seed: 20261505,
   // <map>
   size: 16,
@@ -77,6 +79,11 @@ export const DWARF_5_V7: MissionDefinitionV7 = {
       // Retune 3: nothing free beside the Landing (retune 4 gives back
       // the village and the chest beside Anvil Bay).
       { kind: "VILLAGE", at: { x: 11, y: 6 }, present: false },
+      // Revision 5 (`pulp_wars-as6z`): the village up the coast steps a
+      // tile east, to 3 from Anvil Bay (every village keeps 3 or more from
+      // every city, as the generator places them).
+      { kind: "VILLAGE", at: { x: 4, y: 6 }, present: false },
+      { kind: "VILLAGE", at: { x: 5, y: 6 }, present: true },
     ],
   },
   terrain: [
@@ -136,7 +143,7 @@ export const DWARF_5_V7: MissionDefinitionV7 = {
   ],
   villages: [
     { x: 9, y: 3 },
-    { x: 4, y: 6 },
+    { x: 5, y: 6 },
     { x: 13, y: 12 },
   ],
   treasureChests: [

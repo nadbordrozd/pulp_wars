@@ -1283,13 +1283,18 @@ describe("natural maps", () => {
       // (`pulp_wars-hmyk.27`) gives two villages back to each.
       DINOSAUR_4: 12,
       DINOSAUR_5: 11,
+      // The Sea Road's three island villages moved to 3 from every city
+      // and village (`pulp_wars-as6z`: a removal and an addition each, and
+      // the moved Fernmaw village's fruit cleared).
+      DINOSAUR_3: 14,
       // The Candy campaign (`pulp_wars-hmyk.11`): Riftwatch's crack and
       // eight villages (four under cities); the lake of the Commissioner
       // keeps one village (the island raised, thirteen gone, two under
       // cities: nobody grows while the ships fight); the long night's four
-      // seats stand on seven villages and four more are gone.
+      // seats stand on seven villages and four more are gone. The lake's
+      // village moved a tile from the Outflow (`pulp_wars-as6z`).
       CANDY_2: 11,
-      CANDY_3: 14,
+      CANDY_3: 16,
       CANDY_6: 11,
       // Retune 3 (`pulp_wars-hmyk.21`): the villages by the player's start
       // go; retune 4 (`pulp_wars-hmyk.31`) gives some back (I4 is within
@@ -1319,10 +1324,15 @@ describe("natural maps", () => {
       // Gull Islet raised in the strait (`pulp_wars-mv96`).
       GOBLIN_5: 1,
     };
-    // A village added on land a mission raised for it.
+    // A village added on land a mission raised for it, or moved off a
+    // generator village too close to a city (`pulp_wars-as6z`: every
+    // village keeps 3 from every city and village).
     const addedVillages: Readonly<Record<string, number>> = {
       // Gull Islet's village (`pulp_wars-mv96`).
       GOBLIN_5: 1,
+      DINOSAUR_3: 3,
+      DWARF_5: 1,
+      CANDY_3: 1,
     };
     for (const mission of natural) {
       const source = mission.source as NonNullable<

@@ -334,7 +334,8 @@ describe("Sweet Dreams", () => {
     for (const [id, revision] of [
       ["CANDY_1", 3],
       ["CANDY_2", 4],
-      ["CANDY_3", 4],
+      // Revision 5 (`pulp_wars-as6z`): the village 3 from the Outflow.
+      ["CANDY_3", 5],
       ["CANDY_4", 3],
       ["CANDY_5", 3],
       ["CANDY_6", 4],

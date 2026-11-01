@@ -2244,6 +2244,21 @@ removed. The four built missions change terrain on two tiles in all (Bone
 Neck); every other edit removes a village where a mission city stands or
 where a village would hand the AI a free city.
 
+**Village spacing** (`pulp_wars-as6z`). The generator keeps every
+settlement, capital or village, 3 or more tiles from every other
+(Chebyshev, `SETTLEMENT_SPACING_V7`), so no two 3 x 3 territories overlap.
+A mission's starting board keeps the same rule: every village is 3 or more
+from every city and from every other village, however the cities were
+placed. `tests/unit/mission-village-spacing-v7.test.ts` checks it on the
+built starting state of every registered mission (the two engine fixtures
+`TEST_GROUNDS` and `TEST_CURIOSITIES`, in no chapter, are exempt). A
+mission that places a city 2 from a generator village moves the village
+with a removal and an addition (`VILLAGE` edits), clearing a resource on
+the new tile when there is one, as the generator leaves a village tile
+bare. Ruins, treasure chests and the other curiosities are not villages.
+The first audit moved villages in DN3, D5 and C3 (sections 17.6, 20.7 and
+21.6).
+
 **When the generator changes** (`pulp_wars-ykw.8`, `pulp-wars-poc-7r87`:
 natural water redrew every Continents and Lakes board), a mission keeps its
 board: the baked layers are what the game plays, and the source names the
@@ -5148,6 +5163,30 @@ the clock. DN4 turns on the trick of a Triceratops charge
 into the ring, and once it is known the mission is quick. DN2 needs a
 Raptor to spot for the Spitters (the new third hint says so).
 
+### 17.6 DN3's villages (`pulp_wars-as6z`)
+
+The user, 2026-11-01: "dinos mission 3 - there are a bunch of villages
+that are just 2 squares from a city. villages should be no closer that3
+tiles away so that their 3x3 squares don't overlap". Two of the island's
+three generator villages stood 2 from a town: the one by Fernmaw (2,3),
+north-west of Fernmaw (3,5), and the one by the Crater (2,11), south of
+the Crater (2,9). The rule is the generator's settlement spacing (section
+10.5): every village 3 or more from every city and village. The island
+keeps three villages, each still a step or two from where it was:
+
+- the village by Fernmaw goes a tile north, to the headland at (2,2) (3
+  from Fernmaw, 4 from Gullrock; its fruit cleared);
+- the Crater's western village goes to the southern shore at (4,13) (4
+  from the Crater);
+- the Crater's eastern village (5,11), 3 from the Crater, goes a tile
+  north to (5,10), so the southern-shore one keeps 3 from it.
+
+Big Top Bay (13,3), 5 from the Wharf, is unchanged. The Baron's landings,
+the fleet, the clock and the text are unchanged. DN3 is revision 5,
+re-pinned; it has fourteen edits (the natural-maps test names it). Not
+hand-played: the villages are as many and as near the two island towns as
+before.
+
 ## 18. The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`)
 
 The second tier-2 faction campaign, after the Dinosaurs (section 17): six missions, `MARTIAN_1` to
@@ -5970,8 +6009,8 @@ waves and the crew's start are unchanged.
   replacing `KEEP_CITIES`, which the protected Rock made free), and
   either town gives the crew a shore for a Port (the Rock has no water in
   its land). **Gull Islet** is new: one Grass tile raised in the strait
-  (a `TERRAIN` edit) with a village on it (the one `VILLAGE` edit that
-  adds a village; the natural-maps test allows it for G5 alone). Its
+  (a `TERRAIN` edit) with a village on it (a `VILLAGE` edit that adds a
+  village; the natural-maps test names the missions allowed one). Its
   shallows link the island to the Martians' island, so Fire Rafts
   (Shorecraft, 5 Coins) reach the islet and Ray Hollow without
   Navigation. Eliminating every enemy still wins early.
@@ -6382,6 +6421,15 @@ twelve hold the gallery). On the final definition:
 
 The clock (18, star 14), the hints and the briefing are unchanged.
 
+### 20.7 D5's village (`pulp_wars-as6z`)
+
+The village spacing audit (section 10.5: every village 3 or more from
+every city and village) found the village up the coast that retune 4
+gave back, at (4,6), 2 from Anvil Bay (2,6). It goes a tile east along
+the shore to (5,6), 3 from Anvil Bay; the chest and the other two villages
+are unchanged. D5 is revision 5, re-pinned in both pin tables. Not
+hand-played.
+
 ## 21. The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`)
 
 The first tier-3 faction campaign: six missions, `CANDY_1` to `CANDY_6`
@@ -6719,6 +6767,16 @@ unit's action is a balance question for later. Unbound daemons (killing a
 brood holder or a Horror's channeller) keep fighting for a turn as a
 neutral side, which the hints do not say. Pies off a walled centre have
 Defence 0.5 and die to any daemon.
+
+### 21.6 C3's village (`pulp_wars-as6z`)
+
+The village spacing audit (section 10.5: every village 3 or more from
+every city and village) found the lake's one village, on the southern
+shore at (5,13), 2 from the Outflow (5,11), the Crown's island fort. It
+goes a tile south-east to (6,14), 3 from the Outflow and 4 from Gumdrop.
+C3 is revision 5, re-pinned in both pin tables; it has sixteen edits (the
+natural-maps test names it). Not hand-played: the hunt is on the water,
+and the village is as near both sides as before.
 
 ## 22. The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`)
 

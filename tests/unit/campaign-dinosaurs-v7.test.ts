@@ -326,8 +326,10 @@ describe("The Egg Thief", () => {
       }
     // DN1's poachers have eleven men (retune 3: twelve and two waves).
     expect(seat("DINOSAUR_1", 1).units).toHaveLength(11);
-    // Retune 4 revisions.
-    for (const id of ORDER) expect(mission(id).revision, id).toBe(4);
+    // Retune 4 revisions; DN3's villages moved to 3 from every city and
+    // village after it (`pulp_wars-as6z`, revision 5).
+    for (const id of ORDER)
+      expect(mission(id).revision, id).toBe(id === "DINOSAUR_3" ? 5 : 4);
   });
 
   it("names every place and unit an objective talks about", () => {

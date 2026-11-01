@@ -43,18 +43,18 @@ import type { MissionDefinitionV7 } from "./types";
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
  *    1   ~~~~~~~~~~~~~~~~
- *    2   ~~.~~~~~~~~~~~~~
- *    3   f~v.~~G~~~f~fB~~      G: Gullrock; B: Big Top Bay; v: villages
+ *    2   ~~v~~~~~~~~~~~~~
+ *    3   f~..~~G~~~f~fB~~      G: Gullrock; B: Big Top Bay; v: villages
  *    4   ~~f.P~.~~~.~.f.f      P: Fernmaw's Port
  *    5   .f.F..~~~~~^^ff.      F: Fernmaw
  *    6   f...f~~~~~~~^f..
  *    7   ...ff.~~~~f^..ff
  *    8   .$..~^~~~f~Wf.ff      W: Kessler's Wharf; $: treasure chests
  *    9   ^fC..~~~~~~fff..      C: the Crater
- *   10   .f..~.~~~f.ffff^
- *   11   ^^v~fv~~~..fff$~
+ *   10   .f..~v~~~f.ffff^
+ *   11   ^^.~f.~~~..fff$~
  *   12   ~~~~..~~~~~~f.~.
- *   13   f~^..~~~@~~~~~~f      @: the Sea Serpent
+ *   13   f~^.v~~~@~~~~~~f      @: the Sea Serpent
  *   14   ~~~~~~~~~~~~~~~~
  *   15   ~~~~~~~~~~~~~~~~
  * ```
@@ -67,7 +67,9 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
   // richer Baron and five announced waves.
   // Revision 4 (`pulp_wars-hmyk.27`, retune 4): the Crater and a village
   // back, 5 Coins, a poorer Baron, two landings, a 20-round clock.
-  revision: 4,
+  // Revision 5 (`pulp_wars-as6z`): the island's three villages moved to 3
+  // or more from every city and village.
+  revision: 5,
   seed: 20261403,
   // <map>
   size: 16,
@@ -88,6 +90,19 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
       // Retune 3: the chest beside Fernmaw is gone (retune 4 gives the
       // village back).
       { kind: "CHEST", at: { x: 1, y: 8 }, present: false },
+      // Revision 5 (`pulp_wars-as6z`): every village keeps 3 or more from
+      // every city and village, as the generator places them, so no two
+      // 3 x 3 territories overlap. The village by Fernmaw steps a tile
+      // north (its fruit cleared: the generator leaves a village tile
+      // bare); of the two by the Crater, the eastern one steps a tile north
+      // and the western one goes to the southern shore.
+      { kind: "VILLAGE", at: { x: 2, y: 3 }, present: false },
+      { kind: "VILLAGE", at: { x: 2, y: 2 }, present: true },
+      { kind: "RESOURCE", at: { x: 2, y: 2 }, resource: "." },
+      { kind: "VILLAGE", at: { x: 2, y: 11 }, present: false },
+      { kind: "VILLAGE", at: { x: 4, y: 13 }, present: true },
+      { kind: "VILLAGE", at: { x: 5, y: 11 }, present: false },
+      { kind: "VILLAGE", at: { x: 5, y: 10 }, present: true },
     ],
   },
   terrain: [
@@ -111,7 +126,7 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
   resources: [
     "p...p.p..pp.....",
     "..s.............",
-    "s.rp.....p......",
+    "s..p.....p......",
     "g..r.....sgs..s.",
     "s...........e..g",
     "r.e.rr...p.o.g..",
@@ -146,10 +161,10 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
   ],
   villages: [
+    { x: 2, y: 2 },
     { x: 13, y: 3 },
-    { x: 2, y: 3 },
-    { x: 2, y: 11 },
-    { x: 5, y: 11 },
+    { x: 5, y: 10 },
+    { x: 4, y: 13 },
   ],
   treasureChests: [{ x: 14, y: 11 }],
   // </map>

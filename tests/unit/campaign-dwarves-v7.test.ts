@@ -328,7 +328,8 @@ describe("The Bottomless", () => {
       ["DWARF_2", 3],
       ["DWARF_3", 4],
       ["DWARF_4", 4],
-      ["DWARF_5", 4],
+      // Revision 5 (`pulp_wars-as6z`): the village 3 from Anvil Bay.
+      ["DWARF_5", 5],
       ["DWARF_6", 4],
     ] as const)
       expect(mission(id).revision, id).toBe(revision);

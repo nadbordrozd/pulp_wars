@@ -124,8 +124,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "f81e7f75739e33618c6c39b32f6182f4ef90d8ff24b47db9035991cc5e8cb41c",
   "DINOSAUR_2@4:DINOSAUR":
     "3f54617a9fabe65296dd75207e282f11068a14760c156b4aea406d803f327f25",
-  "DINOSAUR_3@4:DINOSAUR":
-    "ec09ee4b544ca479250326726780e06e4da0d35a8b45d59c2d270737eeb023f6",
+  // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
+  "DINOSAUR_3@5:DINOSAUR":
+    "c213085bab77116a55de7da1ee6ab04a3613ed889709f57fe7b813a7b5a9019f",
   "DINOSAUR_4@4:DINOSAUR":
     "aec5480668d70f110a75d296908e6713e0af122b15a776937c6f350a91b8ff93",
   "DINOSAUR_5@4:DINOSAUR":
@@ -168,8 +169,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "022474ef4c82cb84aeebec159730207ac4652dcda5a63c0f9987ff44fccdc2aa",
   "DWARF_4@4:DWARF":
     "fa1f5e0ba76da68cf9f4cf29c5605d72e23a7a2b038facaad3c724a16a9c3ed6",
-  "DWARF_5@4:DWARF":
-    "1e78aad532ea300a40ede9c2b1006db914946029f6ef3b46368b8160f6f189f1",
+  // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
+  "DWARF_5@5:DWARF":
+    "db71fd4befa265332e1a7fe2873eb47c872cea09b9bedce3086d2d72949ec37f",
   "DWARF_6@4:DWARF":
     "9b1efeba799f82c12413f56e955bb9f2a47c1d2176a670b44f23224b3b0974d5",
   // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
@@ -177,8 +179,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "df5fed4f95541067d0d2d778358ab374437899f9c1c21d0e6adf65367289de92",
   "CANDY_2@4:CANDY":
     "849c072a83e6df93983cb24f78f849ab4e3230c00eb414dc1b18610c36bd1905",
-  "CANDY_3@4:CANDY":
-    "80a144212e0e7067b09093fe22d70635b156d78bdc2ded97eb0016bc3027b3ec",
+  // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
+  "CANDY_3@5:CANDY":
+    "8e9a3dec8009c9a03110b87c3e5e879ab4a3f72ce780d0559623fd9c48ca3be1",
   "CANDY_4@3:CANDY":
     "3a87bc188b05c54b7fb8b51332594cc61cda65604d44b7ad6d7c3c3870e45d21",
   "CANDY_5@3:CANDY":
@@ -533,8 +536,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6d7af92dd97d1b4f31ce345f5e506b674ea394d37117bc09758357641428b693",
   "DWARF_4@4:DWARF":
     "a482641c7fe479ccbcf4be313aa8c684d0a0121ca09e2f00ccc93da89effd4dc",
-  "DWARF_5@4:DWARF":
-    "fb003a428952409275f7f2ac73f3abdd6203b0a5754257d5505f571bbac2924b",
+  "DWARF_5@5:DWARF":
+    "8d814085daa1ff9a6b63b004a7b108bff65b511adcc4422d3c2617915c0f54cc",
   "DWARF_6@4:DWARF":
     "1b1aa4eb15c59dc326616aef634957568fc563b6136247392b72d1310f956afa",
   // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
@@ -542,8 +545,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "39064b406427d884d94d0bf9e6a235f83bf2f21b61783534ed0c01286d46ad15",
   "CANDY_2@4:CANDY":
     "befd78345cd38b39f03acb30e9fc7655ae4c4252399d94e6b7c83435e5af3615",
-  "CANDY_3@4:CANDY":
-    "dc6322898f37c6ee90db3658e0bb7273b001cedb356fa875b519cd9c1accd9a5",
+  "CANDY_3@5:CANDY":
+    "d1ea48f591c3b68aad0e7c30c382eef0f4363fab8553445baabecfbe0b0d8514",
   "CANDY_4@3:CANDY":
     "9d03a7232c81a2fc5496c31b15eabda874ad15582981a0c99015d66ac89e2442",
   "CANDY_6@4:CANDY":

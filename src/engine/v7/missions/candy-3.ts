@@ -42,8 +42,8 @@ import type { MissionDefinitionV7 } from "./types";
  *   10   .f.~~~~~G^......      G: Gumdrop
  *   11   f.f.~O~~^f......      O: the Outflow, the Crown's island fort
  *   12   ...~~~~~....f..f
- *   13   ..^^.v.f...^f...      v: a village
- *   14   ...ff..^f..f....
+ *   13   ..^^...f...^f...
+ *   14   ...ff.v^f..f....      v: a village
  *   15   ff.f.^.ff..^..f.
  * ```
  *
@@ -69,7 +69,9 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
   // Revision 4 (`pulp_wars-hmyk.32`, the fourth retune): a second Tug and
   // 6 Coins back, one patrol boat fewer, the leash until round 10, no
   // waves.
-  revision: 4,
+  // Revision 5 (`pulp_wars-as6z`): the south-shore village a tile further
+  // from the Outflow.
+  revision: 5,
   seed: 20261803,
   // <map>
   size: 16,
@@ -96,6 +98,11 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 14, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 11, y: 10 }, present: false },
       { kind: "VILLAGE", at: { x: 14, y: 10 }, present: false },
+      // Revision 5 (`pulp_wars-as6z`): the south-shore village steps a
+      // tile south-east, to 3 from the Outflow (every village keeps 3 or
+      // more from every city, as the generator places them).
+      { kind: "VILLAGE", at: { x: 5, y: 13 }, present: false },
+      { kind: "VILLAGE", at: { x: 6, y: 14 }, present: true },
     ],
   },
   terrain: [
@@ -153,7 +160,7 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
     "PPPPPPPPPPPPPPPP",
   ],
-  villages: [{ x: 5, y: 13 }],
+  villages: [{ x: 6, y: 14 }],
   treasureChests: [
     { x: 6, y: 5 },
     { x: 2, y: 10 },
