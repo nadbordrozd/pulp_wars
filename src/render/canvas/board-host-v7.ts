@@ -3837,9 +3837,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const city = model.view.cities.find((candidate) => same(candidate.at, at));
     const sameCycle =
       this.#inspectionCycle !== null && same(this.#inspectionCycle.at, at);
+    // Bead pulp_wars-og1r (a player: "can't build a building on a tile with
+    // a unit on it"): a tap on the unit that is already selected, however
+    // it was selected (a tap, the tile chooser's Select, or before the Move
+    // it just made, which resets the cycle), goes on to the tile or
+    // city under it, so its build buttons are one tap away.
+    const selection = model.interaction.selection;
+    const alreadySelected =
+      unit !== undefined &&
+      selection?.kind === "UNIT" &&
+      selection.unitId === unit.id;
     if (
       unit !== undefined &&
-      (!sameCycle || this.#inspectionCycle?.next === "UNIT")
+      (sameCycle ? this.#inspectionCycle?.next === "UNIT" : !alreadySelected)
     ) {
       this.#callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
       this.#inspectionCycle = {

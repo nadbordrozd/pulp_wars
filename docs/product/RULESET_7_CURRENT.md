@@ -5902,7 +5902,15 @@ Forest action, Gather Pearls, and Redevelop are rejected with
 `TILE_ENEMY_OCCUPIED` and not offered, in a besieged city or not
 (`isTileEnemyOccupiedV7`; the public copy is `publicTileEnemyOccupiedV7`).
 A neutral unit counts as hostile; an ally's unit and the actor's own do
-not block. **Blast Mountain is the exception**: it is an explosion on the
+not block: a building goes up under them and they stay where they are
+(`pulp_wars-og1r` checked every building against this; the tile dock
+offers it under an own or allied unit, one tap past the unit). Two
+placements refuse any unit, because the unit would be trapped: a
+**Barricade** (it blocks movement, so it stands only on an empty tile,
+[section 22.8](#228-engineer-repair-and-assemble)) and an Ice Folk **Ice
+Harbour on open water** (it freezes the water first, which would lock a
+ship in the ice). Redevelop of a Port or Shipyard, a removal and not a
+building, also needs the dock unoccupied ([section 8.4](#84-terrain-and-infrastructure-actions)). **Blast Mountain is the exception**: it is an explosion on the
 tile, not a building, and may still target a Mountain an enemy stands on.
 A Shipyard was already refused on a blockaded Port (`INVALID_TILE`). The
 tile dock says "Enemy on this tile" on such a tile of the player's land.

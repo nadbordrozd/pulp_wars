@@ -119,7 +119,9 @@ arming).
   does. A tile with a Move or an Attack and another action shows a badge
   for each, Move or Attack first.
 - **The selected unit's own tile is never badged**: a tap there goes on
-  selecting (and cycling to the tile under it).
+  selecting the tile under it (and the next tap the unit again), even when
+  the cycle was reset by the unit's own Move (`pulp_wars-og1r`), so a
+  building under an own or allied unit is one tap away in the tile dock.
 - **The badge** is a dark disc with the action's glyph (the dock's own
   icon) in cream, rimmed in the colour of the mark its target wears when
   armed (red for a harm, lavender for a help, cream for a place, teal for

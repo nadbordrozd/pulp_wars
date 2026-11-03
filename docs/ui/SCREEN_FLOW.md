@@ -4027,8 +4027,16 @@ selects and highlights that unit. The second consecutive activation of exactly
 that coordinate selects its visible underlying city when present, otherwise its
 tile/site; the cycle then returns to the unit. A wall can never share a unit
 cell, so on a visible wall coordinate the first activation selects the wall and
-the second selects its underlying city/tile. Pointer, touch, Enter/Space, and the
-semantic coordinate activator share this order. An exact currently offered
+the second selects its underlying city/tile. An activation of the unit that is
+already selected, however it was selected (an earlier tap, the tile chooser's
+Select, or before the Move it just made), counts as that second activation and
+selects the underlying city/tile at once (bead `pulp_wars-og1r`: a player who
+moved a unit onto a tile and tapped it saw the unit's dock again and concluded
+nothing could be built there). The tile dock of a tile with an own or allied
+unit on it offers its buildings and other tile commands as on an empty tile;
+under a visible enemy unit it offers none and shows "Enemy on this tile".
+Pointer, touch, Enter/Space, and the semantic coordinate activator share this
+order. An exact currently offered
 positional command is the narrow priority exception: a selected owned unit may
 still activate its offered Attack target directly, and an offered Move or Escape
 destination dispatches immediately. Cycling resets after activating
