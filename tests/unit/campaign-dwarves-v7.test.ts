@@ -271,6 +271,9 @@ describe("The Bottomless", () => {
     expect(seat("DWARF_5", 1).forbiddenTechnologies).toContain(
       "NAVAL_ENGINEERING",
     );
+    // `pulp_wars-ez0i`: the Anvil shoots at Attack 4, so the Lodge has 2
+    // Coins (were 4).
+    expect(seat("DWARF_5", 1).coins).toBe(2);
     // D6: two Liches in the bowl and seven on the Gate; no Gyrocopter at
     // the start; the Rangers attack from round 6.
     expect(
@@ -329,7 +332,8 @@ describe("The Bottomless", () => {
       ["DWARF_3", 4],
       ["DWARF_4", 4],
       // Revision 5 (`pulp_wars-as6z`): the village 3 from Anvil Bay.
-      ["DWARF_5", 5],
+      // Revision 6 (`pulp_wars-ez0i`): the Lodge has 2 Coins.
+      ["DWARF_5", 6],
       ["DWARF_6", 4],
     ] as const)
       expect(mission(id).revision, id).toBe(revision);

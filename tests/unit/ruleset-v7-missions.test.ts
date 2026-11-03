@@ -102,8 +102,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "9b6a41cf850a6551d45396582fe72045f56ce02f4c4b970b247e9afb71dac4d4",
   "TEST_CURIOSITIES@1:GOBLIN":
     "ed95462583b0f54b4a3ffd614617928995af2452bb4dc78049fc6bacf57d3a04",
-  "HUMAN_5@5:ORIGINAL":
-    "c971970323a88eb90981f72ed548206d6dda70c2cc50b3d16e8b930147d8eb50",
+  // Revision 6 (`pulp_wars-ez0i`): rebalanced for the Attack-4 Battleship.
+  "HUMAN_5@6:ORIGINAL":
+    "3cd64a66a39b0b399b87e853030d0fca5da09640541b36c2be59ca04895495c3",
   "HUMAN_6@5:ORIGINAL":
     "e86b7c56a70b01e61deb39f9d7b23bd8d54c1d2e093bff0d7b0d079dc81d1ef7",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
@@ -125,8 +126,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "DINOSAUR_2@4:DINOSAUR":
     "3f54617a9fabe65296dd75207e282f11068a14760c156b4aea406d803f327f25",
   // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
-  "DINOSAUR_3@5:DINOSAUR":
-    "c213085bab77116a55de7da1ee6ab04a3613ed889709f57fe7b813a7b5a9019f",
+  // Revision 6 (`pulp_wars-ez0i`): rebalanced for the Attack-4 Battleship.
+  "DINOSAUR_3@6:DINOSAUR":
+    "ddf7d542d956402e18f23797cb9b88e7d9664e279870182e98953be66ccc35be",
   "DINOSAUR_4@4:DINOSAUR":
     "aec5480668d70f110a75d296908e6713e0af122b15a776937c6f350a91b8ff93",
   "DINOSAUR_5@4:DINOSAUR":
@@ -170,8 +172,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "DWARF_4@4:DWARF":
     "fa1f5e0ba76da68cf9f4cf29c5605d72e23a7a2b038facaad3c724a16a9c3ed6",
   // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
-  "DWARF_5@5:DWARF":
-    "db71fd4befa265332e1a7fe2873eb47c872cea09b9bedce3086d2d72949ec37f",
+  // Revision 6 (`pulp_wars-ez0i`): rebalanced for the Attack-4 Battleship.
+  "DWARF_5@6:DWARF":
+    "30bbcc4015e1e72608b54acd8a8cbc4c2fe2b250e920a13ed9585214fc981054",
   "DWARF_6@4:DWARF":
     "9b1efeba799f82c12413f56e955bb9f2a47c1d2176a670b44f23224b3b0974d5",
   // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
@@ -180,8 +183,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "CANDY_2@4:CANDY":
     "849c072a83e6df93983cb24f78f849ab4e3230c00eb414dc1b18610c36bd1905",
   // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
-  "CANDY_3@5:CANDY":
-    "8e9a3dec8009c9a03110b87c3e5e879ab4a3f72ce780d0559623fd9c48ca3be1",
+  // Revision 6 (`pulp_wars-ez0i`): rebalanced for the Attack-4 Battleship.
+  "CANDY_3@6:CANDY":
+    "11f2d0661517c8f795ac26acdfafe629c1a0e1d6975ba142f3d5efdf8d895458",
   "CANDY_4@3:CANDY":
     "3a87bc188b05c54b7fb8b51332594cc61cda65604d44b7ad6d7c3c3870e45d21",
   "CANDY_5@3:CANDY":
@@ -536,8 +540,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6d7af92dd97d1b4f31ce345f5e506b674ea394d37117bc09758357641428b693",
   "DWARF_4@4:DWARF":
     "a482641c7fe479ccbcf4be313aa8c684d0a0121ca09e2f00ccc93da89effd4dc",
-  "DWARF_5@5:DWARF":
-    "8d814085daa1ff9a6b63b004a7b108bff65b511adcc4422d3c2617915c0f54cc",
+  "DWARF_5@6:DWARF":
+    "7a5fa155e57d55f40821201e2363042807eb10a4fd0cc0cee95dae37f1a141b5",
   "DWARF_6@4:DWARF":
     "1b1aa4eb15c59dc326616aef634957568fc563b6136247392b72d1310f956afa",
   // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
@@ -545,8 +549,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "39064b406427d884d94d0bf9e6a235f83bf2f21b61783534ed0c01286d46ad15",
   "CANDY_2@4:CANDY":
     "befd78345cd38b39f03acb30e9fc7655ae4c4252399d94e6b7c83435e5af3615",
-  "CANDY_3@5:CANDY":
-    "d1ea48f591c3b68aad0e7c30c382eef0f4363fab8553445baabecfbe0b0d8514",
+  "CANDY_3@6:CANDY":
+    "4e6f1291db835ef9b9373837c585fb12a8e7eced238aaa33a6d33a4aa214d98e",
   "CANDY_4@3:CANDY":
     "9d03a7232c81a2fc5496c31b15eabda874ad15582981a0c99015d66ac89e2442",
   "CANDY_6@4:CANDY":

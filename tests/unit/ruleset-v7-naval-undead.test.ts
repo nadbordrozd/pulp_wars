@@ -201,7 +201,7 @@ describe("the Drowned Fleet registry (sections 4.1 and 4.2)", () => {
       "Plague Galleon",
       16,
       25,
-      5,
+      4,
       3,
       2,
       "1-3",
@@ -711,9 +711,10 @@ describe("U2, the Plague Galleon", () => {
       navalUnitAtV7(state, { x: 1, y: 8 }).id,
       navalUnitAtV7(state, { x: 3, y: 8 }).id,
     ];
-    // 14 to the Guard (3 of 17 left), splash to both Fighters.
+    // 10 to the Guard (7 of 17 left; 14 before `pulp_wars-ez0i`), splash
+    // to both Fighters.
     expect(preview).toMatchObject({
-      damageToDefender: 14,
+      damageToDefender: 10,
       defenderDies: false,
     });
     expect(preview?.splash.map((entry) => entry.unitId).sort()).toEqual(

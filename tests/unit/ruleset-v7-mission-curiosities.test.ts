@@ -135,7 +135,8 @@ describe("mission curiosities", () => {
     const broadsides = missionByIdV7("HUMAN_5");
     const hall = missionByIdV7("HUMAN_6");
     if (broadsides === null || hall === null) throw new Error("missing");
-    expect([broadsides.revision, hall.revision]).toEqual([5, 5]);
+    // HUMAN_5 revision 6 (`pulp_wars-ez0i`): a third Diving Barrel.
+    expect([broadsides.revision, hall.revision]).toEqual([6, 5]);
     const sea = createPlayableGameV7(
       missionMatchSetupV7(broadsides) ?? (null as never),
     );

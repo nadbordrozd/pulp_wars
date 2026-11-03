@@ -7727,3 +7727,81 @@ and a saved game with a locked faction loading. The debrief line is in
 `leaderboard-dom.test.ts`, the analytics rule in `analytics-v7.test.ts`.
 The browser review scripts and the browser smoke open the game with
 `dev=1`, since they visit the Gallery and lead locked factions.
+
+## 26. The water missions after the Battleship nerf (`pulp_wars-ez0i`)
+
+The user, 2026-11-03: "The battleship-type units are overpowered. reduce
+attack by 1. rebalance campaign missions heavily involving water". Since
+`pulp-wars-poc-7r121` every faction's Battleship-role ship has Attack 4
+(5 before; [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) section 11). At
+full HP it still sinks a Patrol Boat or a Submarine with one shot (12 by
+the formula), but it deals 10 to a Battleship (14 before) and 10 to a
+fresh Guard beside it (14), and a damaged one no longer one-shots a fresh
+boat. The rule for the pass: a mission where the enemy fields a Battleship
+got easier and gets a little more enemy; one where the player relies on a
+Battleship got harder and gets a little less; where both sides have one,
+the net is weighed. The difficulty stays in the enemy's starting forces
+(no clock moved, no wave added).
+
+### 26.1 The missions on the water
+
+| Mission                                | Why it is a water mission                                                          | Battleships                                                          | Net effect of the nerf                                                                                                                                   |
+| -------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| H5 Broadsides at Saltmarsh             | sink the Golden Goose, a Scrap Dreadnought, with a navy built from one Patrol Boat | enemy: the Goose                                                     | easier: the Goose shells the Submarines that hunt her softer                                                                                             |
+| C3 The Commissioner                    | sink the Sovereign, a Battleship, on a lake                                        | enemy: the Sovereign (yours to build: Pie Galleons)                  | easier: she shells softer; the winning line uses Choco Subs, not Galleons                                                                                |
+| DN3 The Sea Road                       | carry the Old Queen across the sea embarked                                        | enemy: the Baron's Battleship over the northern lane                 | easier: it hit the embarked Queen for 14 and 9 in hand play; now about 10 and 7                                                                          |
+| D5 Iron on the Water                   | escort the Anvil, an Ironclad, up the estuary past two navies                      | both: the Anvil is the gun; the Lodge's Galleon of the Eye           | harder: the Anvil fires most turns and needs three hits on the Galleon (two before), while the Galleon, which cannot move and shoot, fires once or twice |
+| CU3 Old Blood                          | escort the Galleon of the Eye along the lane                                       | both: the Galleon is the gun; the tribes' War Raft (round 4)         | about even: at full HP the Galleon still one-shots every Dugout, small Plesiosaur and Skimmer; the War Raft hits it softer                               |
+| U3 The Ship of the Dead                | take Chapel Rock in the bay                                                        | both: two Hover Cruisers; the winning line built two Plague Galleons | about even                                                                                                                                               |
+| I3 The Frozen Strait                   | freeze a road across the strait and take Anvil Bay                                 | enemy: one Ironclad, in round 11                                     | slightly easier: one late ship, icebound on arrival in the hand-played win                                                                               |
+| G3 Here Be Monsters, M3 The Glass Ship | a sea hunt; an escort past a Plesiosaur                                            | none (Naval Engineering forbidden or unused)                         | none                                                                                                                                                     |
+
+### 26.2 The changes
+
+| Mission | Revision | Change                                                                                       | Reasoning                                                                                                                                                       |
+| ------- | -------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| H5      | 5 to 6   | a third Diving Barrel (Submarine) beside the Golden Goose on (15, 10)                        | the Goose's guns were what kept the hunting Submarines off her; a Barrel torpedoes them unanswered, which gives back the losses the softer guns no longer cause |
+| C3      | 5 to 6   | retune 3's second Submarine back at the anchorage on (3, 12)                                 | the Sovereign's first kill (a Pie Galleon in the retune 4 win) is less sure; a second escort Submarine hunts the Choco Subs that come for her                   |
+| DN3     | 5 to 6   | a guard Patrol Boat (a Wharf boat, no Navigation) in the shallows off Big Top Bay on (11, 3) | the Battleship's shells on the embarked Queen were the crossing's danger; a boat that rams the transport at the far shore puts about the lost damage back       |
+| D5      | 5 to 6   | the Lodge has 2 Coins (were 4)                                                               | one Gondola fewer from Greyhood in the first rounds, for the Anvil's softer broadsides                                                                          |
+| CU3     | 4        | unchanged                                                                                    | tried with one Martian Skimmer fewer: a comfortable 3-star win (below), so the nerf barely touches the escort and the Skimmer stays                             |
+| U3, I3  | 4        | unchanged                                                                                    | U3's two Cruisers and the player's two Galleons lose alike; I3's one Ironclad comes in round 11 and was icebound on arrival                                     |
+
+Each changed mission is one revision higher and re-pinned in both pin
+tables of `tests/unit/ruleset-v7-missions.test.ts`; the campaign tests pin
+the new revisions and units.
+
+### 26.3 Hand play
+
+Two text-mode attempts (the bead allowed three), one each on the two
+missions the nerf touches most directly, by the mission's own faction
+against the Normal AI.
+
+| Mission | Definition                                  | Result                                                                                                                                   |
+| ------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| CU3     | the tried variant (two Skimmers, not three) | win, round 8 of 12 (67%), 3 stars, the Galleon untouched at 25 of 25; two Krakens trained at the Cove, the Summoner and an Initiate lost |
+| C3      | revision 6 (the second Submarine)           | win, round 9 of 16 (56%), 3 stars, two Choco Subs lost                                                                                   |
+
+What decided them:
+
+- **CU3.** The Galleon at full HP still killed a boat a turn (a Dugout for
+  10, two Skimmers, splash on the Plesiosaurs) and the two Krakens
+  finished the Plesiosaurs, the Big one included (the Galleon's splash
+  took it to 11 first); a Kraken trained at the Cove torpedoed the War
+  Raft to 9 and the other sank it. The Galleon was never in a hostile
+  Submarine's reach and never hit, so the cut from Attack 5 to 4 cost
+  nothing that mattered, and with one Skimmer fewer the win was
+  comfortable: the Skimmer is back and CU3 is unchanged.
+- **C3.** The squadron held the anchorage until round 8 and then sailed
+  for Sugarcrest; in round 9 three Choco Subs out of Sugarcrest's and
+  Gumdrop's docks torpedoed the Sovereign in the open (10, 12, 3: sunk)
+  before she fired once. The Patrol Boats rammed a Sub trained on
+  Gumdrop's port beside the anchorage and an escort Submarine sank
+  another. The win never met her guns, so the nerf did not shape it.
+
+**Follow-ups.** C3's winning line (Subs from four docks waiting for the
+round-8 sail-out) won in round 9 here and in round 11 in retune 4, and
+never met the Sovereign's guns: if the user finds it easy, the lever is
+the leash (sail out later, or on Gumdrop) or a third escort Submarine,
+not her Attack. H5, DN3 and D5 are not hand-played on their new
+revisions.

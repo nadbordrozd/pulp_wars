@@ -78,8 +78,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r120");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r120.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r121");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r121.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -139,10 +139,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-55)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-56)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(119);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(120);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -608,7 +608,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         "Plague Galleon",
         16,
         25,
-        10,
+        8,
         6,
         2,
         3,
@@ -728,7 +728,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       // The giants' signatures (`pulp_wars-w49.30`): Crushing Shove.
       ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH+CRUSH"],
       ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK+RAM"],
-      ["Battleship", 16, 25, 10, 6, 2, 3, 1, "ATTACK"],
+      ["Battleship", 16, 25, 8, 6, 2, 3, 1, "ATTACK"],
       // The naval branch (`pulp_wars-5ti.2`).
       ["Submarine", 9, 12, 8, 4, 2, 1, 1, "ATTACK+SUBMERGED+TORPEDO"],
       // Tuning 5 (`pulp_wars-w49.4`); the Champion at 6 Coins since the

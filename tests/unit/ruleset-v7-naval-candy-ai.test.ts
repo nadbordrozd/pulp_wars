@@ -146,10 +146,12 @@ describe("Rush at sea (section 8.6)", () => {
 
   it("a Pie Galleon Rushes to fire harder from where it stands when only the Rushed shot sinks", () => {
     // Out of reach of the Human capital (a defender there is a dearer
-    // kill). At 18 HP the plain shot deals 16 and the Rushed one sinks it.
+    // kill). At 14 HP the plain shot deals 13 and the Rushed one sinks it
+    // (the Attack-4 Battleship of `pulp_wars-ez0i`; at Attack 5 it was 18 HP
+    // and 16).
     const state = sea([
       { seat: 0, role: "BATTLESHIP", at: { x: 7, y: 4 } },
-      { seat: 1, role: "BATTLESHIP", at: { x: 9, y: 4 }, hp: 18 },
+      { seat: 1, role: "BATTLESHIP", at: { x: 9, y: 4 }, hp: 14 },
     ]);
     const galleon = navalUnitAtV7(state, { x: 7, y: 4 });
     const target = navalUnitAtV7(state, { x: 9, y: 4 });
@@ -194,16 +196,18 @@ describe("Rush at sea (section 8.6)", () => {
 
 describe("Splat first (section 8.6)", () => {
   // Away from the Human capital (out of the Galleon's reach), a Guard on
-  // the beach beside a landed Toffee Trooper, the Galleon next to it.
+  // the beach beside a landed Toffee Trooper, the Galleon next to it. The
+  // Guard is wounded (13 of 17): the Attack-4 Galleon of `pulp_wars-ez0i`
+  // leaves it on 2 HP, as the Attack-5 one left a fresh Guard on 3.
   const BEACH: readonly CandyPieceV7[] = [
     { seat: 0, role: "BATTLESHIP", at: { x: 9, y: 7 } },
     { seat: 0, role: "FIGHTER", at: { x: 10, y: 8 } },
-    { seat: 1, role: "GUARD", at: { x: 9, y: 8 } },
+    { seat: 1, role: "GUARD", at: { x: 9, y: 8 }, hp: 13 },
   ];
 
   it("a Pie Galleon Splats the coastal defender before the landed Toffee Trooper attacks it", () => {
     // Without Sugar Sails (the Galleon needs only Pie Galleons): its plain
-    // shot leaves the Guard on 3 HP, Splatted.
+    // shot leaves the Guard on 2 HP, Splatted.
     const state = sea(BEACH, CANDY_WITHOUT_SUGAR_SAILS_V7);
     const galleon = navalUnitAtV7(state, { x: 9, y: 7 });
     const trooper = navalUnitAtV7(state, { x: 10, y: 8 });

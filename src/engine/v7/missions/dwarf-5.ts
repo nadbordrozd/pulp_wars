@@ -35,6 +35,9 @@ import type { MissionDefinitionV7 } from "./types";
  * Redcaps 5, two of their rafts already waiting in the strait below the
  * Landing; the four waves are gone and the clock is 20 rounds.
  *
+ * Revision 6 (`pulp_wars-ez0i`, CAMPAIGN.md section 26): the Anvil and the
+ * Galleon have Attack 4 (was 5); the Lodge has 2 Coins (was 4).
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  4   .....ff~~f......
@@ -59,7 +62,9 @@ export const DWARF_5_V7: MissionDefinitionV7 = {
   // Ironclad, rafts in the strait, no waves, 20 rounds.
   // Revision 5 (`pulp_wars-as6z`): the village up the coast a tile further
   // from Anvil Bay.
-  revision: 5,
+  // Revision 6 (`pulp_wars-ez0i`, the Battleship at Attack 4): the Lodge
+  // has 2 Coins (was 4).
+  revision: 6,
   seed: 20261505,
   // <map>
   size: 16,
@@ -204,8 +209,10 @@ export const DWARF_5_V7: MissionDefinitionV7 = {
     {
       // The Grey Lodge's navy, out of Greyhood.
       faction: "CULT",
-      // Retune 3: 6 Coins; retune 4: 4 (the Favour stays 2).
-      coins: 4,
+      // Retune 3: 6 Coins; retune 4: 4 (the Favour stays 2); `pulp_wars-ez0i`:
+      // 2, since the Anvil shoots softer (Attack 4, was 5) and must hit the
+      // Galleon three times, not twice.
+      coins: 2,
       // A navy and nothing else (hand play: with Leadership and Harbours
       // Greyhood grew to level 3 in a round and summoned an Imp; with a
       // Shipyard it launched a second Galleon in round 6). The Galleon

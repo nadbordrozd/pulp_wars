@@ -161,6 +161,16 @@ describe("The Marshal's Law", () => {
     ).toMatchObject([{ role: "BATTLESHIP", at: { x: 15, y: 9 } }]);
     for (const tech of ["GATHERING", "DRILL", "ENGINEERING", "FORESTRY"])
       expect(redcaps.forbiddenTechnologies, tech).toContain(tech);
+    // Revision 6 (`pulp_wars-ez0i`): the Goose has Attack 4, so three Diving
+    // Barrels ride with her, one beside her.
+    expect(broadsides.revision).toBe(6);
+    expect(
+      redcaps.units.filter((unit) => unit.role === "SUBMARINE"),
+    ).toHaveLength(3);
+    expect(redcaps.units).toContainEqual({
+      role: "SUBMARINE",
+      at: { x: 15, y: 10 },
+    });
     // H6: a Troll holds the Hall's gate, and the Redcaps' garrison stands
     // on the gates of the Hall and the three toll forts.
     const hall = mission("HUMAN_6");

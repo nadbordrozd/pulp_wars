@@ -298,6 +298,36 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     expect(cityPopulation(result.state)).toBe(before);
     expect(parseGameStateV7(result.state)).not.toBeNull();
   });
+
+  // `pulp_wars-ez0i` (7r121): the engine refused nothing here before, though
+  // the command was never offered; a Shipyard is never built under an enemy
+  // ship, frozen in or not.
+  it("refuses a Shipyard on an own dock with a hostile ship frozen onto it", () => {
+    const state = frozenArenaV7({
+      technologies: [ICEBOUND, RIME],
+      coins: [20, 0],
+      units: [
+        { seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } },
+        { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 3 } },
+      ],
+    });
+    const boat = navalUnitAtV7(state, { x: 3, y: 3 });
+    const sailed = acceptV7(acceptV7(state, 0, { kind: "END_TURN" }).state, 1, {
+      kind: "MOVE",
+      unitId: boat.id,
+      path: [WEST],
+    }).state;
+    const mine = acceptV7(sailed, 1, { kind: "END_TURN" }).state;
+    const yeti = navalUnitAtV7(mine, { x: 4, y: 2 });
+    const frozen = acceptV7(mine, 0, {
+      kind: "FREEZE",
+      unitId: yeti.id,
+      at: WEST,
+    }).state;
+    const shipyard = at("BUILD_SHIPYARD", WEST);
+    expect(isOffered(frozen, shipyard)).toBe(false);
+    expect(rejectV7(frozen, 0, shipyard).code).toBe("TILE_ENEMY_OCCUPIED");
+  });
 });
 
 describe("the Fishing Hole and the buildings on ice (section 2.6)", () => {

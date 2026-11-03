@@ -219,7 +219,7 @@ describe("the Dinosaur fleet registry (sections 5.1 and 5.2)", () => {
       "War Raft",
       16,
       25,
-      5,
+      4,
       3,
       2,
       "1-3",
@@ -613,7 +613,7 @@ describe("D2: the Plesiosaur (section 5.3)", () => {
     expect(stage2.combat).toEqual(stage2.preview);
   });
 
-  it("matches the worked examples on an Alpha Plesiosaur: a ram deals 8 and takes 4, a Battleship beside it 16 and 3", () => {
+  it("matches the worked examples on an Alpha Plesiosaur: a ram deals 8 and takes 4, a Battleship beside it 12 and 3 (16 before `pulp_wars-ez0i`)", () => {
     const pieces = (role: UnitRoleIdV7): readonly PieceV7[] => [
       { seat: 0, role, at: { x: 3, y: 5 }, ran: 1 },
       {
@@ -648,7 +648,7 @@ describe("D2: the Plesiosaur (section 5.3)", () => {
       { x: 4, y: 5 },
     );
     expect(shelled.preview).toMatchObject({
-      damageToDefender: 16,
+      damageToDefender: 12,
       damageToAttacker: 3,
       defenderDies: false,
     });

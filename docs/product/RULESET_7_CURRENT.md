@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r120`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r121`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,23 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r121` (`pulp_wars-ez0i`; the user, 2026-11-03: "The
+battleship-type units are overpowered. reduce attack by 1") gives **every
+faction's Battleship Attack 4** (5 before): the Human Battleship, Undead
+Plague Galleon, Goblin Scrap Dreadnought, Dinosaur War Raft, Martian Hover
+Cruiser, Dwarf Ironclad, Candy Pie Galleon, and Cult Galleon of the Eye
+(the Ice Folk registration copies it but never fields one). Cost, HP,
+Defense, Move, range, Sight, splash, and every ship ability are unchanged,
+and so are Patrol Boats, transports, Submarines, and the neutral Sea
+Serpent. At full HP it still sinks a Patrol Boat or a Submarine in one shot
+(12 by the formula), deals 10 to a Battleship and takes 6 (14 and 5
+before). Four campaign missions on the water are rebalanced for it (Human 5, Candy 3,
+Dinosaur 3, and Dwarf 5) (the
+mission revisions in [CAMPAIGN.md](CAMPAIGN.md)). A save, replay, or setup
+of `7r120` is rejected, and the browser autosave has a new key. The same
+identity closes an engine hole: `BUILD_SHIPYARD` on a dock with an enemy ship
+frozen onto it (an Ice Folk Freeze) is refused with `TILE_ENEMY_OCCUPIED`, as
+its offer already left it out.
 `pulp-wars-poc-7r120` (`pulp_wars-eqc6.1`; the user, 2026-10-29: "online
 multiplayer ... just 2 human players in a skirmish type map plus optional AI
 players") adds **online seats**
@@ -1826,10 +1843,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r120`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r121`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r120.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r121.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6603,7 +6620,7 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Knight      | Chivalry          |    9 | 13³ |     4⁵ |       1 |    3 |     1 |     1 | yes               | yes⁴    | Overrun                                                      |
 | Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push; Crushing Shove                                         |
 | Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                      |
-| Battleship⁸ | Naval Engineering |   16 |  25 |      5 |       3 |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
+| Battleship⁸ | Naval Engineering |   16 |  25 |      4 |       3 |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
 | Submarine   | Submersibles      |    9 |  12 |      4 |       2 |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                    |
 
 ¹ Marksman Sight becomes 2 with Fieldcraft.
@@ -6679,6 +6696,12 @@ before); a Submarine's torpedo deals
 it 10 (9 before), and a Patrol Boat's ram deals it 7 and takes 7, so the
 boat survives (6 and 10, the boat sunk, before;
 [section 14.3](#143-the-submarine-submerged-and-torpedo)).
+`pulp_wars-ez0i` (`pulp-wars-poc-7r121`; the user, 2026-11-03: "The
+battleship-type units are overpowered. reduce attack by 1"): Attack 4, in
+every roster that has one; nothing else moved. At full HP it still sinks a
+Patrol Boat (12 by the formula) and an adjacent Submarine (all 12 of its
+HP), deals 10 to a Battleship and takes 6, and 10 to a full-HP Guard from
+the next tile (14 before); the torpedo and the ram on it are unchanged.
 
 The **Submarine** (role `SUBMARINE`, tactical label `NAVAL_HUNTER`;
 `pulp-wars-poc-7r43`) is the third ship: trained with `TRAIN_NAVAL` like the
@@ -8827,7 +8850,10 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
 - **Shipyard** (Naval Engineering, 5 Coins, one per city): upgrades an active
   Port in place (the Ice Folk **Great Harbour**, Icebound, on its ice). It keeps all Port functions, gives +2 live population in
   total (+3 with Harbours), and makes naval training 2 Coins cheaper
-  (minimum 1): Patrol Boat 3, Submarine 7, Battleship 14.
+  (minimum 1): Patrol Boat 3, Submarine 7, Battleship 14. It is never built
+  under an enemy unit (`TILE_ENEMY_OCCUPIED`), an enemy ship frozen onto the
+  dock by a Freeze included (`7r121`, `pulp_wars-ez0i`: the engine accepted
+  that command before, though it was never offered).
 - **Active and blockaded docks:** a Port or Shipyard is active while its city's
   owner owns it and no hostile unit stands on it in the dock's ground form:
   on open water a naval or embarked unit, **on a dock on ice a land-form
@@ -9194,7 +9220,7 @@ Worked examples (full HP, open water, the attacker first; "dealt; taken"):
 | ------------------- | ----------------------- | ------------------------ | --------------- |
 | Patrol Boat         | 5; 5 (ram 8; 4)         | 5; 5 (ram 8; 4)          | 4; 8 (ram 7; 7) |
 | Submarine           | 12 (sunk); 0            | 12 (sunk); 0             | 10; 0           |
-| Battleship          | 16 (sunk), from 3 tiles | 16 (sunk), only adjacent | 14; 5           |
+| Battleship          | 12 (sunk), from 3 tiles | 12 (sunk), only adjacent | 10; 6           |
 
 | Exchange                                                   | Result                                                                                        |
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
@@ -9207,7 +9233,7 @@ Worked examples (full HP, open water, the attacker first; "dealt; taken"):
 | a Battleship two or three tiles from a Submarine           | cannot target it at all                                                                       |
 | a Fighter on the shore attacks an adjacent Submarine       | 5 dealt, 5 taken                                                                              |
 | a Dwarf Gyrocopter bombs a Submarine                       | 5 (6 with Dive), never answered                                                               |
-| a Battleship at 5 HP shoots an adjacent Submarine          | 8 dealt (4 left), 5 taken: the Battleship sinks in its own attack                             |
+| a Battleship at 5 HP shoots an adjacent Submarine          | 5 dealt (7 left), 5 taken: the Battleship sinks in its own attack                             |
 
 ### 14.4 Harbours
 

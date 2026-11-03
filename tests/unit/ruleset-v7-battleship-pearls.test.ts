@@ -47,15 +47,15 @@ describe("the identity", () => {
   // Gibbering Mass (`mch9.37`) 7r91, so all of them are retired with their
   // keys.
   it("was 7r86 after 7r85 and 7r84, all their save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r120");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r120.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-36, -32)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r121");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r121.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-37, -33)).toEqual([
       "pulp-wars-poc-7r84",
       "pulp-wars-poc-7r85",
       "pulp-wars-poc-7r86",
       "pulp-wars-poc-7r87",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-36, -32)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-37, -33)).toEqual([
       "pulpWars.save.v7r84.current",
       "pulpWars.save.v7r85.current",
       "pulpWars.save.v7r86.current",
@@ -65,7 +65,7 @@ describe("the identity", () => {
 });
 
 describe("the Battleship", () => {
-  it("has Attack 5 and Defense 3 in every faction's registration, and nothing else moved", () => {
+  it("has Attack 4 (`pulp_wars-ez0i`; 5 at `7r84`) and Defense 3 in every faction's registration, and nothing else moved", () => {
     for (const faction of FACTION_IDS_V7)
       expect(
         effectiveRoleRuleV7("BATTLESHIP", faction as FactionIdV7),
@@ -77,7 +77,7 @@ describe("the Battleship", () => {
         // The Martian Hover Cruiser: 20 HP behind a Shield of 3
         // (`pulp_wars-5ti.19`).
         maxHp: faction === "MARTIAN" ? 20 : 25,
-        attack2: 10,
+        attack2: 8,
         defense2: 6,
         move: 2,
         range: 3,
@@ -126,14 +126,14 @@ describe("the Battleship", () => {
         { x: 5, y: 4 },
       ),
     ).toMatchObject({
-      attack2: 10,
+      attack2: 8,
       damageToDefender: 10,
       defenderDies: true,
       damageToAttacker: 0,
     });
   });
 
-  it("deals 14 to a Battleship and takes 5 (16 and 7 before)", () => {
+  it("deals 10 to a Battleship and takes 6 (14 and 5 at `7r84`, 16 and 7 before)", () => {
     expect(
       fight(
         [
@@ -144,10 +144,10 @@ describe("the Battleship", () => {
         { x: 4, y: 4 },
       ),
     ).toMatchObject({
-      attack2: 10,
+      attack2: 8,
       defense2: 6,
-      damageToDefender: 14,
-      damageToAttacker: 5,
+      damageToDefender: 10,
+      damageToAttacker: 6,
       retaliation: true,
     });
   });

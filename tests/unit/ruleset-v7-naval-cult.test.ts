@@ -196,7 +196,7 @@ describe("the Deep Ones' registry (sections 9.1 and 9.2)", () => {
       "Galleon of the Eye",
       16,
       25,
-      5,
+      4,
       3,
       2,
       3,

@@ -33,7 +33,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r120",
+        rulesetId: "pulp-wars-poc-7r121",
         commandCapHits: 1,
       },
     });

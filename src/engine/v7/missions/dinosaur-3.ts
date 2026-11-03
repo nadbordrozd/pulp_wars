@@ -32,6 +32,8 @@ import type { MissionDefinitionV7 } from "./types";
  * CAMPAIGN.md section 17.5): the Crater back with a Fighter, Scouting,
  * 5 Coins and the village by Fernmaw; the Baron has 8 Coins, one Patrol
  * Boat fewer and two landings (rounds 4 and 9) on a 20-round clock.
+ * Revision 6 (`pulp_wars-ez0i`, CAMPAIGN.md section 26): the Battleship has
+ * Attack 4 (was 5), so a guard boat waits in the shallows off Big Top Bay.
  *
  * Hand play (the Dinosaur campaign's record in CAMPAIGN.md) set the
  * numbers: with Hunting, Drill and the naval tree Gullrock and the Wharf
@@ -69,7 +71,9 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
   // back, 5 Coins, a poorer Baron, two landings, a 20-round clock.
   // Revision 5 (`pulp_wars-as6z`): the island's three villages moved to 3
   // or more from every city and village.
-  revision: 5,
+  // Revision 6 (`pulp_wars-ez0i`, the Battleship at Attack 4): a Patrol
+  // Boat off Big Top Bay.
+  revision: 6,
   seed: 20261403,
   // <map>
   size: 16,
@@ -255,6 +259,9 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
         // the landings (retune 4: one of those Patrol Boats).
         { role: "SUBMARINE", at: { x: 5, y: 3 } },
         { role: "PATROL_BOAT", at: { x: 10, y: 5 }, home: 1 },
+        // `pulp_wars-ez0i`: the Battleship shells the Queen softer (Attack
+        // 4, was 5), so a guard boat waits in the shallows off Big Top Bay.
+        { role: "PATROL_BOAT", at: { x: 11, y: 3 }, home: 1 },
         { role: "MARKSMAN", at: { x: 12, y: 9 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 7 }, home: 1 },
       ],

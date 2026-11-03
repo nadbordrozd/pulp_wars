@@ -1870,8 +1870,11 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     maxHp: 25,
     // `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14, "way
     // op right now"): Attack 5 and Defense 3 (6 and 4 before), for every
-    // faction's Battleship (each copies this role).
-    attack2: 10,
+    // faction's Battleship (each copies this role). `pulp_wars-ez0i`
+    // (`pulp-wars-poc-7r121`; the user, 2026-11-03, "the battleship-type
+    // units are overpowered. reduce attack by 1"): Attack 4 (5 before),
+    // again for every faction's Battleship.
+    attack2: 8,
     defense2: 6,
     move: 2,
     range: 3,

@@ -24,8 +24,9 @@ describe("ruleset-7 naval combat", () => {
     expect(effectiveRoleRuleV7("BATTLESHIP", "ORIGINAL")).toMatchObject({
       cost: 16,
       maxHp: 25,
-      // `pulp_wars-5ti.13` (7r84): Attack 5, Defense 3 (6 and 4 before).
-      attack2: 10,
+      // `pulp_wars-5ti.13` (7r84): Attack 5, Defense 3 (6 and 4 before);
+      // `pulp_wars-ez0i` (7r121): Attack 4.
+      attack2: 8,
       defense2: 6,
       move: 2,
       range: 3,

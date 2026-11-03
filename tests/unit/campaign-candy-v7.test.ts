@@ -331,11 +331,18 @@ describe("Sweet Dreams", () => {
       2, 2, 2, 2, 2, 2,
     ]);
     expect(ORDER.map((id) => seat(id, 0).coins)).toEqual([5, 5, 6, 5, 5, 5]);
+    // C3 revision 6 (`pulp_wars-ez0i`): the Sovereign has Attack 4, so two
+    // Submarines wait at her anchorage.
+    expect(
+      seat("CANDY_3", 1).units.filter((unit) => unit.role === "SUBMARINE"),
+    ).toHaveLength(2);
     for (const [id, revision] of [
       ["CANDY_1", 3],
       ["CANDY_2", 4],
       // Revision 5 (`pulp_wars-as6z`): the village 3 from the Outflow.
-      ["CANDY_3", 5],
+      // Revision 6 (`pulp_wars-ez0i`): a second Submarine with the
+      // Sovereign, who has Attack 4.
+      ["CANDY_3", 6],
       ["CANDY_4", 3],
       ["CANDY_5", 3],
       ["CANDY_6", 4],

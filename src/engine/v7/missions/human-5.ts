@@ -40,6 +40,8 @@ import type { MissionDefinitionV7 } from "./types";
  * The fourth retune (`pulp_wars-hmyk.25`, section 15.6): a stronger
  * blockade, three Fire Rafts and two Diving Barrels from the start and 13
  * Coins; the chase clock stays 20 rounds (the thoughtful win took all 20).
+ * Revision 6 (`pulp_wars-ez0i`, CAMPAIGN.md section 26): the Goose has
+ * Attack 4 (was 5), so a third Diving Barrel rides beside her.
  *
  * ```text
  *      x 0123456789012345
@@ -68,8 +70,9 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
   // Revision 4 (`pulp_wars-hmyk.19`, the second retune): a skirmish start,
   // Ferry Rest gone, a richer blockade. Revision 5 (`pulp_wars-hmyk.25`,
   // the fourth retune): a third Fire Raft, a second Diving Barrel and 13
-  // Coins for the blockade.
-  revision: 5,
+  // Coins for the blockade. Revision 6 (`pulp_wars-ez0i`, the Battleship at
+  // Attack 4): a third Diving Barrel beside the Golden Goose.
+  revision: 6,
   seed: 20261205,
   // <map>
   size: 16,
@@ -226,6 +229,10 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
         // Retune 4: a third Fire Raft and a second Diving Barrel.
         { role: "PATROL_BOAT", at: { x: 15, y: 12 } },
         { role: "SUBMARINE", at: { x: 15, y: 2 } },
+        // `pulp_wars-ez0i`: the Goose shells softer (Attack 4, was 5), so a
+        // third Diving Barrel rides beside her and torpedoes the Submarines
+        // that come for her.
+        { role: "SUBMARINE", at: { x: 15, y: 10 } },
         { role: "FIGHTER", at: { x: 10, y: 10 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 6, x1: 9, y1: 13 }] },

@@ -171,7 +171,7 @@ describe("the Scrap Fleet registry (section 3.1 and 3.2)", () => {
       "Scrap Dreadnought",
       16,
       25,
-      5,
+      4,
       3,
       2,
       "1-3",

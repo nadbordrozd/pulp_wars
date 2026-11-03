@@ -324,7 +324,8 @@ describe("provocation, the bite, and the wander (section 8.4)", () => {
     const serpent = serpentOfV7(state);
     const view = viewForV7(state, P1);
     const preview = queryCombatPreviewV7(view, battleship.id, serpent.id);
-    expect(preview?.damageToDefender).toBe(15);
+    // 11 (15 before the Battleship's Attack 4, `pulp_wars-ez0i`).
+    expect(preview?.damageToDefender).toBe(11);
     expect(preview?.damageToAttacker).toBe(0);
     expect(preview?.monsterRetaliates).toBe(false);
     const shot = applyAcceptedV7(state, P1, {
@@ -338,7 +339,7 @@ describe("provocation, the bite, and the wander (section 8.4)", () => {
     expect(combats(neutralEvents(second.events))).toEqual([]);
     expect(alive(second.state, battleship.id)?.hp).toBe(25);
     // Regenerated, and the provocation cleared.
-    expect(serpentOfV7(second.state).hp).toBe(32 - 15 + 4);
+    expect(serpentOfV7(second.state).hp).toBe(32 - 11 + 4);
     expect(second.state.monsters[0]?.provokedBy).toEqual([]);
   });
 

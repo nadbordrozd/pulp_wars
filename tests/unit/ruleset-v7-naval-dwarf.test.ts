@@ -198,7 +198,7 @@ describe("the Ironclad fleet registry (sections 7.1 and 7.2)", () => {
         false,
         1,
       ],
-      ["Ironclad", 18, 25, 5, 3, 2, "1-3", ["ATTACK", "ARMOURED"], true, 1],
+      ["Ironclad", 18, 25, 4, 3, 2, "1-3", ["ATTACK", "ARMOURED"], true, 1],
       [
         "Diving Bell",
         10,
@@ -428,7 +428,7 @@ describe("the worked examples (section 7.4)", () => {
     }
   });
 
-  it("a Battleship on an Ironclad: 13; 5", () => {
+  it("a Battleship on an Ironclad: 9; 6 (13; 5 before `pulp_wars-ez0i`)", () => {
     const state = sea(
       ["ORIGINAL", "DWARF"],
       [
@@ -439,8 +439,8 @@ describe("the worked examples (section 7.4)", () => {
     const { preview, combat } = exchange(state, { x: 3, y: 5 }, { x: 4, y: 5 });
     expect(preview).toEqual(combat);
     expect(combat).toMatchObject({
-      damageToDefender: 13,
-      damageToAttacker: 5,
+      damageToDefender: 9,
+      damageToAttacker: 6,
     });
   });
 });

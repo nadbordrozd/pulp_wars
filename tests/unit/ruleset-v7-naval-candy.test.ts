@@ -165,7 +165,7 @@ describe("the Sugar Sails fleet registry (sections 8.1 and 8.2)", () => {
         "Pie Galleon",
         17,
         25,
-        5,
+        4,
         3,
         2,
         "1-3",
@@ -391,7 +391,7 @@ describe("the worked examples (section 8.4)", () => {
     ]).toEqual([true, 14, 0]);
   });
 
-  it("a Rushed Pie Galleon on a Battleship: 18; 5", () => {
+  it("a Rushed Pie Galleon on a Battleship: 14; 5 (18; 5 before `pulp_wars-ez0i`)", () => {
     let state = sea([
       { seat: 0, role: "BATTLESHIP", at: { x: 3, y: 5 } },
       { seat: 1, role: "BATTLESHIP", at: { x: 4, y: 5 } },
@@ -404,11 +404,12 @@ describe("the worked examples (section 8.4)", () => {
       combat.damageToDefender,
       combat.damageToAttacker,
       combat.splatApplied,
-    ]).toEqual([true, 18, 5, true]);
+    ]).toEqual([true, 14, 5, true]);
   });
 
-  it("a Pie Galleon shells a Guard: 14, then a Toffee Trooper's hit has no reply", () => {
-    // From the next tile, as the baseline's "Battleship on a Guard: 14; 5"
+  it("a Pie Galleon shells a Guard: 10; 6, then a Toffee Trooper's hit has no reply", () => {
+    // From the next tile, as the baseline's "Battleship on a Guard: 10; 6"
+    // (14; 5 before the Attack-4 Battleship of `pulp_wars-ez0i`)
     // (from two tiles the Guard's lower Defense against a shot lets the
     // Galleon sink it outright, and a sunk target is never Splatted).
     const state = sea([
@@ -423,18 +424,18 @@ describe("the worked examples (section 8.4)", () => {
       shot.combat.damageToAttacker,
       shot.combat.splatApplied,
       shot.combat.sugarRushApplied,
-    ]).toEqual([14, 5, true, false]);
+    ]).toEqual([10, 6, true, false]);
     const guard = navalUnitAtV7(state, { x: 3, y: 8 });
     expect(shot.state.splattedThisTurn).toEqual([guard.id]);
-    // The Guard is left on 3 HP: the Trooper's hit finishes it, unanswered
-    // (a surviving Splatted target's no-reply is the Tug's Ram below).
+    // The Guard is left on 7 HP: the Trooper's hit (6) leaves it on 1,
+    // unanswered: a Splatted target never strikes back.
     const blow = exchange(shot.state, { x: 2, y: 8 }, { x: 3, y: 8 });
     expect(blow.preview).toEqual(blow.combat);
     expect([
       blow.combat.retaliation,
       blow.combat.damageToAttacker,
       blow.combat.defenderDies,
-    ]).toEqual([false, 0, true]);
+    ]).toEqual([false, 0, false]);
     // Without the Splat the Guard would strike back.
     const unsplatted = queryCombatPreviewV7(
       viewOf(state),

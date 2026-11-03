@@ -3605,6 +3605,10 @@ function applyShipyard(
   if (city?.ownerId !== actor) return rejected(original, "TERRITORY_NOT_OWNED");
   if (tile.improvement !== "PORT" || !isActivePortV7(state, at, actor))
     return rejected(original, "INVALID_TILE", { action: "BUILD_SHIPYARD" });
+  // `pulp_wars-ez0i` (7r121): never under an enemy ship, frozen onto the
+  // dock by the Ice Folk or not (the offer already left it out).
+  if (isTileEnemyOccupiedV7(state, actor, at))
+    return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (
     state.board.tiles.some(
       (candidate) =>

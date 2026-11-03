@@ -60,6 +60,9 @@ import type { MissionDefinitionV7 } from "./types";
  * patrol boats, a Submarine and the fort's Guard, and no Coins; she holds
  * the anchorage until round 8 and then sails north on Sugarcrest, into the
  * open lake. No waves. The clock is 16 (the stars: 12).
+ *
+ * Revision 6 (`pulp_wars-ez0i`, CAMPAIGN.md section 26): the Sovereign has
+ * Attack 4 (was 5), so a second Submarine waits at her anchorage.
  */
 export const CANDY_3_V7: MissionDefinitionV7 = {
   id: "CANDY_3",
@@ -71,7 +74,9 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
   // waves.
   // Revision 5 (`pulp_wars-as6z`): the south-shore village a tile further
   // from the Outflow.
-  revision: 5,
+  // Revision 6 (`pulp_wars-ez0i`, the Battleship at Attack 4): a second
+  // Submarine with the squadron.
+  revision: 6,
   seed: 20261803,
   // <map>
   size: 16,
@@ -233,6 +238,9 @@ export const CANDY_3_V7: MissionDefinitionV7 = {
         // Retune 3's two more patrol boats and a second Submarine; retune
         // 4 keeps one patrol boat.
         { role: "PATROL_BOAT", at: { x: 5, y: 12 } },
+        // `pulp_wars-ez0i`: the Sovereign shells softer (Attack 4, was 5),
+        // so retune 3's second Submarine is back at the anchorage.
+        { role: "SUBMARINE", at: { x: 3, y: 12 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 5, x1: 8, y1: 13 }] },
       // A squadron, not an army: no new trees.

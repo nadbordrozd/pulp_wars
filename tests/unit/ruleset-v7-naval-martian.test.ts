@@ -196,7 +196,7 @@ describe("the Martian fleet registry (sections 6.1 and 6.2)", () => {
     };
     expect(NAVAL_ROLE_IDS_V7.map(row)).toEqual([
       ["Skimmer", 5, 8, 2, 2, 2, 2, "1-1", ["ATTACK", "RAM"], false],
-      ["Hover Cruiser", 16, 20, 3, 5, 3, 2, "1-3", ["ATTACK"], true],
+      ["Hover Cruiser", 16, 20, 3, 4, 3, 2, "1-3", ["ATTACK"], true],
       [
         "Bathysphere",
         9,
@@ -461,7 +461,7 @@ describe("the worked examples (section 6.4)", () => {
     expect(cruiserLeft("DINOSAUR")).toBe(3);
   });
 
-  it("a Battleship on a Hover Cruiser: 3 + 11; 5", () => {
+  it("a Battleship on a Hover Cruiser: 3 + 7; 6 (3 + 11; 5 before `pulp_wars-ez0i`)", () => {
     const state = strait(
       ["ORIGINAL", "MARTIAN"],
       [
@@ -473,8 +473,8 @@ describe("the worked examples (section 6.4)", () => {
     expect(preview).toEqual(combat);
     expect(combat).toMatchObject({
       defenderShieldDamage: 3,
-      damageToDefender: 11,
-      damageToAttacker: 5,
+      damageToDefender: 7,
+      damageToAttacker: 6,
     });
   });
 

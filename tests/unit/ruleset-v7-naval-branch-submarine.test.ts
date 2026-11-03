@@ -628,13 +628,14 @@ describe("Torpedo", () => {
       unitId: battleship.id,
       targetUnitId: submarine.id,
     });
+    // `pulp_wars-ez0i` (Attack 4): 5 dealt (8 before).
     expect(resolved(hit.events)).toMatchObject({
-      damageToDefender: 8,
+      damageToDefender: 5,
       damageToAttacker: 5,
       attackerDies: true,
       retaliation: true,
     });
-    expect(navalUnitV7(hit.state, submarine.id).hp).toBe(4);
+    expect(navalUnitV7(hit.state, submarine.id).hp).toBe(7);
   });
 });
 
