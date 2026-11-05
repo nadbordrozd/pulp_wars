@@ -242,7 +242,7 @@ export function assembleSummaryV7(
   return `Assemble a ${GUNNER()}: ${preview.cost} Coins, slot ${preview.usedSlots + 1}/${preview.capacity} in ${city}`;
 }
 export const ASSEMBLE_PICK_V7 = "Choose a tile next to the Engineer";
-/** The Assemble panel's one line: "4 Coins · slot 2/3". */
+/** The Assemble panel's one line: "2 Coins · slot 2/3". */
 export function assembleCostLineV7(
   preview: Pick<AssemblePreviewV7, "cost" | "usedSlots" | "capacity">,
 ): string {
@@ -528,7 +528,7 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       ASSEMBLE_LABEL_V7,
-      `an ${ENGINEER()} builds a ${GUNNER()} next to itself for ${ASSEMBLE_COST_V7} Coins, using a slot in its home city.`,
+      `an ${ENGINEER()} builds a ${GUNNER()} next to itself for ${ASSEMBLE_COST_V7} Coins, using a slot in its home city; the new ${GUNNER()} may shoot once that turn but not move.`,
     ],
     [
       "Knockback",
@@ -624,7 +624,7 @@ export function dwarfAbilityDescriptionV7(
     case "ERUPTION":
       return `When it surfaces, every enemy on the ground next to it takes ${ERUPTION_DAMAGE_V7} (${BLASTING_ERUPTION_DAMAGE_V7} with Blasting Charges), and Field Defense around it collapses.`;
     case "ASSEMBLE":
-      return `With ${technologyDisplayNameV7("MARKSMANSHIP", "DWARF")}, builds a ${GUNNER()} on a free tile next to it for ${ASSEMBLE_COST_V7} Coins, using a slot in its home city.`;
+      return `With ${technologyDisplayNameV7("MARKSMANSHIP", "DWARF")}, builds a ${GUNNER()} on a free tile next to it for ${ASSEMBLE_COST_V7} Coins, using a slot in its home city; it may shoot once that turn but not move.`;
     case "KNOCKBACK":
       return "Its shot knocks a surviving target one tile straight back.";
     case "PLATED":

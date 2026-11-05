@@ -226,8 +226,8 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // (docs/product/RULESET_7_DWARVES.md section 3).
     // (The ninth unit, 7r55: the breakthrough unit is the Whirligig, 12;
     // the Steam Tank, 16, is the heavy role. `pulp_wars-befg`: the
-    // Whirligig has 18.)
-    expect(hp("DWARF")).toEqual([12, 8, 10, 16, 10, 10, 18, 36]);
+    // Whirligig has 18. `pulp_wars-o2g8`: the Gyrocopter has 10, was 8.)
+    expect(hp("DWARF")).toEqual([12, 10, 10, 16, 10, 10, 18, 36]);
     // The Candy revision (`pulp_wars-jdb.3`) adds an eighth faction
     // (docs/product/RULESET_7_CANDY.md section 3). Tier-3 review B
     // (`pulp_wars-u8so`): the Chocolate Bunny has 16 HP (14 before).

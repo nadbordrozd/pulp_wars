@@ -151,8 +151,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       ASSEMBLE_COST_V7,
       PLATED_CAP_V7,
       // The coarse balance (`pulp_wars-78i.7`): the bomb 5, Dive 6; the
-      // Gyrocopter pass (`pulp_wars-w49.44`): 6, Dive 7.
-    ]).toEqual([3, 2, 3, 2, 6, 7, 2, 1, 4, 4, 4]);
+      // Gyrocopter pass (`pulp_wars-w49.44`): 6, Dive 7. Dwarf oomph
+      // (`pulp_wars-o2g8`): Assemble 2.
+    ]).toEqual([3, 2, 3, 2, 6, 7, 2, 1, 4, 2, 4]);
   });
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
@@ -345,7 +346,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
         assembledUnitId: 8,
         at: at(3, 3),
         cityId: 2,
-        cost: 4,
+        cost: 2,
       },
       { kind: "UNIT_DIED", unitId: 5, cause: "BOMB" },
       { kind: "UNIT_DIED", unitId: 5, cause: "ERUPTION" },
@@ -597,7 +598,8 @@ const ROSTER = [
     "RAIDER",
     "SCOUTING",
     4,
-    8,
+    // `pulp_wars-o2g8` (7r122): 10 HP (8 before).
+    10,
     3,
     2,
     3,
@@ -1308,7 +1310,7 @@ describe("Dwarf starting units and substitutions (section 13.13)", () => {
       ).toMatchObject({ requestedReward: "KNIGHT", grantedReward: "KNIGHT" });
       const created = newUnitsV7(before, after);
       expect(created).toHaveLength(1);
-      expect(created[0]).toMatchObject({ role: "RAIDER", hp: 8, maxHp: 8 });
+      expect(created[0]).toMatchObject({ role: "RAIDER", hp: 10, maxHp: 10 });
       expect(unitRoleRuleV7(after, must(created[0])).label).toBe("Gyrocopter");
     });
 

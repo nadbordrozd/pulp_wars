@@ -1074,6 +1074,29 @@ export function assembleCostV7(
   return Math.max(1, ASSEMBLE_COST_V7 - (forgeActive ? 1 : 0));
 }
 
+/**
+ * Section 9.2 (`pulp_wars-o2g8`, `pulp-wars-poc-7r122`; the user,
+ * 2026-11-05: "building a new unit seems like it would be great but in
+ * practice I can just build the same unit cheaper in the city"): an
+ * assembled Gunner arrives as a unit that has moved and done nothing else.
+ * It cannot Move or Recover, and its shot allowance is 1 (a moved Gunner's,
+ * `attackAllowanceV7`), so it may fire one shot on the turn it is
+ * assembled. A trained Gunner keeps the exhausted activation.
+ */
+function assembledGunnerActivationV7(
+  kit: DwarfReducerKitV7,
+): UnitStateV7["activation"] {
+  return {
+    ...kit.exhaustedActivation(),
+    attacked: false,
+    attacksUsed: 0,
+    recovered: false,
+    captured: false,
+    handled: false,
+    specialActed: false,
+  };
+}
+
 export function applyAssembleV7(
   kit: DwarfReducerKitV7,
   original: GameStateV7,
@@ -1140,7 +1163,7 @@ export function applyAssembleV7(
       kills: 0,
       veteran: false,
       captureEligible: false,
-      activation: kit.exhaustedActivation(),
+      activation: assembledGunnerActivationV7(kit),
     };
     const tile = tileAtV7(state.board, to) as TileStateV7;
     const territoryOwner =

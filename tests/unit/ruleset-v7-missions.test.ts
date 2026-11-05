@@ -114,8 +114,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6120d1a1767b02bfb33a16a6e609426c4f2f348eed77d083fa4dbdc6cdb98e20",
   "UNDEAD_3@4:UNDEAD":
     "0f4d2cbbfbe5646900507ffc930a621c13774f4ae228eda8f8ff20fab3536c82",
+  // Its Dwarf Gyrocopters have 10 HP (was 4f2b959f095df887…:
+  // pulp_wars-o2g8); the board is unchanged.
   "UNDEAD_4@4:UNDEAD":
-    "4f2b959f095df88765f9e07088046b82c5efb773aaf9d960c8094dc3a2e07fc8",
+    "60e3a6e9bc762b272c94203cd277f4b80c3808404d423136b9bf69b2bb423e53",
   "UNDEAD_5@4:UNDEAD":
     "647077de58471f0e087ae69bef071c363c34b3ff6580544215e01e637b38aff4",
   "UNDEAD_6@4:UNDEAD":
@@ -169,8 +171,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "18c417f1f293c0f732c9444f951d468b181332e71929ef8c3d0f3be0037a9201",
   "DWARF_3@4:DWARF":
     "022474ef4c82cb84aeebec159730207ac4652dcda5a63c0f9987ff44fccdc2aa",
+  // Its Gyrocopters have 10 HP (was fa1f5e0ba76da68c…: pulp_wars-o2g8);
+  // the board is unchanged.
   "DWARF_4@4:DWARF":
-    "fa1f5e0ba76da68cf9f4cf29c5605d72e23a7a2b038facaad3c724a16a9c3ed6",
+    "ed9877f6ec091a4df6fb536735f66fddbd6893414c8c6a9d945d4f9cc8f0de2c",
   // Revision 5 (`pulp_wars-as6z`): villages 3 from every city and village.
   // Revision 6 (`pulp_wars-ez0i`): rebalanced for the Attack-4 Battleship.
   "DWARF_5@6:DWARF":
@@ -282,9 +286,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "b82c78fa2a4a0ac1ca7379830de53fe66a01c3ac5015bff340f1c14bc438772d",
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Dwarf roster in
   // the same middle game, the hand player as the Dwarves. Its Whirligig has
-  // 18 HP (was 4b894f5fc0011e42…: pulp_wars-befg).
+  // 18 HP (was 4b894f5fc0011e42…: pulp_wars-befg), and its Gyrocopter 10
+  // (was a5a307ab7eda5f60…: pulp_wars-o2g8).
   "LAB_DWARF_MID@1:DWARF":
-    "a5a307ab7eda5f60236fbf8fa986bb40fbfc96ee3fa83f6071af88284e81f857",
+    "b652020546a81365cb226a8fb31a78d843131c09e57d3d05127fac67747ece34",
   // The Cult's tricks (`pulp_wars-mch9.8`): the Cult roster in the same
   // middle game, the hand player as the Cultists (its 12 Favour is in the
   // `cult` record, which the pins leave out and `expectedMissionCult`
@@ -488,8 +493,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "54c565178f9267763905c9fd653aadb0d905800e4e1a9291d3c34addab8b95d6",
   "UNDEAD_3@4:UNDEAD":
     "09c549d9cc063c0df6e4d2b35473fbd8c0356fed697615b200b9e417540620c0",
+  // Its Dwarf Gyrocopters have 10 HP (was 9345d60e05e47cff…:
+  // pulp_wars-o2g8).
   "UNDEAD_4@4:UNDEAD":
-    "9345d60e05e47cff3684914ac4eb8876f09428c24af45d6a0a925f6e321c0a00",
+    "a711c10a1086848893d6064e28da9effd613368cdef5ea062ed4c385e665d98f",
   "UNDEAD_5@4:UNDEAD":
     "31b71946de12471600651b36736873231d6a294836a98107207d4525fd099def",
   "UNDEAD_6@4:UNDEAD":
@@ -538,8 +545,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "56ea8b4a22ddb2a817f182254efea0e02b160e3157a9f410ed4cc90873467565",
   "DWARF_3@4:DWARF":
     "6d7af92dd97d1b4f31ce345f5e506b674ea394d37117bc09758357641428b693",
+  // Its Gyrocopters have 10 HP (was a482641c7fe479cc…: pulp_wars-o2g8).
   "DWARF_4@4:DWARF":
-    "a482641c7fe479ccbcf4be313aa8c684d0a0121ca09e2f00ccc93da89effd4dc",
+    "3e8379c31e1ea645d3e8e9e92d7599ff814b8e5c3a861aa8ada719ee2028f170",
   "DWARF_5@6:DWARF":
     "7a5fa155e57d55f40821201e2363042807eb10a4fd0cc0cee95dae37f1a141b5",
   "DWARF_6@4:DWARF":
@@ -632,9 +640,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Ice Folk Freeze (`pulp_wars-w49.37`): revision 2.
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
     "ebd63e3819669af5c3446cca594362b3f44fdd534624e342fb48d9b24c8b19e0",
-  // Its Whirligig has 18 HP (was 8a17c1c43532dc6a…: pulp_wars-befg).
+  // Its Whirligig has 18 HP (was 8a17c1c43532dc6a…: pulp_wars-befg), and
+  // its Gyrocopter 10 (was 85a9ee43c70b9fe5…: pulp_wars-o2g8).
   "LAB_DWARF_MID@1:DWARF":
-    "85a9ee43c70b9fe5cf082c380ed18f94c53316dabef36f13c99a419f10372533",
+    "39836929a4d6fc74c9b77fc2af0787ead98e17d4783e767730c5454d8cd5ac3e",
   // The Cult's tricks (`pulp_wars-mch9.8`); the Cult redesign's roster
   // (`pulp_wars-mch9.31`): revision 2.
   "LAB_CULT_MID@2:CULT":

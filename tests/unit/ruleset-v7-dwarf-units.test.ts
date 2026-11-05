@@ -398,7 +398,7 @@ describe("the Engineer's Assemble (section 9.2)", () => {
       options,
     );
 
-  it("builds an exhausted Gunner homed to the Engineer's city for 4 Coins, spending the Engineer's action", () => {
+  it("builds a Gunner homed to the Engineer's city for 2 Coins that has moved but not acted, spending the Engineer's action", () => {
     const state = field();
     const engineer = unitAtV7(state, at(5, 2));
     const capital = cityOfV7(state, 0);
@@ -406,7 +406,7 @@ describe("the Engineer's Assemble (section 9.2)", () => {
     const preview = previewAssembleV7(view, engineer.id);
     expect(preview).toMatchObject({
       unitId: engineer.id,
-      cost: 4,
+      cost: 2,
       cityId: capital.id,
       usedSlots: assignedUnitCountV7(state, capital.id),
       capacity: cityUnitCapacityV7(state, capital),
@@ -426,7 +426,7 @@ describe("the Engineer's Assemble (section 9.2)", () => {
       assembledUnitId: gunner.id,
       at: at(6, 3),
       cityId: capital.id,
-      cost: 4,
+      cost: 2,
     });
     expect(gunner).toMatchObject({
       role: "MARKSMAN",
@@ -434,11 +434,11 @@ describe("the Engineer's Assemble (section 9.2)", () => {
       hp: 10,
       kills: 0,
       captureEligible: false,
-      activation: { moved: true, handled: true },
+      activation: { moved: true, attacked: false, handled: false },
     });
     const coins = (s: GameStateV7) =>
       s.players.find((player) => player.id === activeIdV7(state))?.coins ?? 0;
-    expect(coins(state) - coins(result.state)).toBe(4);
+    expect(coins(state) - coins(result.state)).toBe(2);
     expect(
       result.state.cities.find((city) => city.id === capital.id)
         ?.cityActionAvailable,
@@ -492,7 +492,7 @@ describe("the Engineer's Assemble (section 9.2)", () => {
     const poor = checkedV7({
       ...field(),
       players: field().players.map((player) =>
-        player.seat === 0 ? { ...player, coins: 3 } : player,
+        player.seat === 0 ? { ...player, coins: 1 } : player,
       ),
     });
     expect(

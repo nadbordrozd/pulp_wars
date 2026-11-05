@@ -3703,7 +3703,9 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     label: "Gyrocopter",
     tacticalRole: "SKIRMISHER",
     cost: 4,
-    maxHp: 8,
+    // `pulp_wars-o2g8` (`pulp-wars-poc-7r122`; the user, 2026-11-05: "the
+    // gyrocopter is fun even though it's very weak"): 10 HP (8 before).
+    maxHp: 10,
     attack2: 3,
     defense2: 2,
     move: 3,
@@ -7223,8 +7225,12 @@ export const BOMB_DAMAGE_V7 = 6;
 export const DIVE_BOMB_DAMAGE_V7 = 7;
 /** The Dwarf revision (section 8): Dig In reach from an own city center. */
 export const DIG_IN_RADIUS_V7 = 1;
-/** The Dwarf revision (section 9.2): the Coins an Assemble costs. */
-export const ASSEMBLE_COST_V7 = 4;
+/**
+ * The Dwarf revision (section 9.2): the Coins an Assemble costs; 2 since
+ * `pulp_wars-o2g8` (`pulp-wars-poc-7r122`; 4 before), 1 with a producing
+ * Forge in the Engineer's home city, so it undercuts training a Gunner (3).
+ */
+export const ASSEMBLE_COST_V7 = 2;
 /**
  * Dwarf crowd control (`pulp_wars-w49.33`): the Coins a Barricade costs; 1
  * since `pulp_wars-cln2` (3 before).

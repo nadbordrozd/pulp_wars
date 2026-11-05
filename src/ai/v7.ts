@@ -586,6 +586,7 @@ import {
 } from "./v7-ice-folk";
 import {
   ASSEMBLE_FAR_HOME_V7,
+  ASSEMBLE_SHOT_VALUE_V7,
   ASSEMBLE_VALUE_V7,
   DWARF_ROUTINE_MOVE_PRIORITY_V7,
   ERUPTION_ESCAPE_PRIORITY_V7,
@@ -25159,7 +25160,7 @@ function dwarfCommandScoreV7(
     priority:
       (warTrainingFirstV7(context) ? WAR_TRAINING_PRIORITY_V7 : 1080) +
       (far ? 1 : 0),
-    strategic: ASSEMBLE_VALUE_V7,
+    strategic: ASSEMBLE_VALUE_V7 + (assemble.shot ? ASSEMBLE_SHOT_VALUE_V7 : 0),
     immediate: -cost,
   };
 }

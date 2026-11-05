@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r121`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r122`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,28 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r122` (`pulp_wars-o2g8`; the user, 2026-11-05: "Dwarfs
+seem slightly boring and weak ... building a new unit seems like it would
+be great but in practice I can just build the same unit cheaper in the
+city ... the gyrocopter is fun even though it's very weak") gives the
+Dwarves more punch at the front without touching village density. **Field
+Assembly costs 2 Coins** (4 before; 1 with a producing Forge in the
+Engineer's home city, the Arms Industry rule), so it undercuts training a
+Clockwork Gunner (3), and **an assembled Gunner may fire one shot on the
+turn it is assembled**: it arrives as a unit that has moved and done
+nothing else (`moved` true, no primary action used, not handled), so it
+cannot Move or Recover and its allowance is a moved Gunner's 1, never the
+unmoved 2 ([section 22.6](#226-clockwork),
+[section 22.8](#228-engineer-repair-and-assemble)). A trained Gunner is
+unchanged: exhausted until its owner's next Start Turn. The **Gyrocopter
+has 10 HP** (8 before; [section 22.5](#225-gyrocopters-and-the-bombing-run)),
+so it lives through a bomb (6) with 4 and a Dive bomb (7) with 3; nothing
+else about it changes. The Normal AI values an Assemble whose tile has a
+visible hostile in the Gunner's range 5 higher (the shot); its Gyrocopter
+landing limit stays 8. A save, replay, or setup of `7r121` is rejected, and
+the browser autosave has a new key. No mission board changes; the initial
+state pins of Dwarf mission 4, Undead mission 4, and the lab
+`LAB_DWARF_MID`, which start with Gyrocopters, were re-pinned.
 `pulp-wars-poc-7r121` (`pulp_wars-ez0i`; the user, 2026-11-03: "The
 battleship-type units are overpowered. reduce attack by 1") gives **every
 faction's Battleship Attack 4** (5 before): the Human Battleship, Undead
@@ -1843,10 +1865,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r121`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r122`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r121.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r122.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7224,7 +7246,7 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Unit             | Role          | Tech              | Cost |   HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                                                                                                    |
 | ---------------- | ------------- | ----------------- | ---: | ---: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Hammerer         | `FIGHTER`     | start             |    2 |   12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                                                                                   |
-| Gyrocopter       | `RAIDER`      | Scouting          |    4 |    8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (6, Dive 7¹²), once per target per turn                                                                                                                      |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 | 10¹⁵ | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (6, Dive 7¹²), once per target per turn                                                                                                                      |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |   10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                                                                                      |
 | Steam Mole       | `GUARD`       | Fortification     |    5 |   16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                                                                              |
 | Engineer         | `CAPTAIN`     | Administration    |    5 |   10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | yes     | Repair; Assemble; no Rally                                                                                                                                                   |
@@ -7251,6 +7273,8 @@ Tunnels (the Ram and the Moles' tunnel under shallow water, no Board).
 ¹⁴ `pulp_wars-befg` (the user, 2026-10-27): 18 HP and Defense 2 (12 and
 1.5 before), and its attack is the Whirl
 ([section 22.15](#2215-the-whirligig-whirl)).
+¹⁵ `pulp_wars-o2g8` (`pulp-wars-poc-7r122`; the user, 2026-11-05: "the
+gyrocopter is fun even though it's very weak"): 10 HP (8 before).
 
 - **Hammerer** has Fighter parity (cost, HP, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a
@@ -10537,7 +10561,9 @@ Harbours from it.
   target so that it fires twice; Assembles at the front (on a Pressure job
   or within 3 of a visible hostile unit, on the offered tile nearest the
   target that is not next to a hostile melee unit) at the land-production
-  priority; Repairs, valuing construct HP double; holds a dug-in Hammerer or
+  priority, valued 5 higher when a visible hostile land unit is within the
+  new Gunner's range 2 of that tile (its first-turn shot, `7r122`), and then
+  fires that shot as it fires any Gunner's; Repairs, valuing construct HP double; holds a dug-in Hammerer or
   Mole that has a visible hostile unit within 3; prefers Steam Cannon shots
   whose Knockback empties a hostile center, clears Field Defense, or pushes
   the target next to its melee units; trains a first unit of each role
@@ -14791,6 +14817,7 @@ HP left after one bomb on a fresh target (Shield absorbed in brackets; the
 | Fighter, Marksman, Raptor (12)                                                                                                       | 6      | 5      |
 | Guard (17)                                                                                                                           | 11     | 10     |
 | Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 4      | 3      |
+| Gyrocopter (10, since `7r122`; 8 before: 2 and 1)                                                                                    | 4      | 3      |
 | Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 2      | 1      |
 | Goblin (6), Egg (6)                                                                                                                  | killed | killed |
 | Ankylosaurus (20, Armoured)                                                                                                          | 15     | 14     |
@@ -14807,8 +14834,12 @@ it at 1. A 10-HP back-liner bombed to 4 dies to any one more hit. The
 Gyrocopter that bombs that Fighter from 2 tiles and flies 3 back ends 5
 from it, out of its reach (Move 1, range 1); before, it landed within 2 of
 the Fighter, which hit it for 5 of its 8 HP (Defense 1), and any second
-hit killed it. It stays a scout: 4 Coins, 8 HP, Sight 2, Move 3, one bomb
-a target a turn, and no ordinary attack.
+hit killed it. It stays a scout: 4 Coins, 10 HP (8 until `pulp_wars-o2g8`,
+`7r122`; the user, 2026-11-05: "the gyrocopter is fun even though it's very
+weak"), Sight 2, Move 3, one bomb a target a turn, and no ordinary attack.
+With 10 HP a fresh Gyrocopter caught by that Fighter's hit (5) has 5 left
+instead of 3, and it outlives one enemy Gyrocopter's bomb (4 left, 3 after
+a Dive; 2 and 1 before).
 
 ### 22.6 Clockwork
 
@@ -14841,10 +14872,15 @@ a target a turn, and no ordinary attack.
   the Field Defense rules) at any legal target. A Gunner that has fired
   cannot move (`MOVE` is rejected with `UNIT_ALREADY_ACTED` and never
   offered), and it never advances after a kill, so both shots come from the
-  tile where it stood. A Gunner that landed this turn cannot fire, nor can a Frozen one. An assembled or trained Gunner is exhausted until its owner's next
-  Start Turn. The combat preview's `attacksRemaining` is 1 after the first
-  shot of an unmoved Gunner and 0 otherwise; the unit stats carry
-  `shotsLeft`.
+  tile where it stood. A Gunner that landed this turn cannot fire, nor can a Frozen one. A trained Gunner is exhausted until its owner's next
+  Start Turn. **An assembled Gunner fires one shot on the turn it is
+  assembled** (`pulp_wars-o2g8`, `7r122`; it was exhausted before): it
+  arrives with `moved` true and no primary action used, so it cannot Move
+  or Recover, its allowance is 1, and its one shot is offered, previewed,
+  and resolved like any moved Gunner's. The combat preview's
+  `attacksRemaining` is 1 after the first shot of an unmoved Gunner and 0
+  otherwise; the unit stats carry `shotsLeft` (1 for a Gunner just
+  assembled).
 
 ### 22.7 Dig In
 
@@ -14879,9 +14915,10 @@ dug-in Hammerer 4 and takes 8 (in the open 5 and 5).
   moves. A Push, a pull, a Knockback, and a displacement are not Moves
   either: the unit keeps its `moved` flag, and Dig In is read on the tile
   where it now stands.
-- **Units that arrive this turn are not dug in:** a trained, rewarded,
-  treasure, or assembled unit has the exhausted activation (`moved` true)
-  until its owner's next Start Turn. A unit that surfaced this turn has the
+- **Units that arrive this turn are not dug in:** a trained, rewarded, or
+  treasure unit has the exhausted activation (`moved` true) until its
+  owner's next Start Turn, and an assembled Gunner arrives with `moved`
+  true too (its one shot left, `7r122`). A unit that surfaced this turn has the
   fresh activation, so it is dug in if it then stands still within 1 of an
   own center.
 - **Ignored by everything that ignores fortification:** Charge!, Acid, the
@@ -14924,13 +14961,23 @@ order (all rejections atomic):
 | 8   | The actor has at least the cost in Coins.                                                                                                                                                                                                      | `INSUFFICIENT_COINS`                        |
 | 9   | `to` is one of the eight tiles around the Engineer, land and not a Rift, enterable by a Gunner (a Mountain needs Engineering), with no unit, no mound, and no treasure chest, not a settlement site, and not in territory allied to the actor. | `INVALID_TILE { action: "ASSEMBLE" }`       |
 
-- **Cost:** `ASSEMBLE_COST_V7` **4** Coins (1 more than training a Gunner),
-  1 less when the Engineer's home city has a Forge with positive output (the
-  Arms Industry rule of [section 4.6](#46-training-and-city-center-spawning)).
+- **Cost:** `ASSEMBLE_COST_V7` **2** Coins (1 less than training a Gunner;
+  4 until `pulp_wars-o2g8`, `7r122`, the user, 2026-11-05: "in practice I
+  can just build the same unit cheaper in the city"), 1 when the
+  Engineer's home city has a Forge with positive output (the Arms Industry
+  rule of [section 4.6](#46-training-and-city-center-spawning)).
 - **Result.** The Coins are spent. A new Clockwork Gunner with the next
   entity ID stands on `to`: owned by the actor, homed to the Engineer's
-  home city, at full HP, with zero kills, the exhausted activation, and
-  `captureEligible` false. Field Defense on `to` is destroyed when the
+  home city, at full HP, with zero kills, and `captureEligible` false. Its
+  activation is that of a unit that has moved and done nothing else
+  (`moved` true; `attacked`, `recovered`, `captured`, `specialActed`, and
+  `handled` false; `attacksUsed` 0; since `7r122`, the exhausted activation
+  before): it cannot Move or Recover this turn, and it may fire **one
+  shot** (a moved Gunner's allowance,
+  [section 22.6](#226-clockwork)), so an Engineer that walks up and
+  Assembles lands a hit the same turn. A Gunner standing on a curiosity it
+  can use (the Tesla Tower's Zap, say) may use that primary action instead,
+  as any moved unit may. Field Defense on `to` is destroyed when the
   tile's territory belongs to a player hostile to the actor (reason
   `OCCUPATION`, the Beam Down precedent). The Gunner reveals its sight. The
   Engineer has used its primary action and is handled. Events:
@@ -15227,7 +15274,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `TUNNEL_RANGE_V7` 3, `ERUPTION_DAMAGE_V7` 2, `BLASTING_ERUPTION_DAMAGE_V7`
   3, `BOMB_RANGE_V7` 2, `BOMB_LANDING_RANGE_V7` 2, `BOMB_DAMAGE_V7` 5,
   `DIVE_BOMB_DAMAGE_V7` 6, `GUNNER_UNMOVED_SHOTS_V7` 2, `DIG_IN_RADIUS_V7`
-  1, `REPAIR_MACHINE_V7` 4, `ASSEMBLE_COST_V7` 4, `PLATED_CAP_V7` 4,
+  1, `REPAIR_MACHINE_V7` 4, `ASSEMBLE_COST_V7` 2 (4 until `pulp_wars-o2g8`), `PLATED_CAP_V7` 4,
   `BARRICADE_COST_V7` 1 (3 until `pulp_wars-cln2`), `BARRICADE_HP_V7` 10,
   `BARRICADE_DEFENSE2_V7` 4
   (Defense 2), and `BARRICADE_CAP_V7` 4.

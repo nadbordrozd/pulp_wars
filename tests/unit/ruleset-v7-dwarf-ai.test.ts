@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  ASSEMBLE_SHOT_VALUE_V7,
+  ASSEMBLE_VALUE_V7,
   BOMB_FINISH_PRIORITY_V7,
   DEFAULT_DWARF_POLICY_OPTIONS_V7,
   DEFENCE_TUNNEL_PRIORITY_V7,
@@ -296,6 +298,12 @@ describe("Dwarf Normal AI: the Gunner and the Engineer", () => {
     const command = engineer[0]?.command;
     if (command?.kind !== "ASSEMBLE") throw new Error("no Assemble");
     expect(chebyshev(command.to, at(5, 1))).toBeGreaterThan(1);
+    // `pulp_wars-o2g8`: the Fighter is within the new Gunner's range 2, so
+    // the first-turn shot is valued.
+    expect(chebyshev(command.to, at(5, 1))).toBeLessThanOrEqual(2);
+    expect(engineer[0]?.score.strategicValue).toBe(
+      ASSEMBLE_VALUE_V7 + ASSEMBLE_SHOT_VALUE_V7,
+    );
   });
 
   it("Repairs a construct first", () => {

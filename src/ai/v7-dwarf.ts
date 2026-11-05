@@ -160,7 +160,8 @@ export const BOMB_BACKLINE_VALUE_V7 = 6;
 export const BOMB_KILL_VALUE_V7 = 10;
 /**
  * The Gyrocopter never lands where the landing threat is this much (its 8
- * HP) unless the bomb kills a `CATAPULT` or `CAPTAIN`-role unit.
+ * HP when this was set; it has 10 since `pulp_wars-o2g8`, and the limit
+ * stays 8) unless the bomb kills a `CATAPULT` or `CAPTAIN`-role unit.
  */
 export const BOMB_LANDING_THREAT_LIMIT_V7 = 8;
 /**
@@ -176,6 +177,14 @@ export const BOMB_LANDING_THREAT_DIVISOR_V7 = 2;
 export const BOMB_PREVIEWS_PER_GYROCOPTER_V7 = 3;
 /** An assembled Gunner's value (its HP plus the placement). */
 export const ASSEMBLE_VALUE_V7 = 20;
+/**
+ * `pulp_wars-o2g8` (`7r122`): an assembled Gunner fires one shot on its
+ * first turn, so an Assemble whose tile has a visible hostile land unit
+ * within the Gunner's range (2) is worth this much more (about one shot).
+ */
+export const ASSEMBLE_SHOT_VALUE_V7 = 5;
+/** The Clockwork Gunner's range, for the Assemble shot above. */
+const ASSEMBLE_SHOT_RANGE_V7 = 2;
 /** An Engineer Assembles within this distance of a visible hostile unit. */
 export const ASSEMBLE_FRONT_RADIUS_V7 = 3;
 /** Assemble goes before training when home is this far from the target. */
@@ -1218,18 +1227,26 @@ export function planBombRunsV7(
  * Pressure job, or within 3 of a visible hostile unit, Assembles on the
  * offered tile nearest its target (the job's target, or the nearest visible
  * hostile unit) that is not next to a visible hostile melee unit. Returns
- * the chosen command per Engineer (the others are not candidates).
+ * the chosen command per Engineer (the others are not candidates), and
+ * whether the new Gunner has a visible hostile land unit in range for its
+ * first-turn shot (`pulp_wars-o2g8`).
  */
-export function planAssemblesV7(
-  tools: DwarfPolicyToolsV7,
-): ReadonlyMap<
+export function planAssemblesV7(tools: DwarfPolicyToolsV7): ReadonlyMap<
   UnitId,
-  { readonly command: CommandV7; readonly target: CoordV7 } | null
+  {
+    readonly command: CommandV7;
+    readonly target: CoordV7;
+    readonly shot: boolean;
+  } | null
 > {
   const { view } = tools;
   const result = new Map<
     UnitId,
-    { readonly command: CommandV7; readonly target: CoordV7 } | null
+    {
+      readonly command: CommandV7;
+      readonly target: CoordV7;
+      readonly shot: boolean;
+    } | null
   >();
   const hostiles = view.units.filter(
     (unit) =>
@@ -1286,9 +1303,18 @@ export function planAssemblesV7(
       )
         chosen = command;
     }
+    const to = chosen?.to;
     result.set(
       engineerId,
-      chosen === null ? null : { command: chosen, target },
+      chosen === null || to === undefined
+        ? null
+        : {
+            command: chosen,
+            target,
+            shot: hostiles.some(
+              (hostile) => chebyshev(hostile.at, to) <= ASSEMBLE_SHOT_RANGE_V7,
+            ),
+          },
     );
   }
   return result;

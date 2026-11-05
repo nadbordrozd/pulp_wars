@@ -31,14 +31,18 @@ import {
 // `pulp_wars-5ti.2` (rows 3 and 7 Shallow Water, rows 4 to 6 Deep Water).
 
 describe("the identity", () => {
-  it("is 7r121, with 7r120 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r121");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r121.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r120");
+  // Dwarf oomph (`pulp_wars-o2g8`) took 7r122 after it.
+  it("was 7r121 after 7r120, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r122");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r122.current");
+    const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r121");
+    expect(at).toBeGreaterThan(0);
+    expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r120");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(at - 1, at + 1)).toEqual([
       "pulpWars.save.v7r120.current",
-    );
+      "pulpWars.save.v7r121.current",
+    ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
 });
