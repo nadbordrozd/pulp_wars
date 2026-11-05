@@ -574,9 +574,11 @@ import {
   type BoardDirectionRuntimeV7,
 } from "./visual-direction-v7";
 import {
+  drawCaptureMarkerV7,
   drawPromotionMarkerV7,
   drawReadyChevronV7,
   promotionMarkerSizeCssPxV7,
+  unitHeadMarkerV7,
   type BoardFeedbackFrameV7,
 } from "./feedback-canvas-v7";
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
@@ -4392,6 +4394,12 @@ export function drawBoardV7(input: {
         feedback === null || feedbackUnitId === null
           ? null
           : feedback.promotionMarker(feedbackUnitId);
+      // Bead pulp_wars-6ajn: the Capture flag of a unit that may capture
+      // where it stands; it takes the Promotion marker's slot and wins.
+      const captureMarker =
+        feedback === null || feedbackUnitId === null
+          ? null
+          : feedback.captureMarker(feedbackUnitId);
       let feedbackHead: { readonly x: number; readonly y: number } | null =
         null;
       const garrisonCityId =
@@ -4703,7 +4711,11 @@ export function drawBoardV7(input: {
           // Centred on the sprite as drawn (never on the pixels of its
           // top rows, which for a banner or a spear are off to one side),
           // at the top of its visible pixels.
-          if (turnState === "FRESH" || promotionMarker !== null) {
+          if (
+            turnState === "FRESH" ||
+            promotionMarker !== null ||
+            captureMarker !== null
+          ) {
             const anchor = spriteHeadAnchorV7(image);
             feedbackHead = {
               x: rect.x + rect.width / 2,
@@ -5512,17 +5524,32 @@ export function drawBoardV7(input: {
         // without one, the chevron of a unit that can still move. Always
         // centred on the sprite and just above its top, for every kind of
         // unit and wherever it stands; drawn after the city name plates.
-        if (
-          entry.kind === "UNIT" &&
-          (promotionMarker !== null || turnState === "FRESH")
-        ) {
+        // Bead pulp_wars-6ajn: the Capture flag of a unit that may capture
+        // where it stands takes that slot first, over a Promotion marker.
+        const headMarker =
+          entry.kind === "UNIT"
+            ? unitHeadMarkerV7(captureMarker, promotionMarker, turnState)
+            : null;
+        if (headMarker !== null) {
           const head = feedbackHead ?? { x, y: y - 40 * camera.zoom };
           const top = head.y - 2 * camera.zoom;
           const bounce = (feedback?.chevronBounceCssPx ?? 0) * camera.zoom;
           deferredFeedbackMarks.push(() => {
             context.save();
             context.globalAlpha = sceneAlpha;
-            if (promotionMarker !== null) {
+            if (headMarker === "CAPTURE" && captureMarker !== null) {
+              const size = promotionMarkerSizeCssPxV7(camera.zoom, true);
+              drawCaptureMarkerV7(
+                context,
+                head.x,
+                top - size / 2 + captureMarker.bobCssPx * camera.zoom,
+                size,
+                {
+                  ownerColour: entry.ownerColor,
+                  highContrast: input.highContrast ?? false,
+                },
+              );
+            } else if (headMarker === "PROMOTION" && promotionMarker !== null) {
               const size =
                 promotionMarkerSizeCssPxV7(camera.zoom, promotionMarker.own) *
                 promotionMarker.scale;

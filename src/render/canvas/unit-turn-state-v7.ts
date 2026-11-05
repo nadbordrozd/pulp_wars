@@ -76,3 +76,37 @@ export function unitTurnStatesV7(
   }
   return states;
 }
+
+const NO_CAPTURES: ReadonlySet<number> = new Set();
+
+/**
+ * Bead pulp_wars-6ajn (the user's request of 2026-11-05): the viewer's
+ * units that may capture where they stand right now, for the flag drawn
+ * over their heads. Exactly the units the engine offers a `CAPTURE`
+ * (`queryPlayerCommandsV7`: a neutral village or a city centre it may take,
+ * capture-eligible since its turn began, not yet handled), so a unit that
+ * only just walked or surfaced onto a village shows nothing until its next
+ * turn, and the flag goes once it captures, moves or is spent. Outside the
+ * viewer's own turn there is none.
+ */
+export function captureReadyUnitIdsV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+): ReadonlySet<number> {
+  if (
+    view.outcome !== null ||
+    view.viewer.id !== view.humanPlayerId ||
+    view.turnOrder[view.activeSeatIndex] !== view.viewer.id
+  )
+    return NO_CAPTURES;
+  const own = new Set(
+    view.units
+      .filter((unit) => unit.ownerId === view.viewer.id && unit.hp > 0)
+      .map((unit) => unit.id),
+  );
+  const ready = new Set<number>();
+  for (const command of commands)
+    if (command.kind === "CAPTURE" && own.has(command.unitId))
+      ready.add(command.unitId);
+  return ready.size === 0 ? NO_CAPTURES : ready;
+}

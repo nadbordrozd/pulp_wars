@@ -169,6 +169,7 @@ describe("the renderer and the feedback frame", () => {
       unitHop: new Set<number>(),
       turnState: new Set<number>(),
       marker: new Set<number>(),
+      capture: new Set<number>(),
     };
     const feedback: BoardFeedbackFrameV7 = {
       cityHopCssPx: (id) => {
@@ -190,6 +191,10 @@ describe("the renderer and the feedback frame", () => {
       promotionMarker: (id) => {
         asked.marker.add(id);
         return { own: true, scale: 1, bobCssPx: 0 };
+      },
+      captureMarker: (id) => {
+        asked.capture.add(id);
+        return null;
       },
       pulse: 0.5,
       chevronBounceCssPx: -2,
@@ -239,5 +244,13 @@ describe("the renderer and the feedback frame", () => {
     // than without the feedback frame.
     expect(calls.length).toBeGreaterThan(plain);
     expect(calls).toContain("arc");
+    // Bead pulp_wars-6ajn: every unit is asked for its Capture flag; none
+    // is offered here, so no flag (its waving cloth) is drawn.
+    expect(asked.capture).toEqual(new Set(view.units.map((unit) => unit.id)));
+    expect(calls).not.toContain("bezierCurveTo");
+    // With a flag offered, the flag takes the Promotion marker's place.
+    calls.length = 0;
+    draw({ ...feedback, captureMarker: () => ({ bobCssPx: 0 }) });
+    expect(calls).toContain("bezierCurveTo");
   });
 });

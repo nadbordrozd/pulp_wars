@@ -4,7 +4,7 @@ import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 /**
  * Bead pulp_wars-2yc.29: the code-drawn parts of the feedback animations
  * (the ready ring and chevron, the Promotion marker, a population icon,
- * the rings and sparkles).
+ * the rings and sparkles), and the Capture flag (bead pulp_wars-6ajn).
  * Every function draws one still frame from the numbers it is given.
  */
 const INK = "#171722";
@@ -18,6 +18,15 @@ export interface PromotionMarkerFrameV7 {
   readonly own: boolean;
   /** 0 to 1 (with a small overshoot) while the marker grows in. */
   readonly scale: number;
+  /** The bob in nominal CSS px (negative is up); 0 when still. */
+  readonly bobCssPx: number;
+}
+
+/**
+ * Bead pulp_wars-6ajn: the Capture flag over one of the viewer's units that
+ * may capture where it stands, for a frame.
+ */
+export interface CaptureMarkerFrameV7 {
   /** The bob in nominal CSS px (negative is up); 0 when still. */
   readonly bobCssPx: number;
 }
@@ -39,6 +48,12 @@ export interface BoardFeedbackFrameV7 {
   /** The unit's state in the viewer's turn, or null for a plain unit. */
   turnState(unitId: number): UnitTurnStateV7 | null;
   promotionMarker(unitId: number): PromotionMarkerFrameV7 | null;
+  /**
+   * Bead pulp_wars-6ajn: the Capture flag of a viewer's unit the engine
+   * offers `CAPTURE` this turn, or null. It takes the Promotion marker's
+   * slot and wins over it.
+   */
+  captureMarker(unitId: number): CaptureMarkerFrameV7 | null;
   /** The shared slow loop, 0 to 1 and back; 0 in reduced motion. */
   readonly pulse: number;
   /** The ready chevron's bounce in nominal CSS px (negative is up). */
@@ -545,6 +560,130 @@ export function drawPromotionMarkerV7(
       options.highContrast === true ? "#ffffff" : GOLD,
     );
   }
+  context.restore();
+}
+
+/** Bead pulp_wars-6ajn: what one unit shows over its head, if anything. */
+export type UnitHeadMarkerV7 = "CAPTURE" | "PROMOTION" | "CHEVRON";
+
+/**
+ * The one mark over a unit's head (bead pulp_wars-6ajn, the user's request
+ * of 2026-11-05: "The icon for capturing a village should take precedence
+ * if you can show only one"): the Capture flag first, then the Promotion
+ * marker, then the ready chevron of a unit that can still move.
+ */
+export function unitHeadMarkerV7(
+  capture: CaptureMarkerFrameV7 | null,
+  promotion: PromotionMarkerFrameV7 | null,
+  turnState: UnitTurnStateV7 | null,
+): UnitHeadMarkerV7 | null {
+  if (capture !== null) return "CAPTURE";
+  if (promotion !== null) return "PROMOTION";
+  return turnState === "FRESH" ? "CHEVRON" : null;
+}
+
+/**
+ * Bead pulp_wars-6ajn: the marker over one of the viewer's units that may
+ * capture the village or city it stands on (the user forgot such units and
+ * moved them on). A flag in the viewer's colour on a gold-tipped pole,
+ * centred on (`x`, `y`) in a square of `size` (the Promotion marker's size
+ * and slot), in the Promotion marker's dress: a dark ink outline and a soft
+ * dark halo so it stands on grass, snow, forest and ash alike, with no disc.
+ */
+export function drawCaptureMarkerV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  options: {
+    readonly ownerColour: string | undefined;
+    readonly highContrast?: boolean;
+  },
+): void {
+  if (!(size > 0)) return;
+  const high = options.highContrast === true;
+  const ink = high ? "#000000" : INK;
+  const cloth = high ? "#ffffff" : (options.ownerColour ?? CREAM);
+  const u = size / 24;
+  // The pole, a little left of centre so flag and pole balance round `x`.
+  const poleX = x - 6 * u;
+  const poleTop = y - 9 * u;
+  const poleFoot = y + 11 * u;
+  // The flag: a cloth with a swallow tail and a gentle wave.
+  const flagPath = (): void => {
+    context.beginPath();
+    context.moveTo(poleX, poleTop + 1 * u);
+    context.bezierCurveTo(
+      poleX + 5 * u,
+      poleTop - 2 * u,
+      poleX + 9 * u,
+      poleTop + 3 * u,
+      poleX + 15 * u,
+      poleTop + 0.5 * u,
+    );
+    context.lineTo(poleX + 11 * u, poleTop + 6 * u);
+    context.lineTo(poleX + 15 * u, poleTop + 11.5 * u);
+    context.bezierCurveTo(
+      poleX + 9 * u,
+      poleTop + 14 * u,
+      poleX + 5 * u,
+      poleTop + 9 * u,
+      poleX,
+      poleTop + 12 * u,
+    );
+    context.closePath();
+  };
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.shadowColor = ink;
+  context.shadowBlur = Math.max(2, size * 0.14);
+  // The pole: ink casing, then gold.
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(3, 4 * u);
+  context.beginPath();
+  context.moveTo(poleX, poleTop);
+  context.lineTo(poleX, poleFoot);
+  context.stroke();
+  context.shadowBlur = 0;
+  context.strokeStyle = high ? "#ffffff" : GOLD_DEEP;
+  context.lineWidth = Math.max(1.5, 2 * u);
+  context.beginPath();
+  context.moveTo(poleX, poleTop);
+  context.lineTo(poleX, poleFoot);
+  context.stroke();
+  // The cloth, with the halo, then its ink rim.
+  context.shadowBlur = Math.max(2, size * 0.14);
+  flagPath();
+  context.fillStyle = cloth;
+  context.fill();
+  context.shadowBlur = 0;
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1.5, 2 * u);
+  flagPath();
+  context.stroke();
+  // A pale fold so a dark player colour still reads as cloth.
+  context.strokeStyle = high ? "#000000" : "rgba(255, 246, 207, 0.55)";
+  context.lineWidth = Math.max(1, 1.2 * u);
+  context.beginPath();
+  context.moveTo(poleX + 3 * u, poleTop + 3 * u);
+  context.bezierCurveTo(
+    poleX + 6 * u,
+    poleTop + 1.5 * u,
+    poleX + 8 * u,
+    poleTop + 4.5 * u,
+    poleX + 11 * u,
+    poleTop + 3 * u,
+  );
+  context.stroke();
+  // The gold finial on top of the pole.
+  context.beginPath();
+  context.arc(poleX, poleTop - 0.5 * u, Math.max(1.5, 2.2 * u), 0, Math.PI * 2);
+  context.fillStyle = high ? "#ffffff" : GOLD;
+  context.fill();
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1, 1.2 * u);
+  context.stroke();
   context.restore();
 }
 

@@ -57,7 +57,11 @@ import {
   worldToScreen,
   type CameraState,
 } from "./geometry";
-import { unitTurnStatesV7, type UnitTurnStateV7 } from "./unit-turn-state-v7";
+import {
+  captureReadyUnitIdsV7,
+  unitTurnStatesV7,
+  type UnitTurnStateV7,
+} from "./unit-turn-state-v7";
 
 /** What the feedback animations need from the board host that owns them. */
 export interface BoardFeedbackEnvironmentV7 {
@@ -311,6 +315,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   readonly #env: BoardFeedbackEnvironmentV7;
   #model: BoardFeedbackModelV7 | null = null;
   #turnStates: ReadonlyMap<number, UnitTurnStateV7> = new Map();
+  /** Bead pulp_wars-6ajn: the viewer's units offered `CAPTURE`. */
+  #captureReady: ReadonlySet<number> = new Set();
   readonly #promotionReady = new WeakMap<PlayerViewV7, ReadonlySet<number>>();
   #nextTicket = 1;
   readonly #tickets = new Map<number, FeedbackPlanV7>();
@@ -353,8 +359,13 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
       model.view.turnOrder[model.view.activeSeatIndex] === model.view.viewer.id;
     // While a command settles the engine offers nothing for a moment: the
     // units keep the states they had instead of all turning spent.
-    if (!viewersTurn || model.offeredCommands.length > 0)
+    if (!viewersTurn || model.offeredCommands.length > 0) {
       this.#turnStates = unitTurnStatesV7(model.view, model.offeredCommands);
+      this.#captureReady = captureReadyUnitIdsV7(
+        model.view,
+        model.offeredCommands,
+      );
+    }
     if (model.motion === "REDUCED" && this.#moving()) this.finish();
     this.#schedule();
   }
@@ -705,8 +716,9 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   }
 
   /**
-   * Whether the bob of a waiting Promotion marker should keep the host's
-   * calm ambient loop running (the viewer's own turn, full motion).
+   * Whether the bob of a waiting Promotion marker or a Capture flag should
+   * keep the host's calm ambient loop running (the viewer's own turn, full
+   * motion).
    */
   wantsAmbientFrames(): boolean {
     const model = this.#model;
@@ -714,6 +726,7 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
       return false;
     // First steps: a hopping marker keeps the loop running too.
     if (model.firstStepMarker?.motion === "HOP") return true;
+    if (this.#captureReady.size > 0) return true;
     const ready = this.#readyIds(model.view);
     if (ready.size === 0) return false;
     return model.view.units.some(
@@ -772,6 +785,10 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
           bobCssPx: own ? promotionMarkerBobCssPxV7(now, reduced) : 0,
         };
       },
+      captureMarker: (unitId) =>
+        this.#captureReady.has(unitId)
+          ? { bobCssPx: promotionMarkerBobCssPxV7(now, reduced) }
+          : null,
       pulse: feedbackPulseV7(now, reduced),
       chevronBounceCssPx: readyChevronBounceCssPxV7(now, reduced),
     };

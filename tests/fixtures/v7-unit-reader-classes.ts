@@ -43,6 +43,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/feedback-host-v7.ts::BoardFeedbackV7.wantsAmbientFrames":
       "BOARD",
     "src/render/canvas/unit-turn-state-v7.ts::unitTurnStatesV7": "BOARD",
+    // Bead pulp_wars-6ajn: the Capture flag over a viewer's unit the engine
+    // offers `CAPTURE`; a burrowed unit is not drawn and captures nothing.
+    "src/render/canvas/unit-turn-state-v7.ts::captureReadyUnitIdsV7": "BOARD",
     // Bead pulp_wars-2yc.114: a hurried AI turn plays what matters to the
     // viewer with a beat: the view's units of the viewer an attack lands
     // next to, or that are hurt or gone. A burrowed unit is not on the

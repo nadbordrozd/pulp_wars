@@ -1168,6 +1168,18 @@ Roads, that text now describes the **Classic look** developer option
     with no disc under it, and drawn over a city's name plate. It bobs for
     the viewer's unit; for another player's visible unit, whose kills are
     public, it is smaller and still.
+  - **Capture flag (bead `pulp_wars-6ajn`).** In the viewer's own turn,
+    each of the viewer's units the engine offers Capture right now (a
+    neutral village, or a city centre it may take; the same offer as the
+    dock's Capture button) shows a small flag in the viewer's colour on a
+    gold-tipped pole over its head, in the Promotion marker's slot, size,
+    halo and bob. A unit that only just walked, surfaced or was set down on
+    the place shows none until its next turn, when the capture becomes
+    legal; the flag goes once it captures, moves off or acts otherwise (a
+    Wait leaves it, since the unit may still capture). Only one mark fits
+    over a head: the flag wins over the Promotion medal, which comes back
+    once the place is taken, and over the ready chevron. Other players'
+    units never show it.
   - **Reduced motion** (the Motion setting or the system preference): no
     flight and no hop; the counter, the meter and the marker show at once.
     Fast animation speed halves every duration; Fast Forward and a cancelled
