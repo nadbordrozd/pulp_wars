@@ -22,7 +22,6 @@ import {
 } from "../../src/engine/index";
 import {
   frozenArenaV7,
-  frozenStateV7,
   patchFrozenUnitV7,
   type FrozenIceV7,
   type FrozenUnitV7,
@@ -495,9 +494,11 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     // The frozen sea redesign: permanent, sound ice of the controller (its
     // thickness is the controller's own Glacier, which a Martian tree has
     // not).
+    // The controller's Hoarfrost (`pulp_wars-s55m.1`): three tiles.
     expect(frozen.state.ice).toEqual([
       { at: ICE1, ownerId: seatV7(state, 0).id, cracked: false },
       { at: ICE2, ownerId: seatV7(state, 0).id, cracked: false },
+      { at: ICE3, ownerId: seatV7(state, 0).id, cracked: false },
     ]);
     // Without the controller's Rime the Yeti cannot, whatever its own
     // seat researched.
@@ -581,40 +582,34 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
   });
 });
 
-describe("an icebound ship's Recover and Promote (section 21.16)", () => {
-  it("recovers next to its own dock and is promoted, frozen in or not", () => {
+// The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is ever in the
+// ice; a Frozen ship is refused what a Frozen land unit is refused.
+describe("a Frozen ship's Recover and Promote (section 21.3)", () => {
+  it("is promoted but does not recover while Frozen", () => {
     // (3, 3) is next to seat 0's Port on (4, 3).
     const at: CoordV7 = { x: 3, y: 3 };
     const base = scene("ORIGINAL", [{ seat: 0, role: "BATTLESHIP", at }], []);
     const ship = navalUnitAtV7(base, at);
     const hurt = patchFrozenUnitV7(base, ship.id, { hp: 10, kills: 3 });
-    const frozen = frozenStateV7(hurt, [{ at, seat: 1 }]);
+    const frozen = parseGameStateV7({
+      ...hurt,
+      frozen: [{ unitId: ship.id, turnsLeft: 1 }],
+    });
+    if (frozen === null) throw new Error("invalid");
     expect(
       queryUnitStatsV7(viewForV7(frozen, seatV7(frozen, 0).id), ship.id)
-        ?.icebound,
+        ?.frozen,
+    ).toEqual({ turnsLeft: 1 });
+    expect(
+      offered(hurt, 0).some(
+        (command) => command.kind === "RECOVER" && command.unitId === ship.id,
+      ),
     ).toBe(true);
-    const mine = offered(frozen, 0).filter(
-      (command) => "unitId" in command && command.unitId === ship.id,
-    );
-    expect(mine.map((command) => command.kind).sort()).toEqual(
-      offered(hurt, 0)
-        .filter((command) => "unitId" in command && command.unitId === ship.id)
-        .map((command) => command.kind)
-        .filter((kind) => kind !== "MOVE" && kind !== "ATTACK")
-        .filter((kind, index, kinds) => kinds.indexOf(kind) === index)
-        .sort(),
-    );
-    const recovered = acceptV7(frozen, 0, {
-      kind: "RECOVER",
-      unitId: ship.id,
-    });
-    expect(navalUnitV7(recovered.state, ship.id).hp).toBe(
-      navalUnitV7(
-        acceptV7(hurt, 0, { kind: "RECOVER", unitId: ship.id }).state,
-        ship.id,
-      ).hp,
-    );
-    expect(navalUnitV7(recovered.state, ship.id).hp).toBeGreaterThan(10);
+    expect(
+      offered(frozen, 0).some(
+        (command) => command.kind === "RECOVER" && command.unitId === ship.id,
+      ),
+    ).toBe(false);
     const promoted = acceptV7(frozen, 0, { kind: "PROMOTE", unitId: ship.id });
     expect(navalUnitV7(promoted.state, ship.id)).toMatchObject({
       veteran: true,

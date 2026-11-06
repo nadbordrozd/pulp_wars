@@ -4,11 +4,7 @@ import {
   SEA_ICE_EDGE_SOUTH_V7,
   SEA_ICE_EDGE_WEST_V7,
 } from "../../assets/sea-ice-v7";
-import type {
-  IceboundMarkerV7,
-  SeaIceCellV7,
-} from "./frozen-sea-board-plan-v7";
-import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
+import type { SeaIceCellV7 } from "./frozen-sea-board-plan-v7";
 
 /**
  * The frozen sea on the canvas (bead pulp_wars-5ti.7, second part;
@@ -18,10 +14,8 @@ import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
  *   live and the Classic look), or a code-drawn floe in the same colours
  *   (LEGACY, a sheet still loading); then the melting cracks of its stage.
  * - **A slide's arrow** from the tile a unit steps from, across the ice, to
- *   the tile it stops on.
- * - **An icebound ship:** the pack ice at the foot of its hull (the
- *   `OVERLAY:ICEBOUND` raster, or a code-drawn jagged strip) and a small
- *   pill with the crush it takes next.
+ *   the tile it stops on. (An icebound ship's pack ice and crush pill went
+ *   with Icebound, `pulp_wars-s55m.1`.)
  *
  * The marks never move, so the reduced-motion still is the mark itself.
  */
@@ -355,144 +349,5 @@ export function drawSlideArrowV7(
     options.highContrast === true ? "#ffffff" : SEA_ICE_COLOURS_V7.slide;
   context.lineWidth = width * 0.55;
   context.stroke();
-  context.restore();
-}
-
-/** The crush pill's frame: world units from the tile's centre. */
-export const ICEBOUND_MARKER_FRAME_V7 = {
-  /** The pack ice: the lower half of the cell. */
-  ice: { left: -64, top: 0, width: 128, height: 64 },
-  /**
-   * The crush pill, under the boardable badge's slot: its top edge and its
-   * right edge (world units from the tile's centre), its half size and its
-   * text, with the camera zoom it is never drawn smaller than
-   * (`pulp_wars-5ti.10`: at the desktop's zoom steps it was 18 x 8 px with
-   * 8 px text).
-   */
-  crush: {
-    right: 63,
-    top: -1,
-    halfWidth: 21,
-    halfHeight: 10,
-    font: 13,
-    minimumZoom: 0.8,
-  },
-} as const;
-
-/** The crush pill's box at `zoom` round the tile centre (`x`, `y`). */
-export function crushPillBoxV7(
-  x: number,
-  y: number,
-  zoom: number,
-): {
-  readonly cx: number;
-  readonly cy: number;
-  readonly halfWidth: number;
-  readonly halfHeight: number;
-  readonly font: number;
-} {
-  const pill = ICEBOUND_MARKER_FRAME_V7.crush;
-  const scale = Math.max(zoom, pill.minimumZoom);
-  const halfWidth = pill.halfWidth * scale;
-  const halfHeight = pill.halfHeight * scale;
-  return {
-    // Held to the tile's right edge and to its own top, so a pill at its
-    // floor grows down and to the left, over its own ship.
-    cx: x + pill.right * zoom - halfWidth,
-    cy: y + pill.top * zoom + halfHeight,
-    halfWidth,
-    halfHeight,
-    font: pill.font * scale,
-  };
-}
-
-/**
- * An icebound ship's markers at its tile centre (`x`, `y`): the pack ice
- * over the foot of its hull and the crush pill ("−3 HP", "Sinks").
- */
-export function drawIceboundMarkerV7(
-  context: CanvasRenderingContext2D,
-  marker: IceboundMarkerV7,
-  x: number,
-  y: number,
-  zoom: number,
-  options: {
-    readonly overlay?: CanvasImageSource | null;
-    readonly smoothing?: boolean;
-    readonly highContrast?: boolean;
-  } = {},
-): void {
-  const frame = ICEBOUND_MARKER_FRAME_V7;
-  const highContrast = options.highContrast ?? false;
-  context.save();
-  const overlay = options.overlay ?? null;
-  if (overlay !== null) {
-    context.imageSmoothingEnabled = options.smoothing ?? true;
-    context.drawImage(
-      overlay,
-      x + frame.ice.left * zoom,
-      y + frame.ice.top * zoom,
-      frame.ice.width * zoom,
-      frame.ice.height * zoom,
-    );
-  } else {
-    // A jagged strip of pack ice round the hull's foot.
-    const left = x - 50 * zoom;
-    const right = x + 50 * zoom;
-    const base = y + 30 * zoom;
-    context.fillStyle = SEA_ICE_COLOURS_V7.shallow;
-    context.strokeStyle = SEA_ICE_COLOURS_V7.crack;
-    context.lineWidth = Math.max(1, 1.6 * zoom);
-    context.lineJoin = "round";
-    context.beginPath();
-    context.moveTo(left, base);
-    const teeth = 7;
-    for (let tooth = 0; tooth <= teeth; tooth += 1) {
-      const tx = left + ((right - left) * tooth) / teeth;
-      context.lineTo(
-        tx - ((right - left) / teeth) * 0.5,
-        base - (tooth % 2 === 0 ? 20 : 12) * zoom,
-      );
-      context.lineTo(tx, base - 6 * zoom);
-    }
-    context.lineTo(right, base);
-    context.closePath();
-    context.fill();
-    context.stroke();
-  }
-  // The crush pill.
-  const { cx, cy, halfWidth, halfHeight, font } = crushPillBoxV7(x, y, zoom);
-  context.fillStyle = highContrast ? "#000000" : SEA_ICE_COLOURS_V7.crushToken;
-  context.strokeStyle = highContrast ? "#ffffff" : SEA_ICE_COLOURS_V7.crushRim;
-  context.lineWidth = Math.max(1.5, 1.6 * zoom);
-  context.beginPath();
-  context.moveTo(cx - halfWidth + halfHeight, cy - halfHeight);
-  context.lineTo(cx + halfWidth - halfHeight, cy - halfHeight);
-  context.arc(
-    cx + halfWidth - halfHeight,
-    cy,
-    halfHeight,
-    -Math.PI / 2,
-    Math.PI / 2,
-  );
-  context.lineTo(cx - halfWidth + halfHeight, cy + halfHeight);
-  context.arc(
-    cx - halfWidth + halfHeight,
-    cy,
-    halfHeight,
-    Math.PI / 2,
-    -Math.PI / 2,
-  );
-  context.closePath();
-  context.fill();
-  context.stroke();
-  context.fillStyle =
-    marker.lethal && !highContrast
-      ? SEA_ICE_COLOURS_V7.crushLethal
-      : SEA_ICE_COLOURS_V7.crushText;
-  context.font = `800 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(marker.crush.replace(" HP", ""), cx, cy + 0.5);
   context.restore();
 }

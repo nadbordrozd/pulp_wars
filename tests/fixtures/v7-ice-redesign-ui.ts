@@ -35,8 +35,11 @@ export const ICE_REDESIGN_UI_V7 = {
   west: { x: 1, y: 3 },
   /** Plain ice. */
   middle: { x: 2, y: 3 },
-  /** The viewer's own Patrol Boat, frozen in (the Help mark). */
-  frozenShip: { x: 3, y: 3 },
+  /**
+   * Plain ice (the viewer's own Patrol Boat was frozen in here before the
+   * Ice Folk freeze rework, `pulp_wars-s55m.1`: no ship is in the ice).
+   */
+  east: { x: 3, y: 3 },
   /** The building scene: a Yeti on the shore that Freezes. */
   yeti: { x: 2, y: 2 },
   /** The building scene: another player's ice the Freeze takes. */
@@ -50,8 +53,7 @@ export const ICE_REDESIGN_UI_V7 = {
 /**
  * Seat 0 is Human (the viewer), seat 1 the Ice Folk that own the ice below
  * the Warrior: plain ice, or (`thick`) Glacier's thick ice whose west tile
- * has taken one crack. The Warrior may Crack Ice on all three tiles; the
- * east one holds the viewer's own icebound Patrol Boat.
+ * has taken one crack. The Warrior may Crack Ice on all three tiles.
  */
 export function iceCrackUiFixtureV7(
   options: { readonly thick?: boolean } = {},
@@ -62,14 +64,11 @@ export function iceCrackUiFixtureV7(
     factions: ["ORIGINAL", "ICE_FOLK"],
     technologies: [NAVAL, thick ? NAVAL : ["SHORECRAFT", "NAVIGATION"]],
     ports: [false, false],
-    units: [
-      { seat: 0, role: "FIGHTER", at: at.cracker },
-      { seat: 0, role: "PATROL_BOAT", at: at.frozenShip },
-    ],
+    units: [{ seat: 0, role: "FIGHTER", at: at.cracker }],
     ice: [
       { at: at.west, seat: 1, cracked: thick },
       { at: at.middle, seat: 1 },
-      { at: at.frozenShip, seat: 1 },
+      { at: at.east, seat: 1 },
       { at: { x: 1, y: 4 }, seat: 1 },
       { at: { x: 2, y: 4 }, seat: 1 },
     ],

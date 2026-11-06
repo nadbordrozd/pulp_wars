@@ -69,7 +69,7 @@ describe("Crack Ice: armed and picked on the board", () => {
     ).toEqual([
       [at(UI.west), "Break"],
       [at(UI.middle), "Break"],
-      [at(UI.frozenShip), "Free the ship"],
+      [at(UI.east), "Break"],
     ]);
     // Escape disarms and returns the focus to the button; nothing was sent.
     document.dispatchEvent(
@@ -77,31 +77,26 @@ describe("Crack Ice: armed and picked on the board", () => {
     );
     expect(host.lastModel?.interaction.freezePick ?? null).toBeNull();
     expect(controller.accepted).toEqual([]);
-    // Pick the frozen ship's tile: the ice breaks and the boat floats free.
+    // Pick the east tile: the ice breaks.
     requiredButton("crack-ice").click();
     host.callbacks?.onCommand(
       required(
-        boardPlan(host).targets.find(
-          (target) => at(target.at) === at(UI.frozenShip),
-        ),
+        boardPlan(host).targets.find((target) => at(target.at) === at(UI.east)),
       ),
     );
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "CRACK_ICE",
       unitId: warrior.id,
-      at: UI.frozenShip,
+      at: UI.east,
     });
     const after = required(controller.snapshot().view);
-    expect(after.ice.some((entry) => at(entry.at) === at(UI.frozenShip))).toBe(
-      false,
-    );
+    expect(after.ice.some((entry) => at(entry.at) === at(UI.east))).toBe(false);
     await waitUntil(
       () =>
         document
           .querySelector("#v7-live")
-          ?.textContent?.includes("The ice broke: the ship floats free") ===
-        true,
+          ?.textContent?.includes("The ice broke") === true,
     );
     app.destroy();
   });

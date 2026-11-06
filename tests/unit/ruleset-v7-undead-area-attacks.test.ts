@@ -665,8 +665,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // (`pulp_wars-5ti.25`) inserts ICE_CRACKED after WATER_FROZEN: 99. Map
     // curiosities round 3 (`pulp_wars-737.20`) inserts GOLD_CLAIM_PAID,
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, and TESLA_ZAPPED before it (the
-    // last right after COMBAT_RESOLVED): 103, COMBAT_RESOLVED + 9.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(103);
+    // last right after COMBAT_RESOLVED): 103, COMBAT_RESOLVED + 9. The Ice
+    // Folk freeze rework (`pulp_wars-s55m.1`) drops ICE_MELTED and
+    // UNITS_CRUSHED before it: 101.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(101);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 9,
     );

@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r122");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -193,7 +193,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
     // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
     // (`pulp_wars-mch9.61`) adds CHANT_LEFT after CHANT_JOINED (161).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(161);
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`) drops ICE_MELTED
+    // and UNITS_CRUSHED with Icebound (159).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(159);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

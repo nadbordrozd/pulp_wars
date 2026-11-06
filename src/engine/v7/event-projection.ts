@@ -259,11 +259,9 @@ export function projectEventsV7(
       continue;
     }
     // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 12):
-    // WATER_FROZEN and ICE_MELTED go to every viewer with the tiles it has
-    // explored (before or after the command) and the units it owns or can
-    // see, and are dropped when no tile is left; a viewer that cannot see
-    // the freezing unit gets `unitId` null. UNITS_CRUSHED is projected like
-    // Plague damage.
+    // WATER_FROZEN goes to every viewer with the tiles it has explored
+    // (before or after the command), and is dropped when no tile is left; a
+    // viewer that cannot see the freezing unit gets `unitId` null.
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9):
     // ICE_CRACKED likewise, on its one tile.
     if (event.kind === "ICE_CRACKED") {
@@ -276,11 +274,10 @@ export function projectEventsV7(
         ...event,
         unitId:
           event.unitId !== null && seen(event.unitId) ? event.unitId : null,
-        freed: event.freed.filter(seen),
       });
       continue;
     }
-    if (event.kind === "WATER_FROZEN" || event.kind === "ICE_MELTED") {
+    if (event.kind === "WATER_FROZEN") {
       const seen = (unitId: UnitId): boolean =>
         ownedBeforeOrAfter(unitId) ||
         beforeVisible.has(unitId) ||
@@ -289,16 +286,12 @@ export function projectEventsV7(
         coordVisible(beforeState, afterState, viewerId, at),
       );
       if (tiles.length === 0) continue;
-      if (event.kind === "ICE_MELTED")
-        projected.push({ ...event, tiles, freed: event.freed.filter(seen) });
-      else
-        projected.push({
-          ...event,
-          unitId:
-            event.unitId !== null && seen(event.unitId) ? event.unitId : null,
-          tiles,
-          icebound: event.icebound.filter(seen),
-        });
+      projected.push({
+        ...event,
+        unitId:
+          event.unitId !== null && seen(event.unitId) ? event.unitId : null,
+        tiles,
+      });
       continue;
     }
     // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 12): the
@@ -326,14 +319,6 @@ export function projectEventsV7(
       const hits = event.hits.filter((entry) => seen(entry.unitId));
       if (seen(event.unitId) && hits.length > 0)
         projected.push({ ...event, hits });
-      continue;
-    }
-    if (event.kind === "UNITS_CRUSHED") {
-      const results = event.results.filter(
-        (entry) =>
-          ownedBeforeOrAfter(entry.unitId) || beforeVisible.has(entry.unitId),
-      );
-      if (results.length > 0) projected.push({ ...event, results });
       continue;
     }
     // The Dwarf revision (section 13.11): a tunnel is projected to its

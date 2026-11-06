@@ -9,8 +9,9 @@ import type { MissionDefinitionV7 } from "./types";
  * the water beside it two tiles out in a line (the Witch every tile round
  * her), the ice stays, and Ice Folk slide across it. Every dwarf ship and
  * soldier can crack a tile of ice beside it back into water, unless a unit
- * stands on it; Black Ice freezes an enemy that steps onto your ice, and
- * Icebound locks a ship into the ice to be crushed.
+ * stands on it; Black Ice freezes an enemy that steps onto your ice, and a
+ * Freeze that reaches a ship Freezes it (`pulp_wars-s55m.1`: Icebound and
+ * its crush are gone; the node is Hoarfrost, a three-tile Freeze line).
  *
  * The board is the map generator's (Continents 16, seed 15), turned: the
  * Grey Strait runs north and south between the Ice Folk shore in the west
@@ -151,7 +152,8 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
       faction: "ICE_FOLK",
       // Retune 3: Rime (freeze the shallows) and Pack Ice (the deep water)
       // are all the learning there is; Icebound is a research away. Retune
-      // 4: Gathering, Scouting and Icebound known, 6 Coins.
+      // 4: Gathering, Scouting and Icebound (Hoarfrost since
+      // `pulp_wars-s55m.1`) known, 6 Coins.
       coins: 6,
       technologies: [
         "GATHERING",

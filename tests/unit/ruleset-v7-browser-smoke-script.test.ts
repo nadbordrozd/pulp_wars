@@ -56,7 +56,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
   });
 
-  it("plays the frozen sea in the CHIBI look: Freeze, the slide, an icebound ship", () => {
+  it("plays the frozen sea in the CHIBI look: Freeze, the Cold Snap, the slide, a Frozen ship", () => {
     // The frozen sea (bead pulp_wars-5ti.7, second part).
     const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
     expect(source).toContain("await captureFrozenSeaEvidence(");
@@ -77,7 +77,10 @@ describe("Ruleset 7 browser smoke script", () => {
       "trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN')",
     );
     expect(source).toContain("the Sled did not reach the far shore");
-    expect(source).toContain('[data-unit-status="ice-crush"]');
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship, and
+    // the Witch's one-press Cold Snap.
+    expect(source).toContain('[data-unit-status="frozen"]');
+    expect(source).toContain('[data-action="ice-folk-cold-snap"]');
     expect(source).toContain("Ice Folk technology name: ");
     // The aiming is captured before the Freeze is accepted, and the slide
     // after it.
@@ -917,7 +920,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r122.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r123.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1200,7 +1203,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
     },
     persisted: {
       version: 7,
-      rulesetId: "pulp-wars-poc-7r122",
+      rulesetId: "pulp-wars-poc-7r123",
       commandIndex: 3,
     },
     ordinaryBoundary: {

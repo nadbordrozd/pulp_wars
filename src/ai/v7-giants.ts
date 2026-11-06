@@ -445,7 +445,7 @@ export function crushColumnV7(
  * Whether a visible hostile Abomination that holds no victim could swallow
  * `actor` standing at `at` on its next turn: the engine's own Swallow
  * legality (`swallowRejectionV7`: one slot, no giant, construct, Rock Hard,
- * icebound, or mind-controlled unit, at most its HP limit) for the
+ * or mind-controlled unit, at most its HP limit) for the
  * Abomination fresh on a tile beside `at`, when `reaches` says it can get
  * there. A Frozen Abomination swallows nothing.
  */

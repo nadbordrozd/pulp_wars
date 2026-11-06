@@ -232,3 +232,23 @@ export function lineV7(
     y: from.y + dy * (index + 1),
   }));
 }
+
+/**
+ * The Ice Folk freeze rework (`pulp_wars-s55m.1`): `state` with the units on
+ * `tiles` Frozen for one turn (ships included; no unit afloat is on ice).
+ */
+export function frozenShipsV7(
+  state: GameStateV7,
+  tiles: readonly CoordV7[],
+): GameStateV7 {
+  const ids = new Set(tiles.map((at) => navalUnitAtV7(state, at).id));
+  const parsed = parseGameStateV7({
+    ...state,
+    frozen: [
+      ...state.frozen.filter((entry) => !ids.has(entry.unitId)),
+      ...[...ids].map((unitId) => ({ unitId, turnsLeft: 1 as const })),
+    ].sort((left, right) => left.unitId - right.unitId),
+  });
+  if (parsed === null) throw new Error("the Frozen state is invalid");
+  return parsed;
+}

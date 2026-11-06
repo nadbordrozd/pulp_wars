@@ -146,8 +146,6 @@ export interface CombatPreviewV7 {
     | "OUT_OF_RANGE"
     | "UNANSWERED"
     | "SPLATTED"
-    // The frozen sea (naval branch section 8.9): an icebound defender.
-    | "ICEBOUND"
     // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender.
     | "FROZEN"
     // The Vampire and Banshee rework (`pulp_wars-ty6i`): a defender a
@@ -321,11 +319,6 @@ export interface CombatPreviewV7 {
    * `defenseBonusDenominator`).
    */
   readonly iceCover: boolean;
-  /**
-   * The frozen sea (section 8.9): the defender is icebound and does not
-   * retaliate (`noRetaliationReason` is `ICEBOUND` when it survives).
-   */
-  readonly icebound: boolean;
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55): Shock Field. What the Shock
    * Field of a Shielded Shock Trooper attacked from the next tile took from
@@ -1159,7 +1152,10 @@ export type DomainEventV7 =
         | "COLD_AURA"
         | "BLACK_ICE"
         | "FROSTBITE"
-        | "SHARDS";
+        | "SHARDS"
+        // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze
+        // reached a unit afloat.
+        | "FREEZE";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly turnsLeft: 1 | 2;
@@ -1169,10 +1165,10 @@ export type DomainEventV7 =
       /**
        * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
        * the unit `unitId` of `playerId` froze `tiles` (in (y, x) order; the
-       * redesign: a tile that was ice is taken or mended) and locked the afloat units
-       * `icebound` (in unit-ID order) in the ice. A projection keeps the
-       * tiles the viewer has explored and the units it can see, and is
-       * dropped when no tile is left.
+       * redesign: a tile that was ice is taken or mended; at least one).
+       * Units afloat a Freeze or a Cold Snap reached are in the
+       * `UNITS_FROZEN` before it. A projection keeps the tiles the viewer
+       * has explored, and is dropped when no tile is left.
        */
       readonly kind: "WATER_FROZEN";
       readonly playerId: PlayerId;
@@ -1183,17 +1179,15 @@ export type DomainEventV7 =
        */
       readonly unitId: UnitId | null;
       readonly tiles: readonly CoordV7[];
-      readonly icebound: readonly UnitId[];
     }
   | {
       /**
        * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md
        * section 2.9): the unit `unitId` of `playerId` cracked the ice on
        * `at`. `broken`: the ice broke (the tile is open water again);
-       * otherwise thick ice took its first crack. `freed`: the icebound
-       * units on the broken tile, in unit-ID order. A projection keeps the
+       * otherwise thick ice took its first crack. A projection keeps the
        * event for a viewer that explored `at`, with `unitId` null when it
-       * cannot see the unit and the freed units it can see.
+       * cannot see the unit.
        */
       readonly kind: "ICE_CRACKED";
       readonly playerId: PlayerId;
@@ -1201,35 +1195,6 @@ export type DomainEventV7 =
       readonly unitId: UnitId | null;
       readonly at: CoordV7;
       readonly broken: boolean;
-      readonly freed: readonly UnitId[];
-    }
-  | {
-      /**
-       * The frozen sea (section 8.5): the ice on `tiles` (in (y, x) order)
-       * melted, and the icebound units `freed` (in unit-ID order) float
-       * free. The redesign (section 2.3): only when the ice's owner is
-       * eliminated, and only the tiles that held an icebound unit.
-       * Projected like `WATER_FROZEN`.
-       */
-      readonly kind: "ICE_MELTED";
-      readonly tiles: readonly CoordV7[];
-      readonly freed: readonly UnitId[];
-    }
-  | {
-      /**
-       * The frozen sea (section 8.9): at the Start Turn of `playerId` every
-       * icebound unit on its ice took the crush, in unit-ID order: `damage`
-       * is HP damage and `shieldDamage` what its Shield absorbed first.
-       * Deaths follow as `UNIT_DIED` cause `CRUSHED`.
-       */
-      readonly kind: "UNITS_CRUSHED";
-      readonly playerId: PlayerId;
-      readonly results: readonly {
-        readonly unitId: UnitId;
-        readonly damage: number;
-        readonly shieldDamage: number;
-        readonly hpAfter: number;
-      }[];
     }
   | {
       readonly kind: "WOUNDED_TENDED";
@@ -2096,11 +2061,6 @@ export type DomainEventV7 =
          * Peppermint Surprise of the Crumbs it ate.
          */
         | "PEPPERMINT"
-        /**
-         * The frozen sea (naval branch section 8.9): an icebound unit
-         * crushed by the ice (no credit, no Grave).
-         */
-        | "CRUSHED"
         /**
          * The giants' signatures (RULESET_7_GIANTS.md section 6.0, G5): a
          * Juggernaut's crush or collision, a Thunder Stomp, an Overstride's

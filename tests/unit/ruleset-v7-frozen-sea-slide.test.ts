@@ -16,6 +16,7 @@ import {
 } from "../../src/engine/index";
 import {
   frozenArenaV7,
+  frozenShipsV7,
   lineV7,
   patchFrozenUnitV7,
   type FrozenIceV7,
@@ -553,18 +554,20 @@ describe("Slip (section 8.7)", () => {
 });
 
 describe("ships and ice (sections 8.3 and 8.9)", () => {
-  it("a ship never enters ice, and an icebound one never moves", () => {
-    const state = frozenArenaV7({
-      factions: ["ORIGINAL", "ICE_FOLK"],
-      units: [
-        { seat: 0, role: "PATROL_BOAT", at: { x: 1, y: 4 } },
-        { seat: 0, role: "BATTLESHIP", at: { x: 8, y: 5 } },
-      ],
-      ice: [
-        ...bridge(2).map((entry) => ({ ...entry, seat: 1 as const })),
-        { at: { x: 8, y: 5 }, seat: 1 },
-      ],
-    });
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is in the
+  // ice; a Frozen ship never moves, as a Frozen land unit.
+  it("a ship never enters ice, and a Frozen one never moves", () => {
+    const state = frozenShipsV7(
+      frozenArenaV7({
+        factions: ["ORIGINAL", "ICE_FOLK"],
+        units: [
+          { seat: 0, role: "PATROL_BOAT", at: { x: 1, y: 4 } },
+          { seat: 0, role: "BATTLESHIP", at: { x: 8, y: 5 } },
+        ],
+        ice: bridge(2).map((entry) => ({ ...entry, seat: 1 as const })),
+      }),
+      [{ x: 8, y: 5 }],
+    );
     const boat = { x: 1, y: 4 };
     expect(rejectV7(state, 0, move(state, boat, [{ x: 2, y: 4 }]))).toEqual({
       code: "MOVEMENT_ILLEGAL",
@@ -573,12 +576,11 @@ describe("ships and ice (sections 8.3 and 8.9)", () => {
     // It cannot sail through the bridge either.
     expect(destinations(state, boat).filter((at) => at.x >= 2)).toEqual([]);
     expect(destinations(state, boat).length).toBeGreaterThan(0);
-    // The Battleship frozen in on (8, 5).
+    // The Battleship Frozen on (8, 5).
     const frozen = { x: 8, y: 5 };
-    expect(rejectV7(state, 0, move(state, frozen, [{ x: 8, y: 4 }]))).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "ICEBOUND" },
-    });
+    expect(rejectV7(state, 0, move(state, frozen, [{ x: 8, y: 4 }])).code).toBe(
+      "UNIT_FROZEN",
+    );
     expect(offeredMoves(state, frozen)).toEqual([]);
   });
 

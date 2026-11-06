@@ -581,14 +581,17 @@ const ENTRIES = {
   ROCKFALL: ["Rockfall", "From a mountain it can attack 2 tiles away."],
   FREEZE: [
     "Freeze",
-    "Turns the water next to it to ice that stays until it is cracked: your units slide across it and your cities build on it. Unlocked by a technology.",
+    "Turns the water next to it to ice that stays until it is cracked, or Freezes a ship in the way. Unlocked by a technology.",
   ],
   COLD_BLOOD: ["Cold Blood", "Hits a Frozen unit harder."],
   BLIZZARD: [
     "Blizzard",
     "Snow follows her: your units next to her take less damage from ranged attacks.",
   ],
-  COLD_SNAP: ["Cold Snap", "Freezes every enemy next to her."],
+  COLD_SNAP: [
+    "Cold Snap",
+    "Freezes every enemy next to her, ships too, and with Rime the water around her.",
+  ],
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Witch's Frost Bolt and the
   // Mammoth's Stampede. Bead pulp_wars-2yc.63: the Sled's Bolas is the same
   // freeze, so it is a Frost Bolt too.
@@ -813,14 +816,6 @@ const ENTRIES = {
   STATUS_BOARDABLE: [
     "Boardable",
     "Badly damaged: an enemy ship next to it can capture it.",
-  ],
-  STATUS_ICEBOUND: [
-    "Icebound",
-    "Locked in ice: it cannot sail, shoot or hit back, and the ice crushes it every turn.",
-  ],
-  STATUS_ICE_CRUSH: [
-    "Ice crush",
-    "The ice hurts it at the start of the turn of the player whose ice it is.",
   ],
   // Ice Folk Freeze (`pulp_wars-w49.38`): Frozen is the one Ice Folk
   // status of a unit.
@@ -1249,8 +1244,6 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   afloat: "STATUS_AFLOAT",
   submerged: "SUBMERGED",
   boardable: "STATUS_BOARDABLE",
-  icebound: "STATUS_ICEBOUND",
-  "ice-crush": "STATUS_ICE_CRUSH",
   frozen: "STATUS_FROZEN",
   planted: "STATUS_PLANTED",
   rushed: "STATUS_RUSHED",

@@ -679,7 +679,6 @@ describe("score and modes: the ledger fold", () => {
     for (const cause of [
       "PLAGUE",
       "KABOOM",
-      "CRUSHED",
       "CITY_CAPTURED",
       "ATTACK",
     ] as const) {

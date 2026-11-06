@@ -233,11 +233,14 @@ describe("tile actions in the DOM", () => {
     requiredElement<HTMLElement>("[data-v7-cult-pick]");
   });
 
-  it("leaves the Ice Witch's ring and the bar-only actions off the board", () => {
+  it("leaves the Ice Witch's Cold Snap and the bar-only actions off the board", () => {
     const scene = rig(tileActionsYetiFixtureV7());
     select(scene, FROZEN_UI_V7.witch);
     expect(required(scene.host.lastModel).tileActions ?? null).toBeNull();
-    // Her one Freeze button is still in the dock.
-    requiredButton("freeze");
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): her Cold Snap button,
+    // which also freezes her ring of water, is in the dock; she has no
+    // Freeze.
+    requiredButton("ice-folk-cold-snap");
+    expect(document.querySelector('[data-action="freeze"]')).toBeNull();
   });
 });

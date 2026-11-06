@@ -13,7 +13,6 @@ import {
 import {
   FREEZE_ALREADY_ACTED_V7,
   FREEZE_NEEDS_RIME_V7,
-  ICEBOUND_BLOCKED_V7,
   ICE_COVER_TOOLTIP_V7,
   ICE_FOR_SHIPS_HELP_V7,
   ICE_MOVE_TEXT_V7,
@@ -34,16 +33,16 @@ import { frozenArenaV7, patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
 import {
   FROZEN_UI_V7,
   frozenFreezeUiFixtureV7,
-  frozenIceboundUiFixtureV7,
+  frozenShipUiFixtureV7,
   frozenSlideUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import { navalUnitAtV7 } from "../fixtures/v7-naval-branch";
 
 // The frozen sea interface (bead pulp_wars-5ti.7, second part;
-// docs/ui/BOARD_TARGETING.md section 3.5): Freeze for a line role and for
-// the Ice Witch, the slide and the slip, an icebound ship's reasons and
-// crush warning, the ice chip, and the Ice Folk technology cards, Help and
-// Gallery.
+// docs/ui/BOARD_TARGETING.md section 3.5): Freeze for a line role, the
+// Ice Witch's one-tap Cold Snap and its ring of water (`pulp_wars-s55m.1`),
+// the slide and the slip, a Frozen ship, the ice chip, and the Ice Folk
+// technology cards, Help and Gallery.
 
 const COORDINATE = /\b\d{1,2}, ?\d{1,2}\b/;
 const at = (coord: CoordV7): string => `${coord.x},${coord.y}`;
@@ -95,7 +94,7 @@ describe("Freeze, a line role: armed and picked on the board", () => {
     for (const target of targets) {
       expect(targetHighlightStyleV7(target.family)).toBe("PLACE");
       // The frozen sea redesign (`pulp_wars-5ti.25`): no countdown.
-      expect(target.previewLabel).toMatch(/^Ice [12]( · Icebound)?$/);
+      expect(target.previewLabel).toMatch(/^(Ice [123]|Freezes ship)$/);
       expect(target.semanticLabel).not.toMatch(COORDINATE);
     }
     for (const text of [panel.textContent ?? "", panel.title])
@@ -127,16 +126,18 @@ describe("Freeze, a line role: armed and picked on the board", () => {
       at: FROZEN_UI_V7.freezeAt,
     });
     const after = required(controller.snapshot().view);
+    // Hoarfrost (every Naval technology): a three-tile line.
     expect(after.ice.map((entry) => at(entry.at))).toEqual([
       at(FROZEN_UI_V7.freezeAt),
       at(FROZEN_UI_V7.freezeBeyond),
+      "2,5",
     ]);
     expect(host.lastModel?.interaction.freezePick ?? null).toBeNull();
     await waitUntil(
       () =>
         document
           .querySelector("#v7-live")
-          ?.textContent?.includes("You froze 2 tiles") === true,
+          ?.textContent?.includes("You froze 3 tiles") === true,
     );
     // The new ice is on the plan as sea ice, the Deep Water tile included
     // (Pack Ice).
@@ -147,6 +148,7 @@ describe("Freeze, a line role: armed and picked on the board", () => {
     ).toEqual([
       [at(FROZEN_UI_V7.freezeAt), "SHALLOW"],
       [at(FROZEN_UI_V7.freezeBeyond), "DEEP"],
+      ["2,5", "DEEP"],
     ]);
     app.destroy();
   });
@@ -204,17 +206,21 @@ describe("Freeze, a line role: armed and picked on the board", () => {
   });
 });
 
-describe("Freeze, the Ice Witch: her ring, one button", () => {
-  it("marks the ring while she is selected, lifts it on focus, and casts on press", async () => {
+describe("the Ice Witch's Cold Snap: one tap, units and water", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`; the user: "ice witch
+  // cold snap should not require confirmation. just snap. furthermore the
+  // coldsnap should freeze water around her"): she has no Freeze button;
+  // her Cold Snap button casts at once and freezes her ring of water.
+  it("marks the ring while she is selected, lifts it on focus, and casts on one press", async () => {
     const { controller, host, app, unitAt } = rig(frozenFreezeUiFixtureV7());
     const witch = unitAt(FROZEN_UI_V7.witch);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: witch.id });
-    const freeze = requiredButton("freeze");
-    expect(freeze.dataset.freezeAbility).toBe("ring");
-    expect(freeze.dataset.boardTiles).toBe("3");
-    expect(freeze.hasAttribute("aria-pressed")).toBe(false);
-    expect(freeze.getAttribute("aria-label")).toContain("3 tiles of ice");
-    expect(freeze.getAttribute("aria-label")).not.toMatch(COORDINATE);
+    expect(document.querySelector('[data-action="freeze"]')).toBeNull();
+    const snap = requiredButton("ice-folk-cold-snap");
+    expect(snap.dataset.boardTiles).toBe("3");
+    expect(snap.hasAttribute("aria-pressed")).toBe(false);
+    expect(snap.getAttribute("aria-label")).toContain("3 water tiles");
+    expect(snap.getAttribute("aria-label")).not.toMatch(COORDINATE);
     const ring = () =>
       boardPlan(host).entries.filter((entry) =>
         entry.key.startsWith("ability-area:FREEZE:"),
@@ -224,7 +230,7 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
       new Set(["FREEZE"]),
     );
     // Focus (and hover) lift the ring and label it; blur returns it.
-    freeze.dispatchEvent(new FocusEvent("focus"));
+    snap.dispatchEvent(new FocusEvent("focus"));
     expect(host.lastModel?.interaction.freezeRingFocusUnitId).toBe(witch.id);
     expect(new Set(ring().map((entry) => entry.abilityStyle))).toEqual(
       new Set(["FREEZE_FOCUS"]),
@@ -234,88 +240,37 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
         entry.key.startsWith("ability-target:FREEZE_RING:"),
       )?.label,
     ).toBe("Ice 3");
-    freeze.dispatchEvent(new FocusEvent("blur"));
+    snap.dispatchEvent(new FocusEvent("blur"));
     expect(
       host.lastModel?.interaction.freezeRingFocusUnitId ?? null,
     ).toBeNull();
-    // Nothing is armed and no tile is a target: the button casts.
-    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
-    expect(
-      boardPlan(host).targets.some((target) => target.family === "FREEZE"),
-    ).toBe(false);
-    freeze.click();
+    // One press casts: nothing is armed first.
+    snap.click();
+    expect(document.querySelector("[data-v7-ice-folk-pick]")).toBeNull();
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
-      kind: "FREEZE",
+      kind: "COLD_SNAP",
       unitId: witch.id,
-      at: FROZEN_UI_V7.witch,
     });
     expect(required(controller.snapshot().view).ice).toHaveLength(3);
     app.destroy();
   });
 
-  it("asks a touch before it casts: the first tap lifts and labels the ring, Freeze casts, Cancel and Escape step back", async () => {
-    // `pulp_wars-5ti.10`: a finger has no hover, so one tap must not cast
-    // a ring the player has only seen quiet.
+  it("casts on one tap of a finger too: no confirmation", async () => {
     const { controller, host, app, unitAt } = rig(frozenFreezeUiFixtureV7());
     const witch = unitAt(FROZEN_UI_V7.witch);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: witch.id });
-    const tap = (): void => {
-      const freeze = requiredButton("freeze");
-      const down = new MouseEvent("pointerdown", { bubbles: true });
-      Object.defineProperty(down, "pointerType", { value: "touch" });
-      freeze.dispatchEvent(down);
-      freeze.click();
-    };
-    const label = () =>
-      boardPlan(host).entries.find((entry) =>
-        entry.key.startsWith("ability-target:FREEZE_RING:"),
-      )?.label;
-    tap();
-    expect(controller.accepted).toEqual([]);
-    expect(host.lastModel?.interaction.freezeRingFocusUnitId).toBe(witch.id);
-    expect(label()).toBe("Ice 3");
-    const panel = requiredElement<HTMLElement>("[data-v7-freeze-pick]");
-    expect(panel.dataset.v7FreezePick).toBe("ring");
-    expect(panel.classList.contains("v7-board-pick")).toBe(true);
-    const controls = [...panel.querySelectorAll("button")].map(
-      (control) => control.dataset.action,
-    );
-    expect(controls).toEqual([
-      "pick-info",
-      "confirm-freeze",
-      "freeze-pick-cancel",
-    ]);
-    expect(controls.length).toBeLessThanOrEqual(
-      BOARD_PICK_PANEL_MAX_BUTTONS_V7,
-    );
-    expect(panel.textContent).not.toMatch(COORDINATE);
-    expect(panel.getAttribute("aria-label")).toContain("3 tiles of ice");
-    // The ring's tiles are still an area preview, not targets.
-    expect(
-      boardPlan(host).targets.some((target) => target.family === "FREEZE"),
-    ).toBe(false);
-
-    // Cancel and Escape each step back.
-    requiredButton("freeze-pick-cancel").click();
-    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
-    expect(label()).toBeUndefined();
-    tap();
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-    );
-    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
-    expect(controller.accepted).toEqual([]);
-
-    // Armed, Freeze casts her ring.
-    tap();
-    requiredButton("confirm-freeze").click();
+    const snap = requiredButton("ice-folk-cold-snap");
+    const down = new MouseEvent("pointerdown", { bubbles: true });
+    Object.defineProperty(down, "pointerType", { value: "touch" });
+    snap.dispatchEvent(down);
+    snap.click();
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
-      kind: "FREEZE",
+      kind: "COLD_SNAP",
       unitId: witch.id,
-      at: FROZEN_UI_V7.witch,
     });
+    expect(document.querySelector("[data-v7-ice-folk-pick]")).toBeNull();
     expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
     app.destroy();
   });
@@ -336,7 +291,7 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
     });
     // Rime: the two Shallow tiles beside her (the frozen sea redesign: her
     // own tile is her sound ice, which the ring passes over).
-    expect(requiredButton("freeze").dataset.boardTiles).toBe("2");
+    expect(requiredButton("ice-folk-cold-snap").dataset.boardTiles).toBe("2");
     rime.app.destroy();
     document.body.innerHTML = '<div id="app"></div>';
     const packIce = scene(["SHORECRAFT", "NAVIGATION"]);
@@ -345,7 +300,7 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
       unitId: packIce.unitAt({ x: 2, y: 3 }).id,
     });
     // Pack Ice: the three Deep Water tiles south of her too.
-    expect(requiredButton("freeze").dataset.boardTiles).toBe("5");
+    expect(requiredButton("ice-folk-cold-snap").dataset.boardTiles).toBe("5");
     expect(
       boardPlan(packIce.host)
         .entries.filter((entry) => entry.key.startsWith("ability-area:FREEZE:"))
@@ -472,10 +427,12 @@ describe("moving on ice", () => {
   });
 });
 
-describe("an icebound ship", () => {
-  it("tells its owner why it cannot act and what the ice does next", () => {
+describe("a Frozen ship", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is locked in
+  // the ice; a Frozen ship wears the Frozen chip like any unit.
+  it("tells its owner it is Frozen, and offers it no Move or Attack", () => {
     const { host, app, view, unitAt } = rig(
-      frozenIceboundUiFixtureV7({ victim: true }),
+      frozenShipUiFixtureV7({ victim: true }),
     );
     const ship = unitAt(FROZEN_UI_V7.frozenShip);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: ship.id });
@@ -487,48 +444,19 @@ describe("an icebound ship", () => {
       ),
     ).toBe(false);
     const chip = requiredElement<HTMLElement>(
-      '.v7-selection-dock [data-unit-status="icebound"]',
+      '.v7-selection-dock [data-unit-status="frozen"]',
     );
-    expect(chip.textContent).toBe("Icebound");
-    const crush = requiredElement<HTMLElement>(
-      '.v7-selection-dock [data-unit-status="ice-crush"]',
-    );
-    expect(crush.textContent).toBe("−3 HP");
-    expect(crush.title).toBe(
-      "The ice crushes it for 3 at the start of the Ice Folk's turn",
-    );
-    expect(crush.dataset.lethal).toBe("false");
-    const blocked = requiredButton("icebound-blocked");
-    expect(blocked.getAttribute("aria-disabled")).toBe("true");
-    expect(blocked.title).toBe(ICEBOUND_BLOCKED_V7);
-    blocked.click();
-    expect(document.querySelector("#v7-live")?.textContent).toContain(
-      ICEBOUND_BLOCKED_V7,
-    );
-    // The board marks it and offers nothing.
+    expect(chip.title).not.toMatch(COORDINATE);
+    expect(
+      document.querySelector(
+        '.v7-selection-dock [data-unit-status="icebound"]',
+      ),
+    ).toBeNull();
     expect(boardPlan(host).targets).toEqual([]);
     expect(
       boardPlan(host).entries.find((entry) => entry.key === `unit:${ship.id}`)
-        ?.icebound,
-    ).toEqual({ crush: "−3 HP", lethal: false });
-    app.destroy();
-  });
-
-  it("is shown to the Ice Folk too, with the crush as theirs", () => {
-    const { host, app, unitAt } = rig(frozenIceboundUiFixtureV7());
-    host.callbacks?.onSelection({
-      kind: "UNIT",
-      unitId: unitAt(FROZEN_UI_V7.frozenShip).id,
-    });
-    expect(
-      requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-unit-status="ice-crush"]',
-      ).title,
-    ).toBe("The ice crushes it for 3 at the start of your turn");
-    // An enemy ship has no disabled button of the viewer's.
-    expect(
-      document.querySelector('[data-action="icebound-blocked"]'),
-    ).toBeNull();
+        ?.iceFolk?.frozen,
+    ).toEqual({ turnsLeft: 1 });
     app.destroy();
   });
 });
@@ -537,7 +465,7 @@ describe("the ice chip of a tile", () => {
   it("shows whether the ice is thick or cracked, never a countdown", () => {
     // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent; with
     // Glacier it is thick, and the last tile of the row is cracked.
-    const { host, app } = rig(frozenIceboundUiFixtureV7());
+    const { host, app } = rig(frozenShipUiFixtureV7());
     const chip = (): HTMLElement =>
       requiredElement<HTMLElement>('.v7-selection-dock [data-winter="ice"]');
     for (const [index, kind] of ["thick", "thick", "cracked"].entries()) {
@@ -599,20 +527,20 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
         "seamanship",
         "submersibles",
       ].map(name),
-    ).toEqual(["Rime", "Pack Ice", "Icebound", "Black Ice", "Glacier"]);
+    ).toEqual(["Rime", "Pack Ice", "Hoarfrost", "Black Ice", "Glacier"]);
     const rime = lines("shorecraft");
     expect(rime).toContain(
-      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it; the water inside your borders freezes now and whenever they grow",
+      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch's Cold Snap: all around her), and slide across it; a ship in the way is Frozen; the water inside your borders freezes now and whenever they grow",
     );
     expect(rime).toContain("The Ice Folk build no ships");
     expect(rime.join(" ")).not.toMatch(/embark|Patrol Boat/i);
     expect(lines("navigation")).toContain("Freeze: Deep Water freezes too");
     expect(lines("navigation").join(" ")).not.toContain("Ships can sail");
-    const icebound = lines("naval_engineering");
-    expect(icebound).toContain(
-      "Icebound: Freeze locks an enemy ship in; it cannot sail, shoot or strike back, and takes 3 each turn",
+    const hoarfrost = lines("naval_engineering");
+    expect(hoarfrost).toContain(
+      "Hoarfrost: a Freeze reaches three tiles in a line",
     );
-    expect(icebound.join(" ")).not.toContain("Battleship");
+    expect(hoarfrost.join(" ")).not.toContain("Battleship");
     expect(lines("seamanship")).toEqual([
       "Black Ice: an enemy that steps onto your ice is Frozen",
     ]);

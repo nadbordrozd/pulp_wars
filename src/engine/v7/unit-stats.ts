@@ -13,7 +13,6 @@ import {
   boardableAtV7,
   unitIsSubmergedV7,
   isIceAtV7,
-  unitIsIceboundV7,
   chargeRunUpAttack2V7,
   halfPowerAttack2V7,
   isMindControlledV7,
@@ -62,7 +61,6 @@ import { crackedDefense2V7, unitIsCrackedV7 } from "./ninth-unit";
 import {
   frozenEntryOfV7,
   isBlizzardV7,
-  matchHasIceFolkV7,
   isSnowV7,
   shatterThresholdV7,
   unitGlidesV7,
@@ -369,12 +367,6 @@ export interface PublicUnitStatsV7 {
    * boarded (`floor(maxHp / 3)`); null for every unit not in `NAVAL` form.
    */
   readonly boardableAt: number | null;
-  /**
-   * The naval branch, the frozen sea (section 8.9): the unit is icebound
-   * (afloat on an ice tile). Present for every unit exactly when the match
-   * has an Ice Folk seat.
-   */
-  readonly icebound?: boolean;
   /** The Ice Folk revision: present exactly for units of the Ice Folk kind. */
   readonly iceFolk?: PublicIceFolkMechanicsV7;
   /**
@@ -887,9 +879,6 @@ export function publicUnitStatsV7(
     frozen,
     submerged: unitIsSubmergedV7(state, unit),
     boardableAt: unit.form === "NAVAL" ? boardableAtV7(unit.maxHp) : null,
-    ...(matchHasIceFolkV7(state)
-      ? { icebound: unitIsIceboundV7(state, unit) }
-      : {}),
     ...(goblin
       ? {
           goblin: {
@@ -1125,8 +1114,6 @@ function eggStats(
     frozen: null,
     submerged: false,
     boardableAt: null,
-    // The frozen sea: an Egg is never afloat.
-    ...(matchHasIceFolkV7(state) ? { icebound: false } : {}),
     // The Dwarf revision: an Egg may be bombed (the public per-turn list).
     ...(matchHasDwarvesV7(state)
       ? {

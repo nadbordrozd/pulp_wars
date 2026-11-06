@@ -143,7 +143,10 @@ describe("Ice Folk texts (section 13.2)", () => {
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
     // tiles around the Witch.
     expect(COLD_SNAP_RANGE_V7).toBe(1);
-    expect(COLD_SNAP_NO_TARGET_V7).toBe("No unfrozen enemy next to her");
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): and the water.
+    expect(COLD_SNAP_NO_TARGET_V7).toBe(
+      "No unfrozen enemy or open water next to her",
+    );
     const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").attack2;
     expect(boulderThrowTextV7(true)).toBe(
       `Planted: Attack ${half(boulder + PLANTED_BONUS2_V7)}`,

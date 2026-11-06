@@ -14,7 +14,6 @@ import {
   unitCapacitySlotsV7,
   unitFactionV7,
   unitFliesV7,
-  unitIsIceboundV7,
   unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -236,7 +235,7 @@ export function attackCrushDamageV7(
 
 /**
  * Section 6.1: a defender the Push rule never moves by its nature is never
- * crushed: an Egg, a Rock Hard unit, and an icebound unit. The Cultists
+ * crushed: an Egg and a Rock Hard unit. The Cultists
  * (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 4.2): the Herald is
  * the exception: nothing pushes it (Unstoppable), so a Crushing Shove
  * crushes it, as damage. So is the Gibbering Mass (the Cult redesign,
@@ -253,8 +252,7 @@ export function defenderCrushableV7(
     defender.form !== "EGG" &&
     (!unitIsImmovableV7(lookup, defender) ||
       unitIsUnstoppableV7(defender) ||
-      defender.summoned === "MASS") &&
-    !unitIsIceboundV7(lookup, defender)
+      defender.summoned === "MASS")
   );
 }
 
@@ -530,7 +528,6 @@ export function swallowRejectionV7(
     unitCapacitySlotsV7(lookup, target) !== 1 ||
     unitIsConstructV7(lookup, target) ||
     unitIsImmovableV7(lookup, target) ||
-    unitIsIceboundV7(lookup, target) ||
     isMindControlledV7(lookup, target.id)
   )
     return { code: "SWALLOW_NOT_LEGAL", reason: "IMMUNE" };

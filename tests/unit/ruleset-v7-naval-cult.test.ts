@@ -8,7 +8,6 @@ import {
   favourOfV7,
   previewDeepOfferingsV7,
   publicDraggingKrakenV7,
-  publicDraggingKrakensV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   roleMechanicsV7,
@@ -58,7 +57,6 @@ import {
   cultStraitV7,
   type CultPieceV7,
 } from "../fixtures/v7-naval-cult";
-import { frozenArenaV7 } from "../fixtures/v7-frozen-sea";
 
 // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`,
 // docs/product/RULESET_7_NAVAL_FACTIONS.md section 9): the Black Gondola,
@@ -701,28 +699,6 @@ describe("K2: the Kraken's Drag afloat (section 9.3)", () => {
         { x: 1, y: 8 },
       ]).legal,
     ).toBe(true);
-  });
-
-  it("does not drag from an icebound Kraken", () => {
-    const KRAKEN: CoordV7 = { x: 4, y: 5 };
-    const BOAT: CoordV7 = { x: 3, y: 5 };
-    const frozen = frozenArenaV7({
-      factions: ["CULT", "ORIGINAL"],
-      units: [
-        { seat: 0, role: "SUBMARINE", at: KRAKEN },
-        { seat: 1, role: "PATROL_BOAT", at: BOAT },
-      ],
-      ice: [{ at: KRAKEN, seat: 2 }],
-      third: { faction: "ICE_FOLK", explored: true },
-    });
-    const boat = navalUnitAtV7(frozen, BOAT);
-    expect(
-      validateMovementPathV7(frozen, boat, [
-        { x: 2, y: 5 },
-        { x: 1, y: 5 },
-      ]).legal,
-    ).toBe(true);
-    expect(publicDraggingKrakensV7(viewOf(frozen, 1))).toEqual([]);
   });
 
   it("does not stop a Ram's shove of a unit beside it", () => {

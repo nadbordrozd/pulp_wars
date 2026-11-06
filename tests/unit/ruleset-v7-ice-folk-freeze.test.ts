@@ -369,7 +369,10 @@ describe("Frozen: no move, no action, no retaliation (section 21.3)", () => {
 });
 
 describe("Who can be Frozen, and the Bolas (sections 21.2 and 21.9)", () => {
-  it("never an embarked, naval, Egg, own, or allied unit; Bolas rejections in table order", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`; the user: "I expected
+  // to be able to freeze an enemy ship same as any other unit and it would
+  // last 1 turn"): embarked and naval units are Frozen like land units.
+  it("freezes an embarked or naval unit like any unit; never an own or allied one; Bolas rejections in table order", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(4, 3) },
@@ -380,13 +383,13 @@ describe("Who can be Frozen, and the Bolas (sections 21.2 and 21.9)", () => {
       ],
       { water: [at(5, 2), at(6, 2)] },
     );
-    expect(rejectedV7(state, bolas(state, at(4, 3), at(5, 2)))).toEqual({
-      code: "BOLAS_NOT_LEGAL",
-      params: { reason: "TARGET_IMMUNE" },
-    });
-    expect(rejectedV7(state, bolas(state, at(4, 3), at(6, 2))).params).toEqual({
-      reason: "TARGET_IMMUNE",
-    });
+    for (const target of [at(5, 2), at(6, 2)]) {
+      const thrown = playV7(state, bolas(state, at(4, 3), target));
+      expect(frozenAtV7(thrown.state, target)).toEqual({
+        unitId: unitAtV7(state, target).id,
+        turnsLeft: 1,
+      });
+    }
     expect(rejectedV7(state, bolas(state, at(4, 3), at(4, 4))).code).toBe(
       "TARGET_ALLIED",
     );
@@ -625,6 +628,8 @@ describe("Frozen state, view, and events (sections 21.2 and 21.15)", () => {
         { unitId: Math.min(yeti, fighter), turnsLeft: 1 },
         { unitId: Math.max(yeti, fighter), turnsLeft: 2 },
       ],
+      // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a ship freezes too.
+      [{ unitId: boat, turnsLeft: 1 }],
     ])
       expect(parse(legal), JSON.stringify(legal)).not.toBeNull();
     for (const illegal of [
@@ -632,7 +637,6 @@ describe("Frozen state, view, and events (sections 21.2 and 21.15)", () => {
       [{ unitId: fighter, turnsLeft: 3 }],
       [{ unitId: fighter, turnsLeft: 1, sluggish: true }],
       [{ unitId: 9999, turnsLeft: 1 }],
-      [{ unitId: boat, turnsLeft: 1 }],
       [{ unitId: egg, turnsLeft: 1 }],
       [
         { unitId: Math.max(yeti, fighter), turnsLeft: 1 },
@@ -770,7 +774,8 @@ describe("the fairness numbers (`pulp_wars-w49.37`)", () => {
       "BLIZZARD",
       "COLD_SNAP",
       "FROST_BOLT",
-      "FREEZE",
+      // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no separate Freeze;
+      // her Cold Snap freezes the water around her.
     ]);
     expect(rule("SWORDSMAN").abilities).toContain("STAMPEDE");
   });

@@ -55,8 +55,8 @@ export type AbilityPreviewStyleV7 =
   | "PULL_STEP"
   /**
    * The Ice Folk revision (bead pulp_wars-7g3.6): a Sweep flank victim, a
-   * unit a freeze would catch (FROZEN: a Frost Giant's Cold Aura, an
-   * icebound ship), and the reach of a Cold Snap or Frost Bolt (the
+   * unit a freeze would catch (FROZEN: a Frost Giant's Cold Aura, a ship a
+   * Freeze reaches), and the reach of a Cold Snap or Frost Bolt (the
    * faction's ice glow, ICE_FOLK_PALETTE_V7).
    */
   | "SWEEP"

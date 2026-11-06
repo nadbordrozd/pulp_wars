@@ -14,6 +14,7 @@ import {
   queryPlayerCommandsV7,
   runReplayV7,
   showcaseStripCenterXV7,
+  previewFreezeV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -133,21 +134,27 @@ describe("frozen sea persistence", () => {
           command.unitId === boulder.id && endsOn({ x: cx, y: 11 })(command),
       ),
     );
-    expect(
-      offered().some(
-        (command) =>
-          command.kind === "FREEZE" &&
-          command.unitId === boulder.id &&
-          command.at.x === cx &&
-          command.at.y === 12,
-      ),
-    ).toBe(false);
+    // With Hoarfrost (`pulp_wars-s55m.1`) the line goes on past the two
+    // tiles of its own sound ice to a third, so the Freeze toward them is
+    // offered, and it passes both over.
+    const south = offered().find(
+      (command) =>
+        command.kind === "FREEZE" &&
+        command.unitId === boulder.id &&
+        command.at.x === cx &&
+        command.at.y === 12,
+    );
+    if (south?.kind !== "FREEZE") throw new Error("no Freeze south");
+    const southTiles =
+      previewFreezeV7(viewForV7(state, ice.id), boulder.id, south.at)?.tiles ??
+      [];
+    expect(southTiles).not.toContainEqual({ x: cx, y: 12 });
+    expect(southTiles).not.toContainEqual({ x: cx, y: 13 });
     play(find("FREEZE", (command) => command.unitId === boulder.id));
     expect(events.at(-1)).toMatchObject({
       kind: "WATER_FROZEN",
       playerId: ice.id,
       unitId: boulder.id,
-      icebound: [],
     });
     const midSave = createSaveEnvelopeV7(
       { state, replay },

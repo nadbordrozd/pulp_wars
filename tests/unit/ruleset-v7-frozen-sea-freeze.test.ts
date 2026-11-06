@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseEventV7,
   parsePlayerEventEnvelopeV7,
+  previewColdSnapV7,
   previewFreezeV7,
   projectEventsV7,
   queryPlayerCommandsV7,
@@ -31,12 +32,16 @@ import {
 // redesign (`pulp_wars-5ti.25`, docs/product/RULESET_7_ICE_REDESIGN.md
 // section 2.4): ice is permanent, the own dock freezes, foreign ice is
 // taken, own cracked ice mended, own sound ice passed over, and a Freeze
-// that changes nothing is neither offered nor accepted.
+// that changes nothing is neither offered nor accepted. The Ice Folk freeze
+// rework (`pulp_wars-s55m.1`): a hostile ship the line reaches is Frozen
+// (its tile stays open water), any dock may be iced over, Hoarfrost (the
+// node Icebound was) makes the line three tiles, and the Witch freezes her
+// ring with her Cold Snap (she has no Freeze of her own).
 
 const SHORE: CoordV7 = { x: 2, y: 2 };
 const RIME: readonly TechnologyIdV7[] = ["SHORECRAFT"];
 const PACK_ICE: readonly TechnologyIdV7[] = ["SHORECRAFT", "NAVIGATION"];
-const ICEBOUND: readonly TechnologyIdV7[] = [
+const HOARFROST: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
   "NAVIGATION",
   "NAVAL_ENGINEERING",
@@ -142,7 +147,7 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
     expect(offeredFreezes(result.state)).toEqual([]);
   });
 
-  it("row 5: `at` is one of the eight tiles around the unit (the Witch: her own tile)", () => {
+  it("row 5: `at` is one of the eight tiles around the unit; the Witch has no Freeze (her Cold Snap freezes her ring)", () => {
     const state = frozenArenaV7({
       technologies: [[...RIME, "GATHERING", "ADMINISTRATION"], ALL],
       units: [
@@ -156,11 +161,17 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
         params: { reason: "OUT_OF_RANGE" },
       });
     const witch = { x: 8, y: 2 };
-    expect(rejectV7(state, 0, freeze(state, witch, { x: 8, y: 3 }))).toEqual({
-      code: "FREEZE_NOT_LEGAL",
-      params: { reason: "OUT_OF_RANGE" },
-    });
-    expect(acceptV7(state, 0, freeze(state, witch, witch)).events[0]).toEqual({
+    for (const at of [witch, { x: 8, y: 3 }])
+      expect(rejectV7(state, 0, freeze(state, witch, at))).toEqual({
+        code: "UNIT_ROLE_INVALID",
+        params: { role: "CAPTAIN" },
+      });
+    expect(
+      acceptV7(state, 0, {
+        kind: "COLD_SNAP",
+        unitId: navalUnitAtV7(state, witch).id,
+      }).events[0],
+    ).toEqual({
       kind: "WATER_FROZEN",
       playerId: seatV7(state, 0).id,
       unitId: navalUnitAtV7(state, witch).id,
@@ -169,11 +180,10 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
         { x: 8, y: 3 },
         { x: 9, y: 3 },
       ],
-      icebound: [],
     });
   });
 
-  it("row 6: an empty freeze set is NO_TARGET (land, a hostile dock, a tile the line may not skip)", () => {
+  it("row 6: an empty freeze set is NO_TARGET (land); any dock freezes, a hostile one too", () => {
     const state = frozenArenaV7({
       technologies: [RIME, ALL],
       units: [
@@ -190,10 +200,26 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
       code: "FREEZE_NOT_LEGAL",
       params: { reason: "NO_TARGET" },
     });
-    // A hostile dock never freezes, and a line never skips its first tile.
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a hostile dock is
+    // iced over; it stays its owner's Port, in its owner's territory.
+    const icedOver = acceptV7(
+      state,
+      0,
+      freeze(state, { x: 6, y: 6 }, { x: 6, y: 7 }),
+    );
+    expect(iceEntryV7(icedOver.state, { x: 6, y: 7 })).toEqual({
+      at: { x: 6, y: 7 },
+      ownerId: seatV7(state, 0).id,
+      cracked: false,
+    });
+    const port = icedOver.state.board.tiles.find(
+      (tile) => tile.at.x === 6 && tile.at.y === 7,
+    );
+    expect(port?.improvement).toBe("PORT");
     expect(
-      rejectV7(state, 0, freeze(state, { x: 6, y: 6 }, { x: 6, y: 7 })),
-    ).toEqual({ code: "FREEZE_NOT_LEGAL", params: { reason: "NO_TARGET" } });
+      icedOver.state.cities.find((city) => city.id === port?.territoryCityId)
+        ?.ownerId,
+    ).toBe(seatV7(state, 1).id);
     // The redesign: the own Port freezes (an Ice Harbour).
     const harbour = acceptV7(
       state,
@@ -211,7 +237,7 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
       )?.improvement,
     ).toBe("PORT");
     // The offers are exactly the `at` with a non-empty set, in (y, x) order
-    // (the Musk Ox's Deep Water needs Pack Ice; the hostile dock is none).
+    // (the Musk Ox's Deep Water needs Pack Ice; the hostile dock is one).
     expect(offeredFreezes(state)).toEqual([
       freeze(state, SHORE, { x: 1, y: 3 }),
       freeze(state, SHORE, { x: 2, y: 3 }),
@@ -220,6 +246,7 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
       freeze(state, { x: 4, y: 2 }, { x: 4, y: 3 }),
       freeze(state, { x: 4, y: 2 }, { x: 5, y: 3 }),
       freeze(state, { x: 6, y: 6 }, { x: 5, y: 7 }),
+      freeze(state, { x: 6, y: 6 }, { x: 6, y: 7 }),
       freeze(state, { x: 6, y: 6 }, { x: 7, y: 7 }),
     ]);
   });
@@ -307,7 +334,7 @@ describe("the freeze set (section 8.4)", () => {
       tiles: [{ x: 2, y: 4 }],
       mended: [],
       taken: [{ x: 2, y: 4 }],
-      icebound: [],
+      frozenUnits: [],
     });
     const taken = acceptV7(taking, 0, freeze(taking, SHORE, { x: 2, y: 3 }));
     expect(taken.state.ice).toEqual([
@@ -327,9 +354,11 @@ describe("the freeze set (section 8.4)", () => {
         { x: 2, y: 3 },
       ),
     ).toMatchObject({
+      // Every technology, Hoarfrost included: a three-tile line.
       tiles: [
         { x: 2, y: 3 },
         { x: 2, y: 4 },
+        { x: 2, y: 5 },
       ],
       mended: [{ x: 2, y: 3 }],
       taken: [],
@@ -354,48 +383,85 @@ describe("the freeze set (section 8.4)", () => {
     );
   });
 
-  it("does not take a tile that holds a ship without Icebound, and locks a hostile ship in with it", () => {
-    const scene = (technologies: readonly TechnologyIdV7[]) =>
-      frozenArenaV7({
-        technologies: [technologies, ALL],
-        units: [
-          { seat: 0, role: "FIGHTER", at: SHORE },
-          { seat: 1, role: "PATROL_BOAT", at: { x: 2, y: 3 } },
-        ],
-      });
-    const without = scene(PACK_ICE);
-    expect(
-      rejectV7(without, 0, freeze(without, SHORE, { x: 2, y: 3 })),
-    ).toEqual({ code: "FREEZE_NOT_LEGAL", params: { reason: "NO_TARGET" } });
-    const withTech = scene(ICEBOUND);
-    const boat = navalUnitAtV7(withTech, { x: 2, y: 3 });
-    const result = acceptV7(
-      withTech,
-      0,
-      freeze(withTech, SHORE, { x: 2, y: 3 }),
-    );
-    // The line stops after a tile that held a ship.
-    expect(frozenTiles(result.state)).toEqual([{ x: 2, y: 3 }]);
+  it("Freezes a hostile ship the line reaches (Rime alone), leaves its tile open water, and stops there", () => {
+    const state = frozenArenaV7({
+      technologies: [PACK_ICE, ALL],
+      units: [
+        { seat: 0, role: "FIGHTER", at: SHORE },
+        { seat: 1, role: "PATROL_BOAT", at: { x: 2, y: 3 } },
+      ],
+    });
+    const yeti = navalUnitAtV7(state, SHORE);
+    const boat = navalUnitAtV7(state, { x: 2, y: 3 });
+    const view = viewForV7(state, seatV7(state, 0).id);
+    expect(previewFreezeV7(view, yeti.id, { x: 2, y: 3 })).toEqual({
+      unitId: yeti.id,
+      tiles: [],
+      mended: [],
+      taken: [],
+      frozenUnits: [boat.id],
+    });
+    const result = acceptV7(state, 0, freeze(state, SHORE, { x: 2, y: 3 }));
+    // No ice: the ship's tile is open water, and the line stops at it.
+    expect(frozenTiles(result.state)).toEqual([]);
     expect(result.events).toEqual([
       {
-        kind: "WATER_FROZEN",
-        playerId: seatV7(withTech, 0).id,
-        unitId: navalUnitAtV7(withTech, SHORE).id,
-        tiles: [{ x: 2, y: 3 }],
-        icebound: [boat.id],
+        kind: "UNITS_FROZEN",
+        playerId: seatV7(state, 0).id,
+        sourceUnitId: yeti.id,
+        source: "FREEZE",
+        results: [{ unitId: boat.id, turnsLeft: 1 }],
       },
     ]);
-    // The ship has not moved.
+    for (const event of result.events)
+      expect(parseEventV7(event).ok).toBe(true);
+    expect(result.state.frozen).toEqual([{ unitId: boat.id, turnsLeft: 1 }]);
+    // The ship has not moved; the Yeti has used its action.
     expect(navalUnitAtV7(result.state, { x: 2, y: 3 }).id).toBe(boat.id);
+    expect(navalUnitAtV7(result.state, SHORE).activation.specialActed).toBe(
+      true,
+    );
+    // A ship Frozen already for as long changes nothing: no Freeze.
+    const again = frozenStateV7(
+      patchFrozenUnitV7(result.state, yeti.id, {
+        activation: navalUnitAtV7(state, SHORE).activation,
+      }),
+      [],
+    );
+    expect(rejectV7(again, 0, freeze(again, SHORE, { x: 2, y: 3 }))).toEqual({
+      code: "FREEZE_NOT_LEGAL",
+      params: { reason: "NO_TARGET" },
+    });
   });
 
-  it("the Ice Witch freezes every freezable tile around her, her own cracked tile included", () => {
+  it("Hoarfrost (the node Icebound was) makes the line three tiles", () => {
+    const line = (technologies: readonly TechnologyIdV7[]) => {
+      const state = frozenArenaV7({
+        technologies: [technologies, ALL],
+        units: [{ seat: 0, role: "FIGHTER", at: SHORE }],
+      });
+      return frozenTiles(
+        acceptV7(state, 0, freeze(state, SHORE, { x: 2, y: 3 })).state,
+      );
+    };
+    expect(line(PACK_ICE)).toEqual([
+      { x: 2, y: 3 },
+      { x: 2, y: 4 },
+    ]);
+    expect(line(HOARFROST)).toEqual([
+      { x: 2, y: 3 },
+      { x: 2, y: 4 },
+      { x: 2, y: 5 },
+    ]);
+  });
+
+  it("the Ice Witch's Cold Snap freezes every freezable tile around her, her own cracked tile included, and Freezes the ship beside her", () => {
     const witchAt = { x: 2, y: 3 };
     const state = frozenArenaV7({
       technologies: [[...ALL, "GATHERING", "ADMINISTRATION"], ALL],
       units: [
         { seat: 0, role: "CAPTAIN", at: witchAt },
-        // A hostile ship next to her is locked in (Icebound).
+        // A hostile ship next to her is Frozen; its tile stays water.
         { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 4 } },
       ],
       // Glacier: her own tile is cracked thick ice.
@@ -403,29 +469,30 @@ describe("the freeze set (section 8.4)", () => {
     });
     const witch = navalUnitAtV7(state, witchAt);
     const boat = navalUnitAtV7(state, { x: 3, y: 4 });
-    expect(offeredFreezes(state)).toEqual([freeze(state, witchAt, witchAt)]);
-    const preview = previewFreezeV7(
+    expect(offeredFreezes(state)).toEqual([]);
+    const preview = previewColdSnapV7(
       viewForV7(state, seatV7(state, 0).id),
       witch.id,
-      witchAt,
     );
     expect(preview).toEqual({
       unitId: witch.id,
+      targets: [{ unitId: boat.id, alreadyFrozen: false }],
       tiles: [
         { x: 1, y: 3 },
         { x: 2, y: 3 },
         { x: 3, y: 3 },
         { x: 1, y: 4 },
         { x: 2, y: 4 },
-        { x: 3, y: 4 },
       ],
-      mended: [witchAt],
-      taken: [],
-      icebound: [boat.id],
     });
-    const result = acceptV7(state, 0, freeze(state, witchAt, witchAt));
+    const result = acceptV7(state, 0, { kind: "COLD_SNAP", unitId: witch.id });
     expect(frozenTiles(result.state)).toEqual(preview?.tiles);
     expect(result.state.ice.every((entry) => !entry.cracked)).toBe(true);
+    expect(result.state.frozen).toEqual([{ unitId: boat.id, turnsLeft: 1 }]);
+    expect(result.events.map((event) => event.kind)).toEqual([
+      "UNITS_FROZEN",
+      "WATER_FROZEN",
+    ]);
     // Once her tile is sound, the ring passes it over.
     const sound = frozenArenaV7({
       technologies: [[...ALL, "GATHERING", "ADMINISTRATION"], ALL],
@@ -433,17 +500,16 @@ describe("the freeze set (section 8.4)", () => {
       ice: [{ at: witchAt, seat: 0 }],
     });
     expect(
-      previewFreezeV7(
+      previewColdSnapV7(
         viewForV7(sound, seatV7(sound, 0).id),
         navalUnitAtV7(sound, witchAt).id,
-        witchAt,
       )?.tiles,
     ).not.toContainEqual(witchAt);
   });
 
   it("previews every offered Freeze exactly, and offers exactly the accepted ones", () => {
     const state = frozenArenaV7({
-      technologies: [ICEBOUND, ALL],
+      technologies: [HOARFROST, ALL],
       units: [
         { seat: 0, role: "FIGHTER", at: SHORE },
         { seat: 0, role: "RAIDER", at: { x: 7, y: 2 } },
@@ -460,17 +526,37 @@ describe("the freeze set (section 8.4)", () => {
     for (const command of offers) {
       if (command.kind !== "FREEZE") throw new Error("not a Freeze");
       const preview = previewFreezeV7(view, command.unitId, command.at);
-      const result = acceptV7(state, 0, command);
-      expect(result.events[0]).toEqual({
-        kind: "WATER_FROZEN",
-        playerId: seatV7(state, 0).id,
-        unitId: command.unitId,
-        tiles: preview?.tiles,
-        icebound: preview?.icebound,
-      });
-      expect(parseEventV7(result.events[0]).ok).toBe(true);
-      // Every tile of the preview is the actor's sound ice afterwards.
       if (preview === null) throw new Error("preview missing");
+      const result = acceptV7(state, 0, command);
+      expect(result.events.slice(0, 2)).toEqual([
+        ...(preview.frozenUnits.length === 0
+          ? []
+          : [
+              {
+                kind: "UNITS_FROZEN",
+                playerId: seatV7(state, 0).id,
+                sourceUnitId: command.unitId,
+                source: "FREEZE",
+                results: preview.frozenUnits.map((unitId) => ({
+                  unitId,
+                  turnsLeft: 1,
+                })),
+              },
+            ]),
+        ...(preview.tiles.length === 0
+          ? []
+          : [
+              {
+                kind: "WATER_FROZEN",
+                playerId: seatV7(state, 0).id,
+                unitId: command.unitId,
+                tiles: preview.tiles,
+              },
+            ]),
+      ]);
+      for (const event of result.events)
+        expect(parseEventV7(event).ok).toBe(true);
+      // Every tile of the preview is the actor's sound ice afterwards.
       const after = viewForV7(result.state, seatV7(state, 0).id).ice;
       for (const at of preview.tiles)
         expect(
@@ -578,7 +664,6 @@ describe("Freeze: who learns of it (section 12)", () => {
         playerId: seatV7(partial, 0).id,
         unitId: null,
         tiles: [{ x: 2, y: 4 }],
-        icebound: [],
       },
     ]);
     expect(parsePlayerEventEnvelopeV7(partialEvents).ok).toBe(true);

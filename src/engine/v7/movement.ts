@@ -9,7 +9,6 @@ import {
   hoverLaunchAllowedV7,
   flyerMayStandOnSiteV7,
   isIceAtV7,
-  unitIsIceboundV7,
   isMindControlledV7,
   technologyCapabilitiesV7,
   ownerResearchedTechsV7,
@@ -120,13 +119,11 @@ export type MovementFailureReasonV7 =
   // only on an explored land tile the Vampire may stand on, with no
   // curiosity.
   | "BAT_ESCAPE_LANDING"
-  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.6,
-  // 8.7, and 8.9): a path that stops or turns where a slide continues; a
-  // path that continues past an ice tile a slipping unit entered; a Move of
-  // an icebound unit.
+  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.6
+  // and 8.7): a path that stops or turns where a slide continues; a path
+  // that continues past an ice tile a slipping unit entered.
   | "SLIDE_FORCED"
   | "ICE_STOPS_MOVE"
-  | "ICEBOUND"
   // Map curiosities round 2 (section 28.2): a Dimensional Gate ends every
   // Move that enters it, so a path cannot continue past one.
   | "GATE_STOPS_MOVE"
@@ -388,15 +385,13 @@ function validateMovementPathCoreV7(
   const ownSitesOnly = unitAvoidsForeignSitesV7(state, unit);
   let currentSnow = snowAt(current);
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3,
-  // 8.6, 8.7, and 8.9): ice is read once, from the state before the command.
+  // 8.6, and 8.7): ice is read once, from the state before the command.
   // It is ground for a land-form unit and closed to a unit afloat; an Ice
-  // Folk unit slides on it (forced, at no cost), another faction's ground
-  // unit slips (its Move ends there), and an icebound unit never moves.
+  // Folk unit slides on it (forced, at no cost), and another faction's
+  // ground unit slips (its Move ends there).
   const iceSet = iceIndexSetV7(state, state.board.width);
   const iceAt = (at: CoordV7): boolean =>
     iceSet.size > 0 && iceSet.has(at.y * state.board.width + at.x);
-  if (unit.form !== "LAND" && iceAt(unit.at))
-    return { legal: false, reason: "ICEBOUND" };
   const slides = iceSet.size > 0 && unitSlidesV7(state, unit);
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
   // Sled's Runners, a slide that a hostile zone of control does not stop.
@@ -1384,14 +1379,12 @@ function validatePlayerMovementPathCoreV7(
     return tile?.explored === true && tile.snow === true;
   };
   let currentSnow = publicSnowAt(current);
-  // The frozen sea (naval branch sections 8.3, 8.6, 8.7, and 8.9): the ice
-  // on explored tiles is public, so slides, slips, and icebound units are
-  // exact here. The same rules as the canonical validation.
+  // The frozen sea (naval branch sections 8.3, 8.6, and 8.7): the ice on
+  // explored tiles is public, so slides and slips are exact here. The same
+  // rules as the canonical validation.
   const iceSet = context.ice;
   const iceAt = (at: CoordV7): boolean =>
     iceSet.size > 0 && iceSet.has(at.y * view.board.width + at.x);
-  if (unit.form !== "LAND" && iceAt(unit.at))
-    return { legal: false, reason: "ICEBOUND" };
   const slides = iceSet.size > 0 && unitSlidesV7(view, unit);
   // The frozen sea redesign (section 2.7): Runners.
   const runners = slides && unitHasRunnersV7(view, unit);
@@ -1847,10 +1840,8 @@ function projectsZocV7(
   // Map curiosities (section 8.3): nor does the neutral Monster.
   if (unitFliesV7(state, projector) || isNeutralOwnerV7(projector.ownerId))
     return false;
-  // The frozen sea (naval branch sections 8.3 and 8.9): an icebound unit is
-  // frozen solid and projects nothing; an ice tile takes zones of control
-  // like land (from land units, never from naval units).
-  if (unitIsIceboundV7(state, projector)) return false;
+  // The frozen sea (naval branch section 8.3): an ice tile takes zones of
+  // control like land (from land units, never from naval units).
   const targetTile = tileAtV7(state.board, at);
   const water = targetTile?.biome === null && !isIceAtV7(state, at);
   if (!water) return projector.form !== "NAVAL";
@@ -1925,8 +1916,6 @@ function publicHostileZoc(
         // curiosities (section 8.3): nor does the neutral Monster.
         unitFliesV7(view, unit) ||
         isNeutralOwnerV7(unit.ownerId) ||
-        // The frozen sea: an icebound unit projects nothing.
-        unitIsIceboundV7(view, unit) ||
         unit.ownerId === target.ownerId ||
         publicAllied(view, target.ownerId, unit.ownerId)
       )

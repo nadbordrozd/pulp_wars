@@ -67,7 +67,7 @@ import {
 } from "../fixtures/v7-naval-branch";
 import {
   frozenFreezeUiFixtureV7,
-  frozenIceboundUiFixtureV7,
+  frozenShipUiFixtureV7,
   frozenSlideUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
@@ -249,7 +249,7 @@ const FIXTURES: readonly (readonly [
   ],
   ["Frozen sea: slide", frozenSlideUiFixtureV7, []],
   ["Frozen sea: slip", () => frozenSlideUiFixtureV7({ slipper: true }), []],
-  ["Frozen sea: icebound", frozenIceboundUiFixtureV7, []],
+  ["Frozen sea: icebound", frozenShipUiFixtureV7, []],
   // The giants' signatures (`pulp_wars-w49.32`): each of the four commands
   // aimed and picked on the board, the attack and Move previews, the held
   // victim, the Gingerbread Men and razed Walls.
@@ -402,7 +402,7 @@ const FIXTURES: readonly (readonly [
   ],
   [
     "Frozen sea: icebound victim",
-    () => frozenIceboundUiFixtureV7({ victim: true }),
+    () => frozenShipUiFixtureV7({ victim: true }),
     [],
   ],
 ];

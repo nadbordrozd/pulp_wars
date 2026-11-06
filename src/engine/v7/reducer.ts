@@ -61,7 +61,6 @@ import {
   flyerMayStandOnSiteV7,
   factionUnlocksRoleV7,
   isIceAtV7,
-  unitIsIceboundV7,
   unitFliesV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
@@ -115,15 +114,15 @@ import {
   iceAtV7,
   iceBuildableV7,
   iceIsThickV7,
+  freezeLineV7,
   releaseEliminatedIceV7,
   resolveBlackIceOnEntryV7,
-  resolveIceCrushV7,
   territoryFreezeV7,
   territoryFrozenEventsV7,
   unitCracksIceV7,
-  unitFreezesRingV7,
   withFrozenV7,
   withoutIceV7,
+  type FreezeTileFactsV7,
 } from "./ice";
 import {
   attackMaximumRangeV7,
@@ -438,6 +437,7 @@ import {
   type HeldRewardUnitV7,
   type CoordV7,
   type CuriosityV7,
+  type FrozenStatusV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchSetupV7,
@@ -548,7 +548,7 @@ export type RuleErrorCodeV7 =
   | "BARRICADE_NOT_LEGAL"
   // The Candy revision: a primary action or a Sugar Rush of a Crashed unit
   // (`UNIT_CRASHED { unitId }`), an illegal Sugar Rush (`EMBARKED`,
-  // `RUSHED`, and for a ship `ICEBOUND`), Re-bake (`EMBARKED`, `NO_HOME`, `NO_CRUMBS`, `TILE`), or
+  // `RUSHED`), Re-bake (`EMBARKED`, `NO_HOME`, `NO_CRUMBS`, `TILE`), or
   // Sugar Toss (`EMBARKED`, `OUT_OF_RANGE`, `ALREADY_TOSSED`).
   | "UNIT_CRASHED"
   | "SUGAR_RUSH_NOT_LEGAL"
@@ -562,13 +562,10 @@ export type RuleErrorCodeV7 =
   // the reason `NOT_AFLOAT` (section 5.3).
   | "BOARD_NOT_LEGAL"
   // The frozen sea (section 8.4): an illegal Freeze (`OUT_OF_RANGE`,
-  // `NO_TARGET`). An icebound unit's Attack is `ATTACK_NOT_LEGAL`, its
-  // Board `BOARD_NOT_LEGAL`, and its Move `MOVEMENT_ILLEGAL`, each with the
-  // reason `ICEBOUND` (section 8.9).
+  // `NO_TARGET`).
   | "FREEZE_NOT_LEGAL"
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): an
-  // illegal Crack Ice (`ICEBOUND`, `OUT_OF_RANGE`, `NO_ICE`, `OCCUPIED`,
-  // `BUILT`).
+  // illegal Crack Ice (`OUT_OF_RANGE`, `NO_ICE`, `OCCUPIED`, `BUILT`).
   | "CRACK_ICE_NOT_LEGAL"
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
   // 6.3, 6.4, and 6.8): an illegal Swallow (`EMBARKED`, `FULL`, `TARGET`,
@@ -2088,8 +2085,12 @@ function navalFactsMayChangeV7(
     "REDEVELOP",
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md sections 2.4 and
     // 2.6): a Freeze over an own dock moves its blockade rule onto the ice,
-    // and a Pillage may remove an Ice Harbour.
+    // and a Pillage may remove an Ice Harbour. Ice Folk freeze rework
+    // (`pulp_wars-s55m.1`): so does a Cold Snap's water ring, any dock may
+    // be iced over, and a Crack may open a dock again.
     "FREEZE",
+    "COLD_SNAP",
+    "CRACK_ICE",
     "PILLAGE",
     "WAIL",
     // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl can kill an
@@ -2543,16 +2544,15 @@ function applyResearch(
           : state.curiosities.filter((curiosity) => curiosity !== notes),
     };
     // The border freeze (`pulp_wars-5ti.31`): a technology that widens what
-    // the seat freezes (Rime, Pack Ice, Icebound) freezes the water of every
-    // own city's territory at once, as a Land Grant would.
+    // the seat freezes (Rime, Pack Ice) freezes the water of every own
+    // city's territory at once, as a Land Grant would.
     const before = technologyCapabilitiesV7(
       player.researchedTechs,
       player.faction,
     );
     const after = technologyCapabilitiesV7(researchedTechs, player.faction);
     const freeze =
-      before.freezeWater !== after.freezeWater ||
-      before.icebound !== after.icebound
+      before.freezeWater !== after.freezeWater
         ? territoryFreezeV7(researched, actor, null)
         : null;
     const iced: GameStateV7 =
@@ -3605,8 +3605,8 @@ function applyShipyard(
   if (city?.ownerId !== actor) return rejected(original, "TERRITORY_NOT_OWNED");
   if (tile.improvement !== "PORT" || !isActivePortV7(state, at, actor))
     return rejected(original, "INVALID_TILE", { action: "BUILD_SHIPYARD" });
-  // `pulp_wars-ez0i` (7r121): never under an enemy ship, frozen onto the
-  // dock by the Ice Folk or not (the offer already left it out).
+  // `pulp_wars-ez0i` (7r121): never under an enemy ship (a Frozen one too:
+  // it blockades the dock; the offer already left it out).
   if (isTileEnemyOccupiedV7(state, actor, at))
     return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (
@@ -3931,7 +3931,7 @@ function applyDisembark(
         role: unit.role,
       }),
       // The frozen sea (naval branch section 8.3): a transport may land on
-      // adjacent ice (an icebound one too: the crew climbs out).
+      // adjacent ice.
       ice: isIceAtV7(state, command.at),
     }) ||
     (territoryOwner !== undefined &&
@@ -5267,10 +5267,108 @@ function applySingleFreeze(
 }
 
 /**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`): what a Freeze by `actor`
+ * reads of one tile of the canonical state (`freezeSetV7`). A unit on the
+ * tile is freezable when the actor sees it, can Freeze it, and a freeze
+ * would change its entry.
+ */
+function freezeTileFactsAtV7(
+  state: GameStateV7,
+  actor: PlayerId,
+): (at: CoordV7) => FreezeTileFactsV7 | undefined {
+  const player = requirePlayer(state, actor);
+  return (at) => {
+    const tile = tileAtV7(state.board, at);
+    if (tile === undefined) return undefined;
+    const occupant = state.units.find(
+      (candidate) => candidate.hp > 0 && same(candidate.at, at),
+    );
+    const entry = iceAtV7(state, at);
+    return {
+      explored: isExplored(player, at),
+      terrain: tile.terrain,
+      ice:
+        entry === undefined
+          ? null
+          : { own: entry.ownerId === actor, cracked: entry.cracked },
+      unit:
+        occupant === undefined
+          ? null
+          : {
+              id: occupant.id,
+              form: occupant.form,
+              freezable:
+                isUnitVisibleToPlayerV7(state, actor, occupant) &&
+                canBeFrozenV7(state, actor, occupant) &&
+                freezeChangesUnitV7(state, state.frozen, occupant),
+            },
+    };
+  };
+}
+
+/**
+ * The state after a Freeze or a Cold Snap made `tiles` ice for `actor` and
+ * Froze `unitIds`, with the acting unit handled, accepted with `events`. A
+ * dock made ice is an Ice Harbour (or an enemy dock iced over): the live
+ * economy is recomputed, since its blockade rule changes.
+ */
+function acceptedWaterFreezeV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  actingUnitId: UnitStateV7["id"],
+  tiles: readonly CoordV7[],
+  frozen: readonly FrozenStatusV7[],
+  events: readonly DomainEventV7[],
+): ApplyCommandResultV7 {
+  const frozenState: GameStateV7 = {
+    ...state,
+    commandIndex: nextSafe(state.commandIndex),
+    ice: withFrozenV7(state.ice, tiles, actor),
+    frozen,
+    units: state.units.map((candidate) =>
+      candidate.id === actingUnitId
+        ? {
+            ...candidate,
+            activation: {
+              ...candidate.activation,
+              specialActed: true,
+              handled: true,
+            },
+          }
+        : candidate,
+    ),
+  };
+  const docks = tiles.some((at) => {
+    const improvement = tileAtV7(state.board, at)?.improvement;
+    return improvement === "PORT" || improvement === "SHIPYARD";
+  });
+  if (!docks) return accepted(checked(frozenState), events);
+  const recalculation = recomputeLiveEconomyV7(
+    frozenState,
+    { board: frozenState.board, cities: frozenState.cities },
+    frozenState.populationContributions,
+  );
+  return accepted(
+    checked({
+      ...frozenState,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+    }),
+    [...events, ...economyAndGrowth(recalculation.changes)],
+  );
+}
+
+/**
  * The Ice Folk revision (section 21.6): `COLD_SNAP`. Ice Folk Freeze
  * (`pulp_wars-w49.37`): the Witch freezes every unit she can freeze that her
  * owner sees on the eight tiles around her, and has used her primary
- * action.
+ * action. Ice Folk freeze rework (`pulp_wars-s55m.1`; the user: "the
+ * coldsnap should freeze water around her ... it's the same ability"):
+ * with Rime the same cast also freezes every freezable water tile within
+ * Chebyshev `WITCH_FREEZE_RADIUS_V7` of her (the ring of her old `FREEZE`).
+ * Ships, embarked units, and units on docks are Frozen like anyone. Legal
+ * when it Freezes at least one unit it changes or changes at least one
+ * tile.
  */
 function applyColdSnap(
   original: GameStateV7,
@@ -5299,39 +5397,61 @@ function applyColdSnap(
     witch,
     state.units.filter((unit) => isUnitVisibleToPlayerV7(state, actor, unit)),
   );
-  if (targets.length === 0)
+  // A unit-level unlock (the Mind Control revision section 5.2): the
+  // controller's research through the Witch's kind's tree.
+  const capabilities = unitCapabilitiesV7(
+    state,
+    witch,
+    requirePlayer(state, actor).researchedTechs,
+  );
+  const water =
+    capabilities.freezeWater === "NONE"
+      ? null
+      : freezeSetV7({
+          from: witch.at,
+          at: witch.at,
+          ring: true,
+          line: 0,
+          freezeWater: capabilities.freezeWater,
+          tileAt: freezeTileFactsAtV7(state, actor),
+        });
+  const tiles = water?.tiles ?? [];
+  if (targets.length === 0 && tiles.length === 0)
     return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "NO_TARGET" });
   // No pointless actions (`pulp_wars-zir6`, 7r107): an area cast needs at
-  // least one target it changes; already Frozen targets still count in it.
-  if (!targets.some((unit) => freezeChangesUnitV7(state, state.frozen, unit)))
+  // least one target it changes (a unit or a tile); already Frozen targets
+  // still count in it.
+  if (
+    tiles.length === 0 &&
+    !targets.some((unit) => freezeChangesUnitV7(state, state.frozen, unit))
+  )
     return rejected(original, "COLD_SNAP_NOT_LEGAL", {
       reason: "ALREADY_FROZEN",
     });
   try {
-    const applied = withFrozenAppliedV7(
+    const applied = withFrozenAppliedV7(state, state.frozen, [
+      ...targets.map((unit) => unit.id),
+      ...(water?.units ?? []),
+    ]);
+    const events: DomainEventV7[] = [];
+    if (applied.results.length > 0)
+      events.push(
+        unitsFrozenEventV7(actor, witch.id, "COLD_SNAP", applied.results),
+      );
+    if (tiles.length > 0)
+      events.push({
+        kind: "WATER_FROZEN",
+        playerId: actor,
+        unitId: witch.id,
+        tiles,
+      });
+    return acceptedWaterFreezeV7(
       state,
-      state.frozen,
-      targets.map((unit) => unit.id),
-    );
-    return accepted(
-      checked({
-        ...state,
-        commandIndex: nextSafe(state.commandIndex),
-        frozen: applied.frozen,
-        units: state.units.map((unit) =>
-          unit.id === witch.id
-            ? {
-                ...unit,
-                activation: {
-                  ...unit.activation,
-                  specialActed: true,
-                  handled: true,
-                },
-              }
-            : unit,
-        ),
-      }),
-      [unitsFrozenEventV7(actor, witch.id, "COLD_SNAP", applied.results)],
+      actor,
+      witch.id,
+      tiles,
+      applied.frozen,
+      events,
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -5342,16 +5462,17 @@ function applyColdSnap(
  * The naval branch, the frozen sea
  * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): `FREEZE`. An Ice
  * Folk land unit turns the water next to it to ice: two tiles out in a
- * straight line from `at` (the Ice Witch: every tile around her, with `at`
- * her own tile). It is a primary action, not an Attack, and costs no Coins.
- * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.4): every
- * tile of the freeze set gets a sound entry owned by the actor (open water
- * and the actor's own dock made ice, another player's ice taken, the
- * actor's own cracked ice mended; its sound ice is passed over), and with
- * Icebound a hostile afloat unit on a frozen tile is locked in the ice. A
- * Freeze that changes nothing is refused (`NO_TARGET`). A Freeze moves no
- * unit; a dock it freezes is an Ice Harbour (the live economy is
- * recomputed: its blockade rule changes).
+ * straight line from `at` (three with Hoarfrost; the Ice Witch freezes her
+ * ring with her Cold Snap since `pulp_wars-s55m.1`). It is a primary
+ * action, not an Attack, and costs no Coins. The frozen sea redesign
+ * (RULESET_7_ICE_REDESIGN.md section 2.4): every tile of the freeze set
+ * gets a sound entry owned by the actor (open water and any dock made ice,
+ * another player's ice taken, the actor's own cracked ice mended; its sound
+ * ice is passed over). Ice Folk freeze rework (`pulp_wars-s55m.1`): a unit
+ * afloat the line reaches is Frozen and its tile stays open water. A Freeze
+ * that changes nothing is refused (`NO_TARGET`). A Freeze moves no unit; a
+ * dock it freezes is an Ice Harbour (the live economy is recomputed: its
+ * blockade rule changes).
  */
 function applyFreeze(
   original: GameStateV7,
@@ -5382,94 +5503,39 @@ function applyFreeze(
     primaryActionBlockedAfterMoveV7(state, unit)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
-  const ring = unitFreezesRingV7(state, unit);
-  if (ring ? !same(command.at, unit.at) : chebyshev(command.at, unit.at) !== 1)
+  if (chebyshev(command.at, unit.at) !== 1)
     return rejected(original, "FREEZE_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
   const frozen = freezeSetV7({
     from: unit.at,
     at: command.at,
-    ring,
+    ring: false,
+    line: freezeLineV7(capabilities),
     freezeWater: capabilities.freezeWater,
-    icebound: capabilities.icebound,
-    tileAt: (at) => {
-      const tile = tileAtV7(state.board, at);
-      if (tile === undefined) return undefined;
-      const occupant = state.units.find(
-        (candidate) => candidate.hp > 0 && same(candidate.at, at),
-      );
-      const entry = iceAtV7(state, at);
-      return {
-        explored: isExplored(player, at),
-        terrain: tile.terrain,
-        improvement: tile.improvement,
-        ownTerritory:
-          tile.territoryCityId !== null &&
-          state.cities.some(
-            (city) =>
-              city.id === tile.territoryCityId && city.ownerId === actor,
-          ),
-        ice:
-          entry === undefined
-            ? null
-            : { own: entry.ownerId === actor, cracked: entry.cracked },
-        unit:
-          occupant === undefined
-            ? null
-            : {
-                id: occupant.id,
-                form: occupant.form,
-                hostile: arePlayersHostileV7(state, actor, occupant.ownerId),
-                neutral: isNeutralOwnerV7(occupant.ownerId),
-              },
-      };
-    },
+    tileAt: freezeTileFactsAtV7(state, actor),
   });
-  if (frozen.tiles.length === 0)
+  if (frozen.tiles.length === 0 && frozen.units.length === 0)
     return rejected(original, "FREEZE_NOT_LEGAL", { reason: "NO_TARGET" });
   try {
-    const frozenState: GameStateV7 = {
-      ...state,
-      commandIndex: nextSafe(state.commandIndex),
-      ice: withFrozenV7(state.ice, frozen.tiles, actor),
-      units: state.units.map((candidate) =>
-        candidate.id === unit.id
-          ? {
-              ...candidate,
-              activation: {
-                ...candidate.activation,
-                specialActed: true,
-                handled: true,
-              },
-            }
-          : candidate,
-      ),
-    };
-    const event: DomainEventV7 = {
-      kind: "WATER_FROZEN",
-      playerId: actor,
-      unitId: unit.id,
-      tiles: frozen.tiles,
-      icebound: frozen.icebound,
-    };
-    // A dock made ice is an Ice Harbour: a hostile ship locked on it no
-    // longer blockades it (section 2.6).
-    const docks = frozen.tiles.some((at) => {
-      const improvement = tileAtV7(state.board, at)?.improvement;
-      return improvement === "PORT" || improvement === "SHIPYARD";
-    });
-    if (!docks) return accepted(checked(frozenState), [event]);
-    const recalculation = recomputeLiveEconomyV7(
-      frozenState,
-      { board: frozenState.board, cities: frozenState.cities },
-      frozenState.populationContributions,
-    );
-    return accepted(
-      checked({
-        ...frozenState,
-        cities: recalculation.cities,
-        populationContributions: recalculation.populationContributions,
-      }),
-      [event, ...economyAndGrowth(recalculation.changes)],
+    const applied = withFrozenAppliedV7(state, state.frozen, frozen.units);
+    const events: DomainEventV7[] = [];
+    if (applied.results.length > 0)
+      events.push(
+        unitsFrozenEventV7(actor, unit.id, "FREEZE", applied.results),
+      );
+    if (frozen.tiles.length > 0)
+      events.push({
+        kind: "WATER_FROZEN",
+        playerId: actor,
+        unitId: unit.id,
+        tiles: frozen.tiles,
+      });
+    return acceptedWaterFreezeV7(
+      state,
+      actor,
+      unit.id,
+      frozen.tiles,
+      applied.frozen,
+      events,
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -5477,13 +5543,36 @@ function applyFreeze(
 }
 
 /**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`): whether `actor` may Crack
+ * the ice on a built tile: a dock (Port or Shipyard, any form) whose owner
+ * (the owner of the city whose territory it is in) is the actor or an
+ * ally, iced over by a hostile Freeze. Every other building on ice is
+ * refused (`BUILT`; Pillage it instead).
+ */
+export function crackIceOnDockAllowedV7(
+  state: Pick<GameStateV7, "cities" | "setup" | "humanPlayerId">,
+  actor: PlayerId,
+  tile: Pick<TileStateV7, "improvement" | "territoryCityId">,
+): boolean {
+  if (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD")
+    return false;
+  const owner = state.cities.find(
+    (city) => city.id === tile.territoryCityId,
+  )?.ownerId;
+  return (
+    owner !== undefined &&
+    (owner === actor || arePlayersAlliedV7(state, actor, owner))
+  );
+}
+
+/**
  * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md section
  * 2.9): `CRACK_ICE`. A unit or ship of any kind but the Ice Folk breaks the
  * ice on one of the eight tiles around it back into open water, or, on
  * thick ice that is not cracked yet, cracks it. Rejections in the order of
- * the section's table; a primary action, not an attack, free. An icebound
- * unit on a broken tile floats free at once (its activation is untouched,
- * so an unacted one may sail and act this turn).
+ * the section's table; a primary action, not an attack, free. Since
+ * `pulp_wars-s55m.1` the owner of a dock (and its allies) may crack hostile
+ * ice on it, so a Port iced over by the Ice Folk can be opened again.
  */
 function applyCrackIce(
   original: GameStateV7,
@@ -5499,8 +5588,6 @@ function applyCrackIce(
   const unit = actorCheck.unit;
   if (!unitCracksIceV7(state, unit))
     return rejected(original, "UNIT_ROLE_INVALID", { role: unit.role });
-  if (unitIsIceboundV7(state, unit))
-    return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "ICEBOUND" });
   if (unitIsCrashedV7(state, unit.id))
     return rejected(original, "UNIT_CRASHED", { unitId: unit.id });
   if (
@@ -5523,53 +5610,63 @@ function applyCrackIce(
     (entry.ownerId !== actor && arePlayersAlliedV7(state, actor, entry.ownerId))
   )
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "NO_ICE" });
-  const occupants = state.units.filter(
-    (candidate) => candidate.hp > 0 && same(candidate.at, command.at),
-  );
-  if (occupants.some((candidate) => !isAfloatFormV7(candidate.form)))
+  if (
+    state.units.some(
+      (candidate) => candidate.hp > 0 && same(candidate.at, command.at),
+    )
+  )
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "OCCUPIED" });
-  if (tile.improvement !== null)
+  if (tile.improvement !== null && !crackIceOnDockAllowedV7(state, actor, tile))
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "BUILT" });
   const { broken } = crackIceResultV7(
     entry,
     iceIsThickV7(state.players, entry.ownerId),
   );
-  const freed = broken
-    ? occupants.map((candidate) => candidate.id).sort((a, b) => a - b)
-    : [];
   try {
+    const cracked: GameStateV7 = {
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      ice: broken
+        ? withoutIceV7(state.ice, [command.at])
+        : state.ice.map((item) =>
+            same(item.at, command.at) ? { ...item, cracked: true } : item,
+          ),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              activation: {
+                ...candidate.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : candidate,
+      ),
+    };
+    const event: DomainEventV7 = {
+      kind: "ICE_CRACKED",
+      playerId: actor,
+      unitId: unit.id,
+      at: { x: command.at.x, y: command.at.y },
+      broken,
+    };
+    // A dock opened again is no longer an iced-over dock: its blockade rule
+    // changes, so the live economy is recomputed.
+    if (!broken || tile.improvement === null)
+      return accepted(checked(cracked), [event]);
+    const recalculation = recomputeLiveEconomyV7(
+      cracked,
+      { board: cracked.board, cities: cracked.cities },
+      cracked.populationContributions,
+    );
     return accepted(
       checked({
-        ...state,
-        commandIndex: nextSafe(state.commandIndex),
-        ice: broken
-          ? withoutIceV7(state.ice, [command.at])
-          : state.ice.map((item) =>
-              same(item.at, command.at) ? { ...item, cracked: true } : item,
-            ),
-        units: state.units.map((candidate) =>
-          candidate.id === unit.id
-            ? {
-                ...candidate,
-                activation: {
-                  ...candidate.activation,
-                  specialActed: true,
-                  handled: true,
-                },
-              }
-            : candidate,
-        ),
+        ...cracked,
+        cities: recalculation.cities,
+        populationContributions: recalculation.populationContributions,
       }),
-      [
-        {
-          kind: "ICE_CRACKED",
-          playerId: actor,
-          unitId: unit.id,
-          at: { x: command.at.x, y: command.at.y },
-          broken,
-          freed,
-        },
-      ],
+      [event, ...economyAndGrowth(recalculation.changes)],
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -6467,10 +6564,6 @@ function applyAttack(
   const attacker = actorCheck.unit;
   if (attacker.form === "EMBARKED")
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "EMBARKED" });
-  // The frozen sea (naval branch section 8.9): an icebound ship is frozen
-  // solid and cannot attack.
-  if (unitIsIceboundV7(state, attacker))
-    return rejected(original, "ATTACK_NOT_LEGAL", { reason: "ICEBOUND" });
   const rule = unitRoleRuleV7(state, attacker);
   // The Dwarf revision section 6.1: a Gyrocopter has no ordinary attack.
   if (rule.abilities.includes("BOMB_RUN") && !rule.abilities.includes("ATTACK"))
@@ -6582,8 +6675,8 @@ function applyAttack(
  * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1):
  * Crushing Shove. After an `ATTACK` from distance 1 by a land-form unit
  * whose role has `CRUSH`, a target that survived the exchange, stayed on
- * its tile (it was not pushed), and can be crushed (not an Egg, Rock Hard,
- * or icebound) takes the fixed crush damage, and a unit or Egg hostile to
+ * its tile (it was not pushed), and can be crushed (not an Egg or Rock
+ * Hard) takes the fixed crush damage, and a unit or Egg hostile to
  * the attacker's owner on the tile it would have been pushed onto (the
  * blocker; never a burrowed unit) takes it too; then their deaths, in that
  * order, as `CRUSH` deaths credited to the attacker. `UNIT_CRUSHED` follows
@@ -6816,10 +6909,6 @@ function applyBoard(
     primaryActionBlockedAfterMoveV7(state, boarder)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: boarder.id });
-  // The frozen sea (naval branch section 4.2 row 4a): an icebound ship
-  // cannot board (an icebound target may be boarded, and stays icebound).
-  if (unitIsIceboundV7(state, boarder))
-    return rejected(original, "BOARD_NOT_LEGAL", { reason: "ICEBOUND" });
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
   );
@@ -8785,10 +8874,8 @@ function applyCapture(
     }
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.3): the
     // former owner's ice in the captured city's territory passes to the
-    // captor, sound; an eliminated seat's icebound units float free (the
-    // rest of its ice stays).
+    // captor, sound; an eliminated seat's ice stays (its cracks are gone).
     let ice = state.ice;
-    const iceEvents: DomainEventV7[] = [];
     if (formerOwner !== null && ice.length > 0) {
       ice = ice.map((entry) =>
         entry.ownerId === formerOwner &&
@@ -8796,11 +8883,7 @@ function applyCapture(
           ? { ...entry, ownerId: actor, cracked: false }
           : entry,
       );
-      if (eliminatesFormerOwner) {
-        const release = releaseEliminatedIceV7(ice, units, formerOwner);
-        ice = release.ice;
-        iceEvents.push(...release.events);
-      }
+      if (eliminatesFormerOwner) ice = releaseEliminatedIceV7(ice, formerOwner);
     }
     const events: DomainEventV7[] = [
       {
@@ -8908,7 +8991,6 @@ function applyCapture(
           cause: "ELIMINATION",
         })),
         { kind: "PLAYER_ELIMINATED", playerId: formerOwner },
-        ...iceEvents,
       );
     }
     const outcome = eliminationOutcomeV7(state, players, actor);
@@ -9132,17 +9214,14 @@ function applyEndTurn(
           ),
           nextPlayer.id,
         );
-        // The frozen sea (naval branch section 9): the crush, after the
-        // Shield recharge and before Plague (the redesign: Black Ice freezes
-        // on entry, no longer here). Ice Folk Freeze (`pulp_wars-w49.37`):
-        // the Frost Giant's Cold Aura no longer runs here; it freezes at the
-        // end of the Giant's own Move.
-        const aura = resolveStartTurnIceV7(recharge.state, nextPlayer.id);
+        // The frozen sea: the crush that ran here after the Shield recharge
+        // is gone with Icebound (`pulp_wars-s55m.1`); Black Ice freezes on
+        // entry and the Frost Giant's Cold Aura at the end of its own Move.
         // The Dwarf revision section 5.4: the burrowed Moles surface after the
-        // Shield recharge (and the Cold Aura) and before Plague.
+        // Shield recharge and before Plague.
         const surfacing = resolveStartTurnSurfacingV7(
           DWARF_KIT_V7,
-          aura.state,
+          recharge.state,
           nextPlayer.id,
         );
         const next = surfacing.state;
@@ -9193,11 +9272,7 @@ function applyEndTurn(
                 state: hatch.state,
                 events: [...plague.events, ...hatch.events],
               };
-        const before = [
-          ...recharge.events,
-          ...aura.events,
-          ...surfacing.events,
-        ];
+        const before = [...recharge.events, ...surfacing.events];
         return before.length === 0
           ? afflicted
           : {
@@ -10194,60 +10269,6 @@ function applyKaboom(
  * chain's rising reveals, and the live economy when a unit died. Runs inside
  * the Start Turn before Windmill healing.
  */
-/**
- * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.9) at
- * the Start Turn of `playerId`: the crush (the redesign,
- * RULESET_7_ICE_REDESIGN.md section 2.8: Black Ice no longer runs at the
- * Start Turn). A crushed unit is a death afloat: no credit and no Grave. A
- * crushed Brain (an
- * embarked one) releases its controlled unit right after its death, an
- * embarked exploding unit explodes on its tile, and the live economy is
- * recomputed (a crushed unit may have besieged a city).
- */
-function resolveStartTurnIceV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  if (state.ice.length === 0) return { state, events: [] };
-  const crush = resolveIceCrushV7(state, playerId);
-  if (crush.events.length === 0) return { state, events: [] };
-  const events: DomainEventV7[] = [...crush.events];
-  if (crush.dead.length === 0) return { state: crush.state, events };
-  const release = releaseControlledV7(
-    crush.state.units,
-    crush.state.burrowed,
-    crush.state.mindControlled,
-    crush.state.players,
-    events,
-    null,
-    crush.state.board,
-  );
-  const released: GameStateV7 = {
-    ...crush.state,
-    units: [...release.units],
-    burrowed: release.burrowed,
-    mindControlled: release.mindControlled,
-  };
-  const economy = recomputeLiveEconomyV7(
-    state,
-    { board: released.board, cities: released.cities, units: released.units },
-    released.populationContributions,
-  );
-  events.push(...economyAndGrowth(economy.changes));
-  return withDeathBlastChainV7(
-    state,
-    {
-      state: {
-        ...released,
-        cities: economy.cities,
-        populationContributions: economy.populationContributions,
-      },
-      events,
-    },
-    "CRUSHED",
-  );
-}
-
 function resolveStartTurnPlagueAndChainV7(
   state: GameStateV7,
   playerId: PlayerId,
@@ -10272,7 +10293,7 @@ function withDeathBlastChainV7(
     readonly state: GameStateV7;
     readonly events: readonly DomainEventV7[];
   },
-  cause: "PLAGUE" | "CRUSHED",
+  cause: "PLAGUE",
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const plague = result;
   const initial = plague.events.flatMap((event) => {
@@ -10280,11 +10301,6 @@ function withDeathBlastChainV7(
     const victim = requireValue(
       state.units.find((unit) => unit.id === event.unitId),
     );
-    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
-    // section 3.3 G2, `pulp_wars-5ti.16`): a ship the ice crushes sinks
-    // quietly (the Scrap Dreadnought); an embarked exploding unit crushed
-    // with its raft still explodes.
-    if (cause === "CRUSHED" && victim.form === "NAVAL") return [];
     return isExplodingUnitV7(state, victim)
       ? [{ unit: { ...victim, hp: 0 }, cause: "DEATH" as const }]
       : [];
@@ -10548,7 +10564,7 @@ function recoveryFacts(state: GameStateV7, unit: UnitStateV7): RecoveryFactsV7 {
  * Whether the ship `unit` recovers by the dock on `at`: an active own dock
  * on its tile or next to it. The frozen sea redesign
  * (RULESET_7_ICE_REDESIGN.md section 2.6): nothing recovers on a dock on
- * ice (a ship there is icebound); beside one a ship recovers as beside any.
+ * ice (no ship is ever on ice); beside one a ship recovers as beside any.
  */
 function shipRecoversAtDockV7(
   state: GameStateV7,
@@ -10857,7 +10873,7 @@ function placeCitySpawnV7(
  * Reward arrival (`pulp_wars-sa3h`, section 4.6): whether the unit
  * `occupant` on a city center may be pushed off it to `at`: the Push
  * conditions (`displacementDestinationLegalV7`: not an Egg, a neutral
- * unit, Rock Hard, or icebound; on the board, no settlement, enterable by
+ * unit, or Rock Hard; on the board, no settlement, enterable by
  * its own movement and form, so a land unit goes on ice but never on open
  * water; empty; not in territory allied to it), no treasure chest, and the
  * occupant is not Unstoppable.

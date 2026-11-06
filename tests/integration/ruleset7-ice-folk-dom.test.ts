@@ -222,7 +222,7 @@ describe("Ice Folk unit dock", () => {
       "Cold Snap",
       // Ice Folk Freeze (`pulp_wars-w49.37`).
       "Frost Bolt",
-      "Freeze",
+      // `pulp_wars-s55m.1`: her Cold Snap freezes water; she has no Freeze.
       "Glide",
     ]);
     expect(
@@ -431,30 +431,24 @@ describe("Ice Folk abilities", () => {
     app.destroy();
   });
 
-  it("casts a Cold Snap with one confirm, from the board or the dock", async () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`; the user: "ice witch
+  // cold snap should not require confirmation. just snap"): one press casts.
+  it("casts a Cold Snap on one press of its button, with no confirm", async () => {
     const controller = new FixtureController(iceFolkUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const witch = selectUnitAt(controller, host, AT.witch);
-    requiredButton("ice-folk-cold-snap").click();
     const preview = required(
       previewColdSnapV7(required(controller.snapshot().view), witch.id),
     );
-    // Bead pulp_wars-b5f.8: the panel shows the ability's name; the
-    // summary is its accessible name, its "?" and the cast button's name.
-    expect(
-      requiredElement("[data-v7-ice-folk-pick] .v7-kaboom-summary").textContent,
-    ).toBe("Cold Snap");
-    expect(
-      requiredElement("[data-v7-ice-folk-pick]").getAttribute("aria-label"),
-    ).toBe(coldSnapSummaryV7(preview));
-    expect(
-      requiredButton("cold-snap-cast").getAttribute("aria-label"),
-    ).toContain(coldSnapSummaryV7(preview));
-    const targets = boardPlan(host).targets;
-    expect(targets).toHaveLength(coldSnapChangedTargetsV7(preview).length);
-    // Choosing any highlighted unit casts it.
-    host.callbacks?.onCommand(required(targets[0]));
+    const button = requiredButton("ice-folk-cold-snap");
+    // Its accessible name carries the summary of what it does.
+    expect(button.getAttribute("aria-label")).toContain(
+      coldSnapSummaryV7(preview),
+    );
+    expect(coldSnapChangedTargetsV7(preview).length).toBeGreaterThan(0);
+    button.click();
+    expect(document.querySelector("[data-v7-ice-folk-pick]")).toBeNull();
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "COLD_SNAP",

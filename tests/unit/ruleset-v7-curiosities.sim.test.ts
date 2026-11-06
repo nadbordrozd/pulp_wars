@@ -364,7 +364,6 @@ describe("headless parity and the CLI flag", () => {
           ram,
           torpedo,
           iceCover,
-          icebound,
           shockDamage,
           crackApplied,
           frostbiteApplied,
@@ -381,7 +380,7 @@ describe("headless parity and the CLI flag", () => {
         expect([ram, torpedo]).toEqual([false, false]);
         // The frozen sea (`pulp_wars-5ti.3`, 7r44) adds two more, neutral
         // while nothing is frozen.
-        expect([iceCover, icebound]).toEqual([false, false]);
+        expect(iceCover).toBe(false);
         expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
           false,
           false,

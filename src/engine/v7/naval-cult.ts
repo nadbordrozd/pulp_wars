@@ -44,7 +44,7 @@ import {
  *   from splash, blasts, Plague, a bomb, the crush, or a Tentacle.
  * - **The Kraken's Drag afloat** (K2). A unit afloat of a player hostile to
  *   the Kraken's owner that begins a `MOVE` beside a living Kraken in
- *   `NAVAL` form that is not icebound moves one tile in it (the Gibbering
+ *   `NAVAL` form (a Frozen one too) moves one tile in it (the Gibbering
  *   Mass's `DRAGGED`, `MASS_DRAG_TILES_V7`). A landing (`DISEMBARK`), a
  *   Ram's shove, and a Tractor Beam pull are not Moves. It is read from the
  *   board when the Move begins: no status and no state.
@@ -67,7 +67,7 @@ export interface KrakenUnitFactsV7 extends SummonedUnitRefV7 {
 /**
  * Section 9.3 K2: whether `unit` is a living ship whose role, under its
  * kind, Drags afloat (the Cult Kraken), in `NAVAL` form. Ice is the
- * caller's (an icebound Kraken drags nobody).
+ * caller's (no ship is ever on ice since `pulp_wars-s55m.1`).
  */
 export function unitDragsAfloatV7(
   roster: FactionRosterV7,

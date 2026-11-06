@@ -16,7 +16,7 @@ import * as renderer from "../../src/render/canvas/board-renderer-v7";
 import {
   FROZEN_UI_V7,
   frozenFreezeUiFixtureV7,
-  frozenIceboundUiFixtureV7,
+  frozenShipUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import {
   NAVAL_UI_V7,
@@ -141,7 +141,11 @@ describe("Board on the board host", () => {
     ]);
     for (let step = 0; step < 3; step += 1) {
       expect(tab(), String(step)).toBe(true);
-      expect(description()).toMatch(/^Freeze: [12] tiles? of ice\. /);
+      // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a line that reaches
+      // the Patrol Boat Freezes it instead.
+      expect(description()).toMatch(
+        /^Freeze: ([123] tiles? of ice\. |1 ship is Frozen)/,
+      );
       expect(description()).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
     }
     // Past the last tile Tab leaves the board.
@@ -158,7 +162,7 @@ describe("Board on the board host", () => {
   });
 
   it("describes an ice tile under the cursor without coordinates", () => {
-    const state = frozenIceboundUiFixtureV7();
+    const state = frozenShipUiFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const rig = hostRig(view);
     rig.host.update({

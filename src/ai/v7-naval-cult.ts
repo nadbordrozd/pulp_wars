@@ -1,8 +1,4 @@
-import {
-  isIceAtV7,
-  unitIsIceboundV7,
-  unitRoleMechanicsV7,
-} from "../engine/rules/ruleset-v7";
+import { isIceAtV7, unitRoleMechanicsV7 } from "../engine/rules/ruleset-v7";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   publicDraggingKrakenV7,
@@ -139,12 +135,7 @@ export function navalKrakenHoldValueV7(
   actor: PublicUnitV7,
   to: CoordV7,
 ): number {
-  if (
-    !navalOwnKrakenV7(view, actor) ||
-    unitIsIceboundV7(view, actor) ||
-    isIceAtV7(view, to)
-  )
-    return 0;
+  if (!navalOwnKrakenV7(view, actor) || isIceAtV7(view, to)) return 0;
   if (facts.hostileBattleships.some((ship) => chebyshev(ship.at, to) <= 1))
     return 0;
   const held = (at: CoordV7): number => {
@@ -154,8 +145,7 @@ export function navalKrakenHoldValueV7(
         unit.hp <= 0 ||
         unit.id === actor.id ||
         chebyshev(unit.at, at) !== 1 ||
-        !tools.isHostile(unit.ownerId) ||
-        unitIsIceboundV7(view, unit)
+        !tools.isHostile(unit.ownerId)
       )
         continue;
       if (unit.form === "EMBARKED")

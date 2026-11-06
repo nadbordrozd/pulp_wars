@@ -967,10 +967,11 @@ function sceneTools(connection: Connection): {
  * The frozen sea (bead pulp_wars-5ti.7, second part), in the live CHIBI
  * look: the fixture app is mounted again with the CHIBI art set, so the
  * naval art (the Ram and Torpedo ability icons, the sea ice sheets, the
- * Icebound pack ice) is drawn by the gate. A Yeti's Freeze is armed and its
- * tile picked on the board; the Ice Witch's ring is previewed and cast; a
- * Sled slides across an ice bridge to the far shore; an icebound Battleship
- * shows its chips; the Ice Folk technology cards carry their names. Each
+ * sea ice sheets) is drawn by the gate. A Yeti's Freeze is armed and its
+ * tile picked on the board; the Ice Witch's Cold Snap ring is previewed and
+ * cast on one press (`pulp_wars-s55m.1`); a Sled slides across an ice
+ * bridge to the far shore; a Frozen Battleship shows its Frozen chip; the
+ * Ice Folk technology cards carry their names. Each
  * scene is a fixture of tests/fixtures/v7-frozen-sea-ui.ts.
  */
 async function captureFrozenSeaEvidence(
@@ -1187,22 +1188,22 @@ async function captureFrozenSeaEvidence(
       if (trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN'))
         throw new Error('the board pick did not accept FREEZE with WATER_FROZEN');
       const ice = globalThis.__NAVAL_DOM__.snapshot().view.ice;
-      if (ice.length !== 2) throw new Error('the Freeze did not make two ice tiles');
+      if (ice.length !== 3) throw new Error('the Freeze (Hoarfrost) did not make three ice tiles');
       return { command: trace.command.kind, ice: ice.length };
     })()`,
   );
   await tools.settle();
 
-  // Freeze, the Ice Witch: her ring is previewed while her one button is
-  // focused, and the button casts it.
+  // The Ice Witch's Cold Snap (`pulp_wars-s55m.1`): her ring of water is
+  // previewed while its button is focused, and one press casts it.
   await activate(freeze.witch);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock [data-action="freeze"][data-freeze-ability="ring"]') instanceof HTMLButtonElement`,
+    `document.querySelector('.v7-selection-dock [data-action="ice-folk-cold-snap"]') instanceof HTMLButtonElement`,
   );
   await evaluate(
     connection,
-    `document.querySelector('.v7-selection-dock [data-action="freeze"]').focus()`,
+    `document.querySelector('.v7-selection-dock [data-action="ice-folk-cold-snap"]').focus()`,
   );
   await delay(250);
   await capture(connection, "frozen-witch-ring.png", directory);
@@ -1210,7 +1211,7 @@ async function captureFrozenSeaEvidence(
     connection,
     `(() => {
       globalThis.__NAVAL_DOM__.traces.length = 0;
-      document.querySelector('.v7-selection-dock [data-action="freeze"]').click();
+      document.querySelector('.v7-selection-dock [data-action="ice-folk-cold-snap"]').click();
     })()`,
   );
   await waitForExpression(
@@ -1221,8 +1222,8 @@ async function captureFrozenSeaEvidence(
     connection,
     `(() => {
       const trace = globalThis.__NAVAL_DOM__.traces[0];
-      if (trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN'))
-        throw new Error("the Witch's button did not accept FREEZE with WATER_FROZEN");
+      if (trace?.command?.kind !== 'COLD_SNAP' || !trace.eventKinds.includes('WATER_FROZEN'))
+        throw new Error("the Witch's Cold Snap did not accept COLD_SNAP with WATER_FROZEN");
       return { command: trace.command.kind, ice: globalThis.__NAVAL_DOM__.snapshot().view.ice.length };
     })()`,
   );
@@ -1257,30 +1258,25 @@ async function captureFrozenSeaEvidence(
     })()`,
   );
 
-  // Icebound: the viewer's own Battleship frozen in, with its crush warning
-  // and the melting stages beside it.
-  const icebound = await frozen("frozenIceboundUiFixtureV7", { victim: true });
-  await activate(icebound.frozenShip);
+  // A Frozen ship (`pulp_wars-s55m.1`; Icebound before): the viewer's own
+  // Battleship Frozen on the water, with the ice row beside it.
+  const frozenShip = await frozen("frozenShipUiFixtureV7", { victim: true });
+  await activate(frozenShip.frozenShip);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock [data-unit-status="icebound"]') !== null && document.querySelector('.v7-selection-dock [data-unit-status="ice-crush"]') !== null`,
+    `document.querySelector('.v7-selection-dock [data-unit-status="frozen"]') !== null`,
   );
   await delay(250);
-  await capture(connection, "frozen-icebound.png", directory);
+  await capture(connection, "frozen-ship.png", directory);
   const crush = await evaluate<Record<string, unknown>>(
     connection,
     `(() => {
-      const blocked = document.querySelector('.v7-selection-dock [data-action="icebound-blocked"]');
-      if (!(blocked instanceof HTMLButtonElement) || blocked.getAttribute('aria-disabled') !== 'true')
-        throw new Error('the icebound ship does not say why it cannot act');
-      return {
-        chip: document.querySelector('.v7-selection-dock [data-unit-status="ice-crush"]').textContent,
-        reason: blocked.title,
-      };
+      const chip = document.querySelector('.v7-selection-dock [data-unit-status="frozen"]');
+      return { chip: chip?.textContent ?? null, reason: chip?.title ?? null };
     })()`,
   );
   // The ice chip of a cracked tile (the frozen sea redesign).
-  const melting = icebound.melting as readonly unknown[];
+  const melting = frozenShip.melting as readonly unknown[];
   await activate(melting[2]);
   await waitForExpression(
     connection,
@@ -1305,7 +1301,7 @@ async function captureFrozenSeaEvidence(
         if (!(card instanceof HTMLButtonElement)) throw new Error('technology card missing: ' + tech);
         names[tech] = card.querySelector('.v7-tech-name')?.textContent;
       }
-      const expected = { shorecraft: 'Rime', navigation: 'Pack Ice', naval_engineering: 'Icebound', seamanship: 'Black Ice', submersibles: 'Glacier' };
+      const expected = { shorecraft: 'Rime', navigation: 'Pack Ice', naval_engineering: 'Hoarfrost', seamanship: 'Black Ice', submersibles: 'Glacier' };
       for (const [tech, name] of Object.entries(expected))
         if (names[tech] !== name) throw new Error('Ice Folk technology name: ' + tech + ' is ' + names[tech]);
       document.querySelector('[data-action="tech-shorecraft"]').click();
@@ -1336,7 +1332,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r122', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r123', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only

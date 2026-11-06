@@ -166,7 +166,9 @@ export function iceFolkUnitMarkersV7(
     );
   if (turnsLeft === null && !witch) return undefined;
   return {
-    frozen: turnsLeft === null || unit.form !== "LAND" ? null : { turnsLeft },
+    // Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship is cased
+    // like a Frozen land unit.
+    frozen: turnsLeft === null || unit.form === "EGG" ? null : { turnsLeft },
     shatterWindow: shatterWindowV7(view, unit),
     witch,
   };

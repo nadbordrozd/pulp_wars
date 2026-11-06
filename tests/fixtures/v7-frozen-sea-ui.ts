@@ -3,7 +3,7 @@ import type {
   GameStateV7,
   TechnologyIdV7,
 } from "../../src/engine/index";
-import { frozenArenaV7, lineV7 } from "./v7-frozen-sea";
+import { frozenArenaV7, frozenShipsV7, lineV7 } from "./v7-frozen-sea";
 
 /**
  * The frozen sea interface (bead pulp_wars-5ti.7, second part): scenes on
@@ -20,13 +20,16 @@ export const FROZEN_UI_V7 = {
   freezeAt: { x: 2, y: 3 },
   freezeBeyond: { x: 2, y: 4 },
   witch: { x: 8, y: 2 },
-  /** An enemy Patrol Boat a Freeze toward the south-east locks in. */
+  /** An enemy Patrol Boat a Freeze toward the south-east Freezes. */
   prey: { x: 3, y: 3 },
   /** Slide: a bridge of five ice tiles down column 1, and its far shore. */
   bridgeHead: { x: 1, y: 2 },
   bridge: lineV7({ x: 1, y: 2 }, 0, 1, 5),
   farShore: { x: 1, y: 8 },
-  /** Icebound: a Battleship frozen in on Deep Water. */
+  /**
+   * A Frozen Battleship on open Deep Water (the Ice Folk freeze rework,
+   * `pulp_wars-s55m.1`: it was frozen in, Icebound, before).
+   */
   frozenShip: { x: 7, y: 5 },
   /**
    * Three ice tiles (the frozen sea redesign: the last one cracked), and ice
@@ -51,9 +54,9 @@ const ALL: readonly TechnologyIdV7[] = [
 
 /**
  * Freeze: an Ice Folk Yeti on the shore (a line role) and an Ice Witch (her
- * ring), with every Ice Folk Naval technology (or, `rime`, Rime alone, so
- * Deep Water does not freeze and no ship is locked in), and an enemy Patrol
- * Boat on the tile south-east of the Yeti.
+ * Cold Snap's ring), with every Ice Folk Naval technology (or, `rime`, Rime
+ * alone, so Deep Water does not freeze), and an enemy Patrol Boat on the
+ * tile south-east of the Yeti (a Freeze toward it Freezes it).
  */
 export function frozenFreezeUiFixtureV7(
   options: { readonly rime?: boolean } = {},
@@ -106,12 +109,13 @@ export function frozenSlideUiFixtureV7(
 }
 
 /**
- * Icebound: a Battleship frozen in on the viewer's ice (the viewer is the
- * Ice Folk), or, with `victim`, the viewer's own Battleship frozen in on an
- * Ice Folk seat's ice. Beside it: melting ice at 3, 2 and 1 turns and one
- * permanent tile in the Ice Folk capital's territory.
+ * A Frozen ship (the Ice Folk freeze rework, `pulp_wars-s55m.1`): a hostile
+ * Battleship Frozen on open water beside the viewer's ice (the viewer is the
+ * Ice Folk), or, with `victim`, the viewer's own Battleship Frozen beside an
+ * Ice Folk seat's ice. Beside it: a row of ice (the last tile cracked) and
+ * one tile in the Ice Folk capital's territory.
  */
-export function frozenIceboundUiFixtureV7(
+export function frozenShipUiFixtureV7(
   options: { readonly victim?: boolean } = {},
 ): GameStateV7 {
   const victim = options.victim === true;
@@ -120,24 +124,26 @@ export function frozenIceboundUiFixtureV7(
   // The permanent tile is by the Ice Folk capital: (6, 3) for seat 0,
   // (4, 7) for seat 1.
   const permanent = victim ? { x: 4, y: 7 } : FROZEN_UI_V7.permanent;
-  return frozenArenaV7({
-    ...(victim ? { factions: ["ORIGINAL", "ICE_FOLK"] as const } : {}),
-    technologies: [ALL, ALL],
-    units: [
-      { seat: shipSeat, role: "BATTLESHIP", at: FROZEN_UI_V7.frozenShip },
-    ],
-    ice: [
-      { at: FROZEN_UI_V7.frozenShip, seat: iceSeat },
-      // The frozen sea redesign: ice is permanent; the last of the row is
-      // cracked thick ice (every technology, so Glacier's).
-      ...FROZEN_UI_V7.melting.map((at, index) => ({
-        at,
-        seat: iceSeat,
-        cracked: index === FROZEN_UI_V7.melting.length - 1,
-      })),
-      { at: permanent, seat: iceSeat },
-    ],
-  });
+  return frozenShipsV7(
+    frozenArenaV7({
+      ...(victim ? { factions: ["ORIGINAL", "ICE_FOLK"] as const } : {}),
+      technologies: [ALL, ALL],
+      units: [
+        { seat: shipSeat, role: "BATTLESHIP", at: FROZEN_UI_V7.frozenShip },
+      ],
+      ice: [
+        // The frozen sea redesign: ice is permanent; the last of the row is
+        // cracked thick ice (every technology, so Glacier's).
+        ...FROZEN_UI_V7.melting.map((at, index) => ({
+          at,
+          seat: iceSeat,
+          cracked: index === FROZEN_UI_V7.melting.length - 1,
+        })),
+        { at: permanent, seat: iceSeat },
+      ],
+    }),
+    [FROZEN_UI_V7.frozenShip],
+  );
 }
 
 /**

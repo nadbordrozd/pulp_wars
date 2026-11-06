@@ -232,7 +232,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
     // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
     // (`pulp_wars-mch9.61`) adds CHANT_LEFT (161).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(161);
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`) drops ICE_MELTED
+    // and UNITS_CRUSHED with Icebound (159).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(159);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

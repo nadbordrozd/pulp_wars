@@ -537,10 +537,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // set no charge).
     "src/engine/v7/explosions.ts": 2,
     "src/engine/v7/graves.ts": 1,
-    // `pulp_wars-5ti.3` (the frozen sea): a boat or an embarked unit on ice is
-    // Icebound and makes no Move (canonical and public validation; an Egg is
-    // never on water).
-    "src/engine/v7/movement.ts": 4,
+    // `pulp_wars-5ti.3` (the frozen sea): a boat or an embarked unit on ice was
+    // Icebound and made no Move; the Ice Folk freeze rework
+    // (`pulp_wars-s55m.1`) removed both tests (no unit afloat is on ice).
+    "src/engine/v7/movement.ts": 2,
     // `pulp_wars-5ti.3`: a Wreck is salvaged by an afloat unit or by a
     // land-form unit standing on ice (an Egg never moves onto one).
     // Map curiosities round 3 (`pulp_wars-737.20`): a Gold Claim is staked
@@ -736,7 +736,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // attacker has Gang Up (`gangUpWithHelpersV7`, as the engine's
     // `gangUpBonusV7`; an Egg makes no attack).
     "src/ai/v7-goblin.ts": 2,
-    "src/ai/v7-ice-folk.ts": 7,
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Cold Snap counts
+    // every target but an Egg (one test fewer).
+    "src/ai/v7-ice-folk.ts": 6,
     // Bolder abilities (`pulp_wars-w49.42`): the legacy Mind Control
     // exposure test (land form only) went with the HP limit (2 before).
     "src/ai/v7-martian.ts": 1,

@@ -33,7 +33,6 @@ import {
   terrainStopsMoveV7,
   isIceAtV7,
   factionUnlocksRoleV7,
-  unitIsIceboundV7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
   unitMayActAfterMoveV7,
@@ -627,7 +626,7 @@ import {
   whirlPreviewForScoringV7,
 } from "./v7-ninth-unit";
 import {
-  ICE_CREW_LANDING_PRIORITY_V7,
+  iceColdSnapWaterScoreV7,
   iceCrackScoreV7,
   iceCrossingMoveV7,
   iceFreezeScoreV7,
@@ -641,7 +640,6 @@ import {
   iceSlideEndV7,
   iceSliderV7,
   iceTargetBonusV7,
-  iceboundCrewLandingV7,
   iceRouteStepCostV7,
   landGrantIceTilesV7,
   type FrozenSeaToolsV7,
@@ -11653,9 +11651,6 @@ function* publicThreatenedTilesWorkV7(
     (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0)
   )
     return [];
-  // The frozen sea (`pulp_wars-5ti.3`): an icebound unit cannot move or
-  // attack, so it threatens nothing.
-  if (unitIsIceboundV7(view, unit)) return [];
   const minimumRange = wail ? 1 : facts.minimumRange;
   const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
   // Revision 17: a goblin-crewed land unit may Kaboom after any Move (even a
@@ -12902,12 +12897,6 @@ function isPolicyCandidate(
         !navalLandingWaitsV7(context, command.unitId) &&
         // Naval AI iteration 2 (`pulp_wars-32bb`): and in force.
         navalLandingInForceAtV7(context, command.unitId, command.at, null)) ||
-      // The frozen sea: the crew of an icebound transport climbs out.
-      iceboundCrewLandingV7(
-        context.view,
-        frozenSeaToolsV7(context),
-        command,
-      ) !== null ||
       endgameLandingValueV7(context, command) > 0 ||
       (strandedTransportV7(context, command.unitId) &&
         campaignHasWorkAtV7(context.tactical.campaign, command.at) &&
@@ -15474,17 +15463,6 @@ function scoreCommandWithContext(
       priority = Math.max(priority, ENDGAME_APPROACH_PRIORITY_V7);
       strategicValue += landing;
     }
-    // The frozen sea (`pulp_wars-5ti.5`): the crew of an icebound
-    // transport climbs out, onto land before ice.
-    const crew = iceboundCrewLandingV7(
-      view,
-      frozenSeaToolsV7(context),
-      command,
-    );
-    if (crew !== null) {
-      priority = Math.max(priority, ICE_CREW_LANDING_PRIORITY_V7);
-      strategicValue += crew;
-    }
     if (context.undead && fragileLandingExposedV7(context, actor, command.at))
       priority = -1;
   }
@@ -15969,9 +15947,17 @@ function scoreCommandWithContext(
 
   if (command.kind === "COLD_SNAP" && context.iceFolk) {
     const snap = coldSnapScoreV7(iceFolkCacheV7(context).tools, command);
-    priority = snap.priority;
-    strategicValue = snap.strategic;
-    immediateValue = snap.immediate;
+    // Ice Folk freeze rework (`pulp_wars-s55m.1`): the cast also freezes
+    // the water around the Witch, worth what a Freeze of it is worth.
+    const water = iceColdSnapWaterScoreV7(
+      view,
+      frozenSeaToolsV7(context),
+      icePlanV7(context),
+      command,
+    );
+    priority = Math.max(snap.priority, water?.priority ?? -1);
+    strategicValue = Math.max(snap.strategic, 0) + (water?.strategic ?? 0);
+    immediateValue = Math.max(snap.immediate, 0) + (water?.immediate ?? 0);
   }
 
   // Ice Folk Freeze (`pulp_wars-w49.37`): basic scoring of the two new

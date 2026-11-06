@@ -342,10 +342,12 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "FREEZE"; readonly depth: "SHALLOW" | "DEEP" }
   /**
-   * The frozen sea (section 8.9): Icebound (the Ice Folk
-   * `NAVAL_ENGINEERING`), a Freeze locks a hostile afloat unit in the ice.
+   * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r123`):
+   * Hoarfrost (the Ice Folk `NAVAL_ENGINEERING`, Icebound before): the
+   * owner's Freeze line reaches `LONG_FREEZE_LINE_V7` tiles instead of
+   * `FREEZE_LINE_V7` (the Ice Witch's ring is unchanged).
    */
-  | { readonly kind: "ICEBOUND" }
+  | { readonly kind: "LONG_FREEZE" }
   /**
    * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`).
    * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.8): a
@@ -1012,7 +1014,7 @@ export interface RoleMechanicsV7 {
    * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.3 K2,
    * `pulp_wars-5ti.22`): the Gibbering Mass's Drag pointed at the sea. A
    * unit afloat of a player hostile to the owner that begins a Move beside
-   * a living ship of the role in `NAVAL` form that is not icebound moves
+   * a living ship of the role in `NAVAL` form that is not Frozen moves
    * one tile (`draggingKrakenV7`). The Cult `SUBMARINE` only; false for
    * every other role (the Mass drags land-form units by its own rule).
    */
@@ -3323,8 +3325,8 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * (docs/product/RULESET_7_NAVAL_BRANCH.md section 2.2): the five Naval nodes
  * keep their IDs, tiers, prerequisites, and economic unlocks, lose every
  * ship, the Ram, and Board, and gain the ice unlocks of
- * `ICE_FOLK_NAVAL_UNLOCKS_V7`. They display as Rime, Pack Ice, Icebound,
- * Black Ice, and Glacier.
+ * `ICE_FOLK_NAVAL_UNLOCKS_V7`. They display as Rime, Pack Ice, Hoarfrost
+ * (Icebound before `pulp_wars-s55m.1`), Black Ice, and Glacier.
  */
 const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
   Partial<Record<TechnologyIdV7, readonly TechnologyUnlockV7[]>>
@@ -3336,7 +3338,9 @@ const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
     { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
   ],
   NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
-  NAVAL_ENGINEERING: [{ kind: "ICEBOUND" }],
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost, a longer
+  // Freeze line, replaces Icebound (no ship is ever locked in the ice).
+  NAVAL_ENGINEERING: [{ kind: "LONG_FREEZE" }],
   SEAMANSHIP: [{ kind: "BLACK_ICE" }],
   SUBMERSIBLES: [{ kind: "GLACIER" }],
 });
@@ -3466,15 +3470,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
     // Ice Folk Freeze: Cold Snap freezes every adjacent hostile unit and the
-    // Frost Bolt one unit within 2 (one of the two a turn).
-    abilities: [
-      "ATTACK",
-      "CAPTURE",
-      "BLIZZARD",
-      "COLD_SNAP",
-      "FROST_BOLT",
-      "FREEZE",
-    ],
+    // Frost Bolt one unit within 2 (one of the two a turn). The Ice Folk
+    // freeze rework (`pulp_wars-s55m.1`): her Cold Snap also freezes the
+    // water around her with Rime, so she has no separate `FREEZE`.
+    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FROST_BOLT"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -5384,7 +5383,7 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     EXPLOSIVES: "Brittle",
     SHORECRAFT: "Rime",
     NAVIGATION: "Pack Ice",
-    NAVAL_ENGINEERING: "Icebound",
+    NAVAL_ENGINEERING: "Hoarfrost",
     SEAMANSHIP: "Black Ice",
     SUBMERSIBLES: "Glacier",
     SAWMILLING: "Boulders",
@@ -6981,12 +6980,12 @@ export function kaboomReadyV7(
  * `pulp_wars-5ti.16`, read it as "in land form, or in `NAVAL` form with
  * `fireRafts`"). Null in land form. An embarked unit (or any other form
  * that is not a ship) is `EMBARKED`; a ship whose kind's capabilities under
- * its controller lack `fireRafts` (Powder Kegs) needs `SEAMANSHIP`; an
- * icebound ship is `ICEBOUND`. The reducer and the public command query
+ * its controller lack `fireRafts` (Powder Kegs) needs `SEAMANSHIP`. The
+ * reducer and the public command query
  * share it, so a Kaboom afloat is offered exactly when it is accepted.
  */
 export function kaboomFormBlockV7(
-  roster: FactionRosterV7 & IceLookupV7,
+  roster: FactionRosterV7,
   unit: UnitKindRefV7 & {
     readonly form: UnitFormV7;
     readonly at: { readonly x: number; readonly y: number };
@@ -6994,7 +6993,6 @@ export function kaboomFormBlockV7(
   controllerResearchedTechs: readonly TechnologyIdV7[],
 ):
   | { readonly code: "KABOOM_NOT_LEGAL"; readonly reason: "EMBARKED" }
-  | { readonly code: "KABOOM_NOT_LEGAL"; readonly reason: "ICEBOUND" }
   | { readonly code: "TECH_REQUIRED"; readonly tech: "SEAMANSHIP" }
   | null {
   if (unit.form === "LAND") return null;
@@ -7002,8 +7000,6 @@ export function kaboomFormBlockV7(
     return { code: "KABOOM_NOT_LEGAL", reason: "EMBARKED" };
   if (!unitCapabilitiesV7(roster, unit, controllerResearchedTechs).fireRafts)
     return { code: "TECH_REQUIRED", tech: "SEAMANSHIP" };
-  if (unitIsIceboundV7(roster, unit))
-    return { code: "KABOOM_NOT_LEGAL", reason: "ICEBOUND" };
   return null;
 }
 
@@ -7441,10 +7437,13 @@ export const FISHING_HOLE_COST_V7 = 3;
 export const FISHING_HOLE_POPULATION_V7 = 1;
 /** The frozen sea (section 8.4): the tiles of a Freeze line. */
 export const FREEZE_LINE_V7 = 2;
+/**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r123`): the
+ * tiles of a Freeze line with Hoarfrost (`longFreeze`).
+ */
+export const LONG_FREEZE_LINE_V7 = 3;
 /** The frozen sea (section 8.4): the Ice Witch's Freeze ring (Chebyshev). */
 export const WITCH_FREEZE_RADIUS_V7 = 1;
-/** The frozen sea (section 8.9): the crush of an icebound unit. */
-export const ICE_CRUSH_DAMAGE_V7 = 3;
 /** The frozen sea (section 8.11): Sea Dog for an Ice Folk seat. */
 export const ICE_SEA_DOG_UNITS_V7 = 5;
 
@@ -7504,25 +7503,6 @@ export function iceEntryIndexV7<
   return index;
 }
 
-/**
- * The frozen sea (section 8.9) `unitIsIceboundV7`: an afloat unit (`NAVAL`
- * or `EMBARKED`) standing on an ice tile. Derived, never stored. It cannot
- * Move, Attack, Board, or retaliate, and no shove, Push, Knockback, or
- * Tractor Beam moves it.
- */
-export function unitIsIceboundV7(
-  lookup: IceLookupV7,
-  unit: {
-    readonly form: UnitFormV7;
-    readonly at: { readonly x: number; readonly y: number };
-  },
-): boolean {
-  return (
-    (unit.form === "NAVAL" || unit.form === "EMBARKED") &&
-    isIceAtV7(lookup, unit.at)
-  );
-}
-
 /** The unit facts the naval-branch helpers read (state and public units). */
 export interface NavalBranchUnitFactsV7 {
   readonly id: number;
@@ -7534,19 +7514,18 @@ export interface NavalBranchUnitFactsV7 {
 /**
  * The naval branch (section 5.2): whether the unit is submerged (a
  * `NAVAL`-form unit whose role has `SUBMERGED`: the Submarine). An `ATTACK`
- * on it is legal only from Chebyshev distance 1. The frozen sea (section
- * 8.9): an icebound Submarine is not submerged.
+ * on it is legal only from Chebyshev distance 1. A Frozen Submarine stays
+ * submerged (`pulp_wars-s55m.1`: no ship is ever on ice).
  */
 export function unitIsSubmergedV7(
-  roster: FactionRosterV7 & IceLookupV7,
+  roster: FactionRosterV7,
   unit: NavalBranchUnitFactsV7 & {
     readonly at: { readonly x: number; readonly y: number };
   },
 ): boolean {
   return (
     unit.form === "NAVAL" &&
-    unitRoleRuleV7(roster, unit).abilities.includes("SUBMERGED") &&
-    !isIceAtV7(roster, unit.at)
+    unitRoleRuleV7(roster, unit).abilities.includes("SUBMERGED")
   );
 }
 
@@ -7587,11 +7566,10 @@ export function attackIsTorpedoV7(
  * `NAVAL`-form attacker whose role has `RAM` and whose kind's capabilities
  * under its owner have `ram` (Seamanship), that has moved this turn (an
  * interrupted Move counts; `plannedMove` estimates an attack after a planned
- * Move), at Chebyshev distance 1, on a target afloat that is not icebound
- * (the frozen sea, section 8.9: no ram moves a ship frozen in).
+ * Move), at Chebyshev distance 1, on a target afloat.
  */
 export function attackIsRamV7(
-  roster: FactionRosterV7 & IceLookupV7,
+  roster: FactionRosterV7,
   attacker: NavalBranchUnitFactsV7 & {
     readonly activation: { readonly moved: boolean };
   },
@@ -7608,7 +7586,6 @@ export function attackIsRamV7(
     distance === 1 &&
     (attacker.activation.moved || plannedMove) &&
     (target.form === "NAVAL" || target.form === "EMBARKED") &&
-    !isIceAtV7(roster, target.at) &&
     unitRoleRuleV7(roster, attacker).abilities.includes("RAM") &&
     unitCapabilitiesV7(roster, attacker, attackerOwnerResearchedTechs).ram
   );
@@ -8258,8 +8235,11 @@ export interface TechnologyCapabilitiesV7 {
    * Freeze: nothing, Shallow Water (Rime), or Deep Water too (Pack Ice).
    */
   readonly freezeWater: "NONE" | "SHALLOW" | "DEEP";
-  /** The frozen sea (section 8.9): a Freeze locks hostile afloat units in. */
-  readonly icebound: boolean;
+  /**
+   * Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost, the owner's
+   * Freeze line reaches `LONG_FREEZE_LINE_V7` tiles.
+   */
+  readonly longFreeze: boolean;
   /** The frozen sea (section 8.8): Black Ice. */
   readonly blackIce: boolean;
   /**
@@ -8411,7 +8391,7 @@ export function technologyCapabilitiesV7(
   let harbourPopulation: 0 | 1 = 0;
   let freezeShallow = false;
   let freezeDeep = false;
-  let icebound = false;
+  let longFreeze = false;
   let blackIce = false;
   let thickIce = false;
   let iceCover = false;
@@ -8546,8 +8526,8 @@ export function technologyCapabilitiesV7(
         if (unlock.depth === "DEEP") freezeDeep = true;
         else freezeShallow = true;
         break;
-      case "ICEBOUND":
-        icebound = true;
+      case "LONG_FREEZE":
+        longFreeze = true;
         break;
       case "BLACK_ICE":
         blackIce = true;
@@ -8668,7 +8648,7 @@ export function technologyCapabilitiesV7(
     harbourPopulation,
     // Pack Ice requires Rime, so `DEEP` implies the shallows.
     freezeWater: freezeDeep ? "DEEP" : freezeShallow ? "SHALLOW" : "NONE",
-    icebound,
+    longFreeze,
     blackIce,
     thickIce,
     iceCover,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  ICE_CRUSH_DAMAGE_V7,
   applyCommandV7,
+  previewColdSnapV7,
   previewFreezeV7,
   projectEventsV7,
   queryCombatPreviewV7,
@@ -27,12 +27,9 @@ import {
   seaIceCellsV7,
 } from "../../src/render/canvas/frozen-sea-board-plan-v7";
 import {
-  ICEBOUND_MARKER_FRAME_V7,
   SEA_ICE_CRACKS_V7,
-  drawIceboundMarkerV7,
   drawSeaIceCellV7,
   drawSlideArrowV7,
-  crushPillBoxV7,
   slideArrowWidthV7,
   seaIceCracksV7,
 } from "../../src/render/canvas/frozen-sea-canvas-v7";
@@ -52,14 +49,12 @@ import {
   FREEZE_ALREADY_ACTED_V7,
   FREEZE_NEEDS_PACK_ICE_V7,
   FREEZE_NEEDS_RIME_V7,
-  ICEBOUND_PREVIEW_V7,
   ICE_COVER_PREVIEW_V7,
   ICE_FOR_SHIPS_HELP_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
   SLIDE_MOVE_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
-  crushWarningV7,
   freezeOutcomeTextV7,
   freezeOutcomeV7,
   freezeTargetLabelV7,
@@ -75,21 +70,21 @@ import { galleryUnitCellV7 } from "../../src/render/gallery-presentation-v7";
 import { roleAbilityDescriptionV7 } from "../../src/render/role-presentation-v7";
 import {
   frozenArenaV7,
-  frozenStateV7,
+  frozenShipsV7,
   patchFrozenUnitV7,
 } from "../fixtures/v7-frozen-sea";
-import { navalUnitAtV7 } from "../fixtures/v7-naval-branch";
 import {
   FROZEN_UI_V7,
   frozenFreezeUiFixtureV7,
-  frozenIceboundUiFixtureV7,
+  frozenShipUiFixtureV7,
   frozenSlideUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 // The frozen sea interface (bead pulp_wars-5ti.7, second part;
 // docs/ui/BOARD_TARGETING.md section 3.5): the board plan, the words and
-// the canvas marks of Freeze, the ice, the slide, Icebound and the crush.
+// the canvas marks of Freeze, the ice, and the slide (Icebound and the
+// crush went with the Ice Folk freeze rework, `pulp_wars-s55m.1`).
 
 const COORDINATE = /\b\d{1,2}, ?\d{1,2}\b/;
 const at = (coord: CoordV7): string => `${coord.x},${coord.y}`;
@@ -185,25 +180,30 @@ describe("Freeze on the board plan", () => {
       if (preview === null) throw new Error("preview missing");
       expect(at(target.at)).toBe(at(target.command.at));
       expect(target.freeze?.tiles).toEqual(preview.tiles);
-      // The frozen sea redesign: no countdown; a locked ship is named.
+      // The frozen sea redesign: no countdown; a Frozen ship is named.
       expect(target.previewLabel).toBe(
         freezeTargetLabelV7(freezeOutcomeV7(preview)),
       );
       expect(target.previewLabel).toMatch(
-        new RegExp(`^Ice ${preview.tiles.length}( · Icebound)?$`),
+        preview.tiles.length === 0
+          ? /^Freezes ship$/
+          : new RegExp(`^Ice ${preview.tiles.length}$`),
       );
-      expect(target.semanticLabel).toContain(
-        `${preview.tiles.length} ${preview.tiles.length === 1 ? "tile" : "tiles"} of ice`,
-      );
+      if (preview.tiles.length > 0)
+        expect(target.semanticLabel).toContain(
+          `${preview.tiles.length} ${preview.tiles.length === 1 ? "tile" : "tiles"} of ice`,
+        );
       expect(target.semanticLabel).not.toMatch(COORDINATE);
     }
-    // The line south of the Yeti: its own tile and the Deep Water beyond.
+    // The line south of the Yeti: its own tile and the Deep Water beyond
+    // (Hoarfrost: three tiles).
     const south = built.targets.find(
       (target) => at(target.at) === at(FROZEN_UI_V7.freezeAt),
     );
     expect(south?.freeze?.tiles.map(at)).toEqual([
       at(FROZEN_UI_V7.freezeAt),
       at(FROZEN_UI_V7.freezeBeyond),
+      "2,5",
     ]);
     // The far tiles are tinted and are not targets.
     const beyond = built.entries.filter((entry) =>
@@ -216,28 +216,30 @@ describe("Freeze on the board plan", () => {
       expect(
         built.targets.some((target) => at(target.at) === at(entry.at)),
       ).toBe(false);
-    // The Patrol Boat a Freeze would lock in says so.
+    // The Patrol Boat a Freeze would Freeze says so.
     const prey = built.targets.find(
       (target) => at(target.at) === at(FROZEN_UI_V7.prey),
     );
-    expect(prey?.previewNote).toBe("Icebound 1");
+    expect(prey?.previewNote).toBe("Frozen 1");
     expect(
       built.entries
-        .filter((entry) => entry.key.startsWith("ability-target:ICEBOUND:"))
+        .filter((entry) => entry.key.startsWith("ability-target:FROZEN:"))
         .map((entry) => [at(entry.at), entry.label]),
-    ).toEqual([[at(FROZEN_UI_V7.prey), "Icebound"]]);
+    ).toEqual([[at(FROZEN_UI_V7.prey), "Frozen"]]);
   });
 
-  it("with Rime alone the line stops at Deep Water and locks no ship in", () => {
+  it("with Rime alone the line stops at Deep Water, and a ship it reaches is Frozen", () => {
     const view = viewOf(frozenFreezeUiFixtureV7({ rime: true }));
     const yeti = unitAt(view, FROZEN_UI_V7.yeti);
     const built = plan(view, yeti.id, {
       freezePick: { kind: "FREEZE", unitId: yeti.id },
     });
-    // The tile under the Patrol Boat is not freezable without Icebound.
-    expect(built.targets.map((target) => at(target.at))).not.toContain(
-      at(FROZEN_UI_V7.prey),
-    );
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): Rime alone Freezes
+    // the Patrol Boat; its tile stays open water.
+    expect(
+      built.targets.find((target) => at(target.at) === at(FROZEN_UI_V7.prey))
+        ?.previewLabel,
+    ).toBe("Freezes ship");
     const south = built.targets.find(
       (target) => at(target.at) === at(FROZEN_UI_V7.freezeAt),
     );
@@ -257,10 +259,11 @@ describe("Freeze on the board plan", () => {
     const preview = previewFreezeV7(view, yeti.id, { x: 6, y: 3 });
     if (preview === null) throw new Error("preview missing");
     const outcome = freezeOutcomeV7(preview);
-    expect(outcome).toEqual({ tiles: 2, mended: 1, taken: 0, icebound: 0 });
-    expect(freezeTargetLabelV7(outcome)).toBe("Ice 2 · mends 1");
+    // Every technology, Hoarfrost included: a three-tile line.
+    expect(outcome).toEqual({ tiles: 3, mended: 1, taken: 0, frozenUnits: 0 });
+    expect(freezeTargetLabelV7(outcome)).toBe("Ice 3 · mends 1");
     expect(freezeOutcomeTextV7(outcome)).toBe(
-      "Freeze: 2 tiles of ice. It stays until it is cracked. 1 cracked tile is mended.",
+      "Freeze: 3 tiles of ice. It stays until it is cracked. 1 cracked tile is mended.",
     );
     // The engine agrees: after the Freeze both tiles are sound ice.
     const result = applyCommandV7(state, state.humanPlayerId, {
@@ -274,19 +277,27 @@ describe("Freeze on the board plan", () => {
     ).toEqual([
       ["6,3", false],
       ["6,4", false],
+      ["6,5", false],
     ]);
   });
 
-  it("the Witch's ring is marked quietly, and prominently while her button is focused", () => {
+  it("the Witch's Cold Snap ring is marked quietly, and prominently while its button is focused", () => {
     const view = viewOf(frozenFreezeUiFixtureV7());
     const witch = unitAt(view, FROZEN_UI_V7.witch);
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): she has no Freeze;
+    // her Cold Snap freezes the water around her.
+    expect(
+      queryPlayerCommandsV7(view).some(
+        (candidate) =>
+          candidate.kind === "FREEZE" && candidate.unitId === witch.id,
+      ),
+    ).toBe(false);
     const command = queryPlayerCommandsV7(view).find(
-      (candidate): candidate is Extract<CommandV7, { kind: "FREEZE" }> =>
-        candidate.kind === "FREEZE" && candidate.unitId === witch.id,
+      (candidate): candidate is Extract<CommandV7, { kind: "COLD_SNAP" }> =>
+        candidate.kind === "COLD_SNAP" && candidate.unitId === witch.id,
     );
-    if (command === undefined) throw new Error("no Freeze for the Witch");
-    expect(at(command.at)).toBe(at(FROZEN_UI_V7.witch));
-    const preview = previewFreezeV7(view, witch.id, command.at);
+    if (command === undefined) throw new Error("no Cold Snap for the Witch");
+    const preview = previewColdSnapV7(view, witch.id);
     if (preview === null) throw new Error("preview missing");
     const ring = (built: BoardRenderPlanV7) =>
       built.entries.filter((entry) =>
@@ -382,7 +393,7 @@ describe("Freeze on the board plan", () => {
 
 describe("ice on the board plan", () => {
   it("gives each ice cell its depth, its open-water sides and its stage", () => {
-    const view = viewOf(frozenIceboundUiFixtureV7());
+    const view = viewOf(frozenShipUiFixtureV7());
     const cells = seaIceCellsV7(view);
     expect(cells.size).toBe(view.ice.length);
     // Three tiles in a row (the frozen sea redesign): sound, sound, and
@@ -438,7 +449,7 @@ describe("ice on the board plan", () => {
   });
 
   it("labels the tile's ice with its thickness, without coordinates or turns", () => {
-    const view = viewOf(frozenIceboundUiFixtureV7());
+    const view = viewOf(frozenShipUiFixtureV7());
     const melting = view.ice.find(
       (entry) => at(entry.at) === at(FROZEN_UI_V7.melting[2]),
     );
@@ -460,7 +471,7 @@ describe("ice on the board plan", () => {
     // The viewer has Black Ice (every technology): its own ice says so.
     expect(iceChipTooltipV7(view, melting)).toContain("Black Ice:");
     // Another seat's ice does not (its research is private).
-    const victim = viewOf(frozenIceboundUiFixtureV7({ victim: true }));
+    const victim = viewOf(frozenShipUiFixtureV7({ victim: true }));
     const theirs = victim.ice[0];
     if (theirs === undefined) throw new Error("ice missing");
     expect(iceChipTooltipV7(victim, theirs)).not.toContain("Black Ice");
@@ -560,30 +571,18 @@ describe("moving on ice", () => {
   });
 });
 
-describe("Icebound and the crush", () => {
-  it("marks a ship locked in the ice, for both sides, with the crush", () => {
+describe("a Frozen ship (the Ice Folk freeze rework, `pulp_wars-s55m.1`)", () => {
+  it("wears the Frozen casing like a land unit, for both sides, and its owner may not sail or shoot", () => {
     for (const victim of [false, true]) {
-      const view = viewOf(frozenIceboundUiFixtureV7({ victim }));
+      const view = viewOf(frozenShipUiFixtureV7({ victim }));
       const ship = unitAt(view, FROZEN_UI_V7.frozenShip);
       expect(
-        view.unitStats.find((entry) => entry.unitId === ship.id)?.icebound,
-      ).toBe(true);
-      const warning = crushWarningV7(view, ship);
-      expect(warning).toMatchObject({
-        damage: ICE_CRUSH_DAMAGE_V7,
-        lethal: false,
-        label: `−${ICE_CRUSH_DAMAGE_V7} HP`,
-      });
-      expect(warning?.text).toBe(
-        victim
-          ? "The ice crushes it for 3 at the start of the Ice Folk's turn"
-          : "The ice crushes it for 3 at the start of your turn",
-      );
+        view.unitStats.find((entry) => entry.unitId === ship.id)?.frozen,
+      ).toEqual({ turnsLeft: 1 });
       const entry = plan(view, null).entries.find(
         (candidate) => candidate.key === `unit:${ship.id}`,
       );
-      expect(entry?.icebound).toEqual({ crush: "−3 HP", lethal: false });
-      // The owner of an icebound ship is offered no Move, Attack or Board.
+      expect(entry?.iceFolk?.frozen).toEqual({ turnsLeft: 1 });
       if (victim)
         expect(
           queryPlayerCommandsV7(view).filter(
@@ -597,66 +596,37 @@ describe("Icebound and the crush", () => {
     }
   });
 
-  it("says when the next crush sinks it", () => {
-    const state = frozenIceboundUiFixtureV7({ victim: true });
-    const ship = navalUnitAtV7(state, FROZEN_UI_V7.frozenShip);
-    const view = viewOf(patchFrozenUnitV7(state, ship.id, { hp: 2 }));
-    expect(crushWarningV7(view, unitAt(view, FROZEN_UI_V7.frozenShip))).toEqual(
-      {
-        damage: 2,
-        lethal: true,
-        label: "Sinks",
-        text: "The ice crushes it at the start of the Ice Folk's turn: it sinks",
-      },
-    );
-    // A free ship has no warning.
-    const free = viewOf(
-      frozenArenaV7({
-        factions: ["ORIGINAL", "ICE_FOLK"],
-        units: [{ seat: 0, role: "BATTLESHIP", at: FROZEN_UI_V7.frozenShip }],
-      }),
-    );
-    expect(
-      crushWarningV7(free, unitAt(free, FROZEN_UI_V7.frozenShip)),
-    ).toBeNull();
-  });
-
-  it("adds the frozen-sea notes to an attack preview", () => {
-    // An Ice Folk Yeti attacks the Battleship frozen in next to it.
-    const state = frozenStateV7(
+  it("adds the frozen-sea notes to an attack preview: a Frozen ship does not strike back", () => {
+    // An Ice Folk Yeti on its own ice attacks the Frozen Battleship beside it.
+    const state = frozenShipsV7(
       frozenArenaV7({
         units: [
           { seat: 0, role: "FIGHTER", at: { x: 7, y: 4 } },
           { seat: 1, role: "BATTLESHIP", at: FROZEN_UI_V7.frozenShip },
         ],
       }),
-      [{ at: FROZEN_UI_V7.frozenShip }],
+      [FROZEN_UI_V7.frozenShip],
     );
     const view = viewOf(state);
     const yeti = unitAt(view, { x: 7, y: 4 });
     const ship = unitAt(view, FROZEN_UI_V7.frozenShip);
     const preview = queryCombatPreviewV7(view, yeti.id, ship.id);
     if (preview === null) throw new Error("preview missing");
-    expect(preview.icebound).toBe(true);
-    expect(preview.damageToAttacker).toBe(0);
-    expect(frozenSeaCombatNotesV7(preview)).toEqual([ICEBOUND_PREVIEW_V7]);
-    const attack = plan(view, yeti.id).targets.find(
-      (target) => target.family === "ATTACK",
-    );
-    expect(attack?.previewNote).toContain(ICEBOUND_PREVIEW_V7);
+    expect(preview).toMatchObject({
+      retaliation: false,
+      noRetaliationReason: "FROZEN",
+      damageToAttacker: 0,
+    });
+    expect(frozenSeaCombatNotesV7(preview)).toEqual([]);
     // The enemy's view of a Yeti on its own ice with Glacier: cover.
     const enemy = viewForV7(state, ship.ownerId);
     expect(
       enemy.unitStats.find((entry) => entry.unitId === yeti.id)?.iceFolk
         ?.iceCover,
     ).toBe(true);
-    expect(
-      frozenSeaCombatNotesV7({
-        ...preview,
-        iceCover: true,
-        icebound: false,
-      }),
-    ).toEqual([ICE_COVER_PREVIEW_V7]);
+    expect(frozenSeaCombatNotesV7({ ...preview, iceCover: true })).toEqual([
+      ICE_COVER_PREVIEW_V7,
+    ]);
   });
 });
 
@@ -668,7 +638,7 @@ describe("frozen-sea cues and notices", () => {
     const result = applyCommandV7(state, state.humanPlayerId, {
       kind: "FREEZE",
       unitId: yeti.id,
-      at: FROZEN_UI_V7.prey,
+      at: FROZEN_UI_V7.freezeAt,
     });
     if (!result.accepted) throw new Error("Freeze rejected");
     const after = viewOf(result.state);
@@ -683,77 +653,32 @@ describe("frozen-sea cues and notices", () => {
       (step) => step.kind === "ICE_FOLK" && step.effect === "ICE_FREEZE",
     );
     expect(cue).toMatchObject({
-      cells: [FROZEN_UI_V7.prey],
+      cells: [FROZEN_UI_V7.freezeAt, FROZEN_UI_V7.freezeBeyond, { x: 2, y: 5 }],
       from: FROZEN_UI_V7.yeti,
       durationMs: ICE_FOLK_EFFECT_DURATIONS_V7.ICE_FREEZE,
     });
     const notice = frozenSeaBoundaryNoticeV7(envelope.events, before, after);
-    expect(notice?.text).toBe(
-      "You froze 1 tile: the Humans' Patrol Boat is icebound",
-    );
+    expect(notice?.text).toBe("You froze 3 tiles");
     expect(notice?.text).not.toMatch(COORDINATE);
     expect(frozenSeaBoundaryNoticeV7([], before, after)).toBeNull();
   });
 
-  it("plans the melt and the crush from their events", () => {
-    const view = viewOf(frozenIceboundUiFixtureV7({ victim: true }));
-    const ship = unitAt(view, FROZEN_UI_V7.frozenShip);
-    const iceOwner = view.ice[0]?.ownerId;
-    if (iceOwner === undefined) throw new Error("ice missing");
-    const envelope = {
-      ...projectEventsV7(
-        frozenIceboundUiFixtureV7({ victim: true }),
-        frozenIceboundUiFixtureV7({ victim: true }),
-        view.viewer.id,
-        [],
-      ),
-      events: [
-        {
-          kind: "UNITS_CRUSHED" as const,
-          playerId: iceOwner,
-          results: [
-            { unitId: ship.id, damage: 3, shieldDamage: 0, hpAfter: 22 },
-          ],
-        },
-        {
-          kind: "ICE_MELTED" as const,
-          tiles: [FROZEN_UI_V7.melting[2]],
-          freed: [],
-        },
-      ],
-    };
-    const steps = corePresentationPlanV7(view, envelope, view);
-    expect(
-      steps.map((step) => (step.kind === "ICE_FOLK" ? step.effect : step.kind)),
-    ).toEqual(["ICE_CRUSH", "DAMAGE", "ICE_MELT"]);
-    expect(steps[1]).toMatchObject({
-      unitId: ship.id,
-      damage: 3,
-      lethal: false,
-    });
-    const notice = frozenSeaBoundaryNoticeV7(envelope.events, view, view);
-    expect(notice).toEqual({
-      text: "The ice crushed your Battleship for 3 · Ice melted on 1 tile",
-      toast: true,
-    });
-  });
-
   it("a boarding raises the captor's flag", () => {
-    const steps = corePresentationPlanV7(viewOf(frozenIceboundUiFixtureV7()), {
+    const steps = corePresentationPlanV7(viewOf(frozenShipUiFixtureV7()), {
       ...projectEventsV7(
-        frozenIceboundUiFixtureV7(),
-        frozenIceboundUiFixtureV7(),
-        viewOf(frozenIceboundUiFixtureV7()).viewer.id,
+        frozenShipUiFixtureV7(),
+        frozenShipUiFixtureV7(),
+        viewOf(frozenShipUiFixtureV7()).viewer.id,
         [],
       ),
       events: [
         {
           kind: "SHIP_BOARDED",
-          playerId: viewOf(frozenIceboundUiFixtureV7()).viewer.id,
+          playerId: viewOf(frozenShipUiFixtureV7()).viewer.id,
           unitId: 1 as never,
           targetUnitId: 2 as never,
           fromPlayerId: unitAt(
-            viewOf(frozenIceboundUiFixtureV7()),
+            viewOf(frozenShipUiFixtureV7()),
             FROZEN_UI_V7.frozenShip,
           ).ownerId,
           at: FROZEN_UI_V7.frozenShip,
@@ -774,8 +699,6 @@ describe("frozen-sea cues and notices", () => {
   it("draws every new cue at any progress, reduced motion included", () => {
     for (const effect of [
       "ICE_FREEZE",
-      "ICE_MELT",
-      "ICE_CRUSH",
       "PRIZE_FLAG",
     ] as const satisfies readonly IceFolkFeedbackEffectV7[])
       for (const progress of [0, 0.25, 0.6, 0.99, 1]) {
@@ -874,10 +797,9 @@ describe("frozen-sea marks on the canvas", () => {
     expect(none.calls).toEqual([]);
   });
 
-  it("keeps the slide arrow and the crush pill readable at the desktop's zoom steps", () => {
+  it("keeps the slide arrow readable at the desktop's zoom steps", () => {
     // `pulp_wars-5ti.10`: the camera zoom of the chibi zoom steps 0.75 and 1
-    // (60 and 80 px tiles). The first arrow was a 4 to 7 px casing there
-    // and the pill 18 x 8 px with 8 px text.
+    // (60 and 80 px tiles). The first arrow was a 4 to 7 px casing there.
     for (const zoom of [0.46875, 0.625]) {
       expect(slideArrowWidthV7(zoom, false)).toBeGreaterThanOrEqual(8);
       expect(slideArrowWidthV7(zoom, true)).toBeGreaterThanOrEqual(10);
@@ -901,64 +823,12 @@ describe("frozen-sea marks on the canvas", () => {
         6,
       );
       expect(context.lineWidth).toBeGreaterThanOrEqual(4);
-
-      const box = crushPillBoxV7(100, 100, zoom);
-      expect(box.font).toBeGreaterThanOrEqual(10);
-      expect(box.halfHeight * 2).toBeGreaterThanOrEqual(16);
-      expect(box.halfWidth * 2).toBeGreaterThanOrEqual(32);
-      // It stays inside its own tile on the right, and under the badge slot.
-      const half = 64 * zoom;
-      expect(box.cx + box.halfWidth).toBeLessThanOrEqual(100 + half);
-      expect(box.cx - box.halfWidth).toBeGreaterThanOrEqual(100 - half);
-      expect(box.cy - box.halfHeight).toBeCloseTo(100 - zoom, 6);
-      expect(box.cy + box.halfHeight).toBeLessThanOrEqual(100 + half);
     }
-    // Above the floor both scale with the camera, as before.
+    // Above the floor it scales with the camera, as before.
     expect(slideArrowWidthV7(2, true)).toBe(30);
-    expect(crushPillBoxV7(0, 0, 2).font).toBe(26);
-    const drawn = recorder();
-    drawIceboundMarkerV7(
-      drawn.context,
-      { crush: "−3 HP", lethal: false },
-      100,
-      100,
-      0.46875,
-    );
-    const text = drawn.named("fillText")[0];
-    const box = crushPillBoxV7(100, 100, 0.46875);
-    expect([text?.[1], text?.[2]]).toEqual(["−3", box.cx]);
   });
 
-  it("draws the pack ice and the crush pill of an icebound ship", () => {
-    const overlay = { id: "icebound" } as unknown as CanvasImageSource;
-    const withRaster = recorder();
-    drawIceboundMarkerV7(
-      withRaster.context,
-      { crush: "−3 HP", lethal: false },
-      100,
-      100,
-      1,
-      { overlay },
-    );
-    const frame = ICEBOUND_MARKER_FRAME_V7.ice;
-    expect(withRaster.named("drawImage")).toEqual([
-      ["drawImage", overlay, 100 + frame.left, 100, frame.width, frame.height],
-    ]);
-    expect(withRaster.named("fillText")[0]?.[1]).toBe("−3");
-    const coded = recorder();
-    drawIceboundMarkerV7(
-      coded.context,
-      { crush: "Sinks", lethal: true },
-      100,
-      100,
-      1,
-    );
-    expect(coded.named("drawImage")).toEqual([]);
-    expect(coded.named("fillText")[0]?.[1]).toBe("Sinks");
-    expect(coded.named("fill").length).toBeGreaterThanOrEqual(2);
-  });
-
-  it("the board draws ice cells, the slide and the icebound marker", () => {
+  it("the board draws ice cells and the slide", () => {
     const art: IceFolkBoardArtV7 = {
       snowTile: () => null,
       caps: () => null,
@@ -979,11 +849,10 @@ describe("frozen-sea marks on the canvas", () => {
       return named;
     };
     // LEGACY: every ice cell is a code floe (one ellipse set per permanent
-    // cell), and the icebound ship's pill is written.
-    const icebound = viewOf(frozenIceboundUiFixtureV7());
-    const named = draw(plan(icebound, null));
+    // cell).
+    const iced = viewOf(frozenShipUiFixtureV7());
+    const named = draw(plan(iced, null));
     expect(named("ellipse").length).toBeGreaterThanOrEqual(3);
-    expect(named("fillText").some((call) => call[1] === "−3")).toBe(true);
     // The slide's arrow is drawn while the Yeti is selected.
     const slide = viewOf(frozenSlideUiFixtureV7());
     const yeti = unitAt(slide, FROZEN_UI_V7.bridgeHead);
@@ -1007,7 +876,8 @@ describe("frozen-sea words", () => {
       "Build",
       "No ships",
       "Black Ice",
-      "Icebound",
+      // The Ice Folk freeze rework (`pulp_wars-s55m.1`): Icebound's node.
+      "Hoarfrost",
       "Glacier",
     ]);
     for (const [, sentence] of [...ICE_HELP_RULES_V7, ICE_FOR_SHIPS_HELP_V7]) {

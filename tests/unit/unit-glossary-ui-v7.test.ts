@@ -481,8 +481,6 @@ describe("Ruleset 7 unit glossary", () => {
       "slots",
       "submerged",
       "boardable",
-      "icebound",
-      "ice-crush",
       "frozen",
       "planted",
       "bombed",

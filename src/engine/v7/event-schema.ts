@@ -17,7 +17,6 @@ import {
   BLASTING_ERUPTION_DAMAGE_V7,
   DIVE_BOMB_DAMAGE_V7,
   HEAVY_TRACTOR_PULL_V7,
-  ICE_CRUSH_DAMAGE_V7,
   LAND_GRANT_COST_PER_TILE_V7,
   LAND_GRANT_MINIMUM_COST_V7,
   MONUMENT_POPULATION_V7,
@@ -410,11 +409,9 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
   UNITS_FROZEN: ["kind", "playerId", "sourceUnitId", "source", "results"],
-  // The naval branch, the frozen sea (sections 8.4, 8.5, and 8.9).
-  WATER_FROZEN: ["kind", "playerId", "unitId", "tiles", "icebound"],
-  ICE_CRACKED: ["kind", "playerId", "unitId", "at", "broken", "freed"],
-  ICE_MELTED: ["kind", "tiles", "freed"],
-  UNITS_CRUSHED: ["kind", "playerId", "results"],
+  // The naval branch, the frozen sea (section 8.4 and the redesign's 2.9).
+  WATER_FROZEN: ["kind", "playerId", "unitId", "tiles"],
+  ICE_CRACKED: ["kind", "playerId", "unitId", "at", "broken"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
@@ -1694,38 +1691,23 @@ function validPayload(
         frozenResults(e.results, e.sourceUnitId)
       );
     case "WATER_FROZEN":
-      // The frozen sea (section 8.4): at least one tile, in (y, x) order;
-      // the newly icebound units in unit-ID order, never the actor. The
-      // border freeze (`pulp_wars-5ti.31`): `unitId` null, no unit froze.
+      // The frozen sea (section 8.4): at least one tile, in (y, x) order.
+      // The border freeze (`pulp_wars-5ti.31`): `unitId` null, no unit
+      // froze.
       return (
         id(e.playerId) &&
         (e.unitId === null || id(e.unitId)) &&
         sortedCoords(e.tiles) &&
-        (e.tiles as readonly unknown[]).length > 0 &&
-        ascendingIds(e.icebound) &&
-        !(e.icebound as readonly unknown[]).includes(e.unitId)
+        (e.tiles as readonly unknown[]).length > 0
       );
     case "ICE_CRACKED":
-      // The frozen sea redesign (section 2.9): a thick crack frees nobody.
+      // The frozen sea redesign (section 2.9).
       return (
         id(e.playerId) &&
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
-        typeof e.broken === "boolean" &&
-        ascendingIds(e.freed) &&
-        (e.broken === true || (e.freed as readonly unknown[]).length === 0) &&
-        !(e.freed as readonly unknown[]).includes(e.unitId)
+        typeof e.broken === "boolean"
       );
-    case "ICE_MELTED":
-      // Section 8.5: at least one tile; the freed units in unit-ID order.
-      return (
-        sortedCoords(e.tiles) &&
-        (e.tiles as readonly unknown[]).length > 0 &&
-        ascendingIds(e.freed)
-      );
-    case "UNITS_CRUSHED":
-      // Section 8.9: the fixed crush, split between HP and a Shield.
-      return id(e.playerId) && crushResults(e.results);
     case "WOUNDED_TENDED":
       return id(e.captainId) && tendResults(e.results);
     case "DEAD_RAISED":
@@ -2392,8 +2374,6 @@ function validPayload(
           "ERUPTION",
           // The Candy revision: a Peppermint Surprise.
           "PEPPERMINT",
-          // The frozen sea: an icebound unit crushed by the ice.
-          "CRUSHED",
           // The giants' signatures (section 6.0, G5).
           "CRUSH",
           "STOMP",
@@ -2725,7 +2705,6 @@ function combat(input: unknown): boolean {
       "ram",
       "torpedo",
       "iceCover",
-      "icebound",
       "shockDamage",
       "crackApplied",
       "frostbiteApplied",
@@ -2910,7 +2889,6 @@ function combat(input: unknown): boolean {
         "OUT_OF_RANGE",
         "UNANSWERED",
         "SPLATTED",
-        "ICEBOUND",
         // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender.
         "FROZEN",
         // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror.
@@ -2957,21 +2935,11 @@ function combat(input: unknown): boolean {
         input.attackerDies === false &&
         input.noRetaliationReason !== "OUT_OF_RANGE" &&
         input.noRetaliationReason !== "SPLATTED" &&
-        input.noRetaliationReason !== "ICEBOUND" &&
         input.noRetaliationReason !== "FROZEN" &&
         input.noRetaliationReason !== "TERROR")) &&
-    // The frozen sea (naval branch sections 8.9 and 8.10): an icebound
-    // defender never retaliates and is never rammed or pushed; ice cover is
-    // a cover, so the defense bonus is not 1.
+    // The frozen sea (naval branch section 8.10): ice cover is a cover, so
+    // the defense bonus is not 1.
     typeof input.iceCover === "boolean" &&
-    typeof input.icebound === "boolean" &&
-    (input.icebound !== true ||
-      (input.retaliation === false &&
-        input.attackerDies === false &&
-        input.ram === false &&
-        input.push !== "WILL_PUSH" &&
-        input.iceCover === false)) &&
-    (input.noRetaliationReason !== "ICEBOUND" || input.icebound === true) &&
     (input.iceCover !== true ||
       (input.snowCover === false &&
         input.defenseBonusNumerator === SNOW_COVER_V7.numerator &&
@@ -3458,37 +3426,6 @@ function ascendingIds(input: unknown): boolean {
     )
   );
 }
-/**
- * The frozen sea (naval branch section 8.9) `UNITS_CRUSHED` results:
- * non-empty, in strictly increasing unit-ID order; each a hit of 1 to
- * `ICE_CRUSH_DAMAGE_V7` split between HP and a Shield.
- */
-function crushResults(input: unknown): boolean {
-  if (!isDenseArrayV7(input) || input.length === 0) return false;
-  let prior = 0;
-  for (const result of input) {
-    if (
-      !hasExactKeysV7(result, [
-        "damage",
-        "hpAfter",
-        "shieldDamage",
-        "unitId",
-      ]) ||
-      !id(result.unitId) ||
-      !nn(result.damage) ||
-      !nn(result.shieldDamage) ||
-      !nn(result.hpAfter) ||
-      Number(result.shieldDamage) > SHIELD_CAP_V7 ||
-      Number(result.damage) + Number(result.shieldDamage) < 1 ||
-      Number(result.damage) + Number(result.shieldDamage) >
-        ICE_CRUSH_DAMAGE_V7 ||
-      Number(result.unitId) <= prior
-    )
-      return false;
-    prior = Number(result.unitId);
-  }
-  return true;
-}
 /** Ice Folk Freeze (`pulp_wars-w49.37`): the source of a `UNITS_FROZEN`. */
 function frozenSource(input: unknown): boolean {
   return (
@@ -3501,7 +3438,9 @@ function frozenSource(input: unknown): boolean {
     // The ninth unit (`pulp_wars-w49.17`, 7r55): a Musk Ox's Frostbite.
     input === "FROSTBITE" ||
     // The giants' signatures (section 6.6): a Frost Giant's shards.
-    input === "SHARDS"
+    input === "SHARDS" ||
+    // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze.
+    input === "FREEZE"
   );
 }
 /**
@@ -3549,10 +3488,7 @@ function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
     return input.unitId === null &&
       id(input.playerId) &&
       parseCoordV7(input.at) !== null &&
-      typeof input.broken === "boolean" &&
-      ascendingIds(input.freed) &&
-      (input.broken === true ||
-        (input.freed as readonly unknown[]).length === 0)
+      typeof input.broken === "boolean"
       ? (input as unknown as PlayerEventV7)
       : null;
   return hasExactKeysV7(input, FIELDS.WATER_FROZEN) &&
@@ -3560,8 +3496,7 @@ function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
     input.unitId === null &&
     id(input.playerId) &&
     sortedCoords(input.tiles) &&
-    (input.tiles as readonly unknown[]).length > 0 &&
-    ascendingIds(input.icebound)
+    (input.tiles as readonly unknown[]).length > 0
     ? (input as unknown as PlayerEventV7)
     : null;
 }

@@ -184,7 +184,9 @@ export function attackIsFrostbittenV7(
   return (
     distance === 1 &&
     !attackerDies &&
-    attacker.form === "LAND" &&
+    // Ice Folk freeze rework (`pulp_wars-s55m.1`): a ship attacking from
+    // the next tile is Frozen like a land unit.
+    (attacker.form === "LAND" || attacker.form === "NAVAL") &&
     defender.form === "LAND" &&
     !isNeutralOwnerV7(attacker.ownerId) &&
     !unitIsUnstoppableV7(attacker) &&

@@ -22,8 +22,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r122" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r122.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r123" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r123.current" ||
   MAP_GENERATION_REVISION_V7 !== "REGIONAL_BIOMES_NAVAL_V4" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
@@ -166,7 +166,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-frozen-sea-freeze.test.ts",
     "tests/unit/ruleset-v7-frozen-sea-slide.test.ts",
     "tests/unit/ruleset-v7-frozen-sea-turns.test.ts",
-    "tests/unit/ruleset-v7-frozen-sea-icebound.test.ts",
+    "tests/unit/ruleset-v7-ice-freeze-rework-s55m.test.ts",
     "tests/unit/ruleset-v7-frozen-sea-ground.test.ts",
     "tests/unit/ruleset-v7-frozen-sea-persistence.test.ts",
     "tests/unit/ruleset-v7-frozen-sea-headless.sim.test.ts",

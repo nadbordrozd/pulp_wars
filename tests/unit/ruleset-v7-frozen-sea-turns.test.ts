@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  ICE_CRUSH_DAMAGE_V7,
-  parseEventV7,
   parseGameStateV7,
-  parsePlayerEventEnvelopeV7,
-  projectEventsV7,
   queryPlayerCommandsV7,
-  unitIsIceboundV7,
   viewForV7,
   type CoordV7,
   type DomainEventV7,
@@ -18,7 +13,6 @@ import {
   frozenStateV7,
   iceEntryV7,
   inTerritoryOfV7,
-  patchFrozenUnitV7,
 } from "../fixtures/v7-frozen-sea";
 import {
   acceptV7,
@@ -31,8 +25,9 @@ import {
 // docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.5, 8.8, 8.9, and 9):
 // the turn steps of the frozen sea. The frozen sea redesign
 // (`pulp_wars-5ti.25`, docs/product/RULESET_7_ICE_REDESIGN.md sections 2.3
-// and 2.8): ice is permanent (no thaw), Black Ice no longer runs at the
-// Start Turn, and the crush stays.
+// and 2.8): ice is permanent (no thaw) and Black Ice no longer runs at the
+// Start Turn. The Ice Folk freeze rework (`pulp_wars-s55m.1`): Icebound and
+// its crush are gone, so nothing of the frozen sea runs at a Start Turn.
 
 const RIME: readonly TechnologyIdV7[] = ["SHORECRAFT"];
 const ICEBOUND: readonly TechnologyIdV7[] = [
@@ -136,19 +131,16 @@ describe("permanent ice (redesign section 2.3)", () => {
     ).toBeNull();
   });
 
-  it("no land unit is needed to hold it, and an icebound ship stays icebound", () => {
+  it("no land unit is needed to hold it, and a ship beside it takes no harm at any Start Turn", () => {
     const state = frozenArenaV7({
       technologies: [ICEBOUND, ALL],
-      units: [{ seat: 1, role: "PATROL_BOAT", at: FAR }],
+      units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 1, y: 4 } }],
       ice: [{ at: FAR }, { at: { x: 1, y: 6 } }],
     });
-    const boat = navalUnitAtV7(state, FAR);
-    expect(unitIsIceboundV7(state, boat)).toBe(true);
+    const boat = navalUnitAtV7(state, { x: 1, y: 4 });
     const after = round(round(state).state);
     expect(after.state.ice).toEqual(state.ice);
-    expect(kinds(after.events)).not.toContain("ICE_MELTED");
-    const crushed = navalUnitV7(after.state, boat.id);
-    expect(unitIsIceboundV7(after.state, crushed)).toBe(true);
+    expect(navalUnitV7(after.state, boat.id).hp).toBe(boat.hp);
   });
 
   it("an eliminated owner's ice stays", () => {
@@ -222,171 +214,5 @@ describe("Black Ice no longer runs at the Start Turn (redesign section 2.8)", ()
         (command) => command.kind === "ATTACK" && command.unitId === victim.id,
       ),
     ).toBe(true);
-  });
-});
-
-describe("the crush (section 8.9)", () => {
-  it("deals 3 to every icebound unit on the seat's ice at its Start Turn (Black Ice no longer runs there)", () => {
-    const state = frozenArenaV7({
-      technologies: [ALL, ALL],
-      units: [
-        { seat: 1, role: "PATROL_BOAT", at: FAR },
-        { seat: 1, role: "BATTLESHIP", at: { x: 1, y: 4 } },
-        // A ship on open water, a land unit on the ice.
-        { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 5 } },
-        { seat: 1, role: "FIGHTER", at: { x: 1, y: 6 } },
-      ],
-      ice: [{ at: FAR }, { at: { x: 1, y: 4 } }, { at: { x: 1, y: 6 } }],
-    });
-    const boat = navalUnitAtV7(state, FAR);
-    const battleship = navalUnitAtV7(state, { x: 1, y: 4 });
-    const free = navalUnitAtV7(state, { x: 3, y: 5 });
-    expect(ICE_CRUSH_DAMAGE_V7).toBe(3);
-    const started = round(state);
-    const crushed = started.events.filter(
-      (event) => event.kind === "UNITS_CRUSHED",
-    );
-    // In unit-ID order.
-    const expected = [boat, battleship]
-      .sort((left, right) => left.id - right.id)
-      .map((unit) => ({
-        unitId: unit.id,
-        damage: 3,
-        shieldDamage: 0,
-        hpAfter: unit.hp - 3,
-      }));
-    expect(crushed).toEqual([
-      {
-        kind: "UNITS_CRUSHED",
-        playerId: seatV7(state, 0).id,
-        results: expected,
-      },
-    ]);
-    expect(parseEventV7(crushed[0]).ok).toBe(true);
-    expect(navalUnitV7(started.state, boat.id).hp).toBe(boat.hp - 3);
-    expect(navalUnitV7(started.state, battleship.id).hp).toBe(
-      battleship.hp - 3,
-    );
-    expect(navalUnitV7(started.state, free.id).hp).toBe(free.hp);
-    // The redesign: the Fighter on the ice is not frozen at the Start Turn.
-    expect(kinds(started.events)).not.toContain("UNITS_FROZEN");
-    // The other seat's Start Turn crushes nothing.
-    expect(kinds(endTurn(state, 0).events)).not.toContain("UNITS_CRUSHED");
-    // The victims' owner learns of it.
-    const envelope = projectEventsV7(
-      state,
-      started.state,
-      seatV7(state, 1).id,
-      started.events,
-    );
-    expect(envelope.events).toContainEqual(crushed[0]);
-    expect(parsePlayerEventEnvelopeV7(envelope).ok).toBe(true);
-  });
-
-  it("sinks a ship at 3 HP or less: cause CRUSHED, no credit, no Grave", () => {
-    const base = frozenArenaV7({
-      factions: ["ICE_FOLK", "UNDEAD"],
-      technologies: [ALL, ALL],
-      units: [
-        { seat: 1, role: "PATROL_BOAT", at: FAR },
-        { seat: 0, role: "FIGHTER", at: { x: 1, y: 6 } },
-      ],
-      ice: [{ at: FAR }],
-    });
-    const boat = navalUnitAtV7(base, FAR);
-    const yeti = navalUnitAtV7(base, { x: 1, y: 6 });
-    const state = patchFrozenUnitV7(base, boat.id, { hp: 2 });
-    const started = round(state);
-    expect(started.events).toContainEqual({
-      kind: "UNITS_CRUSHED",
-      playerId: seatV7(state, 0).id,
-      results: [{ unitId: boat.id, damage: 2, shieldDamage: 0, hpAfter: 0 }],
-    });
-    expect(started.events).toContainEqual({
-      kind: "UNIT_DIED",
-      unitId: boat.id,
-      cause: "CRUSHED",
-    });
-    expect(started.state.units.some((unit) => unit.id === boat.id)).toBe(false);
-    expect(started.state.graves).toEqual([]);
-    expect(kinds(started.events)).not.toContain("GRAVE_CREATED");
-    expect(navalUnitV7(started.state, yeti.id).kills).toBe(0);
-    expect(parseGameStateV7(started.state)).not.toBeNull();
-  });
-
-  it("is absorbed by a Shield first (an icebound self-launched machine)", () => {
-    const base = frozenArenaV7({
-      factions: ["ICE_FOLK", "MARTIAN"],
-      technologies: [ALL, ALL],
-      units: [{ seat: 1, role: "CATAPULT", at: { x: 1, y: 8 } }],
-    });
-    const tripod = navalUnitAtV7(base, { x: 1, y: 8 });
-    const shield = base.shields.find((entry) => entry.unitId === tripod.id);
-    expect(shield?.shield).toBe(2);
-    const state = frozenStateV7(
-      patchFrozenUnitV7(base, tripod.id, {
-        at: { x: 1, y: 7 },
-        form: "EMBARKED",
-      }),
-      [{ at: { x: 1, y: 7 } }],
-    );
-    const started = round(state);
-    expect(started.events).toContainEqual({
-      kind: "UNITS_CRUSHED",
-      playerId: seatV7(state, 0).id,
-      results: [
-        {
-          unitId: tripod.id,
-          damage: 1,
-          shieldDamage: 2,
-          hpAfter: tripod.hp - 1,
-        },
-      ],
-    });
-    expect(navalUnitV7(started.state, tripod.id).hp).toBe(tripod.hp - 1);
-  });
-
-  it("an embarked exploding unit that is crushed explodes on its tile", () => {
-    const base = frozenArenaV7({
-      factions: ["ICE_FOLK", "GOBLIN"],
-      technologies: [ALL, ALL],
-      units: [
-        { seat: 1, role: "MARKSMAN", at: { x: 1, y: 8 } },
-        { seat: 0, role: "FIGHTER", at: { x: 1, y: 6 } },
-      ],
-      ice: [{ at: { x: 1, y: 6 } }],
-    });
-    const goblin = navalUnitAtV7(base, { x: 1, y: 8 });
-    const yeti = navalUnitAtV7(base, { x: 1, y: 6 });
-    const state = frozenStateV7(
-      patchFrozenUnitV7(base, goblin.id, {
-        at: { x: 1, y: 7 },
-        form: "EMBARKED",
-        hp: 1,
-      }),
-      [{ at: { x: 1, y: 7 } }],
-    );
-    const started = round(state);
-    const order = kinds(started.events);
-    expect(order).toContain("UNITS_CRUSHED");
-    expect(started.events).toContainEqual({
-      kind: "UNIT_DIED",
-      unitId: goblin.id,
-      cause: "CRUSHED",
-    });
-    const blast = started.events.find(
-      (event) => event.kind === "EXPLOSION_RESOLVED",
-    );
-    expect(blast).toMatchObject({
-      kind: "EXPLOSION_RESOLVED",
-      unitId: goblin.id,
-      at: { x: 1, y: 7 },
-      cause: "DEATH",
-    });
-    expect(order.indexOf("UNITS_CRUSHED")).toBeLessThan(
-      order.indexOf("EXPLOSION_RESOLVED"),
-    );
-    expect(navalUnitV7(started.state, yeti.id).hp).toBeLessThan(yeti.hp);
-    expect(parseGameStateV7(started.state)).not.toBeNull();
   });
 });

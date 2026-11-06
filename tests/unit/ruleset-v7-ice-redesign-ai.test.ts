@@ -7,7 +7,7 @@ import {
 } from "../../src/ai/v7";
 import {
   ICE_BRIDGE_FREEZE_PRIORITY_V7,
-  ICE_CRACK_FREE_PRIORITY_V7,
+  ICE_CRACK_DOCK_PRIORITY_V7,
   ICE_CRACK_HOME_PRIORITY_V7,
   ICE_CRACK_LANE_PRIORITY_V7,
   ICE_HOME_FREEZE_PRIORITY_V7,
@@ -25,7 +25,6 @@ import {
   previewEconomicV7,
   queryPublicEconomicPotentialsV7,
   queryPlayerCommandsV7,
-  unitIsIceboundV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -50,7 +49,6 @@ import {
 import {
   acceptV7,
   navalUnitAtV7,
-  navalUnitV7,
   patchNavalUnitV7,
   seatV7,
 } from "../fixtures/v7-naval-branch";
@@ -519,82 +517,72 @@ describe("every other seat cracks the ice where it gains", () => {
     ice,
   });
 
-  it("cracks an own icebound ship free before anything else", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is ever locked
+  // in the ice; an own dock the Ice Folk iced over is cracked open instead.
+  const DOCK: CoordV7 = { x: 4, y: 3 };
+
+  it("cracks an own dock iced over by a hostile Freeze open", () => {
     const { state, view } = scene(
       against(
-        [
-          { seat: 0, role: "PATROL_BOAT", at: { x: 8, y: 4 } },
-          { seat: 0, role: "PATROL_BOAT", at: { x: 8, y: 5 } },
-        ],
-        [{ at: { x: 8, y: 4 }, seat: 1 }],
+        [{ seat: 0, role: "PATROL_BOAT", at: { x: 5, y: 4 } }],
+        [{ at: DOCK, seat: 1 }],
       ),
     );
-    const frozen = idAt(state, { x: 8, y: 4 });
-    const helper = idAt(state, { x: 8, y: 5 });
-    expect(unitIsIceboundV7(view, navalUnitV7(state, frozen))).toBe(true);
-    const best = candidates(view)[0];
-    expect(best?.command).toEqual(crack(helper, { x: 8, y: 4 }));
-    expect(best?.score.priority).toBe(ICE_CRACK_FREE_PRIORITY_V7);
+    const boat = idAt(state, { x: 5, y: 4 });
     expect(
-      iceCrackScoreV7(view, toolsOf(view), crack(helper, { x: 8, y: 4 })),
-    ).toMatchObject({ reason: "FREE", preview: { broken: true } });
+      iceCrackScoreV7(view, toolsOf(view), crack(boat, DOCK)),
+    ).toMatchObject({
+      reason: "DOCK",
+      priority: ICE_CRACK_DOCK_PRIORITY_V7,
+      preview: { broken: true },
+    });
+    const best = bestOf(view, boat);
+    expect(best?.command).toEqual(crack(boat, DOCK));
     const result = acceptV7(state, 0, best?.command as CommandV7);
-    expect(eventOf(result.events, "ICE_CRACKED").freed).toEqual([frozen]);
-    // The freed boat sails this turn.
+    expect(eventOf(result.events, "ICE_CRACKED").broken).toBe(true);
     expect(
-      queryPlayerCommandsV7(viewOf(result.state)).some(
-        (command) => command.kind === "MOVE" && command.unitId === frozen,
-      ),
-    ).toBe(true);
+      result.state.board.tiles.find(
+        (tile) => tile.at.x === DOCK.x && tile.at.y === DOCK.y,
+      )?.improvement,
+    ).toBe("PORT");
   });
 
   it("cracks thick ice twice in one turn when two units stand beside it, and not with one", () => {
+    // The capital's Fighter on (5, 2) stands beside the dock; a boat on
+    // (5, 4) is the second unit.
     const options = (two: boolean) =>
       against(
-        [
-          { seat: 0, role: "PATROL_BOAT", at: { x: 8, y: 4 } },
-          { seat: 0, role: "PATROL_BOAT", at: { x: 8, y: 5 } },
-          ...(two
-            ? [
-                {
-                  seat: 0 as const,
-                  role: "PATROL_BOAT" as const,
-                  at: { x: 7, y: 4 },
-                },
-              ]
-            : []),
-        ],
-        [{ at: { x: 8, y: 4 }, seat: 1 }],
+        two ? [{ seat: 0, role: "PATROL_BOAT", at: { x: 5, y: 4 } }] : [],
+        [{ at: DOCK, seat: 1 }],
         GLACIER,
       );
     const alone = scene(options(false));
-    const helper = idAt(alone.state, { x: 8, y: 5 });
-    expect(previewCrackIceV7(alone.view, helper, { x: 8, y: 4 })?.broken).toBe(
-      false,
-    );
+    const helper = idAt(alone.state, { x: 5, y: 2 });
+    expect(previewCrackIceV7(alone.view, helper, DOCK)?.broken).toBe(false);
     expect(
-      iceCrackScoreV7(
-        alone.view,
-        toolsOf(alone.view),
-        crack(helper, { x: 8, y: 4 }),
-      ),
+      iceCrackScoreV7(alone.view, toolsOf(alone.view), crack(helper, DOCK)),
     ).toBeNull();
-    expect(
-      candidates(alone.view).some((item) => item.command.kind === "CRACK_ICE"),
-    ).toBe(false);
     const { state, view } = scene(options(true));
-    const first = candidates(view)[0];
-    expect(first?.command.kind).toBe("CRACK_ICE");
-    expect(first?.score.priority).toBe(ICE_CRACK_FREE_PRIORITY_V7);
-    const cracked = acceptV7(state, 0, first?.command as CommandV7);
+    const first = iceCrackScoreV7(
+      view,
+      toolsOf(view),
+      crack(idAt(state, { x: 5, y: 4 }), DOCK),
+    );
+    expect(first?.priority).toBe(ICE_CRACK_DOCK_PRIORITY_V7);
+    const cracked = acceptV7(
+      state,
+      0,
+      crack(idAt(state, { x: 5, y: 4 }), DOCK),
+    );
     expect(eventOf(cracked.events, "ICE_CRACKED").broken).toBe(false);
-    const second = candidates(viewOf(cracked.state))[0];
-    expect(second?.command.kind).toBe("CRACK_ICE");
-    expect(second?.score.priority).toBe(ICE_CRACK_FREE_PRIORITY_V7);
-    const broken = acceptV7(cracked.state, 0, second?.command as CommandV7);
+    const after = viewOf(cracked.state);
+    const second = crack(idAt(state, { x: 5, y: 2 }), DOCK);
+    expect(iceCrackScoreV7(after, toolsOf(after), second)?.priority).toBe(
+      ICE_CRACK_DOCK_PRIORITY_V7,
+    );
+    const broken = acceptV7(cracked.state, 0, second);
     expect(eventOf(broken.events, "ICE_CRACKED")).toMatchObject({
       broken: true,
-      freed: [idAt(state, { x: 8, y: 4 })],
     });
   });
 

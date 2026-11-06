@@ -1658,9 +1658,6 @@ export function corePresentationPlanV7(
             ? {}
             : { from: source.at }),
         });
-    } else if (event.kind === "ICE_MELTED") {
-      const cells = event.tiles.filter(isExplored);
-      if (cells.length > 0) pushIceFolk({ effect: "ICE_MELT", cells });
     } else if (event.kind === "ICE_CRACKED") {
       // The frozen sea redesign (bead pulp_wars-5ti.27): a crack flashes
       // across the tile; a break then gives way into floes.
@@ -1674,29 +1671,6 @@ export function corePresentationPlanV7(
             ? {}
             : { from: source.at }),
         });
-      }
-    } else if (event.kind === "UNITS_CRUSHED") {
-      // The crush: the ice closes on each frozen ship, then its hit shows.
-      const hits = event.results.flatMap((result) => {
-        const unit = unitAnywhere(result.unitId);
-        return unit === undefined || !isExplored(unit.at)
-          ? []
-          : [{ result, at: unit.at }];
-      });
-      if (hits.length > 0) {
-        pushIceFolk({
-          effect: "ICE_CRUSH",
-          cells: hits.map((hit) => hit.at),
-        });
-        for (const hit of hits)
-          steps.push({
-            kind: "DAMAGE",
-            unitId: hit.result.unitId,
-            at: hit.at,
-            damage: hit.result.damage + hit.result.shieldDamage,
-            lethal: hit.result.hpAfter <= 0,
-            durationMs: 100,
-          });
       }
     } else if (event.kind === "SHIP_BOARDED") {
       // The naval branch: the prize's flag changes to its captor's colour.

@@ -1,27 +1,24 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   FREEZE_LINE_V7,
-  ICE_CRUSH_DAMAGE_V7,
+  LONG_FREEZE_LINE_V7,
   WITCH_FREEZE_RADIUS_V7,
   iceEntryIndexV7,
   iceTileKeyV7,
   technologyCapabilitiesV7,
   unitFactionV7,
   unitRoleMechanicsV7,
-  unitRoleRuleV7,
   factionRulesV7,
   type FactionRosterV7,
   type IceLookupV7,
 } from "../rules/ruleset-v7";
-import { arePlayersHostileV7 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import {
   canBeFrozenV7,
   unitsFrozenEventV7,
   withFrozenAppliedV7,
 } from "./ice-folk";
-import { absorbHitV7, shieldOfV7, withShieldDamageV7 } from "./martian";
-import { compareCoordsV7, sameCoordV7 } from "./schema";
+import { compareCoordsV7 } from "./schema";
 import {
   isAfloatFormV7,
   isNeutralOwnerV7,
@@ -32,7 +29,6 @@ import {
   type PlayerStateV7,
   type UnitFormV7,
   type UnitRoleIdV7,
-  type UnitStateV7,
 } from "./types";
 
 /**
@@ -42,8 +38,8 @@ import {
  * stored layer over water tiles (`GameStateV7.ice`): ground for every
  * land-form unit, never entered by a unit afloat, and permanent until a
  * Crack Ice breaks it. This module holds the ice reads every rule shares
- * (`iceAtV7`, with `unitIsIceboundV7` in the registry), the Freeze set, the
- * Crack Ice result, building on ice, Black Ice on entry, and the crush. The
+ * (`iceAtV7`), the Freeze set, the
+ * Crack Ice result, building on ice, and Black Ice on entry. The
  * list changes in the middle of a turn (a Freeze, a Crack), so nothing here
  * is cached across lists. Every helper returns the neutral answer in a match
  * without an Ice Folk seat, whose list is always empty.
@@ -153,19 +149,6 @@ export function unitCracksIceV7(
   );
 }
 
-/** Section 8.4: whether the role Freezes a ring (the Ice Witch) or a line. */
-export function unitFreezesRingV7(
-  roster: FactionRosterV7,
-  unit: {
-    readonly id: UnitId;
-    readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
-  },
-): boolean {
-  // Only the Ice Witch's role has `BLIZZARD` (see `winterV7`).
-  return unitRoleRuleV7(roster, unit).abilities.includes("BLIZZARD");
-}
-
 /**
  * The frozen sea redesign (section 2.3): whether the ice of `ownerId` is
  * thick: its owner is a living player whose tree's Glacier it has
@@ -210,21 +193,18 @@ export interface FreezeTileFactsV7 {
   /** Explored by the actor. */
   readonly explored: boolean;
   readonly terrain: string;
-  readonly improvement: string | null;
-  /** The tile is in the territory of a city of the actor (its owner). */
-  readonly ownTerritory: boolean;
   /** The ice on the tile: whether it is the actor's own, and cracked. */
   readonly ice: { readonly own: boolean; readonly cracked: boolean } | null;
   /** The living unit on the tile, if any (visible on an explored tile). */
   readonly unit: {
     readonly id: UnitId;
     readonly form: UnitFormV7;
-    readonly hostile: boolean;
     /**
-     * Map curiosities round 3, bead B (section 8.6): the unit is neutral.
-     * The tile under the Sea Serpent is never freezable.
+     * Ice Folk freeze rework (`pulp_wars-s55m.1`): the actor can Freeze it
+     * now and that would change its Frozen entry (`canBeFrozenV7`, visible
+     * to the actor, `freezeChangesUnitV7`). The Sea Serpent never is.
      */
-    readonly neutral: boolean;
+    readonly freezable: boolean;
   } | null;
 }
 
@@ -236,26 +216,29 @@ export interface FreezeSetV7 {
   readonly mended: readonly CoordV7[];
   /** The tiles of `tiles` that were another player's ice, in (y, x) order. */
   readonly taken: readonly CoordV7[];
-  /** The afloat units newly locked in the ice, in unit-ID order. */
-  readonly icebound: readonly UnitId[];
+  /**
+   * Ice Folk freeze rework (`pulp_wars-s55m.1`): the units afloat the
+   * Freeze Frozen on open water it reached (their tiles stay open water),
+   * in unit-ID order.
+   */
+  readonly units: readonly UnitId[];
 }
 
-type FreezeTakeV7 = "MAKE" | "LOCK" | "TAKE" | "MEND" | "PASS" | "NO";
+type FreezeTakeV7 = "MAKE" | "FREEZE_UNIT" | "TAKE" | "MEND" | "PASS" | "NO";
 
 /**
- * The frozen sea redesign (section 2.4): what a Freeze does to one tile. A
- * tile is freezable when it is explored by the actor and water (Shallow, or
- * Deep with `DEEP`); a dock that is not the actor's own never freezes.
- * Open water with no unit (the actor's own dock included) is made ice;
- * open water holding a hostile afloat unit, with `icebound`, is made ice
- * and locks it in; another player's ice is taken (any occupant); the
- * actor's own cracked ice is mended (any occupant); the actor's own sound
- * ice is passed over.
+ * The frozen sea redesign (section 2.4), as reworked by `pulp_wars-s55m.1`:
+ * what a Freeze does to one tile. A tile is freezable when it is explored
+ * by the actor and water (Shallow, or Deep with `DEEP`); any dock, another
+ * player's included, may be iced over (it stays its owner's dock). Open
+ * water with no unit is made ice; open water holding a unit afloat that
+ * the actor can freeze stays open water and the unit is Frozen; another
+ * player's ice is taken (any occupant); the actor's own cracked ice is
+ * mended (any occupant); the actor's own sound ice is passed over.
  */
 function freezeTakeV7(
   tile: FreezeTileFactsV7 | undefined,
   freezeWater: "NONE" | "SHALLOW" | "DEEP",
-  icebound: boolean,
 ): FreezeTakeV7 {
   if (tile === undefined || !tile.explored || freezeWater === "NONE")
     return "NO";
@@ -264,53 +247,50 @@ function freezeTakeV7(
     !(tile.terrain === "DEEP_WATER" && freezeWater === "DEEP")
   )
     return "NO";
-  if (
-    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
-    !tile.ownTerritory
-  )
-    return "NO";
   if (tile.ice !== null)
     return !tile.ice.own ? "TAKE" : tile.ice.cracked ? "MEND" : "PASS";
   if (tile.unit === null) return "MAKE";
-  // Map curiosities round 3, bead B (section 8.6): the Sea Serpent's tile is
-  // never freezable, so it is never icebound or crushed.
-  if (tile.unit.neutral) return "NO";
-  return icebound && tile.unit.hostile && isAfloatFormV7(tile.unit.form)
-    ? "LOCK"
+  return tile.unit.freezable && isAfloatFormV7(tile.unit.form)
+    ? "FREEZE_UNIT"
     : "NO";
 }
 
 /**
  * The frozen sea redesign (section 2.4): the freeze set of a Freeze by a
- * unit on `from` aimed at `at`. `ring` (the Ice Witch): every freezable tile
- * within Chebyshev `WITCH_FREEZE_RADIUS_V7` of her, her own tile included.
- * Otherwise a line of `FREEZE_LINE_V7` tiles from `at` in the direction from
- * the unit to `at`: each is taken if freezable; the actor's own sound ice
- * is passed over and the line goes on; any other tile ends the line, and so
- * does a tile that holds a unit afloat. An empty `tiles` means the Freeze
+ * unit on `from` aimed at `at`. `ring` (the Ice Witch's Cold Snap): every
+ * freezable tile within Chebyshev `WITCH_FREEZE_RADIUS_V7` of her, her own
+ * tile included. Otherwise a line of `line` tiles (`freezeLineV7`) from
+ * `at` in the direction from the unit to `at`: each is taken if freezable;
+ * the actor's own sound ice is passed over and the line goes on; any other
+ * tile ends the line, and so does a tile that holds a unit afloat (after
+ * Freezing it, when it can). An empty `tiles` and `units` means the Freeze
  * changes nothing and is not offered.
  */
 export function freezeSetV7(input: {
   readonly from: CoordV7;
   readonly at: CoordV7;
   readonly ring: boolean;
+  readonly line: number;
   readonly freezeWater: "NONE" | "SHALLOW" | "DEEP";
-  readonly icebound: boolean;
   readonly tileAt: (at: CoordV7) => FreezeTileFactsV7 | undefined;
 }): FreezeSetV7 {
   const tiles: CoordV7[] = [];
   const mended: CoordV7[] = [];
   const taken: CoordV7[] = [];
-  const icebound: UnitId[] = [];
+  const units: UnitId[] = [];
   const take = (at: CoordV7): "GO" | "STOP" => {
     const tile = input.tileAt(at);
-    const result = freezeTakeV7(tile, input.freezeWater, input.icebound);
-    if (result === "NO" || tile === undefined) return "STOP";
+    if (tile === undefined) return "STOP";
+    const result = freezeTakeV7(tile, input.freezeWater);
+    if (result === "FREEZE_UNIT" && tile.unit !== null) {
+      units.push(tile.unit.id);
+      return "STOP";
+    }
+    if (result === "NO") return "STOP";
     if (result !== "PASS") {
       tiles.push({ x: at.x, y: at.y });
       if (result === "MEND") mended.push({ x: at.x, y: at.y });
       if (result === "TAKE") taken.push({ x: at.x, y: at.y });
-      if (result === "LOCK" && tile.unit !== null) icebound.push(tile.unit.id);
     }
     return tile.unit !== null && isAfloatFormV7(tile.unit.form) ? "STOP" : "GO";
   };
@@ -330,7 +310,7 @@ export function freezeSetV7(input: {
     const dx = input.at.x - input.from.x;
     const dy = input.at.y - input.from.y;
     let current = input.at;
-    for (let step = 0; step < FREEZE_LINE_V7; step += 1) {
+    for (let step = 0; step < input.line; step += 1) {
       if (take(current) !== "GO") break;
       current = { x: current.x + dx, y: current.y + dy };
     }
@@ -339,8 +319,18 @@ export function freezeSetV7(input: {
     tiles: tiles.sort(compareCoordsV7),
     mended: mended.sort(compareCoordsV7),
     taken: taken.sort(compareCoordsV7),
-    icebound: icebound.sort((left, right) => left - right),
+    units: units.sort((left, right) => left - right),
   };
+}
+
+/**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`): the length of a Freeze line
+ * for a unit whose capabilities have `longFreeze` (Hoarfrost) or not.
+ */
+export function freezeLineV7(capabilities: {
+  readonly longFreeze: boolean;
+}): number {
+  return capabilities.longFreeze ? LONG_FREEZE_LINE_V7 : FREEZE_LINE_V7;
 }
 
 /**
@@ -350,18 +340,17 @@ export function freezeSetV7(input: {
  * ice IF you have the relevant technology"). When the borders of an Ice
  * Folk city grow (a Land Grant, a village captured into a city, a city
  * captured), and when its owner researches a technology that widens what
- * it freezes (Rime, Pack Ice, Icebound), every tile of that city's
- * territory is put through the Freeze rule of one tile (`freezeTakeV7`,
- * redesign section 2.4) with the seat's own `freezeWater` and `icebound`:
- * open water with no unit (an own dock too) is made ice, a hostile ship
- * there is locked in with Icebound, another player's ice is taken, own
- * cracked ice is mended, and own sound ice, unexplored tiles, deep water
- * without Pack Ice, a neutral unit's tile, and a tile holding any other
- * afloat unit are left. No line, no ring and no stopping: every tile is
- * read on its own. `cityIds` null: every city of `actor`. A seat without
- * Rime (every seat of another faction) freezes nothing. Every caller
- * recomputes the live economy after it (a dock made ice is an Ice
- * Harbour, whose blockade rule differs).
+ * it freezes (Rime, Pack Ice), every tile of that city's territory is put
+ * through the Freeze rule of one tile (`freezeTakeV7`, redesign section
+ * 2.4) with the seat's own `freezeWater`: open water with no unit (an own
+ * dock too) is made ice, another player's ice is taken, own cracked ice is
+ * mended, and own sound ice, unexplored tiles, deep water without Pack Ice,
+ * and a tile holding any unit afloat are left (no unit acts, so nobody is
+ * Frozen). No line, no ring and no stopping: every tile is read on its own.
+ * `cityIds` null: every city of `actor`. A seat without Rime (every seat of
+ * another faction) freezes nothing. Every caller recomputes the live
+ * economy after it (a dock made ice is an Ice Harbour, whose blockade rule
+ * differs).
  */
 export function territoryFreezeV7(
   state: Pick<
@@ -374,7 +363,7 @@ export function territoryFreezeV7(
   readonly ice: readonly IceTileV7[];
   readonly frozen: FreezeSetV7;
 } {
-  const none: FreezeSetV7 = { tiles: [], mended: [], taken: [], icebound: [] };
+  const none: FreezeSetV7 = { tiles: [], mended: [], taken: [], units: [] };
   const player = state.players.find((candidate) => candidate.id === actor);
   if (player === undefined || player.status === "ELIMINATED")
     return { ice: state.ice, frozen: none };
@@ -394,56 +383,48 @@ export function territoryFreezeV7(
   );
   if (own.size === 0) return { ice: state.ice, frozen: none };
   const explored = new Set(player.explored.map((at) => iceTileKeyV7(at)));
+  const occupied = new Map(
+    state.units
+      .filter((candidate) => candidate.hp > 0)
+      .map((candidate) => [iceTileKeyV7(candidate.at), candidate] as const),
+  );
   const tiles: CoordV7[] = [];
   const mended: CoordV7[] = [];
   const taken: CoordV7[] = [];
-  const icebound: UnitId[] = [];
   for (const tile of state.board.tiles) {
     if (tile.territoryCityId === null || !own.has(tile.territoryCityId))
       continue;
     if (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER")
       continue;
-    const occupant = state.units.find(
-      (candidate) => candidate.hp > 0 && sameCoordV7(candidate.at, tile.at),
-    );
+    const occupant = occupied.get(iceTileKeyV7(tile.at));
     const entry = iceAtV7(state, tile.at);
     const facts: FreezeTileFactsV7 = {
       explored: explored.has(iceTileKeyV7(tile.at)),
       terrain: tile.terrain,
-      improvement: tile.improvement,
-      ownTerritory: true,
       ice:
         entry === undefined
           ? null
           : { own: entry.ownerId === actor, cracked: entry.cracked },
+      // The border freeze Freezes no unit: no unit acted.
       unit:
         occupant === undefined
           ? null
-          : {
-              id: occupant.id,
-              form: occupant.form,
-              hostile: arePlayersHostileV7(state, actor, occupant.ownerId),
-              neutral: isNeutralOwnerV7(occupant.ownerId),
-            },
+          : { id: occupant.id, form: occupant.form, freezable: false },
     };
-    const result = freezeTakeV7(
-      facts,
-      capabilities.freezeWater,
-      capabilities.icebound,
-    );
-    if (result === "NO" || result === "PASS") continue;
+    const result = freezeTakeV7(facts, capabilities.freezeWater);
+    if (result === "NO" || result === "PASS" || result === "FREEZE_UNIT")
+      continue;
     const at = { x: tile.at.x, y: tile.at.y };
     tiles.push(at);
     if (result === "MEND") mended.push(at);
     if (result === "TAKE") taken.push(at);
-    if (result === "LOCK" && occupant !== undefined) icebound.push(occupant.id);
   }
   if (tiles.length === 0) return { ice: state.ice, frozen: none };
   const frozen: FreezeSetV7 = {
     tiles: tiles.sort(compareCoordsV7),
     mended: mended.sort(compareCoordsV7),
     taken: taken.sort(compareCoordsV7),
-    icebound: icebound.sort((left, right) => left - right),
+    units: [],
   };
   return { ice: withFrozenV7(state.ice, frozen.tiles, actor), frozen };
 }
@@ -463,7 +444,6 @@ export function territoryFrozenEventsV7(
       playerId: actor,
       unitId: null,
       tiles: frozen.tiles,
-      icebound: frozen.icebound,
     },
   ];
 }
@@ -550,127 +530,20 @@ export function resolveBlackIceOnEntryV7(
 }
 
 /**
- * The frozen sea redesign (section 2.3): the elimination release. Every
- * icebound unit on the ice of the eliminated `ownerId` floats free (its
- * tile's entry goes); the rest of that ice stays. One `ICE_MELTED`, or
- * nothing.
+ * The frozen sea redesign (section 2.3): the elimination release. The ice of
+ * the eliminated `ownerId` stays, but an eliminated owner has no thick ice,
+ * so its cracks are gone (the next Crack breaks the tile). Since
+ * `pulp_wars-s55m.1` no unit afloat is ever on ice, so nothing floats free.
  */
 export function releaseEliminatedIceV7(
   ice: readonly IceTileV7[],
-  units: readonly Pick<UnitStateV7, "id" | "at" | "hp" | "form">[],
   ownerId: PlayerId,
-): {
-  readonly ice: readonly IceTileV7[];
-  readonly events: readonly DomainEventV7[];
-} {
-  if (ice.length === 0) return { ice, events: [] };
-  const melted: CoordV7[] = [];
-  const freed: UnitId[] = [];
-  for (const entry of ice) {
-    if (entry.ownerId !== ownerId) continue;
-    const afloat = units.filter(
-      (unit) =>
-        unit.hp > 0 &&
-        isAfloatFormV7(unit.form) &&
-        sameCoordV7(unit.at, entry.at),
-    );
-    if (afloat.length === 0) continue;
-    melted.push(entry.at);
-    for (const unit of afloat) freed.push(unit.id);
-  }
-  // An eliminated owner has no thick ice: its cracks are gone with it (the
-  // next Crack breaks the tile).
-  const sound = ice.some((entry) => entry.ownerId === ownerId && entry.cracked)
-    ? ice.map((entry) =>
-        entry.ownerId === ownerId && entry.cracked
-          ? { ...entry, cracked: false }
-          : entry,
-      )
-    : ice;
-  if (melted.length === 0) return { ice: sound, events: [] };
-  return {
-    ice: withoutIceV7(sound, melted),
-    events: [
-      {
-        kind: "ICE_MELTED",
-        tiles: [...melted].sort(compareCoordsV7),
-        freed: [...freed].sort((left, right) => left - right),
-      },
-    ],
-  };
-}
-
-/**
- * Section 8.9 the crush at the Start Turn of `playerId` (the redesign keeps
- * it; Black Ice no longer runs at the Start Turn): every icebound unit on
- * that player's ice takes `ICE_CRUSH_DAMAGE_V7`, in unit-ID order: fixed
- * damage (no cover, Defense, or HP ratio), from its Shield first, capped at
- * its HP. The dead leave the board with `UNIT_DIED` cause `CRUSHED` (no
- * credit, no Grave: a death afloat). The caller resolves what a death
- * starts (a Brain's collapse, an embarked exploding unit's blast) and
- * recomputes the live economy; `dead` lists the victims as they stood
- * before the crush, in unit-ID order.
- */
-export function resolveIceCrushV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): {
-  readonly state: GameStateV7;
-  readonly events: readonly DomainEventV7[];
-  readonly dead: readonly UnitStateV7[];
-} {
-  if (state.ice.length === 0) return { state, events: [], dead: [] };
-  const victims = state.units
-    .filter((unit) => {
-      if (unit.hp <= 0 || !isAfloatFormV7(unit.form)) return false;
-      return iceAtV7(state, unit.at)?.ownerId === playerId;
-    })
-    .sort((left, right) => left.id - right.id);
-  if (victims.length === 0) return { state, events: [], dead: [] };
-  const hits = victims.map((unit) => ({
-    unit,
-    hit: absorbHitV7(
-      shieldOfV7(state.shields, unit.id),
-      unit.hp,
-      ICE_CRUSH_DAMAGE_V7,
-    ),
-  }));
-  const damage = new Map(
-    hits.map(({ unit, hit }) => [unit.id, hit.hpDamage] as const),
+): readonly IceTileV7[] {
+  if (!ice.some((entry) => entry.ownerId === ownerId && entry.cracked))
+    return ice;
+  return ice.map((entry) =>
+    entry.ownerId === ownerId && entry.cracked
+      ? { ...entry, cracked: false }
+      : entry,
   );
-  const events: DomainEventV7[] = [
-    {
-      kind: "UNITS_CRUSHED",
-      playerId,
-      results: hits.map(({ unit, hit }) => ({
-        unitId: unit.id,
-        damage: hit.hpDamage,
-        shieldDamage: hit.shieldDamage,
-        hpAfter: unit.hp - hit.hpDamage,
-      })),
-    },
-  ];
-  const dead = hits
-    .filter(({ unit, hit }) => hit.hpDamage >= unit.hp)
-    .map(({ unit }) => unit);
-  for (const unit of dead)
-    events.push({ kind: "UNIT_DIED", unitId: unit.id, cause: "CRUSHED" });
-  return {
-    state: {
-      ...state,
-      units: state.units
-        .map((unit) =>
-          damage.has(unit.id)
-            ? { ...unit, hp: unit.hp - (damage.get(unit.id) ?? 0) }
-            : unit,
-        )
-        .filter((unit) => unit.hp > 0),
-      shields: withShieldDamageV7(
-        state.shields,
-        new Map(hits.map(({ unit, hit }) => [unit.id, hit.shieldDamage])),
-      ),
-    },
-    events,
-    dead,
-  };
 }

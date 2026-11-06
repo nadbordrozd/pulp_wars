@@ -1497,9 +1497,9 @@ const SCENES: readonly Scene[] = [
         ["freeze"],
       ],
       [
-        "dock-icebound-ship",
+        "dock-frozen-ship",
         "v7-frozen-sea-ui",
-        "frozenIceboundUiFixtureV7()",
+        "frozenShipUiFixtureV7()",
         "FROZEN_UI_V7.frozenShip",
         [],
       ],

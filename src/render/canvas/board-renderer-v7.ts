@@ -195,7 +195,6 @@ import {
   drawFrozenCasingV7,
   drawFrozenGlyphV7,
   drawIceFolkBadgeV7,
-  drawRimeV7,
   drawShatterCracksV7,
   drawShatterWindowV7,
   drawSnowCapsV7,
@@ -289,19 +288,16 @@ import {
   addFreezeRingEntriesV7,
   crackIcePickTargetsV7,
   freezePickTargetsV7,
-  iceboundMarkerV7,
   moveOnIceLabelV7,
   moveOnIceV7,
   seaIceCellsV7,
   type FreezePickV7,
   type FreezeRingWeightV7,
-  type IceboundMarkerV7,
   type MoveSlideV7,
   type SeaIceCellV7,
 } from "./frozen-sea-board-plan-v7";
 import {
   drawIceBuildingPadV7,
-  drawIceboundMarkerV7,
   drawSeaIceCellV7,
   drawSlideArrowV7,
 } from "./frozen-sea-canvas-v7";
@@ -1394,8 +1390,6 @@ export interface BoardRenderPlanEntryV7 {
    * building stands on ice, so it is drawn on a packed-snow pad.
    */
   readonly onIce?: true;
-  /** UNIT only, the frozen sea: a ship locked in the ice, and its crush. */
-  readonly icebound?: IceboundMarkerV7;
   /** CRUMBS only, the Candy revision: the role, the turns left, the bite. */
   readonly crumbs?: CandyCrumbsMarkerV7;
   /** BARRICADE only, Dwarf crowd control: its HP and whose it is. */
@@ -1854,8 +1848,6 @@ export function buildBoardRenderPlanV7(
     const candy = candyMatch ? candyUnitMarkersV7(view, unit) : undefined;
     // The naval branch interface: Submerged and Boardable, on any ship.
     const naval = navalUnitMarkersV7(view, unit);
-    // The frozen sea: a ship locked in the ice, and the crush it takes.
-    const icebound = iceFolkMatch ? iceboundMarkerV7(view, unit) : undefined;
     // The Martian revision: a machine afloat is drawn as itself (never as
     // the transport); the Mind Control revision: a controlled unit keeps its
     // own name and sprite and carries the control halo and brain chip.
@@ -1967,7 +1959,6 @@ export function buildBoardRenderPlanV7(
       ...(dwarf === undefined ? {} : { dwarf }),
       ...(candy === undefined ? {} : { candy }),
       ...(naval === undefined ? {} : { naval }),
-      ...(icebound === undefined ? {} : { icebound }),
       ...(cult === undefined ? {} : { cult }),
       ...(breed !== null
         ? {
@@ -2208,8 +2199,9 @@ export function buildBoardRenderPlanV7(
     cultPick === null &&
     curiosityPick === null
   ) {
-    // The Ice Witch's ring: quiet while she is selected, prominent while
-    // her Freeze button is hovered or focused.
+    // The Ice Witch's Cold Snap ring (`pulp_wars-s55m.1`): quiet while she
+    // is selected, prominent while her Cold Snap button is hovered or
+    // focused.
     const weight: FreezeRingWeightV7 =
       interaction.freezeRingFocusUnitId === selectedUnitId
         ? "PROMINENT"
@@ -4684,7 +4676,6 @@ export function drawBoardV7(input: {
             entry.kind === "UNIT" &&
             direction?.navalWaterline !== undefined &&
             !garrisoned &&
-            entry.icebound === undefined &&
             (entry.iceFolk?.frozen ?? null) === null &&
             shatterCue === null
               ? navalWaterlineOfV7(chibiReady.asset.id, image, chibiReady.asset)
@@ -4748,10 +4739,6 @@ export function drawBoardV7(input: {
               drawShatterCracksV7(context, rect, shatterCue.cracks);
             } else if ((entry.iceFolk?.frozen ?? null) !== null)
               drawFrozenCasingV7(context, iceFolkArt, image, rect);
-            // The frozen sea: an icebound ship's hull is rimed (with the
-            // pack ice at its foot, the frost crust of section 14.1).
-            else if (entry.icebound !== undefined)
-              drawRimeV7(context, iceFolkArt, image, rect);
           }
           // The Martian revision: a walker afloat wades (ripples at its feet).
           if (
@@ -5071,25 +5058,6 @@ export function drawBoardV7(input: {
               navalArtRoleOfSubjectV7(entry.artSubject) ===
                 "SUBMARINE_SUBMERGED"
             ),
-          });
-          context.restore();
-        }
-        // The frozen sea: the pack ice at an icebound ship's foot and the
-        // crush it takes next.
-        if (entry.kind === "UNIT" && entry.icebound !== undefined) {
-          const overlay = chibiPiece
-            ? chibiArt.resolve({
-                subject: "OVERLAY:ICEBOUND",
-                at: entry.at,
-                deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-              })
-            : null;
-          context.save();
-          context.globalAlpha = sceneAlpha;
-          drawIceboundMarkerV7(context, entry.icebound, x, y, camera.zoom, {
-            overlay: overlay?.kind === "READY" ? overlay.image : null,
-            smoothing: overlay?.kind === "READY" ? overlay.smoothing : true,
-            highContrast: input.highContrast ?? false,
           });
           context.restore();
         }

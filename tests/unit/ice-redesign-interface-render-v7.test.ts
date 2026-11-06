@@ -54,7 +54,7 @@ import {
   iceBuildUiFixtureV7,
   iceCrackUiFixtureV7,
 } from "../fixtures/v7-ice-redesign-ui";
-import { patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
+import { frozenArenaV7, patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
 
 // The frozen sea redesign's interface (bead pulp_wars-5ti.27;
 // docs/product/RULESET_7_ICE_REDESIGN.md section 4.1, docs/ui/
@@ -122,7 +122,7 @@ describe("Crack Ice on the board", () => {
     });
   });
 
-  it("labels plain ice 'Break' and the viewer's frozen ship 'Free the ship'", () => {
+  it("labels plain ice 'Break', and the viewer's own iced-over dock 'Open the dock'", () => {
     const view = viewOf(iceCrackUiFixtureV7());
     const warrior = unitAt(view, at.cracker);
     expect(unitHasCrackIceV7(view, warrior)).toBe(true);
@@ -139,13 +139,8 @@ describe("Crack Ice on the board", () => {
     });
     expect(byTile(at.west)?.highlight).toBeUndefined();
     expect(byTile(at.middle)?.previewLabel).toBe("Break");
-    expect(byTile(at.frozenShip)).toMatchObject({
-      previewLabel: "Free the ship",
-      highlight: "SUPPORT",
-    });
-    expect(byTile(at.frozenShip)?.semanticLabel).toBe(
-      "Crack Ice: The ice breaks into open water: the ship floats free. Choose a highlighted ice tile to crack.",
-    );
+    expect(byTile(at.east)?.previewLabel).toBe("Break");
+    expect(byTile(at.east)?.highlight).toBeUndefined();
     for (const target of targets) {
       expect(target.previewLabel).not.toMatch(COORDINATE);
       expect(target.semanticLabel).not.toMatch(COORDINATE);
@@ -162,15 +157,32 @@ describe("Crack Ice on the board", () => {
       queryPlayerCommandsV7(view),
       warrior.id,
     );
-    for (const tile of [at.west, at.middle, at.frozenShip])
+    for (const tile of [at.west, at.middle, at.east])
       expect(
         tileActionsAtV7(badges, tile)?.actions.map((action) => action.id),
       ).toContain("CRACK_ICE");
-    expect(
-      tileActionsAtV7(badges, at.frozenShip)?.actions.find(
-        (action) => action.id === "CRACK_ICE",
-      )?.style,
-    ).toBe("SUPPORT");
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the viewer's own
+    // Port the Ice Folk iced over wears the Help mark.
+    const dock = frozenArenaV7({
+      factions: ["ORIGINAL", "ICE_FOLK"],
+      technologies: [["SHORECRAFT"], ["SHORECRAFT"]],
+      units: [{ seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } }],
+      ice: [{ at: { x: 4, y: 3 }, seat: 1 }],
+    });
+    const dockView = viewOf(dock);
+    const opener = unitAt(dockView, { x: 4, y: 2 });
+    const opened = crackIcePickTargetsV7(
+      dockView,
+      queryPlayerCommandsV7(dockView),
+      { kind: "CRACK_ICE", unitId: opener.id },
+    ).find((target) => same(target.at, { x: 4, y: 3 }));
+    expect(opened).toMatchObject({
+      previewLabel: "Open the dock",
+      highlight: "SUPPORT",
+    });
+    expect(opened?.semanticLabel).toBe(
+      "Crack Ice: The ice breaks into open water: the dock is open again. Choose a highlighted ice tile to crack.",
+    );
   });
 
   it("names thick ice's first crack and breaks a cracked tile", () => {
@@ -184,7 +196,7 @@ describe("Crack Ice on the board", () => {
       targets.find((target) => same(target.at, coord))?.previewLabel;
     expect(label(at.west)).toBe("Break");
     expect(label(at.middle)).toBe("Crack · 1 more breaks it");
-    expect(label(at.frozenShip)).toBe("Crack · 1 more frees it");
+    expect(label(at.east)).toBe("Crack · 1 more breaks it");
   });
 
   it("gives the first failing reason, and no button to the Ice Folk", () => {
@@ -253,7 +265,7 @@ describe("Crack Ice on the board", () => {
       const command: CommandV7 = {
         kind: "CRACK_ICE",
         unitId: warrior.id,
-        at: at.frozenShip,
+        at: at.east,
       };
       const result = applyCommandV7(state, state.humanPlayerId, command);
       if (!result.accepted) throw new Error("Crack Ice rejected");
@@ -265,16 +277,14 @@ describe("Crack Ice on the board", () => {
         result.events,
       );
       const notice = frozenSeaBoundaryNoticeV7(envelope.events, before, after);
-      expect(notice?.text).toBe(
-        thick ? "The ice cracked" : "The ice broke: the ship floats free",
-      );
-      expect(notice?.toast).toBe(!thick);
+      expect(notice?.text).toBe(thick ? "The ice cracked" : "The ice broke");
+      expect(notice?.toast).toBe(false);
       const steps = corePresentationPlanV7(before, envelope, after);
       const cue = steps.find((step) => step.kind === "ICE_FOLK");
       const effect = thick ? "ICE_CRACK" : "ICE_BREAK";
       expect(cue).toMatchObject({
         effect,
-        cells: [at.frozenShip],
+        cells: [at.east],
         from: at.cracker,
         durationMs: ICE_FOLK_EFFECT_DURATIONS_V7[effect],
       });
@@ -376,11 +386,12 @@ describe("the Freeze preview", () => {
     const taking = previewFreezeV7(view, yeti.id, at.foreign);
     const mending = previewFreezeV7(view, yeti.id, at.west);
     if (taking === null || mending === null) throw new Error("no preview");
+    // Hoarfrost (every Naval technology): a three-tile line.
     expect(freezeTargetLabelV7(freezeOutcomeV7(taking))).toBe(
-      "Ice 2 · takes 1",
+      "Ice 3 · takes 1",
     );
     expect(freezeOutcomeTextV7(freezeOutcomeV7(taking))).toBe(
-      "Freeze: 2 tiles of ice. It stays until it is cracked. 1 tile of another player's ice becomes yours.",
+      "Freeze: 3 tiles of ice. It stays until it is cracked. 1 tile of another player's ice becomes yours.",
     );
     expect(freezeTargetLabelV7(freezeOutcomeV7(mending))).toBe(
       "Ice 2 · mends 1",

@@ -39,7 +39,6 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "../../src/engine/index";
-import { frozenArenaV7 } from "../fixtures/v7-frozen-sea";
 import {
   NAVAL_TECHS_V7,
   acceptV7,
@@ -571,34 +570,6 @@ describe("U1, Drowned Crews: where nothing rises", () => {
     const deep = exchange(navigating, { x: 3, y: 3 }, { x: 3, y: 4 });
     expect(deep.preview?.defenderInfected).toBe(true);
     expectGhostShip(deep.result.state, { x: 3, y: 4 }, 0);
-  });
-
-  it("not on an ice tile", () => {
-    const state = frozenArenaV7({
-      factions: ["UNDEAD", "ORIGINAL"],
-      units: [
-        { seat: 0, role: "SUBMARINE", at: { x: 3, y: 5 } },
-        { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 } },
-      ],
-      ice: [{ at: { x: 4, y: 5 }, seat: 2 }],
-      third: { faction: "ICE_FOLK", explored: true },
-    });
-    const galley = navalUnitAtV7(state, { x: 3, y: 5 });
-    const boat = navalUnitAtV7(state, { x: 4, y: 5 });
-    const weak = parseGameStateV7({
-      ...state,
-      units: state.units.map((unit) =>
-        unit.id === boat.id ? { ...unit, hp: 1 } : unit,
-      ),
-    });
-    if (weak === null) throw new Error("the icy state is invalid");
-    const preview = queryCombatPreviewV7(viewOf(weak), galley.id, boat.id);
-    expect(preview).toMatchObject({
-      defenderDies: true,
-      defenderInfected: false,
-    });
-    const result = acceptV7(weak, 0, attack(galley.id, boat.id));
-    expect(infectedOf(result.events)).toEqual([]);
   });
 
   it("is the one shared rule: a ship killer with a crew, a ship victim, open water", () => {

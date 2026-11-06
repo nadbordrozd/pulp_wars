@@ -44,11 +44,10 @@ export type IceFolkFeedbackEffectV7 =
   | "SWEEP"
   /**
    * The frozen sea (bead pulp_wars-5ti.7): a Freeze spreading over its
-   * tiles, ice melting into floes, and the crush closing on a frozen ship.
+   * tiles. (Ice melting and the crush went with Icebound,
+   * `pulp_wars-s55m.1`.)
    */
   | "ICE_FREEZE"
-  | "ICE_MELT"
-  | "ICE_CRUSH"
   /**
    * The frozen sea redesign (bead pulp_wars-5ti.27): Crack Ice. A crack
    * flashes across thick ice that holds (ICE_CRACK); ice that breaks gives
@@ -92,8 +91,6 @@ export const ICE_FOLK_EFFECT_DURATIONS_V7: Readonly<
   STAMPEDE: 520,
   SWEEP: 300,
   ICE_FREEZE: 520,
-  ICE_MELT: 480,
-  ICE_CRUSH: 460,
   ICE_CRACK: 360,
   ICE_BREAK: 560,
   PRIZE_FLAG: 560,
@@ -677,7 +674,7 @@ export function drawIceFolkFeedbackV7(
   ) {
     // Crack Ice (the frozen sea redesign): a white flash at the tile's
     // heart, a jagged crack racing across it, two chips flung up; ice that
-    // breaks then drifts apart into floes, as ICE_MELT draws them.
+    // breaks then drifts apart into floes.
     const size = 128 * zoom;
     const breaks = feedback.effect === "ICE_BREAK";
     const crackEnd = breaks ? 0.45 : 1;
@@ -783,69 +780,6 @@ export function drawIceFolkFeedbackV7(
         }
         context.restore();
       }
-    }
-  } else if (feedback.effect === "ICE_MELT") {
-    // The ice gives way: a fading pale sheet that breaks into drifting
-    // floes over the open water.
-    const size = 128 * zoom;
-    for (const at of feedback.cells) {
-      const point = centre(at);
-      context.save();
-      context.globalAlpha *= (1 - progress) * 0.7;
-      context.fillStyle = icePale;
-      const drift = progress * 14 * zoom;
-      for (const [dx, dy] of [
-        [-1, -1],
-        [1, -1],
-        [-1, 1],
-        [1, 1],
-      ] as const) {
-        const floe = size * (0.4 - 0.18 * progress);
-        context.fillRect(
-          point.x + dx * (size * 0.22 + drift) - floe / 2,
-          point.y + dy * (size * 0.22 + drift) - floe / 2,
-          floe,
-          floe,
-        );
-      }
-      context.restore();
-    }
-  } else if (feedback.effect === "ICE_CRUSH") {
-    // The crush: cracks snap across each frozen ship's tile and the ice
-    // closes in from both sides.
-    const size = 128 * zoom;
-    for (const at of feedback.cells) {
-      const point = centre(at);
-      const squeeze = swell(progress) * 14 * zoom;
-      context.save();
-      context.globalAlpha *= 1 - clamp01((progress - 0.7) / 0.3);
-      context.fillStyle = "#ffffff";
-      for (const side of [-1, 1] as const)
-        context.fillRect(
-          point.x + side * (size * 0.36 - squeeze) - 5 * zoom,
-          point.y - size * 0.05,
-          10 * zoom,
-          size * 0.42,
-        );
-      context.strokeStyle = iceDark;
-      context.lineWidth = Math.max(1, 3 * zoom);
-      context.lineCap = "round";
-      context.lineJoin = "round";
-      const reach = clamp01(progress / 0.5);
-      for (const side of [-1, 1] as const) {
-        context.beginPath();
-        context.moveTo(point.x, point.y + size * 0.18);
-        context.lineTo(
-          point.x + side * size * 0.16 * reach,
-          point.y + size * (0.18 - 0.1 * reach),
-        );
-        context.lineTo(
-          point.x + side * size * 0.3 * reach,
-          point.y + size * (0.18 + 0.06 * reach),
-        );
-        context.stroke();
-      }
-      context.restore();
     }
   } else if (feedback.effect === "PRIZE_FLAG") {
     // The naval branch: a boarded ship's flag changes. The old colour's

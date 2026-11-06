@@ -213,6 +213,10 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyBasic": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyCrackIce": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyFreeze": "PLAYER_ONLY",
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the Freeze facts and
+  // the Cold Snap read the acting seat's own record.
+  "src/engine/v7/reducer.ts::freezeTileFactsAtV7": "PLAYER_ONLY",
+  "src/engine/v7/reducer.ts::applyColdSnap": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::iceValid": "NEUTRAL_AWARE",
   // The ninth unit (`pulp_wars-w49.17`, 7r55). A marked Grave belongs to
   // the seat whose Wight died (the neutral owner's units mark none:

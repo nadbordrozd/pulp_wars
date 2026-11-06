@@ -15,7 +15,6 @@ import {
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitCapacitySlotsV7,
-  unitIsIceboundV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
@@ -1276,9 +1275,6 @@ export function tractorBeamTargetBlockV7(
     target.role === "JUGGERNAUT" ||
     isNeutralOwnerV7(target.ownerId) ||
     unitCapacitySlotsV7(roster, target) !== 1 ||
-    // The frozen sea (naval branch section 8.9): no pull moves an icebound
-    // unit.
-    unitIsIceboundV7(roster, target) ||
     // The ninth unit (`pulp_wars-w49.17`, 7r55): Rock Hard, no pull moves
     // a land-form Jawbreaker.
     (target.form === "LAND" && unitRoleMechanicsV7(roster, target).immovable)

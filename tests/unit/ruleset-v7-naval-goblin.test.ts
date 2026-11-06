@@ -42,7 +42,7 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "../../src/engine/index";
-import { frozenArenaV7, patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
+import { frozenArenaV7, frozenShipsV7 } from "../fixtures/v7-frozen-sea";
 import {
   NAVAL_ARENA_PORTS_V7,
   NAVAL_TECHS_V7,
@@ -378,22 +378,23 @@ describe("G1, the Fire Raft's Kaboom afloat", () => {
     });
   });
 
-  it("is refused to an icebound raft (ICEBOUND) and never offered", () => {
-    const state = frozenArenaV7({
-      factions: ["GOBLIN", "ORIGINAL"],
-      units: [
-        { seat: 0, role: "PATROL_BOAT", at: RAFT },
-        { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 } },
-      ],
-      ice: [{ at: RAFT, seat: 2 }],
-      third: { faction: "ICE_FOLK", explored: true },
-    });
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no raft is in the ice
+  // any more; a Frozen one is refused like any Frozen unit.
+  it("is refused to a Frozen raft (UNIT_FROZEN) and never offered", () => {
+    const state = frozenShipsV7(
+      frozenArenaV7({
+        factions: ["GOBLIN", "ORIGINAL"],
+        units: [
+          { seat: 0, role: "PATROL_BOAT", at: RAFT },
+          { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 } },
+        ],
+        third: { faction: "ICE_FOLK", explored: true },
+      }),
+      [RAFT],
+    );
     const raft = navalUnitAtV7(state, RAFT);
     expect(offered(state, kaboom(raft.id))).toBe(false);
-    expect(rejectV7(state, 0, kaboom(raft.id))).toEqual({
-      code: "KABOOM_NOT_LEGAL",
-      params: { reason: "ICEBOUND" },
-    });
+    expect(rejectV7(state, 0, kaboom(raft.id)).code).toBe("UNIT_FROZEN");
   });
 
   it("is no Kaboom of the other ships, of a Human boat, or of an embarked unit", () => {
@@ -778,30 +779,6 @@ describe("G2, the Scrap Dreadnought's death blast, by every cause", () => {
     expect(explosionsOf(result.events)).toMatchObject([
       { unitId: dreadnought.id, cause: "DEATH", damage: 7 },
     ]);
-  });
-
-  it("sinks quietly when the Ice Folk ice crushes it", () => {
-    const base = frozenArenaV7({
-      factions: ["ICE_FOLK", "GOBLIN"],
-      units: [
-        { seat: 1, role: "BATTLESHIP", at: { x: 1, y: 5 } },
-        { seat: 1, role: "PATROL_BOAT", at: { x: 2, y: 5 } },
-      ],
-      ice: [{ at: { x: 1, y: 5 } }],
-    });
-    const dreadnought = navalUnitAtV7(base, { x: 1, y: 5 });
-    const raft = navalUnitAtV7(base, { x: 2, y: 5 });
-    const state = patchFrozenUnitV7(base, dreadnought.id, { hp: 2 });
-    const first = acceptV7(state, 0, { kind: "END_TURN" });
-    const second = acceptV7(first.state, 1, { kind: "END_TURN" });
-    const events = [...first.events, ...second.events];
-    expect(diedOf(events)).toContainEqual({
-      kind: "UNIT_DIED",
-      unitId: dreadnought.id,
-      cause: "CRUSHED",
-    });
-    expect(explosionsOf(events)).toEqual([]);
-    expect(navalUnitV7(second.state, raft.id).hp).toBe(raft.hp);
   });
 });
 

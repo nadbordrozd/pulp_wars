@@ -49,7 +49,6 @@ import {
   DROWNED_CREW_HP_V7,
   drownedCrewOfV7,
   drownedCrewRaisesV7,
-  unitIsIceboundV7,
   coverBonusV7,
   terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
@@ -240,8 +239,9 @@ import {
   iceAtV7,
   iceBuildableV7,
   unitCracksIceV7,
-  unitFreezesRingV7,
+  freezeLineV7,
   type FreezeSetV7,
+  type FreezeTileFactsV7,
 } from "./ice";
 import {
   absorbHitV7,
@@ -1297,9 +1297,6 @@ function appendPublicUnitCommandsV7(
   const attackReady =
     unit.form !== "EMBARKED" &&
     !crashed &&
-    // The frozen sea (naval branch section 8.9): an icebound ship cannot
-    // attack.
-    !unitIsIceboundV7(view, unit) &&
     (primaryReady ||
       unit.activation.overrunActive ||
       twinShotReadyV7(view, unit) ||
@@ -1434,12 +1431,11 @@ function appendPublicUnitCommandsV7(
           targetUnitId: target.id,
         });
     // No pointless actions (`pulp_wars-zir6`): a Cold Snap needs a target
-    // it changes (one not Frozen already for as long).
+    // it changes (one not Frozen already for as long) or, with Rime, a
+    // water tile it makes ice (`pulp_wars-s55m.1`).
     if (
       rule.abilities.includes("COLD_SNAP") &&
-      coldSnapTargetsV7(view, unit, view.units).some((target) =>
-        freezeChangesUnitV7(view, view.frozen, target),
-      )
+      publicColdSnapChangesV7(view, unit)
     )
       candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
     if (rule.abilities.includes("FROST_BOLT"))
@@ -1457,7 +1453,7 @@ function appendPublicUnitCommandsV7(
       for (const at of publicStampedeTargetsV7(view, unit))
         candidates.push({ kind: "STAMPEDE", unitId: unit.id, at });
     // The frozen sea (naval branch section 8.4): Freeze, for every `at`
-    // with a non-empty freeze set (one for the Ice Witch: her own tile).
+    // with a non-empty freeze set.
     if (rule.abilities.includes("FREEZE"))
       for (const at of publicFreezeTargetsV7(view, unit))
         candidates.push({ kind: "FREEZE", unitId: unit.id, at });
@@ -1556,8 +1552,7 @@ function appendPublicUnitCommandsV7(
     !unitIsFrozenV7(view, unit) &&
     rule.abilities.includes("KABOOM") &&
     // Themed naval branches (`pulp_wars-5ti.16`): in land form, or a Fire
-    // Raft afloat with Powder Kegs that is not icebound (the reducer's own
-    // predicate).
+    // Raft afloat with Powder Kegs (the reducer's own predicate).
     kaboomFormBlockV7(view, unit, view.viewer.researchedTechs) === null
   )
     candidates.push({ kind: "KABOOM", unitId: unit.id });
@@ -2194,9 +2189,7 @@ function publicBoardTargetsV7(
     !unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).boarding ||
     unit.activation.overrunActive ||
     primaryUsedForQuery(unit) ||
-    primaryActionBlockedAfterMoveV7(view, unit) ||
-    // The frozen sea (section 4.2 row 4a): an icebound ship cannot board.
-    unitIsIceboundV7(view, unit)
+    primaryActionBlockedAfterMoveV7(view, unit)
   )
     return [];
   const navigation = view.viewer.researchedTechs.includes("NAVIGATION");
@@ -2219,11 +2212,52 @@ function publicBoardTargetsV7(
 
 /**
  * The naval branch, the frozen sea
- * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): the freeze set of a
- * Freeze by the viewer's land unit `unit` aimed at `at`, from the public
- * view. Every tile it reads must be explored by the viewer, every unit on an
- * explored tile is visible, and the ice on explored tiles is public, so it
- * equals the reducer's set.
+ * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): what a Freeze (or a
+ * Cold Snap's water ring) by the viewer reads of one tile, from the public
+ * view. Every tile it reads must be explored by the viewer, every unit on
+ * an explored tile is visible, and the ice on explored tiles is public, so
+ * it equals the reducer's facts.
+ */
+function publicFreezeTileFactsV7(
+  view: PlayerViewV7,
+  sourceOwnerId: PlayerId,
+): (target: CoordV7) => FreezeTileFactsV7 | undefined {
+  return (target) => {
+    const tile = tileAtView(view, target);
+    if (tile === undefined) return undefined;
+    if (!tile.explored)
+      return { explored: false, terrain: "GRASS", ice: null, unit: null };
+    const occupant = view.units.find(
+      (candidate) => candidate.hp > 0 && same(candidate.at, target),
+    );
+    const entry = iceAtV7(view, target);
+    return {
+      explored: true,
+      terrain: tile.terrain,
+      ice:
+        entry === undefined
+          ? null
+          : {
+              own: entry.ownerId === view.viewer.id,
+              cracked: entry.cracked,
+            },
+      unit:
+        occupant === undefined
+          ? null
+          : {
+              id: occupant.id,
+              form: occupant.form,
+              freezable:
+                canBeFrozenV7(view, sourceOwnerId, occupant) &&
+                freezeChangesUnitV7(view, view.frozen, occupant),
+            },
+    };
+  };
+}
+
+/**
+ * Section 8.4: the freeze set of a Freeze by the viewer's land unit `unit`
+ * aimed at `at` (a line; Hoarfrost lengthens it), from the public view.
  */
 function publicFreezeSetV7(
   view: PlayerViewV7,
@@ -2238,56 +2272,44 @@ function publicFreezeSetV7(
   return freezeSetV7({
     from: unit.at,
     at,
-    ring: unitFreezesRingV7(view, unit),
+    ring: false,
+    line: freezeLineV7(capabilities),
     freezeWater: capabilities.freezeWater,
-    icebound: capabilities.icebound,
-    tileAt: (target) => {
-      const tile = tileAtView(view, target);
-      if (tile === undefined) return undefined;
-      if (!tile.explored)
-        return {
-          explored: false,
-          terrain: "GRASS",
-          improvement: null,
-          ownTerritory: false,
-          ice: null,
-          unit: null,
-        };
-      const occupant = view.units.find(
-        (candidate) => candidate.hp > 0 && same(candidate.at, target),
-      );
-      const entry = iceAtV7(view, target);
-      return {
-        explored: true,
-        terrain: tile.terrain,
-        improvement: tile.improvement,
-        ownTerritory: tile.territoryOwnerId === view.viewer.id,
-        ice:
-          entry === undefined
-            ? null
-            : {
-                own: entry.ownerId === view.viewer.id,
-                cracked: entry.cracked,
-              },
-        unit:
-          occupant === undefined
-            ? null
-            : {
-                id: occupant.id,
-                form: occupant.form,
-                hostile: publicHostile(view, view.viewer.id, occupant.ownerId),
-                neutral: isNeutralOwnerV7(occupant.ownerId),
-              },
-      };
-    },
+    tileAt: publicFreezeTileFactsV7(view, unit.ownerId),
+  });
+}
+
+/**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`): the water ring of a Cold
+ * Snap by the viewer's Ice Witch `witch` (every freezable tile within
+ * Chebyshev 1 of her), or the empty set without Rime.
+ */
+function publicColdSnapWaterV7(
+  view: PlayerViewV7,
+  witch: PlayerViewV7["units"][number],
+): FreezeSetV7 {
+  const capabilities = unitCapabilitiesV7(
+    view,
+    witch,
+    view.viewer.researchedTechs,
+  );
+  if (capabilities.freezeWater === "NONE")
+    return { tiles: [], mended: [], taken: [], units: [] };
+  return freezeSetV7({
+    from: witch.at,
+    at: witch.at,
+    ring: true,
+    line: 0,
+    freezeWater: capabilities.freezeWater,
+    tileAt: publicFreezeTileFactsV7(view, witch.ownerId),
   });
 }
 
 /**
  * Section 8.4: the `at` of every `FREEZE` the viewer's land unit may make
- * now, in (y, x) order: its own tile for the Ice Witch, otherwise each of
- * the eight tiles around it, each with a non-empty freeze set. The caller
- * has checked the actor rows (the role's `FREEZE`, land form, and that the
+ * now, in (y, x) order: each of the eight tiles around it whose freeze set
+ * changes something (a tile or a unit afloat Frozen). The caller has
+ * checked the actor rows (the role's `FREEZE`, land form, and that the
  * unit may use a primary action); Rime is checked here.
  */
 function publicFreezeTargetsV7(
@@ -2300,12 +2322,12 @@ function publicFreezeTargetsV7(
       "NONE"
   )
     return [];
-  const candidates = unitFreezesRingV7(view, unit)
-    ? [unit.at]
-    : adjacentPublicTiles(view, unit.at).map((tile) => tile.at);
-  return candidates.filter(
-    (at) => publicFreezeSetV7(view, unit, at).tiles.length > 0,
-  );
+  return adjacentPublicTiles(view, unit.at)
+    .map((tile) => tile.at)
+    .filter((at) => {
+      const frozen = publicFreezeSetV7(view, unit, at);
+      return frozen.tiles.length > 0 || frozen.units.length > 0;
+    });
 }
 
 /**
@@ -2313,15 +2335,15 @@ function publicFreezeTargetsV7(
  * redesign (RULESET_7_ICE_REDESIGN.md section 2.4): every tile that gets a
  * sound entry of the actor (`tiles`), the actor's own cracked ones of them
  * that are mended (`mended`), the other players' ice of them that is taken
- * (`taken`), and the afloat units locked in the ice (`icebound`). Ice is
- * permanent: there is no countdown.
+ * (`taken`), and (`pulp_wars-s55m.1`) the units afloat it Freezes on open
+ * water (`frozenUnits`). Ice is permanent: there is no countdown.
  */
 export interface FreezePreviewV7 {
   readonly unitId: UnitId;
   readonly tiles: readonly CoordV7[];
   readonly mended: readonly CoordV7[];
   readonly taken: readonly CoordV7[];
-  readonly icebound: readonly UnitId[];
+  readonly frozenUnits: readonly UnitId[];
 }
 
 /**
@@ -2350,7 +2372,7 @@ export function previewFreezeV7(
     tiles: frozen.tiles,
     mended: frozen.mended,
     taken: frozen.taken,
-    icebound: frozen.icebound,
+    frozenUnits: frozen.units,
   };
 }
 
@@ -2358,10 +2380,11 @@ export function previewFreezeV7(
  * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): the `at`
  * of every `CRACK_ICE` the viewer's unit may make now, in (y, x) order:
  * each of the eight tiles around it that is explored ice not of an ally of
- * the viewer, with no visible land-form unit and no improvement on it. The
- * actor rows: a unit of any kind but the Ice Folk, in land, naval, or
- * embarked form, not icebound. The caller has checked that the unit may use
- * a primary action (and the generic Frozen filter drops a Frozen unit).
+ * the viewer, with no visible unit on it and no improvement on it (but an
+ * iced-over dock of the viewer or an ally, `pulp_wars-s55m.1`). The actor
+ * rows: a unit of any kind but the Ice Folk, in land, naval, or embarked
+ * form. The caller has checked that the unit may use a primary action (and
+ * the generic Frozen filter drops a Frozen unit).
  */
 function publicCrackIceTargetsV7(
   view: PlayerViewV7,
@@ -2370,24 +2393,28 @@ function publicCrackIceTargetsV7(
   if (
     view.ice.length === 0 ||
     unit.ownerId !== view.viewer.id ||
-    !unitCracksIceV7(view, unit) ||
-    unitIsIceboundV7(view, unit)
+    !unitCracksIceV7(view, unit)
   )
     return [];
   return adjacentPublicTiles(view, unit.at)
     .filter((tile) => {
-      if (!tile.explored || tile.improvement !== null) return false;
+      if (!tile.explored) return false;
+      if (
+        tile.improvement !== null &&
+        !(
+          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+          tile.territoryOwnerId !== null &&
+          (tile.territoryOwnerId === view.viewer.id ||
+            publicAllied(view, view.viewer.id, tile.territoryOwnerId))
+        )
+      )
+        return false;
       const entry = iceAtV7(view, tile.at);
       return (
         entry !== undefined &&
         (entry.ownerId === view.viewer.id ||
           !publicAllied(view, view.viewer.id, entry.ownerId)) &&
-        !view.units.some(
-          (other) =>
-            other.hp > 0 &&
-            same(other.at, tile.at) &&
-            !isAfloatFormV7(other.form),
-        )
+        !view.units.some((other) => other.hp > 0 && same(other.at, tile.at))
       );
     })
     .map((tile) => tile.at);
@@ -2396,19 +2423,18 @@ function publicCrackIceTargetsV7(
 /**
  * The frozen sea redesign (section 2.9): the exact result of an offered
  * `CRACK_ICE`: whether the ice breaks (`broken`; otherwise thick ice takes
- * its first crack), and the icebound units a break frees, in unit-ID order.
+ * its first crack).
  */
 export interface CrackIcePreviewV7 {
   readonly unitId: UnitId;
   readonly at: CoordV7;
   readonly broken: boolean;
-  readonly freed: readonly UnitId[];
 }
 
 /**
  * The frozen sea redesign (section 2.9): the preview of `CRACK_ICE` by the
  * viewer's unit `unitId` on `at`, or null unless that command is offered.
- * Exact: the ice's `thick` and `cracked` and the icebound units are public.
+ * Exact: the ice's `thick` and `cracked` are public.
  */
 export function previewCrackIceV7(
   view: PlayerViewV7,
@@ -2426,20 +2452,10 @@ export function previewCrackIceV7(
     return null;
   const entry = iceAtV7(view, at);
   if (entry === undefined) return null;
-  const broken = !entry.thick || entry.cracked;
   return {
     unitId,
     at: { x: at.x, y: at.y },
-    broken,
-    freed: broken
-      ? view.units
-          .filter(
-            (other) =>
-              other.hp > 0 && same(other.at, at) && isAfloatFormV7(other.form),
-          )
-          .map((other) => other.id)
-          .sort((left, right) => left - right)
-      : [],
+    broken: !entry.thick || entry.cracked,
   };
 }
 
@@ -4898,6 +4914,27 @@ export interface ColdSnapPreviewV7 {
     /** Ice Folk Freeze: the target is already Frozen (renewed). */
     readonly alreadyFrozen: boolean;
   }[];
+  /**
+   * Ice Folk freeze rework (`pulp_wars-s55m.1`): the water tiles the cast
+   * makes ice (with Rime; empty without), in (y, x) order.
+   */
+  readonly tiles: readonly CoordV7[];
+}
+
+/**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`): whether the viewer's land
+ * Witch's Cold Snap would change something: a target it Freezes anew (or
+ * longer) or a water tile it makes ice.
+ */
+function publicColdSnapChangesV7(
+  view: PlayerViewV7,
+  witch: PlayerViewV7["units"][number],
+): boolean {
+  return (
+    coldSnapTargetsV7(view, witch, view.units).some((target) =>
+      freezeChangesUnitV7(view, view.frozen, target),
+    ) || publicColdSnapWaterV7(view, witch).tiles.length > 0
+  );
 }
 
 /** Null unless that `COLD_SNAP` is offered; otherwise exact (visible targets). */
@@ -4919,6 +4956,7 @@ export function previewColdSnapV7(
       unitId: target.id,
       alreadyFrozen: isFrozenV7(view.frozen, target.id),
     })),
+    tiles: publicColdSnapWaterV7(view, witch).tiles,
   };
 }
 
@@ -7486,7 +7524,6 @@ export function previewRewardArrivalV7(
         occupant.form === "EGG" ||
         isNeutralOwnerV7(occupant.ownerId) ||
         unitIsImmovableV7(view, occupant) ||
-        unitIsIceboundV7(view, occupant) ||
         unitIsUnstoppableV7(occupant)
       )
         return false;
@@ -8120,9 +8157,7 @@ export function estimateCombatV7(
     // units afloat, and a submerged Submarine is attacked only from an
     // adjacent tile.
     (attackIsTorpedoV7(state, attacker) && !isAfloatFormV7(target.form)) ||
-    (distance > 1 && unitIsSubmergedV7(state, target)) ||
-    // The frozen sea (section 8.9): an icebound ship cannot attack.
-    unitIsIceboundV7(state, attacker)
+    (distance > 1 && unitIsSubmergedV7(state, target))
   )
     return null;
   return calculateCombatPreviewV7(
@@ -8296,9 +8331,6 @@ export function queryThreatenedTilesV7(
       preview.reachTiles.some((tile) => same(tile, at)),
     );
   }
-  // The frozen sea (naval branch section 8.9): an icebound unit cannot
-  // move or attack, so it threatens nothing.
-  if (unitIsIceboundV7(view, unit)) return [];
   // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen unit cannot move or act
   // on its owner's next turn, so it threatens nothing.
   if (unitIsFrozenV7(view, unit)) return [];
@@ -12225,9 +12257,6 @@ function publicCombatPreviewCore(
     primaryActionBlockedAfterMoveV7(view, attacker) ||
     distance < attackerRule.minimumRange ||
     distance > publicAttackMaximumRangeV7(view, attacker) ||
-    // The frozen sea (naval branch section 8.9): an icebound ship cannot
-    // attack.
-    unitIsIceboundV7(view, attacker) ||
     // The Cultists (`pulp_wars-mch9.8`, section 9.1): a frog does not
     // attack; and (the Cult redesign, `pulp_wars-mch9.33`, section 8.1) a
     // unit beside a standing hostile idol attacks only an Idol Bearer
@@ -12279,8 +12308,10 @@ function publicCombatPreviewCore(
   // role Attack, and Cold Blood is added against a Frozen target.
   const attackerMechanics0 = unitRoleMechanicsV7(view, attacker);
   const attackerLand = attacker.form === "LAND";
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`): a ship or an embarked unit
+  // is Frozen like anyone (never an Egg).
   const targetFrozen =
-    target.form === "LAND" &&
+    target.form !== "EGG" &&
     (options.assumeTargetFrozen === true || isFrozenV7(view.frozen, target.id));
   // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.1):
   // a frog (public on a visible unit) defends with a flat 0.5, has no
@@ -12464,8 +12495,6 @@ function publicCombatPreviewCore(
   // private; the stats already hold the unit's fortification).
   const iceCover =
     !acid && !targetFrog && defenseStats.iceFolk?.iceCover === true;
-  // Section 8.9: an icebound defender never retaliates.
-  const defenderIcebound = unitIsIceboundV7(view, target);
   const bonus = coverBonusV7(terrainCover, snowCover || iceCover);
   const breachApplied = breach && fortificationIgnored > 0;
   const applied = bonus;
@@ -12541,7 +12570,6 @@ function publicCombatPreviewCore(
   const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
-    !defenderIcebound &&
     !targetFrozen &&
     !targetFrog &&
     target.form !== "EMBARKED" &&
@@ -12837,7 +12865,6 @@ function publicCombatPreviewCore(
       defenderDies,
       retaliates: retaliation,
       unanswered,
-      icebound: defenderIcebound,
       frozen: targetFrozen,
       splatted: wouldRetaliate && splatted,
       terrified: wouldRetaliate && !splatted && terrified,
@@ -12907,7 +12934,6 @@ function publicCombatPreviewCore(
     ram,
     torpedo,
     iceCover,
-    icebound: defenderIcebound,
     shockDamage,
     crackApplied: attackCracksV7(view, attacker, target, defenderDies),
     frostbiteApplied: frostbitten,
@@ -13759,19 +13785,14 @@ function publicPushState(
   const tile = tileAtView(view, behind);
   if (tile === undefined) return "BLOCKED";
   if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
-  // The frozen sea (naval branch section 8.9): nothing moves an icebound
-  // unit, whatever is behind it (exact: the ice under a visible unit is
-  // public).
-  if (unitIsIceboundV7(view, defender)) return "BLOCKED";
   // Revision 20: a Charge! reads the explored tile as resolution does (every
   // unit on an explored tile is visible), so its Push and follow preview is
   // exact; the Juggernaut-role Push keeps its historical detection rule.
   if (!attackIsChargeV7(view, attacker) && !publicDetectionCovers(view, behind))
     return "UNKNOWN_BEHIND_FOG";
-  // The frozen sea (naval branch sections 8.3 and 8.9): ice is ground for
-  // a land-form unit and closed to a unit afloat, and nothing moves an
-  // icebound unit (the ice on an explored tile is public).
-  if (unitIsIceboundV7(view, defender)) return "BLOCKED";
+  // The frozen sea (naval branch section 8.3): ice is ground for a
+  // land-form unit and closed to a unit afloat (the ice on an explored tile
+  // is public).
   const ice = isIceAtV7(view, behind);
   const water = tile.biome === null && !ice;
   if (
@@ -13856,10 +13877,9 @@ function publicKnockbackState(
   const tile = tileAtView(view, behind);
   if (tile === undefined) return "BLOCKED";
   if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
-  // The frozen sea (naval branch sections 8.3 and 8.9): ice is ground for
-  // a land-form unit and closed to a unit afloat, and nothing moves an
-  // icebound unit (the ice on an explored tile is public).
-  if (unitIsIceboundV7(view, defender)) return "BLOCKED";
+  // The frozen sea (naval branch section 8.3): ice is ground for a
+  // land-form unit and closed to a unit afloat (the ice on an explored tile
+  // is public).
   const ice = isIceAtV7(view, behind);
   const water = tile.biome === null && !ice;
   if (

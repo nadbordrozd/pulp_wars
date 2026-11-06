@@ -23,7 +23,6 @@ import {
   factionRulesV7,
   flyerMayStandOnSiteV7,
   isIceAtV7,
-  unitIsIceboundV7,
   halfPowerAttack2V7,
   ownerResearchedTechsV7,
   platedCapAppliesV7,
@@ -466,8 +465,10 @@ export function calculateCombatPreviewV7(
   // Blood. Ice Folk Freeze (`pulp_wars-w49.37`): only a land-form unit is
   // Frozen.
   const attackerLand = attacker.form === "LAND";
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship or embarked
+  // unit is Frozen like any unit (never an Egg).
   const defenderFrozen =
-    defender.form === "LAND" &&
+    defender.form !== "EGG" &&
     (options.assumeTargetFrozen === true ||
       isFrozenV7(state.frozen, defender.id));
   // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.1):
@@ -683,9 +684,6 @@ export function calculateCombatPreviewV7(
     : defenseBonusForUnitV7(state, defender, snowAt);
   const snowCover = !uncovered && snowCoverAppliesV7(state, defender, snowAt);
   const iceCover = !uncovered && iceCoverAppliesV7(state, defender);
-  // The frozen sea (naval branch section 8.9): an icebound defender is
-  // frozen solid and never retaliates.
-  const defenderIcebound = unitIsIceboundV7(state, defender);
 
   const attackForceNumerator =
     BigInt(attack2) * BigInt(unflinching ? attacker.maxHp : attacker.hp);
@@ -780,7 +778,6 @@ export function calculateCombatPreviewV7(
   const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
-    !defenderIcebound &&
     !defenderFrozen &&
     !defenderFrog &&
     defender.form !== "EMBARKED" &&
@@ -1078,7 +1075,6 @@ export function calculateCombatPreviewV7(
       defenderDies,
       retaliates,
       unanswered,
-      icebound: defenderIcebound,
       frozen: defenderFrozen,
       splatted: wouldRetaliate && splatted,
       terrified: wouldRetaliate && !splatted && terrified,
@@ -1142,7 +1138,6 @@ export function calculateCombatPreviewV7(
     ram,
     torpedo,
     iceCover,
-    icebound: defenderIcebound,
     shockDamage,
     crackApplied: attackCracksV7(state, attacker, defender, defenderDies),
     frostbiteApplied: frostbitten,
@@ -1471,8 +1466,6 @@ export function noRetaliationReasonV7(facts: {
   readonly defenderDies: boolean;
   readonly retaliates: boolean;
   readonly unanswered: boolean;
-  /** The frozen sea (naval branch section 8.9): the defender is icebound. */
-  readonly icebound: boolean;
   /** Ice Folk Freeze (`pulp_wars-w49.37`): the defender is Frozen. */
   readonly frozen: boolean;
   readonly splatted: boolean;
@@ -1493,17 +1486,15 @@ export function noRetaliationReasonV7(facts: {
       ? null
       : facts.unanswered
         ? "UNANSWERED"
-        : facts.icebound
-          ? "ICEBOUND"
-          : facts.frozen
-            ? "FROZEN"
-            : facts.splatted
-              ? "SPLATTED"
-              : facts.terrified === true
-                ? "TERROR"
-                : facts.swarmed === true
-                  ? "SWARMED"
-                  : "OUT_OF_RANGE";
+        : facts.frozen
+          ? "FROZEN"
+          : facts.splatted
+            ? "SPLATTED"
+            : facts.terrified === true
+              ? "TERROR"
+              : facts.swarmed === true
+                ? "SWARMED"
+                : "OUT_OF_RANGE";
 }
 
 /**
@@ -1864,10 +1855,8 @@ export function displacementDestinationLegalV7(
   if (moved.form === "EGG" || isNeutralOwnerV7(moved.ownerId)) return false;
   // The ninth unit (7r55): Rock Hard, nothing moves a Jawbreaker.
   if (unitIsImmovableV7(state, moved)) return false;
-  // The frozen sea (naval branch sections 8.3 and 8.9): no Push, Knockback,
-  // or pull moves an icebound unit; a land-form unit may be moved onto ice
-  // and a unit afloat never.
-  if (unitIsIceboundV7(state, moved)) return false;
+  // The frozen sea (naval branch section 8.3): a land-form unit may be
+  // moved onto ice and a unit afloat never.
   const tile = tileAtV7(state.board, destination);
   if (tile === undefined || tile.site !== null) return false;
   const owner = requirePlayer(state, moved.ownerId);

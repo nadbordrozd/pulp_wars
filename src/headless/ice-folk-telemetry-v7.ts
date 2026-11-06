@@ -125,7 +125,9 @@ export type ChillSourceV7 =
   | "BLACK_ICE"
   | "FROSTBITE"
   // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
-  | "SHARDS";
+  | "SHARDS"
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze.
+  | "FREEZE";
 export type ShatterSetupV7 =
   | "CHARGE_AT_FULL_HP"
   | "SWEEP_FLANK"
@@ -146,6 +148,8 @@ const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
   "FROSTBITE",
   // The giants' signatures: a Frost Giant's shards.
   "SHARDS",
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`).
+  "FREEZE",
 ];
 const SHATTER_SETUPS_V7: readonly ShatterSetupV7[] = [
   "CHARGE_AT_FULL_HP",

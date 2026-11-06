@@ -4,7 +4,6 @@ import {
   parseGameStateV7,
   parsePlayerEventEnvelopeV7,
   projectEventsV7,
-  unitIsIceboundV7,
   viewForV7,
   type CoordV7,
   type DomainEventV7,
@@ -119,7 +118,6 @@ describe("the border freeze on a Land Grant", () => {
         playerId: owner,
         unitId: null,
         tiles: shallow,
-        icebound: [],
       },
     ]);
     expect(parseEventV7(events[0]).ok).toBe(true);
@@ -147,7 +145,10 @@ describe("the border freeze on a Land Grant", () => {
     expect(frozenEvents(result.events)).toEqual([]);
   });
 
-  it("follows the Freeze rule tile by tile: a hostile ship is locked in with Icebound and left without; another seat's ice is taken; own sound ice is passed over", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no unit acts in a
+  // border freeze, so a ship's tile is left open water and the ship is not
+  // Frozen, whatever the seat researched.
+  it("follows the Freeze rule tile by tile: a hostile ship's tile is left open water and the ship is not Frozen; another seat's ice is taken; own sound ice is passed over", () => {
     const options: Partial<FrozenArenaOptionsV7> = {
       units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 7, y: 3 } }],
       ice: [{ at: { x: 3, y: 3 }, seat: 1 }, { at: { x: 5, y: 3 } }],
@@ -165,22 +166,19 @@ describe("the border freeze on a Land Grant", () => {
       cracked: false,
     });
     const [event] = frozenEvents(left.events);
-    expect(event).toMatchObject({ unitId: null, icebound: [] });
+    expect(event).toMatchObject({ unitId: null });
     if (event?.kind !== "WATER_FROZEN") throw new Error("no freeze");
     // Own sound ice is not in the set; another seat's taken ice is.
     expect(event.tiles).not.toContainEqual({ x: 5, y: 3 });
     expect(event.tiles).toContainEqual({ x: 3, y: 3 });
 
-    const locked = grant(scene(ICEBOUND, options));
-    expect(iceEntryV7(locked.state, { x: 7, y: 3 })).toMatchObject({
-      ownerId: owner(plain),
-    });
-    expect(frozenEvents(locked.events)[0]).toMatchObject({
-      icebound: [boat.id],
-    });
-    expect(
-      unitIsIceboundV7(locked.state, navalUnitV7(locked.state, boat.id)),
-    ).toBe(true);
+    const hoarfrost = grant(scene(ICEBOUND, options));
+    expect(iceEntryV7(hoarfrost.state, { x: 7, y: 3 })).toBeUndefined();
+    expect(hoarfrost.state.frozen).toEqual([]);
+    expect(navalUnitV7(hoarfrost.state, boat.id).at).toEqual({ x: 7, y: 3 });
+    expect(hoarfrost.events.map((event) => event.kind)).not.toContain(
+      "UNITS_FROZEN",
+    );
   });
 
   it("the event is projected to the other seat on the tiles it explored, with no unit", () => {
@@ -198,7 +196,6 @@ describe("the border freeze on a Land Grant", () => {
         playerId: seatV7(state, 0).id,
         unitId: null,
         tiles: row(3, 3, 7),
-        icebound: [],
       },
     ]);
   });
@@ -215,7 +212,6 @@ describe("the border freeze on research", () => {
         playerId: seatV7(state, 0).id,
         unitId: null,
         tiles: row(3, 4, 6),
-        icebound: [],
       },
     ]);
     // Pack Ice then freezes nothing more: the footprint has no Deep Water.
@@ -266,7 +262,6 @@ describe("the border freeze on a capture", () => {
         playerId: owner,
         unitId: null,
         tiles: row(7, 4, 6),
-        icebound: [],
       },
     ]);
     expect(parseGameStateV7(result.state)).not.toBeNull();

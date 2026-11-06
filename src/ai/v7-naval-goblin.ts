@@ -1,7 +1,6 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   unitCapabilitiesV7,
-  unitIsIceboundV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -57,8 +56,7 @@ export function navalOwnFireRaftV7(
     unit.form === "NAVAL" &&
     unit.ownerId === view.viewer.id &&
     unitRoleRuleV7(view, unit).abilities.includes("KABOOM") &&
-    unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).fireRafts &&
-    !unitIsIceboundV7(view, unit)
+    unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).fireRafts
   );
 }
 

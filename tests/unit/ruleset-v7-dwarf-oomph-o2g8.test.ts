@@ -36,12 +36,18 @@ import { activeIdV7, at, attackV7 } from "../fixtures/v7-revision20";
 // capital (8, 8), territory x 7-9, y 7-9; villages (5, 5), (8, 5), (5, 8)).
 
 describe("the identity", () => {
-  it("is 7r122, with 7r121 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r122");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r122.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r121");
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`) took 7r123 after it.
+  it("was 7r122 after 7r121, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r123.current");
+    const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r122");
+    expect(at).toBeGreaterThan(0);
+    expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r121");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    const key = OBSOLETE_SAVE_STORAGE_KEYS_V7.indexOf(
+      "pulpWars.save.v7r122.current",
+    );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7[key - 1]).toBe(
       "pulpWars.save.v7r121.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

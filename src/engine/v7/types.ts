@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r122" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r123" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -133,8 +133,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r119",
   "pulp-wars-poc-7r120",
   "pulp-wars-poc-7r121",
+  "pulp-wars-poc-7r122",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r122.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r123.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -596,14 +597,13 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // Bolt, a Frost Giant, Black Ice, Frostbite, or shards froze units (the
   // Ice Folk revision's `UNITS_CHILLED`, in its place).
   "UNITS_FROZEN",
-  // The naval branch (sections 8.4, 8.5, and 8.9): a Freeze made ice; ice
-  // melted at an End Turn; icebound units were crushed at a Start Turn.
+  // The naval branch (section 8.4): a Freeze or a Cold Snap made ice.
+  // (`ICE_MELTED` and `UNITS_CRUSHED` went with Icebound,
+  // `pulp_wars-s55m.1`.)
   "WATER_FROZEN",
   // The frozen sea redesign (section 2.9): a Crack Ice broke or cracked a
-  // tile. `ICE_MELTED` is kept for the elimination release (section 2.3).
+  // tile.
   "ICE_CRACKED",
-  "ICE_MELTED",
-  "UNITS_CRUSHED",
   // The Candy revision: a unit went on a Sugar Rush.
   "UNIT_SUGAR_RUSHED",
   "WOUNDED_TENDED",

@@ -7,7 +7,6 @@ import {
   queryPlayerCommandsV7,
   queryThreatenedTilesV7,
   queryUnitStatsV7,
-  unitIsIceboundV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -32,12 +31,7 @@ import {
   type FrozenIceV7,
   type FrozenUnitV7,
 } from "../fixtures/v7-frozen-sea";
-import {
-  acceptV7,
-  navalUnitAtV7,
-  navalUnitV7,
-  seatV7,
-} from "../fixtures/v7-naval-branch";
+import { acceptV7, navalUnitAtV7, seatV7 } from "../fixtures/v7-naval-branch";
 
 // The frozen sea redesign (`pulp_wars-5ti.25`,
 // docs/product/RULESET_7_ICE_REDESIGN.md sections 2.3, 2.7, and 2.8): Black
@@ -326,7 +320,9 @@ describe("Runners: the Sled's slide is not stopped by zones of control (section 
 });
 
 describe("ice on a capture and an elimination (section 2.3)", () => {
-  it("the former owner's ice in the captured city's territory passes to the captor; an eliminated seat's icebound ships float free and its other ice stays, one Crack from breaking", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is ever in
+  // the ice, so nothing floats free (no ICE_MELTED).
+  it("the former owner's ice in the captured city's territory passes to the captor; an eliminated seat's other ice stays, one Crack from breaking", () => {
     const base = frozenArenaV7({
       factions: ["ORIGINAL", "ICE_FOLK"],
       technologies: [ALL, ALL],
@@ -334,23 +330,19 @@ describe("ice on a capture and an elimination (section 2.3)", () => {
       third: { faction: "GOBLIN" },
       units: [
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 9 } },
-        { seat: 0, role: "PATROL_BOAT", at: { x: 8, y: 5 } },
         { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
       ],
       ice: [
         // In the Ice Folk capital's territory, its Ice Harbour included.
         { at: { x: 4, y: 7 }, seat: 1, cracked: true },
         { at: { x: 6, y: 7 }, seat: 1 },
-        // Elsewhere: a cracked tile, and the ice a Human ship is locked in.
+        // Elsewhere: a cracked tile.
         { at: ICE1, seat: 1, cracked: true },
-        { at: { x: 8, y: 5 }, seat: 1 },
       ],
     });
     const capital = { x: 5, y: 8 };
     const yeti = navalUnitAtV7(base, capital);
     const captor = navalUnitAtV7(base, { x: 4, y: 9 });
-    const boat = navalUnitAtV7(base, { x: 8, y: 5 });
-    expect(unitIsIceboundV7(base, boat)).toBe(true);
     const parsed = parseGameStateV7({
       ...base,
       units: base.units
@@ -369,20 +361,15 @@ describe("ice on a capture and an elimination (section 2.3)", () => {
       kind: "PLAYER_ELIMINATED",
       playerId: iceFolk,
     });
-    expect(result.events).toContainEqual({
-      kind: "ICE_MELTED",
-      tiles: [{ x: 8, y: 5 }],
-      freed: [boat.id],
-    });
+    expect(result.events.map((event) => event.kind)).not.toContain(
+      "UNITS_FROZEN",
+    );
     expect(result.state.ice).toEqual([
       // The eliminated seat has no thick ice: its crack is gone.
       { at: ICE1, ownerId: iceFolk, cracked: false },
       { at: { x: 4, y: 7 }, ownerId: human, cracked: false },
       { at: { x: 6, y: 7 }, ownerId: human, cracked: false },
     ]);
-    expect(
-      unitIsIceboundV7(result.state, navalUnitV7(result.state, boat.id)),
-    ).toBe(false);
     // One Crack breaks the eliminated seat's ice.
     const next = result.state;
     const fighter = navalUnitAtV7(next, SHORE);

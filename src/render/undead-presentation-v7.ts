@@ -17,7 +17,6 @@ import {
   seatRoleRuleV7,
   unitFactionV7,
   unitFliesV7,
-  unitIsIceboundV7,
   unitIsTerrifiedV7,
   queryPlayerCommandsV7,
   unitRoleRuleV7,
@@ -385,7 +384,7 @@ export function unitIsEtherealV7(
  * The tiles ("y,x") in a hostile zone of control for a land-form `unit`,
  * as the public movement reads them: the eight cells round every visible
  * hostile unit on the board that projects one (not a flyer, an Egg, an
- * embarked or icebound unit, a neutral, an own or allied unit): land and
+ * embarked unit, a neutral, an own or allied unit): land and
  * ice round a land unit, water round a ship; an unexplored cell counts.
  */
 function hostileZocCellsV7(
@@ -401,7 +400,6 @@ function hostileZocCellsV7(
       other.ownerId === unit.ownerId ||
       isNeutralOwnerV7(other.ownerId) ||
       unitFliesV7(view, other) ||
-      unitIsIceboundV7(view, other) ||
       cooperativeAlliesV7(
         view.setup,
         view.humanPlayerId,

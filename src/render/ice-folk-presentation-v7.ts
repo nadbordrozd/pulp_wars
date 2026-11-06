@@ -177,9 +177,14 @@ export function canThenShatterTextV7(units: readonly string[]): string {
  */
 export const BOLAS_NO_TARGET_V7 = `No unfrozen enemy within ${BOLAS_RANGE_V7} tiles`;
 export const COLD_SNAP_LABEL_V7 = "Cold Snap";
+/**
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`): one tap casts it, and with
+ * Rime it also freezes the water around her.
+ */
 export const COLD_SNAP_TOOLTIP_V7 =
-  "Freeze every hostile unit next to her. No damage. Instead of a Frost Bolt.";
-export const COLD_SNAP_NO_TARGET_V7 = "No unfrozen enemy next to her";
+  "Freeze every hostile unit next to her, ships too, and with Rime the water around her. No damage. Instead of a Frost Bolt.";
+export const COLD_SNAP_NO_TARGET_V7 =
+  "No unfrozen enemy or open water next to her";
 export const COLD_SNAP_CAST_V7 = "Cast Cold Snap";
 /** Ice Folk Freeze (`pulp_wars-w49.38`): the Witch's single-target freeze. */
 export const FROST_BOLT_LABEL_V7 = "Frost Bolt";
@@ -337,15 +342,16 @@ export function shatterThresholdAgainstV7(
 
 /**
  * Section 13.1 "Shatter window on HP bars": the lowest HP of a Frozen
- * unit's bar that an Ice Folk blow would shatter, or null (not Frozen, not
- * in land form, a `JUGGERNAUT` role, or no hostile Ice Folk seat).
+ * unit's bar that an Ice Folk blow would shatter, or null (not Frozen, an
+ * Egg, a `JUGGERNAUT` role, or no hostile Ice Folk seat). A Frozen ship
+ * shatters like a land unit since `pulp_wars-s55m.1`.
  */
 export function shatterWindowV7(
   view: PlayerViewV7,
   unit: Pick<PublicUnitV7, "id" | "ownerId" | "form" | "role">,
 ): number | null {
   if (frozenTurnsLeftV7(view, unit.id) === null) return null;
-  if (unit.form !== "LAND" || unit.role === "JUGGERNAUT") return null;
+  if (unit.form === "EGG" || unit.role === "JUGGERNAUT") return null;
   return shatterThresholdAgainstV7(view, unit.ownerId);
 }
 
@@ -835,7 +841,12 @@ export function coldSnapChangedTargetsV7(
 
 /** The Cold Snap summary: "Freezes 3 units" (the units it changes). */
 export function coldSnapSummaryV7(preview: ColdSnapPreviewV7): string {
-  return `Freezes ${plural(coldSnapChangedTargetsV7(preview).length, "unit")}`;
+  const units = coldSnapChangedTargetsV7(preview).length;
+  const tiles = preview.tiles.length;
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`): and the water it ices.
+  if (tiles === 0) return `Freezes ${plural(units, "unit")}`;
+  if (units === 0) return `Freezes ${plural(tiles, "water tile")}`;
+  return `Freezes ${plural(units, "unit")} and ${plural(tiles, "water tile")}`;
 }
 
 /** The Ice Folk ability commands with a button of their own. */
@@ -1212,6 +1223,11 @@ export function iceFolkBoundaryNoticeV7(
           break;
         case "BLACK_ICE":
           parts.push(`${who} Black Ice froze ${what}`);
+          break;
+        // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze
+        // reached a ship.
+        case "FREEZE":
+          parts.push(`${who} ${sourceName("FIGHTER")}'s Freeze froze ${what}`);
           break;
         case "SHARDS":
           parts.push(

@@ -71,7 +71,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       objective: "Take Anvil Bay by turn 22.",
       hints: Object.freeze([
         "Ice with a unit on it can't be broken: hold your road.",
-        "With Icebound, freeze an enemy ship's water to lock it in.",
+        "Freeze toward an enemy ship to Freeze it for a turn.",
         "Soldiers in boats can't strike back.",
       ]),
       closing:

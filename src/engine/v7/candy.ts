@@ -17,7 +17,6 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
-  unitIsIceboundV7,
   type FactionRosterV7,
   type FrozenLookupV7,
   type IceLookupV7,
@@ -140,7 +139,7 @@ export type SugarRushRejectionV7 =
   | { readonly code: "UNIT_ROLE_INVALID" }
   | {
       readonly code: "SUGAR_RUSH_NOT_LEGAL";
-      readonly reason: "EMBARKED" | "RUSHED" | "ICEBOUND";
+      readonly reason: "EMBARKED" | "RUSHED";
     }
   | { readonly code: "TECH_REQUIRED"; readonly tech: "SEAMANSHIP" }
   | { readonly code: "UNIT_CRASHED" }
@@ -152,8 +151,8 @@ export type SugarRushRejectionV7 =
  * form, or in `NAVAL` form when its kind's capabilities under its owner
  * have `sugarSails`". Null in land form. An embarked unit (or any other
  * form that is not a ship) is `EMBARKED`; a ship whose kind's capabilities
- * under its controller lack Sugar Sails needs `SEAMANSHIP`; an icebound ship
- * is `ICEBOUND` (in that order, as the Kaboom afloat).
+ * under its controller lack Sugar Sails needs `SEAMANSHIP` (in that order,
+ * as the Kaboom afloat).
  */
 export function sugarRushFormBlockV7(
   lookup: FactionRosterV7 & IceLookupV7,
@@ -165,8 +164,6 @@ export function sugarRushFormBlockV7(
     return { code: "SUGAR_RUSH_NOT_LEGAL", reason: "EMBARKED" };
   if (!unitCapabilitiesV7(lookup, unit, controllerResearchedTechs).sugarSails)
     return { code: "TECH_REQUIRED", tech: "SEAMANSHIP" };
-  if (unitIsIceboundV7(lookup, unit))
-    return { code: "SUGAR_RUSH_NOT_LEGAL", reason: "ICEBOUND" };
   return null;
 }
 
@@ -178,8 +175,8 @@ function rushFormV7(form: UnitFormV7): boolean {
 /**
  * THE Sugar Rush legality (section 5.1, rows 2 to 6), shared by the reducer
  * and the public command query: the unit's role, under its kind, has
- * `SUGAR_RUSH`; it is in land form, or a ship with Sugar Sails that is not
- * icebound (`sugarRushFormBlockV7`, themed naval branches); it is neither
+ * `SUGAR_RUSH`; it is in land form, or a ship with Sugar Sails
+ * (`sugarRushFormBlockV7`, themed naval branches); it is neither
  * Crashed nor Rushed; and it has not moved (a landing is a Move), used a
  * primary action, or been handled. A sluggish unit may Rush.
  * `controllerResearchedTechs` is the research of the unit's controller (the

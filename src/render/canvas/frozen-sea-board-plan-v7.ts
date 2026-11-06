@@ -1,4 +1,5 @@
 import {
+  previewColdSnapV7,
   previewCrackIceV7,
   previewFreezeV7,
   unitMovementModeV7,
@@ -16,13 +17,12 @@ import {
 import {
   CRACK_ICE_PICK_V7,
   FREEZE_PICK_V7,
-  ICEBOUND_LABEL_V7,
+  ICE_LABEL_V7,
   SLIDE_MOVE_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
   crackIceOutcomeTextV7,
   crackIceOutcomeV7,
   crackIceTargetLabelV7,
-  crushWarningV7,
   freezeOutcomeTextV7,
   freezeOutcomeV7,
   freezeTargetLabelV7,
@@ -38,9 +38,9 @@ import type {
  * The frozen sea on the board plan (bead pulp_wars-5ti.7, second part;
  * docs/ui/BOARD_TARGETING.md section 3.5): the ice of each water cell (its
  * depth, its edges against open water, its snow or cracks), the Freeze
- * picking mode of a line role and the ring of the Ice Witch, the slide of a
- * Move across ice, and the markers of an icebound ship. Everything is read
- * from the public view, the offered commands and the public previews.
+ * picking mode of a line role and the water ring of the Ice Witch's Cold
+ * Snap, and the slide of a Move across ice. Everything is read from the
+ * public view, the offered commands and the public previews.
  */
 
 /** TERRAIN only: the sea ice over a water cell. */
@@ -57,13 +57,6 @@ export interface SeaIceCellV7 {
   readonly permanent: boolean;
   /** Cracks: 0 (sound) or 2 (cracked thick ice). */
   readonly stage: 0 | 1 | 2 | 3;
-}
-
-/** UNIT only: a ship locked in the ice, and the crush it takes next. */
-export interface IceboundMarkerV7 {
-  /** "−3 HP" or "Sinks". */
-  readonly crush: string;
-  readonly lethal: boolean;
 }
 
 /**
@@ -122,17 +115,6 @@ export function seaIceCellsV7(
   return cells;
 }
 
-/** The marker of an icebound unit (any owner), or undefined. */
-export function iceboundMarkerV7(
-  view: PlayerViewV7,
-  unit: PlayerViewV7["units"][number],
-): IceboundMarkerV7 | undefined {
-  const warning = crushWarningV7(view, unit);
-  return warning === null
-    ? undefined
-    : { crush: warning.label, lethal: warning.lethal };
-}
-
 /**
  * The map targets of an armed Freeze: one per offered `FREEZE` of the unit,
  * on the tile it aims at, with the exact outcome of `previewFreezeV7`.
@@ -155,9 +137,9 @@ export function freezePickTargetsV7(
         command,
         family: "FREEZE",
         previewLabel: freezeTargetLabelV7(outcome),
-        ...(outcome.icebound === 0
+        ...(outcome.frozenUnits === 0
           ? {}
-          : { previewNote: `${ICEBOUND_LABEL_V7} ${outcome.icebound}` }),
+          : { previewNote: `Frozen ${outcome.frozenUnits}` }),
         semanticLabel: `${freezeOutcomeTextV7(outcome)} ${FREEZE_PICK_V7}.`,
         freeze: { tiles: preview.tiles },
       },
@@ -170,7 +152,7 @@ export function freezePickTargetsV7(
  * RULESET_7_ICE_REDESIGN.md section 4.1): one per offered `CRACK_ICE` of
  * the unit, on its ice tile, labelled with the exact outcome of
  * `previewCrackIceV7`. It harms the owner's work, so it wears the Attack
- * mark; over an own or allied frozen ship it wears the Help mark.
+ * mark; over an own or allied iced-over dock it wears the Help mark.
  */
 export function crackIcePickTargetsV7(
   view: PlayerViewV7,
@@ -188,7 +170,7 @@ export function crackIcePickTargetsV7(
         at: command.at,
         command,
         family: "CRACK_ICE",
-        ...(outcome.frees ? { highlight: "SUPPORT" as const } : {}),
+        ...(outcome.dock ? { highlight: "SUPPORT" as const } : {}),
         previewLabel: crackIceTargetLabelV7(outcome),
         semanticLabel: `${crackIceOutcomeTextV7(outcome)} ${CRACK_ICE_PICK_V7}.`,
       },
@@ -214,8 +196,8 @@ function areaEdges(
 
 /**
  * Preview entries of an armed Freeze that are not targets: the tiles each
- * line reaches beyond its target, tinted, and "Icebound" on every ship a
- * Freeze would lock in.
+ * line reaches beyond its target, tinted, and "Frozen" on every ship a
+ * Freeze would Freeze.
  */
 export function addFreezePickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -233,7 +215,7 @@ export function addFreezePickEntriesV7(
     if (preview === null) continue;
     for (const at of preview.tiles)
       if (!targetCells.has(key(at))) beyond.set(key(at), at);
-    for (const id of preview.icebound) ships.add(id);
+    for (const id of preview.frozenUnits) ships.add(id);
   }
   const area = new Set(beyond.keys());
   for (const at of beyond.values())
@@ -245,10 +227,10 @@ export function addFreezePickEntriesV7(
       abilityStyle: "FREEZE",
       targetEdges: areaEdges(area, at),
     });
-  addIceboundPreviewEntries(entries, view, ships);
+  addFrozenPreviewEntries(entries, view, ships);
 }
 
-function addIceboundPreviewEntries(
+function addFrozenPreviewEntries(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   ships: ReadonlySet<number>,
@@ -257,21 +239,23 @@ function addIceboundPreviewEntries(
     const ship = view.units.find((unit) => unit.id === id);
     if (ship === undefined) continue;
     entries.push({
-      key: `ability-target:ICEBOUND:${id}`,
+      key: `ability-target:FROZEN:${id}`,
       kind: "ABILITY_TARGET",
       layer: 7.5,
       at: ship.at,
       abilityStyle: "FROZEN",
-      label: ICEBOUND_LABEL_V7,
+      label: "Frozen",
     });
   }
 }
 
 /**
- * The Ice Witch's ring (section 8.4): her Freeze has nothing to aim, so the
- * tiles it would turn to ice are marked while she is selected and her one
- * button is on offer: quiet at rest, prominent (with the outcome's label on
- * her tile) while the button is hovered or focused. They are not targets.
+ * The Ice Witch's Cold Snap (`pulp_wars-s55m.1`: one tap casts it, and with
+ * Rime it also turns the water around her to ice): while she is selected
+ * and her Cold Snap is on offer, the water it would freeze is marked quiet;
+ * while its button is hovered or focused the ring is prominent, with the
+ * outcome's label on her tile and "Frozen" on every unit it changes. They
+ * are not targets.
  */
 export function addFreezeRingEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -284,15 +268,14 @@ export function addFreezeRingEntriesV7(
   if (
     witch === undefined ||
     witch.ownerId !== view.viewer.id ||
-    !freezesRingV7(view, witch)
+    !freezesRingV7(view, witch) ||
+    !commands.some(
+      (candidate) =>
+        candidate.kind === "COLD_SNAP" && candidate.unitId === unitId,
+    )
   )
     return;
-  const command = commands.find(
-    (candidate): candidate is Extract<CommandV7, { kind: "FREEZE" }> =>
-      candidate.kind === "FREEZE" && candidate.unitId === unitId,
-  );
-  if (command === undefined) return;
-  const preview = previewFreezeV7(view, command.unitId, command.at);
+  const preview = previewColdSnapV7(view, witch.id);
   if (preview === null) return;
   const area = new Set(preview.tiles.map(key));
   for (const at of preview.tiles)
@@ -305,15 +288,24 @@ export function addFreezeRingEntriesV7(
       targetEdges: areaEdges(area, at),
     });
   if (weight !== "PROMINENT") return;
-  entries.push({
-    key: `ability-target:FREEZE_RING:${unitId}`,
-    kind: "ABILITY_TARGET",
-    layer: 7.5,
-    at: witch.at,
-    abilityStyle: "FREEZE_FOCUS",
-    label: freezeTargetLabelV7(freezeOutcomeV7(preview)),
-  });
-  addIceboundPreviewEntries(entries, view, new Set(preview.icebound));
+  if (preview.tiles.length > 0)
+    entries.push({
+      key: `ability-target:FREEZE_RING:${unitId}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: witch.at,
+      abilityStyle: "FREEZE_FOCUS",
+      label: `${ICE_LABEL_V7} ${preview.tiles.length}`,
+    });
+  addFrozenPreviewEntries(
+    entries,
+    view,
+    new Set(
+      preview.targets
+        .filter((target) => !target.alreadyFrozen)
+        .map((target) => target.unitId),
+    ),
+  );
 }
 
 /** A slide inside a Move: from the first ice tile entered to the stop. */

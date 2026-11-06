@@ -43,7 +43,7 @@ export const REWARD_ARRIVAL_RADIUS_V7 = 2;
  *   `REWARD_ARRIVAL_RADIUS_V7` of the center by the same order. The push
  *   never damages or kills it.
  * - When the occupant cannot be pushed (no such tile, or nothing moves it:
- *   an Egg, Rock Hard, an icebound boat, a neutral unit) or the reward unit
+ *   an Egg, Rock Hard, a neutral unit) or the reward unit
  *   may not push (the second Goblin or Initiate of a Militia, a held unit),
  *   the reward unit appears beside the city by the placement of
  *   `pulp_wars-spue` (7r111): on the nearest tile of the city's own

@@ -648,8 +648,6 @@ describe("sounds of presentation steps", () => {
           "COLD_AURA",
           "SWEEP",
           "ICE_FREEZE",
-          "ICE_MELT",
-          "ICE_CRUSH",
           "PRIZE_FLAG",
         ] as const
       ).map((effect): CorePresentationStepV7 => ({

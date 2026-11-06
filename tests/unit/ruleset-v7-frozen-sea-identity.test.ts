@@ -7,7 +7,7 @@ import {
   FISHING_HOLE_POPULATION_V7,
   FREEZE_LINE_V7,
   ICE_CRACKS_THICK_V7,
-  ICE_CRUSH_DAMAGE_V7,
+  LONG_FREEZE_LINE_V7,
   ICE_SEA_DOG_UNITS_V7,
   NAVAL_ROLE_IDS_V7,
   PRIOR_RULESET_7_IDS,
@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r122");
-    expect(PRIOR_RULESET_7_IDS.slice(-79, -75)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
+    expect(PRIOR_RULESET_7_IDS.slice(-80, -76)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(121);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(122);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r122.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-78, -75)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r123.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-79, -76)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r122");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r123");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -156,23 +156,24 @@ describe("the frozen sea shapes", () => {
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "WATER_FROZEN")).toBe(
       "ICE_CRACKED",
     );
-    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "ICE_CRACKED")).toBe("ICE_MELTED");
-    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "ICE_MELTED")).toBe(
-      "UNITS_CRUSHED",
-    );
-    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_CRUSHED")).toBe(
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): ICE_MELTED and
+    // UNITS_CRUSHED went with Icebound.
+    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "ICE_CRACKED")).toBe(
       "UNIT_SUGAR_RUSHED",
     );
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).not.toContain("ICE_MELTED");
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).not.toContain("UNITS_CRUSHED");
     expect([
       ICE_CRACKS_THICK_V7,
       FISHING_HOLE_COST_V7,
       FISHING_HOLE_POPULATION_V7,
       FREEZE_LINE_V7,
+      // `pulp_wars-s55m.1`: Hoarfrost's line (the crush is gone).
+      LONG_FREEZE_LINE_V7,
       WITCH_FREEZE_RADIUS_V7,
-      ICE_CRUSH_DAMAGE_V7,
       ICE_SEA_DOG_UNITS_V7,
       // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 units on the ice (3).
-    ]).toEqual([2, 3, 1, 2, 1, 3, 5]);
+    ]).toEqual([2, 3, 1, 2, 3, 1, 5]);
     expect(ICE_SEA_DOG_UNITS_V7).toBe(SEA_DOG_SHIPS_V7);
     expect(() => assertRuleset7Registry()).not.toThrow();
   });
@@ -217,7 +218,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     expect(unlocks("NAVAL_ENGINEERING")).toEqual([
       { kind: "COMMAND", command: "BUILD_SHIPYARD" },
       { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
-      { kind: "ICEBOUND" },
+      { kind: "LONG_FREEZE" },
     ]);
     expect(unlocks("SEAMANSHIP")).toEqual([{ kind: "BLACK_ICE" }]);
     expect(unlocks("SUBMERSIBLES")).toEqual([
@@ -239,7 +240,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       EXPLOSIVES: "Brittle",
       SHORECRAFT: "Rime",
       NAVIGATION: "Pack Ice",
-      NAVAL_ENGINEERING: "Icebound",
+      NAVAL_ENGINEERING: "Hoarfrost",
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
       // The ninth unit (7r55): the nodes named for their unit.
@@ -256,7 +257,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       const caps = of(techs);
       return [
         caps.freezeWater,
-        caps.icebound,
+        caps.longFreeze,
         caps.blackIce,
         caps.thickIce,
         caps.iceCover,
@@ -280,6 +281,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       false,
       0,
     ]);
+    // Hoarfrost (`pulp_wars-s55m.1`, Icebound before): a longer Freeze line.
     expect(facts(["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"])).toEqual([
       "DEEP",
       true,
@@ -331,7 +333,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       expect(
         [
           caps.freezeWater,
-          caps.icebound,
+          caps.longFreeze,
           caps.blackIce,
           caps.thickIce,
           caps.iceCover,
@@ -363,15 +365,17 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     }
   });
 
-  it("gives FREEZE to every Ice Folk land role and to no other role", () => {
+  it("gives FREEZE to every Ice Folk land role but the Witch, and to no other role", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7)
         expect(
           effectiveRoleRuleV7(role, faction).abilities.includes("FREEZE"),
           `${faction} ${role}`,
         ).toBe(
-          // (The ninth unit, 7r55: the heavy role is the Mammoth.)
-          faction === "ICE_FOLK" && !isNavalRoleV7(role),
+          // (The ninth unit, 7r55: the heavy role is the Mammoth.) The Ice
+          // Folk freeze rework (`pulp_wars-s55m.1`): the Witch's Cold Snap
+          // freezes her water.
+          faction === "ICE_FOLK" && !isNavalRoleV7(role) && role !== "CAPTAIN",
         );
   });
 

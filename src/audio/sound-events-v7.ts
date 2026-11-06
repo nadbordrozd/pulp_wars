@@ -475,8 +475,6 @@ export function soundCuesForStepV7(
             { id: "special.freeze", delayMs: 0 },
             { id: "impact.ice", delayMs: step.durationMs * 0.5 },
           ];
-        case "ICE_CRUSH":
-          return [{ id: "impact.ice", delayMs: 0 }];
         case "COLD_SNAP":
         case "COLD_AURA":
         case "ICE_FREEZE":
@@ -507,8 +505,6 @@ export function soundCuesForStepV7(
           ];
         case "SWEEP":
           return [{ id: "attack.melee", delayMs: 0 }];
-        case "ICE_MELT":
-          return [{ id: "impact.splash", delayMs: 0 }];
         // The frozen sea redesign (`pulp_wars-5ti.27`): Crack Ice, a break
         // and a crack alike.
         case "ICE_CRACK":

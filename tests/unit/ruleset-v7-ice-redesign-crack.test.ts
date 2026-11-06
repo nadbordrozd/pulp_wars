@@ -7,7 +7,6 @@ import {
   previewCrackIceV7,
   projectEventsV7,
   queryPlayerCommandsV7,
-  unitIsIceboundV7,
   unitIsSubmergedV7,
   viewForV7,
   type CommandV7,
@@ -96,7 +95,6 @@ describe("Crack Ice: the result (section 2.9)", () => {
       unitId: fighter.id,
       at: ICE,
       broken: true,
-      freed: [],
     });
     const result = acceptV7(state, 0, crack(state, SHORE, ICE));
     expect(result.events).toEqual([
@@ -106,7 +104,6 @@ describe("Crack Ice: the result (section 2.9)", () => {
         unitId: fighter.id,
         at: ICE,
         broken: true,
-        freed: [],
       },
     ]);
     expect(parseEventV7(result.events[0]).ok).toBe(true);
@@ -145,7 +142,7 @@ describe("Crack Ice: the result (section 2.9)", () => {
     ]);
     expect(
       previewCrackIceV7(view, navalUnitAtV7(state, SHORE).id, ICE),
-    ).toMatchObject({ broken: false, freed: [] });
+    ).toMatchObject({ broken: false });
     const first = acceptV7(state, 0, crack(state, SHORE, ICE));
     expect(first.events[0]).toMatchObject({
       kind: "ICE_CRACKED",
@@ -179,27 +176,16 @@ describe("Crack Ice: the result (section 2.9)", () => {
     expect(iceEntryV7(mend.state, ICE)?.cracked).toBe(false);
   });
 
-  it("frees an icebound ship, which may sail and act the same turn; a ship cracks too", () => {
-    const BOUND: CoordV7 = { x: 2, y: 4 };
+  it("a ship cracks too: thick ice takes two Cracks (no ship is ever in the ice)", () => {
+    const TILE: CoordV7 = { x: 2, y: 4 };
     const FREE: CoordV7 = { x: 2, y: 5 };
     const state = scene(
-      [
-        { seat: 0, role: "PATROL_BOAT", at: BOUND },
-        { seat: 0, role: "PATROL_BOAT", at: FREE },
-      ],
-      [BOUND],
+      [{ seat: 0, role: "PATROL_BOAT", at: FREE }],
+      [TILE],
       ALL,
     );
-    const bound = navalUnitAtV7(state, BOUND);
-    expect(unitIsIceboundV7(state, bound)).toBe(true);
-    // An icebound ship cannot crack its own way out (nor anything else).
-    expect(rejectV7(state, 0, crack(state, BOUND, { x: 1, y: 3 }))).toEqual({
-      code: "CRACK_ICE_NOT_LEGAL",
-      params: { reason: "ICEBOUND" },
-    });
-    // Thick: the first Crack frees nobody, the second does.
-    const first = acceptV7(state, 0, crack(state, FREE, BOUND));
-    expect(first.events[0]).toMatchObject({ broken: false, freed: [] });
+    const first = acceptV7(state, 0, crack(state, FREE, TILE));
+    expect(first.events[0]).toMatchObject({ broken: false });
     const second = acceptV7(
       turnOf(
         acceptV7(acceptV7(first.state, 0, { kind: "END_TURN" }).state, 1, {
@@ -208,22 +194,13 @@ describe("Crack Ice: the result (section 2.9)", () => {
         0,
       ),
       0,
-      crack(first.state, FREE, BOUND),
+      crack(first.state, FREE, TILE),
     );
     expect(second.events[0]).toMatchObject({
       kind: "ICE_CRACKED",
       broken: true,
-      freed: [bound.id],
     });
-    expect(
-      unitIsIceboundV7(second.state, navalUnitV7(second.state, bound.id)),
-    ).toBe(false);
-    // The freed ship sails and acts this turn.
-    expect(
-      offered(second.state).some(
-        (command) => command.kind === "MOVE" && command.unitId === bound.id,
-      ),
-    ).toBe(true);
+    expect(iceEntryV7(second.state, TILE)).toBeUndefined();
   });
 
   it("a submerged Submarine cracks and stays submerged", () => {
@@ -411,7 +388,7 @@ describe("Crack Ice: the legality rows in order (section 2.9)", () => {
     expect(offeredCracks(ally, 1)).toEqual([]);
   });
 
-  it("row 6: no land-form unit on it (an icebound ship may be)", () => {
+  it("row 6: no unit on it", () => {
     const state = scene(
       [
         { seat: 0, role: "FIGHTER", at: SHORE },
@@ -493,7 +470,6 @@ describe("Crack Ice: the legality rows in order (section 2.9)", () => {
               unitId: unit.id,
               at: { x, y },
               broken: preview?.broken,
-              freed: preview?.freed,
             },
           ]);
           expect(iceEntryV7(result.state, { x, y }) === undefined).toBe(

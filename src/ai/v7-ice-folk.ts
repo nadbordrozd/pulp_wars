@@ -653,7 +653,9 @@ export interface IceFolkPolicyToolsV7 {
 
 /**
  * `COLD_SNAP` (rule 3): whenever it is offered, first in the turn; worth
- * each target, a new freeze more than a renewal.
+ * each target, a new freeze more than a renewal. Ships and embarked units
+ * count like land units since `pulp_wars-s55m.1`; the water the cast
+ * freezes is scored by the frozen-sea rules (`iceColdSnapWaterScoreV7`).
  */
 export function coldSnapScoreV7(
   tools: IceFolkPolicyToolsV7,
@@ -666,7 +668,7 @@ export function coldSnapScoreV7(
   for (const unit of tools.view.units) {
     if (
       unit.id === witch.id ||
-      unit.form !== "LAND" ||
+      unit.form === "EGG" ||
       unit.hp <= 0 ||
       !tools.isHostile(unit.ownerId) ||
       chebyshev(unit.at, witch.at) > COLD_SNAP_RANGE_V7

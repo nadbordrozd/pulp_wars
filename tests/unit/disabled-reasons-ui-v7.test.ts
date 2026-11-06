@@ -21,7 +21,6 @@ import {
   FREEZE_NEEDS_PACK_ICE_V7,
   FREEZE_NEEDS_RIME_V7,
   FREEZE_NO_TARGET_V7,
-  ICEBOUND_BLOCKED_V7,
 } from "../../src/render/frozen-sea-presentation-v7";
 import { GOBLIN_FIELD_DEFENSE_EXPLANATION_V7 } from "../../src/render/goblin-presentation-v7";
 import { ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7 } from "../../src/render/ice-folk-presentation-v7";
@@ -96,7 +95,6 @@ describe("disabled action reasons", () => {
       FREEZE_NO_TARGET_V7,
       CRACK_ICE_OCCUPIED_V7,
       CRACK_ICE_BUILT_V7,
-      ICEBOUND_BLOCKED_V7,
       ASSEMBLE_NEEDS_TECH_V7,
       ASSEMBLE_NO_HOME_V7,
       BOMB_FROZEN_V7,

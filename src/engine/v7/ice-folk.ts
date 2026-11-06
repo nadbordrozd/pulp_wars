@@ -98,8 +98,10 @@ export function isFrozenV7(
 
 /**
  * Section 21.2: whether `target` can be Frozen by a source owned by
- * `sourceOwnerId`: a living land-form unit hostile to the source's owner
- * (never embarked, naval, an Egg, own, or allied). Map curiosities: the
+ * `sourceOwnerId`: a living unit hostile to the source's owner, in land,
+ * naval, or embarked form (since `pulp_wars-s55m.1` ships, embarked units,
+ * and units on docks freeze like anyone; never an Egg, own, or allied
+ * unit). Map curiosities: the
  * neutral Monster is immune too. The Cultists (`pulp_wars-mch9.7`,
  * RULESET_7_CULTISTS.md section 4.2): so is the Herald (Unstoppable).
  */
@@ -113,7 +115,7 @@ export function canBeFrozenV7(
 ): boolean {
   return (
     target.hp > 0 &&
-    target.form === "LAND" &&
+    target.form !== "EGG" &&
     // Map curiosities (section 8.6): the Monster is immune to Frozen.
     !isNeutralOwnerV7(target.ownerId) &&
     !unitIsUnstoppableV7(target) &&
@@ -268,7 +270,10 @@ export type FrozenSourceV7 =
   | "BLACK_ICE"
   | "FROSTBITE"
   // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
-  | "SHARDS";
+  | "SHARDS"
+  // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze reached a
+  // ship (or an embarked unit) on open water.
+  | "FREEZE";
 
 /** One `UNITS_FROZEN` event (section 21.15). */
 export function unitsFrozenEventV7(
@@ -797,8 +802,9 @@ export function shatterThresholdV7(
 /**
  * Section 5.5: whether an attack shatters its defender: the attacker is a
  * land-form unit of an Ice Folk seat attacking from distance 1; the defender
- * is Frozen (or assumed Frozen), in land form, and not of the `JUGGERNAUT`
- * role; and the HP the hit leaves is from 1 to the threshold.
+ * is Frozen (or assumed Frozen), of any form (a ship or an embarked unit
+ * too since `pulp_wars-s55m.1`), and not of the `JUGGERNAUT` role; and the
+ * HP the hit leaves is from 1 to the threshold.
  */
 export function attackShattersV7(input: {
   readonly attackerIceFolk: boolean;
@@ -812,7 +818,6 @@ export function attackShattersV7(input: {
     input.attackerIceFolk &&
     input.distance === 1 &&
     input.defenderFrozen &&
-    input.defender.form === "LAND" &&
     input.defender.role !== "JUGGERNAUT" &&
     input.hpAfterHit >= 1 &&
     input.hpAfterHit <= input.threshold

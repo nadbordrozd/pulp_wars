@@ -122,7 +122,6 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   // The frozen sea redesign: a Crack frees a ship, it disrupts nothing.
   ICE_CRACKED: NONE,
   // Only units afloat are icebound; a watched unit is in land form.
-  ICE_MELTED: NONE,
   PLAGUE_EXPIRED: NONE,
   PLAGUE_CLEARED: NONE,
 
@@ -215,7 +214,6 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   THUNDER_STOMP: ["HP_LOSS"],
   UNITS_TRAMPLED: ["HP_LOSS"],
   // The crush of the ice (units afloat) and a surfacing eruption.
-  UNITS_CRUSHED: ["HP_LOSS"],
   UNIT_SURFACED: ["HP_LOSS"],
   // A star (`pulp_wars-mch9.7`): fixed damage to everything in its area.
   STAR_FELL: ["HP_LOSS"],
@@ -272,7 +270,6 @@ export const UNPROVEN_DISRUPTION_PATHS_V7: Readonly<
   Partial<Record<DomainEventV7["kind"], string>>
 > = {
   SHIP_BOARDED: "only a ship is boarded; a watched unit is in land form",
-  UNITS_CRUSHED: "only a unit afloat is icebound; a watched unit is on land",
   UNIT_RELEASED:
     "a released unit goes back to its owner; a mind-controlled cultist lost its strand, its grip, and its Channel when it was taken",
   UNIT_DISBANDED:

@@ -259,7 +259,10 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     expect(iceEntryV7(pillaged.state, WEST)).toBeDefined();
   });
 
-  it("a hostile ship locked on an own dock by a Freeze no longer blockades it", () => {
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Freeze that reaches
+  // the ship Freezes it and leaves the dock open water, so it still
+  // blockades it (Frozen keeps a unit's hold on its tile).
+  it("a hostile ship on an own dock that a Freeze reaches is Frozen and still blockades it", () => {
     const state = frozenArenaV7({
       technologies: [ICEBOUND, RIME],
       units: [
@@ -283,19 +286,15 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
       unitId: yeti.id,
       at: WEST,
     });
-    expect(result.events[0]).toMatchObject({
-      kind: "WATER_FROZEN",
-      tiles: [WEST],
-      icebound: [boat.id],
-    });
-    expect(result.events).toContainEqual(
+    expect(result.events).toEqual([
       expect.objectContaining({
-        kind: "PORT_BLOCKADE_CHANGED",
-        at: WEST,
-        activeAfter: true,
+        kind: "UNITS_FROZEN",
+        source: "FREEZE",
+        results: [{ unitId: boat.id, turnsLeft: 1 }],
       }),
-    );
-    expect(cityPopulation(result.state)).toBe(before);
+    ]);
+    expect(iceEntryV7(result.state, WEST)).toBeUndefined();
+    expect(cityPopulation(result.state)).toBe(before - 1);
     expect(parseGameStateV7(result.state)).not.toBeNull();
   });
 
@@ -326,7 +325,8 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     }).state;
     const shipyard = at("BUILD_SHIPYARD", WEST);
     expect(isOffered(frozen, shipyard)).toBe(false);
-    expect(rejectV7(frozen, 0, shipyard).code).toBe("TILE_ENEMY_OCCUPIED");
+    // `pulp_wars-s55m.1`: the Frozen ship still blockades the Port.
+    expect(rejectV7(frozen, 0, shipyard).code).toBe("INVALID_TILE");
   });
 });
 

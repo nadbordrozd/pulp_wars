@@ -9,7 +9,6 @@ import {
   isIceAtV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
-  unitIsIceboundV7,
   unitIsSubmergedV7,
   unitMayActAfterMoveV7,
   unitRoleMechanicsV7,
@@ -143,7 +142,7 @@ export interface NavalFleetFactsV7 {
   readonly ownSubmarines: readonly PublicUnitV7[];
   /** The viewer's Ports and Shipyards, blockaded ones included. */
   readonly ownDocks: number;
-  /** Visible hostile ships that are not icebound, by role (nor are the own ships above). */
+  /** Visible hostile ships, by role. */
   readonly hostilePatrolBoats: readonly PublicUnitV7[];
   readonly hostileBattleships: readonly PublicUnitV7[];
   readonly hostileSubmarines: readonly PublicUnitV7[];
@@ -171,10 +170,7 @@ export function navalFleetFactsV7(
         unit.hp > 0 &&
         unit.form === "NAVAL" &&
         unit.role === role &&
-        unit.ownerId === view.viewer.id &&
-        // The frozen sea (`pulp_wars-5ti.5`): an own ship frozen in is
-        // written off: it escorts, screens, and counters nothing.
-        !unitIsIceboundV7(view, unit),
+        unit.ownerId === view.viewer.id,
     );
   const hostile = (role: NavalRoleIdV7): PublicUnitV7[] =>
     view.units.filter(
@@ -186,8 +182,7 @@ export function navalFleetFactsV7(
         // Map curiosities round 3, bead B (`pulp_wars-737.21`): the Sea
         // Serpent (a neutral `BATTLESHIP`) is no seat's fleet; the
         // curiosity rules steer around it.
-        !isNeutralOwnerV7(unit.ownerId) &&
-        !unitIsIceboundV7(view, unit),
+        !isNeutralOwnerV7(unit.ownerId),
     );
   const facts: NavalFleetFactsV7 = {
     ownPatrolBoats: own("PATROL_BOAT"),
@@ -652,8 +647,7 @@ export function navalRamApproachV7(
     !navalRammerV7(view, actor) ||
     actor.activation.moved ||
     actor.activation.attacksUsed > 0 ||
-    actor.activation.attacked ||
-    unitIsIceboundV7(view, actor)
+    actor.activation.attacked
   )
     return null;
   let best: NavalRamApproachV7 | null = null;
@@ -662,8 +656,7 @@ export function navalRamApproachV7(
       target.hp <= 0 ||
       !afloat(target) ||
       !tools.isHostile(target.ownerId) ||
-      chebyshev(target.at, to) !== 1 ||
-      unitIsIceboundV7(view, target)
+      chebyshev(target.at, to) !== 1
     )
       continue;
     const plain = navalAttackAfterMoveV7(

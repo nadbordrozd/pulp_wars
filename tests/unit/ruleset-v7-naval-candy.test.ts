@@ -50,7 +50,7 @@ import {
   candyStraitV7,
   type CandyPieceV7,
 } from "../fixtures/v7-naval-candy";
-import { frozenArenaV7 } from "../fixtures/v7-frozen-sea";
+import { frozenArenaV7, frozenShipsV7 } from "../fixtures/v7-frozen-sea";
 import { endTurnUntilV7 } from "../fixtures/v7-goblin-arena";
 
 // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`,
@@ -568,7 +568,7 @@ describe("Sugar Sails: the Rush afloat (section 8.3 C2)", () => {
     }
   });
 
-  it("is refused to an embarked unit (EMBARKED) and to an icebound ship (ICEBOUND)", () => {
+  it("is refused to an embarked unit (EMBARKED) and to a Frozen ship", () => {
     const embarked = sea([
       {
         seat: 0,
@@ -583,19 +583,20 @@ describe("Sugar Sails: the Rush afloat (section 8.3 C2)", () => {
       code: "SUGAR_RUSH_NOT_LEGAL",
       params: { reason: "EMBARKED" },
     });
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship (no
+    // ship is in the ice any more) is refused like any Frozen unit.
     const TUG: CoordV7 = { x: 3, y: 5 };
-    const frozen = frozenArenaV7({
-      factions: ["CANDY", "ORIGINAL"],
-      units: [{ seat: 0, role: "PATROL_BOAT", at: TUG }],
-      ice: [{ at: TUG, seat: 2 }],
-      third: { faction: "ICE_FOLK", explored: true },
-    });
+    const frozen = frozenShipsV7(
+      frozenArenaV7({
+        factions: ["CANDY", "ORIGINAL"],
+        units: [{ seat: 0, role: "PATROL_BOAT", at: TUG }],
+        third: { faction: "ICE_FOLK", explored: true },
+      }),
+      [TUG],
+    );
     const tug = navalUnitAtV7(frozen, TUG);
     expect(offered(frozen, rush(tug.id))).toBe(false);
-    expect(rejectV7(frozen, 0, rush(tug.id))).toEqual({
-      code: "SUGAR_RUSH_NOT_LEGAL",
-      params: { reason: "ICEBOUND" },
-    });
+    expect(rejectV7(frozen, 0, rush(tug.id)).code).toBe("UNIT_FROZEN");
   });
 
   it("is refused after a Move (UNIT_ALREADY_ACTED) and never offered twice", () => {

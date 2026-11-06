@@ -3329,8 +3329,10 @@ function validateCrossReferences(value: CrossInput): boolean {
       // stand on an ice tile (water with an ice entry); an Egg never does.
       // Flyers over water (`pulp_wars-7pi5`, `7r116`): a land-form flyer
       // may stand on any water tile (it is in the air, never afloat).
+      // Ice Folk freeze rework (`pulp_wars-s55m.1`): no unit afloat is ever
+      // on ice (there is no Icebound).
       (isAfloatFormV7(unit.form)
-        ? tile.biome !== null
+        ? tile.biome !== null || iceKeys.has(key(unit.at))
         : tile.biome === null &&
           !(
             unit.form === "LAND" &&
@@ -3743,8 +3745,8 @@ function validateCrossReferences(value: CrossInput): boolean {
       return false;
   }
   // Ice Folk Freeze (section 21.2): every Frozen entry needs a living unit
-  // that is neither naval nor an Egg, and only a match with an Ice Folk seat
-  // has entries.
+  // that is not an Egg (ships and embarked units freeze like anyone since
+  // `pulp_wars-s55m.1`), and only a match with an Ice Folk seat has entries.
   if (frozen.length > 0 && !value.setup.factions.includes("ICE_FOLK"))
     return false;
   for (const entry of frozen) {
@@ -3753,7 +3755,6 @@ function validateCrossReferences(value: CrossInput): boolean {
       unit === undefined ||
       unit.hp <= 0 ||
       isNeutralOwnerV7(unit.ownerId) ||
-      unit.form === "NAVAL" ||
       unit.form === "EGG"
     )
       return false;

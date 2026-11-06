@@ -100,9 +100,6 @@ describe("headless Normal matches with the frozen sea", () => {
       for (const event of match.events)
         if (event.kind === "COMBAT_RESOLVED") {
           expect(typeof event.preview.iceCover, label).toBe("boolean");
-          // An icebound defender never answers.
-          if (event.preview.icebound)
-            expect(event.preview.retaliation, label).toBe(false);
         }
     }
   }, 600_000);

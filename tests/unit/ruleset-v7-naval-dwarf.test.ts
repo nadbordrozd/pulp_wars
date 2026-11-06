@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   NAVAL_ROLE_IDS_V7,
   PLAGUE_DAMAGE_V7,
-  ICE_CRUSH_DAMAGE_V7,
   TUNNEL_RANGE_V7,
   allOwnedUnitsV7,
   effectiveRoleRuleV7,
@@ -61,7 +60,7 @@ import {
   dwarfStraitV7,
   type DwarfPieceV7,
 } from "../fixtures/v7-naval-dwarf";
-import { frozenArenaV7, frozenStateV7 } from "../fixtures/v7-frozen-sea";
+import { frozenStateV7 } from "../fixtures/v7-frozen-sea";
 import { patchTileV7 } from "../fixtures/v7-revision20";
 import { endTurnUntilV7, seatIdV7 } from "../fixtures/v7-goblin-arena";
 
@@ -534,24 +533,6 @@ describe("W1, Armoured on every damage source but the crush", () => {
     );
     expect(PLAGUE_DAMAGE_V7).toBe(2);
     expect(damage).toMatchObject([{ unitId: ironclad.id, damage: 1 }]);
-  });
-
-  it("does not reduce the Ice Folk crush (3)", () => {
-    const state = frozenArenaV7({
-      factions: ["ICE_FOLK", "DWARF"],
-      technologies: [NAVAL_TECHS_V7, DWARF_NAVAL_TECHS_V7],
-      units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 1, y: 5 } }],
-      ice: [{ at: { x: 1, y: 5 } }],
-    });
-    const launch = navalUnitAtV7(state, { x: 1, y: 5 });
-    const first = acceptV7(state, 0, { kind: "END_TURN" });
-    const second = acceptV7(first.state, 1, { kind: "END_TURN" });
-    const crushed = [...first.events, ...second.events].flatMap((event) =>
-      event.kind === "UNITS_CRUSHED" ? event.results : [],
-    );
-    expect(crushed).toMatchObject([
-      { unitId: launch.id, damage: ICE_CRUSH_DAMAGE_V7 },
-    ]);
   });
 });
 

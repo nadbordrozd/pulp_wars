@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r122");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r122.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-107, -67)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r123.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-108, -68)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -230,8 +230,10 @@ describe("ruleset-7 prior identities", () => {
     // seats, the match ends when no human is left or one seat stands):
     // 7r120. Every faction's Battleship at Attack 4 (`pulp_wars-ez0i`):
     // 7r121. Dwarf field assembly at 2 Coins with a first-turn shot and the
-    // Gyrocopter at 10 HP (`pulp_wars-o2g8`): 7r122.
-    expect(revision).toBe(122);
+    // Gyrocopter at 10 HP (`pulp_wars-o2g8`): 7r122. Ships and port units
+    // freeze like anyone, no Icebound, a one-tap Cold Snap that also
+    // freezes water (`pulp_wars-s55m.1`): 7r123.
+    expect(revision).toBe(123);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -266,7 +268,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r123", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r124", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

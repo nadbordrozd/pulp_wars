@@ -7738,7 +7738,7 @@ html:has(.v7-match-shell) body {
   color: var(--pw-amber);
 }
 
-/* The frozen sea (bead pulp_wars-5ti.7): Freeze, Icebound, the crush. */
+/* The frozen sea (bead pulp_wars-5ti.7): Freeze. */
 .v7-context-action[data-freeze-ability][aria-disabled="true"] {
   cursor: not-allowed;
   opacity: var(--pw-dim);
@@ -7746,11 +7746,6 @@ html:has(.v7-match-shell) body {
 
 .v7-context-action[data-freeze-ability][aria-pressed="true"] {
   border-color: var(--pw-blue);
-}
-
-.v7-ice-folk-chip[data-unit-status="ice-crush"] {
-  border-color: var(--pw-red);
-  color: var(--pw-red);
 }
 
 .v7-ice-folk-chip .v7-ui-icon {

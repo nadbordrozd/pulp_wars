@@ -445,9 +445,6 @@ export const BOARD_BLOCK_DEEP_WATER_V7 = "Needs Navigation";
 /** Why a ship next to a weak ship on Deep Water has no Board to aim. */
 export const BOARD_NEEDS_NAVIGATION_V7 =
   "Taking a ship on Deep Water needs Navigation";
-/** Why an icebound ship has no Board to aim (the frozen sea). */
-export const BOARD_ICEBOUND_V7 = "Icebound: this ship cannot board";
-
 /**
  * The engine's Board target rule (`boardTargetBlockV7`) read from the view,
  * with the facts of the public command query: the target's explored tile
@@ -521,11 +518,6 @@ export function boardUnavailableTextV7(
       chebyshev(candidate.at, unit.at) === 1,
   );
   if (adjacent.length === 0) return null;
-  // The frozen sea (`pulp_wars-5ti.3`): an icebound ship never boards.
-  if (
-    view.unitStats.find((entry) => entry.unitId === unit.id)?.icebound === true
-  )
-    return BOARD_ICEBOUND_V7;
   const blocks = adjacent.map((candidate) =>
     viewBoardTargetBlockV7(view, unit, candidate),
   );

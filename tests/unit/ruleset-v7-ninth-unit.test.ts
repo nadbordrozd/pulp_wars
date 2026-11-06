@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r122");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r122.current");
-    expect(PRIOR_RULESET_7_IDS.at(-68)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r123.current");
+    expect(PRIOR_RULESET_7_IDS.at(-69)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-68)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-69)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -460,7 +460,9 @@ describe("the ninth unit: identity", () => {
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
     // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
     // (`pulp_wars-mch9.61`) adds CHANT_LEFT (161).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(161);
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`) drops ICE_MELTED
+    // and UNITS_CRUSHED with Icebound (159).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(159);
   });
 });
 
@@ -934,7 +936,7 @@ describe("the ninth unit: technology display names", () => {
       EXPLOSIVES: "Brittle",
       SHORECRAFT: "Rime",
       NAVIGATION: "Pack Ice",
-      NAVAL_ENGINEERING: "Icebound",
+      NAVAL_ENGINEERING: "Hoarfrost",
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
       SAWMILLING: "Boulders",

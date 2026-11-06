@@ -6,7 +6,6 @@ import {
   BARRICADE_HP_V7,
   attackIsTorpedoV7,
   primaryActionBlockedAfterMoveV7,
-  unitIsIceboundV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
@@ -530,7 +529,7 @@ export function barricadeDamageV7(input: {
 /**
  * Why `attacker` cannot attack a Barricade now (the attacker rows of an
  * `ATTACK`), or null when it can: the role has `ATTACK` and an Attack above
- * 0, it is not embarked, icebound, or Crashed, it has not used a primary
+ * 0, it is not embarked or Crashed, it has not used a primary
  * action (an unmoved Gunner's second shot is allowed), it may act after its
  * Move, and it is not a torpedo. Shared by the reducer and the query.
  */
@@ -551,8 +550,6 @@ export function barricadeAttackerRejectionV7(
     return { code: "UNIT_ROLE_INVALID" };
   if (attacker.form !== "LAND" && attacker.form !== "NAVAL")
     return { code: "ATTACK_NOT_LEGAL", reason: "EMBARKED" };
-  if (unitIsIceboundV7(lookup, attacker))
-    return { code: "ATTACK_NOT_LEGAL", reason: "ICEBOUND" };
   // A torpedo targets only units afloat (naval branch section 5.3).
   if (attackIsTorpedoV7(lookup, attacker))
     return { code: "ATTACK_NOT_LEGAL", reason: "NOT_AFLOAT" };

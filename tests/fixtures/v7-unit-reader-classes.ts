@@ -250,10 +250,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // nothing, is no ship, and a mound is never on water).
     "src/ai/v7-frozen-sea.ts::computeIcePlan": "BOARD",
     "src/ai/v7-frozen-sea.ts::freezeTakes": "BOARD",
-    "src/ai/v7-frozen-sea.ts::iceFreezeScoreV7": "BOARD",
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the score of a
+    // water freeze reads the ships it Freezes and the units that reach them.
+    "src/ai/v7-frozen-sea.ts::iceWaterFreezeScoreV7": "BOARD",
     "src/ai/v7-frozen-sea.ts::iceHostileFreezersV7": "BOARD",
     "src/ai/v7-frozen-sea.ts::iceSeaResearchV7": "BOARD",
-    "src/ai/v7-frozen-sea.ts::iceboundCrewLandingV7": "BOARD",
     // The frozen sea redesign (`pulp_wars-5ti.26`): the units on a tile
     // the seat sees cracked open, on a building site on its ice, and on a
     // tile to Crack (its own icebound ships, a hostile ship, the cracker's
@@ -821,7 +822,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // read what stands on the board (nothing burrows under ice or water).
     "src/render/canvas/frozen-sea-board-plan-v7.ts::freezePickTargetsV7":
       "BOARD",
-    "src/render/canvas/frozen-sea-board-plan-v7.ts::addIceboundPreviewEntries":
+    "src/render/canvas/frozen-sea-board-plan-v7.ts::addFrozenPreviewEntries":
       "BOARD",
     "src/render/canvas/frozen-sea-board-plan-v7.ts::addFreezeRingEntriesV7":
       "BOARD",
@@ -833,7 +834,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // the tile) read what stands on the board; nothing burrows under ice.
     "src/render/frozen-sea-presentation-v7.ts::crackIceUnavailableTextV7":
       "BOARD",
-    "src/render/frozen-sea-presentation-v7.ts::crackIceOutcomeV7": "BOARD",
     // Bead pulp_wars-2yc.70: the Slayer deed names the unit on the board
     // with the most kills, as Slayer reads it (a burrowed unit is off the
     // board and does not count).
@@ -1013,7 +1013,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // crushes what stands on the board; a Freeze and its preview read the
     // board. No Ice Folk unit is afloat anywhere, a mound included, so the
     // state check also reads the `burrowed` list.
-    "src/engine/v7/ice.ts::resolveIceCrushV7": "BOARD",
     // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry
     // freezes the unit that stepped on; Crack Ice and its preview read who
     // stands on the ice; an Ice Harbour on open water needs no unit there.
@@ -1023,13 +1022,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/ice.ts::territoryFreezeV7": "BOARD",
     "src/engine/v7/reducer.ts::withBlackIceResultV7": "BOARD",
     "src/engine/v7/query.ts::publicCrackIceTargetsV7": "BOARD",
-    "src/engine/v7/query.ts::previewCrackIceV7": "BOARD",
     "src/engine/v7/reducer.ts::applyCrackIce": "BOARD",
     "src/engine/v7/reducer.ts::applyPort": "BOARD",
-    "src/engine/v7/query.ts::publicFreezeSetV7": "BOARD",
+    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Freeze (and a Cold
+    // Snap's ring) reads the unit on each tile it reaches, the offer and
+    // the result alike.
+    "src/engine/v7/query.ts::publicFreezeTileFactsV7": "BOARD",
+    "src/engine/v7/query.ts::publicFreezeTargetsV7": "BOARD",
+    "src/engine/v7/query.ts::publicColdSnapChangesV7": "BOARD",
+    "src/engine/v7/reducer.ts::freezeTileFactsAtV7": "BOARD",
+    "src/engine/v7/reducer.ts::acceptedWaterFreezeV7": "BOARD",
     "src/engine/v7/query.ts::previewFreezeV7": "BOARD",
     "src/engine/v7/reducer.ts::applyFreeze": "BOARD",
-    "src/engine/v7/reducer.ts::resolveStartTurnIceV7": "BOARD",
     "src/engine/v7/state-schema.ts::iceValid": "ALL",
     "src/headless/candy-telemetry-v7.ts::recordCandyV7": "BOARD",
     // The Candy UI (`pulp_wars-jdb.6`): the dock, the board plan and the

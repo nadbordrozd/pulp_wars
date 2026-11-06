@@ -31,7 +31,6 @@ import {
 } from "../../src/render/canvas/target-highlight-v7";
 import {
   BOARD_ALREADY_ACTED_V7,
-  BOARD_ICEBOUND_V7,
   BOARD_NEEDS_NAVIGATION_V7,
   BOARD_NO_WEAK_SHIP_V7,
   NAVAL_HELP_RULES_V7,
@@ -226,15 +225,6 @@ describe("Board on the board plan", () => {
     };
     expect(boardUnavailableTextV7(deepView, boarder, false)).toBe(
       BOARD_NEEDS_NAVIGATION_V7,
-    );
-    const frozenView = {
-      ...view,
-      unitStats: view.unitStats.map((entry) =>
-        entry.unitId === boarder.id ? { ...entry, icebound: true } : entry,
-      ),
-    };
-    expect(boardUnavailableTextV7(frozenView, boarder, false)).toBe(
-      BOARD_ICEBOUND_V7,
     );
     // Nothing afloat next to a ship: no button at all.
     const alone = viewOf(navalSubmarineUiFixtureV7());
