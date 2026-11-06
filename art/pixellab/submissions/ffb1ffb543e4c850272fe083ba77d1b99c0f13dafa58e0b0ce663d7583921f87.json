@@ -1,0 +1,36 @@
+{
+  "id": "snow-golem-e-slate-light",
+  "jobId": "91817d1f-5081-4959-a298-50fa0694c7e0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-snow-golem",
+    "subject": "UNIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255322,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only: the dark grey boulder becomes a lighter mid slate grey rock, colour #8c929c, shaded #686e78, keeping its white snow and blue ice crust; the warm light grey snow of the body becomes a cool very light grey, colour #e2e5e8, shaded #c0c5cb. Keep the blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only: the dark grey boulder becomes a lighter mid slate grey rock, colour #8c929c, shaded #686e78, keeping its white snow and blue ice crust; the warm light grey snow of the body becomes a cool very light grey, colour #e2e5e8, shaded #c0c5cb. Keep the blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only: the dark grey boulder becomes a lighter mid slate grey rock, colour #8c929c, shaded #686e78, keeping its white snow and blue ice crust; the warm light grey snow of the body becomes a cool very light grey, colour #e2e5e8, shaded #c0c5cb. Keep the blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only: the dark grey boulder becomes a lighter mid slate grey rock, colour #8c929c, shaded #686e78, keeping its white snow and blue ice crust; the warm light grey snow of the body becomes a cool very light grey, colour #e2e5e8, shaded #c0c5cb. Keep the blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "snow-golem-e-slate",
+      "candidate": 0,
+      "sha256": "200817e29acc476ab5419cafd6293acb29207635f7c623ce7a55b75ba68238af"
+    }
+  }
+}

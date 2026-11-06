@@ -1,0 +1,36 @@
+{
+  "id": "snow-golem-e-shade",
+  "jobId": "2e6a6b0c-1b3b-4944-86af-cdb65dbd66ba",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-snow-golem",
+    "subject": "UNIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255311,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only: the pale blue shading of the snow on the right side becomes warm light grey, colour #c9c0b0, so no snow is blue; the purple mouth becomes black; the tan patch behind the boulder becomes white snow. Keep the ivory snow, the ice crystals, the slate boulder, the eyes, the pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only: the pale blue shading of the snow on the right side becomes warm light grey, colour #c9c0b0, so no snow is blue; the purple mouth becomes black; the tan patch behind the boulder becomes white snow. Keep the ivory snow, the ice crystals, the slate boulder, the eyes, the pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only: the pale blue shading of the snow on the right side becomes warm light grey, colour #c9c0b0, so no snow is blue; the purple mouth becomes black; the tan patch behind the boulder becomes white snow. Keep the ivory snow, the ice crystals, the slate boulder, the eyes, the pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only: the pale blue shading of the snow on the right side becomes warm light grey, colour #c9c0b0, so no snow is blue; the purple mouth becomes black; the tan patch behind the boulder becomes white snow. Keep the ivory snow, the ice crystals, the slate boulder, the eyes, the pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "snow-golem-e",
+      "candidate": 0,
+      "sha256": "fcc8045f777ef9d0c762ca4331ddc7a0b3d606ab27eded91a8cfece43e69f0a3"
+    }
+  }
+}

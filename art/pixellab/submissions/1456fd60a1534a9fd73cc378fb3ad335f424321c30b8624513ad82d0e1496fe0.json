@@ -1,0 +1,64 @@
+{
+  "id": "frost-wyrm-big-b",
+  "jobId": "sync-75938d7b-4e99-4341-9619-5f4093244709",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-frost-wyrm",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255123,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+        "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+        "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+        "text": "Subject: Frost Wyrm, a big heavy chunky ice drake flying in the air, the fearsome elite of the peaks, as big as a war beast: a huge round horned head about half of its size with fierce bright ice blue eyes, a broad dark slate snout with small white fangs, a thick plump body of snow white scales shaded pale warm grey, a cream belly, two huge wings spread wide to both sides with pale cream membranes edged in ice blue, a row of big sharp clear ice crystal spikes along its back and thick tail, two curved pale ivory horns, a shaggy white mane, strong dark slate claws tucked under it; simple shapes and very few details; airborne, with empty space under it."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The drake is drawn big and heavy and fills the width of the image with its spread wings and most of its height. It flies: it hovers in the air with its legs tucked up; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest.",
+        "negative": "rider, person, saddle, armour, standing on legs, feet on the ground, fire, flames, breathing fire, blue body, blue scales, brown body, brown scales, orange eyes, red eyes, green, dinosaur, bird, feathers, thin, skinny, small, two animals"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Frost Wyrm, a big heavy chunky ice drake flying in the air, the fearsome elite of the peaks, as big as a war beast: a huge round horned head about half of its size with fierce bright ice blue eyes, a broad dark slate snout with small white fangs, a thick plump body of snow white scales shaded pale warm grey, a cream belly, two huge wings spread wide to both sides with pale cream membranes edged in ice blue, a row of big sharp clear ice crystal spikes along its back and thick tail, two curved pale ivory horns, a shaggy white mane, strong dark slate claws tucked under it; simple shapes and very few details; airborne, with empty space under it. The drake is drawn big and heavy and fills the width of the image with its spread wings and most of its height. It flies: it hovers in the air with its legs tucked up; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, armour, standing on legs, feet on the ground, breathing fire, blue body, blue scales, brown body, brown scales, orange eyes, red eyes, dinosaur, bird, feathers, thin, skinny, small, two animals",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Frost Wyrm, a big heavy chunky ice drake flying in the air, the fearsome elite of the peaks, as big as a war beast: a huge round horned head about half of its size with fierce bright ice blue eyes, a broad dark slate snout with small white fangs, a thick plump body of snow white scales shaded pale warm grey, a cream belly, two huge wings spread wide to both sides with pale cream membranes edged in ice blue, a row of big sharp clear ice crystal spikes along its back and thick tail, two curved pale ivory horns, a shaggy white mane, strong dark slate claws tucked under it; simple shapes and very few details; airborne, with empty space under it. The drake is drawn big and heavy and fills the width of the image with its spread wings and most of its height. It flies: it hovers in the air with its legs tucked up; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, armour, standing on legs, feet on the ground, breathing fire, blue body, blue scales, brown body, brown scales, orange eyes, red eyes, dinosaur, bird, feathers, thin, skinny, small, two animals."
+  }
+}

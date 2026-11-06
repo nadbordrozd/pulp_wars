@@ -1,0 +1,36 @@
+{
+  "id": "frost-wyrm-big-edit",
+  "jobId": "58da11fb-8478-4fc4-a3bb-d88e79d28489",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-frost-wyrm",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255121,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw the same drake much bigger and chunkier so it fills the image: a bigger round head, a thick heavy body, a thick tail, and the wings spread wide to the left and right edges. It still flies with empty space under it. Keep its white scales, white mane, ice blue eyes, dark slate snout and claws, ice blue spikes and wing edges, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw the same drake much bigger and chunkier so it fills the image: a bigger round head, a thick heavy body, a thick tail, and the wings spread wide to the left and right edges. It still flies with empty space under it. Keep its white scales, white mane, ice blue eyes, dark slate snout and claws, ice blue spikes and wing edges, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw the same drake much bigger and chunkier so it fills the image: a bigger round head, a thick heavy body, a thick tail, and the wings spread wide to the left and right edges. It still flies with empty space under it. Keep its white scales, white mane, ice blue eyes, dark slate snout and claws, ice blue spikes and wing edges, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw the same drake much bigger and chunkier so it fills the image: a bigger round head, a thick heavy body, a thick tail, and the wings spread wide to the left and right edges. It still flies with empty space under it. Keep its white scales, white mane, ice blue eyes, dark slate snout and claws, ice blue spikes and wing edges, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "frost-wyrm-a-white",
+      "candidate": 0,
+      "sha256": "7318b8b8bb61f24944345eaf59b50ca6dc6c2ef7b8b70b3fa1da13a86adbd150"
+    }
+  }
+}

@@ -479,6 +479,15 @@ faction describe the batches as first made. What each shows is in the
 | `UNIT:CANDY:SWORDSMAN` (Jawbreaker)      | `chibi-direction-candy-jawbreaker`          | `direction-candy`    | 56 x 80 | `STANDARD_UNIT` | `unit`                                                                | `candy-pink`      |
 | `PORTRAIT:<FACTION>:SWORDSMAN` (seven)   | `chibi-direction-portrait-<faction>-<unit>` | the same batch       | 48 x 48 | `PORTRAIT`      | `portrait`; `icon` for the Stegosaurus and the Whirligig, shown whole | as the unit       |
 
+The Ice Folk rework (bead `pulp_wars-s55m.3`, batch
+`direction-ice-folk-rework`, not registered yet) draws three replacements on
+the same slots and canvases: `chibi-direction-ice-folk-frost-wyrm`
+(`UNIT:ICE_FOLK:KNIGHT`, 72 x 88, `unit`, seated with the flyers' gap),
+`chibi-direction-ice-folk-walrus` (`UNIT:ICE_FOLK:SWORDSMAN`, 56 x 80,
+`unit`) and `chibi-direction-ice-folk-snow-golem` (`UNIT:ICE_FOLK:CATAPULT`,
+72 x 88, `creature`), each with a `chibi-direction-portrait-ice-folk-<unit>`
+portrait (48 x 48; the Golem's with the `creature` class, shown whole).
+
 The Ogre is a `LARGE_UNIT` (between the Orc Brute and the Troll); the
 Stegosaurus and the Whirligig take the canvas of the role they are fielded
 in (siege and breakthrough), the Triceratops's and the Steam Tank's. No Egg

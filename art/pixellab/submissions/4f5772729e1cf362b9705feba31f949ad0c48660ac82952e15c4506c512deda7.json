@@ -1,0 +1,36 @@
+{
+  "id": "snow-golem-e-grey",
+  "jobId": "3cd29b77-6825-4b91-97e5-34ed635f95f1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-snow-golem",
+    "subject": "UNIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255313,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the shadows of the snow: every blue and blue-grey shadow tone on the body, arms, legs and head becomes a pale neutral grey like shaded snow, colour #d2d4d6, darker #aeb1b5 in the deepest folds, so no snow is blue; the lit snow becomes pure white #fbfbf8. Keep the bright blue ice crystals, the dark slate boulder, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the shadows of the snow: every blue and blue-grey shadow tone on the body, arms, legs and head becomes a pale neutral grey like shaded snow, colour #d2d4d6, darker #aeb1b5 in the deepest folds, so no snow is blue; the lit snow becomes pure white #fbfbf8. Keep the bright blue ice crystals, the dark slate boulder, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the shadows of the snow: every blue and blue-grey shadow tone on the body, arms, legs and head becomes a pale neutral grey like shaded snow, colour #d2d4d6, darker #aeb1b5 in the deepest folds, so no snow is blue; the lit snow becomes pure white #fbfbf8. Keep the bright blue ice crystals, the dark slate boulder, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the shadows of the snow: every blue and blue-grey shadow tone on the body, arms, legs and head becomes a pale neutral grey like shaded snow, colour #d2d4d6, darker #aeb1b5 in the deepest folds, so no snow is blue; the lit snow becomes pure white #fbfbf8. Keep the bright blue ice crystals, the dark slate boulder, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "snow-golem-e-shade",
+      "candidate": 0,
+      "sha256": "7f32d706f1cf6e52d8d5d534dcfaf5423ecc309a5bbf6a26814c199d0821dbef"
+    }
+  }
+}

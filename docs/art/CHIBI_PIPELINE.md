@@ -2305,3 +2305,36 @@ waters beside Snow, the icon on the dock's dark disc).
   drew nine clean ice boathouses, none with the ice-blue accent; beside
   the Ice Folk houses they read as igloos. The second seed's pennant on
   the ridge is what says "dock".
+
+## The Ice Folk rework units (bead `pulp_wars-s55m.3`)
+
+Batch `direction-ice-folk-rework` (faction `ICE_FOLK`, fixed colours,
+accent `ice-folk-blue`): the Frost Wyrm, the Walrus and the Snow Golem and
+their portraits, on the art slots of the Sabretooth (`KNIGHT`), the Musk Ox
+(`SWORDSMAN`) and the Boulder Yeti (`CATAPULT`), through subject keys
+`<subject>/FROST_WYRM`, `/WALRUS` and `/SNOW_GOLEM`
+([what and why](factions/ICE_FOLK.md#the-rework-units-bead-pulp_wars-s55m3)).
+29 PixelLab calls for six pieces. It is a batch of its own so that the
+replaced assets of `direction-ice-folk` stay valid and live until the
+roster bead swaps them; no runtime manifest lists it yet (an unlisted
+raster in a manifest under `src/assets` fails the preload inventory test).
+`tests/unit/chibi-ice-folk-rework-assets.test.ts` checks the records, the
+accent derivation and that it is not wired yet.
+
+What PixelLab did, added to the prompt notes of the earlier batches:
+
+- **A flyer through the unit class:** a recipe line saying it hovers and
+  that its tail tip is the lowest thing beat the class's "standing, feet
+  lowest"; `bottomMargin` 18 on the as-is class then seats it with the
+  flyers' gap (lowest pixel row 69 of 88).
+- **A faction layer can dress a creature:** "dark brown-grey hide and
+  furs" put fur, belts and boots on every Snow Golem of the unit and
+  portrait classes, and the unit class's "oversized signature weapon" put
+  its boulder on a hammer handle. The `creature` class drew it bare.
+- **Snow is shaded pale blue**, inside the `ice-folk-blue` band: a recolour
+  edit to neutral grey (saturation below the band's 0.2) keeps white snow
+  out of the accent step; warm taupe made it beige.
+- **"Redraw it bigger" as an edit does not enlarge:** the Frost Wyrm came
+  back the same size; a fresh creation whose subject line names a huge
+  head, a thick body and huge wings drew the bigger drake, and recolour
+  edits brought it to the accepted look.

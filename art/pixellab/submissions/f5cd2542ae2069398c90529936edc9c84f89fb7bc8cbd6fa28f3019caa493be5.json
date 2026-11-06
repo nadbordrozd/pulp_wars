@@ -1,0 +1,36 @@
+{
+  "id": "portrait-frost-wyrm-a-white",
+  "jobId": "e0ef020a-20ea-4574-8d66-b101c1800748",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-portrait-ice-folk-frost-wyrm",
+    "subject": "PORTRAIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 255152,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only these parts: the grey top of the head and the dark navy neck and chest become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the tan horns and ear frills become pale ivory bone #eadfc8; any orange near the eyes becomes white. Keep the dark slate snout, the ice blue eyes, the white mane, the ice blue crystal spikes, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only these parts: the grey top of the head and the dark navy neck and chest become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the tan horns and ear frills become pale ivory bone #eadfc8; any orange near the eyes becomes white. Keep the dark slate snout, the ice blue eyes, the white mane, the ice blue crystal spikes, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only these parts: the grey top of the head and the dark navy neck and chest become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the tan horns and ear frills become pale ivory bone #eadfc8; any orange near the eyes becomes white. Keep the dark slate snout, the ice blue eyes, the white mane, the ice blue crystal spikes, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only these parts: the grey top of the head and the dark navy neck and chest become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the tan horns and ear frills become pale ivory bone #eadfc8; any orange near the eyes becomes white. Keep the dark slate snout, the ice blue eyes, the white mane, the ice blue crystal spikes, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-frost-wyrm-a",
+      "candidate": 0,
+      "sha256": "c4fd1206d1c4bae817a21ffbaa666fdda0752455a4986d221485e2ebd04237ab"
+    }
+  }
+}

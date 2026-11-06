@@ -1,0 +1,36 @@
+{
+  "id": "snow-golem-e-slate",
+  "jobId": "dda2f1cb-52ee-4299-94ff-7f6883e3afc8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-snow-golem",
+    "subject": "UNIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255321,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only: the black boulder becomes a mid slate grey rock, colour #7a808a, shaded #565c66, with its ice crust kept; the pure white snow becomes a very light neutral grey, colour #e4e6e8, shaded #c2c5c9. Keep the bright blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only: the black boulder becomes a mid slate grey rock, colour #7a808a, shaded #565c66, with its ice crust kept; the pure white snow becomes a very light neutral grey, colour #e4e6e8, shaded #c2c5c9. Keep the bright blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only: the black boulder becomes a mid slate grey rock, colour #7a808a, shaded #565c66, with its ice crust kept; the pure white snow becomes a very light neutral grey, colour #e4e6e8, shaded #c2c5c9. Keep the bright blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only: the black boulder becomes a mid slate grey rock, colour #7a808a, shaded #565c66, with its ice crust kept; the pure white snow becomes a very light neutral grey, colour #e4e6e8, shaded #c2c5c9. Keep the bright blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "snow-golem-e-grey",
+      "candidate": 0,
+      "sha256": "0d35333bbef7bac538e3c8d0b0d3f530342a6a02f3fd6954794a92a280ca9c61"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "frost-wyrm-big-a-white",
+  "jobId": "ee2090f0-b006-41b9-b98a-0b6955344d2b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-frost-wyrm",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255124,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase the wooden stick it holds, leaving its claws empty. Recolour: the grey and brown scales of the body, legs and tail become snow white #f4f1e8 shaded pale grey #c4c0b8; the tan horns become pale ivory; the red mouth becomes dark slate. Keep the white mane, ice blue eyes, dark slate snout, the wings with their ice blue edges, the ice spikes, the pose, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Erase the wooden stick it holds, leaving its claws empty. Recolour: the grey and brown scales of the body, legs and tail become snow white #f4f1e8 shaded pale grey #c4c0b8; the tan horns become pale ivory; the red mouth becomes dark slate. Keep the white mane, ice blue eyes, dark slate snout, the wings with their ice blue edges, the ice spikes, the pose, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Erase the wooden stick it holds, leaving its claws empty. Recolour: the grey and brown scales of the body, legs and tail become snow white #f4f1e8 shaded pale grey #c4c0b8; the tan horns become pale ivory; the red mouth becomes dark slate. Keep the white mane, ice blue eyes, dark slate snout, the wings with their ice blue edges, the ice spikes, the pose, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Erase the wooden stick it holds, leaving its claws empty. Recolour: the grey and brown scales of the body, legs and tail become snow white #f4f1e8 shaded pale grey #c4c0b8; the tan horns become pale ivory; the red mouth becomes dark slate. Keep the white mane, ice blue eyes, dark slate snout, the wings with their ice blue edges, the ice spikes, the pose, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "frost-wyrm-big-a",
+      "candidate": 0,
+      "sha256": "a8876d434b5cf97f2a5153899901bac6b8b0b2e492c21b9318508de44272b814"
+    }
+  }
+}

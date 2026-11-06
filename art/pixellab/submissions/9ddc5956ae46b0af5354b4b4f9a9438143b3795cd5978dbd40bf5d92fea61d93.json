@@ -1,0 +1,36 @@
+{
+  "id": "frost-wyrm-a-white",
+  "jobId": "1589c3fe-a02b-4ab8-ae58-6cd527d83761",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-frost-wyrm",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only these parts: the brown and taupe scales of the body, legs, belly and tail become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the orange and red eyes become bright ice blue; any red or orange mark on the face becomes white. Keep the shaggy white mane, the dark slate snout and claws, the wings with their ice blue edges, the ice crystal spikes along the back and tail, the pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only these parts: the brown and taupe scales of the body, legs, belly and tail become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the orange and red eyes become bright ice blue; any red or orange mark on the face becomes white. Keep the shaggy white mane, the dark slate snout and claws, the wings with their ice blue edges, the ice crystal spikes along the back and tail, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only these parts: the brown and taupe scales of the body, legs, belly and tail become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the orange and red eyes become bright ice blue; any red or orange mark on the face becomes white. Keep the shaggy white mane, the dark slate snout and claws, the wings with their ice blue edges, the ice crystal spikes along the back and tail, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only these parts: the brown and taupe scales of the body, legs, belly and tail become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the orange and red eyes become bright ice blue; any red or orange mark on the face becomes white. Keep the shaggy white mane, the dark slate snout and claws, the wings with their ice blue edges, the ice crystal spikes along the back and tail, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "frost-wyrm-a",
+      "candidate": 0,
+      "sha256": "7905f0d1c96c9b94dfe5913def4d390a5e2e8c9ca8fb7a84d6506d4bbba0c172"
+    }
+  }
+}

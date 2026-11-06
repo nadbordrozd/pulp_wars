@@ -1,0 +1,36 @@
+{
+  "id": "frost-wyrm-big-a-white-mouth",
+  "jobId": "44dc09b4-097a-47ab-9268-aba9fed08844",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk-rework",
+    "asset": "chibi-direction-ice-folk-frost-wyrm",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 255125,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, colour #2e3038, so nothing is red; the small white fangs stay. Do not redraw anything else: keep the white scales, the ivory horns, the ice blue eyes, the dark slate snout, the wings, the ice spikes, the pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, colour #2e3038, so nothing is red; the small white fangs stay. Do not redraw anything else: keep the white scales, the ivory horns, the ice blue eyes, the dark slate snout, the wings, the ice spikes, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, colour #2e3038, so nothing is red; the small white fangs stay. Do not redraw anything else: keep the white scales, the ivory horns, the ice blue eyes, the dark slate snout, the wings, the ice spikes, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, colour #2e3038, so nothing is red; the small white fangs stay. Do not redraw anything else: keep the white scales, the ivory horns, the ice blue eyes, the dark slate snout, the wings, the ice spikes, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "frost-wyrm-big-a-white",
+      "candidate": 0,
+      "sha256": "04e98119f6adf0fbff8b0e55e000d4a8645edbd0e91d0822e1fcbc50e83dbc71"
+    }
+  }
+}

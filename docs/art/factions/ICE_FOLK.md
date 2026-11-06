@@ -655,3 +655,108 @@ code glyph and stand-ins of other ice art. Six icons of their own, 48 x 48,
   the Frozen cube by its white cap and dark arch. The Rime boot keeps a
   small rust-brown heel. The wave says "sea" before it says "ice" at 18 px;
   its icicles read from 24 px up.
+
+## The rework units (bead `pulp_wars-s55m.3`)
+
+The user (2026-11-06): "its slightly annoying that there are 2 yeti units
+and 2 similar looking mammoth + ox", and "Ice peeps should be unique and
+cool". The Ice Folk rework (epic `pulp_wars-s55m`) replaces three units in
+their art slots. **Art only:** batch
+[`direction-ice-folk-rework`](../../../scripts/art/chibi/batches/batch-direction-ice-folk-rework.json)
+holds the six accepted pieces; no runtime manifest lists them yet. The
+roster bead (`pulp_wars-s55m.4`) adds them to the direction registry (the
+lines `npm run art:chibi -- registry --batch direction-ice-folk-rework`
+prints), retires the Sabretooth, Musk Ox and Boulder Yeti assets of
+`direction-ice-folk`, gives the Frost Wyrm its flyer presentation (below)
+and regenerates the unit shadow table (`npm run art:unit-shadows-measure`).
+
+| Art slot (replaces)                     | Asset                                 | Canvas  | Sprite  | Accepted recipe                | What it shows                                                                                                                                                                         |
+| --------------------------------------- | ------------------------------------- | ------- | ------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `UNIT:ICE_FOLK:KNIGHT` (Sabretooth)     | `chibi-direction-ice-folk-frost-wyrm` | 72 x 88 | 61 x 62 | `frost-wyrm-big-a-white-mouth` | a chunky heavy snow-white drake in flight: a big horned head, ice-blue eyes, a dark slate snout, ivory horns, broad wings ribbed and edged in ice blue, ice spikes down back and tail |
+| `UNIT:ICE_FOLK:SWORDSMAN` (Musk Ox)     | `chibi-direction-ice-folk-walrus`     | 56 x 80 | 54 x 60 | `walrus-a`                     | a fat walrus reared up on its front flippers, dark slate-and-brown hide, a shaggy cream mane, ivory tusks with frost, a harness with ice crystals                                     |
+| `UNIT:ICE_FOLK:CATAPULT` (Boulder Yeti) | `chibi-direction-ice-folk-snow-golem` | 72 x 88 | 63 x 75 | `snow-golem-e-slate-light`     | a chunky golem of bare snow in a cool very light grey, a pebble grin, ice crystals in its shoulders, a mid slate boulder crusted with ice raised in one fist                          |
+
+Each has a 48 x 48 portrait (`chibi-direction-portrait-ice-folk-<unit>`):
+the Frost Wyrm's white head and neck (`portrait-frost-wyrm-a-white`), the
+Walrus's mane, moustache and frosted tusks (`portrait-walrus-a`), and the
+Snow Golem shown whole (`portrait-snow-golem-c`), as the direction allows
+for the Catapult role. The asset set is the one every unit of this art set
+has: one board sprite and one portrait (no frames, poses or variants).
+
+- **Frost Wyrm, a flyer.** Seated with `bottomMargin` 18, so its lowest
+  pixel (the tail tip) is row 69 of 88, as the Mothership's, where a
+  walker stands on row 81 to 84; no shadow is baked in, so the same sprite
+  serves over water. For the roster bead: `hullBottom` 69 and a ground
+  line about row 82 (shadow ellipse about `{ x: 36, y: 81, radiusX: 18,
+radiusY: 4 }`, the Gyrocopter's), in an Ice Folk flyer presentation like
+  `DWARF_FLYER_PRESENTATION_V7`. Its body is white, not the Dinosaurs'
+  deep blue, and its only blue is the accent (18% of its pixels: the wing
+  ribs and edges, the spikes and the eyes).
+- **Walrus, not a Mammoth.** Upright and taller than long, seen from the
+  front-right, tusks hanging straight down and no trunk, against the
+  Mammoth's side view, cream wool, trunk and forward tusks.
+- **Snow Golem, not a Yeti.** Smooth lumpy snow, a white face with black
+  pebble eyes, no fur and no clothes, against the Yeti's shaggy cream fur
+  and charcoal face. It lifts the slate boulder crusted with ice that the
+  `ICE_BOULDER` attack cue already throws, so the cue needs no change.
+- **Light.** `lighting-qa` reads the Walrus lit from the left (faces +2.9);
+  the Frost Wyrm (faces -6.5, thirds +13.1) and the Snow Golem (faces -7.8,
+  thirds +26.6) from the right by faces but from the left by thirds: by eye
+  their left sides are the light ones, and the Wyrm's dark snout and the
+  Golem's boulder and fist sit on the right.
+
+How they were made (29 PixelLab calls in all, 19 creations and 10 edits,
+seeds 255101 to 255354; 23 recipes rejected with a recorded reason; the
+first accepted Wyrm, `frost-wyrm-a-white`, and Golem, `snow-golem-e-grey`,
+were superseded after the root's review):
+
+- **The Frost Wyrm** is an edit of a creation: `frost-wyrm-a` was the right
+  chibi drake in flight but taupe-brown with orange eyes; a recolour edit
+  with hex values made it white with ice-blue eyes. The unit class's
+  "standing, feet lowest" sentence did not stop the flight: the recipe line
+  "it hovers in the air ... the tip of its tail is the lowest thing" won.
+  The review found that Wyrm (67 x 54) too small and spindly for the
+  faction's elite. An edit asking for "the same drake much bigger" came
+  back the same size; a creation with a subject line for "a big heavy
+  chunky ice drake ... a huge round head ... a thick plump body ... huge
+  wings" drew the chunky drake (`frost-wyrm-big-a`), grey and brown with a
+  red mouth and a wooden stick in its claws (the unit class's signature
+  weapon again); one edit erased the stick and made it white, a second
+  made the mouth dark.
+- **The Snow Golem needed the `creature` class.** Four unit-class creations
+  failed the same two ways: the faction layer's "hide and furs" dressed it
+  (fur, belts, boots, a loincloth), and the unit class's "oversized
+  signature weapon" put the boulder on a hammer handle. The creature class
+  (no faction layer, "holds no weapon") drew a bare snow body holding the
+  boulder.
+- **PixelLab shades snow pale blue**, which the `ice-folk-blue` accent
+  step turns into a saturated blue body or rim. "Never blue" in the subject
+  line did not help; a recolour edit to warm taupe shade made a beige
+  dough figure, and an edit to **neutral grey** shade (`#d2d4d6`, below the
+  step's saturation floor of 0.2) kept it snow. After the review two more
+  recolour edits toned the snow down to a cool very light grey (`#e2e5e8`)
+  and lightened the near-black boulder to the Boulder Yeti's mid slate.
+- **The portraits:** the Walrus's and the Golem's are fresh creations (an
+  edit cannot change the canvas, so a map sprite cannot be zoomed into a
+  bust); the portrait class dressed the Golem again, so its portrait uses
+  the creature class and shows it whole. The Wyrm's portrait creation had
+  a grey head and a navy neck; a recolour edit matched it to the sprite.
+
+Evidence: `npx tsx scripts/art/ice-folk-rework/review.ts` writes
+[`art/pixellab/reviews/chibi-batch-direction-ice-folk-rework/`](../../../art/pixellab/reviews/chibi-batch-direction-ice-folk-rework/):
+`roster-{1x,x2,x4}.png` (every Ice Folk unit on Grass and on Snow, the new
+three last), `replacements-{1x,x4}.png` (each old unit beside its
+replacement, and the Mammoth and the Yeti) and `portraits-{1x,x2,x4}.png`.
+
+![The Ice Folk units with the Frost Wyrm, the Walrus and the Snow Golem last](../../../art/pixellab/reviews/chibi-batch-direction-ice-folk-rework/roster-x2.png)
+
+Weak spots:
+
+- The Frost Wyrm's dark snout is one dark mass now that its mouth is
+  recoloured, and its right wing is mostly hidden behind the head.
+- The Snow Golem portrait (`portrait-snow-golem-c`) keeps a darker,
+  bluer boulder than the map sprite's slate one.
+- On the Snow overlay the Snow Golem's pale body is carried by its
+  outline.
+- The Walrus keeps the faction's cream mane, which makes its head a little
+  like a hood at 1:1.

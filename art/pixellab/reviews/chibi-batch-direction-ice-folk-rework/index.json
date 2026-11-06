@@ -1,0 +1,172 @@
+{
+  "bead": "pulp_wars-s55m.3",
+  "batch": "direction-ice-folk-rework",
+  "units": {
+    "yeti": {
+      "name": "Yeti",
+      "canvas": [
+        56,
+        80
+      ],
+      "sprite": [
+        52,
+        54
+      ],
+      "lowestRow": 66,
+      "new": false
+    },
+    "sled": {
+      "name": "Sled",
+      "canvas": [
+        72,
+        88
+      ],
+      "sprite": [
+        69,
+        76
+      ],
+      "lowestRow": 81,
+      "new": false
+    },
+    "snow-hunter": {
+      "name": "Snow Hunter",
+      "canvas": [
+        56,
+        80
+      ],
+      "sprite": [
+        53,
+        65
+      ],
+      "lowestRow": 71,
+      "new": false
+    },
+    "mammoth": {
+      "name": "Mammoth",
+      "canvas": [
+        56,
+        80
+      ],
+      "sprite": [
+        53,
+        61
+      ],
+      "lowestRow": 69,
+      "new": false
+    },
+    "ice-witch": {
+      "name": "Ice Witch",
+      "canvas": [
+        56,
+        80
+      ],
+      "sprite": [
+        48,
+        55
+      ],
+      "lowestRow": 66,
+      "new": false
+    },
+    "boulder-yeti": {
+      "name": "Boulder Yeti",
+      "canvas": [
+        72,
+        88
+      ],
+      "sprite": [
+        58,
+        80
+      ],
+      "lowestRow": 83,
+      "new": false
+    },
+    "sabretooth": {
+      "name": "Sabretooth",
+      "canvas": [
+        72,
+        88
+      ],
+      "sprite": [
+        60,
+        49
+      ],
+      "lowestRow": 68,
+      "new": false
+    },
+    "musk-ox": {
+      "name": "Musk Ox",
+      "canvas": [
+        56,
+        80
+      ],
+      "sprite": [
+        54,
+        53
+      ],
+      "lowestRow": 64,
+      "new": false
+    },
+    "frost-giant": {
+      "name": "Frost Giant",
+      "canvas": [
+        88,
+        104
+      ],
+      "sprite": [
+        80,
+        92
+      ],
+      "lowestRow": 98,
+      "new": false
+    },
+    "frost-wyrm": {
+      "name": "Frost Wyrm",
+      "canvas": [
+        72,
+        88
+      ],
+      "sprite": [
+        61,
+        62
+      ],
+      "lowestRow": 69,
+      "new": true
+    },
+    "walrus": {
+      "name": "Walrus",
+      "canvas": [
+        56,
+        80
+      ],
+      "sprite": [
+        54,
+        60
+      ],
+      "lowestRow": 69,
+      "new": true
+    },
+    "snow-golem": {
+      "name": "Snow Golem",
+      "canvas": [
+        72,
+        88
+      ],
+      "sprite": [
+        63,
+        75
+      ],
+      "lowestRow": 79,
+      "new": true
+    }
+  },
+  "files": [
+    "roster-1x.png",
+    "portraits-1x.png",
+    "roster-x2.png",
+    "portraits-x2.png",
+    "roster-x4.png",
+    "portraits-x4.png",
+    "replacements-1x.png",
+    "replacements-x4.png"
+  ]
+}

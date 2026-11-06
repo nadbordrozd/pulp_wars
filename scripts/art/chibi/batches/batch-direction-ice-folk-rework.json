@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-ice-folk-rework",
+  "title": "Ice Folk rework: the Frost Wyrm, the Walrus and the Snow Golem, with their portraits, in the fixed faction colours of direction-ice-folk",
+  "bead": "pulp_wars-s55m.3",
+  "faction": "ICE_FOLK",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-ice-folk-frost-wyrm",
+      "subject": "UNIT:ICE_FOLK:KNIGHT",
+      "subjectKey": "UNIT:ICE_FOLK:KNIGHT/FROST_WYRM",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue",
+      "bottomMargin": 18
+    },
+    {
+      "id": "chibi-direction-ice-folk-walrus",
+      "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+      "subjectKey": "UNIT:ICE_FOLK:SWORDSMAN/WALRUS",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-snow-golem",
+      "subject": "UNIT:ICE_FOLK:CATAPULT",
+      "subjectKey": "UNIT:ICE_FOLK:CATAPULT/SNOW_GOLEM",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-frost-wyrm",
+      "subject": "PORTRAIT:ICE_FOLK:KNIGHT",
+      "subjectKey": "PORTRAIT:ICE_FOLK:KNIGHT/FROST_WYRM",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-walrus",
+      "subject": "PORTRAIT:ICE_FOLK:SWORDSMAN",
+      "subjectKey": "PORTRAIT:ICE_FOLK:SWORDSMAN/WALRUS",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-snow-golem",
+      "subject": "PORTRAIT:ICE_FOLK:CATAPULT",
+      "subjectKey": "PORTRAIT:ICE_FOLK:CATAPULT/SNOW_GOLEM",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "frost-wyrm-a",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "create-image-pixen",
+      "seed": 255101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "It flies: it hovers in the air with both wings spread wide and its legs tucked up under its belly; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest.",
+      "negativeAddendum": "rider, person, saddle, armour, standing on legs, feet on the ground, fire, flames, breathing fire, blue body, blue scales, green, dinosaur, bird, feathers, two animals",
+      "notes": "Bead pulp_wars-s55m.3: the Frost Wyrm (KNIGHT role, replaces the Sabretooth), first sample: a fresh creation with the unit class at the KNIGHT canvas, airborne like the Saucer and the Gyrocopter."
+    },
+    {
+      "id": "frost-wyrm-b",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "create-image-pixen",
+      "seed": 255102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "It flies: it hovers in the air with both wings spread wide and its legs tucked up under its belly; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest.",
+      "negativeAddendum": "rider, person, saddle, armour, standing on legs, feet on the ground, fire, flames, breathing fire, blue body, blue scales, green, dinosaur, bird, feathers, two animals",
+      "notes": "Bead pulp_wars-s55m.3: second sample of the Frost Wyrm, the same request with another seed."
+    },
+    {
+      "id": "walrus-a",
+      "asset": "chibi-direction-ice-folk-walrus",
+      "endpoint": "create-image-pixen",
+      "seed": 255201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "It is a sea animal with no legs: it sits upright on its belly and its two front flippers, its round body taller than it is long, never on all fours and never standing on legs. It holds nothing and carries no rider. It is lit from the left: the left side of the body is the lightest.",
+      "negativeAddendum": "rider, person, legs, hooves, trunk, elephant, mammoth, wool, fur, horns, seal pup, pink, orange, cream body, white body, two animals",
+      "notes": "Bead pulp_wars-s55m.3: the Walrus (the GUARD-role defender, replaces the Musk Ox in its art slot SWORDSMAN), first sample: a fresh creation upright in the default south-east view, so that it is not a side-view Mammoth."
+    },
+    {
+      "id": "walrus-b",
+      "asset": "chibi-direction-ice-folk-walrus",
+      "endpoint": "create-image-pixen",
+      "seed": 255202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "It is a sea animal with no legs: it sits upright on its belly and its two front flippers, its round body taller than it is long, never on all fours and never standing on legs. It holds nothing and carries no rider. It is lit from the left: the left side of the body is the lightest.",
+      "negativeAddendum": "rider, person, legs, hooves, trunk, elephant, mammoth, wool, fur, horns, seal pup, pink, orange, cream body, white body, two animals",
+      "notes": "Bead pulp_wars-s55m.3: second sample of the Walrus, the same request with another seed."
+    },
+    {
+      "id": "snow-golem-a",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the height of the image, with the boulder above its head inside the image. It is lit from the left: the left side of the snow is the brightest.",
+      "negativeAddendum": "yeti, ape, monkey, fur, hair, shaggy, skin, face skin, snowman hat, top hat, carrot nose, scarf, broom, stick arms, person, clothes, armour, brown, catapult, wheels",
+      "notes": "Bead pulp_wars-s55m.3: the Snow Golem (CATAPULT role, replaces the Boulder Yeti), first sample: a fresh creation with the unit class at the CATAPULT canvas; it lifts the slate boulder crusted with ice that the ICE_BOULDER attack cue throws."
+    },
+    {
+      "id": "snow-golem-b",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255302,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the height of the image, with the boulder above its head inside the image. It is lit from the left: the left side of the snow is the brightest.",
+      "negativeAddendum": "yeti, ape, monkey, fur, hair, shaggy, skin, face skin, snowman hat, top hat, carrot nose, scarf, broom, stick arms, person, clothes, armour, brown, catapult, wheels",
+      "notes": "Bead pulp_wars-s55m.3: second sample of the Snow Golem, the same request with another seed."
+    },
+    {
+      "id": "frost-wyrm-a-white",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "edit-image-pixen",
+      "seed": 255111,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "frost-wyrm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only these parts: the brown and taupe scales of the body, legs, belly and tail become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the orange and red eyes become bright ice blue; any red or orange mark on the face becomes white. Keep the shaggy white mane, the dark slate snout and claws, the wings with their ice blue edges, the ice crystal spikes along the back and tail, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "frost-wyrm-a is the right chibi drake in flight (a big round head, spread wings, ice spikes down the tail, the tail tip lowest), but its body is a muddy taupe-brown and its eyes orange: the edit makes it a white frost drake with ice-blue eyes."
+    },
+    {
+      "id": "snow-golem-c",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255303,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the height of the image, with the boulder above its head inside the image. It is lit from the left: the left side of the snow is the brightest.",
+      "negativeAddendum": "yeti, ape, troll, monkey, fur, hair, shaggy, skin, teeth, snowman hat, top hat, carrot nose, scarf, broom, stick arms, hammer, mallet, handle, club, belt, strap, loincloth, boots, clothes, armour, blue snow, blue body, person, brown, catapult, wheels",
+      "notes": "Bead pulp_wars-s55m.3, second try at the Snow Golem: the subject line now names the snow's warm grey shade (snow-golem-a and -b were shaded pale blue, which the accent step turns saturated blue), says it wears nothing and grips the boulder in its fists with no handle."
+    },
+    {
+      "id": "snow-golem-d",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255304,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the height of the image, with the boulder above its head inside the image. It is lit from the left: the left side of the snow is the brightest.",
+      "negativeAddendum": "yeti, ape, troll, monkey, fur, hair, shaggy, skin, teeth, snowman hat, top hat, carrot nose, scarf, broom, stick arms, hammer, mallet, handle, club, belt, strap, loincloth, boots, clothes, armour, blue snow, blue body, person, brown, catapult, wheels",
+      "notes": "Bead pulp_wars-s55m.3: snow-golem-c's request with another seed."
+    },
+    {
+      "id": "portrait-walrus-a",
+      "asset": "chibi-direction-portrait-ice-folk-walrus",
+      "endpoint": "create-image-pixen",
+      "seed": 255251,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big round walrus head with its shaggy cream mane, dark face, bristly moustache and two long ivory tusks fills the whole square; no body, no flippers.",
+      "negativeAddendum": "full body, flippers, belly, trunk, elephant, mammoth, horns, seal pup, pink, orange, red",
+      "notes": "Bead pulp_wars-s55m.3: the Walrus portrait, a fresh creation with the portrait class and a close-up addendum (an edit cannot change the canvas size, so the map sprite cannot be zoomed into a bust)."
+    },
+    {
+      "id": "portrait-walrus-b",
+      "asset": "chibi-direction-portrait-ice-folk-walrus",
+      "endpoint": "create-image-pixen",
+      "seed": 255252,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big round walrus head with its shaggy cream mane, dark face, bristly moustache and two long ivory tusks fills the whole square; no body, no flippers.",
+      "negativeAddendum": "full body, flippers, belly, trunk, elephant, mammoth, horns, seal pup, pink, orange, red",
+      "notes": "Bead pulp_wars-s55m.3: portrait-walrus-a's request with another seed."
+    },
+    {
+      "id": "portrait-frost-wyrm-a",
+      "asset": "chibi-direction-portrait-ice-folk-frost-wyrm",
+      "endpoint": "create-image-pixen",
+      "seed": 255151,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head and neck only: the big round white drake head with its shaggy white mane, ice-blue eyes, dark slate snout and short ivory horns fills the whole square; no legs and no tail.",
+      "negativeAddendum": "full body, legs, tail, rider, fire, flames, orange eyes, red eyes, brown scales, blue scales, green, bird, feathers",
+      "notes": "Bead pulp_wars-s55m.3: the Frost Wyrm portrait, a fresh creation with the portrait class and a close-up addendum that names the accepted map sprite's head."
+    },
+    {
+      "id": "snow-golem-e",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255305,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the height of the image, with the boulder above its head inside the image; its stumpy snow feet are the lowest thing in the image.",
+      "negativeAddendum": "yeti, ape, troll, monkey, fur, hair, shaggy, skin, teeth, snowman hat, top hat, carrot nose, scarf, broom, stick arms, hammer, mallet, handle, club, belt, strap, loincloth, boots, clothes, blue snow, blue body, blue shading, person, brown, catapult, wheels",
+      "notes": "Bead pulp_wars-s55m.3, third try at the Snow Golem, with the creature class (no faction layer: its 'hide and furs' dressed snow-golem-c and -d in fur, a belt and boots, and the unit class's 'oversized signature weapon' put the boulder on a hammer handle in all four unit creations). The subject line names every colour, the snow's warm grey shade by hex."
+    },
+    {
+      "id": "snow-golem-f",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255306,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the height of the image, with the boulder above its head inside the image; its stumpy snow feet are the lowest thing in the image.",
+      "negativeAddendum": "yeti, ape, troll, monkey, fur, hair, shaggy, skin, teeth, snowman hat, top hat, carrot nose, scarf, broom, stick arms, hammer, mallet, handle, club, belt, strap, loincloth, boots, clothes, blue snow, blue body, blue shading, person, brown, catapult, wheels",
+      "notes": "Bead pulp_wars-s55m.3: snow-golem-e's request with another seed."
+    },
+    {
+      "id": "snow-golem-e-shade",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 255311,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "snow-golem-e",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only: the pale blue shading of the snow on the right side becomes warm light grey, colour #c9c0b0, so no snow is blue; the purple mouth becomes black; the tan patch behind the boulder becomes white snow. Keep the ivory snow, the ice crystals, the slate boulder, the eyes, the pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "snow-golem-e is the right golem (a chunky bare snow body, a pebble grin, ice crystals in its shoulders, the slate boulder held up in one fist), but its right side is shaded pale blue, which the accent step turns into a saturated blue rim, its mouth is purple and a tan patch shows behind the boulder."
+    },
+    {
+      "id": "snow-golem-e-warm",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 255312,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "snow-golem-e-shade",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the shadows of the snow: every cool blue and blue-grey shadow tone on the body, arms, legs and head becomes a warm light taupe grey, colour #c4b8a6, darker #a0937f in the deepest folds, so no snow is blue or grey-blue. Keep the ivory white lit snow, the bright blue ice crystals, the dark slate boulder, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+      "notes": "snow-golem-e-shade fixed the mouth but kept the blue shade on the golem's right side; this is the wording that fixed the Yeti's blue-grey fur shade (yeti-fur-b)."
+    },
+    {
+      "id": "snow-golem-e-grey",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 255313,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "snow-golem-e-shade",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the shadows of the snow: every blue and blue-grey shadow tone on the body, arms, legs and head becomes a pale neutral grey like shaded snow, colour #d2d4d6, darker #aeb1b5 in the deepest folds, so no snow is blue; the lit snow becomes pure white #fbfbf8. Keep the bright blue ice crystals, the dark slate boulder, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+      "notes": "snow-golem-e-warm has no blue left, but its warm taupe shade makes it a beige dough figure rather than snow; this asks for neutral grey snow shade, below the accent step's saturation floor (0.2), so the step leaves it grey."
+    },
+    {
+      "id": "portrait-frost-wyrm-a-white",
+      "asset": "chibi-direction-portrait-ice-folk-frost-wyrm",
+      "endpoint": "edit-image-pixen",
+      "seed": 255152,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-frost-wyrm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only these parts: the grey top of the head and the dark navy neck and chest become snow white scales, colour #f4f1e8, shaded pale warm grey #c4baa8; the tan horns and ear frills become pale ivory bone #eadfc8; any orange near the eyes becomes white. Keep the dark slate snout, the ice blue eyes, the white mane, the ice blue crystal spikes, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-frost-wyrm-a is the right drake head with ice-blue eyes and crystal spikes, but its head is grey, its neck dark navy and its horns tan, where the accepted map sprite is a white drake with a slate snout."
+    },
+    {
+      "id": "portrait-frost-wyrm-b",
+      "asset": "chibi-direction-portrait-ice-folk-frost-wyrm",
+      "endpoint": "create-image-pixen",
+      "seed": 255153,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head and neck only: the big round snow white drake head with its shaggy white mane, ice-blue eyes, dark slate snout and short ivory horns fills the whole square; the neck is snow white too; no legs and no tail.",
+      "negativeAddendum": "full body, legs, tail, rider, fire, flames, orange eyes, red eyes, brown scales, blue scales, navy, grey head, green, bird, feathers",
+      "notes": "Bead pulp_wars-s55m.3: a second Frost Wyrm portrait creation, naming the white neck."
+    },
+    {
+      "id": "portrait-snow-golem-b",
+      "asset": "chibi-direction-portrait-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255352,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the round snowball head with its pebble eyes and grin, the snow shoulders and the boulder held up beside the head fill the whole square. It wears nothing.",
+      "negativeAddendum": "full body, legs, yeti, ape, fur, hair, skin, teeth, troll, hammer, handle, hat, carrot nose, scarf, clothes, hide, blue snow, blue face, beige",
+      "notes": "Bead pulp_wars-s55m.3: the Snow Golem portrait after the accepted map sprite (snow-golem-e-grey): its subject line now names the neutral grey snow shade."
+    },
+    {
+      "id": "portrait-snow-golem-c",
+      "asset": "chibi-direction-portrait-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255353,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The golem fills the whole square, from the boulder at the top to its feet at the bottom.",
+      "negativeAddendum": "yeti, ape, troll, fur, hair, skin, teeth, hammer, handle, hat, carrot nose, scarf, clothes, hide, belt, boots, blue snow, blue body, beige",
+      "notes": "Bead pulp_wars-s55m.3: the Snow Golem portrait with the creature class, shown whole as the CATAPULT role's portraits may be (the direction's rule for ships and the Catapult): portrait-snow-golem-b, with the portrait class's faction layer, came back dressed in hide and fur again."
+    },
+    {
+      "id": "portrait-snow-golem-d",
+      "asset": "chibi-direction-portrait-ice-folk-snow-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 255354,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The golem fills the whole square, from the boulder at the top to its feet at the bottom.",
+      "negativeAddendum": "yeti, ape, troll, fur, hair, skin, teeth, hammer, handle, hat, carrot nose, scarf, clothes, hide, belt, boots, blue snow, blue body, beige",
+      "notes": "Bead pulp_wars-s55m.3: portrait-snow-golem-c's request with another seed."
+    },
+    {
+      "id": "frost-wyrm-big-edit",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "edit-image-pixen",
+      "seed": 255121,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "frost-wyrm-a-white",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw the same drake much bigger and chunkier so it fills the image: a bigger round head, a thick heavy body, a thick tail, and the wings spread wide to the left and right edges. It still flies with empty space under it. Keep its white scales, white mane, ice blue eyes, dark slate snout and claws, ice blue spikes and wing edges, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-s55m.3 correction (coordinator review of b7f8cef7): the accepted Frost Wyrm (67 x 54) is too small and spindly for the faction's elite; an edit asks for the same drake bigger and chunkier."
+    },
+    {
+      "id": "frost-wyrm-big-a",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "create-image-pixen",
+      "seed": 255122,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The drake is drawn big and heavy and fills the width of the image with its spread wings and most of its height. It flies: it hovers in the air with its legs tucked up; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest.",
+      "negativeAddendum": "rider, person, saddle, armour, standing on legs, feet on the ground, fire, flames, breathing fire, blue body, blue scales, brown body, brown scales, orange eyes, red eyes, green, dinosaur, bird, feathers, thin, skinny, small, two animals",
+      "notes": "Bead pulp_wars-s55m.3 correction: a fresh creation of a bigger, chunkier Frost Wyrm with the revised subject line (a huge head, a thick body, huge wings)."
+    },
+    {
+      "id": "frost-wyrm-big-b",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "create-image-pixen",
+      "seed": 255123,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The drake is drawn big and heavy and fills the width of the image with its spread wings and most of its height. It flies: it hovers in the air with its legs tucked up; it does not stand and nothing is under it, and the tip of its tail is the lowest thing in the image. It holds nothing and carries no rider. It is lit from the left: the left side of the body and wings is the lightest.",
+      "negativeAddendum": "rider, person, saddle, armour, standing on legs, feet on the ground, fire, flames, breathing fire, blue body, blue scales, brown body, brown scales, orange eyes, red eyes, green, dinosaur, bird, feathers, thin, skinny, small, two animals",
+      "notes": "Bead pulp_wars-s55m.3 correction: frost-wyrm-big-a's request with another seed."
+    },
+    {
+      "id": "snow-golem-e-slate",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 255321,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "snow-golem-e-grey",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only: the black boulder becomes a mid slate grey rock, colour #7a808a, shaded #565c66, with its ice crust kept; the pure white snow becomes a very light neutral grey, colour #e4e6e8, shaded #c2c5c9. Keep the bright blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-s55m.3 correction (coordinator review of b7f8cef7): the boulder of snow-golem-e-grey reads almost black, not the slate grey crusted with ice of the Boulder Yeti and the ICE_BOULDER cue, and its pure white body is the brightest thing in the roster."
+    },
+    {
+      "id": "frost-wyrm-big-a-white",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "edit-image-pixen",
+      "seed": 255124,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "frost-wyrm-big-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase the wooden stick it holds, leaving its claws empty. Recolour: the grey and brown scales of the body, legs and tail become snow white #f4f1e8 shaded pale grey #c4c0b8; the tan horns become pale ivory; the red mouth becomes dark slate. Keep the white mane, ice blue eyes, dark slate snout, the wings with their ice blue edges, the ice spikes, the pose, thick black outline and art style the same, on a transparent background.",
+      "notes": "frost-wyrm-big-a is the chunky, imposing drake the review asked for (a big head, a thick body, wings spread wide), but grey and brown, with a red mouth (in the owner key band) and a wooden stick in its claws: the edit makes it the white frost drake of the first accepted Wyrm."
+    },
+    {
+      "id": "snow-golem-e-slate-light",
+      "asset": "chibi-direction-ice-folk-snow-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 255322,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "snow-golem-e-slate",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only: the dark grey boulder becomes a lighter mid slate grey rock, colour #8c929c, shaded #686e78, keeping its white snow and blue ice crust; the warm light grey snow of the body becomes a cool very light grey, colour #e2e5e8, shaded #c0c5cb. Keep the blue ice crystals, the black eyes and mouth, the shapes, outline and art style exactly the same, on a transparent background.",
+      "notes": "snow-golem-e-slate toned the body down but warm, and its boulder is still a dark charcoal; this asks for the Boulder Yeti's mid slate grey and a cool very light grey snow."
+    },
+    {
+      "id": "frost-wyrm-big-a-white-mouth",
+      "asset": "chibi-direction-ice-folk-frost-wyrm",
+      "endpoint": "edit-image-pixen",
+      "seed": 255125,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "frost-wyrm-big-a-white",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, colour #2e3038, so nothing is red; the small white fangs stay. Do not redraw anything else: keep the white scales, the ivory horns, the ice blue eyes, the dark slate snout, the wings, the ice spikes, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "frost-wyrm-big-a-white is the chunky white drake, but its open mouth is still red, in the owner key band (the same fix as the Sabretooth portrait's mouth)."
+    }
+  ]
+}
