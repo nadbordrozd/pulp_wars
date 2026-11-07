@@ -205,16 +205,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
-  "ICE_FOLK_3@5:ICE_FOLK":
-    "5949dca8c7d6e4daf179db6206a50b819d4e58063d1b231276c9e96aabb2eb69",
+  // Revision 6 (`pulp_wars-s55m.7`): the second Steam Launch is back.
+  "ICE_FOLK_3@6:ICE_FOLK":
+    "695397ca57dc51b83c604466ab98c931cd5a8a4cbf87e021622193f3e56fba07",
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_4@4:ICE_FOLK":
     "63ec93d147e64e737b439d86a1441966b333fdc658af3e7f870ea84acd81140a",
   "ICE_FOLK_5@4:ICE_FOLK":
     "b7d24543b2fdd782021adc99292e71986eca472ec6b15bf6d2043b7b4c9de2e0",
-  "ICE_FOLK_6@4:ICE_FOLK":
-    "f54d2eb8ac848aa003940ea82329cfbdd54352aaa22e75353a91c9fb08a1a557",
+  // Revision 5 (`pulp_wars-s55m.7`): the Lodge has Favour 5 and holds
+  // with six.
+  "ICE_FOLK_6@5:ICE_FOLK":
+    "5fb2825e0b469d3fb03390ebd413e6aa0cf70b87b7045ad81471cd39f9c69d8a",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
   "CULT_1@4:CULT":
     "520e53094ca20029c5929a970ecd963eff74be1554c427b0491d725553e4dc72",
@@ -582,16 +585,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
-  "ICE_FOLK_3@5:ICE_FOLK":
-    "d929f1bb648a4640a9b7c4e5337bc997476512b7e148932ec4fbe52b6859c6b7",
+  // Revision 6 (`pulp_wars-s55m.7`): the second Steam Launch is back.
+  "ICE_FOLK_3@6:ICE_FOLK":
+    "6fe99a458bffb9487c2b2171593395c7e740151943f4f2020764d6fed2ac4acf",
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_4@4:ICE_FOLK":
     "b58ead6a097fcb3236d8b01fff4872d22eb4f563e46a1265d9417db4262bd485",
   "ICE_FOLK_5@4:ICE_FOLK":
     "d9c9447f508ba1913052244941c04a0e8391b750650b856d63f6cab4c4d00bde",
-  "ICE_FOLK_6@4:ICE_FOLK":
-    "dc67526d57862f7bc90d9d25b23bd2fd7f46b259a8132da2f9b712af7182788c",
+  // Revision 5 (`pulp_wars-s55m.7`): the Lodge has Favour 5 and holds
+  // with six.
+  "ICE_FOLK_6@5:ICE_FOLK":
+    "30d3a5c626f23fe39ee4667695d43804f9e1a991029e348a2060c6ebac874d9c",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
   "CULT_1@4:CULT":
     "d3b84ca2491f2f7a450a12683b961667837cc6ee0ecb2d1fa4e81083b5da803c",

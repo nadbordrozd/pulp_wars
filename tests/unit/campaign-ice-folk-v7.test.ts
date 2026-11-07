@@ -296,10 +296,14 @@ describe("The Long Winter", () => {
       garrison: 5,
       others: { kind: "RUSH" },
     });
-    // After the Ice Folk rework (`pulp_wars-s55m.5`): one Steam Launch.
+    // After the Ice Folk rework (`pulp_wars-s55m.5`): one Steam Launch;
+    // iteration 2 (`pulp_wars-s55m.7`): the second is back, at (9, 11).
     expect(
       seat("ICE_FOLK_3", 1).units.filter((unit) => unit.role === "PATROL_BOAT"),
-    ).toHaveLength(1);
+    ).toEqual([
+      expect.objectContaining({ at: { x: 9, y: 13 } }),
+      expect.objectContaining({ at: { x: 9, y: 11 } }),
+    ]);
     expect(rounds("ICE_FOLK_3")).toEqual([[1, 11]]);
     expect((mission("ICE_FOLK_3").reinforcements ?? [])[0]?.units).toEqual([
       expect.objectContaining({ role: "BATTLESHIP" }),
@@ -340,17 +344,18 @@ describe("The Long Winter", () => {
     expect(seat("ICE_FOLK_5", 2).directive).toMatchObject({ kind: "RUSH" });
     expect(rounds("ICE_FOLK_5")).toEqual([]);
     // I6: no Engineering at the start (the peaks are the road's walls);
-    // the climb is seen; the Lodge has eleven units and Favour 3, holds the
-    // slopes and then sends three at Rime Camp, with no ambush below the
-    // summit; the Unquiet have ten on the board and one wave in round 8;
-    // the dwarves hold the Deep Gate.
+    // the climb is seen; the Lodge has eleven units and Favour 5 (3 until
+    // `pulp_wars-s55m.7`), holds the slopes with six (eight before) and
+    // then sends five at Rime Camp, with no ambush below the summit; the
+    // Unquiet have ten on the board and one wave in round 8; the dwarves
+    // hold the Deep Gate.
     expect(seat("ICE_FOLK_6", 0).technologies).not.toContain("ENGINEERING");
     expect(seat("ICE_FOLK_6", 0).units).toHaveLength(9);
     expect(seat("ICE_FOLK_6", 1).units).toHaveLength(11);
-    expect(seat("ICE_FOLK_6", 1).favour).toBe(3);
+    expect(seat("ICE_FOLK_6", 1).favour).toBe(5);
     expect(seat("ICE_FOLK_6", 1).directive).toMatchObject([
       { kind: "HOLD", untilRound: 4 },
-      { kind: "GUARD", garrison: 8, others: { kind: "ASSAULT" } },
+      { kind: "GUARD", garrison: 6, others: { kind: "ASSAULT" } },
     ]);
     expect(seat("ICE_FOLK_6", 2).units).toHaveLength(10);
     expect(seat("ICE_FOLK_6", 2).directive).toMatchObject({ kind: "RUSH" });

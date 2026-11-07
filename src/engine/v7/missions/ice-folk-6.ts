@@ -52,6 +52,12 @@ import type { MissionDefinitionV7 } from "./types";
  * 3: eight hold the slopes and three march. The dead have ten on the board
  * (the first wave among them) and one more wave in round 8. The clock is 18
  * (star 14).
+ *
+ * Iteration 2 after the Ice Folk rework (`pulp_wars-s55m.7`, CAMPAIGN.md
+ * section 27.4): revision 4 fell in round 10 with three stars and Rime
+ * never hit; with Favour 3 the Lodge called only Imps, and eight of its
+ * eleven held the slopes. Now it has Favour 5 (a Horror at once) and holds
+ * the slopes with six, so five march on Rime Camp from round 4.
  */
 export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_6",
@@ -60,7 +66,9 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
   // marching Lodge and five waves of the dead.
   // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward the
   // middle; the first of the dead on the board, one later wave.
-  revision: 4,
+  // Revision 5 (`pulp_wars-s55m.7`, iteration 2 after the Ice Folk
+  // rework): Favour 5 and a garrison of six.
+  revision: 5,
   seed: 20261606,
   // <map>
   size: 20,
@@ -234,8 +242,10 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
       coins: 6,
       // Enough Favour for two Horrors at once (retune 3: was 4). Retune 4:
       // 3 (hand play: a Horror kills Mother Rime in one blow, and with 6
-      // one stood in the fog on every other tile of the climb).
-      favour: 3,
+      // one stood in the fog on every other tile of the climb). Revision 5
+      // (`pulp_wars-s55m.7`): 5, a Horror at once (with 3 it called only
+      // Imps and the escort was never touched).
+      favour: 5,
       // Leadership (the Summoner), Hexers and Familiars.
       technologies: [
         "GATHERING",
@@ -295,6 +305,8 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
       ],
       // They hold the slopes beside the road and strike whatever passes
       // (ten of them); from round 4 the other six march on Rime Camp.
+      // Revision 5 (`pulp_wars-s55m.7`): six hold and five march (eight
+      // held and only Imps and Familiars came out in hand play).
       directive: [
         {
           kind: "HOLD",
@@ -310,7 +322,7 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
             { x0: 12, y0: 4, x1: 16, y1: 10 },
             { x0: 8, y0: 8, x1: 10, y1: 9 },
           ],
-          garrison: 8,
+          garrison: 6,
           others: { kind: "ASSAULT", target: { x: 7, y: 3 } },
           fromRound: 4,
         },

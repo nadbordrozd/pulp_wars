@@ -57,6 +57,13 @@ import type { MissionDefinitionV7 } from "./types";
  * may be iced over. The hand play was lost (no foothold by round 8: the
  * Launches cracked the road's end and the shore Gunners shot whoever
  * stood on it), so the second Steam Launch, retune 3's, is gone.
+ *
+ * Iteration 2 (`pulp_wars-s55m.7`, CAMPAIGN.md section 27.4): revision 5
+ * fell in round 12 with three stars to a player who researched Chivalry
+ * by round 4 and flew a Frost Wyrm over the strait (embarked dwarves
+ * cannot strike back, and a bolas, a Wyrm's 8 and a Yeti finished each
+ * Hammerer that stepped onto the ice), so retune 3's second Steam Launch
+ * is back on the strait at (9, 11), where the road must pass.
  */
 export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_3",
@@ -67,7 +74,9 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   // the middle.
   // Revision 5 (`pulp_wars-s55m.5`, after the Ice Folk rework): one Steam
   // Launch, since a Freeze no longer locks a boat in for good.
-  revision: 5,
+  // Revision 6 (`pulp_wars-s55m.7`, iteration 2): the second Steam Launch
+  // is back (a comfortable 3-star win in round 12 with the Frost Wyrm).
+  revision: 6,
   seed: 20261603,
   // <map>
   size: 16,
@@ -234,9 +243,11 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         { role: "PATROL_BOAT", at: { x: 9, y: 13 } },
         { role: "SUBMARINE", at: { x: 8, y: 12 } },
         // Retune 3: two more Hammerers, a second Gunner on the shore, a
-        // Guard on the quay and a second Steam Launch (gone again since
+        // Guard on the quay and a second Steam Launch (gone in
         // `pulp_wars-s55m.5`: without Icebound a frozen boat thaws in a
-        // turn, and two cracked the road's end every turn in hand play).
+        // turn; back in `pulp_wars-s55m.7`: the Frost Wyrm won the strait
+        // comfortably against one).
+        { role: "PATROL_BOAT", at: { x: 9, y: 11 } },
         { role: "FIGHTER", at: { x: 12, y: 9 } },
         { role: "FIGHTER", at: { x: 11, y: 10 } },
         { role: "MARKSMAN", at: { x: 12, y: 8 } },

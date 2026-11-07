@@ -7103,8 +7103,9 @@ cultist, often the Summoners (I5); that is a strong trick and may deserve
 a look. The AI retrains a unit onto an emptied capital centre every turn
 (I5), so a city falls only to a capturer already standing beside it.
 
-Section 27 (`pulp_wars-s55m.5`) recalibrates the campaign after the Ice
-Folk rework and supersedes I1's and I3's numbers here.
+Section 27 (`pulp_wars-s55m.5` and `pulp_wars-s55m.7`) recalibrates the
+campaign after the Ice Folk rework and supersedes I1's, I3's and I6's
+numbers here.
 
 ## 23. The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`)
 
@@ -7906,3 +7907,77 @@ Cold Snap iced them, while Yrsel's froze when it was captured (since
 Coldharbour's one free shallow is ice from turn 1). A Walrus
 cannot Freeze after it moves (its "cannot move and attack" covers the
 Freeze).
+
+### 27.4 Iteration 2: every mission played to the end (`pulp_wars-s55m.7`)
+
+Iteration 1 finished no game. This pass hand-played all six missions to
+the end through `play-text` on `7r126` (the starting border freeze of
+`pulp_wars-s55m.6` included), as the Ice Folk against the Normal AI, in
+the order the bead set (I3, I6, I4, I1, I2, I5), and replayed the two
+missions it changed. The method is iteration 1's: the difficulty is the
+enemy's start, conquest clocks stay lax, waves only fine-tune, mission 1
+is the easiest, a comfortable agent win means the enemy start is
+strengthened, and a loss to my own blunder is no reason to ease. Only
+mission data changed; no rule was touched.
+
+| Mission | Revision   | Result | Round    | Stars                      | What decided it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------- | ---------- | ------ | -------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I3      | 5          | win    | 12 of 22 | 3                          | Chivalry by round 4 and a Frost Wyrm in round 5. Embarked dwarves cannot strike back: a Freeze line or a bolas froze each boat or landing party and two Yetis or a Sled finished it (the Launch shattered in round 4, three embarked units died in rounds 5 to 7). Each Hammerer that stepped onto the ice to kill a Yeti died to a bolas, the Wyrm's 8 and a Yeti; the Wyrm shattered the centre's new Gunner and a Walrus stepped on. Lost: two Yetis and a Sled, each parked on (10, 12) and killed by an unseen Gunner and a Hammerer |
+| I6      | 4          | win    | 10 of 18 | 3                          | Engineering in round 1 and a route that skirts the Deep Gate's land (an ally's territory cannot be entered). The Lodge never called a Horror (Favour 3, Imps at 2 each), eight of its eleven held the slopes, and Rime was never hit; a Sled killed the Summoner in round 6. The Wyrm did not matter (a Hexer and an Initiate killed one parked on a peak)                                                                                                                                                                                |
+| I4      | 4          | win    | held 13  | 3                          | Walls for Frostford in round 1 (fruit, game and a Fishing Hole made it level 3). Every Knight that struck a Walrus was Frostbitten for two turns and died to Cold Blood shots and a Walrus or Yeti shatter (five Knights); Rime's Cold Snap froze the Knight beside Whitewater for a Walrus shatter. Seven units lost, among them three Walruses and the Sled that scouted the west shore (my blunder); the sweets' ten sat by Sugar Camp nearly all game. No lake play was needed: skating and dives never came into it                  |
+| I1      | 5          | win    | 18 of 22 | 2 (round 15 missed)        | No slot to train until a mine made Rime Camp level 3 in round 6; a free Explorer monument made it level 5 in round 12 and its Frost Giant ended the game (Boiler Hole in round 14, the Stovepipe in round 18). Gang Up (3.5) killed four Yetis, a Sled and the Walrus, but the gang came in ones and twos, never in force                                                                                                                                                                                                                 |
+| I2      | 4          | win    | 12 of 18 | 3                          | The Frost Giant: it wakes beside the tomb in round 10, its aura froze the door Zombie, Glacial Smash killed it and the shards froze the Abbot, and it killed him in round 12. Before that the dead killed five units that left the walls (two rose as Zombies) but never pressed walled Rime Camp                                                                                                                                                                                                                                         |
+| I5      | 4          | win    | 19 of 22 | 2 (round 16 missed)        | A workshop and two fruits made Hoarfrost level 4 in round 1 (Boom), a lumber camp level 5 in round 4: the Frost Giant. It killed Imps, a Horror, a Summoner, the centre's Idol Bearer (Breach, Glacial Smash 16) and both Hexers; the Lodge re-manned the centre each turn (Familiar, Idol Bearer, Imp), an Imp killed the first capturer and two Hexers' Ribbits frogged the second twice. Captured in round 19                                                                                                                          |
+| I6      | 5 (replay) | win    | 14 of 18 | 3 (on the last star round) | A Horror in round 1; Imps killed the Mammoth and a Horror one-shot the Wyrm (14), which gave the Lodge 18 Favour and two more Horrors. Two Sleds bolased the Horrors every turn and Cold Blood shots and Wyrms killed them (rounds 9, 11 and 12); Rime walked only inside a full ring and reached the Summit in round 14. Lost the Mammoth, a Wyrm and a Yeti                                                                                                                                                                             |
+| I3      | 6 (replay) | win    | 19 of 22 | 2 (round 16 missed)        | The second Launch sailed north and never fought, but the slower capture let Anvil Bay reach level 5 (a monument) and raise a Brass Titan on the centre. The Titan embarked on its own Port and died frozen (no strike back); the round-11 Ironclad (range 3, splash) then killed two Wyrms and a Yeti with one broadside. A Yeti froze the Ironclad and a Sled bolased the Bell every turn after; Brittle's Breach and a Wyrm's freeze-hit let a Sled kill the centre's Hammerer and step on (round 18)                                   |
+
+Variants of I2, each tried once and dropped: the dead with 8 Coins (were 4) won in round 12 with three stars (they spent them on villages); the
+Abbot keeping nine at home (were five) won in round 12 with three stars
+(the Giant's shards froze them all); the Giant waking at (8, 5) instead of
+(8, 3) won in round 15 with two stars (it walked the snowfield killing a
+Skeleton a turn, untouched). None made it a fight, so I2 is unchanged.
+
+The changes:
+
+| Mission | Revision | Change                                                                                                            | Reasoning                                                                                                                                                                                                                                     |
+| ------- | -------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I3      | 5 to 6   | the second Steam Launch is back on the strait at (9, 11) (retune 3's)                                             | revision 5 fell comfortably in round 12 with three stars to a Wyrm trained in round 5; the replay on revision 6 was a 2-star win in round 19 (the Titan and the Ironclad came into it)                                                        |
+| I6      | 4 to 5   | the Lodge has Favour 5 (was 3) and holds the slopes with six (was eight), so five march on Rime Camp from round 4 | revision 4 fell in round 10 with Rime never touched and no Horror called; the replay on revision 5 was won on the last star round after three Horrors, with the Mammoth and a Wyrm lost                                                       |
+| I1      | 5        | unchanged                                                                                                         | mission 1 is the easiest; a 2-star win in round 18 with five units lost is about right                                                                                                                                                        |
+| I2      | 4        | unchanged                                                                                                         | a comfortable 3-star win, but three enemy-start levers left it as comfortable (above): the Giant decides it. Left for the user: the lever that bites is the Giant's wake (later, or further from the tomb), which changes the mission's story |
+| I4, I5  | 4        | unchanged                                                                                                         | real fights won after solid play: I4 with all stars but seven units lost and Frostford's centre Walrus near death, I5 in round 19 with two stars after its capturer was killed once and frogged twice                                         |
+
+Both changed missions are re-pinned in both pin tables of
+`tests/unit/ruleset-v7-missions.test.ts`;
+`tests/unit/campaign-ice-folk-v7.test.ts` pins I3's two Steam Launches and
+I6's Favour 5 and garrison of six. No clock, star or wave moved.
+
+**What the rework did to the campaign.** The Frost Wyrm decides the
+strait (I3): it flies over the water, and with Frost Breath and a bolas it
+kills a Hammerer a turn; it is fragile (a Horror or an Ironclad kills it
+in one blow). Embarked units cannot strike back and Freeze lines freeze
+boats, so dwarves who cross the water die. The Frost Giant decides I2, I5
+and late I1: its aura freezes everything it steps beside and Glacial
+Smash's shards freeze the ring round a shattered unit, so a crowd only
+feeds it. Skating, the Runners' glides and Fishing Hole dives never
+mattered in I4 (the defence held on land).
+
+**Rule observations (nothing changed).**
+
+- An AI Brass Titan (I3 revision 6) embarked on its own Port and became a
+  defenceless boat (Attack 0, Defense 1, no strike back): an AI blunder
+  worth a look in the Normal policy.
+- Two Hexers take turns to frog a capturer on a centre (a frog cannot
+  capture), which can stall a capture for as long as both live; it cost
+  I5 two rounds.
+- In I3 revision 6 a Hammerer Frostbitten with `turnsLeft=2` in the
+  enemy's round 8 retaliated against my Wyrm in my round 9, while in I4 a
+  Knight Frostbitten the same way stayed Frozen through my next turn. Seen
+  once and not reproduced; worth a small hand-built test.
+- Frozen units heal by idle recovery (a Diving Bell healed 4 while
+  frozen); this is the written rule, but it blunts freeze-and-wait play.
+- A seat cannot enter an ally's territory (I6: the route to the Summit
+  must skirt the Deep Gate's land).
+- The Normal AI's goblin gang (I1), the sweets (I4) and the Abbot's dead
+  (I2) mostly sat or took villages instead of rushing the towns their
+  directives point at.
