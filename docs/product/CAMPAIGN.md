@@ -7103,6 +7103,9 @@ cultist, often the Summoners (I5); that is a strong trick and may deserve
 a look. The AI retrains a unit onto an emptied capital centre every turn
 (I5), so a city falls only to a capturer already standing beside it.
 
+Section 27 (`pulp_wars-s55m.5`) recalibrates the campaign after the Ice
+Folk rework and supersedes I1's and I3's numbers here.
+
 ## 23. The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`)
 
 The last tier-3 faction campaign and the saga's finale: six missions,
@@ -7805,3 +7808,99 @@ never met the Sovereign's guns: if the user finds it easy, the lever is
 the leash (sail out later, or on Gumdrop) or a third escort Submarine,
 not her Attack. H5, DN3 and D5 are not hand-played on their new
 revisions.
+
+## 27. The Ice Folk campaign after the rework (`pulp_wars-s55m.5`)
+
+The user, 2026-11-06, after playing the Ice Folk missions: "they are half
+baked", and, once the faction is reworked, "calibrate the campaign
+missions"; Ice Folk that come out "slightly stronger than the vanilla
+factions" are fine. The rework (`pulp_wars-s55m.1`, `.2` and `.4`,
+`pulp-wars-poc-7r123` to `7r125`) changed what section 22 was tuned
+against: ships, embarked units and units on docks Freeze for one turn like
+anyone, and **Icebound and its crush are gone** (the node is Hoarfrost, a
+three-tile Freeze line); the Ice Witch has no Freeze of her own, and her
+Cold Snap ices the water around her; the forced slide is replaced by
+**skating** (half a Move a step onto ice; the Sled and the Snow Hunter
+glide free in a straight line); the Ice Folk build **no dock** (no Ice
+Harbour, Port or Shipyard) and dive between their Fishing Holes; any dock,
+a hostile one too, may be iced over; the **Frost Wyrm** (a flyer with
+Frost Breath) replaces the Sabretooth, the Musk Ox is the Walrus and the
+Boulder Yeti the Snow Golem. The method is that of sections 22.5 and 26:
+the difficulty is the enemy's strong, aggressive start, conquest clocks
+stay lax, waves only fine-tune, mission 1 is the easiest, and a
+comfortable agent win means the mission is too easy. Only mission data
+changed; no Ice Folk rule was touched.
+
+### 27.1 What the rework broke
+
+- **Text.** No player-facing text named the slide, the Ice Harbour, a Port
+  the Ice Folk build, Icebound, the Sabretooth, the Musk Ox or the Boulder
+  Yeti (the earlier rework beads had already reworded I3's hints). I1's
+  briefing gave the player's units their role names ("two Fighters and a
+  Guard"); it now says "two Yetis and a Walrus" (and "seven" for the gang,
+  below). I3's definition comment described the slide; it now describes
+  skating.
+- **Data.** No Ice Folk seat starts with a dock, a Harbour or a `KNIGHT`
+  (now a Frost Wyrm), and no objective needs a dock. I3's pre-built Port
+  and Shipyard are the dwarves', which keep working; the Port can now be
+  iced over. I3's starting `NAVAL_ENGINEERING` is Hoarfrost now (the long
+  Freeze line), which suits the mission. I2, I4, I5 and I6 forbid or never
+  reach the naval nodes, and I1, I2, I5 and I6 are dry boards, so the
+  movement rework does not reach them. The Frost Wyrm is open to research
+  (Scouting, Raiding, Chivalry) in every mission; it is left open, as a
+  strong combo.
+- **Other campaigns.** The Ice Folk seats of `CULT_5`, `DWARF_2`,
+  `HUMAN_4` and `UNDEAD_6` are on dry boards without Rime or a `KNIGHT`,
+  and no text of theirs assumes Icebound, harbours or Sabretooths: nothing
+  to fix. `FRONTIER_6` "The Deep Gate" and `FRONTIER_7` "The Island That
+  Time Forgot" were retired with the prologue (section 24) and are not
+  registered, so they were neither fixed nor played.
+
+### 27.2 Hand play
+
+Four `play-text` attempts as the Ice Folk against the Normal AI under the
+rework's rules, within the bead's time box: three on revision 4 and a
+short one on I1's revision 5.
+
+| Mission    | Attempt | Result                                                                                                                   | What decided it                                                                                                                                                                                                                                                                                                                    |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I1         | 1       | loss (abandoned in round 6; Rime dead in round 4, so that star was gone)                                                 | Rime, left beside the camp, died to a Wolf Rider out of the fog with Gang Up (10 in one blow); a Brute then walked onto Rime Camp's empty center while a Gang Up pair killed the Walrus                                                                                                                                            |
+| I1         | 2       | loss (abandoned in round 10: Rime Camp besieged, Rime at 2 HP, three units against eleven)                               | Rime held a pocket of peaks behind Cold Snaps, Frost Bolts and the Sled's bolas, and Rockfall from the peaks killed the Wolf Rider; but Gang Up pairs (3.5 Attack with two neighbours) killed a Yeti, the Sled or the Walrus each turn, Kaldmir (the second valley village) fell in round 5, and the gang trained from three towns |
+| I3         | 1       | loss (abandoned in round 8: no foothold across the strait; the Walrus, a Sled and a Yeti dead for one embarked Hammerer) | Freeze lines froze a Launch, the Bell and an embarked Gunner each turn, and Frostbite froze both Launches that struck the Walrus; but a Freeze lasts one turn, the frozen boats healed, the Launches and a shore Hammerer cracked the road's end (thick ice too), and two unseen shore Gunners shot whoever stood on it            |
+| I1 (rev 5) | 3       | unfinished (stopped at the time box in round 7: Rime Camp held, Rime at full HP, five units against nine)                | Rime kept to the pocket of peaks behind the camp, the Walrus stood on the camp's center, Frost Bolts froze the Brute each turn and Rockfall from the peaks killed a Goblin; the gang took the eastern village (Kaldmir) and kept training from three towns, while the camp had no free slot                                        |
+
+The Frost Wyrm was not reached in either mission (Raiding was bought in
+I3's round 7). Skating made the road itself fast (a Walrus or a Yeti
+reaches the second ice tile from the shore in one Move; a Sled glides to
+the end), so the road's length is no longer the problem; holding its end
+is.
+
+### 27.3 The changes
+
+| Mission   | Revision | Change                                                                                                                 | Reasoning                                                                                                                                                                                                               |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I1        | 4 to 5   | the gang is seven (the Fighter on the Stovepipe's northern doorstep is gone; the first four rounds' garrison is seven) | mission 1 is the easiest, and it was lost twice; one Goblin fewer is one Gang Up pair fewer in the first rush, and the gang still outnumbers Rime's four, starts broke, and rushes from round 4                         |
+| I3        | 4 to 5   | one Steam Launch (retune 3's second, on the strait opposite Coldharbour, is gone)                                      | the retune 4 win was decided by Icebound (a boat frozen in for good and crushed); without it a frozen boat thaws in a turn, and the two Launches cracked the road's end every turn; the shore Gunners and the Bell stay |
+| I2, I4–I6 | 4        | unchanged                                                                                                              | not hand-played in the time box (below); their boards are dry (I2, I5, I6), or their lake play only got faster for the Ice Folk (I4)                                                                                    |
+
+Both changed missions are re-pinned in both pin tables of
+`tests/unit/ruleset-v7-missions.test.ts`, and
+`tests/unit/campaign-ice-folk-v7.test.ts` pins the gang of seven and I3's
+one Steam Launch. No clock, star or wave moved.
+
+**Not reached.** I2, I4, I5 and I6 were not hand-played under the rework's
+rules; I3's revision 5 was not played, and I1's only to round 7. I4 is the mission the rework most likely made easier (skating
+across the lakes and diving between the towns' Fishing Holes move the
+defence between fronts quickly); in I6 the Frost Wyrm (a flyer that
+freezes a Horror every turn and ignores the peaks) may ease the escort for
+a player who researches Chivalry. These are the next calibration's first
+games.
+
+**Observations (no rule changed).** Gang Up lets a pair of Goblins kill a
+Yeti or a Sled in one turn, and the Normal AI pairs up every turn. A
+mission seat that starts with Rime known starts with open water inside
+its borders (the border freeze fires on a research, a Land Grant or a
+capture, not at setup): Coldharbour's own shallows stayed open until a
+Cold Snap iced them, while Yrsel's froze when it was captured. A Walrus
+cannot Freeze after it moves (its "cannot move and attack" covers the
+Freeze).

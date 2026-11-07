@@ -46,6 +46,13 @@ import type { MissionDefinitionV7 } from "./types";
  * level 1; eight Goblins and no Coins, home for four rounds and then all
  * but three at the camp; the second gang is gone. The clock is 22 (star
  * 15).
+ *
+ * After the Ice Folk rework (`pulp_wars-s55m.5`, CAMPAIGN.md section 27,
+ * hand-played): a dry board, so skating, the dives and the Frost Wyrm do
+ * not reach it; two hand-played losses on revision 4 (Gang Up Goblins and
+ * the two Brutes killed a Yeti, the Sled or the Walrus a turn and the
+ * Brutes walked onto Rime Camp's center), so the gang is seven: the
+ * Fighter on the Stovepipe's northern doorstep is gone.
  */
 export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_1",
@@ -54,7 +61,9 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
   // against a bigger, marching gang.
   // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
   // the middle.
-  revision: 4,
+  // Revision 5 (`pulp_wars-s55m.5`, after the Ice Folk rework): the gang
+  // is seven (a Fighter fewer), after two hand-played losses.
+  revision: 5,
   seed: 20261601,
   // <map>
   size: 11,
@@ -180,8 +189,8 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 7, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 8, y: 5 }, home: 1 },
         // Retune 3: four more, and a second Raider (retune 4: a Fighter and
-        // the Raider are gone again).
-        { role: "FIGHTER", at: { x: 3, y: 7 } },
+        // the Raider are gone again; `pulp_wars-s55m.5`: the Fighter on the
+        // doorstep too).
         { role: "GUARD", at: { x: 6, y: 5 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 2, x1: 7, y1: 4 }] },
@@ -211,7 +220,7 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
       ],
       // Retune 3: they hold home for three rounds (Boiler Hole and the
       // Stovepipe, all ten), then all but three march on Rime Camp. Retune
-      // 4: four rounds, all eight.
+      // 4: four rounds, all eight (seven since `pulp_wars-s55m.5`).
       directive: [
         {
           kind: "GUARD",
@@ -219,7 +228,7 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
             { x0: 3, y0: 6, x1: 8, y1: 9 },
             { x0: 6, y0: 4, x1: 8, y1: 6 },
           ],
-          garrison: 8,
+          garrison: 7,
           untilRound: 4,
         },
         {

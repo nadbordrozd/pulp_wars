@@ -197,12 +197,14 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "CANDY_6@4:CANDY":
     "366f689e05c1a3c88b9cea687385115c8efc0faeca32d16e1ec421f7cae784c8",
   // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
-  "ICE_FOLK_1@4:ICE_FOLK":
-    "baf801b44478146b861eaa339f034e4fcde559e5a9aaffc7e8e48d89a698ab44",
+  // Revision 5 (`pulp_wars-s55m.5`): the gang is seven.
+  "ICE_FOLK_1@5:ICE_FOLK":
+    "edbd702109c873b93983a1b5929dc5cc7938dfe9ff9bd8144e6e815d3debb008",
   "ICE_FOLK_2@4:ICE_FOLK":
     "23a24ff15531d8f2a24ce01df35a0f9f7996204456610c0b3ed6fc491929a52e",
-  "ICE_FOLK_3@4:ICE_FOLK":
-    "30b5343657c6579d1e8159bca44b2972409bcc4892f5f73e564398ee7e1091e9",
+  // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
+  "ICE_FOLK_3@5:ICE_FOLK":
+    "b964f112ea6b17b9829ae3b167f8605c8ad23fae98807d53ae86da78c32bc602",
   "ICE_FOLK_4@4:ICE_FOLK":
     "7d1dc6d39bcbd474f00d173e36f20af44b7b34fc7c02f42de41e92c03abe3eee",
   "ICE_FOLK_5@4:ICE_FOLK":
@@ -564,12 +566,14 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "CANDY_6@4:CANDY":
     "b2a9247053b8f3dc6bfe4f0d0bea95266bc35396af10ac496615f11eb178ea87",
   // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
-  "ICE_FOLK_1@4:ICE_FOLK":
-    "c9326e94e22a1b9767d936465e5cb9de6173556d0ef7c457a790be7efa581c59",
+  // Revision 5 (`pulp_wars-s55m.5`): the gang is seven.
+  "ICE_FOLK_1@5:ICE_FOLK":
+    "19a0949ecb54a9a8485089e2a2dd3c59980d06c4881d3e54b351ec0d4fc9adca",
   "ICE_FOLK_2@4:ICE_FOLK":
     "5c90d2d7df4029954d83d466f25b47ff84f0814f50bffd94724dc5c988158a41",
-  "ICE_FOLK_3@4:ICE_FOLK":
-    "75db14fcedb4f3c03ca83fab4a2c20097a605e87096065cd5a53b54175f830bb",
+  // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
+  "ICE_FOLK_3@5:ICE_FOLK":
+    "62b8eec5f20f80489ff659a58a78397e17a9917b666137051023a007a6b32b7c",
   "ICE_FOLK_4@4:ICE_FOLK":
     "e05908fe3fe999137eaa1aef3a1f6805d07b2e0e1e0b8edf75e6722166323391",
   "ICE_FOLK_5@4:ICE_FOLK":

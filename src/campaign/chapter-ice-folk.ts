@@ -26,7 +26,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       name: "The Warm Mountain",
       format: "CONQUEST",
       briefing:
-        "Rime Camp's glacier is melting from underneath, and in the warm caves below it a goblin gang calling itself the Frostbite Boys has moved in with a stove. The Ice Folk do not object to goblins. They object to stoves. They are eight; you have two Fighters and a Guard. Put the stove out, and the goblins with it. Chief Gnash of Whitefang, out of work, is watching from the ridge to see how it is done.",
+        "Rime Camp's glacier is melting from underneath, and in the warm caves below it a goblin gang calling itself the Frostbite Boys has moved in with a stove. The Ice Folk do not object to goblins. They object to stoves. They are seven; you have two Yetis and a Walrus. Put the stove out, and the goblins with it. Chief Gnash of Whitefang, out of work, is watching from the ridge to see how it is done.",
       objective: "Take both goblin camps by turn 22.",
       hints: Object.freeze([
         "Frozen enemies can't act: freeze first, then strike.",

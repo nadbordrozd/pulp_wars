@@ -258,10 +258,11 @@ describe("The Long Winter", () => {
         expect(wave.line, id).toBeTypeOf("string");
         if (wave.seat !== 0) expect(wave.announce, id).toBe(true);
       }
-    // I1: one level 2 camp and four units against eight Goblins with no
-    // Coins, who hold four rounds and then send all but three; no waves.
+    // I1: one level 2 camp and four units against seven Goblins with no
+    // Coins (eight before `pulp_wars-s55m.5`, CAMPAIGN.md section 27), who
+    // hold four rounds and then send all but three; no waves.
     expect(seat("ICE_FOLK_1", 0).units).toHaveLength(4);
-    expect(seat("ICE_FOLK_1", 1).units).toHaveLength(8);
+    expect(seat("ICE_FOLK_1", 1).units).toHaveLength(7);
     expect(seat("ICE_FOLK_1", 1).coins).toBe(0);
     expect(seat("ICE_FOLK_1", 1).directive).toMatchObject([
       { kind: "GUARD", untilRound: 4 },
@@ -295,6 +296,10 @@ describe("The Long Winter", () => {
       garrison: 5,
       others: { kind: "RUSH" },
     });
+    // After the Ice Folk rework (`pulp_wars-s55m.5`): one Steam Launch.
+    expect(
+      seat("ICE_FOLK_3", 1).units.filter((unit) => unit.role === "PATROL_BOAT"),
+    ).toHaveLength(1);
     expect(rounds("ICE_FOLK_3")).toEqual([[1, 11]]);
     expect((mission("ICE_FOLK_3").reinforcements ?? [])[0]?.units).toEqual([
       expect.objectContaining({ role: "BATTLESHIP" }),

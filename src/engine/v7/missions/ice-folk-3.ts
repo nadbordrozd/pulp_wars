@@ -7,7 +7,8 @@ import type { MissionDefinitionV7 } from "./types";
  * Anvil Bay patrol it with ironclads: freeze a road across and take Anvil
  * Bay by round 22. Step 3 of 6. The Ice Folk have no ships: a unit freezes
  * the water beside it two tiles out in a line (the Witch every tile round
- * her), the ice stays, and Ice Folk slide across it. Every dwarf ship and
+ * her), the ice stays, and Ice Folk skate across it (half a Move a tile;
+ * Sleds glide free in a straight line). Every dwarf ship and
  * soldier can crack a tile of ice beside it back into water, unless a unit
  * stands on it; Black Ice freezes an enemy that steps onto your ice, and a
  * Freeze that reaches a ship Freezes it (`pulp_wars-s55m.1`: Icebound and
@@ -47,6 +48,15 @@ import type { MissionDefinitionV7 } from "./types";
  * Anvil Bay is level 3 behind walls with twelve dwarves (two Steam
  * Launches, the Bell, two Gunners), 3 Coins; the landing parties are gone
  * and the Ironclad comes home in round 11. The clock is 22 (star 16).
+ *
+ * After the Ice Folk rework (`pulp_wars-s55m.5`, CAMPAIGN.md section 27,
+ * hand-played): Icebound and its crush are gone, so a Freeze holds a boat
+ * for one turn and the boat then cracks the road and shoots again; Pack Ice
+ * and Hoarfrost (the old Icebound node, a three-tile Freeze line) are
+ * known, the Ice Folk skate and the Sleds glide, and Anvil Bay's own Port
+ * may be iced over. The hand play was lost (no foothold by round 8: the
+ * Launches cracked the road's end and the shore Gunners shot whoever
+ * stood on it), so the second Steam Launch, retune 3's, is gone.
  */
 export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_3",
@@ -55,7 +65,9 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   // a garrisoned harbour and three waves.
   // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
   // the middle.
-  revision: 4,
+  // Revision 5 (`pulp_wars-s55m.5`, after the Ice Folk rework): one Steam
+  // Launch, since a Freeze no longer locks a boat in for good.
+  revision: 5,
   seed: 20261603,
   // <map>
   size: 16,
@@ -222,12 +234,13 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         { role: "PATROL_BOAT", at: { x: 9, y: 13 } },
         { role: "SUBMARINE", at: { x: 8, y: 12 } },
         // Retune 3: two more Hammerers, a second Gunner on the shore, a
-        // Guard on the quay and a second Steam Launch.
+        // Guard on the quay and a second Steam Launch (gone again since
+        // `pulp_wars-s55m.5`: without Icebound a frozen boat thaws in a
+        // turn, and two cracked the road's end every turn in hand play).
         { role: "FIGHTER", at: { x: 12, y: 9 } },
         { role: "FIGHTER", at: { x: 11, y: 10 } },
         { role: "MARKSMAN", at: { x: 12, y: 8 } },
         { role: "GUARD", at: { x: 10, y: 10 } },
-        { role: "PATROL_BOAT", at: { x: 9, y: 11 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 7, x1: 10, y1: 14 }] },
       forbiddenTechnologies: [
