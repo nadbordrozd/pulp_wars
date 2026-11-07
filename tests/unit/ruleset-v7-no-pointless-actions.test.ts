@@ -63,7 +63,7 @@ describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () 
       { seat: 0, role: "RAIDER", at: at(4, 3) },
       { seat: 0, role: "CAPTAIN", at: at(5, 5) },
       { seat: 1, role: "FIGHTER", at: at(5, 3), frozen: { turnsLeft: 1 } },
-      { seat: 1, role: "FIGHTER", at: at(6, 4) },
+      { seat: 1, role: "FIGHTER", at: at(6, 3) },
     ]);
 
   for (const [kind, error, from] of [
@@ -86,11 +86,11 @@ describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () 
       const useful: CommandV7 = {
         kind,
         unitId: idAt(state, from),
-        targetUnitId: idAt(state, at(6, 4)),
+        targetUnitId: idAt(state, at(6, 3)),
       };
       expect(offeredV7(state, kind)).toEqual([useful]);
-      expect(frozenAtV7(playV7(state, useful).state, at(6, 4))).toEqual({
-        unitId: idAt(state, at(6, 4)),
+      expect(frozenAtV7(playV7(state, useful).state, at(6, 3))).toEqual({
+        unitId: idAt(state, at(6, 3)),
         turnsLeft: 1,
       });
     });

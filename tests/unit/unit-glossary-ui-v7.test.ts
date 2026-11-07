@@ -124,6 +124,12 @@ describe("Ruleset 7 unit glossary", () => {
           roleMechanicsV7(role, faction).ignoresZocStops,
         "SLIPS_PAST",
       ],
+      // `pulp_wars-ev6q` (7r129): the Steam Mole.
+      [
+        "Roads give it nothing",
+        (role, faction) => roleMechanicsV7(role, faction).ignoresRoads,
+        "NO_ROADS",
+      ],
       [
         "splash on enemies",
         (role, faction) => {

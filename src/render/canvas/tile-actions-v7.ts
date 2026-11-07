@@ -268,6 +268,7 @@ export interface TileAbilityV7 extends TileActionLookV7 {
    * Mammoth's Stampede is its 2- or 3-tile straight charge, so a tile it
    * charges to carries the Stampede alone even where a Road would let the
    * Mammoth walk there; every tile has one meaning and opens no chooser.
+   * The Steam Mole's Tunnel too (`pulp_wars-ev6q`, 7r129: 2 or 3 tiles).
    */
   readonly replacesMove?: true;
 }
@@ -436,6 +437,9 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     dockAction: "dwarf-tunnel",
     families: ["TUNNEL", "TUNNEL_DESTINATION"],
     offered: kind("TUNNEL"),
+    // `pulp_wars-ev6q` (7r129): the Mole walks one tile (Roads give it
+    // nothing) and tunnels 2 or 3, so a Tunnel tile is never also a Move.
+    replacesMove: true,
     pick: (unitId, view, commands) => ({
       dwarfPick: {
         kind: "TUNNEL",

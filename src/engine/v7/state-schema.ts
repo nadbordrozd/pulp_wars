@@ -7,7 +7,6 @@ import {
   GINGERBREAD_MAN_VARIANT_V7,
   GROWTH_HP_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   NEUTRAL_ROLE_RULES_V7,
@@ -3667,20 +3666,17 @@ function validateCrossReferences(value: CrossInput): boolean {
   // living unit that is not an Egg, on the board or burrowed, with no home,
   // owned by a Martian seat other than its original owner; its Brain is a
   // living unit on the board of the same owner, not itself controlled,
-  // whose role under its kind has Mind Control, and no Brain holds more
-  // than the limit. Bolder abilities (`pulp_wars-w49.42`, 7r99): any kind
-  // role, size, and form but an Egg (a giant, a two-slot unit, a construct,
-  // a daemon, a ship); 1 to 3 per Brain.
+  // whose role under its kind has Mind Control. Bolder abilities
+  // (`pulp_wars-w49.42`, 7r99): any kind role, size, and form but an Egg (a
+  // giant, a two-slot unit, a construct, a daemon, a ship); since
+  // `pulp_wars-ev6q` (7r129) any number per Brain (1 to 3 before).
   if (mindControlled.length > 0 && !value.setup.factions.includes("MARTIAN"))
     return false;
-  const controlledByBrain = new Map<number, number>();
   for (const entry of mindControlled) {
     const unit = unitById.get(entry.unitId);
     const brain = units.find((candidate) => candidate.id === entry.brainUnitId);
     const kind = unit === undefined ? undefined : kindOf(unit);
     const brainKind = brain === undefined ? undefined : kindOf(brain);
-    const controlled = (controlledByBrain.get(entry.brainUnitId) ?? 0) + 1;
-    controlledByBrain.set(entry.brainUnitId, controlled);
     if (
       unit === undefined ||
       kind === undefined ||
@@ -3697,8 +3693,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       controlledById.has(brain.id) ||
       !effectiveRoleRuleV7(brain.role, brainKind).abilities.includes(
         "MIND_CONTROL",
-      ) ||
-      controlled > MIND_CONTROL_LIMIT_V7
+      )
     )
       return false;
   }

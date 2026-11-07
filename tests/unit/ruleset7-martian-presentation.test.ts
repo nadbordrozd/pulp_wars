@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   FORCE_FIELD_SHIELD_V7,
-  MIND_CONTROL_LIMIT_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   previewBeamDownV7,
@@ -108,9 +107,8 @@ describe("Martian texts (section 13.2)", () => {
     const view = humanView(martianUiFixtureV7());
     const brain = statsAt(view, AT.brain).mindControl;
     if (brain === null) throw new Error("no Mind Control block");
-    expect(brainControlTextV7(brain)).toBe(
-      `Controls 0 / ${MIND_CONTROL_LIMIT_V7}`,
-    );
+    // `pulp_wars-ev6q` (7r129): no limit, so no "/ 3".
+    expect(brainControlTextV7(brain)).toBe("Controls 0");
     expect(mindControlUnavailableTextV7(brain)).toBeNull();
     expect(mindControlUnavailableTextV7({ ...brain, cooldown: 1 })).toBe(
       `Recovering: ${mindControlReadyInV7(1)} turns`,
@@ -120,14 +118,12 @@ describe("Martian texts (section 13.2)", () => {
     );
     const controller = statsAt(view, AT.controller).mindControl;
     if (controller === null) throw new Error("no Mind Control block");
-    // Bolder abilities (`pulp_wars-w49.42`, 7r99): three at a time.
-    expect(brainControlTextV7(controller)).toBe("Controls 1 / 3");
+    // `pulp_wars-ev6q` (7r129): any number, so three is not a reason.
+    expect(brainControlTextV7(controller)).toBe("Controls 1");
     expect(mindControlUnavailableTextV7(controller)).toBeNull();
-    const full = { ...controller, controlled: 3 };
-    expect(brainControlTextV7(full)).toBe("Controls 3 / 3");
-    expect(mindControlUnavailableTextV7(full)).toBe(
-      "Controls three units already",
-    );
+    const many = { ...controller, controlled: 3 };
+    expect(brainControlTextV7(many)).toBe("Controls 3");
+    expect(mindControlUnavailableTextV7(many)).toBeNull();
   });
 
   it("names a controlled unit's controller, original owner and fate (section 9)", () => {
@@ -177,9 +173,9 @@ describe("Martian texts (section 13.2)", () => {
       unitAt(view, AT.controller),
       statsAt(view, AT.controller),
     );
-    // Bolder abilities (7r99): one of three, so Mind Control is ready.
+    // `pulp_wars-ev6q` (7r129): no limit, so no "/ 3".
     expect(brainLines.find((line) => line.id === "brain")).toMatchObject({
-      name: "Controls 1 / 3",
+      name: "Controls 1",
       description: "Mind Control is ready.",
     });
     const projector = martianUnitInfoLinesV7(
@@ -267,10 +263,10 @@ describe("Martian texts (section 13.2)", () => {
     expect(rules.get("Force Field")).toBe(
       `with Force Fields, a unit that recharges next to a ${label("GUARD")} recharges to Shield ${FORCE_FIELD_SHIELD_V7}. At full HP with that Shield whole, one attack cannot kill it: it is left at 1 HP.`,
     );
-    // Bolder abilities (`pulp_wars-w49.42`, 7r99): any enemy next to it,
-    // three at a time.
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): any enemy next to it;
+    // `pulp_wars-ev6q` (7r129): as many as it likes (three at a time before).
     expect(rules.get("Mind Control")).toContain(
-      "takes control of any enemy unit next to it (giants and ships too, at any HP), up to three at a time",
+      "takes control of any enemy unit next to it (giants and ships too, at any HP), as many as it likes",
     );
     // The Mind Control revision: the unit keeps its type and goes home.
     expect(rules.get("Mind Control")).toContain(

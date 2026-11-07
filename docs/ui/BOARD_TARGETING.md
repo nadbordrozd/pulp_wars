@@ -39,7 +39,13 @@ The dock never lists one button, portrait or chip per target.
   charges 2 or 3 tiles, the Mammoth moves 1, and on a tile a Road would
   also let it reach the Stampede badge stands alone. Its end tile is chosen
   first, then charged by choosing it again or with Charge, as a Tunnel's
-  destination is dug.
+  destination is dug. Since `7r129` (`pulp_wars-ev6q`) three more share no
+  target by rule: the Brain has no attack, so an enemy beside it means
+  Mind Control alone; the Steam Mole tunnels 2 or 3 tiles and Roads give
+  its Move nothing, so a tile next to it is a Move and one farther a
+  Tunnel (with no Hammerer able to ride, one tap digs it); and the Ice
+  Witch's Frost Bolt flies exactly 2 tiles, so an enemy beside her means
+  Attack (her Cold Snap button freezes the ring).
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is made with the armed button, or, unarmed,

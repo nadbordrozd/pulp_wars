@@ -3,6 +3,7 @@ import type { JsonValue } from "../replay/canonical";
 import {
   ASSEMBLE_COST_V7,
   BOMB_RANGE_V7,
+  TUNNEL_MIN_RANGE_V7,
   armouredDamageV7,
   canEnterTerrainV7,
   isIceAtV7,
@@ -324,7 +325,10 @@ export function applyTunnelV7(
     mole,
     kit.requirePlayer(state, actor).researchedTechs,
   ).seaTunnels;
+  // `pulp_wars-ev6q` (7r129): never to the tile next door, which is only
+  // ever a Move (or an Attack); a Tunnel goes 2 or 3 tiles.
   if (
+    chebyshev(mole.at, command.to) < TUNNEL_MIN_RANGE_V7 ||
     !tunnelTileLegalV7(state, actor, mole, command.to) ||
     !canonicalTunnelReachV7(state, actor, mole.at, range, seaTunnels).has(
       key(command.to),

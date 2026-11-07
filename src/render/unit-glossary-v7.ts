@@ -382,6 +382,11 @@ const ENTRIES = {
     "Sea Tunnels",
     "It can tunnel under shallow water too, never under deep water or ice. Unlocked by a technology.",
   ],
+  // `pulp_wars-ev6q` (7r129): the Steam Mole walks one tile, Roads or not.
+  NO_ROADS: [
+    "Off-road",
+    "Roads do not speed it up: it always walks one tile and tunnels farther.",
+  ],
   AT_SEA: [
     "At sea",
     "A transport carries a land unit across water. The unit cannot fight until it lands on a shore.",
@@ -565,7 +570,7 @@ const ENTRIES = {
   ],
   MIND_CONTROL: [
     "Mind Control",
-    "Takes over any enemy next to it, up to three at a time. They fight for you until this unit is lost.",
+    "Takes over any enemy next to it, as many as it likes; it is its only attack. They fight for you until this unit is lost.",
   ],
   SHOCK_FIELD: [
     "Shock Field",
@@ -597,7 +602,7 @@ const ENTRIES = {
   // freeze, so it is a Frost Bolt too.
   FROST_BOLT: [
     "Frost Bolt",
-    "Freezes one enemy within 2 tiles. It does no damage.",
+    "Freezes one enemy up to 2 tiles away, without damage. An Ice Witch's flies exactly that far, never at a neighbour.",
   ],
   STAMPEDE: [
     "Stampede",
@@ -670,7 +675,7 @@ const ENTRIES = {
   ],
   TUNNEL: [
     "Tunnel",
-    "Digs under anything, up to 3 tiles away, and surfaces at the start of your next turn.",
+    "Digs under anything to a tile two or three tiles away, never next door, and surfaces at the start of your next turn.",
   ],
   ERUPTION: [
     "Eruption",
@@ -1173,6 +1178,8 @@ export function roleTraitGlossaryIdsV7(
     technologyCapabilitiesV7(["SHORECRAFT", "SEAMANSHIP"], faction).seaTunnels
   )
     traits.push("SEA_TUNNELS");
+  // `pulp_wars-ev6q` (7r129): Roads give the Steam Mole nothing.
+  if (mechanics.ignoresRoads) traits.push("NO_ROADS");
   return traits;
 }
 

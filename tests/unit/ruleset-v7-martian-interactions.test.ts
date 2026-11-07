@@ -502,13 +502,14 @@ describe("public queries (section 11)", () => {
     });
     expect(threatens(grunt, at(2, 3), at(4, 3), 0)).toBe(true);
     expect(threatens(grunt, at(2, 3), at(5, 3), 0)).toBe(false);
-    // Mind Control and the Tractor Beam add no threatened tile: a Brain
-    // (Move 1, range 1) threatens distance 2 at most.
+    // Mind Control and the Tractor Beam add no threatened tile, and since
+    // `pulp_wars-ev6q` (7r129) a Brain has no attack, so it threatens no
+    // tile at all (distance 2 at most before).
     const brain = martianFieldV7([
       { seat: 0, role: "CAPTAIN", at: at(2, 3) },
       { seat: 1, role: "FIGHTER", at: at(9, 1) },
     ]);
-    expect(threatens(brain, at(2, 3), at(4, 3))).toBe(true);
-    expect(threatens(brain, at(2, 3), at(5, 3))).toBe(false);
+    expect(threatens(brain, at(2, 3), at(3, 3))).toBe(false);
+    expect(threatens(brain, at(2, 3), at(4, 3))).toBe(false);
   });
 });

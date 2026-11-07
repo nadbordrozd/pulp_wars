@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r128");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r128.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-77, -75)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-78, -76)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-77, -75)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-78, -76)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -294,7 +294,8 @@ describe("the Martian pass: identity", () => {
       ["Ray Gunner", 4, 8, 2, 6, 2, 1, 1, 2, "MARKSMANSHIP"],
       // The Industry reshuffle (7r56): at Force Fields (Fortification).
       ["Shield Projector", 4, 12, 3, 3, 5, 1, 1, 1, "FORTIFICATION"],
-      ["Brain", 5, 8, 2, 2, 2, 1, 1, 1, "ADMINISTRATION"],
+      // `pulp_wars-ev6q` (7r129): no attack (Attack 1, range 1 before).
+      ["Brain", 5, 8, 2, 0, 2, 1, 0, 0, "ADMINISTRATION"],
       ["Tripod", 9, 12, 2, 8, 2, 2, 2, 2, "SAWMILLING"],
       // The Mothership redesign (`pulp_wars-ewpj`, 7r108): 9 Coins, 20 HP,
       // Attack 3, Defense 3 (8, 16, 2.5, 2 before).

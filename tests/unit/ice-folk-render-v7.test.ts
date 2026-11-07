@@ -742,30 +742,28 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     expect(twos(plan) - twos(once)).toBe(1);
   });
 
-  it("aims a Frost Bolt: one target each, within two tiles, with its hint", () => {
+  it("aims a Frost Bolt: one target each, exactly two tiles away, with its hint", () => {
     const witch = unitAt(view, FREEZE.witch);
     const plan = planFor(view, FREEZE.witch, {
       iceFolkPick: { kind: "FROST_BOLT", unitId: witch.id },
     });
     // No pointless actions (`pulp_wars-zir6`): the unit Frozen already is
-    // no target.
-    expect(plan.targets.map((target) => target.family)).toEqual([
-      "FROST_BOLT",
-      "FROST_BOLT",
-    ]);
+    // no target. `pulp_wars-ev6q` (7r129): nor is the one next to her.
+    expect(plan.targets.map((target) => target.family)).toEqual(["FROST_BOLT"]);
     const label = (where: CoordV7) =>
       plan.targets.find((target) => at(target, where))?.previewLabel;
     expect(label(FREEZE.boltTarget)).toBe("Freeze");
-    expect(label(FREEZE.snapTarget)).toBe("Freeze");
+    expect(label(FREEZE.snapTarget)).toBeUndefined();
     expect(label(FREEZE.boltFrozen)).toBeUndefined();
-    // Its reach (the 5 x 5 tiles round her) is outlined.
+    // Its reach (the ring of tiles exactly 2 away: the 5 x 5 round her
+    // less the 3 x 3 she stands in) is outlined.
     expect(
       plan.entries.filter(
         (entry) =>
           entry.kind === "ABILITY_AREA" &&
           entry.key.startsWith("ability-area:FROST_BOLT:"),
       ),
-    ).toHaveLength(25);
+    ).toHaveLength(16);
     // A Cold Snap reaches only the tile next to her.
     const snap = planFor(view, FREEZE.witch, {
       iceFolkPick: { kind: "COLD_SNAP", unitId: witch.id },

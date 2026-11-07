@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 128;
+const REVISION = 129;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -720,14 +720,16 @@ const ROSTER = [
     1,
     8,
     2,
+    // `pulp_wars-ev6q` (7r129): no attack (Attack 0, Range 0, no `ATTACK`);
+    // Mind Control is its attack (Attack 1 at range 1 before).
+    0,
     2,
-    2,
     1,
-    1,
-    1,
+    0,
+    0,
     1,
     true,
-    ["ATTACK", "CAPTURE", "RALLY", "MIND_CONTROL"],
+    ["CAPTURE", "RALLY", "MIND_CONTROL"],
     "GROUND",
     true,
     false,
@@ -1768,7 +1770,6 @@ describe("Martian public unit stats (section 11)", () => {
     expect(stats(at(4, 5)).martian?.mindControl).toEqual({
       cooldown: 1,
       controlled: 1,
-      controlLimit: 3,
     });
     // A controlled Human unit has no Martian block; its control is public.
     expect(stats(at(5, 5))).not.toHaveProperty("martian");

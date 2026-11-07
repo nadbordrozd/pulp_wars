@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_LIMIT_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
   applyCommandV7,
@@ -219,13 +218,12 @@ describe("Mind Control revision: the kind resolver (section 2)", () => {
 
 describe("Mind Control revision: legality (section 3)", () => {
   it("the constants", () => {
-    // Bolder abilities (`pulp_wars-w49.42`, 7r99): adjacent (2 before),
-    // three at a time (1 before), and no HP limit (6 before).
-    expect([
-      MIND_CONTROL_RANGE_V7,
-      MIND_CONTROL_COOLDOWN_TURNS_V7,
-      MIND_CONTROL_LIMIT_V7,
-    ]).toEqual([1, 2, 3]);
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): adjacent (2 before) and
+    // no HP limit (6 before); `pulp_wars-ev6q` (7r129): no control limit
+    // (three at a time from 7r99, one before).
+    expect([MIND_CONTROL_RANGE_V7, MIND_CONTROL_COOLDOWN_TURNS_V7]).toEqual([
+      1, 2,
+    ]);
     expect([...MIND_CONTROLLED_LOST_ABILITIES_V7]).toEqual([
       "RAISE_DEAD",
       "INFECT",
@@ -258,45 +256,29 @@ describe("Mind Control revision: legality (section 3)", () => {
     ]);
   });
 
-  it("row 6: a Brain that controls three units (the limit, 7r99) is offered nothing and rejected with CONTROL_LIMIT", () => {
-    // Bolder abilities (`pulp_wars-w49.42`): three at a time (one before).
-    const three = (more: readonly MartianPieceV7[] = []) =>
-      brainField(
-        [
-          { seat: 1, role: "FIGHTER", at: at(3, 3), controlledBy: BRAIN },
-          { seat: 1, role: "KNIGHT", at: at(3, 4), controlledBy: BRAIN },
-          { seat: 1, role: "GUARD", at: at(4, 4), controlledBy: BRAIN },
-          { seat: 1, role: "FIGHTER", at: at(5, 3) },
-          ...more,
-        ],
-        { factions: ["MARTIAN", "ORIGINAL"] },
-      );
-    const state = three();
-    expect(
-      controlledByBrainV7(state.mindControlled, idAt(state, BRAIN)),
-    ).toHaveLength(MIND_CONTROL_LIMIT_V7);
-    expect(offeredV7(state, "MIND_CONTROL")).toEqual([]);
-    expect(rejectedV7(state, control(state, BRAIN, at(5, 3)))).toEqual({
-      code: "MIND_CONTROL_NOT_LEGAL",
-      params: { reason: "CONTROL_LIMIT" },
-    });
-    // With two, the third is offered.
-    const two = brainField(
+  it("row 6 is gone (7r129): a Brain that controls three units takes a fourth; a cooldown still blocks it", () => {
+    // `pulp_wars-ev6q`: no control limit (three at a time from 7r99, one
+    // before), so the `CONTROL_LIMIT` reason is never given.
+    const state = brainField(
       [
         { seat: 1, role: "FIGHTER", at: at(3, 3), controlledBy: BRAIN },
         { seat: 1, role: "KNIGHT", at: at(3, 4), controlledBy: BRAIN },
+        { seat: 1, role: "GUARD", at: at(4, 4), controlledBy: BRAIN },
         { seat: 1, role: "FIGHTER", at: at(5, 3) },
       ],
       { factions: ["MARTIAN", "ORIGINAL"] },
     );
-    expect(expectOfferedAcceptedV7(two, "MIND_CONTROL")).toEqual([
-      control(two, BRAIN, at(5, 3)),
-    ]);
-    const run = playV7(two, control(two, BRAIN, at(5, 3)));
     expect(
-      controlledByBrainV7(run.state.mindControlled, idAt(two, BRAIN)),
+      controlledByBrainV7(state.mindControlled, idAt(state, BRAIN)),
     ).toHaveLength(3);
-    // The cooldown comes first (row 5 before row 6).
+    expect(expectOfferedAcceptedV7(state, "MIND_CONTROL")).toEqual([
+      control(state, BRAIN, at(5, 3)),
+    ]);
+    const run = playV7(state, control(state, BRAIN, at(5, 3)));
+    expect(
+      controlledByBrainV7(run.state.mindControlled, idAt(state, BRAIN)),
+    ).toHaveLength(4);
+    // The cooldown (row 5) still blocks it.
     const onCooldown = checkedV7({
       ...state,
       mindControlCooldowns: [{ unitId: idAt(state, BRAIN), turnsRemaining: 1 }],
@@ -477,7 +459,6 @@ describe("Mind Control revision: the result (section 3)", () => {
       hp: 5,
       maxHp: 18,
       controlledAfter: 1,
-      controlLimit: 3,
       cooldownTurns: 2,
       releasedUnitIds: [],
     });
@@ -1355,6 +1336,24 @@ describe("Mind Control revision: state parsing (section 2.1)", () => {
       ].sort((left, right) => left.unitId - right.unitId),
     };
     expect(parse(state, threeOfOne), "three for one Brain").not.toBeNull();
+    // `pulp_wars-ev6q` (7r129): no limit, so a fourth for one Brain parses
+    // (it was rejected as more than the limit of three).
+    const fourOfOne = {
+      units: threeOfOne.units.map((candidate) =>
+        sameV7(candidate.at, at(9, 1))
+          ? { ...candidate, ownerId: martian, homeCityId: null }
+          : candidate,
+      ),
+      mindControlled: [
+        ...threeOfOne.mindControlled,
+        {
+          unitId: idAt(state, at(9, 1)),
+          brainUnitId: brain,
+          originalOwnerId: original,
+        },
+      ].sort((left, right) => left.unitId - right.unitId),
+    };
+    expect(parse(state, fourOfOne), "four for one Brain").not.toBeNull();
     const bad: readonly [string, Readonly<Record<string, unknown>>][] = [
       ["duplicate", { mindControlled: [entry, entry] }],
       [
@@ -1388,24 +1387,6 @@ describe("Mind Control revision: state parsing (section 2.1)", () => {
       [
         "the Brain is another owner's",
         { mindControlled: [{ ...entry, brainUnitId: idAt(state, at(1, 1)) }] },
-      ],
-      [
-        "more than the limit (three) for one Brain",
-        {
-          units: threeOfOne.units.map((candidate) =>
-            sameV7(candidate.at, at(9, 1))
-              ? { ...candidate, ownerId: martian, homeCityId: null }
-              : candidate,
-          ),
-          mindControlled: [
-            ...threeOfOne.mindControlled,
-            {
-              unitId: idAt(state, at(9, 1)),
-              brainUnitId: brain,
-              originalOwnerId: original,
-            },
-          ].sort((left, right) => left.unitId - right.unitId),
-        },
       ],
       [
         "an Egg",

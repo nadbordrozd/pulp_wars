@@ -3,7 +3,6 @@ import {
   GANG_UP_ATTACK_PER_HELPER_V7,
   GANG_UP_MAX_ATTACK_V7,
   OGRE_GANG_UP_WEIGHT_V7,
-  MIND_CONTROL_LIMIT_V7,
   MIND_CONTROL_RANGE_V7,
   TECHNOLOGY_IDS_V7,
   calculateCombatPreviewV7,
@@ -44,7 +43,7 @@ import {
 } from "../fixtures/v7-martian";
 import {
   MARTIAN_BOLDER_V7,
-  martianBolderCapFixtureV7,
+  martianBolderHeldFixtureV7,
   martianBolderTargetsFixtureV7,
 } from "../fixtures/v7-martian-ui";
 import { at, kindsV7, withoutTechsV7 } from "../fixtures/v7-revision20";
@@ -96,9 +95,8 @@ const roundTrip = (state: GameStateV7): GameStateV7 => {
 };
 
 describe("bolder abilities: the Brain takes any adjacent unit (7r99)", () => {
-  it("the rule's numbers: reach 1, three at a time", () => {
+  it("the rule's numbers: reach 1 (and no limit since 7r129)", () => {
     expect(MIND_CONTROL_RANGE_V7).toBe(1);
-    expect(MIND_CONTROL_LIMIT_V7).toBe(3);
   });
 
   it("takes a full-HP giant, which keeps fighting for it through the turns", () => {
@@ -393,7 +391,7 @@ describe("bolder abilities: the Brain takes any adjacent unit (7r99)", () => {
     ).toBe("TARGET_IMMUNE");
   });
 
-  it("controls three at a time: the fourth waits for a release", () => {
+  it("7r129: holds any number, so a Brain with three takes a fourth (it waited for a release from 7r99)", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: BRAIN },
@@ -408,29 +406,18 @@ describe("bolder abilities: the Brain takes any adjacent unit (7r99)", () => {
     expect(
       controlledByBrainV7(state.mindControlled, idAt(state, BRAIN)),
     ).toHaveLength(3);
-    expect(offeredV7(state, "MIND_CONTROL")).toEqual([]);
-    // Releasing one (Disband on a controlled unit) frees a place.
-    const released = playV7(state, {
-      kind: "DISBAND",
-      unitId: idAt(state, at(3, 2)),
-    }).state;
+    expect(expectOfferedAcceptedV7(state, "MIND_CONTROL")).toEqual([
+      control(state, BRAIN, at(5, 3)),
+    ]);
+    const run = playV7(state, control(state, BRAIN, at(5, 3)));
     expect(
-      controlledByBrainV7(released.mindControlled, idAt(state, BRAIN)),
-    ).toHaveLength(2);
-    // (The Knight let go is seat 1's again, next to the Brain: a target.)
-    const offered = expectOfferedAcceptedV7(released, "MIND_CONTROL");
-    expect(offered).toHaveLength(2);
-    expect(offered).toEqual(
-      expect.arrayContaining([
-        control(released, BRAIN, at(5, 3)),
-        control(released, BRAIN, at(3, 2)),
-      ]),
-    );
+      controlledByBrainV7(run.state.mindControlled, idAt(state, BRAIN)),
+    ).toHaveLength(4);
   });
 });
 
 describe("bolder abilities: the browser review fixtures (7r99)", () => {
-  it("offer the four kinds beside the Brain, and nothing at three held", () => {
+  it("offer the four kinds beside the Brain, and a fourth with three held (7r129)", () => {
     const at = MARTIAN_BOLDER_V7;
     const targets = martianBolderTargetsFixtureV7();
     const offered = expectOfferedAcceptedV7(targets, "MIND_CONTROL");
@@ -442,11 +429,13 @@ describe("bolder abilities: the browser review fixtures (7r99)", () => {
         ),
       ),
     );
-    const capped = martianBolderCapFixtureV7();
+    const held = martianBolderHeldFixtureV7();
     expect(
-      controlledByBrainV7(capped.mindControlled, idAt(capped, at.brain)),
+      controlledByBrainV7(held.mindControlled, idAt(held, at.brain)),
     ).toHaveLength(3);
-    expect(offeredV7(capped, "MIND_CONTROL")).toEqual([]);
+    expect(expectOfferedAcceptedV7(held, "MIND_CONTROL")).toEqual([
+      control(held, at.brain, at.villageKnight),
+    ]);
   });
 });
 

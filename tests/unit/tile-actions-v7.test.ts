@@ -387,15 +387,16 @@ describe("tile actions: the factions' scenes", () => {
     expect(planOf(tileActionsYetiFixtureV7(), FROZEN_UI_V7.witch)).toBeNull();
   });
 
-  it("badges the enemy a Martian Brain may take with Mind Control", () => {
-    // Bolder abilities (7r99): the target is beside the Brain, which may
-    // also hit it.
+  it("badges the enemy a Martian Brain may take with Mind Control, and nothing else", () => {
+    // Bolder abilities (7r99): the target is beside the Brain.
+    // `pulp_wars-ev6q` (7r129): the Brain has no attack, so the tile means
+    // Mind Control alone and opens no chooser (it was Attack + Mind Control).
     const plan = planOf(tileActionsBrainFixtureV7(), A.brain);
-    expect(
-      tileActionsAtV7(plan, A.controlTarget)?.actions.map(
-        (action) => action.id,
-      ),
-    ).toEqual(["ATTACK", "MIND_CONTROL"]);
+    const tile = tileActionsAtV7(plan, A.controlTarget);
+    expect(tile?.actions.map((action) => action.id)).toEqual(["MIND_CONTROL"]);
+    expect(tile?.chooser).toBe(false);
+    for (const each of plan?.tiles ?? [])
+      expect(each.actions.map((action) => action.id)).not.toContain("ATTACK");
   });
 
   it("shrinks a Stargazer's many star tiles and offers Select on its own Initiate", () => {

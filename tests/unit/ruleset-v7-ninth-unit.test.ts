@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r128");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r128.current");
-    expect(PRIOR_RULESET_7_IDS.at(-74)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
+    expect(PRIOR_RULESET_7_IDS.at(-75)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-74)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-75)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);

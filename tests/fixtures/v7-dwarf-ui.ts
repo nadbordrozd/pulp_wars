@@ -29,6 +29,8 @@ export interface DwarfUiOptionsV7 {
   readonly factions?: readonly FactionIdV7[];
   readonly forest?: readonly CoordV7[];
   readonly mountain?: readonly CoordV7[];
+  /** Tiles with a Road (`pulp_wars-ev6q`: the Mole's Move ignores them). */
+  readonly roads?: readonly CoordV7[];
   readonly water?: readonly CoordV7[];
   readonly fieldDefense?: readonly CoordV7[];
   readonly techs?: Readonly<Record<number, readonly TechnologyIdV7[]>>;
@@ -92,7 +94,9 @@ export function dwarfUiFieldV7(
                   terrain: "MOUNTAIN" as const,
                   biome: "HIGHLANDS" as const,
                 }
-              : tile,
+              : among(options.roads, tile.at)
+                ? { ...tile, road: true }
+                : tile,
       ),
     },
   });
@@ -216,6 +220,41 @@ export function dwarfUiFixtureV7(enemy: FactionIdV7 = "ORIGINAL"): GameStateV7 {
       homed: [at.engineer],
       fieldDefense: [at.tunnelCaptain, at.blockedTarget],
     },
+  );
+}
+
+/**
+ * `pulp_wars-ev6q` (7r129): an unmoved Steam Mole on a Road that runs
+ * east and west of it, an own Hammerer on the same Road, and a Human
+ * Fighter beside the Mole. The Mole walks one tile (the Road gives it
+ * nothing; the Hammerer walks two along it), attacks the Fighter, and
+ * tunnels 2 or 3 tiles: every tile has one meaning.
+ */
+export const DWARF_MOLE_ROAD_V7 = {
+  mole: { x: 5, y: 2 },
+  hammerer: { x: 2, y: 1 },
+  fighter: { x: 6, y: 3 },
+  roads: [
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+    { x: 3, y: 1 },
+    { x: 3, y: 2 },
+    { x: 4, y: 2 },
+    { x: 5, y: 2 },
+    { x: 6, y: 2 },
+    { x: 7, y: 2 },
+  ],
+} as const;
+
+export function dwarfMoleRoadFixtureV7(): GameStateV7 {
+  const at = DWARF_MOLE_ROAD_V7;
+  return dwarfUiFieldV7(
+    [
+      { seat: 0, role: "GUARD", at: at.mole },
+      { seat: 0, role: "FIGHTER", at: at.hammerer },
+      { seat: 1, role: "FIGHTER", at: at.fighter },
+    ],
+    { roads: at.roads },
   );
 }
 

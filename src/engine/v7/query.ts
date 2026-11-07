@@ -28,7 +28,6 @@ import {
   TENTACLE_RANGE_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MASS_BEAM_DOWN_CAPACITY_V7,
-  MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
   RAMPAGE_ATTACKS_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
@@ -73,6 +72,7 @@ import {
   unitIsFrozenV7,
   STAMPEDE_DAMAGE_V7,
   STAMPEDE_RANGE_V7,
+  TUNNEL_MIN_RANGE_V7,
   unitMayEnterMountainV7,
   primaryActionBlockedAfterMoveV7,
   kaboomFormBlockV7,
@@ -2556,8 +2556,9 @@ function publicTunnelTileV7(
 }
 
 /**
- * The Dwarf revision section 5.1: every legal `TUNNEL` of an own ready Mole,
- * one per destination and rider tile plus the rider-less entry (the Beam
+ * The Dwarf revision section 5.1: every legal `TUNNEL` of an own ready Mole
+ * (to a tile 2 or 3 tiles away since `pulp_wars-ev6q`, 7r129), one per
+ * destination and rider tile plus the rider-less entry (the Beam
  * Down precedent), in `compareCommandsV7` order.
  */
 function publicTunnelCommandsV7(
@@ -2611,6 +2612,9 @@ function publicTunnelCommandsV7(
   for (const to of [...reach.values()].sort(
     (left, right) => left.y - right.y || left.x - right.x,
   )) {
+    // `pulp_wars-ev6q` (7r129): a Tunnel goes 2 or 3 tiles; the tile next
+    // door is only ever a Move (or an Attack).
+    if (chebyshev(mole.at, to) < TUNNEL_MIN_RANGE_V7) continue;
     if (!publicTunnelTileV7(view, unitMobilityV7(view, mole), to)) continue;
     commands.push({ kind: "TUNNEL", unitId: mole.id, to, rider: null });
     for (const rider of riders)
@@ -4374,9 +4378,9 @@ function publicBeamDownDestinationsV7(
 /**
  * The Mind Control revision (section 3): the legal Mind Control targets of
  * an own Brain that is ready (land form, no primary action used): none
- * while it has a cooldown entry or controls `MIND_CONTROL_LIMIT_V7` units
- * (its controlled units are its owner's, so the view lists them all);
- * otherwise every visible hostile unit that `mindControlTargetBlockV7` (the
+ * while it has a cooldown entry (since `pulp_wars-ev6q`, 7r129, it holds
+ * any number of units; a limit of 3 blocked it before); otherwise every
+ * visible hostile unit that `mindControlTargetBlockV7` (the
  * reducer's own per-target check) accepts: since bolder abilities
  * (`pulp_wars-w49.42`, 7r99) any adjacent one that is not an Egg, a
  * neutral unit, or already controlled, at any HP, size, or form (afloat on
@@ -4386,11 +4390,7 @@ function publicMindControlTargetsV7(
   view: PlayerViewV7,
   brain: PlayerViewV7["units"][number],
 ): readonly PlayerViewV7["units"][number][] {
-  if (
-    view.mindControlCooldowns.some((entry) => entry.unitId === brain.id) ||
-    controlledByBrainV7(view.mindControlled, brain.id).length >=
-      MIND_CONTROL_LIMIT_V7
-  )
+  if (view.mindControlCooldowns.some((entry) => entry.unitId === brain.id))
     return [];
   return view.units
     .filter((target) => {
@@ -4568,9 +4568,8 @@ export interface MindControlPreviewV7 {
   readonly faction: FactionIdV7;
   readonly hp: number;
   readonly maxHp: number;
-  /** The units the Brain controls afterwards, and the limit. */
+  /** The units the Brain controls afterwards (no limit since 7r129). */
   readonly controlledAfter: number;
-  readonly controlLimit: number;
   /** The cooldown the Mind Control starts. */
   readonly cooldownTurns: number;
   /**
@@ -4611,7 +4610,6 @@ export function previewMindControlV7(
     maxHp: target.maxHp,
     controlledAfter:
       controlledByBrainV7(view.mindControlled, unitId).length + 1,
-    controlLimit: MIND_CONTROL_LIMIT_V7,
     cooldownTurns: MIND_CONTROL_COOLDOWN_TURNS_V7,
     releasedUnitIds: controlledByBrainV7(view.mindControlled, targetUnitId),
   };

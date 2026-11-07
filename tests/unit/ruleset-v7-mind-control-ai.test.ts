@@ -258,7 +258,7 @@ describe("Mind Control AI: the most valuable adjacent unit, three at a time (7r9
     });
   });
 
-  it("a Brain holding three neither takes nor approaches, and is no threat to others", () => {
+  it("a Brain holding three still approaches the next (no limit since 7r129), and is a threat to others", () => {
     const pieces = [
       own("CAPTAIN", 7, 4),
       foe("FIGHTER", 7, 3, { controlledBy: at(7, 4) }),
@@ -267,13 +267,16 @@ describe("Mind Control AI: the most valuable adjacent unit, three at a time (7r9
       foe("KNIGHT", 5, 4),
     ];
     const state = asMartian(pieces);
+    // `pulp_wars-ev6q` (7r129): it held three at most before, so it neither
+    // took nor approached; now it walks up to the Knight two tiles away.
     expect(mindControlOf(state, at(7, 4))).toBeUndefined();
     expect(
       unitCandidatesV7(state, at(7, 4), "MOVE").some(
         (item) => item.score.priority >= MIND_CONTROL_APPROACH_PRIORITY_V7,
       ),
-    ).toBe(false);
-    // Against Martians: the full Brain is not a ready hostile Brain.
+    ).toBe(true);
+    // Against Martians: a Brain holding three is still a ready hostile
+    // Brain.
     const human = againstMartian([
       foe("CAPTAIN", 7, 4),
       own("FIGHTER", 7, 3, { controlledBy: at(7, 4) }),
@@ -288,7 +291,7 @@ describe("Mind Control AI: the most valuable adjacent unit, three at a time (7r9
         martianFactsV7(view),
         (owner) => owner !== view.viewer.id,
       ),
-    ).toEqual([]);
+    ).toEqual([unitAt(view, at(7, 4))]);
   });
 });
 

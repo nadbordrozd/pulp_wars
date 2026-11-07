@@ -14,7 +14,6 @@ import {
   COLD_SNAP_RANGE_V7,
   FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_RANGE_V7,
-  MIND_CONTROL_LIMIT_V7,
   armouredDamageV7,
   attackIsWhirlV7,
   isMindControlledV7,
@@ -11724,6 +11723,7 @@ function* publicThreatenedTilesWorkV7(
           publicProjectsZocForThreatV7(view, occupant, unit, target),
       ),
     );
+  const ignoresRoads = unitRoleMechanicsV7(view, unit).ignoresRoads;
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   // Section 6.3: a Goblin beside its seat's Troll (or one step from it) may
   // be thrown two or three tiles and still attack or Kaboom, so every
@@ -11789,7 +11789,8 @@ function* publicThreatenedTilesWorkV7(
         const skateCost = skates && isIceAtV7(view, tile.at);
         // Revision 18: leaving a usable Road node costs half; the Forest and
         // Mountain stop is still waived only when both ends are Road nodes.
-        const roadCost = unit.form === "LAND" && priorRoadNode;
+        // `pulp_wars-ev6q` (7r129): Roads give the Steam Mole nothing.
+        const roadCost = unit.form === "LAND" && !ignoresRoads && priorRoadNode;
         const roadEdge =
           roadCost && publicRoadNodeForOwner(tile, unit.ownerId, lookup);
         // `pulp_wars-1wy.3`: Glide is a step from Snow onto Snow.
@@ -24098,8 +24099,6 @@ function martianMoveValueV7(
   if (abilities.includes("MIND_CONTROL")) {
     const ready =
       !facts.cooldownBrains.has(actor.id) &&
-      (facts.controlledOfBrain.get(actor.id)?.length ?? 0) <
-        MIND_CONTROL_LIMIT_V7 &&
       !actor.activation.handled &&
       !cache.mindControllers.has(actor.id);
     // Bolder abilities (7r99): any adjacent unit, afloat too, at any HP.

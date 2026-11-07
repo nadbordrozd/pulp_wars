@@ -745,13 +745,13 @@ describe("text-mode play harness", () => {
         // and a mound on the map (the view printed nothing for one).
         expect(started).toContain("YOU PLAY THE DWARVES");
         expect(started).toContain("YOUR TURN | coins 35 |");
-        expect(ok("do", "--session", session, "u61.tunnel.7,2")).toContain(
-          "UNIT_TUNNELLED playerId=S0 unitId=u61(S0 Steam Mole) from=6,3 to=7,2",
+        expect(ok("do", "--session", session, "u61.tunnel.8,2")).toContain(
+          "UNIT_TUNNELLED playerId=S0 unitId=u61(S0 Steam Mole) from=6,3 to=8,2",
         );
         const mound = ok("view", "--session", session);
-        expect(mound).toContain("|f---0##|");
+        expect(mound).toContain("|.---0##|");
         expect(mound).toContain(
-          "u61 Steam Mole [GUARD] @7,2 hp 16/16 atk 2 def 3.75 mov 1 rng 1 home c7 spent options 0 | BURROWED: a mound; it surfaces at your next turn start",
+          "u61 Steam Mole [GUARD] @8,2 hp 16/16 atk 2 def 2.5 mov 1 rng 1 home c7 spent options 0 | BURROWED: a mound; it surfaces at your next turn start",
         );
       }
       if (lab === "LAB_UNDEAD_MID") {

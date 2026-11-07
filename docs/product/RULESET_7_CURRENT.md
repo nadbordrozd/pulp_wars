@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r128`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r129`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,41 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r129` (`pulp_wars-ev6q`, **one tile, one meaning for the
+Brain, the Steam Mole, and the Ice Witch**; the user, 2026-11-07: "I mean
+to change the game mechanics so that it is unnecessary") removes three
+more tiles that offered two commands, by rule rather than by a chooser.
+(1) The Martian **Brain has no attack**
+([section 20.8](#208-mind-control)): its role drops `ATTACK` and has
+Attack 0 and Range 0 (Attack 1 at range 1 before), so it never attacks
+and never strikes back, and an attack on it draws no retaliation; Mind
+Control is its attack, with the same reach (1) and cooldown (2). Its HP
+and Defense are unchanged. A Brain **holds any number of units**: the
+limit of three (`MIND_CONTROL_LIMIT_V7`) and the `CONTROL_LIMIT` rejection
+are gone, and state parsing no longer caps the entries per Brain. So an
+enemy beside a selected Brain means Mind Control alone. (2) The Dwarf
+**Steam Mole tunnels 2 or 3 tiles**
+([section 22.2](#222-the-tunnel-and-burrowed-units)): a `TUNNEL`
+whose `to` is next to it is rejected
+(`TUNNEL_NOT_LEGAL { reason: "DESTINATION" }`, `TUNNEL_MIN_RANGE_V7` 2)
+and never offered, and **Roads give the Mole no Move bonus** (role
+mechanic `ignoresRoads`: a step from a Road node costs a whole step and a
+Road edge waives no stop), so its Move is always one tile. A tile next to
+a selected Mole means Move (or Attack), a tile 2 or 3 away Tunnel. (3) The
+Ice Folk **Ice Witch's Frost Bolt flies exactly 2 tiles**
+([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)): a
+`FROST_BOLT` at an adjacent unit is rejected
+(`FROST_BOLT_NOT_LEGAL { reason: "OUT_OF_RANGE" }`,
+`FROST_BOLT_MIN_RANGE_V7` 2) and never offered; her Cold Snap freezes her
+neighbours as before, so a neighbouring enemy means Attack alone. The
+Sled's Bolas (also shown as a Frost Bolt) is unchanged. The Normal AI
+plays the offered commands, so the Brain never attacks and uses Mind
+Control on any number of units, the Mole walks 1 and tunnels 2 or 3, and
+the Witch bolts only at 2; its threat estimate reads the Mole's Move
+without Roads, as the engine does. A save, replay, or setup of `7r128` is
+rejected, and the browser autosave has a new key.
+
 `pulp-wars-poc-7r128` (`pulp_wars-57lq`, **the Mammoth's 2- or 3-tile
 Stampede**; the user, 2026-11-07: "right now I have a choice of moving to a
 next tile as a regular move or as a stampede and that's unnecessary")
@@ -2041,10 +2076,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r128`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r129`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r128.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r129.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6715,8 +6750,8 @@ benefit of a Port connection.)
   Attack, Frenzy, and Raise Dead ([section 17](#17-undead-faction-rules)),
   the Goblin Orc Warboss has Attack and Berserk
   ([section 18.10](#1810-berserk-ram-and-troll-regeneration)), and the
-  Martian Brain has Attack, Psychic Command, and Mind Control
-  ([section 20.8](#208-mind-control)), and the Ice Folk Ice Witch has
+  Martian Brain has Psychic Command and Mind Control and no attack (since
+  `7r129`; [section 20.8](#208-mind-control)), and the Ice Folk Ice Witch has
   Attack, Cold Snap, and Frost Bolt and no Rally
   ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)); none of these four has
   Tend Wounded (`TEND_WOUNDED` is never offered and is rejected with
@@ -7226,7 +7261,7 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Saucer           | `RAIDER`      | Scouting          |    4 |     1 |    8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | yes     | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance                                 |
 | Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |    8 |      2 |   3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                                                   |
 | Shield Projector | `GUARD`       | Fortification     |    4 |     1 |   12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                                              |
-| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |    8 |      2 |   1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no Tend Wounded                                                             |
+| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |    8 |      2 |     0¹¹ |    1 (2) |    1 |   0¹¹ |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no attack¹¹; no Tend Wounded                                                |
 | Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |   12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | yes     | heat ray; Pierce; never advances                                                                           |
 | Mothership       | `KNIGHT`      | Chivalry          |  9¹⁰ |     2 | 20¹⁰ |      4 | 3 (6)¹⁰ |  3 (6)¹⁰ |    2 |     1 |   2¹⁰ | fly    | yes               | yes     | Mass Beam Down¹⁰; Shield Canopy¹⁰; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
 | Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |   12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                                                   |
@@ -7262,6 +7297,10 @@ shore launch of foot units, no Board).
 anchor at the Knight's price, 9 Coins (8), 20 HP (16), Attack 3 (2.5),
 Defense 3 (2), Sight 2 (1); Mass Beam Down instead of Beam Down, and the
 Shield Canopy ([section 20.3](#203-force-field-and-force-fields)).
+¹¹ One tile, one meaning (`pulp-wars-poc-7r129`, `pulp_wars-ev6q`): the
+Brain has no attack (no `ATTACK`, Attack 0, Range 0; Attack 1 at range 1
+before), never strikes back, and holds any number of units with Mind
+Control ([section 20.8](#208-mind-control)).
 
 - **Grunt** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion: 13 HP promoted) except its numbers, its Shield, its
@@ -7288,8 +7327,11 @@ Shield Canopy ([section 20.3](#203-force-field-and-force-fields)).
   Fields (`7r52`), projects the Force Field
   ([section 20.3](#203-force-field-and-force-fields)).
 - **Brain** has Captain parity for capture and for Rally, labelled
-  **Psychic Command**; it has no Tend Wounded. Its primary actions are
-  Attack, Psychic Command, and Mind Control.
+  **Psychic Command**; it has no Tend Wounded. Since `7r129`
+  (`pulp_wars-ev6q`) it has **no attack**: no `ATTACK`, Attack 0 and Range
+  0 (Attack 1 at range 1 before, the Stargazer's statline for a unit with
+  no attack), so it never strikes back. Its primary actions are Psychic
+  Command and Mind Control, which is its attack.
 - **Tripod** is a walker with a heat ray and Pierce
   ([section 20.5](#205-pierce-and-the-disintegrator)). Like the Catapult it
   has a minimum range of 2: it fires only at a unit exactly two tiles away
@@ -7324,7 +7366,8 @@ Shield Canopy ([section 20.3](#203-force-field-and-force-fields)).
 - **Public abilities** (the role rule's `abilities`): Grunt `ATTACK`,
   `CAPTURE`; Saucer `ATTACK`, `CAPTURE`, `CHARGE`, `FLY`, `BEAM_DOWN`, `TRACTOR_BEAM`; Ray Gunner
   `ATTACK`, `CAPTURE`, `HEAT_RAY`; Shield Projector `ATTACK`, `CAPTURE`,
-  `FORCE_FIELD`; Brain `ATTACK`, `CAPTURE`, `RALLY`, `MIND_CONTROL`; Tripod
+  `FORCE_FIELD`; Brain `CAPTURE`, `RALLY`, `MIND_CONTROL` (`ATTACK` until
+  `7r129`); Tripod
   `ATTACK`, `CAPTURE`, `STRIDE`, `HEAT_RAY`, `PIERCE`; Mothership `ATTACK`,
   `CAPTURE`, `FLY`, `MASS_BEAM_DOWN`, `TRACTOR_BEAM`, `SHIELD_CANOPY`
   (`BEAM_DOWN` before `7r108`); Colossus `ATTACK`, `CAPTURE`, `PUSH`, `STRIDE`,
@@ -7350,7 +7393,7 @@ units cross Mountains without Engineering and without stopping
 | Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
 | Walrus      | `GUARD`      | Fortification  |    4 |  16 |              1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                              |
 | Mammoth     | `SWORDSMAN`  | Metallurgy     |    7 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
-| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap; Frost Bolt; no Rally; no Tend Wounded                                        |
+| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap; Frost Bolt at exactly 2 (`7r129`); no Rally; no Tend Wounded                 |
 | Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |  10 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | yes     | Boulders (ignore fortification); Planted; Mountain-born; never advances                           |
 | Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
 | Frost Giant | `JUGGERNAUT` | reward only    |    — |  36 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Aura; Mountain-born; never advances                                           |
@@ -7390,7 +7433,9 @@ Golem the Snow Golem, with the same numbers.
   Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED` are never offered
   and are rejected with `UNIT_ROLE_INVALID`). She carries the Blizzard; her
   primary actions are Attack, Cold Snap, and Frost Bolt
-  ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)).
+  ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)). Since
+  `7r129` her Frost Bolt flies exactly 2 tiles, so a neighbouring enemy is
+  only ever her Attack's (her Cold Snap freezes the ring).
 - **Snow Golem** has range 1–2 with minimum range 1 and may attack after
   moving, unlike the Catapult; like it, it captures, never advances,
   keeps the `SIEGE` label, and every attack it makes destroys Field Defense
@@ -7451,7 +7496,7 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Hammerer         | `FIGHTER`     | start             |    2 |   12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                                                                                   |
 | Gyrocopter       | `RAIDER`      | Scouting          |    4 | 10¹⁵ | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (6, Dive 7¹²), once per target per turn                                                                                                                      |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |   10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                                                                                      |
-| Steam Mole       | `GUARD`       | Fortification     |    5 |   16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                                                                              |
+| Steam Mole       | `GUARD`       | Fortification     |    5 |   16 |     2 (4) | 2.5 (5) |  1¹⁶ |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 2 or 3¹⁶ with a rider; Eruption 2 (3); Dig In; no Field Defense                                                                                                       |
 | Engineer         | `CAPTAIN`     | Administration    |    5 |   10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | yes     | Repair; Assemble; no Rally                                                                                                                                                   |
 | Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |   10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | yes     | Knockback; with Blasting Charges ignores Walls and Field Defense                                                                                                             |
 | Whirligig        | `KNIGHT`      | Chivalry          |    9 | 18¹⁴ |     3 (6) | 2 (4)¹⁴ |    3 |     1 |     1 | construct; machine | yes                  | yes     | its attack is the Whirl (hits every adjacent unit, friend and foe, at once, unanswered; `befg`; a separate Whirl `w49.33`, Three Hammers before); never advances; no Overrun |
@@ -7478,6 +7523,10 @@ Tunnels (the Ram and the Moles' tunnel under shallow water, no Board).
 ([section 22.15](#2215-the-whirligig-whirl)).
 ¹⁵ `pulp_wars-o2g8` (`pulp-wars-poc-7r122`; the user, 2026-11-05: "the
 gyrocopter is fun even though it's very weak"): 10 HP (8 before).
+¹⁶ One tile, one meaning (`pulp-wars-poc-7r129`, `pulp_wars-ev6q`): the
+Mole tunnels 2 or 3 tiles, never to the tile next door (up to 3 before),
+and Roads give its Move nothing (role mechanic `ignoresRoads`), so it
+always walks one tile ([section 22.2](#222-the-tunnel-and-burrowed-units)).
 
 - **Hammerer** has Fighter parity (cost, HP, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a
@@ -7499,9 +7548,11 @@ gyrocopter is fun even though it's very weak"): 10 HP (8 before).
 - **Steam Mole** (a squat riveted tub on tracks with a drill nose) has Guard
   parity for capture: unlike the Guard it may attack after moving and
   advances after a melee kill. It cannot build Field Defense. It may move
-  underground with `TUNNEL` instead of a Move
+  underground with `TUNNEL` instead of a Move, 2 or 3 tiles
   ([section 22.2](#222-the-tunnel-and-burrowed-units)), erupts when it
-  surfaces, and digs in.
+  surfaces, and digs in. Since `7r129` Roads give it no Move bonus (role
+  mechanic `ignoresRoads`): a step from a Road node costs it a whole step
+  and a Road edge waives no stop for it, so its Move is always one tile.
 - **Engineer** has Captain parity for capture and the Captain's body. It
   has no Rally (`RALLY` is never offered and is rejected with
   `UNIT_ROLE_INVALID`); its Tend Wounded is **Repair**, and it has
@@ -10676,7 +10727,8 @@ Harbours from it.
   refuses a Pierce that kills an own unit without killing the target; beams
   passengers down when that gains at least three route steps and keeps a
   Saucer unmoved for it; takes Mind Control above every kill on the most
-  valuable unit beside the Brain (since `7r99` any unit, three per Brain,
+  valuable unit beside the Brain (since `7r99` any unit; since `7r129`
+  any number per Brain, three before, and the Brain never attacks;
   worth its kind cost or, without one, its Score value; no hit wounds a
   target into control any more); uses its controlled units as the front row; scores a
   Tractor Beam by its effect (a defender pulled off a center next to an own
@@ -12961,8 +13013,11 @@ Brain: **any enemy unit beside it** changes sides and **stays what it is**
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md) retired the Thrall;
 bolder abilities, `pulp_wars-w49.42`, `7r99`, removed the HP limit and
 every immunity but an Egg, a neutral unit, and an already controlled unit,
-made the reach 1, and raised the limit to three). It is not an Attack and
-costs no Coins. Legality, in this order (all rejections atomic):
+made the reach 1, and raised the limit to three; `pulp_wars-ev6q`,
+`7r129`, removed the limit, so a Brain holds any number of units, and took
+the Brain's attack, so Mind Control is its only offensive action). It is
+not an Attack and costs no Coins. Legality, in this order (all rejections
+atomic):
 
 | #   | Requirement                                                                                                                                                                                                                                                            | Rejection                                              |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -12971,7 +13026,7 @@ costs no Coins. Legality, in this order (all rejections atomic):
 | 3   | It has not used a primary action and has not landed this turn (it may have moved).                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                                   |
 | 4   | It is in land form.                                                                                                                                                                                                                                                    | `MIND_CONTROL_NOT_LEGAL { reason: "EMBARKED" }`        |
 | 5   | It has no entry in `mindControlCooldowns`.                                                                                                                                                                                                                             | `MIND_CONTROL_NOT_LEGAL { reason: "COOLDOWN" }`        |
-| 6   | It controls fewer than `MIND_CONTROL_LIMIT_V7` (3; 1 before `7r99`) units.                                                                                                                                                                                             | `MIND_CONTROL_NOT_LEGAL { reason: "CONTROL_LIMIT" }`   |
+| 6   | Retired in `7r129`: a Brain holds any number of units (it controlled fewer than `MIND_CONTROL_LIMIT_V7`, 3 from `7r99` and 1 before, and was refused with `CONTROL_LIMIT`).                                                                                            | none                                                   |
 | 7   | `targetUnitId` is a unit on the board that the actor can see.                                                                                                                                                                                                          | `TARGET_NOT_FOUND`                                     |
 | 8   | It is hostile to the actor.                                                                                                                                                                                                                                            | `TARGET_ALLIED`                                        |
 | 9   | It is not an Egg, not a neutral unit, and not already mind-controlled (by any Brain); its tile is known. Any role, size, and form else: a giant, a two-slot unit, a construct, a daemon, a ship or sea beast, an embarked unit, a unit on a settlement site or a Rift. | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_IMMUNE" }`   |
@@ -13030,8 +13085,8 @@ above 6 HP or unwounded (`TARGET_HEALTHY`, retired).
 
 A **mind-controlled** unit is a unit with an entry in
 `GameStateV7.mindControlled: { unitId, brainUnitId, originalOwnerId }[]`
-(sorted by unit ID; empty in a match without a Martian seat; up to three
-entries per Brain since `7r99`). Its owner is
+(sorted by unit ID; empty in a match without a Martian seat; any number
+of entries per Brain since `7r129`, up to three from `7r99`). Its owner is
 its **controller**; its **kind** is its original owner's faction
 (`unitFactionV7`). It resolves label, art, cost, stats, maximum HP,
 abilities, role mechanics, and its faction's body rules through its kind,
@@ -13069,11 +13124,10 @@ Rider with no Charge. Three rulings decide the rest:
 | Sight and fog                     | reveals for the controller; the original owner sees it as a hostile unit                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Per faction                       | Human: all (Field Defense, Rally, Tend Wounded on the controller's units, Charge, Escape, Overrun). Undead: all but Raise Dead, Infect, Bite. Goblin: all (Kaboom, blasts, Ram, Berserk, Gang Up with the controller's helpers). Dinosaur: all but Hatch. Martian: all but Mind Control. Ice Folk: all (her Blizzard halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units). Dwarf: all but Assemble and tunnel riding (a controlled Mole tunnels alone; a controlled Engineer repairs) |
 
-- **Limit.** A Brain controls at most `MIND_CONTROL_LIMIT_V7` (3) units
-  (1 before `7r99`). At the limit it is offered no Mind Control
-  (`CONTROL_LIMIT`); it never lets the oldest go to take another. A
-  release by its controller (below) or a controlled unit's death frees a
-  place.
+- **No limit** (since `7r129`, `pulp_wars-ev6q`). A Brain controls any
+  number of units; its two-turn cooldown is the only pace. (It controlled
+  at most `MIND_CONTROL_LIMIT_V7` units, 3 from `7r99` and 1 before, and at
+  the limit was offered no Mind Control, `CONTROL_LIMIT`.)
 - **Daemons** (since `7r99`). A bound daemon a Brain holds is held by the
   Brain, not by strands: the channel check of its controller's Start Turn
   passes it by (it is never Unbound by the check and owes no Herald
@@ -13148,12 +13202,13 @@ Rider with no Charge. Three rulings decide the rest:
   to the unit's owner or not a player of the match (an eliminated player is
   allowed); a `brainUnitId` that is not a unit on the board of the same
   owner whose role, under its kind, has `MIND_CONTROL`, or that is itself
-  controlled; more than `MIND_CONTROL_LIMIT_V7` entries for one Brain; an
-  Egg (since `7r99` any other form, role, and size is legal: before, a
-  `JUGGERNAUT`-role, two-slot, or construct unit and any form but `LAND`
-  or `EMBARKED` were rejected, and a summoned unit could not be
-  controlled); an owner that is not a `MARTIAN` seat; and any entry in a
-  match without a `MARTIAN` seat.
+  controlled; an Egg (since `7r99` any other form, role, and size is
+  legal: before, a `JUGGERNAUT`-role, two-slot, or construct unit and any
+  form but `LAND` or `EMBARKED` were rejected, and a summoned unit could
+  not be controlled); an owner that is not a `MARTIAN` seat; and any entry
+  in a match without a `MARTIAN` seat. Until `7r129` it also rejected more
+  than `MIND_CONTROL_LIMIT_V7` entries for one Brain; a Brain now holds any
+  number.
 - **View.** `PlayerViewV7.mindControlled` lists
   `{ unitId, brainUnitId, originalOwnerId }` for every visible controlled
   unit (and visible mound), with `brainUnitId` null when the viewer cannot
@@ -13303,9 +13358,9 @@ cost.
   `fortificationLevel: 0` and `fortificationIgnored`.
 - **Errors:** `BEAM_DOWN_NOT_LEGAL` (reasons `EMBARKED` and
   `NO_PASSENGER`; `MOVED` was retired in `7r37`), `MIND_CONTROL_NOT_LEGAL`
-  (`EMBARKED`, `COOLDOWN`,
-  `CONTROL_LIMIT`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, and since `7r99`
-  `DEEP_WATER`; `TARGET_HEALTHY` was retired with the HP limit), and
+  (`EMBARKED`, `COOLDOWN`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, and since
+  `7r99` `DEEP_WATER`; `TARGET_HEALTHY` was retired with the HP limit, and
+  `CONTROL_LIMIT` with the control limit in `7r129`), and
   `TRACTOR_BEAM_NOT_LEGAL` (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
   `BLOCKED`); `DISBAND_NOT_LEGAL` gains the reason `MIND_CONTROLLED`; the movement
   failure reasons and `UNIT_MOVE_INTERRUPTED` gain `SETTLEMENT_FORBIDDEN`
@@ -13323,7 +13378,8 @@ cost.
   [section 11](#11-unit-roster) states; faction rule
   `treasureUnitRole` `RAIDER`; constants `FORCE_FIELD_SHIELD_V7` 4,
   `SHIELD_CAP_V7` 4, `MIND_CONTROL_HP_V7` 6, `MIND_CONTROL_RANGE_V7` 2,
-  `MIND_CONTROL_COOLDOWN_TURNS_V7` 2, `MIND_CONTROL_LIMIT_V7` 1,
+  `MIND_CONTROL_COOLDOWN_TURNS_V7` 2, `MIND_CONTROL_LIMIT_V7` 1 (3 from
+  `7r99`; retired in `7r129`),
   `TRACTOR_BEAM_RANGE_V7` 2, `TRACTOR_BEAM_PULL_V7` 1,
   `HEAVY_TRACTOR_RANGE_V7` 3, `HEAVY_TRACTOR_PULL_V7` 2, and
   `BEAM_DOWN_PICKUP_RANGE_V7` 2. Helpers: `isMindControlledV7`,
@@ -13858,8 +13914,13 @@ uses **one of the two per turn** (and neither after an Attack).
   focusing the button lifts the ring and its "Ice N" label on her tile and
   the units it would Freeze, and the quiet ring is drawn while she is
   selected.
-- **Frost Bolt** freezes **one** unit within Chebyshev `FROST_BOLT_RANGE_V7`
-  (2) of the Witch, distance 1 included. Its legality is the Bolas table of
+- **Frost Bolt** freezes **one** unit exactly Chebyshev 2 from the Witch
+  (`FROST_BOLT_MIN_RANGE_V7` to `FROST_BOLT_RANGE_V7`, both 2; since
+  `7r129`, `pulp_wars-ev6q`: within 2, distance 1 included, before). A
+  Frost Bolt at a unit next to her is `OUT_OF_RANGE` and never offered: a
+  neighbouring enemy is an Attack, and her Cold Snap freezes every
+  neighbour, so no tile next to a selected Witch carries two commands. The
+  Sled's Bolas keeps its reach of 1 or 2. Its legality is the Bolas table of
   [section 21.9](#219-bolas-and-cold-blood) with the ability `FROST_BOLT`
   and the error `FROST_BOLT_NOT_LEGAL` (reasons `EMBARKED`,
   `TARGET_IMMUNE`, `OUT_OF_RANGE`, `ALREADY_FROZEN`); its result is the Bolas result with the
@@ -14902,16 +14963,16 @@ allowed).
 
 Legality, in this order (all rejections atomic):
 
-| #   | Requirement                                                                                                                                                                                                                                                        | Rejection                                                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                     | the ordinary unit errors; a burrowed unit `UNIT_ALREADY_HANDLED` |
-| 2   | Its role has `TUNNEL`.                                                                                                                                                                                                                                             | `UNIT_ROLE_INVALID { role }`                                     |
-| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                                             |
-| 4   | It is in land form.                                                                                                                                                                                                                                                | `TUNNEL_NOT_LEGAL { reason: "EMBARKED" }`                        |
-| 5   | It is not in `surfacedThisTurn`.                                                                                                                                                                                                                                   | `TUNNEL_NOT_LEGAL { reason: "SURFACED" }`                        |
-| 6   | `to` is a tunnel tile for the Mole, and a sequence of at most `TUNNEL_RANGE_V7` (3) steps between Chebyshev neighbours leads from the Mole's tile to `to` with every tile after the first explored by the actor and land (Grass, Forest, Mountain, or Rift).       | `TUNNEL_NOT_LEGAL { reason: "DESTINATION" }`                     |
-| 7   | If `rider` is not null: `rider.unitId` is another own unit on the board whose role has `RIDES_TUNNEL` (a Hammerer), in land form, Chebyshev-adjacent to the Mole, that has not moved, used a primary action, or landed this turn and is not in `surfacedThisTurn`. | `TUNNEL_NOT_LEGAL { reason: "RIDER" }`                           |
-| 8   | If `rider` is not null: `rider.to` is a tunnel tile for the Hammerer, Chebyshev-adjacent to `to`, and not `to`.                                                                                                                                                    | `TUNNEL_NOT_LEGAL { reason: "RIDER_DESTINATION" }`               |
+| #   | Requirement                                                                                                                                                                                                                                                                                                                                        | Rejection                                                        |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                                                                                                     | the ordinary unit errors; a burrowed unit `UNIT_ALREADY_HANDLED` |
+| 2   | Its role has `TUNNEL`.                                                                                                                                                                                                                                                                                                                             | `UNIT_ROLE_INVALID { role }`                                     |
+| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                                             |
+| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                                | `TUNNEL_NOT_LEGAL { reason: "EMBARKED" }`                        |
+| 5   | It is not in `surfacedThisTurn`.                                                                                                                                                                                                                                                                                                                   | `TUNNEL_NOT_LEGAL { reason: "SURFACED" }`                        |
+| 6   | `to` is at least `TUNNEL_MIN_RANGE_V7` (2; since `7r129`) tiles (Chebyshev) from the Mole, is a tunnel tile for the Mole, and a sequence of at most `TUNNEL_RANGE_V7` (3) steps between Chebyshev neighbours leads from the Mole's tile to `to` with every tile after the first explored by the actor and land (Grass, Forest, Mountain, or Rift). | `TUNNEL_NOT_LEGAL { reason: "DESTINATION" }`                     |
+| 7   | If `rider` is not null: `rider.unitId` is another own unit on the board whose role has `RIDES_TUNNEL` (a Hammerer), in land form, Chebyshev-adjacent to the Mole, that has not moved, used a primary action, or landed this turn and is not in `surfacedThisTurn`.                                                                                 | `TUNNEL_NOT_LEGAL { reason: "RIDER" }`                           |
+| 8   | If `rider` is not null: `rider.to` is a tunnel tile for the Hammerer, Chebyshev-adjacent to `to`, and not `to`.                                                                                                                                                                                                                                    | `TUNNEL_NOT_LEGAL { reason: "RIDER_DESTINATION" }`               |
 
 - **Sea Tunnels** (`7r96`, `pulp_wars-5ti.20`): for a Mole whose kind's
   capabilities under its controller have `seaTunnels` (the Dwarf
@@ -14926,6 +14987,16 @@ Legality, in this order (all rejections atomic):
   is never part of a tunnel (but Shallow Water with Sea Tunnels); nothing is revealed along the way. The command
   carries no path, so the command query offers one entry per destination
   and rider tile (and the rider-less entry).
+- **2 or 3 tiles, never next door** (`pulp_wars-ev6q`, `7r129`; up to 3
+  before). A tile next to the Mole is only ever a Move (or an Attack on a
+  hostile unit there), and Roads give the Mole no Move bonus (role
+  mechanic `ignoresRoads`; the canonical and the public Move validation
+  and the Normal AI's threat estimate all read it), so its Move is one
+  tile and a tile 2 or 3 away is only ever a Tunnel: no tile of a selected
+  Mole carries two commands. With no Hammerer able to ride, a Tunnel digs
+  at the first tap on its destination, as a Move goes; with one, the
+  destination is chosen first and dug when chosen again, so the
+  Hammerer's seat and landing can be set.
 - **A Frozen Mole cannot tunnel**, and a Frozen Hammerer cannot ride
   (`UNIT_FROZEN`, [section 21.3](#213-what-a-frozen-unit-cannot-do)).
 - **Result.** The Mole leaves `units` and enters `burrowed` as

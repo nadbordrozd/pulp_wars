@@ -4,6 +4,7 @@ import {
   BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
+  FROST_BOLT_MIN_RANGE_V7,
   FROST_BOLT_RANGE_V7,
   factionRulesV7,
   ownerResearchedTechsV7,
@@ -355,10 +356,15 @@ export function withinBolasRangeV7(from: CoordV7, to: CoordV7): boolean {
   return distance >= 1 && distance <= BOLAS_RANGE_V7;
 }
 
-/** Section 21.6: the Frost Bolt reach check (Chebyshev 1 or 2). */
+/**
+ * Section 21.6: the Frost Bolt reach check: Chebyshev exactly 2
+ * (`FROST_BOLT_MIN_RANGE_V7` to `FROST_BOLT_RANGE_V7`; `pulp_wars-ev6q`,
+ * 7r129: never an adjacent unit, which is an Attack or the Cold Snap's;
+ * 1 or 2 before).
+ */
 export function withinFrostBoltRangeV7(from: CoordV7, to: CoordV7): boolean {
   const distance = chebyshev(from, to);
-  return distance >= 1 && distance <= FROST_BOLT_RANGE_V7;
+  return distance >= FROST_BOLT_MIN_RANGE_V7 && distance <= FROST_BOLT_RANGE_V7;
 }
 
 /**

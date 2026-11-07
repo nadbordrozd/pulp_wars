@@ -2,7 +2,6 @@ import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
   FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_RANGE_V7,
-  MIND_CONTROL_LIMIT_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
@@ -556,7 +555,7 @@ export function hostileRayAttack2V7(
     : attack2;
 }
 
-/** A ready hostile Brain: no cooldown and below the control limit. */
+/** A ready hostile Brain: no cooldown (no control limit since 7r129). */
 export function readyHostileBrainsV7(
   view: PlayerViewV7,
   facts: MartianFactsV7,
@@ -568,9 +567,7 @@ export function readyHostileBrainsV7(
       unit.hp > 0 &&
       isHostile(unit.ownerId) &&
       hasAbilityV7(view, unit, "MIND_CONTROL") &&
-      !facts.cooldownBrains.has(unit.id) &&
-      (facts.controlledOfBrain.get(unit.id)?.length ?? 0) <
-        MIND_CONTROL_LIMIT_V7,
+      !facts.cooldownBrains.has(unit.id),
   );
 }
 

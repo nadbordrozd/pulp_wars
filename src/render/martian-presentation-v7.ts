@@ -9,7 +9,6 @@ import {
   beamDownPassengerLegalV7,
   massBeamDownPassengerLegalV7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_LIMIT_V7,
   TRACTOR_BEAM_RANGE_V7,
   UNIT_ROLE_IDS_V7,
   activationIsExhaustedV7,
@@ -202,8 +201,9 @@ export const MARTIAN_FROZEN_MOVED_V7 = "Frozen: it cannot act this turn";
 export const TRACTOR_FREE_TAG_V7 = "Free";
 export const MIND_CONTROL_LABEL_V7 = "Mind Control";
 // Bolder abilities (`pulp_wars-w49.42`, 7r99): any enemy next to the
-// Brain, at any HP, up to three at a time.
-export const MIND_CONTROL_TOOLTIP_V7 = `Take any enemy unit next to this Brain, up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time. It fights for you as itself until this Brain is lost.`;
+// Brain, at any HP. `pulp_wars-ev6q` (7r129): as many as it likes; it is
+// the Brain's attack (it has no other).
+export const MIND_CONTROL_TOOLTIP_V7 = `Take any enemy unit next to this Brain, as many as you like. It fights for you as itself until this Brain is lost.`;
 export const MIND_CONTROL_PICK_V7 = "Choose an enemy next to the Brain";
 export const MIND_CONTROL_IMMUNE_V7 = "Immune";
 /** An enemy afloat on Deep Water while the viewer lacks Navigation. */
@@ -364,11 +364,14 @@ export function rayPowerTextV7(
   return mechanics.cooling ? "Half power: Cooling" : "Half power: moved";
 }
 
-/** The Mind Control revision (section 9) "Brain info": "Controls 0 / 1". */
+/**
+ * The Mind Control revision (section 9) "Brain info": "Controls 2" (no
+ * limit since `pulp_wars-ev6q`, 7r129; "Controls 0 / 3" before).
+ */
 export function brainControlTextV7(
   mindControl: NonNullable<PublicMartianMechanicsV7["mindControl"]>,
 ): string {
-  return `Controls ${mindControl.controlled} / ${mindControl.controlLimit}`;
+  return `Controls ${mindControl.controlled}`;
 }
 
 /**
@@ -382,8 +385,8 @@ export function mindControlReadyInV7(turnsRemaining: number): number {
 
 /**
  * The Mind Control revision section 9 "disabled reasons": "Recovering: {n}
- * turn(s)" (the turns until it is ready) or "Controls a unit already"; null
- * when neither applies.
+ * turn(s)" (the turns until it is ready); null when it is ready (the
+ * "Controls three units already" reason went with the limit in 7r129).
  */
 export function mindControlUnavailableTextV7(
   mindControl: PublicMartianMechanicsV7["mindControl"],
@@ -391,10 +394,6 @@ export function mindControlUnavailableTextV7(
   if (mindControl === null) return null;
   if (mindControl.cooldown !== null)
     return `Recovering: ${plural(mindControlReadyInV7(mindControl.cooldown), "turn")}`;
-  if (mindControl.controlled >= mindControl.controlLimit)
-    return mindControl.controlLimit === 1
-      ? "Controls a unit already"
-      : `Controls ${numberWord(mindControl.controlLimit)} units already`;
   return null;
 }
 
@@ -525,7 +524,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       MIND_CONTROL_LABEL_V7,
-      `a ${joinOr(brains)} takes control of any enemy unit next to it (giants and ships too, at any HP), up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time, and needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next. The unit keeps its type and abilities but cannot create units. When the ${joinOr(brains)} is lost, the unit returns to its owner.`,
+      `a ${joinOr(brains)} takes control of any enemy unit next to it (giants and ships too, at any HP), as many as it likes, and needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next. The unit keeps its type and abilities but cannot create units. When the ${joinOr(brains)} is lost, the unit returns to its owner.`,
     ],
     [
       TRACTOR_BEAM_LABEL_V7,
@@ -1357,7 +1356,7 @@ export function martianFieldDefenseBlockedV7(
 }
 
 /** The Martian technology unlock texts of section 4. */
-export const BRAIN_SUPPORT_UNLOCK_TEXT_V7 = `${martianLabelV7("CAPTAIN")}s give ${PSYCHIC_COMMAND_LABEL_V7} or take ${MIND_CONTROL_LABEL_V7} of any enemy next to them, up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time`;
+export const BRAIN_SUPPORT_UNLOCK_TEXT_V7 = `${martianLabelV7("CAPTAIN")}s give ${PSYCHIC_COMMAND_LABEL_V7} or take ${MIND_CONTROL_LABEL_V7} of any enemy next to them`;
 // The Martian pass (`pulp_wars-w49.14`, 7r52): the Force Field itself is
 // this technology's.
 export const FORCE_FIELDS_UNLOCK_TEXT_V7 = `${martianLabelV7("GUARD")}s raise the Shields of units next to them to ${FORCE_FIELD_SHIELD_V7}, and at full HP one attack cannot kill such a unit; Shields also recharge at the end of your turn`;

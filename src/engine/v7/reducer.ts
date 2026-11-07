@@ -45,7 +45,6 @@ import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   attackIsTorpedoV7,
@@ -249,7 +248,6 @@ import {
   massBeamDownPassengerLegalV7,
   massBeamDownPlacementsV7,
   massBeamDownTargetInRangeV7,
-  controlledByBrainV7,
   coolingStepV7,
   isCoolingV7,
   mindControlCooldownStepV7,
@@ -514,8 +512,9 @@ export type RuleErrorCodeV7 =
   | "HATCH_NOT_LEGAL"
   | "UNIT_IS_EGG"
   // The Martian revision: an illegal Beam Down (`EMBARKED`, `MOVED`,
-  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `COOLDOWN`, `CONTROL_LIMIT`,
-  // `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), or Tractor Beam
+  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `COOLDOWN`, `TARGET_IMMUNE`,
+  // `OUT_OF_RANGE`, `TARGET_HEALTHY`; `CONTROL_LIMIT` until 7r129), or
+  // Tractor Beam
   // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
   | "BEAM_DOWN_NOT_LEGAL"
   // The Mothership redesign (`pulp_wars-ewpj`, 7r108): an illegal Mass
@@ -4787,8 +4786,9 @@ function applyMassBeamDown(
 /**
  * The Mind Control revision `MIND_CONTROL` (docs/product/RULESET_7_MIND_CONTROL.md
  * section 3; bolder abilities, `pulp_wars-w49.42`, 7r99): a primary action
- * of a Brain that is not itself controlled and controls fewer than
- * `MIND_CONTROL_LIMIT_V7` (3) units. Any visible hostile unit next to it
+ * of a Brain that is not itself controlled; since `pulp_wars-ev6q` (7r129)
+ * it holds any number of units (at most 3 from 7r99, 1 before). Any visible
+ * hostile unit next to it
  * (`MIND_CONTROL_RANGE_V7` 1) that is not an Egg, a neutral unit, or
  * already controlled, at any HP, of any size or form (afloat on Deep Water
  * only with the actor's Navigation), comes under the actor's control: it
@@ -4825,13 +4825,8 @@ function applyMindControl(
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "EMBARKED" });
   if (state.mindControlCooldowns.some((entry) => entry.unitId === brain.id))
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "COOLDOWN" });
-  if (
-    controlledByBrainV7(state.mindControlled, brain.id).length >=
-    MIND_CONTROL_LIMIT_V7
-  )
-    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
-      reason: "CONTROL_LIMIT",
-    });
+  // `pulp_wars-ev6q` (7r129): a Brain holds any number of units (the limit
+  // of 3 and its `CONTROL_LIMIT` reason are gone).
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
   );
@@ -5171,7 +5166,9 @@ function applyThrowBolas(
 
 /**
  * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.6): `FROST_BOLT`, the Ice
- * Witch freezes one visible hostile unit within Chebyshev 2. Its legality
+ * Witch freezes one visible hostile unit exactly Chebyshev 2 away (1 or 2
+ * before `pulp_wars-ev6q`, 7r129; an adjacent one is `OUT_OF_RANGE`). Its
+ * legality
  * is the Bolas table with the role ability `FROST_BOLT` and the error
  * `FROST_BOLT_NOT_LEGAL`.
  */

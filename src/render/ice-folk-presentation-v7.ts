@@ -200,9 +200,11 @@ export const COLD_SNAP_NO_TARGET_V7 =
 export const COLD_SNAP_CAST_V7 = "Cast Cold Snap";
 /** Ice Folk Freeze (`pulp_wars-w49.38`): the Witch's single-target freeze. */
 export const FROST_BOLT_LABEL_V7 = "Frost Bolt";
-export const FROST_BOLT_TOOLTIP_V7 = `Freeze one hostile unit within ${FROST_BOLT_RANGE_V7} tiles. No damage. Instead of a Cold Snap.`;
+// `pulp_wars-ev6q` (7r129): exactly 2 tiles; a neighbour is an Attack or
+// the Cold Snap's.
+export const FROST_BOLT_TOOLTIP_V7 = `Freeze one hostile unit ${FROST_BOLT_RANGE_V7} tiles away, not next to her. No damage. Instead of a Cold Snap.`;
 export const FROST_BOLT_PICK_V7 = "Choose a unit to freeze";
-export const FROST_BOLT_NO_TARGET_V7 = `No unfrozen enemy within ${FROST_BOLT_RANGE_V7} tiles`;
+export const FROST_BOLT_NO_TARGET_V7 = `No unfrozen enemy ${FROST_BOLT_RANGE_V7} tiles away`;
 /** The Witch used her Cold Snap or Frost Bolt (one of the two a turn). */
 export const WITCH_SPELL_USED_V7 = "She already cast this turn";
 /** Ice Folk Freeze: the Mammoth's charge. */
@@ -431,7 +433,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       FROST_BOLT_LABEL_V7,
-      `a ${joinOr([...sledders, ...witches])} freezes one hostile unit up to ${numberWord(FROST_BOLT_RANGE_V7)} tiles away, without damage; an ${joinOr(witches)} casts it or a ${COLD_SNAP_LABEL_V7}, one of the two a turn.`,
+      `a ${joinOr(sledders)} freezes one hostile unit up to ${numberWord(BOLAS_RANGE_V7)} tiles away, an ${joinOr(witches)} one exactly ${numberWord(FROST_BOLT_RANGE_V7)} tiles away (never next to her), without damage; an ${joinOr(witches)} casts it or a ${COLD_SNAP_LABEL_V7}, one of the two a turn.`,
     ],
     [
       "Cold Blood",
@@ -615,7 +617,7 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
 }
 
 /** The Ice Folk technology unlock texts of section 4. */
-export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7} on adjacent enemies, or a ${FROST_BOLT_LABEL_V7} up to ${numberWord(FROST_BOLT_RANGE_V7)} tiles away`;
+export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7} on adjacent enemies, or a ${FROST_BOLT_LABEL_V7} ${numberWord(FROST_BOLT_RANGE_V7)} tiles away`;
 export const DEEP_WINTER_UNLOCK_TEXT_V7 = `Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from your city centers; Recover heals ${DEEP_WINTER_RECOVER_V7} in your territory`;
 export const BRITTLE_UNLOCK_TEXT_V7 = `Shatter at ${BRITTLE_SHATTER_HP_V7} HP or less`;
 

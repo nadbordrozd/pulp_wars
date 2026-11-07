@@ -542,7 +542,8 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
   it("Mind Control: a beamed controlled unit released in the same turn leaves the per-turn list", () => {
     const state = martianFieldV7([
       { seat: 0, role: "RAIDER", at: at(4, 3) },
-      // A Brain at 1 HP next to a Fighter: its attack costs it its life.
+      // The Brain is lost in the same turn: disbanded (it attacked to its
+      // death before `pulp_wars-ev6q`, 7r129, which took its attack).
       { seat: 0, role: "CAPTAIN", at: at(8, 2), hp: 1 },
       { seat: 1, role: "FIGHTER", at: at(9, 2) },
       { seat: 1, role: "FIGHTER", at: at(5, 2), controlledBy: at(8, 2), hp: 4 },
@@ -551,8 +552,10 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
     const controlled = unitAtV7(state, at(5, 2));
     const beamed = playV7(state, beam(state, at(4, 3), at(5, 2), at(3, 4)));
     expect(beamed.state.beamedThisTurn).toEqual([controlled.id]);
-    const lost = attackV7(beamed.state, at(8, 2), at(9, 2));
-    expect(lost.combat.attackerDies).toBe(true);
+    const lost = playV7(beamed.state, {
+      kind: "DISBAND",
+      unitId: unitAtV7(beamed.state, at(8, 2)).id,
+    });
     // Released to its owner where it was set down; the entry is dropped
     // (the list names only the active player's units).
     expect(unitAtV7(lost.state, at(3, 4))).toMatchObject({

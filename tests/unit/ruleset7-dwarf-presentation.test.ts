@@ -10,6 +10,7 @@ import {
   ERUPTION_DAMAGE_V7,
   PLATED_CAP_V7,
   REPAIR_MACHINE_V7,
+  TUNNEL_MIN_RANGE_V7,
   TUNNEL_RANGE_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
@@ -166,7 +167,9 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
     ]);
     const rules = new Map(DWARF_HELP_RULES_V7);
     expect(rules.get("Tunnel")).toBe(
-      `a ${label("GUARD")} digs up to ${TUNNEL_RANGE_V7} tiles under anything, taking an adjacent ${label("FIGHTER")} with it; both wait as mounds everyone can see and nobody can touch.`,
+      // `pulp_wars-ev6q` (7r129): 2 or 3 tiles (up to 3 before), and Roads
+      // do not speed the Mole's Move.
+      `a ${label("GUARD")} digs ${TUNNEL_MIN_RANGE_V7} or ${TUNNEL_RANGE_V7} tiles under anything (a step to the next tile is a plain Move, and Roads do not speed its Move), taking an adjacent ${label("FIGHTER")} with it; both wait as mounds everyone can see and nobody can touch.`,
     );
     expect(rules.get("Eruption")).toContain(
       `takes ${ERUPTION_DAMAGE_V7} (${BLASTING_ERUPTION_DAMAGE_V7} with Blasting Charges)`,
@@ -233,7 +236,7 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       `Eruptions deal ${BLASTING_ERUPTION_DAMAGE_V7}; Steam Cannons ignore Walls and Field Defense`,
     );
     expect(tunnelTooltipV7(3)).toBe(
-      `Dig up to ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take 3 when it surfaces`,
+      `Dig ${TUNNEL_MIN_RANGE_V7} or ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take 3 when it surfaces`,
     );
     expect(bombRunTooltipV7(6)).toBe(
       `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 6, then fly back or land anywhere your Move reaches. No reply`,

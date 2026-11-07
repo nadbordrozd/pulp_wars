@@ -227,6 +227,35 @@ const SHOTS: readonly Shot[] = [
     unit: "shaman",
     marks: ["MOVE", "SUPPORT"],
   },
+  // `pulp_wars-ev6q` (7r129): one tile, one meaning. A selected Brain's
+  // neighbouring enemies carry the Mind Control badge alone (no Attack); a
+  // selected Steam Mole on a Road moves one tile and tunnels 2 or 3 (a
+  // badge alone on each Tunnel tile); a selected Ice Witch attacks her
+  // neighbour and has a Frost Bolt badge only on the enemy 2 tiles away.
+  {
+    name: "simplify-brain",
+    module: "/tests/fixtures/v7-martian-ui.ts",
+    fixture: "martianUiFixtureV7",
+    coords: "MARTIAN_UI_V7",
+    unit: "brain",
+    marks: ["MOVE", "ATTACK"],
+  },
+  {
+    name: "simplify-mole",
+    module: "/tests/fixtures/v7-dwarf-ui.ts",
+    fixture: "dwarfMoleRoadFixtureV7",
+    coords: "DWARF_MOLE_ROAD_V7",
+    unit: "mole",
+    marks: ["MOVE", "ATTACK", "PLACE"],
+  },
+  {
+    name: "simplify-witch",
+    module: "/tests/fixtures/v7-ice-folk-ui.ts",
+    fixture: "iceFolkFreezeFixtureV7",
+    coords: "ICE_FOLK_FREEZE_V7",
+    unit: "witch",
+    marks: ["MOVE", "ATTACK"],
+  },
   // The marks on the other grounds: Snow with a Forest and Mountains, and
   // the Undead gloam ground.
   {

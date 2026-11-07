@@ -13,7 +13,7 @@ import {
 import { withFishingHolesV7 } from "./v7-frozen-sea";
 
 /**
- * Fishing Hole links (`pulp_wars-vg5l`, `pulp-wars-poc-7r128`): an authored
+ * Fishing Hole links (`pulp_wars-vg5l`, `pulp-wars-poc-7r129`): an authored
  * 11 x 11 board, built through the mission builder so every state passes
  * the full state schema. Seat 0 (Ice Folk by default) has its capital on
  * (1, 1) and a second city on (`east`, 1); row 1 between them is a lane of

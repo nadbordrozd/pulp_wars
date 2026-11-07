@@ -810,6 +810,13 @@ export interface RoleMechanicsV7 {
   readonly digsIn: boolean;
   /** The Dwarf revision (section 5.1): the Tunnel range, or 0 without. */
   readonly tunnelRange: number;
+  /**
+   * `pulp_wars-ev6q` (7r129): Roads give the role no Move bonus. A step
+   * from a Road node costs a whole step and a Road edge waives no stop, so
+   * the Steam Mole's Move is always one tile and every tile 2 or 3 away
+   * means its Tunnel alone.
+   */
+  readonly ignoresRoads: boolean;
   /** The Dwarf revision (section 5.5): the role rides a Mole's tunnel. */
   readonly ridesTunnel: boolean;
   /** The Dwarf revision (section 6): the role makes bombing runs. */
@@ -2021,6 +2028,7 @@ const mechanics = (
           tendGrowingHeal: null,
           digsIn: false,
           tunnelRange: 0,
+          ignoresRoads: false,
           ridesTunnel: false,
           bombs: false,
           unmovedShots: 1,
@@ -3173,15 +3181,18 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     tacticalRole: "SUPPORT",
     cost: 5,
     maxHp: 8,
-    attack2: 2,
+    // `pulp_wars-ev6q` (7r129): the Brain has no attack (Attack 0, no
+    // `ATTACK`, Range 0, as the Stargazer) and never strikes back; taking
+    // control of a unit is its attack (it was Attack 1 at range 1).
+    attack2: 0,
     defense2: 2,
     move: 1,
-    range: 1,
-    minimumRange: 1,
+    range: 0,
+    minimumRange: 0,
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "RALLY", "MIND_CONTROL"],
+    abilities: ["CAPTURE", "RALLY", "MIND_CONTROL"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -3924,6 +3935,12 @@ export const REPAIR_MACHINE_V7 = 4;
 export const GUNNER_UNMOVED_SHOTS_V7 = 2;
 /** The Dwarf revision (section 5.1): the Tunnel range in steps. */
 export const TUNNEL_RANGE_V7 = 3;
+/**
+ * The nearest tile a Tunnel may surface on (`pulp_wars-ev6q`, 7r129): an
+ * adjacent tile is only ever a Move (or an Attack), so a Tunnel goes 2 or 3
+ * tiles (Chebyshev) and never to the tile next door.
+ */
+export const TUNNEL_MIN_RANGE_V7 = 2;
 
 /**
  * The Dwarf engine mechanics (section 14): no role builds Field Defense; the
@@ -3955,6 +3972,8 @@ export const DWARF_ROLE_MECHANICS_V7 = mechanics({
     buildsFieldDefense: false,
     digsIn: true,
     tunnelRange: TUNNEL_RANGE_V7,
+    // `pulp_wars-ev6q` (7r129): the Mole walks one tile, Roads or not.
+    ignoresRoads: true,
     repairsAsMachine: true,
   },
   CAPTAIN: { repairMachineHeal: REPAIR_MACHINE_V7 },
@@ -7111,11 +7130,6 @@ export const MIND_CONTROL_RANGE_V7 = 1;
 /** The Martian revision (section 8.2): the cooldown a Mind Control starts. */
 export const MIND_CONTROL_COOLDOWN_TURNS_V7 = 2;
 /**
- * The Mind Control revision (section 4.4): the units one Brain controls at
- * most. Bolder abilities (`pulp_wars-w49.42`, 7r99): 3 (it was 1).
- */
-export const MIND_CONTROL_LIMIT_V7 = 3;
-/**
  * The Martian revision (section 8.4): the Tractor Beam distance: the exact
  * distance of the Saucer's pull and the minimum of the Heavy Tractor Beam.
  */
@@ -7234,6 +7248,12 @@ export const BOLAS_RANGE_V7 = 2;
 export const COLD_SNAP_RANGE_V7 = 1;
 /** Ice Folk Freeze: the Ice Witch's Frost Bolt reach (Chebyshev). */
 export const FROST_BOLT_RANGE_V7 = 2;
+/**
+ * The nearest unit a Frost Bolt may aim at (`pulp_wars-ev6q`, 7r129): an
+ * adjacent enemy is only ever an Attack (Cold Snap freezes the ring), so a
+ * Frost Bolt flies exactly 2 tiles.
+ */
+export const FROST_BOLT_MIN_RANGE_V7 = 2;
 /** Ice Folk Freeze: the farthest a Mammoth's Stampede goes (tiles). */
 export const STAMPEDE_RANGE_V7 = 3;
 /**

@@ -1,5 +1,6 @@
 import {
   COLD_SNAP_RANGE_V7,
+  FROST_BOLT_MIN_RANGE_V7,
   FROST_BOLT_RANGE_V7,
   previewBolasV7,
   previewColdSnapV7,
@@ -288,7 +289,8 @@ export function iceFolkPickTargetsV7(
 /**
  * Preview entries of an active pick that are not targets: the reach of a
  * Cold Snap (the eight tiles round the Witch) or a Frost Bolt (every
- * explored cell within its range), outlined at its edge.
+ * explored cell exactly 2 away: since `pulp_wars-ev6q`, 7r129, the ring
+ * beyond her neighbours), outlined at its edges.
  */
 export function addIceFolkPickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -305,9 +307,14 @@ export function addIceFolkPickEntriesV7(
   );
   const reach =
     pick.kind === "COLD_SNAP" ? COLD_SNAP_RANGE_V7 : FROST_BOLT_RANGE_V7;
-  const inArea = (at: CoordV7): boolean =>
-    Math.max(Math.abs(at.x - witch.at.x), Math.abs(at.y - witch.at.y)) <=
-      reach && explored.has(key(at));
+  const nearest = pick.kind === "COLD_SNAP" ? 0 : FROST_BOLT_MIN_RANGE_V7;
+  const inArea = (at: CoordV7): boolean => {
+    const distance = Math.max(
+      Math.abs(at.x - witch.at.x),
+      Math.abs(at.y - witch.at.y),
+    );
+    return distance <= reach && distance >= nearest && explored.has(key(at));
+  };
   for (let dy = -reach; dy <= reach; dy += 1)
     for (let dx = -reach; dx <= reach; dx += 1) {
       const at = { x: witch.at.x + dx, y: witch.at.y + dy };

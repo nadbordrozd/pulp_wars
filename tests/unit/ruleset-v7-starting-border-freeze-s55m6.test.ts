@@ -59,8 +59,8 @@ describe("the identity", () => {
   // Fishing Hole links (`pulp_wars-vg5l`) took 7r127 after it, and the
   // Mammoth's 2- or 3-tile Stampede (`pulp_wars-57lq`) 7r128.
   it("was 7r126 after 7r125, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r128");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r128.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r126");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r125");

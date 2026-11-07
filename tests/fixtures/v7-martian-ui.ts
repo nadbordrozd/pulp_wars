@@ -431,7 +431,7 @@ export const MARTIAN_BOLDER_V7 = {
   battleship: { x: 4, y: 6 },
   boat: { x: 3, y: 6 },
   far: { x: 6, y: 4 },
-  /** The capped scene: the three units the Brain holds. */
+  /** The held scene: the three units the Brain holds. */
   held: [
     { x: 3, y: 4 },
     { x: 5, y: 4 },
@@ -454,8 +454,12 @@ export function martianBolderTargetsFixtureV7(): GameStateV7 {
   );
 }
 
-/** The same Brain holding three units (the limit): no Mind Control. */
-export function martianBolderCapFixtureV7(): GameStateV7 {
+/**
+ * The same Brain holding three units. Three was the limit from 7r99; since
+ * `pulp_wars-ev6q` (7r129) there is none, so it still takes the Knight on
+ * the village.
+ */
+export function martianBolderHeldFixtureV7(): GameStateV7 {
   const at = MARTIAN_BOLDER_V7;
   return martianUiFieldV7(
     [

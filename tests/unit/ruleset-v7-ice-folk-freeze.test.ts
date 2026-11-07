@@ -497,22 +497,25 @@ describe("the Ice Witch: Cold Snap and Frost Bolt (section 21.6)", () => {
     ).toEqual({ reason: "NO_TARGET" });
   });
 
-  it("Frost Bolt freezes one visible hostile unit within 2, in table order, and spends her action", () => {
+  it("Frost Bolt freezes one visible hostile unit exactly 2 away, in table order, and spends her action", () => {
     const state = witchField();
     const witch = unitAtV7(state, at(5, 3));
-    // Offered for every legal target within 2, in target-ID order; never
-    // the Frozen one on (6, 2), which it would not change (no pointless
-    // actions, `pulp_wars-zir6`).
-    expect(offeredV7(state, "FROST_BOLT")).toEqual(
-      [at(4, 3), at(7, 1)]
-        .map((where) => unitAtV7(state, where).id)
-        .sort((left, right) => left - right)
-        .map((targetUnitId) => ({
-          kind: "FROST_BOLT",
-          unitId: witch.id,
-          targetUnitId,
-        })),
-    );
+    // Offered for every legal target exactly 2 away (`pulp_wars-ev6q`,
+    // 7r129: 1 or 2 before), in target-ID order; never the adjacent one on
+    // (4, 3), which is an Attack or her Cold Snap's, nor the Frozen one on
+    // (6, 2), which it would not change (no pointless actions,
+    // `pulp_wars-zir6`).
+    expect(offeredV7(state, "FROST_BOLT")).toEqual([
+      {
+        kind: "FROST_BOLT",
+        unitId: witch.id,
+        targetUnitId: unitAtV7(state, at(7, 1)).id,
+      },
+    ]);
+    expect(rejectedV7(state, frostBolt(state, at(5, 3), at(4, 3)))).toEqual({
+      code: "FROST_BOLT_NOT_LEGAL",
+      params: { reason: "OUT_OF_RANGE" },
+    });
     const result = playV7(state, frostBolt(state, at(5, 3), at(7, 1)));
     expect(result.events).toEqual([
       {

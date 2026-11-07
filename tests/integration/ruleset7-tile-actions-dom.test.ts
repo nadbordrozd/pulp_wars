@@ -3,6 +3,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { CoordV7 } from "../../src/engine/index";
 import { tileActionsAtV7 } from "../../src/render/canvas/tile-actions-v7";
+import {
+  DWARF_MOLE_ROAD_V7,
+  dwarfMoleRoadFixtureV7,
+} from "../fixtures/v7-dwarf-ui";
 import { FROZEN_UI_V7 } from "../fixtures/v7-frozen-sea-ui";
 import {
   required,
@@ -148,17 +152,32 @@ describe("tile actions in the DOM", () => {
     });
   });
 
-  it("chooses a Brain's Mind Control from the chooser of the enemy beside it", async () => {
+  it("takes the enemy beside a Brain with one tap: Mind Control is its only action there", async () => {
     // Bolder abilities (`pulp_wars-w49.42`, 7r99): Mind Control reaches the
-    // eight tiles around the Brain, so its target can be hit too: the tile
-    // opens a chooser with both.
+    // eight tiles around the Brain. `pulp_wars-ev6q` (7r129): the Brain has
+    // no attack, so the tile opens no chooser (it offered Attack too).
     const scene = rig(tileActionsBrainFixtureV7());
     select(scene, A.brain);
     tap(scene, A.controlTarget);
-    expect(rows()).toEqual(["attack", "mind_control"]);
-    requiredButton("tile-choice-mind-control").click();
+    expect(chooser()).toBeNull();
     await waitUntil(() => scene.controller.accepted.length === 1);
     expect(scene.controller.accepted[0]?.kind).toBe("MIND_CONTROL");
+  });
+
+  it("digs a Mole's Tunnel 2 tiles away with one tap when no Hammerer can ride", async () => {
+    // `pulp_wars-ev6q` (7r129): a Tunnel tile is 2 or 3 away and never also
+    // a Move (Roads give the Mole nothing), so it opens no chooser; with no
+    // Hammerer beside the Mole there is nothing else to choose either.
+    const scene = rig(dwarfMoleRoadFixtureV7());
+    select(scene, DWARF_MOLE_ROAD_V7.mole);
+    tap(scene, { x: 7, y: 2 });
+    expect(chooser()).toBeNull();
+    await waitUntil(() => scene.controller.accepted.length === 1);
+    expect(scene.controller.accepted[0]).toMatchObject({
+      kind: "TUNNEL",
+      to: { x: 7, y: 2 },
+      rider: null,
+    });
   });
 
   it("keeps a rite's confirmation: a star tile is chosen, then begun", async () => {

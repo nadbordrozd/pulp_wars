@@ -11,6 +11,7 @@ import {
   GUNNER_UNMOVED_SHOTS_V7,
   PLATED_CAP_V7,
   REPAIR_MACHINE_V7,
+  TUNNEL_MIN_RANGE_V7,
   TUNNEL_RANGE_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
@@ -131,9 +132,12 @@ const WHIRLIGIG = (): string => dwarfLabelV7("KNIGHT");
 // ------------------------------------------------------------ section 16.2
 
 export const TUNNEL_LABEL_V7 = "Tunnel";
-/** "Dig up to 3 tiles under anything. Enemies next to the Mole take {n} …". */
+/**
+ * "Dig 2 or 3 tiles under anything. Enemies next to the Mole take {n} …"
+ * (`pulp_wars-ev6q`, 7r129: never to the tile next door, which is a Move).
+ */
 export function tunnelTooltipV7(eruptionDamage: number): string {
-  return `Dig up to ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take ${eruptionDamage} when it surfaces`;
+  return `Dig ${TUNNEL_MIN_RANGE_V7} or ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take ${eruptionDamage} when it surfaces`;
 }
 export const TUNNEL_PICK_V7 = "Choose where the Mole surfaces";
 /**
@@ -175,8 +179,10 @@ export function noPassengerAccessibleNameV7(selected: boolean): string {
   return `${TUNNEL_ALONE_V7}${selected ? ", selected" : ""}`;
 }
 export const TUNNEL_SURFACED_V7 = "It surfaced this turn";
+/** `pulp_wars-ev6q` (7r129): the Steam Mole's Move ignores Roads. */
+export const ROADS_NO_HELP_TEXT_V7 = "Roads do not speed it up";
 export const TUNNEL_MOVED_V7 = "It moved this turn";
-export const TUNNEL_NO_TILE_V7 = `No free tile within ${TUNNEL_RANGE_V7}`;
+export const TUNNEL_NO_TILE_V7 = `No free tile ${TUNNEL_MIN_RANGE_V7} or ${TUNNEL_RANGE_V7} tiles away`;
 export const RIDER_SURFACED_V7 =
   "Just surfaced: cannot enter a city or village this turn";
 export const BOMB_RUN_LABEL_V7 = "Bomb Run";
@@ -491,7 +497,7 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
   return [
     [
       TUNNEL_LABEL_V7,
-      `a ${MOLE()} digs up to ${TUNNEL_RANGE_V7} tiles under anything, taking an adjacent ${HAMMERER()} with it; both wait as mounds everyone can see and nobody can touch.`,
+      `a ${MOLE()} digs ${TUNNEL_MIN_RANGE_V7} or ${TUNNEL_RANGE_V7} tiles under anything (a step to the next tile is a plain Move, and Roads do not speed its Move), taking an adjacent ${HAMMERER()} with it; both wait as mounds everyone can see and nobody can touch.`,
     ],
     [
       "Eruption",
@@ -620,7 +626,7 @@ export function dwarfAbilityDescriptionV7(
     case "TWIN_SHOT":
       return `Shoots ${GUNNER_UNMOVED_SHOTS_V7} times on a turn it has not moved, once after moving; after it fires it cannot move.`;
     case "TUNNEL":
-      return `Digs up to ${TUNNEL_RANGE_V7} tiles under anything (and takes an adjacent ${HAMMERER()} along); it waits as a mound everyone can see and nobody can touch.`;
+      return `Digs ${TUNNEL_MIN_RANGE_V7} or ${TUNNEL_RANGE_V7} tiles under anything (and takes an adjacent ${HAMMERER()} along); it waits as a mound everyone can see and nobody can touch.`;
     case "ERUPTION":
       return `When it surfaces, every enemy on the ground next to it takes ${ERUPTION_DAMAGE_V7} (${BLASTING_ERUPTION_DAMAGE_V7} with Blasting Charges), and Field Defense around it collapses.`;
     case "ASSEMBLE":
@@ -712,6 +718,8 @@ export function dwarfRecruitNotesV7(
     ...(mechanics.movementMode === "FLY"
       ? ["Flies over any terrain and unit."]
       : []),
+    // `pulp_wars-ev6q` (7r129): the Steam Mole.
+    ...(mechanics.ignoresRoads ? [`${ROADS_NO_HELP_TEXT_V7}.`] : []),
     ...(mechanics.repairsAsMachine && !mechanics.construct
       ? [
           `A machine: an ${ENGINEER()}'s Repair heals it by ${REPAIR_MACHINE_V7}.`,

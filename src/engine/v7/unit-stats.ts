@@ -5,7 +5,6 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
-  MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
   chargeRunUpMaximumTilesV7,
   attackIsChargeV7,
@@ -197,8 +196,9 @@ export interface PublicDinosaurMechanicsV7 {
  * a unit without a heat ray or afloat); `cooling` is whether its next ray
  * is halved by Cooling; `mindControl` is a Brain's cooldown entry
  * (`cooldown`: the remaining `turnsRemaining`, or null when ready), the
- * units it controls (the Mind Control revision: `controlled`), and the
- * limit (`controlLimit`). `capacitySlots` is 0 for a mind-controlled unit
+ * units it controls (the Mind Control revision: `controlled`; any number
+ * since `pulp_wars-ev6q`, 7r129, which dropped the limit and
+ * `controlLimit`). `capacitySlots` is 0 for a mind-controlled unit
  * (it has no home).
  */
 export interface PublicMartianMechanicsV7 {
@@ -218,7 +218,6 @@ export interface PublicMartianMechanicsV7 {
   readonly mindControl: {
     readonly cooldown: number | null;
     readonly controlled: number;
-    readonly controlLimit: number;
   } | null;
 }
 
@@ -939,7 +938,6 @@ export function publicUnitStatsV7(
                     )?.turnsRemaining ?? null,
                   controlled: controlledByBrainV7(state.mindControlled, unit.id)
                     .length,
-                  controlLimit: MIND_CONTROL_LIMIT_V7,
                 }
               : null,
           },

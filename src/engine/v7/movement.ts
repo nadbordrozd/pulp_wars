@@ -18,6 +18,7 @@ import {
   unitMovementModeV7,
   unitDeepWaterMoveV7,
   unitIsSummonedV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type MovementModeV7,
 } from "../rules/ruleset-v7";
@@ -297,9 +298,12 @@ function validateMovementPathCoreV7(
   const revealed: CoordV7[] = [];
   const traversedPath: CoordV7[] = [];
   let current = unit.at;
+  // `pulp_wars-ev6q` (7r129): Roads give the Steam Mole nothing (its Move
+  // is always one tile, so every farther tile is its Tunnel's).
+  const roads = !unitRoleMechanicsV7(state, unit).ignoresRoads;
   // Whether the tile being left is a usable Road node for the owner: it
   // alone decides the step cost (revision 18, section 4.1).
-  let currentRoadNode = isUsableRoadNodeV7(state, player, current);
+  let currentRoadNode = roads && isUsableRoadNodeV7(state, player, current);
   let spentPoints2 = 0;
   // The Ice Folk revision (sections 6.1, 6.2, and 6.5): Snow is read once,
   // from the state before the command. An Ice Folk unit Glides (a step from
@@ -680,7 +684,7 @@ function validateMovementPathCoreV7(
       entersZoc &&
       !inHostileZoc(state, { ...unit, at: step }, step, knownBeforeCommand);
     // The stop is waived only on a Road edge: both ends usable Road nodes.
-    const stepRoadNode = isUsableRoadNodeV7(state, player, step);
+    const stepRoadNode = roads && isUsableRoadNodeV7(state, player, step);
     // The Martian revision section 7.1: a walker or flyer is never stopped
     // by terrain; the Ice Folk revision section 7.1: nor is a Mountain-born
     // unit by a Mountain.
@@ -1299,11 +1303,12 @@ function validatePlayerMovementPathCoreV7(
     mode,
   );
   let current = unit.at;
-  let currentRoadNode = isUsablePublicRoadNodeV7(
-    view,
-    publicTileAt(view, current),
-    context,
-  );
+  // `pulp_wars-ev6q` (7r129): Roads give the Steam Mole nothing, as the
+  // canonical validation.
+  const roads = !unitRoleMechanicsV7(view, unit).ignoresRoads;
+  let currentRoadNode =
+    roads &&
+    isUsablePublicRoadNodeV7(view, publicTileAt(view, current), context);
   let spentPoints2 = 0;
   // The Ice Folk revision (section 6.2): Glide and deep snow from the
   // public Snow flags; Prowl; a surfaced rider's settlement restriction.
@@ -1539,7 +1544,7 @@ function validatePlayerMovementPathCoreV7(
       !prowls &&
       !overstrides &&
       publicHostileZoc(view, unit, step, context);
-    const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
+    const stepRoadNode = roads && isUsablePublicRoadNodeV7(view, tile, context);
     const roadEdge = currentRoadNode && stepRoadNode && jumped === null;
     const snowStops = snowStopped && stepSnow && !roadEdge;
     // The frozen sea section 8.7: slip.
