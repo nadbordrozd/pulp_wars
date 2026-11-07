@@ -1294,6 +1294,23 @@ export function iceFolkBoundaryNoticeV7(
       parts.push(
         `${owner(attacker.ownerId)} ${unitName(after, attacker)} shattered a ${defender === undefined ? "unit" : unitName(after, defender)}`,
       );
+    } else if (event.kind === "WOUNDED_TENDED") {
+      // `pulp_wars-s55m.8`: a Tend or an Engineer's Repair thaws a Frozen
+      // unit (section 21.2); the seat that froze it is told, since the
+      // Frozen tag otherwise just vanishes from its board.
+      const tender = unitById(event.captainId);
+      if (tender === undefined || tender.ownerId === viewerId) continue;
+      const thawed = event.results.filter((result) => result.curedFrozen);
+      if (thawed.length === 0) continue;
+      toast = true;
+      const target = unitById(thawed[0]?.unitId ?? -1);
+      const what =
+        thawed.length === 1
+          ? `a ${target === undefined ? "unit" : unitName(after, target)}`
+          : plural(thawed.length, "unit");
+      parts.push(
+        `${owner(tender.ownerId)} ${unitName(after, tender)} thawed ${what}`,
+      );
     } else if (event.kind === "MAMMOTH_STAMPEDED") {
       // Ice Folk Freeze: the Mammoth's charge, its hits and its kills.
       const mammoth = unitById(event.unitId);

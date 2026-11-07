@@ -2742,13 +2742,21 @@ function eventTextV7(
         break;
       }
       for (const result of event.results) {
+        const unit = context.memory.tag(result.unitId);
         const cured = [
           ...(result.curedBitten ? ["the bite"] : []),
           ...(result.curedPlague ? ["the Plague"] : []),
         ];
-        if (cured.length > 0)
+        const done = [
+          ...(cured.length > 0
+            ? [`cured ${cured.join(" and ")} of ${unit}`]
+            : []),
+          // `pulp_wars-s55m.8`: a Tend or Repair thawed a unit you froze.
+          ...(result.curedFrozen ? [`thawed ${unit} (no longer Frozen)`] : []),
+        ];
+        if (done.length > 0)
           lines.push(
-            `CURED: ${context.memory.tag(event.captainId)} cured ${cured.join(" and ")} of ${context.memory.tag(result.unitId)}`,
+            `CURED: ${context.memory.tag(event.captainId)} ${done.join(" and ")}`,
           );
       }
       break;

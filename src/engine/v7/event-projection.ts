@@ -665,6 +665,9 @@ function eventVisible(
   // cured unit (a bite vanished from the biter's board without an event).
   // Such a viewer's copy lists only the cured units it sees
   // (`projectEventPayload`); a Tend that only healed stays its owner's.
+  // A thaw is a cure too (`pulp_wars-s55m.8`): Frozen is public, and the
+  // freezing seat saw an Engineer's Repair lift the Frostbite of a Hammerer
+  // without an event, so the thawed Hammerer seemed to shrug it off.
   if (event.kind === "WOUNDED_TENDED") {
     const seen = (id: UnitId): boolean =>
       beforeVisible.has(id) || afterVisible.has(id);
@@ -674,14 +677,7 @@ function eventVisible(
     if (owner === viewerId) return ids.every(seen);
     return (
       seen(event.captainId) &&
-      event.results.some(
-        (result) =>
-          // (`pulp_wars-mch9.8`: or a frog, which the hexing seat watches.)
-          (result.curedPlague ||
-            result.curedBitten ||
-            result.curedFrog === true) &&
-          seen(result.unitId),
-      )
+      event.results.some((result) => tendCuredV7(result) && seen(result.unitId))
     );
   }
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 12): a
@@ -1008,6 +1004,23 @@ function eventVisible(
   }
 }
 
+/**
+ * Whether a Tend result cured something another seat put on the unit and
+ * watches: a Plague, a bite, a frog (`pulp_wars-mch9.8`), or a Frozen entry
+ * (`pulp_wars-s55m.8`). Such a result reaches every viewer that sees the
+ * tender and the unit; a bare heal stays the tender's owner's.
+ */
+function tendCuredV7(
+  result: Extract<DomainEventV7, { kind: "WOUNDED_TENDED" }>["results"][number],
+): boolean {
+  return (
+    result.curedPlague ||
+    result.curedBitten ||
+    result.curedFrozen ||
+    result.curedFrog === true
+  );
+}
+
 function unitIds(event: DomainEventV7): readonly UnitId[] {
   switch (event.kind) {
     case "COMBAT_RESOLVED":
@@ -1142,10 +1155,7 @@ function projectEventPayload(
       ...event,
       results: event.results.filter(
         (result) =>
-          // (`pulp_wars-mch9.8`: or a frog, which the hexing seat watches.)
-          (result.curedPlague ||
-            result.curedBitten ||
-            result.curedFrog === true) &&
+          tendCuredV7(result) &&
           (seenBefore.has(result.unitId) || seenAfter.has(result.unitId)),
       ),
     };

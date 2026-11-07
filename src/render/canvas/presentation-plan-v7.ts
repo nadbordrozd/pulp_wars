@@ -2251,12 +2251,13 @@ export function corePresentationPlanV7(
           effect: "REPAIR",
           cells: recipients.map((recipient) => recipient.at),
         });
-      // Revision 14: Tend also cures Plague and bites; the cured sparkle.
+      // Revision 14: Tend also cures Plague and bites; the cured sparkle
+      // (and a thaw, `pulp_wars-s55m.8`).
       if (event.kind === "WOUNDED_TENDED") {
         const [first, ...rest] = event.results.flatMap((result) => {
           const unit = publicUnits.get(result.unitId);
           return unit !== undefined &&
-            (result.curedPlague || result.curedBitten)
+            (result.curedPlague || result.curedBitten || result.curedFrozen)
             ? [{ unitId: unit.id, at: unit.at }]
             : [];
         });

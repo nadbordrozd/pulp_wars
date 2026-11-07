@@ -11123,7 +11123,9 @@ of the Abomination's kills in combat only.
   in full; since the correction of `7r51`, when it cured a Plague or a
   bite, also to every player who sees the Captain and a cured unit, with
   only the cured units that player sees in `results` (the player whose
-  Zombie bit the unit saw the mark vanish without an event).
+  Zombie bit the unit saw the mark vanish without an event). A thaw
+  (`curedFrozen`) and a cured frog count as cures for this projection
+  (`pulp_wars-s55m.8` and `pulp_wars-mch9.8`).
 - Errors `RAISE_DEAD_NOT_LEGAL`, `DEVOUR_NOT_LEGAL`, `WAIL_NOT_LEGAL`, and
   `DISBAND_NOT_LEGAL`; `RECOVER_NOT_LEGAL` has the reason `RESTLESS`.
 - The public command query offers each Undead command, Tend Wounded, and
@@ -13507,7 +13509,15 @@ turnsLeft 2  → turnsLeft := 1
   Control and a release keep it (the unit stays on the board). Tend Wounded
   (and the Engineer's Repair, and Frosting) removes it
   ([section 10](#10-recovery-and-support)): the unit thaws at once and may
-  move and act this turn. Promotion, growth, a Push, a Tractor Beam pull, and a change of home do
+  move and act this turn, and it strikes back on the next Ice Folk turn.
+  Since `pulp_wars-s55m.8` the `WOUNDED_TENDED` of such a thaw is projected
+  to every player who sees the tender and the thawed unit, with that
+  result (`curedFrozen: true`), like a cured Plague or bite
+  ([section 17.10](#1710-commands-events-and-queries)); before, the seat
+  that froze the unit saw the Frozen mark vanish without an event (the I3
+  hand play: a Frostbitten Hammerer, `turnsLeft` 2, thawed by an
+  Engineer's Repair on the Dwarf turn, seemed to shrug off the Frostbite).
+  The rule itself is unchanged, so no ruleset revision. Promotion, growth, a Push, a Tractor Beam pull, and a change of home do
   not remove it (a Frozen unit cannot embark, land, or Beam Down itself).
 
 ### 21.3 What a Frozen unit cannot do
