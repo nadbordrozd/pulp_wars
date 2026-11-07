@@ -200,8 +200,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Revision 5 (`pulp_wars-s55m.5`): the gang is seven.
   "ICE_FOLK_1@5:ICE_FOLK":
     "edbd702109c873b93983a1b5929dc5cc7938dfe9ff9bd8144e6e815d3debb008",
-  "ICE_FOLK_2@4:ICE_FOLK":
-    "23a24ff15531d8f2a24ce01df35a0f9f7996204456610c0b3ed6fc491929a52e",
+  // Revision 5 (`pulp_wars-s55m.9`): the Frost Giant wakes in round 12.
+  "ICE_FOLK_2@5:ICE_FOLK":
+    "7fe2ee3d0c4e707774591aedbc2b13d0da789db8f4d85f4fa41643f7865811c1",
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
@@ -580,8 +581,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Revision 5 (`pulp_wars-s55m.5`): the gang is seven.
   "ICE_FOLK_1@5:ICE_FOLK":
     "19a0949ecb54a9a8485089e2a2dd3c59980d06c4881d3e54b351ec0d4fc9adca",
-  "ICE_FOLK_2@4:ICE_FOLK":
-    "5c90d2d7df4029954d83d466f25b47ff84f0814f50bffd94724dc5c988158a41",
+  // Revision 5 (`pulp_wars-s55m.9`): the Frost Giant wakes in round 12.
+  "ICE_FOLK_2@5:ICE_FOLK":
+    "6c61ee8d1e6fc2c3c3d54340ad34c30d40aeca9c7ea1029235e0592ed221273a",
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.

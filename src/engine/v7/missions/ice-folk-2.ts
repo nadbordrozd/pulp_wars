@@ -5,9 +5,9 @@ import type { MissionDefinitionV7 } from "./types";
  * the Ice Folk campaign, `pulp_wars-hmyk.10`). The Frost Giants sleep in
  * the Glacier Tomb, and the Frozen Abbot, a monk three hundred years in the
  * ice, has raised his dead to keep them asleep: destroy the Abbot by round
- * 20. Step 2 of 6. A Lich in a cirque of peaks shoots three tiles and
+ * 18. Step 2 of 6. A Lich in a cirque of peaks shoots three tiles and
  * splashes plague on whoever stands round its target; his Zombies hold the
- * tomb and his Skeletons march on Rime Camp. On the tenth round a Frost
+ * tomb and his Skeletons march on Rime Camp. On the twelfth round a Frost
  * Giant wakes beside the tomb and joins you: its blow from the next tile
  * shatters a Frozen enemy left with 8 HP or less, and its shards freeze
  * everyone round the shattered one.
@@ -50,6 +50,14 @@ import type { MissionDefinitionV7 } from "./types";
  * snowfields from the start, so the tomb has sixteen dead (eleven march
  * after three rounds) and 4 Coins; the other waves are gone, and the Giant
  * still wakes in round 10. The clock is 18 (star 14).
+ *
+ * Revision 5 (`pulp_wars-s55m.9`, CAMPAIGN.md section 27.5, hand-played):
+ * revision 4 fell comfortably in round 12, because the dead never pressed
+ * the camp and the Giant woke in round 10 and walked to the Abbot. From
+ * round 3 the Abbot keeps seven at home and the other nine `ASSAULT` Rime
+ * Camp (they massed but did not march under `RUSH`), and the Giant wakes
+ * beside the tomb in round 12, so the dead's assault has to be survived
+ * before it comes.
  */
 export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_2",
@@ -57,7 +65,9 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
   // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
   // the middle.
-  revision: 4,
+  // Revision 5 (`pulp_wars-s55m.9`): the dead assault Rime Camp from round
+  // 3 and the Giant wakes in round 12.
+  revision: 5,
   seed: 20261602,
   // <map>
   size: 14,
@@ -234,7 +244,8 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
       ],
       // Retune 3: all eleven hold the cirque for three rounds; then the
       // Abbot and four of his dead stay, and the other six march on Rime
-      // Camp (retune 4: sixteen hold, and eleven march).
+      // Camp (retune 4: sixteen hold, and eleven march). Revision 5: the
+      // Abbot and six stay, and the other nine assault Rime Camp.
       directive: [
         {
           kind: "GUARD",
@@ -245,20 +256,21 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
         {
           kind: "GUARD",
           zone: [{ x0: 5, y0: 0, x1: 7, y1: 3 }],
-          garrison: 5,
-          others: { kind: "RUSH" },
+          garrison: 7,
+          others: { kind: "ASSAULT", target: { x: 8, y: 10 } },
           fromRound: 3,
         },
       ],
     },
   ],
-  // The first giant wakes on the tenth day, beside the tomb. Retune 3: and
-  // the Abbot sent three announced waves, in rounds 4, 8 and 12 (retune 4:
-  // the first is on the board from the start, the other two are gone).
+  // The first giant wakes beside the tomb, on the tenth day until revision
+  // 5 and on the twelfth since. Retune 3: and the Abbot sent three announced
+  // waves, in rounds 4, 8 and 12 (retune 4: the first is on the board from
+  // the start, the other two are gone).
   reinforcements: [
     {
       seat: 0,
-      round: 10,
+      round: 12,
       line: "A Frost Giant wakes beside the tomb, yawns, and picks a side.",
       units: [{ role: "JUGGERNAUT", at: { x: 8, y: 3 } }],
     },

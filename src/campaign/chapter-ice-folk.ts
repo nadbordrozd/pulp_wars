@@ -47,11 +47,11 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       name: "Waking the Giants",
       format: "KILL",
       briefing:
-        "Long ago, say the Ice Folk, the giants of the frost walked out of the cold to put a hungry star to bed. They sleep now in the Glacier Tomb, and the Frozen Abbot, a monk who has prayed to the wrong thing for three hundred years, has raised his dead to keep them asleep. Destroy the Abbot, who has sixteen dead and is sending them down. The first giant wakes on the tenth day whether he is gone or not.",
+        "Long ago, say the Ice Folk, the giants of the frost walked out of the cold to put a hungry star to bed. They sleep now in the Glacier Tomb, and the Frozen Abbot, a monk who has prayed to the wrong thing for three hundred years, has raised his dead to keep them asleep. Destroy the Abbot, who has sixteen dead and sends them down. The first giant wakes on the twelfth day whether he is gone or not.",
       objective: "Destroy the Frozen Abbot by turn 18.",
       hints: Object.freeze([
-        "A Frost Giant joins you on turn 10: freeze, then smash.",
-        "The Abbot's dead march at once: hold the camp first.",
+        "A Frost Giant joins you on turn 12: freeze, then smash.",
+        "From turn 3 the dead assault the camp: hold it first.",
       ]),
       closing:
         "The Abbot shatters, and the giant walks out of the glacier yawning. He remembers the hungry star. It sleeps, he says, under the Hollow Mountain, and it is warm.",

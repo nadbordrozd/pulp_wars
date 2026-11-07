@@ -7981,3 +7981,61 @@ mattered in I4 (the defence held on land).
 - The Normal AI's goblin gang (I1), the sweets (I4) and the Abbot's dead
   (I2) mostly sat or took villages instead of rushing the towns their
   directives point at.
+
+### 27.5 I2: the Giant wakes later, the dead assault (`pulp_wars-s55m.9`)
+
+Section 27.4 left I2 as a comfortable 3-star win in round 12: under `RUSH`
+the dead massed in the cirque or took villages and never pressed the camp,
+and the Frost Giant woke in round 10, smashed the door Zombie, and its
+shards froze the Abbot. Three enemy-start levers left it comfortable. The
+root's call keeps the story (the Giant wakes beside the tomb) but makes
+the fight real: the dead get an aggressive start that presses Rime Camp
+through the directive system, and the Giant wakes later, so the Abbot's
+host has to be survived first. A mission has no conditional wave (a
+reinforcement has a round and nothing else), so the wake moved to a later
+round; no engine feature was added. Three `play-text` games as the Ice
+Folk against the Normal AI on `7r126`, user-authorised.
+
+| Game | Definition                                                                                                                            | Result                                                                                                      | Stars               | What decided it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | draft A: from round 1 the Abbot keeps five and eleven `ASSAULT` Rime Camp; the Giant in round 13                                      | loss, eliminated in round 12                                                                                | none                | The dead met Ulvsted (the village north of the camp, taken in round 3) in round 3 and took the villages of the north-east. My Yetis killed on Ulvsted's front and the forced advance after a kill left them among the dead: five Yetis and two Sleds died by round 10, and five of them, bitten, rose as Zombies. Moving a Sled off (7, 7) opened a tile beside Rime, and two Skeletons killed her in round 10; Rime Camp fell in round 12, before the Giant woke. My blunders, on a start that was also too strong                                                                                    |
+| 2    | draft A                                                                                                                               | loss (abandoned in round 8: three units against about twenty)                                               | none                | Played tighter (no Yeti advanced on purpose; a Mammoth shatter and Rockfalls from the peaks), but the Yeti holding Ulvsted's centre died to two Skeletons in round 6, and the Mammoth's kill-advance onto that centre put it beside a fresh Zombie and a Skeleton (dead and risen in round 7). With five units, a camp at its unit limit and eleven dead arriving from round 3, the draft was too strong for good play                                                                                                                                                                                 |
+| 3    | revision 5: all sixteen hold the cirque until round 3, then the Abbot keeps seven and nine `ASSAULT` Rime Camp; the Giant in round 12 | win, round 15 of 18; a Sled, two Yetis and the Mammoth lost, and Ulvsted and Vettra (a second village) lost | 2 (round 14 missed) | The dead massed until round 6 and then came in a stream from the north-east and the west. Frost Bolts and Bolas on the attackers, Rockfall kills from the peaks and two Sled shatters held the camp; Rime fell to 4 HP in round 8. A mine on the ore peak by the camp (Engineering) made Rime Camp level 5 in round 10, and its own Frost Giant cleared the camp's front. The tomb's Giant woke at (9, 1) (a Skeleton stood on (8, 3)), walked to (7, 1) in round 14 (its aura froze three Zombies), smashed the Zombie at (6, 1), and the shards froze the Abbot at (5, 0); it killed him in round 15 |
+
+Revision 5 is game 3's definition. It is a real fight: the dead press the
+camp from round 6 and cost four units and both captured villages, and a
+player who spreads out or kills forward feeds the dead their Zombies (game
+1). The round-14 star needs the Abbot dead by the Giant's third turn, so
+it asks for a wake on (8, 3) or a push on the tomb. The changes:
+
+| Field                                                  | Revision 4                                                                     | Revision 5                                                                                       |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| the dead's directive from round 3                      | `GUARD` the cirque with five, the rest `RUSH`                                  | `GUARD` the cirque with seven (the Abbot and six), the other nine `ASSAULT` Rime Camp at (8, 10) |
+| the Frost Giant (your wave, beside the tomb at (8, 3)) | round 10                                                                       | round 12                                                                                         |
+| briefing                                               | "wakes on the tenth day"                                                       | "wakes on the twelfth day" (and "sends them down", to keep the card within 400 characters)       |
+| hints                                                  | "joins you on turn 10"; "The Abbot's dead march at once: hold the camp first." | "joins you on turn 12"; "From turn 3 the dead assault the camp: hold it first."                  |
+
+The dead's sixteen units and 4 Coins, the clock (18) and the stars (by
+round 14, no city lost) are unchanged. I2 is re-pinned at revision 5 in
+both pin tables of `tests/unit/ruleset-v7-missions.test.ts`;
+`tests/unit/campaign-ice-folk-v7.test.ts` pins the new directive and the
+round-12 wake. SAGA.md's I2 keeps the saga bible's tenth day (its clock,
+20, was already the bible's and not the mission's).
+
+**Observations (no rule changed).**
+
+- `ASSAULT` makes the dead fight where `RUSH` did not: under `RUSH` they
+  sat in the cirque or took villages; under `ASSAULT` they mass and then
+  come at the camp in a stream. They still take villages on the way (those
+  of the north-east in every game, and Ulvsted and Vettra back from me).
+- A melee kill advances the killer onto the dead unit's tile, so a Yeti or
+  the Mammoth that kills at the front ends among the dead; with Zombie
+  bites, each such loss is a Zombie for the Abbot. Rockfall from a peak
+  and a Giant (which never advances) are the safe killers.
+- The Undead seat forbids Scouting but got a Ghoul in each game, most
+  likely from the treasure chest at (13, 4) (the Undead treasure unit is
+  their `RAIDER`).
+- Rime Camp reaches level 5 by round 10 with two fruits, two farms, a
+  workshop, Population Boom and a mine on the ore peak at (7, 9), so the
+  player can have a Frost Giant of their own before the tomb's wakes; the
+  EXPLORER monument then adds 3 more population.

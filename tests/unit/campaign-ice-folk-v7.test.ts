@@ -270,14 +270,20 @@ describe("The Long Winter", () => {
     ]);
     expect(rounds("ICE_FOLK_1")).toEqual([]);
     // I2: sixteen dead (retune 3's first wave on the board), the tomb holds
-    // three rounds, then the Abbot and four stay and the rest march; no
-    // waves of the dead; the first Frost Giant joins you in round 10.
+    // three rounds, then the Abbot and six stay and the other nine assault
+    // Rime Camp (`pulp_wars-s55m.9`); no waves of the dead; the first Frost
+    // Giant joins you beside the tomb in round 12 (was 10).
     expect(seat("ICE_FOLK_2", 1).units).toHaveLength(16);
     expect(seat("ICE_FOLK_2", 1).directive).toMatchObject([
-      { kind: "GUARD", untilRound: 3 },
-      { kind: "GUARD", garrison: 5, others: { kind: "RUSH" }, fromRound: 3 },
+      { kind: "GUARD", garrison: 16, untilRound: 3 },
+      {
+        kind: "GUARD",
+        garrison: 7,
+        others: { kind: "ASSAULT", target: { x: 8, y: 10 } },
+        fromRound: 3,
+      },
     ]);
-    expect(rounds("ICE_FOLK_2")).toEqual([[0, 10]]);
+    expect(rounds("ICE_FOLK_2")).toEqual([[0, 12]]);
     expect(
       (mission("ICE_FOLK_2").reinforcements ?? []).find(
         (wave) => wave.seat === 0,
