@@ -102,6 +102,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape landing
   // of a seat's Vampire (the Spider never has the role).
   "src/engine/v7/movement.ts::canonicalBatLandingV7": "PLAYER_ONLY",
+  // Ice Folk movement (`pulp_wars-s55m.2`): only a unit of the Ice Folk
+  // kind dives, and its owner is a seat.
+  "src/engine/v7/movement.ts::canonicalDiveV7": "PLAYER_ONLY",
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Stampede of a seat's Mammoth
   // (the Spider never has the role).
   "src/engine/v7/stampede.ts::stampedePathLegalV7": "PLAYER_ONLY",

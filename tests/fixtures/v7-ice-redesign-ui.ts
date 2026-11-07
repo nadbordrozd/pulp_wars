@@ -98,8 +98,10 @@ function accept(state: GameStateV7, command: CommandV7): GameStateV7 {
 /**
  * Seat 0 is the Ice Folk (the viewer) with every naval node (thick ice),
  * Crafting and Farming. Its capital's three Shallow Water tiles are its ice,
- * built on with the engine's commands: a Fishing Hole, a Workshop beside
- * it, and an Ice Harbour (`greatHarbour`: upgraded to the Great Harbour).
+ * built on with the engine's commands: a Fishing Hole and a Workshop beside
+ * it; the third holds an iced-over dock of the seat, its Ice Harbour
+ * (`greatHarbour`: a Great Harbour), as a captured one would be (the Ice
+ * Folk build no dock since `pulp_wars-s55m.2`).
  * A Yeti on the west shore stands over the Humans' ice (taken by a
  * Freeze) and its own cracked tile (mended by one).
  */
@@ -111,6 +113,15 @@ export function iceBuildUiFixtureV7(
     factions: ["ICE_FOLK", "ORIGINAL"],
     technologies: [[...NAVAL, "DRILL", "GATHERING", "FARMING"], ["SHORECRAFT"]],
     ports: [false, false],
+    // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk build no dock,
+    // so the Ice Harbour (or Great Harbour) is one the seat holds already,
+    // as a captured one, iced over.
+    improvements: [
+      {
+        at: at.harbour,
+        improvement: options.greatHarbour === true ? "SHIPYARD" : "PORT",
+      },
+    ],
     units: [{ seat: 0, role: "FIGHTER", at: at.yeti }],
     ice: [
       { at: at.west, seat: 0, cracked: true },
@@ -123,9 +134,6 @@ export function iceBuildUiFixtureV7(
   });
   state = accept(state, { kind: "BUILD_FISHING_HOLE", at: at.hole });
   state = accept(state, { kind: "BUILD_WORKSHOP", at: at.workshop });
-  state = accept(state, { kind: "BUILD_PORT", at: at.harbour });
-  if (options.greatHarbour === true)
-    state = accept(state, { kind: "BUILD_SHIPYARD", at: at.harbour });
   return state;
 }
 

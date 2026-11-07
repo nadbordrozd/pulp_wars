@@ -18,7 +18,7 @@ import {
   CRACK_ICE_PICK_V7,
   FREEZE_PICK_V7,
   ICE_LABEL_V7,
-  SLIDE_MOVE_LABEL_V7,
+  SKATE_TRAIL_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
   crackIceOutcomeTextV7,
   crackIceOutcomeV7,
@@ -320,8 +320,9 @@ export interface MoveSlideV7 {
  * What a Move does on ice, read from the command's own path (the path the
  * engine offers and will walk) and the view's ice list:
  *
- * - a unit that slides (`stats.iceFolk.slides`): every run of two or more
- *   ice tiles in one straight line is a slide (section 8.6);
+ * - a unit that skates (`stats.iceFolk.skates`): every run of two or more
+ *   ice tiles in one straight line is drawn as a skate trail (Ice Folk
+ *   movement, `pulp_wars-s55m.2`; a forced slide before);
  * - every other ground unit: a Move that ends on ice ends there (section
  *   8.7, the slip).
  *
@@ -342,7 +343,7 @@ export function moveOnIceV7(
   const ice = new Set(view.ice.map((entry) => key(entry.at)));
   if (!command.path.some((at) => ice.has(key(at)))) return null;
   const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
-  if (stats?.iceFolk?.slides !== true) {
+  if (stats?.iceFolk?.skates !== true) {
     // A walker or a flyer is never stopped by terrain; the Sabretooth is an
     // Ice Folk unit and does not slip.
     const slips =
@@ -382,5 +383,5 @@ export function moveOnIceLabelV7(
   onIce: ReturnType<typeof moveOnIceV7>,
 ): string | null {
   if (onIce === null) return null;
-  return onIce.slip ? SLIP_MOVE_LABEL_V7 : SLIDE_MOVE_LABEL_V7;
+  return onIce.slip ? SLIP_MOVE_LABEL_V7 : SKATE_TRAIL_LABEL_V7;
 }

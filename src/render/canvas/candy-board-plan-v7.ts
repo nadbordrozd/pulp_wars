@@ -1,5 +1,6 @@
 import {
   hopJumpedTileV7,
+  unitHopsV7,
   previewCrumbsEatV7,
   previewRebakeV7,
   previewSugarRushV7,
@@ -456,7 +457,9 @@ export function moveHopV7(
   readonly to: CoordV7;
 } | null {
   const unit = view.units.find((candidate) => candidate.id === command.unitId);
-  if (unit === undefined) return null;
+  // Ice Folk movement (`pulp_wars-s55m.2`): a Fishing Hole dive is a
+  // one-tile path that is no hop; only a unit that hops hops.
+  if (unit === undefined || !unitHopsV7(view, unit)) return null;
   let current = unit.at;
   for (const step of command.path) {
     const over = hopJumpedTileV7(current, step);

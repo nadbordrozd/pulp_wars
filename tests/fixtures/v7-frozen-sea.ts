@@ -1,4 +1,5 @@
 import {
+  applyCommandV7,
   parseGameStateV7,
   tileAtV7,
   type CoordV7,
@@ -250,5 +251,83 @@ export function frozenShipsV7(
     ].sort((left, right) => left.unitId - right.unitId),
   });
   if (parsed === null) throw new Error("the Frozen state is invalid");
+  return parsed;
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): an 11 x 11 terrain for the
+ * Fishing Hole dive: the strait of the default arena with two more Shallow
+ * Water tiles, (4, 1) and (6, 1), beside seat 0's capital on (5, 2), so its
+ * territory (radius 1) holds four water tiles two apart: (4, 1), (6, 1),
+ * (4, 3), and (6, 3). Use it with `ports: [false, true]`.
+ */
+export const DIVE_TERRAIN_V7: readonly string[] = [
+  "...........",
+  "....~.~....",
+  "...........",
+  "~~~~~~~~~~~",
+  "~~~~~~~~~~~",
+  "~~~~~~~~~.~",
+  "~~~~~~~~~~~",
+  "~~~~~~~~~~~",
+  "...........",
+  "...........",
+  "...........",
+];
+
+/** The four dive tiles of {@link DIVE_TERRAIN_V7}. */
+export const DIVE_HOLES_V7: readonly CoordV7[] = [
+  { x: 4, y: 1 },
+  { x: 6, y: 1 },
+  { x: 4, y: 3 },
+  { x: 6, y: 3 },
+];
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): `state` with seat 0's Fishing
+ * Holes built on `tiles` (its own ice in its territory) by the real
+ * `BUILD_FISHING_HOLE` command, each city reward the growth brings taken
+ * (the Coins one where it is offered, else the first), and the seat's Coins
+ * then put back to 60.
+ */
+export function withFishingHolesV7(
+  state: GameStateV7,
+  tiles: readonly CoordV7[],
+): GameStateV7 {
+  let next = state;
+  const actor = seatV7(state, 0).id;
+  for (const at of tiles) {
+    const built = applyCommandV7(next, actor, {
+      kind: "BUILD_FISHING_HOLE",
+      at,
+    });
+    if (!built.accepted)
+      throw new Error(`BUILD_FISHING_HOLE rejected: ${built.error.code}`);
+    next = built.state;
+    while (next.pendingChoices[0] !== undefined) {
+      const choice = next.pendingChoices[0];
+      const reward =
+        choice.candidates.find((candidate) => candidate === "TREASURY") ??
+        choice.candidates.find((candidate) => candidate === "STOCKPILE") ??
+        choice.candidates[0];
+      if (reward === undefined) throw new Error("reward missing");
+      const chosen = applyCommandV7(next, actor, {
+        kind: "CHOOSE_CITY_REWARD",
+        cityId: choice.cityId,
+        reachedLevel: choice.reachedLevel,
+        reward,
+      });
+      if (!chosen.accepted)
+        throw new Error(`CHOOSE_CITY_REWARD rejected: ${chosen.error.code}`);
+      next = chosen.state;
+    }
+  }
+  const parsed = parseGameStateV7({
+    ...next,
+    players: next.players.map((player) =>
+      player.id === actor ? { ...player, coins: 60 } : player,
+    ),
+  });
+  if (parsed === null) throw new Error("the Fishing Hole state is invalid");
   return parsed;
 }

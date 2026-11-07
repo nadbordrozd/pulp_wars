@@ -325,23 +325,31 @@ describe("the Ice Folk seat builds its economy on the ice", () => {
     });
   });
 
-  it("builds an Ice Harbour on its ice through the economic chooser", () => {
+  // Ice Folk movement (`pulp_wars-s55m.2`): no Ice Harbour; the economic
+  // chooser builds the Fishing Hole on that ice instead.
+  it("builds a Fishing Hole, never a dock, on its ice through the economic chooser", () => {
     const { state, view } = scene({
       technologies: [RIME, RIME],
       ports: [false, true],
       units: [],
       ice: [{ at: MIDDLE }],
     });
-    const port: CommandV7 = { kind: "BUILD_PORT", at: MIDDLE };
-    const offered = candidates(view).find(
+    expect(
+      candidates(view).some(
+        (item) =>
+          item.command.kind === "BUILD_PORT" ||
+          item.command.kind === "BUILD_SHIPYARD",
+      ),
+    ).toBe(false);
+    const hole = candidates(view).find(
       (item) =>
-        item.command.kind === "BUILD_PORT" && same(item.command.at, MIDDLE),
+        item.command.kind === "BUILD_FISHING_HOLE" &&
+        same(item.command.at, MIDDLE),
     );
-    expect(offered?.score.priority).toBeGreaterThanOrEqual(1140);
-    const result = acceptV7(state, 0, port);
-    expect(eventOf(result.events, "PORT_BUILT")).toMatchObject({
+    expect(hole?.score.priority).toBeGreaterThanOrEqual(1140);
+    const result = acceptV7(state, 0, hole?.command as CommandV7);
+    expect(eventOf(result.events, "ECONOMIC_BUILDING_BUILT")).toMatchObject({
       at: MIDDLE,
-      iceMade: false,
     });
     expect(iceEntryV7(result.state, MIDDLE)?.ownerId).toBe(seatV7(state, 0).id);
   });

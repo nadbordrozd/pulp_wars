@@ -665,7 +665,8 @@ import {
   boulderThrowTextV7,
   matchHasIceFolkSeatV7,
   snowTooltipV7,
-  moveUsesGlacierV7,
+  moveIsDiveV7,
+  moveUsesSkateV7,
   stampedePlanV7,
   stampedeSemanticV7,
   type IceFolkAbilityKindV7,
@@ -719,12 +720,13 @@ import {
   FREEZE_PICK_V7,
   FREEZE_SHALLOW_UNLOCK_V7,
   ICE_LAND_GRANT_UNLOCK_V7,
-  GLACIER_MOVE_LABEL_V7,
+  DIVE_MOVE_LABEL_V7,
+  SKATE_MOVE_LABEL_V7,
   HOARFROST_UNLOCK_V7,
   ICE_MOVE_TEXT_V7,
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
-  SLIDE_MOVE_LABEL_V7,
+  SKATE_TRAIL_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
   freezeUnavailableTextV7,
   FREEZE_FROZEN_MOVED_V7,
@@ -11627,30 +11629,37 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Ice Folk Freeze (`pulp_wars-w49.38`): the legend of an Ice Folk unit's
-   * Glacier tiles (the tiles only its +1 Move across ice reaches), shown
-   * while it has any.
+   * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's tiles before): the
+   * legend of an Ice Folk unit's skate tiles (the tiles only skating or a
+   * Runners glide reaches) and of its Fishing Hole dives, shown while it
+   * has any.
    */
   #glacierLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
-    if (
-      !matchHasIceFolkSeatV7(view) ||
-      !this.#snapshot.offeredCommands.some(
-        (command) =>
-          command.kind === "MOVE" &&
-          command.unitId === unitId &&
-          !moveIsGlideV7(view, command) &&
-          moveUsesGlacierV7(view, command),
-      )
-    )
-      return null;
+    if (!matchHasIceFolkSeatV7(view)) return null;
+    const moves = this.#snapshot.offeredCommands.filter(
+      (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+        command.kind === "MOVE" && command.unitId === unitId,
+    );
+    const skate = moves.some(
+      (command) =>
+        !moveIsGlideV7(view, command) && moveUsesSkateV7(view, command),
+    );
+    const dive = moves.some((command) => moveIsDiveV7(view, command));
+    if (!skate && !dive) return null;
     const legend = el(this.#document, "ul", "v7-landing-legend");
-    legend.setAttribute("aria-label", "Glacier markers");
-    const item = el(this.#document, "li", "v7-landing-legend-item");
-    item.dataset.landingMarker = "glacier";
-    const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
-    swatch.setAttribute("aria-hidden", "true");
-    item.append(swatch, text(this.#document, "span", GLACIER_MOVE_LABEL_V7));
-    legend.append(item);
+    legend.setAttribute("aria-label", "Ice markers");
+    for (const [marker, label, shown] of [
+      ["glacier", SKATE_MOVE_LABEL_V7, skate],
+      ["dive", DIVE_MOVE_LABEL_V7, dive],
+    ] as const) {
+      if (!shown) continue;
+      const item = el(this.#document, "li", "v7-landing-legend-item");
+      item.dataset.landingMarker = marker;
+      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, text(this.#document, "span", label));
+      legend.append(item);
+    }
     return legend;
   }
 
@@ -17499,7 +17508,7 @@ export class Ruleset7DomAppView {
     const legend = el(this.#document, "ul", "v7-landing-legend");
     legend.setAttribute("aria-label", "Ice markers");
     for (const [shown, marker, label] of [
-      [slide, "slide", SLIDE_MOVE_LABEL_V7],
+      [slide, "slide", SKATE_TRAIL_LABEL_V7],
       [
         slip,
         "slip",
@@ -20305,7 +20314,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r123",
+    rulesetId: "pulp-wars-poc-7r124",
     seed,
     width,
     height: width,

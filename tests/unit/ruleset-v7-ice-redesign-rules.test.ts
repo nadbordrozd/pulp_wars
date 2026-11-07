@@ -240,7 +240,10 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
   });
 });
 
-describe("Runners: the Sled's slide is not stopped by zones of control (section 2.7)", () => {
+// Ice Folk movement (`pulp_wars-s55m.2`, 7r124): the slide is no longer
+// forced; the Sled glides straight on through a zone of control and may
+// stop anywhere on the ice.
+describe("Runners: the Sled's glide is not stopped by zones of control (section 2.7)", () => {
   // A bridge down column 2 from the north shore to the south shore, with a
   // Human Fighter on the ice to its west whose zone of control covers
   // (2, 3) to (2, 5).
@@ -261,14 +264,15 @@ describe("Runners: the Sled's slide is not stopped by zones of control (section 
   const validate = (state: GameStateV7, path: readonly CoordV7[]) =>
     validateMovementPathV7(state, navalUnitAtV7(state, SHORE), path);
 
-  it("a Sled slides through the zone to the end of the ice; a Yeti stops in it", () => {
+  it("a Sled glides through the zone to the end of the ice; a Yeti stops in it", () => {
     const sled = bridge("RAIDER");
     const through = validate(sled, BRIDGE);
     expect(through).toMatchObject({ legal: true, destination: { x: 2, y: 7 } });
-    // The slide is forced: it cannot stop in the zone.
+    // No forced slide: it may also stop in the zone.
     expect(validate(sled, [ICE1])).toMatchObject({
-      legal: false,
-      reason: "SLIDE_FORCED",
+      legal: true,
+      destination: ICE1,
+      stopped: true,
     });
     // The public paths agree, and so does the threat a viewer sees.
     const sledUnit = navalUnitAtV7(sled, SHORE);
@@ -304,18 +308,22 @@ describe("Runners: the Sled's slide is not stopped by zones of control (section 
     ).toBe(false);
   });
 
-  it("a Sled still stops at a unit, and where its slide ends in the zone the Move ends", () => {
+  it("a Sled ends on no unit, passes its own, and where its glide stops in the zone the Move ends", () => {
     const blocked = bridge("RAIDER", [
       { seat: 0, role: "GUARD", at: { x: 2, y: 6 } },
     ]);
-    // The slide stops before the Musk Ox, on (2, 5), in the zone: the Move
-    // ends there.
+    // Stopping on (2, 5), in the zone: the Move ends there.
     expect(validate(blocked, BRIDGE.slice(0, 3))).toMatchObject({
       legal: true,
       destination: { x: 2, y: 5 },
       stopped: true,
     });
+    // Never on the Musk Ox, but past it (an own unit is passed).
     expect(validate(blocked, BRIDGE.slice(0, 4)).legal).toBe(false);
+    expect(validate(blocked, BRIDGE)).toMatchObject({
+      legal: true,
+      destination: { x: 2, y: 7 },
+    });
   });
 });
 

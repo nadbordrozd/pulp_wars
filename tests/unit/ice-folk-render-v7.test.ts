@@ -72,7 +72,9 @@ import {
   iceFolkVictimFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import {
+  FROZEN_DIVE_UI_V7,
   FROZEN_GLACIER_UI_V7,
+  frozenDiveUiFixtureV7,
   frozenGlacierUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
@@ -857,15 +859,42 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     expect(texts(draw(chosen))).toContain("−3 · stops");
   });
 
-  it("marks the tile only Glacier's +1 Move across ice reaches", () => {
-    const glacier = humanView(frozenGlacierUiFixtureV7());
-    const plan = planFor(glacier, FROZEN_GLACIER_UI_V7.walker);
-    const marked = plan.targets.filter((target) => target.glacier === true);
+  // Ice Folk movement (`pulp_wars-s55m.2`; Glacier's "+1" mark before).
+  it("marks the tile only skating reaches, with a chevron token and no text", () => {
+    const skating = humanView(frozenGlacierUiFixtureV7());
+    const plan = planFor(skating, FROZEN_GLACIER_UI_V7.walker);
+    const marked = plan.targets.filter((target) => target.skate === true);
     expect(marked.map((target) => target.at)).toEqual([
       FROZEN_GLACIER_UI_V7.glacierTile,
     ]);
-    expect(marked[0]?.semanticLabel).toBe("Glacier: +1 Move across ice");
-    expect(texts(draw(plan)).filter((text) => text === "+1")).toHaveLength(1);
+    expect(marked[0]?.semanticLabel).toBe("Skate: ice costs half a move");
+    expect(texts(draw(plan))).not.toContain("+1");
+    // The token adds strokes to the selected plan.
+    const resting = draw(planFor(skating, null)).filter(
+      (call) => call[0] === "stroke",
+    ).length;
+    expect(
+      draw(plan).filter((call) => call[0] === "stroke").length,
+    ).toBeGreaterThan(resting);
+  });
+
+  it("marks the Fishing Holes a unit may dive to, with ripples", () => {
+    const view = humanView(frozenDiveUiFixtureV7());
+    const plan = planFor(view, FROZEN_DIVE_UI_V7.diver);
+    const dives = plan.targets.filter((target) => target.dive === true);
+    const key = (at: CoordV7) => `${String(at.x)},${String(at.y)}`;
+    expect(dives.map((target) => key(target.at)).sort()).toEqual(
+      FROZEN_DIVE_UI_V7.destinations.map(key).sort(),
+    );
+    expect(dives[0]?.semanticLabel).toBe(
+      "Dive: through your Fishing Holes, as the whole move",
+    );
+    const ellipses = (log: readonly LogEntry[]) =>
+      log.filter((call) => call[0] === "ellipse").length;
+    // Two ripple rings round each of the three holes.
+    expect(ellipses(draw(plan))).toBeGreaterThanOrEqual(
+      ellipses(draw(planFor(view, null))) + 6,
+    );
   });
 
   it("plays a Stampede: the dust, each shove and hit, then the charge", () => {

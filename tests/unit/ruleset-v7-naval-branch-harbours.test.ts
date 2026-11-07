@@ -16,6 +16,7 @@ import {
   navalArenaV7,
   navalUnitAtV7,
   patchNavalUnitV7,
+  rejectV7,
   seatV7,
 } from "../fixtures/v7-naval-branch";
 
@@ -67,6 +68,18 @@ describe("Harbours", () => {
         technologies: [NAVAL_TECHS_V7, BEFORE],
         units: [],
       });
+      // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk have no
+      // Harbours and build no Shipyard; the Port they hold gives 1.
+      if (faction === "ICE_FOLK") {
+        expect(dockAmount(state, 0), faction).toBe(1);
+        expect(
+          rejectV7(state, 0, {
+            kind: "BUILD_SHIPYARD",
+            at: NAVAL_ARENA_PORTS_V7[0],
+          }).code,
+        ).toBe("INVALID_TILE");
+        continue;
+      }
       // Seat 0 has Harbours; seat 1 does not.
       expect(dockAmount(state, 0), faction).toBe(2);
       expect(dockAmount(state, 1), faction).toBe(1);

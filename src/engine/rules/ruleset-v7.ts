@@ -342,7 +342,7 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "FREEZE"; readonly depth: "SHALLOW" | "DEEP" }
   /**
-   * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r123`):
+   * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r124`):
    * Hoarfrost (the Ice Folk `NAVAL_ENGINEERING`, Icebound before): the
    * owner's Freeze line reaches `LONG_FREEZE_LINE_V7` tiles instead of
    * `FREEZE_LINE_V7` (the Ice Witch's ring is unchanged).
@@ -709,11 +709,21 @@ export interface RoleMechanicsV7 {
    */
   readonly glides: boolean;
   /**
-   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7):
-   * Runners, the unit's slide on ice is not stopped by a hostile zone of
-   * control (the Sled). A body rule.
+   * Ice Folk movement (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the
+   * redesign's slide before): Runners. In land form, a step from an ice
+   * tile onto an ice tile in the same direction as the step before it, in
+   * the same Move, costs nothing, so the unit glides any distance in a
+   * straight line along ice and may stop on any tile of it (the Sled and
+   * the Snow Hunter). A body rule.
    */
   readonly runners: boolean;
+  /**
+   * Ice Folk movement (`pulp_wars-s55m.2`): a step onto ice that enters a
+   * hostile zone of control does not end the unit's Move while its next
+   * step glides on straight along the ice (the Sled; the redesign's
+   * Runners before). A body rule.
+   */
+  readonly glidesThroughZoc: boolean;
   /**
    * The Ice Folk revision (section 7.7): Prowl. Entering hostile zone of
    * control does not end the unit's Move (the Sabretooth).
@@ -1973,6 +1983,7 @@ const mechanics = (
           mountainBorn: false,
           glides: false,
           runners: false,
+          glidesThroughZoc: false,
           ignoresZocStops: false,
           sweepDamage: 0,
           tramplesFieldDefense: false,
@@ -3332,7 +3343,8 @@ const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
   Partial<Record<TechnologyIdV7, readonly TechnologyUnlockV7[]>>
 > = deepFreeze({
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Rime
-  // also unlocks the Fishing Hole (the Ice Harbour is the Port).
+  // also unlocks the Fishing Hole (since `pulp_wars-s55m.2` the one Ice
+  // Folk ice building: no Ice Harbour).
   SHORECRAFT: [
     { kind: "FREEZE", depth: "SHALLOW" },
     { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
@@ -3364,10 +3376,18 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
                 ? [{ kind: "DEEP_WINTER" }]
                 : // The frozen sea (naval branch sections 2.2 and 8.11):
                   // the Ice Folk tree unlocks no ship, no Ram, and no
-                  // Board.
+                  // Board. Ice Folk movement (`pulp_wars-s55m.2`, 7r124):
+                  // nor a dock (no Port or Ice Harbour, no Shipyard or
+                  // Great Harbour), nor Harbours or the naval training
+                  // discount: the Fishing Hole is their one ice building.
                   (unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) ||
                     unlock.kind === "RAM" ||
-                    (unlock.kind === "COMMAND" && unlock.command === "BOARD")
+                    unlock.kind === "HARBOURS" ||
+                    unlock.kind === "NAVAL_TRAINING_DISCOUNT" ||
+                    (unlock.kind === "COMMAND" &&
+                      (unlock.command === "BOARD" ||
+                        unlock.command === "BUILD_PORT" ||
+                        unlock.command === "BUILD_SHIPYARD"))
                   ? []
                   : [unlock],
           ),
@@ -3587,10 +3607,11 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     glides: true,
     rockfallAttack2: 3,
   },
-  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
-  // Sled's Runners.
-  RAIDER: { glides: true, runners: true },
-  MARKSMAN: { glides: true, coldBloodBonus2: 1 },
+  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): Runners, a free glide
+  // straight along ice, for the Sled and the Snow Hunter; the Sled also
+  // glides through zones of control (the redesign's Runners before).
+  RAIDER: { glides: true, runners: true, glidesThroughZoc: true },
+  MARKSMAN: { glides: true, runners: true, coldBloodBonus2: 1 },
   // The ninth unit (7r55): the Musk Ox (Frostbite).
   GUARD: { buildsFieldDefense: false, glides: true, frostbite: true },
   CAPTAIN: { glides: true },
@@ -7186,11 +7207,6 @@ export const FROST_BOLT_RANGE_V7 = 2;
 export const STAMPEDE_RANGE_V7 = 3;
 /** Ice Folk Freeze: the fixed damage a Stampede deals each unit in its path. */
 export const STAMPEDE_DAMAGE_V7 = 3;
-/**
- * Ice Folk Freeze: the Move points Glacier adds to an Ice Folk land unit's
- * `MOVE` whose path includes an ice tile.
- */
-export const GLACIER_ICE_MOVE_BONUS_V7 = 1;
 /** The Ice Folk revision (section 6.3): the Blizzard radius (Chebyshev). */
 export const BLIZZARD_RADIUS_V7 = 1;
 /** The Ice Folk revision (section 6.6): the Deep Winter radius (Chebyshev). */
@@ -7438,7 +7454,7 @@ export const FISHING_HOLE_POPULATION_V7 = 1;
 /** The frozen sea (section 8.4): the tiles of a Freeze line. */
 export const FREEZE_LINE_V7 = 2;
 /**
- * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r123`): the
+ * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r124`): the
  * tiles of a Freeze line with Hoarfrost (`longFreeze`).
  */
 export const LONG_FREEZE_LINE_V7 = 3;

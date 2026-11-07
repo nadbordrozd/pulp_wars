@@ -23,6 +23,7 @@ import {
   type BoardRenderPlanV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import {
+  moveOnIceLabelV7,
   moveOnIceV7,
   seaIceCellsV7,
 } from "../../src/render/canvas/frozen-sea-board-plan-v7";
@@ -53,7 +54,8 @@ import {
   ICE_FOR_SHIPS_HELP_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
-  SLIDE_MOVE_LABEL_V7,
+  SKATE_MOVE_LABEL_V7,
+  SKATE_TRAIL_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
   freezeOutcomeTextV7,
   freezeOutcomeV7,
@@ -476,7 +478,7 @@ describe("ice on the board plan", () => {
     if (theirs === undefined) throw new Error("ice missing");
     expect(iceChipTooltipV7(victim, theirs)).not.toContain("Black Ice");
     expect(iceChipTooltipV7(victim, theirs)).toContain(
-      "Ice Folk slide; others stop here.",
+      "Ice Folk skate (half a move); others stop here.",
     );
     for (const entry of view.ice)
       expect(iceChipTooltipV7(view, entry)).not.toMatch(COORDINATE);
@@ -484,39 +486,45 @@ describe("ice on the board plan", () => {
 });
 
 describe("moving on ice", () => {
-  it("a slider's Move carries its slide from the shore to where the ice ends", () => {
+  it("a skater's Move carries its trail over the ice it crosses (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
     const yeti = unitAt(view, FROZEN_UI_V7.bridgeHead);
     const built = plan(view, yeti.id);
-    const last = FROZEN_UI_V7.bridge.at(-1);
-    if (last === undefined) throw new Error("bridge missing");
-    // The destinations on the ice: the tile the slide stops on and, with
-    // Glacier's extra point (Ice Folk Freeze, `pulp_wars-w49.37`), the
-    // first bridge tile entered diagonally from the shore beside the head,
-    // where no slide continues.
+    // A Yeti (Move 1) skates two bridge tiles, half a Move each, and may
+    // stop on either.
+    const [first, second] = FROZEN_UI_V7.bridge as readonly {
+      x: number;
+      y: number;
+    }[];
+    if (first === undefined || second === undefined)
+      throw new Error("bridge missing");
     const onIce = built.targets.filter(
       (target) =>
         target.family === "MOVE" &&
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
     expect(onIce.map((target) => at(target.at))).toEqual([
-      at(FROZEN_UI_V7.bridge[0] as { x: number; y: number }),
-      at(last),
+      at(first),
+      at(second),
     ]);
-    const slid = onIce.find((target) => at(target.at) === at(last));
-    expect(slid?.slide).toEqual([
-      { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
+    const skated = onIce.find((target) => at(target.at) === at(second));
+    expect(skated?.slide).toEqual([
+      { from: FROZEN_UI_V7.bridgeHead, tiles: [first, second] },
     ]);
-    expect(slid?.slip).toBeUndefined();
-    expect(slid?.semanticLabel).toBe(SLIDE_MOVE_LABEL_V7);
-    // Every other Move that carries a slide slides the same bridge (with
-    // Glacier's extra point it may step ashore after it); the first bridge
-    // tile, entered diagonally, carries none.
-    for (const target of built.targets)
-      if (target.family === "MOVE" && target.slide !== undefined)
-        expect(target.slide).toEqual([
-          { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
-        ]);
+    expect(skated?.slip).toBeUndefined();
+    // The skate reach (past the Yeti's Move) names the skate once.
+    expect(skated?.skate).toBe(true);
+    expect(skated?.semanticLabel).toBe(SKATE_MOVE_LABEL_V7);
+    // A trail alone is named as such; a one-tile step carries none.
+    expect(
+      moveOnIceLabelV7(
+        moveOnIceV7(view, {
+          kind: "MOVE",
+          unitId: yeti.id,
+          path: [first, second],
+        }),
+      ),
+    ).toBe(SKATE_TRAIL_LABEL_V7);
     expect(onIce[0]?.slide).toBeUndefined();
   });
 
@@ -535,7 +543,7 @@ describe("moving on ice", () => {
     expect(ashore.command.path).toHaveLength(FROZEN_UI_V7.bridge.length + 1);
   });
 
-  it("the Sabretooth walks on ice: plain Moves, no slide and no slip", () => {
+  it("the Sabretooth skates the ice too (every Ice Folk land unit), and never slips", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
     const sabretooth = unitAt(view, { x: 0, y: 2 });
     const built = plan(view, sabretooth.id);
@@ -545,11 +553,11 @@ describe("moving on ice", () => {
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
     expect(onIce.length).toBeGreaterThan(1);
+    expect(onIce.some((target) => target.slide !== undefined)).toBe(true);
     for (const target of onIce) {
-      expect(target.slide).toBeUndefined();
       expect(target.slip).toBeUndefined();
       if (target.command.kind === "MOVE")
-        expect(moveOnIceV7(view, target.command)).toBeNull();
+        expect(moveOnIceV7(view, target.command)?.slip ?? false).toBe(false);
     }
   });
 
@@ -866,7 +874,10 @@ describe("frozen-sea words", () => {
   it("has the Ice Folk Help list and one line for everyone else", () => {
     expect(ICE_HELP_RULES_V7.map(([name]) => name)).toEqual([
       "Freeze",
-      "Slide",
+      // Ice Folk movement (`pulp_wars-s55m.2`; "Slide" before).
+      "Skate",
+      "Runners",
+      "Dive",
       // The frozen sea redesign (bead pulp_wars-5ti.27): the ice stays,
       // other factions crack it, the Ice Folk build on it.
       "Ice stays",

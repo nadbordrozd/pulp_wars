@@ -540,7 +540,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-5ti.3` (the frozen sea): a boat or an embarked unit on ice was
     // Icebound and made no Move; the Ice Folk freeze rework
     // (`pulp_wars-s55m.1`) removed both tests (no unit afloat is on ice).
-    "src/engine/v7/movement.ts": 2,
+    // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole diver, read
+    // from the state and from a view, is a land-form unit (an Egg never
+    // dives).
+    "src/engine/v7/movement.ts": 4,
     // `pulp_wars-5ti.3`: a Wreck is salvaged by an afloat unit or by a
     // land-form unit standing on ice (an Egg never moves onto one).
     // Map curiosities round 3 (`pulp_wars-737.20`): a Gold Claim is staked

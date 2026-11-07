@@ -817,20 +817,20 @@ export function drawStampedeArrowsV7(
   context.restore();
 }
 
-// ----------------------------------------------------------------- Glacier
+// ------------------------------------------------------ Skating and dives
 
 /**
- * Ice Folk Freeze (bead pulp_wars-w49.38): a Move tile only Glacier's +1
- * Move across ice reaches: a faint ice tint over the tile and a small
- * "+1" token in its top-right corner (the outline is the Move mark's,
- * dotted in pale ice). `x`, `y` are the tile centre in CSS px.
+ * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's "+1" token before): a
+ * Move tile only skating or a Runners glide reaches: a faint ice tint over
+ * the tile and a small round token in its top-right corner with a double
+ * chevron, a skate's speed (the outline is the Move mark's, dotted in pale
+ * ice). `x`, `y` are the tile centre in CSS px.
  */
-export function drawGlacierReachV7(
+export function drawSkateReachV7(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
   zoom: number,
-  bonus: number,
   highContrast = false,
 ): void {
   const half = 60 * zoom;
@@ -849,10 +849,76 @@ export function drawGlacierReachV7(
   context.arc(cx, cy, radius, 0, Math.PI * 2);
   context.fill();
   context.stroke();
-  context.fillStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.outline;
-  context.font = `800 ${Math.max(8, radius * 1.05)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(`+${bonus}`, cx, cy + radius * 0.06);
+  context.strokeStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.outline;
+  context.lineWidth = Math.max(1.5, 2.6 * zoom);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  const arm = radius * 0.42;
+  for (const offset of [-0.32, 0.22]) {
+    const tip = cx + radius * offset + arm * 0.5;
+    context.beginPath();
+    context.moveTo(tip - arm, cy - arm);
+    context.lineTo(tip, cy);
+    context.lineTo(tip - arm, cy + arm);
+    context.stroke();
+  }
+  context.restore();
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): a Fishing Hole a unit may dive
+ * to: two pale ripple rings round the hole and a small down-and-up arrow
+ * token in the tile's top-right corner (the outline is the Move mark's in
+ * pale ice). `x`, `y` are the tile centre in CSS px.
+ */
+export function drawDiveReachV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  highContrast = false,
+): void {
+  context.save();
+  context.strokeStyle = highContrast ? "#ffffff" : ICE_FOLK_PALETTE_V7.icePale;
+  context.lineWidth = Math.max(1.5, 3 * zoom);
+  for (const scale of [0.34, 0.5]) {
+    context.beginPath();
+    context.ellipse(
+      x,
+      y + 6 * zoom,
+      60 * zoom * scale,
+      34 * zoom * scale,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.stroke();
+  }
+  const radius = Math.max(7, 15 * zoom);
+  const cx = x + 40 * zoom;
+  const cy = y - 40 * zoom;
+  context.fillStyle = highContrast ? "#ffffff" : ICE_FOLK_PALETTE_V7.icePale;
+  context.strokeStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.iceDark;
+  context.lineWidth = Math.max(1, 2 * zoom);
+  context.beginPath();
+  context.arc(cx, cy, radius, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // A hook: down into the water and up again.
+  context.strokeStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.outline;
+  context.lineWidth = Math.max(1.5, 2.6 * zoom);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  const r = radius * 0.45;
+  context.beginPath();
+  context.moveTo(cx - r, cy - r);
+  context.lineTo(cx - r, cy + r * 0.2);
+  context.quadraticCurveTo(cx - r, cy + r, cx, cy + r);
+  context.quadraticCurveTo(cx + r, cy + r, cx + r, cy + r * 0.2);
+  context.lineTo(cx + r, cy - r);
+  context.moveTo(cx + r * 0.45, cy - r * 0.45);
+  context.lineTo(cx + r, cy - r);
+  context.lineTo(cx + r * 1.55, cy - r * 0.45);
+  context.stroke();
   context.restore();
 }

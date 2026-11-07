@@ -8,7 +8,6 @@ import {
   COLD_SNAP_RANGE_V7,
   COMMAND_KIND_ORDER_V7,
   FROST_BOLT_RANGE_V7,
-  GLACIER_ICE_MOVE_BONUS_V7,
   STAMPEDE_DAMAGE_V7,
   STAMPEDE_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
@@ -165,13 +164,13 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     ]).toEqual([3, 4, 2, 1, 1, 2, 6, 2, 3, 2, 1]);
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
     // tiles around the Witch (2 before), the Frost Bolt 2; the Stampede goes
-    // 3 tiles and hits for 3; Glacier adds 1 Move on an ice path.
+    // 3 tiles and hits for 3 (Glacier's +1 Move on ice is gone with
+    // `pulp_wars-s55m.2`).
     expect([
       FROST_BOLT_RANGE_V7,
       STAMPEDE_RANGE_V7,
       STAMPEDE_DAMAGE_V7,
-      GLACIER_ICE_MOVE_BONUS_V7,
-    ]).toEqual([2, 3, 3, 1]);
+    ]).toEqual([2, 3, 3]);
   });
 
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
@@ -1096,13 +1095,22 @@ describe("Ice Folk technology (section 4)", () => {
       };
       if (human.branch === "NAVAL") {
         // The five Naval nodes keep their economic unlocks, lose every
-        // ship, the Ram, and Board, and gain the ice unlocks.
+        // ship, the Ram, and Board, and gain the ice unlocks. Ice Folk
+        // movement (`pulp_wars-s55m.2`): they lose the docks, Harbours,
+        // and the naval training discount too.
         expect(ice.unlocks, human.id).toEqual([
           ...human.unlocks.filter(
             (unlock) =>
               !(unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) &&
               unlock.kind !== "RAM" &&
-              !(unlock.kind === "COMMAND" && unlock.command === "BOARD"),
+              unlock.kind !== "HARBOURS" &&
+              unlock.kind !== "NAVAL_TRAINING_DISCOUNT" &&
+              !(
+                unlock.kind === "COMMAND" &&
+                (unlock.command === "BOARD" ||
+                  unlock.command === "BUILD_PORT" ||
+                  unlock.command === "BUILD_SHIPYARD")
+              ),
           ),
           ...must(ICE_NAVAL[human.id], human.id),
         ]);
@@ -1189,8 +1197,13 @@ describe("Ice Folk technology (section 4)", () => {
     expect(
       ice.commands.filter((command) => command !== "BUILD_FISHING_HOLE"),
     ).toEqual(
+      // Ice Folk movement (`pulp_wars-s55m.2`): and no dock.
       human.commands.filter(
-        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
+        (command) =>
+          command !== "BUILD_FIELD_DEFENSE" &&
+          command !== "BOARD" &&
+          command !== "BUILD_PORT" &&
+          command !== "BUILD_SHIPYARD",
       ),
     );
     expect(ice.commands).toContain("BUILD_FISHING_HOLE");
@@ -1409,7 +1422,20 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     const state = create(["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     const reference = create(["ORIGINAL", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(state.board).toEqual(reference.board);
-    expect(state.cities).toEqual(reference.cities);
+    // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk have no Harbours,
+    // so the Coast city's two docks give 2 population fewer; every other
+    // city field is the same.
+    const withoutPopulation = (cities: typeof state.cities) =>
+      cities.map((city) => ({ ...city, population: 0, economicPopulation: 0 }));
+    expect(withoutPopulation(state.cities)).toEqual(
+      withoutPopulation(reference.cities),
+    );
+    expect(
+      state.cities.reduce((sum, city) => sum + city.economicPopulation, 0),
+    ).toBe(
+      reference.cities.reduce((sum, city) => sum + city.economicPopulation, 0) -
+        2,
+    );
     const iceId = seatIdV7(state, 0);
     // The ninth unit (7r55): the Mammoth stands where it stood (the
     // defender's tile, as the heavy role) and the Musk Ox on the ninth
@@ -1464,8 +1490,10 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
     // tuning 3 the linked capital earns it too (19 before); 18 since
     // tuning 4 (land trade pays 1 Coin); 20 since the reward ladder rework
-    // (`pulp_wars-zypi`: North's and Coast's Economic Miracle, +1 each).
-    expect(playerIncomeV7(state, iceId).totalCoins).toBe(20);
+    // (`pulp_wars-zypi`: North's and Coast's Economic Miracle, +1 each);
+    // 19 since Ice Folk movement (`pulp_wars-s55m.2`: no Harbours, so the
+    // Coast city's docks give 2 population fewer).
+    expect(playerIncomeV7(state, iceId).totalCoins).toBe(19);
   });
 
   it("every Ice Folk ability can be offered on the first turns, and every offered command is accepted", () => {
@@ -1540,8 +1568,9 @@ describe("Ice Folk public unit stats (section 11)", () => {
       blizzard: false,
       // The frozen sea (naval branch section 12).
       onIce: false,
-      slides: true,
-      // The frozen sea redesign (`pulp_wars-5ti.25`): only the Sled.
+      // Ice Folk movement (`pulp_wars-s55m.2`): every Ice Folk land unit
+      // skates; Runners are the Sled's and the Snow Hunter's.
+      skates: true,
       runners: false,
       iceCover: false,
     });

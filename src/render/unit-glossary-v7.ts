@@ -619,11 +619,18 @@ const ENTRIES = {
     "Frostbite",
     "An enemy that hits it from the next tile and survives is Frozen.",
   ],
-  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md sections 2.7 and
-  // 2.9): the Sled's Runners, and every other faction's Crack Ice.
-  RUNNERS: [
-    "Runners",
-    "Its slide across ice does not stop beside enemies; it still stops at a unit or where the ice ends.",
+  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): every Ice Folk land
+  // unit skates and dives; the Sled's and the Snow Hunter's Runners, the
+  // Sled's glide past enemies; and every other faction's Crack Ice.
+  SKATES: ["Skates", "Ice costs half a move."],
+  RUNNERS: ["Runners", "Glides free in a straight line on ice."],
+  GLIDES_PAST: [
+    "Glides past",
+    "Its straight glide on ice goes on past enemies; it stops when it turns or leaves the ice.",
+  ],
+  DIVE: [
+    "Dive",
+    "From your Fishing Hole, if it has not moved, it dives to any other free Fishing Hole of yours as its move.",
   ],
   CRACK_ICE: [
     "Crack Ice",
@@ -1123,7 +1130,11 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.shield > 0) traits.push("SHIELD");
   if (mechanics.shockFieldDamage > 0) traits.push("SHOCK_FIELD");
   if (mechanics.glides) traits.push("GLIDE");
+  // Ice Folk movement (`pulp_wars-s55m.2`): a kind rule of the Ice Folk.
+  if (rules.snow) traits.push("SKATES");
   if (mechanics.runners) traits.push("RUNNERS");
+  if (mechanics.glidesThroughZoc) traits.push("GLIDES_PAST");
+  if (rules.snow) traits.push("DIVE");
   if (mechanics.frostbite) traits.push("FROSTBITE");
   // `pulp_wars-befg`: the Whirligig's Whirl is its attack, not an ability.
   if (mechanics.whirl && attacks) traits.push("WHIRL");

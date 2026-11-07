@@ -3,7 +3,6 @@ import {
   EMBARKED_MOVE_V7,
   FROG_MOVE_V7,
   MASS_DRAG_TILES_V7,
-  GLACIER_ICE_MOVE_BONUS_V7,
   canCrossWaterV7,
   canEnterTerrainV7,
   hoverLaunchAllowedV7,
@@ -53,9 +52,10 @@ import {
 } from "./observation";
 import {
   iceIndexSetV7,
+  unitGlidesThroughZocV7,
   unitHasRunnersV7,
   unitKindWalksIceV7,
-  unitSlidesV7,
+  unitSkatesV7,
 } from "./ice";
 import { tileAtV7 } from "./spatial-economy";
 import type {
@@ -119,10 +119,9 @@ export type MovementFailureReasonV7 =
   // only on an explored land tile the Vampire may stand on, with no
   // curiosity.
   | "BAT_ESCAPE_LANDING"
-  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.6
-  // and 8.7): a path that stops or turns where a slide continues; a path
-  // that continues past an ice tile a slipping unit entered.
-  | "SLIDE_FORCED"
+  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.7): a
+  // path that continues past an ice tile a slipping unit entered. (The
+  // forced slide's `SLIDE_FORCED` is gone with `pulp_wars-s55m.2`.)
   | "ICE_STOPS_MOVE"
   // Map curiosities round 2 (section 28.2): a Dimensional Gate ends every
   // Move that enters it, so a path cannot continue past one.
@@ -148,21 +147,12 @@ export type MovementPathResultV7 =
       readonly spentPoints2: number;
       readonly stopped: boolean;
       /**
-       * The frozen sea (section 8.6), route searches only: the path ends on
-       * an ice tile from which the unit's slide continues, in this
-       * direction. Such a path is a prefix, never a legal `MOVE` (which is
-       * rejected with `SLIDE_FORCED`); only the pass-through probe of the
-       * enumerations returns it.
+       * Ice Folk movement (`pulp_wars-s55m.2`), Runners: the direction of
+       * the path's last step when it ended on ice, so a route search keys
+       * the tile by it (the next step straight on is free). Absent for a
+       * unit without Runners.
        */
-      readonly slideContinues?: { readonly dx: number; readonly dy: number };
-      /**
-       * Ice Folk Freeze (`pulp_wars-w49.37`, Glacier), route searches only:
-       * the probe's path has entered ice (`iceTouched`), or it is over the
-       * budget it has without ice and has not (`glacierPending`: never a
-       * destination). Absent for a unit without the Glacier bonus.
-       */
-      readonly iceTouched?: boolean;
-      readonly glacierPending?: boolean;
+      readonly glideDirection?: { readonly dx: number; readonly dy: number };
       readonly explored: readonly CoordV7[];
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
@@ -244,48 +234,6 @@ function baseMoveBudget2V7(
 }
 
 /**
- * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section 21.16,
- * Glacier): the half-points Glacier adds to the `MOVE` of a land-form unit
- * of the Ice Folk kind whose path includes an ice tile (0 for every other
- * unit, and in a match without ice).
- */
-function glacierBonus2V7(
-  lookup: GameStateV7 | PlayerViewV7,
-  unit: UnitStateV7 | PublicUnitV7,
-  capabilities: { readonly iceCover: boolean },
-  iceCount: number,
-): number {
-  return unit.form === "LAND" &&
-    iceCount > 0 &&
-    capabilities.iceCover &&
-    unitKindWalksIceV7(lookup, unit)
-    ? GLACIER_ICE_MOVE_BONUS_V7 * 2
-    : 0;
-}
-
-/**
- * Route searches only (`passThroughProbe`): a probe is validated with the
- * Glacier half-points whether or not its path has reached ice yet, so a
- * search can extend it onto ice. `glacierPending` marks a probe that is
- * over the base budget and has not touched ice (never a destination);
- * `iceTouched` keys the search state.
- */
-function withGlacierProbeV7(
-  result: MovementPathResultV7,
-  baseBudget2: number,
-  glacier2: number,
-  iceAt: (at: CoordV7) => boolean,
-): MovementPathResultV7 {
-  if (!result.legal || glacier2 === 0) return result;
-  const iceTouched = result.traversedPath.some(iceAt);
-  return {
-    ...result,
-    iceTouched,
-    glacierPending: result.spentPoints2 > baseBudget2 && !iceTouched,
-  };
-}
-
-/**
  * `passThroughProbe` treats the last step as an intermediate one for
  * occupancy only, so an enumeration can extend a path across an own unit.
  */
@@ -300,23 +248,18 @@ function validateMovementPathWithOptionsV7(
   // The Mind Control revision section 5.2: movement unlocks are unit-level
   // (the controller's research through the unit's kind's tree).
   const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
-  const baseBudget2 = baseMoveBudget2V7(state, unit);
-  const iceIndex = iceIndexSetV7(state, state.board.width);
-  const glacier2 = glacierBonus2V7(state, unit, capabilities, iceIndex.size);
-  const onIce = (at: CoordV7): boolean =>
-    iceIndex.has(at.y * state.board.width + at.x);
-  const result = validateMovementPathCoreV7(
+  const budget2 = baseMoveBudget2V7(state, unit);
+  // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dive.
+  const dive = canonicalDiveV7(state, unit, path, budget2);
+  if (dive !== null) return dive;
+  return validateMovementPathCoreV7(
     state,
     unit,
     path,
     passThroughProbe,
     capabilities,
-    baseBudget2 +
-      (glacier2 > 0 && (passThroughProbe || path.some(onIce)) ? glacier2 : 0),
+    budget2,
   );
-  return passThroughProbe
-    ? withGlacierProbeV7(result, baseBudget2, glacier2, onIce)
-    : result;
 }
 
 function validateMovementPathCoreV7(
@@ -384,25 +327,27 @@ function validateMovementPathCoreV7(
   const overstrides = unitOverstridesV7(state, unit);
   const ownSitesOnly = unitAvoidsForeignSitesV7(state, unit);
   let currentSnow = snowAt(current);
-  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3,
-  // 8.6, and 8.7): ice is read once, from the state before the command.
-  // It is ground for a land-form unit and closed to a unit afloat; an Ice
-  // Folk unit slides on it (forced, at no cost), and another faction's
-  // ground unit slips (its Move ends there).
+  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3
+  // and 8.7): ice is read once, from the state before the command. It is
+  // ground for a land-form unit and closed to a unit afloat; another
+  // faction's ground unit slips (its Move ends there). Ice Folk movement
+  // (`pulp_wars-s55m.2`, 7r124; the forced slide before): an Ice Folk unit
+  // skates (each step onto ice costs half), Runners glide straight on along
+  // ice for free, and the Sled glides on through zones of control.
   const iceSet = iceIndexSetV7(state, state.board.width);
   const iceAt = (at: CoordV7): boolean =>
     iceSet.size > 0 && iceSet.has(at.y * state.board.width + at.x);
-  const slides = iceSet.size > 0 && unitSlidesV7(state, unit);
-  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
-  // Sled's Runners, a slide that a hostile zone of control does not stop.
-  const runners = slides && unitHasRunnersV7(state, unit);
+  const skates = iceSet.size > 0 && unitSkatesV7(state, unit);
+  const runners = skates && unitHasRunnersV7(state, unit);
+  const zocGlider = runners && unitGlidesThroughZocV7(state, unit);
   const iceFolkKind = unitKindWalksIceV7(state, unit);
   const summoned = unitIsSummonedV7(unit);
-  /** The direction the next step must take: the slide continues. */
-  let slide: { readonly dx: number; readonly dy: number } | null = null;
+  /** The direction of the step before (Runners), null at the start. */
+  let lastDirection: { readonly dx: number; readonly dy: number } | null = null;
   // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 6.2 and 7.7):
-  // a Stuck unit's Move has at most one step (a slide is not a step); a
-  // Chocolate Bunny's Move may contain one hop.
+  // a Stuck unit's Move has at most one step (a Runners glide is a step
+  // too since `pulp_wars-s55m.2`); a Chocolate Bunny's Move may contain one
+  // hop.
   const stepLimit = moveStepLimitV7(state, unit.id);
   const hops = unitHopsV7(state, unit);
   let hopUsed = false;
@@ -412,7 +357,7 @@ function validateMovementPathCoreV7(
   const grabbedBy = grabbingTentacleAtV7(state, unit.id);
   // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): Drag. A unit that
   // begins its Move beside a hostile Gibbering Mass moves one tile (one
-  // step, no hop; as for Stuck, an ice slide is no step). Themed naval
+  // step, no hop; a Runners glide is a step). Themed naval
   // branches (`pulp_wars-5ti.22`, RULESET_7_NAVAL_FACTIONS.md section 9.3
   // K2): so does a unit afloat beside a hostile Kraken not on ice.
   const dragged =
@@ -424,7 +369,7 @@ function validateMovementPathCoreV7(
     const step = path[index];
     if (step === undefined) throw new RangeError("INVALID_STATE");
     const jumped =
-      chebyshev(current, step) === 2 && hops && !hopUsed && slide === null
+      chebyshev(current, step) === 2 && hops && !hopUsed
         ? hopJumpedTileV7(current, step)
         : null;
     if (chebyshev(current, step) !== 1 && jumped === null)
@@ -444,25 +389,26 @@ function validateMovementPathCoreV7(
         return { legal: false, reason: "HOP_ILLEGAL" };
       hopUsed = true;
     }
-    // Section 8.6: the slide is forced; a path that turns is rejected.
-    const sliding = slide !== null;
-    if (!sliding) {
-      steps += 1;
-      if (steps > stepLimit) return { legal: false, reason: "STUCK" };
-      if (dragged && steps > MASS_DRAG_TILES_V7)
-        return { legal: false, reason: "DRAGGED" };
-    }
-    if (
-      slide !== null &&
-      (step.x !== current.x + slide.dx || step.y !== current.y + slide.dy)
-    )
-      return { legal: false, reason: "SLIDE_FORCED" };
-    slide = null;
+    steps += 1;
+    if (steps > stepLimit) return { legal: false, reason: "STUCK" };
+    if (dragged && steps > MASS_DRAG_TILES_V7)
+      return { legal: false, reason: "DRAGGED" };
     const tile = tileAtV7(state.board, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
     const stepIce = iceAt(step);
+    // Ice Folk movement (`pulp_wars-s55m.2`): Skating and Runners.
+    const ice = iceStepV7(
+      { skates, runners, zocGlider },
+      current,
+      step,
+      path[index + 1],
+      lastDirection,
+      jumped !== null,
+      iceAt,
+    );
+    lastDirection = ice.direction;
     // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a foot unit
     // with Hover Pods makes the last step of its Move onto known free
     // Shallow Water (not ice, not a dock) and launches there; the step
@@ -482,18 +428,19 @@ function validateMovementPathCoreV7(
     // The Ice Folk balance revision (`pulp_wars-1wy.3`,
     // RULESET_7_BALANCE_MARTIAN_ICE.md section 6.1): Glide is a step from a
     // Snow tile onto a Snow tile (both ends read from the state before the
-    // command); it never adds to a Road node's half cost. A slid tile costs
-    // nothing.
+    // command); it never adds to a Road node's half cost. A skating step
+    // onto ice costs half, a Runners glide nothing.
     const stepSnow = snowAt(step);
     // The Candy redesign (section 7.2): a step onto a Glazed tile costs a
     // Road step's 1 for the active seat's land-form units; a hop always
     // costs one ordinary step.
     // A Bat Escape step is always a whole step.
-    spentPoints2 += sliding
+    spentPoints2 += ice.glide
       ? 0
       : jumped !== null || batEscape || hoverLaunch
         ? 2
         : currentRoadNode ||
+            ice.skate ||
             (glides && currentSnow && stepSnow) ||
             glazeStepAppliesV7(state, unit, step)
           ? 1
@@ -536,13 +483,10 @@ function validateMovementPathCoreV7(
         candidate.hp > 0 &&
         same(candidate.at, step),
     );
-    // A flyer passes over a unit of any owner; no Move ends on a unit. The
-    // frozen sea (section 10): a sliding unit never passes a unit on ice,
-    // own or not.
+    // A flyer passes over a unit of any owner; no Move ends on a unit.
     const passesOwnUnit =
       occupant !== undefined &&
       (occupant.ownerId === unit.ownerId || flies || overstrides) &&
-      !(slides && stepIce) &&
       (passThroughProbe || index < path.length - 1);
     const occupied = occupant !== undefined && !passesOwnUnit;
     // The Dwarf revision section 5.3: a Move may pass over a mound tile but
@@ -756,33 +700,17 @@ function validateMovementPathCoreV7(
       gateAtV7(state.curiosities, step) !== null;
     // Hover Pods: the launch ends the Move.
     const otherStops = !wasExplored || terrainStops || gateStops || hoverLaunch;
-    let stops = otherStops || entersZoc;
-    // Section 8.6: a step that entered ice the mover knew of continues
-    // straight on while the next tile in that direction is on the board,
-    // known before the command, ice, and free of units and mounds, and
-    // while the tile it is on is not in a hostile zone of control. The
-    // redesign's Runners (section 2.7): a Sled's slide goes on through a
-    // zone of control; where it ends, the zone stops the Move as ever.
-    if (
-      slides &&
-      stepIce &&
-      wasKnownBeforeCommand &&
-      !otherStops &&
-      (!entersZoc || runners)
-    ) {
-      const dx = step.x - current.x;
-      const dy = step.y - current.y;
-      const next = { x: step.x + dx, y: step.y + dy };
-      if (
-        tileAtV7(state.board, next) !== undefined &&
-        contains(knownBeforeCommand, next) &&
-        iceAt(next) &&
-        !tileOccupiedV7(state, next, unit.id)
-      ) {
-        slide = { dx, dy };
-        stops = otherStops;
-      }
-    }
+    // Ice Folk movement (`pulp_wars-s55m.2`): a Sled that steps onto ice in
+    // a hostile zone of control goes on while its next step glides straight
+    // on along the ice; a turn, a step off the ice, or the end of the path
+    // stops it there as any zone does.
+    const stops =
+      otherStops ||
+      (entersZoc &&
+        !(
+          ice.glidesOn &&
+          ((passThroughProbe && index === path.length - 1) || ice.nextGlides)
+        ));
     traversedPath.push(step);
     current = step;
     currentRoadNode = stepRoadNode;
@@ -886,17 +814,15 @@ function validateMovementPathCoreV7(
         interruption: null,
       };
   }
-  // Section 8.6: a path that stops where a slide continues is rejected; a
-  // route search extends it instead.
-  if (slide !== null && !passThroughProbe)
-    return { legal: false, reason: "SLIDE_FORCED" };
   return {
     legal: true,
     destination: current,
     traversedPath,
     spentPoints2,
     stopped: false,
-    ...(slide === null ? {} : { slideContinues: slide }),
+    ...(runners && lastDirection !== null && iceAt(current)
+      ? { glideDirection: lastDirection }
+      : {}),
     explored,
     revealed: unique(revealed),
     interruption: null,
@@ -952,18 +878,15 @@ export function reachableMovementPathsV7(
       )
         continue;
       const destinationKey = key(validation.destination);
-      // The frozen sea (naval branch section 8.6): a prefix that ends where
-      // a slide continues is a passing state of its own (the tile and the
-      // direction), never a destination. The Candy redesign: a path that
-      // has hopped is a state of its own (it may not hop again).
-      const pending = validation.slideContinues;
-      // Ice Folk Freeze (Glacier): a path that has touched ice has more
-      // budget, so it is a search state of its own.
+      // Ice Folk movement (`pulp_wars-s55m.2`): a Runners path on ice is a
+      // search state of its own for each direction (the next step straight
+      // on is free). The Candy redesign: a path that has hopped is a state
+      // of its own (it may not hop again).
+      const glide = validation.glideDirection;
       const stateKey =
-        (pending === undefined
+        (glide === undefined
           ? destinationKey
-          : `${destinationKey}>${pending.dx},${pending.dy}`) +
-        (validation.iceTouched === true ? "~ice" : "") +
+          : `${destinationKey}>${glide.dx},${glide.dy}`) +
         (hops && pathHasHopV7(unit.at, candidate) ? "^" : "");
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
@@ -994,15 +917,13 @@ export function reachableMovementPathsV7(
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
       // Every destination keeps its cheapest path: the search states of a
-      // tile (a Bunny's hop and walk, the Candy redesign; a Glacier path
-      // over ice and one without, `pulp_wars-mm8p`) may each reach it, and
-      // a later, longer one never replaces a cheaper one. The start tile is
-      // never a destination (a Glacier path may loop back to it over ice).
+      // tile (a Bunny's hop and walk, the Candy redesign; a Runners glide
+      // in each direction, `pulp_wars-s55m.2`) may each reach it, and a
+      // later, longer one never replaces a cheaper one. The start tile is
+      // never a destination (a path may loop back to it over ice).
       const known = results.get(destinationKey);
       if (
         !ownOccupied &&
-        pending === undefined &&
-        validation.glacierPending !== true &&
         !same(validation.destination, unit.at) &&
         (known === undefined || known.spentPoints2 > validation.spentPoints2)
       )
@@ -1013,6 +934,17 @@ export function reachableMovementPathsV7(
         });
       if (!validation.stopped) queue.push(candidate);
     }
+  }
+  // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dives, to the
+  // holes no walk reaches.
+  for (const hole of canonicalDiveDestinationsV7(state, unit)) {
+    const dive = validateMovementPathV7(state, unit, [hole]);
+    if (dive.legal && dive.interruption === null && !results.has(key(hole)))
+      results.set(key(hole), {
+        destination: hole,
+        path: [hole],
+        spentPoints2: dive.spentPoints2,
+      });
   }
   return [...results.values()].sort((a, b) =>
     compare(a.destination, b.destination),
@@ -1076,17 +1008,13 @@ export function reachablePlayerMovementPathsV7(
       )
         continue;
       const destinationKey = key(validation.destination);
-      // The frozen sea (naval branch section 8.6): a prefix that ends where
-      // a slide continues is a passing state of its own (the tile and the
-      // direction), never a destination.
-      const pending = validation.slideContinues;
-      // Ice Folk Freeze (Glacier): a path that has touched ice has more
-      // budget, so it is a search state of its own.
+      // Ice Folk movement (`pulp_wars-s55m.2`): a Runners path on ice is a
+      // search state of its own for each direction.
+      const glide = validation.glideDirection;
       const stateKey =
-        (pending === undefined
+        (glide === undefined
           ? destinationKey
-          : `${destinationKey}>${pending.dx},${pending.dy}`) +
-        (validation.iceTouched === true ? "~ice" : "") +
+          : `${destinationKey}>${glide.dx},${glide.dy}`) +
         (hops && pathHasHopV7(unit.at, candidate) ? "^" : "");
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
@@ -1111,15 +1039,13 @@ export function reachablePlayerMovementPathsV7(
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
       // Every destination keeps its cheapest path: the search states of a
-      // tile (a Bunny's hop and walk, the Candy redesign; a Glacier path
-      // over ice and one without, `pulp_wars-mm8p`) may each reach it, and
-      // a later, longer one never replaces a cheaper one. The start tile is
-      // never a destination (a Glacier path may loop back to it over ice).
+      // tile (a Bunny's hop and walk, the Candy redesign; a Runners glide
+      // in each direction, `pulp_wars-s55m.2`) may each reach it, and a
+      // later, longer one never replaces a cheaper one. The start tile is
+      // never a destination (a path may loop back to it over ice).
       const known = results.get(destinationKey);
       if (
         !ownOccupied &&
-        pending === undefined &&
-        validation.glacierPending !== true &&
         !same(validation.destination, unit.at) &&
         (known === undefined || known.spentPoints2 > validation.spentPoints2)
       )
@@ -1130,6 +1056,16 @@ export function reachablePlayerMovementPathsV7(
         });
       if (!validation.stopped) queue.push(candidate);
     }
+  }
+  // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dives, to the
+  // holes no walk reaches.
+  for (const hole of publicDiveDestinationsV7(view, unit, context)) {
+    if (!results.has(key(hole)))
+      results.set(key(hole), {
+        destination: hole,
+        path: [hole],
+        spentPoints2: baseMoveBudget2V7(view, unit),
+      });
   }
   return [...results.values()].sort((left, right) =>
     compare(left.destination, right.destination),
@@ -1263,25 +1199,19 @@ function validatePlayerMovementPathWithContextV7(
   // The Candy revision section 5.2: the Rushed budget (the public
   // `sugarRush` list; the same helper as the canonical validation).
   // `pulp_wars-w49.35`: the Berserk budget (the public `berserkThisTurn`).
-  // Ice Folk Freeze (`pulp_wars-w49.37`): Glacier, from the public ice.
-  const baseBudget2 = baseMoveBudget2V7(view, unit);
-  const glacier2 = glacierBonus2V7(view, unit, capabilities, context.ice.size);
-  const onIce = (at: CoordV7): boolean =>
-    publicTileAt(view, at)?.explored === true &&
-    context.ice.has(at.y * view.board.width + at.x);
-  const result = validatePlayerMovementPathCoreV7(
+  const budget2 = baseMoveBudget2V7(view, unit);
+  // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dive.
+  const dive = publicDiveV7(view, unit, path, context, budget2);
+  if (dive !== null) return dive;
+  return validatePlayerMovementPathCoreV7(
     view,
     unit,
     path,
     context,
     passThroughProbe,
     capabilities,
-    baseBudget2 +
-      (glacier2 > 0 && (passThroughProbe || path.some(onIce)) ? glacier2 : 0),
+    budget2,
   );
-  return passThroughProbe
-    ? withGlacierProbeV7(result, baseBudget2, glacier2, onIce)
-    : result;
 }
 
 /** The research a hostile seat is assumed to have for its Hover Pods. */
@@ -1379,15 +1309,16 @@ function validatePlayerMovementPathCoreV7(
     return tile?.explored === true && tile.snow === true;
   };
   let currentSnow = publicSnowAt(current);
-  // The frozen sea (naval branch sections 8.3, 8.6, and 8.7): the ice on
-  // explored tiles is public, so slides and slips are exact here. The same
-  // rules as the canonical validation.
+  // The frozen sea (naval branch sections 8.3 and 8.7): the ice on explored
+  // tiles is public, so skating, Runners, and slips are exact here (Ice
+  // Folk movement, `pulp_wars-s55m.2`). The same rules as the canonical
+  // validation.
   const iceSet = context.ice;
   const iceAt = (at: CoordV7): boolean =>
     iceSet.size > 0 && iceSet.has(at.y * view.board.width + at.x);
-  const slides = iceSet.size > 0 && unitSlidesV7(view, unit);
-  // The frozen sea redesign (section 2.7): Runners.
-  const runners = slides && unitHasRunnersV7(view, unit);
+  const skates = iceSet.size > 0 && unitSkatesV7(view, unit);
+  const runners = skates && unitHasRunnersV7(view, unit);
+  const zocGlider = runners && unitGlidesThroughZocV7(view, unit);
   const iceFolkKind = unitKindWalksIceV7(view, unit);
   const summoned = unitIsSummonedV7(unit);
   // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): exact for the
@@ -1398,7 +1329,7 @@ function validatePlayerMovementPathCoreV7(
     unit.ownerId === view.viewer.id
       ? capabilities.hoverPods
       : publicUnitHoverPodsV7(view, unit);
-  let slide: { readonly dx: number; readonly dy: number } | null = null;
+  let lastDirection: { readonly dx: number; readonly dy: number } | null = null;
   const traversedPath: CoordV7[] = [];
   // The Candy redesign (sections 6.2 and 7.7): Stuck and the hop, from the
   // public `stuck` list and the explored tiles (as the canonical rules).
@@ -1417,7 +1348,7 @@ function validatePlayerMovementPathCoreV7(
     const step = path[index];
     if (step === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const jumped =
-      chebyshev(current, step) === 2 && hops && !hopUsed && slide === null
+      chebyshev(current, step) === 2 && hops && !hopUsed
         ? hopJumpedTileV7(current, step)
         : null;
     if (chebyshev(current, step) !== 1 && jumped === null)
@@ -1435,22 +1366,24 @@ function validatePlayerMovementPathCoreV7(
         return { legal: false, reason: "HOP_ILLEGAL" };
       hopUsed = true;
     }
-    const sliding = slide !== null;
-    if (!sliding) {
-      steps += 1;
-      if (steps > stepLimit) return { legal: false, reason: "STUCK" };
-      if (dragged && steps > MASS_DRAG_TILES_V7)
-        return { legal: false, reason: "DRAGGED" };
-    }
-    if (
-      slide !== null &&
-      (step.x !== current.x + slide.dx || step.y !== current.y + slide.dy)
-    )
-      return { legal: false, reason: "SLIDE_FORCED" };
-    slide = null;
+    steps += 1;
+    if (steps > stepLimit) return { legal: false, reason: "STUCK" };
+    if (dragged && steps > MASS_DRAG_TILES_V7)
+      return { legal: false, reason: "DRAGGED" };
     const tile = publicTileAt(view, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const stepIce = tile.explored && iceAt(step);
+    // Ice Folk movement (`pulp_wars-s55m.2`): Skating and Runners.
+    const ice = iceStepV7(
+      { skates, runners, zocGlider },
+      current,
+      step,
+      path[index + 1],
+      lastDirection,
+      jumped !== null,
+      iceAt,
+    );
+    lastDirection = ice.direction;
     // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): the same rule
     // as the canonical validation, on the tiles the viewer has explored.
     const hoverLaunch =
@@ -1508,11 +1441,12 @@ function validatePlayerMovementPathCoreV7(
     const stepSnow = tile.explored && tile.snow === true;
     // The Candy redesign (section 7.2): the Glaze (public on explored
     // tiles); a hop costs one ordinary step.
-    spentPoints2 += sliding
+    spentPoints2 += ice.glide
       ? 0
       : jumped !== null || batEscape || hoverLaunch
         ? 2
         : currentRoadNode ||
+            ice.skate ||
             (glides && currentSnow && stepSnow) ||
             glazeStepAppliesV7(view, unit, step)
           ? 1
@@ -1522,10 +1456,8 @@ function validatePlayerMovementPathCoreV7(
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
     // Only the mover's own visible units can be passed, and never ended on.
-    // The Martian revision: a flyer passes every visible unit. The frozen
-    // sea: a sliding unit never passes a unit on ice.
-    const passesOwnUnits =
-      (passThroughProbe || index < path.length - 1) && !(slides && stepIce);
+    // The Martian revision: a flyer passes every visible unit.
+    const passesOwnUnits = passThroughProbe || index < path.length - 1;
     if (
       context.unitsByPosition
         .get(key(step))
@@ -1618,32 +1550,15 @@ function validatePlayerMovementPathCoreV7(
     // Hover Pods: the launch ends the Move.
     const otherStops =
       !tile.explored || terrainStops || gateStops || hoverLaunch;
-    let stops = otherStops || entersZoc;
-    // Section 8.6: the slide (the same rule as the canonical validation;
-    // every tile it reads is explored and every unit on it visible), with
-    // the redesign's Runners (section 2.7).
-    if (slides && stepIce && !otherStops && (!entersZoc || runners)) {
-      const dx = step.x - current.x;
-      const dy = step.y - current.y;
-      const next = { x: step.x + dx, y: step.y + dy };
-      const nextTile = publicTileAt(view, next);
-      // The mover's own start tile is free (the canonical occupancy
-      // predicate excludes the mover), and a Barricade stops a slide like a
-      // unit (Ice Folk Freeze, `pulp_wars-w49.37`: Glacier's extra point
-      // made a slide back over the start tile reachable).
-      if (
-        nextTile?.explored === true &&
-        iceAt(next) &&
-        context.unitsByPosition
-          .get(key(next))
-          ?.some((other) => other.id !== unit.id) !== true &&
-        moundAtV7(view, next) === undefined &&
-        barricadeAtV7(view, next) === undefined
-      ) {
-        slide = { dx, dy };
-        stops = otherStops;
-      }
-    }
+    // Ice Folk movement (`pulp_wars-s55m.2`): the Sled glides on through a
+    // zone of control (the same rule as the canonical validation).
+    const stops =
+      otherStops ||
+      (entersZoc &&
+        !(
+          ice.glidesOn &&
+          ((passThroughProbe && index === path.length - 1) || ice.nextGlides)
+        ));
     traversedPath.push(step);
     current = step;
     currentRoadNode = stepRoadNode;
@@ -1681,15 +1596,15 @@ function validatePlayerMovementPathCoreV7(
         interruption: null,
       };
   }
-  if (slide !== null && !passThroughProbe)
-    return { legal: false, reason: "SLIDE_FORCED" };
   return {
     legal: true,
     destination: current,
     traversedPath,
     spentPoints2,
     stopped: false,
-    ...(slide === null ? {} : { slideContinues: slide }),
+    ...(runners && lastDirection !== null && iceAt(current)
+      ? { glideDirection: lastDirection }
+      : {}),
     explored: view.viewer.explored,
     revealed: [],
     interruption: null,
@@ -2103,3 +2018,284 @@ const same = (a: CoordV7, b: CoordV7) => a.x === b.x && a.y === b.y;
 const compare = (a: CoordV7, b: CoordV7) => a.y - b.y || a.x - b.x;
 const chebyshev = (a: CoordV7, b: CoordV7) =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`): what one
+ * step of a Move is on ice. A **skate** is a step of a skating unit (a
+ * land-form unit of the Ice Folk kind) onto an ice tile: it costs half a
+ * point. A **glide** is a step of a unit with Runners from an ice tile onto
+ * an ice tile in the same direction as the step before it in this Move: it
+ * costs nothing. `glidesOn` marks a step onto ice of a unit that glides
+ * through zones of control (the Sled), and `nextGlides` that the path's
+ * next step goes on straight along the ice. A hop is neither.
+ */
+function iceStepV7(
+  rules: {
+    readonly skates: boolean;
+    readonly runners: boolean;
+    readonly zocGlider: boolean;
+  },
+  current: CoordV7,
+  step: CoordV7,
+  next: CoordV7 | undefined,
+  lastDirection: { readonly dx: number; readonly dy: number } | null,
+  hop: boolean,
+  iceAt: (at: CoordV7) => boolean,
+): {
+  readonly skate: boolean;
+  readonly glide: boolean;
+  readonly glidesOn: boolean;
+  readonly nextGlides: boolean;
+  readonly direction: { readonly dx: number; readonly dy: number } | null;
+} {
+  const dx = step.x - current.x;
+  const dy = step.y - current.y;
+  if (hop || !rules.skates)
+    return {
+      skate: false,
+      glide: false,
+      glidesOn: false,
+      nextGlides: false,
+      direction: hop ? null : { dx, dy },
+    };
+  const stepIce = iceAt(step);
+  return {
+    skate: stepIce,
+    glide:
+      rules.runners &&
+      stepIce &&
+      lastDirection !== null &&
+      lastDirection.dx === dx &&
+      lastDirection.dy === dy &&
+      iceAt(current),
+    glidesOn: rules.zocGlider && stepIce,
+    nextGlides:
+      next !== undefined &&
+      next.x === step.x + dx &&
+      next.y === step.y + dy &&
+      iceAt(next),
+    direction: { dx, dy },
+  };
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): whether the unit may dive now,
+ * read from the canonical state. A land-form unit of the Ice Folk kind (a
+ * body rule) that stands on a Fishing Hole in its owner's territory and has
+ * not moved (no Escape Move), neither Grabbed nor Dragged.
+ */
+function canonicalDiverV7(state: GameStateV7, unit: UnitStateV7): boolean {
+  if (
+    state.ice.length === 0 ||
+    unit.form !== "LAND" ||
+    !unitKindWalksIceV7(state, unit) ||
+    unit.activation.moved ||
+    unit.activation.escapeAvailable ||
+    unit.activation.overrunActive ||
+    batEscapeTilesV7(state, unit) > 0 ||
+    grabbingTentacleAtV7(state, unit.id) !== null ||
+    draggingMassV7(state, massesOfV7(state.units), unit) !== undefined
+  )
+    return false;
+  return canonicalOwnFishingHoleV7(state, unit.ownerId, unit.at);
+}
+
+function canonicalOwnFishingHoleV7(
+  state: GameStateV7,
+  ownerId: PlayerId,
+  at: CoordV7,
+): boolean {
+  const tile = tileAtV7(state.board, at);
+  return (
+    tile !== undefined &&
+    tile.improvement === "FISHING_HOLE" &&
+    tileOwner(state, tile) === ownerId
+  );
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): the **dive**. A `MOVE` whose path
+ * is one tile, not next to the unit, that is another Fishing Hole in the
+ * diver's owner's territory, explored by it before the command, with no
+ * living unit on it (one the owner cannot see interrupts the dive before
+ * it starts, reason `OCCUPIED`): the unit goes there as its whole Move (the
+ * path is that one tile, the budget is spent), it sees from there, and it
+ * may then act if its role may act after moving. Null when the path is no
+ * dive (a walk is validated as ever: an adjacent hole is a step).
+ */
+function canonicalDiveV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  path: readonly CoordV7[],
+  budget2: number,
+): MovementPathResultV7 | null {
+  const to = path[0];
+  if (
+    path.length !== 1 ||
+    to === undefined ||
+    chebyshev(unit.at, to) <= 1 ||
+    !canonicalDiverV7(state, unit) ||
+    !canonicalOwnFishingHoleV7(state, unit.ownerId, to)
+  )
+    return null;
+  const player = requirePlayer(state, unit.ownerId);
+  if (!contains(player.explored, to))
+    return { legal: false, reason: "UNEXPLORED_INTERMEDIATE" };
+  const occupant = state.units.find(
+    (candidate) =>
+      candidate.id !== unit.id && candidate.hp > 0 && same(candidate.at, to),
+  );
+  if (occupant !== undefined) {
+    if (isUnitVisibleToPlayerV7(state, player.id, occupant))
+      return { legal: false, reason: "OCCUPIED" };
+    return {
+      legal: true,
+      destination: unit.at,
+      traversedPath: [],
+      spentPoints2: budget2,
+      stopped: true,
+      explored: player.explored,
+      revealed: [],
+      interruption: { at: to, reason: "OCCUPIED" },
+    };
+  }
+  const tile = tileAtV7(state.board, to);
+  if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
+  const sight = revealRadius(
+    state,
+    player.explored,
+    to,
+    unitSightRadiusAtV7(state, unit, tile),
+  );
+  return {
+    legal: true,
+    destination: to,
+    traversedPath: [to],
+    spentPoints2: budget2,
+    stopped: true,
+    explored: sight.explored,
+    revealed: sight.revealed,
+    interruption: null,
+  };
+}
+
+/** The Fishing Holes the unit may dive to (canonical; see `canonicalDiveV7`). */
+function canonicalDiveDestinationsV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): readonly CoordV7[] {
+  if (!canonicalDiverV7(state, unit)) return [];
+  return state.board.tiles
+    .filter(
+      (tile) =>
+        tile.improvement === "FISHING_HOLE" &&
+        chebyshev(tile.at, unit.at) > 1 &&
+        tileOwner(state, tile) === unit.ownerId,
+    )
+    .map((tile) => tile.at);
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): the dive read from a view (the
+ * same rule as `canonicalDiveV7`): Fishing Holes and territory are public
+ * on explored tiles, and an own unit's activation is exact; a hostile
+ * unit's dive reach is estimated from its public activation.
+ */
+function publicDiverV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  context: PublicMovementContextV7,
+): boolean {
+  if (
+    context.ice.size === 0 ||
+    unit.form !== "LAND" ||
+    !unitKindWalksIceV7(view, unit) ||
+    unit.activation.moved ||
+    unit.activation.escapeAvailable ||
+    unit.activation.overrunActive ||
+    batEscapeTilesV7(view, unit) > 0 ||
+    grabbingTentacleAtV7(view, unit.id) !== null ||
+    publicDraggedV7(view, context, unit)
+  )
+    return false;
+  return publicOwnFishingHoleV7(view, unit.ownerId, unit.at);
+}
+
+function publicOwnFishingHoleV7(
+  view: PlayerViewV7,
+  ownerId: PlayerId,
+  at: CoordV7,
+): boolean {
+  const tile = publicTileAt(view, at);
+  return (
+    tile?.explored === true &&
+    tile.improvement === "FISHING_HOLE" &&
+    tile.territoryOwnerId === ownerId
+  );
+}
+
+function publicDiveV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+  context: PublicMovementContextV7,
+  budget2: number,
+): MovementPathResultV7 | null {
+  const to = path[0];
+  if (
+    path.length !== 1 ||
+    to === undefined ||
+    chebyshev(unit.at, to) <= 1 ||
+    !publicDiverV7(view, unit, context) ||
+    !publicOwnFishingHoleV7(view, unit.ownerId, to)
+  )
+    return null;
+  if (
+    context.unitsByPosition
+      .get(key(to))
+      ?.some((other) => other.id !== unit.id && other.hp > 0) === true
+  )
+    return { legal: false, reason: "OCCUPIED" };
+  return {
+    legal: true,
+    destination: to,
+    traversedPath: [to],
+    spentPoints2: budget2,
+    stopped: true,
+    explored: view.viewer.explored,
+    revealed: [],
+    interruption: null,
+  };
+}
+
+/** The Fishing Holes the visible unit may dive to (public). */
+function publicDiveDestinationsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  context: PublicMovementContextV7,
+): readonly CoordV7[] {
+  if (!publicDiverV7(view, unit, context)) return [];
+  return view.board.tiles
+    .filter(
+      (tile) =>
+        tile.explored &&
+        tile.improvement === "FISHING_HOLE" &&
+        tile.territoryOwnerId === unit.ownerId &&
+        chebyshev(tile.at, unit.at) > 1 &&
+        context.unitsByPosition
+          .get(key(tile.at))
+          ?.some((other) => other.id !== unit.id && other.hp > 0) !== true,
+    )
+    .map((tile) => tile.at);
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Holes a visible unit
+ * may dive to now (for the board's move highlights and the AI's reach).
+ */
+export function publicDiveDestinationsForUnitV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): readonly CoordV7[] {
+  return publicDiveDestinationsV7(view, unit, publicMovementContextV7(view));
+}

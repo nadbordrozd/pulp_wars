@@ -3503,6 +3503,10 @@ function applyPort(
   if (!isExplored(player, at)) return rejected(original, "TILE_UNEXPLORED");
   if (!player.researchedTechs.includes("SHORECRAFT"))
     return rejected(original, "TECH_REQUIRED", { tech: "SHORECRAFT" });
+  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): an Ice Folk seat builds
+  // no dock (no Ice Harbour); a captured one keeps working.
+  if (player.faction === "ICE_FOLK")
+    return rejected(original, "INVALID_TILE", { action: "BUILD_PORT" });
   const city = state.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );
@@ -3513,19 +3517,11 @@ function applyPort(
       candidate.biome !== null &&
       chebyshev(candidate.at, at) === 1,
   );
-  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the
-  // Ice Folk Port is the Ice Harbour, built on the seat's own ice (Shallow
-  // or Deep) or on open Shallow Water with no unit on it, which it freezes
-  // first. Every other seat builds only on open Shallow Water.
-  const iceFolkSeat = player.faction === "ICE_FOLK";
-  const entry = iceAtV7(state, at);
-  const iceMade = iceFolkSeat && entry === undefined;
+  // A Port stands on open Shallow Water (never on ice: the Ice Harbour is
+  // gone with `pulp_wars-s55m.2`, so `PORT_BUILT.iceMade` is always false).
   if (
-    (entry === undefined
-      ? tile.terrain !== "SHALLOW_WATER" ||
-        (iceMade &&
-          state.units.some((unit) => unit.hp > 0 && same(unit.at, at)))
-      : !iceBuildableV7(player.faction, actor, entry)) ||
+    tile.terrain !== "SHALLOW_WATER" ||
+    iceAtV7(state, at) !== undefined ||
     tile.improvement !== null ||
     tile.site !== null ||
     tile.road ||
@@ -3540,7 +3536,7 @@ function applyPort(
     return rejected(original, "INSUFFICIENT_COINS", { cost: 4 });
   try {
     const board = replaceTile(state, at, { ...tile, improvement: "PORT" });
-    const ice = iceMade ? withFrozenV7(state.ice, [at], actor) : state.ice;
+    const ice = state.ice;
     // The naval branch section 5.4: a Port gives 2 with Harbours.
     const portPopulation = dockPopulationV7(
       "PORT",
@@ -3577,7 +3573,7 @@ function applyPort(
         at,
         cost: 4,
         populationAdded: portPopulation,
-        iceMade,
+        iceMade: false,
       },
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
@@ -3599,6 +3595,9 @@ function applyShipyard(
   if (!isExplored(player, at)) return rejected(original, "TILE_UNEXPLORED");
   if (!player.researchedTechs.includes("NAVAL_ENGINEERING"))
     return rejected(original, "TECH_REQUIRED", { tech: "NAVAL_ENGINEERING" });
+  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): no Great Harbour.
+  if (player.faction === "ICE_FOLK")
+    return rejected(original, "INVALID_TILE", { action: "BUILD_SHIPYARD" });
   const city = state.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );

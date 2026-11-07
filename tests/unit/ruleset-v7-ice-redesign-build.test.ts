@@ -13,14 +13,12 @@ import {
 } from "../../src/engine/index";
 import {
   frozenArenaV7,
-  frozenStateV7,
   iceEntryV7,
   type FrozenArenaOptionsV7,
   type FrozenIceV7,
 } from "../fixtures/v7-frozen-sea";
 import {
   acceptV7,
-  navalArenaV7,
   navalUnitAtV7,
   navalUnitV7,
   rejectV7,
@@ -83,107 +81,44 @@ const cityPopulation = (state: GameStateV7): number =>
     ?.economicPopulation ?? -1;
 
 describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
-  it("an Ice Harbour on open Shallow Water freezes its tile first", () => {
-    const state = scene(RIME, []);
-    const port = at("BUILD_PORT", MIDDLE);
-    expect(isOffered(state, port)).toBe(true);
-    const result = acceptV7(state, 0, port);
-    expect(result.events[0]).toEqual({
-      kind: "PORT_BUILT",
-      playerId: seatV7(state, 0).id,
-      cityId: tileOf(state, MIDDLE)?.territoryCityId,
-      at: MIDDLE,
-      cost: 4,
-      populationAdded: 1,
-      iceMade: true,
-    });
-    expect(parseEventV7(result.events[0]).ok).toBe(true);
-    expect(iceEntryV7(result.state, MIDDLE)).toEqual({
-      at: MIDDLE,
-      ownerId: seatV7(state, 0).id,
-      cracked: false,
-    });
-    expect(tileOf(result.state, MIDDLE)?.improvement).toBe("PORT");
-    expect(cityPopulation(result.state)).toBe(cityPopulation(state) + 1);
-    // The capital's Yeti may stand on its dock: it is ice.
-    const yeti = navalUnitAtV7(result.state, { x: 5, y: 2 });
+  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124; the user, 2026-11-06:
+  // "you can build a fishing hole or an ice harbour on ice and it's
+  // confusing"): the Ice Folk build no dock at all; the Fishing Hole is
+  // their one ice building, and a dock they hold keeps working.
+  it("no Ice Harbour: a Port is neither offered nor accepted, on open water or on own ice", () => {
+    for (const ice of [[], [MIDDLE]] as const) {
+      const state = scene(RIME, ice);
+      expect(isOffered(state, at("BUILD_PORT", MIDDLE))).toBe(false);
+      expect(rejectV7(state, 0, at("BUILD_PORT", MIDDLE))).toEqual({
+        code: "INVALID_TILE",
+        params: { action: "BUILD_PORT" },
+      });
+    }
+    // The Fishing Hole is offered on the seat's own ice.
     expect(
-      offered(result.state).some(
-        (command) =>
-          command.kind === "MOVE" &&
-          command.unitId === yeti.id &&
-          command.path.at(-1)?.x === MIDDLE.x &&
-          command.path.at(-1)?.y === MIDDLE.y,
+      isOffered(scene(RIME, [MIDDLE]), at("BUILD_FISHING_HOLE", MIDDLE)),
+    ).toBe(true);
+  });
+
+  it("no Great Harbour: a dock the seat holds, iced over, keeps working and is never upgraded", () => {
+    // Seat 0's Port on (4, 3) (as a captured one would be), iced over.
+    const state = scene(ICEBOUND, [WEST], { ports: [true, true] });
+    expect(tileOf(state, WEST)?.improvement).toBe("PORT");
+    expect(isOffered(state, at("BUILD_SHIPYARD", WEST))).toBe(false);
+    expect(rejectV7(state, 0, at("BUILD_SHIPYARD", WEST))).toEqual({
+      code: "INVALID_TILE",
+      params: { action: "BUILD_SHIPYARD" },
+    });
+    // It still counts for its city's population.
+    expect(
+      state.populationContributions.some(
+        (entry) =>
+          entry.source.kind === "IMPROVEMENT" &&
+          entry.source.improvement === "PORT" &&
+          entry.source.at.x === WEST.x &&
+          entry.source.at.y === WEST.y,
       ),
     ).toBe(true);
-    const onDock = acceptV7(result.state, 0, {
-      kind: "MOVE",
-      unitId: yeti.id,
-      path: [MIDDLE],
-    });
-    expect(navalUnitV7(onDock.state, yeti.id)).toMatchObject({
-      at: MIDDLE,
-      form: "LAND",
-    });
-  });
-
-  it("an Ice Harbour on the seat's own ice keeps the ice, Shallow or Deep; never on another seat's ice", () => {
-    const own = scene(RIME, [MIDDLE, { at: EAST, seat: 1 }]);
-    const result = acceptV7(own, 0, at("BUILD_PORT", MIDDLE));
-    expect(result.events[0]).toMatchObject({
-      kind: "PORT_BUILT",
-      iceMade: false,
-    });
-    expect(result.state.ice).toEqual(own.ice);
-    // Another seat's ice is Frozen first.
-    expect(isOffered(own, at("BUILD_PORT", EAST))).toBe(false);
-    expect(rejectV7(own, 0, at("BUILD_PORT", EAST))).toEqual({
-      code: "INVALID_TILE",
-      params: { action: "BUILD_PORT" },
-    });
-    // Deep Water in the footprint: a strait whose (4, 2) is water, so (4, 3)
-    // is Deep and touches the capital's land diagonally.
-    const terrain = [
-      "...........",
-      "...........",
-      "....~......",
-      "~~~~~~~~~~~",
-      "~~~~~~~~~~~",
-      "~~~~~~~~~.~",
-      "~~~~~~~~~~~",
-      "~~~~~~~~~~~",
-      "...........",
-      "...........",
-      "...........",
-    ];
-    const strait = navalArenaV7({
-      factions: ["ICE_FOLK", "ORIGINAL"],
-      technologies: [[...RIME, "NAVIGATION"], RIME],
-      ports: [false, true],
-      terrain,
-      units: [],
-    });
-    expect(tileOf(strait, WEST)?.terrain).toBe("DEEP_WATER");
-    // Open Deep Water: no dock.
-    expect(isOffered(strait, at("BUILD_PORT", WEST))).toBe(false);
-    const deep = frozenStateV7(strait, [{ at: WEST }]);
-    expect(isOffered(deep, at("BUILD_PORT", WEST))).toBe(true);
-    const harbour = acceptV7(deep, 0, at("BUILD_PORT", WEST));
-    expect(tileOf(harbour.state, WEST)?.improvement).toBe("PORT");
-    expect(parseGameStateV7(harbour.state)).not.toBeNull();
-  });
-
-  it("the Great Harbour upgrades an Ice Harbour on ice", () => {
-    const state = acceptV7(
-      scene(ICEBOUND, []),
-      0,
-      at("BUILD_PORT", MIDDLE),
-    ).state;
-    const upgrade = at("BUILD_SHIPYARD", MIDDLE);
-    expect(isOffered(state, upgrade)).toBe(true);
-    const result = acceptV7(state, 0, upgrade);
-    expect(tileOf(result.state, MIDDLE)?.improvement).toBe("SHIPYARD");
-    expect(iceEntryV7(result.state, MIDDLE)).toBeDefined();
   });
 
   it("no other seat builds a Port on ice, and no ship trains or embarks at a dock on ice", () => {

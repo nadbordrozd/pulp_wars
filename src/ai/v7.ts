@@ -84,6 +84,7 @@ import {
   unitOwnerIsIceFolkV7,
 } from "../engine/v7/ice-folk";
 import {
+  publicDiveDestinationsForUnitV7,
   unitOverstridesV7,
   validatePlayerMovementPassagePathV7,
 } from "../engine/v7/movement";
@@ -637,8 +638,8 @@ import {
   iceSeaResearchV7,
   iceSeaSeatV7,
   iceShipMoveRejectedV7,
-  iceSlideEndV7,
-  iceSliderV7,
+  iceGlideLineV7,
+  iceSkaterV7,
   iceTargetBonusV7,
   iceRouteStepCostV7,
   landGrantIceTilesV7,
@@ -2679,23 +2680,20 @@ function* hasReplacementPathWorkV7(
           validation.traversedPath.length !== candidate.length
         )
           continue;
-        const key = coordKey(next);
+        // Ice Folk movement (`pulp_wars-s55m.2`): a Runners path on ice is
+        // a search state of its own for each direction (a glide is free).
+        const glide = validation.glideDirection;
+        const key =
+          glide === undefined
+            ? coordKey(next)
+            : `${coordKey(next)}>${glide.dx},${glide.dy}`;
         if (
           (best.get(key) ?? Number.POSITIVE_INFINITY) <= validation.spentPoints2
         )
           continue;
-        const passedOnly = ownOccupied.has(key);
+        const passedOnly = ownOccupied.has(coordKey(next));
         if (passedOnly && validation.stopped) continue;
-        // The frozen sea: a prefix that ends where a slide continues is
-        // not a legal Move end; nor is one over the budget it has without
-        // ice that has not touched ice (Glacier, `pulp_wars-mm8p`).
-        if (
-          !passedOnly &&
-          validation.slideContinues === undefined &&
-          validation.glacierPending !== true &&
-          same(next, target)
-        )
-          return true;
+        if (!passedOnly && same(next, target)) return true;
         best.set(key, validation.spentPoints2);
         if (!validation.stopped) queue.push(candidate);
       }
@@ -11698,16 +11696,14 @@ function* publicThreatenedTilesWorkV7(
   // ending on one) and ignores hostile zones of control, so a screen does
   // not keep it from the units behind. Only the Colossus has the ability.
   const overstrides = unitOverstridesV7(view, unit);
-  // The frozen sea (`pulp_wars-5ti.5`, section 8.6): an Ice Folk unit that
-  // steps onto known ice slides straight on, at no cost, to the end of the
-  // ice, a unit, or a zone of control (`iceSlideEndV7`). False in a view
-  // without ice. Glacier's extra Move on ice is its owner's private
-  // research and is left out.
-  const slides = iceSliderV7(view, unit);
-  // The frozen sea redesign (`pulp_wars-5ti.26`, section 2.7): a Sled's
-  // Runners: no zone of control stops its slide (where the slide ends, one
-  // stops the Move as for any step, below).
-  const runners = slides && unitRoleMechanicsV7(view, unit).runners;
+  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): an Ice Folk land unit
+  // skates (a step onto known ice costs half); with Runners (the Sled, the
+  // Snow Hunter) a step onto ice also reaches every tile straight on along
+  // the ice at the same cost (`iceGlideLineV7`), the Sled's through zones
+  // of control. False in a view without ice.
+  const skates = iceSkaterV7(view, unit);
+  const runners = skates && unitRoleMechanicsV7(view, unit).runners;
+  const zocGlider = runners && unitRoleMechanicsV7(view, unit).glidesThroughZoc;
   const zocAt = (target: PlayerViewV7["board"]["tiles"][number]): boolean =>
     mode !== "FLY" &&
     !prowls &&
@@ -11763,7 +11759,7 @@ function* publicThreatenedTilesWorkV7(
         priorTile !== undefined &&
         publicRoadNodeForOwner(priorTile, unit.ownerId, lookup);
       for (const next of neighbors8V7(view, current.at)) {
-        let tile = tileAtPublicV7(view, next);
+        const tile = tileAtPublicV7(view, next);
         if (!publicMovementTilePossible(view, unit, tile, lookup)) continue;
         // Revision 18: a unit passes through the visible units of its own
         // owner, never another seat's, and cannot end on any unit.
@@ -11787,25 +11783,7 @@ function* publicThreatenedTilesWorkV7(
             !view.cities.some(
               (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
             ));
-        // The frozen sea: the step onto ice is the slide; the unit never
-        // stops short of its end and never passes a unit on the ice.
-        if (slides && isIceAtV7(view, tile.at)) {
-          if (occupants.length > 0) continue;
-          tile = tileAtPublicV7(
-            view,
-            iceSlideEndV7(
-              view,
-              tile.at,
-              tile.at.x - current.at.x,
-              tile.at.y - current.at.y,
-              (at) =>
-                (lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
-                  (occupant) => occupant.id !== unit.id && occupant.hp > 0,
-                ),
-              (at) => !runners && zocAt(tileAtPublicV7(view, at)),
-            ),
-          );
-        }
+        const skateCost = skates && isIceAtV7(view, tile.at);
         // Revision 18: leaving a usable Road node costs half; the Forest and
         // Mountain stop is still waived only when both ends are Road nodes.
         const roadCost = unit.form === "LAND" && priorRoadNode;
@@ -11818,7 +11796,8 @@ function* publicThreatenedTilesWorkV7(
           priorTile.snow === true &&
           tile.explored &&
           tile.snow === true;
-        const spent2 = current.spent2 + (roadCost || glideCost ? 1 : 2);
+        const spent2 =
+          current.spent2 + (roadCost || glideCost || skateCost ? 1 : 2);
         if (spent2 > (facts.move + sugarRushMove) * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
@@ -11849,9 +11828,46 @@ function* publicThreatenedTilesWorkV7(
         best.set(key, spent2);
         if (!passedOnly) origins.set(key, tile.at);
         if (!stops && !stuck) queue.push({ at: tile.at, spent2 });
+        // Runners: the glide straight on along the ice, free.
+        if (
+          runners &&
+          skateCost &&
+          !stuck &&
+          !terrainStop &&
+          (!hostileZoc || zocGlider)
+        )
+          for (const glide of iceGlideLineV7(
+            view,
+            tile.at,
+            tile.at.x - current.at.x,
+            tile.at.y - current.at.y,
+            (at) =>
+              (lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
+                (occupant) =>
+                  occupant.id !== unit.id &&
+                  occupant.hp > 0 &&
+                  occupant.ownerId !== unit.ownerId,
+              ),
+            (at) => !zocGlider && zocAt(tileAtPublicV7(view, at)),
+          )) {
+            const glideKey = coordKey(glide);
+            if ((best.get(glideKey) ?? Number.POSITIVE_INFINITY) <= spent2)
+              continue;
+            best.set(glideKey, spent2);
+            const ownOn = (lookup.occupantsByKey.get(glideKey) ?? []).some(
+              (occupant) => occupant.id !== unit.id && occupant.hp > 0,
+            );
+            if (!ownOn) origins.set(glideKey, glide);
+            if (!zocAt(tileAtPublicV7(view, glide)))
+              queue.push({ at: glide, spent2 });
+          }
       }
       yield;
     }
+    // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dives.
+    if (!stuck)
+      for (const hole of publicDiveDestinationsForUnitV7(view, unit))
+        origins.set(coordKey(hole), hole);
   }
   if (standTilesOut !== undefined) {
     standTilesOut.push(...origins.values());

@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
-    expect(PRIOR_RULESET_7_IDS.slice(-80, -76)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
+    expect(PRIOR_RULESET_7_IDS.slice(-81, -77)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(122);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(123);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r123.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-79, -76)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -77)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r123");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r124");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -202,10 +202,11 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     const human = factionTreeV7("ORIGINAL");
     const unlocks = (tech: TechnologyIdV7) =>
       tree.nodes.find((node) => node.id === tech)?.unlocks;
+    // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): no dock unlock (no Ice
+    // Harbour, no Great Harbour), no Harbours, no naval training discount.
     expect(unlocks("SHORECRAFT")).toEqual([
       { kind: "COMMAND", command: "HARVEST_FISH" },
-      { kind: "COMMAND", command: "BUILD_PORT" },
-      // 7r76 (`pulp_wars-5ti.12`): the sea link comes with Ports.
+      // 7r76 (`pulp_wars-5ti.12`): the sea link (a captured dock's).
       { kind: "SEA_LINK" },
       { kind: "FREEZE", depth: "SHALLOW" },
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
@@ -215,16 +216,9 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       { kind: "COMMAND", command: "GATHER_PEARLS" },
       { kind: "FREEZE", depth: "DEEP" },
     ]);
-    expect(unlocks("NAVAL_ENGINEERING")).toEqual([
-      { kind: "COMMAND", command: "BUILD_SHIPYARD" },
-      { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
-      { kind: "LONG_FREEZE" },
-    ]);
+    expect(unlocks("NAVAL_ENGINEERING")).toEqual([{ kind: "LONG_FREEZE" }]);
     expect(unlocks("SEAMANSHIP")).toEqual([{ kind: "BLACK_ICE" }]);
-    expect(unlocks("SUBMERSIBLES")).toEqual([
-      { kind: "HARBOURS", population: 1 },
-      { kind: "GLACIER" },
-    ]);
+    expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "GLACIER" }]);
     for (const tech of NAVAL_BRANCH) {
       const node = tree.nodes.find((entry) => entry.id === tech);
       const reference = human.nodes.find((entry) => entry.id === tech);
@@ -298,14 +292,15 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       false,
       0,
     ]);
-    // Glacier: thick ice (the redesign), cover, and Harbours.
+    // Glacier: thick ice (the redesign) and cover (no Harbours since
+    // `pulp_wars-s55m.2`).
     expect(facts(["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"])).toEqual([
       "SHALLOW",
       false,
       true,
       true,
       true,
-      1,
+      0,
     ]);
     // No ship, no Ram, and no Board, whatever the seat researched.
     const all = of(NAVAL_BRANCH);
@@ -316,10 +311,12 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       expect.arrayContaining([
         "HARVEST_FISH",
         "GATHER_PEARLS",
-        "BUILD_PORT",
-        "BUILD_SHIPYARD",
+        "BUILD_FISHING_HOLE",
       ]),
     );
+    // Ice Folk movement (`pulp_wars-s55m.2`): and no dock.
+    expect(all.commands).not.toContain("BUILD_PORT");
+    expect(all.commands).not.toContain("BUILD_SHIPYARD");
     for (const role of NAVAL_ROLE_IDS_V7) {
       expect(factionUnlocksRoleV7("ICE_FOLK", role), role).toBe(false);
       for (const faction of SEAFARERS)

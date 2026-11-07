@@ -12031,16 +12031,11 @@ function publicTileCommandLegal(
   if (kind === "BUILD_PORT")
     return (
       view.viewer.coins >= 4 &&
-      // The frozen sea redesign (section 2.6): the Ice Folk Ice Harbour on
-      // the seat's own ice, or on open Shallow Water with no unit on it
-      // (which it freezes); every other seat's Port on open Shallow Water.
-      (iceAtV7(view, tile.at) === undefined
-        ? tile.terrain === "SHALLOW_WATER" &&
-          !(
-            view.viewer.faction === "ICE_FOLK" &&
-            view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at))
-          )
-        : ownIce) &&
+      // A Port on open Shallow Water; an Ice Folk seat has no Port unlock
+      // (no Ice Harbour since `pulp_wars-s55m.2`).
+      view.viewer.faction !== "ICE_FOLK" &&
+      iceAtV7(view, tile.at) === undefined &&
+      tile.terrain === "SHALLOW_WATER" &&
       tile.improvement === null &&
       tile.site === null &&
       !tile.road &&

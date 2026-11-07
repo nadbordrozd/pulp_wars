@@ -7,12 +7,11 @@ import {
   technologyCapabilitiesV7,
   unitIsFrozenV7,
   unitMayActAfterMoveV7,
-  unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
-import { iceAtV7 } from "../engine/v7/ice";
+import { iceAtV7, unitKindWalksIceV7 } from "../engine/v7/ice";
 import {
   previewColdSnapV7,
   previewCrackIceV7,
@@ -35,7 +34,7 @@ import type {
  * **An Ice Folk seat** has no ship and so no naval plan; it has an ice plan
  * (`iceSeaPlanV7`): the crossing it freezes toward an objective it cannot
  * walk to, the builder that freezes it, and the wave that waits at its head
- * and slides across. The same seat Freezes hostile ships with a water
+ * and skates across. The same seat Freezes hostile ships with a water
  * Freeze or a Cold Snap (`pulp_wars-s55m.1`: through their owner's next
  * turn; Icebound is gone), mends and retakes its crossing, Freezes the
  * water of its own territory for
@@ -47,8 +46,11 @@ import type {
  * hostile ice (Black Ice is assumed, research being private), a transport
  * lands beside the ice, and every other seat Cracks the ice
  * (`iceCrackScoreV7`) to open an own or allied dock iced over, to break a
- * bridge that threatens a center, and to open its ships' way. The threat estimate follows a slide (`iceSlideEndV7`), through zones
- * of control for a Sled's Runners.
+ * bridge that threatens a center, and to open its ships' way. The threat
+ * estimate follows Ice Folk movement (`pulp_wars-s55m.2`): a skate onto ice
+ * costs half a step, a Runners glide straight on is free
+ * (`iceGlideLineV7`, through zones of control for the Sled), and a Fishing
+ * Hole dive reaches every other own hole.
  *
  * The frozen sea redesign (`pulp_wars-5ti.26`,
  * docs/product/RULESET_7_ICE_REDESIGN.md section 3): ice is permanent, so no
@@ -209,47 +211,49 @@ export interface FrozenSeaToolsV7 {
   readonly plannedThrough: (at: CoordV7) => boolean;
 }
 
-// --- The slide in a reach estimate ---------------------------------------------
+// --- The glide in a reach estimate ---------------------------------------------
 
 /**
- * Section 8.6 for an estimate over the public view: the tile on which a
- * sliding unit stops after it has entered the known ice tile `first` in the
- * direction (`dx`, `dy`). It goes on while the tile it is on is in no
- * hostile zone of control (`zoc`) and the next tile is on the board,
- * explored, ice, and free (`occupied`: a unit of any owner stops it).
- * A Sled's Runners (the frozen sea redesign, section 2.7): the caller passes
- * a `zoc` that is always false, since a zone of control does not stop its
- * slide (where the slide ends, a zone stops the Move as for any step).
+ * Ice Folk movement (`pulp_wars-s55m.2`, 7r124) for an estimate over the
+ * public view: the tiles a unit with Runners glides to, free, after it has
+ * stepped onto the known ice tile `first` in the direction (`dx`, `dy`):
+ * every next tile straight on while it is on the board, explored, ice, and
+ * not held by a unit that blocks it (`blocked`: a hostile unit; an own one
+ * is passed), and while the tile it is on is in no zone of control that
+ * stops it (`zoc`: always false for the Sled, which glides through zones).
+ * `first` itself is not in the list.
  */
-export function iceSlideEndV7(
+export function iceGlideLineV7(
   view: PlayerViewV7,
   first: CoordV7,
   dx: number,
   dy: number,
-  occupied: (at: CoordV7) => boolean,
+  blocked: (at: CoordV7) => boolean,
   zoc: (at: CoordV7) => boolean,
-): CoordV7 {
+): readonly CoordV7[] {
+  const line: CoordV7[] = [];
+  if (dx === 0 && dy === 0) return line;
   let current = first;
-  if (dx === 0 && dy === 0) return current;
   for (;;) {
-    if (zoc(current)) return current;
+    if (zoc(current)) return line;
     const next = { x: current.x + dx, y: current.y + dy };
     if (
       exploredTile(view, next) === undefined ||
       !isIceAtV7(view, next) ||
-      occupied(next)
+      blocked(next)
     )
-      return current;
+      return line;
+    line.push(next);
     current = next;
   }
 }
 
-/** Whether the unit slides on ice (section 8.6): land form and a role that Glides under its kind. */
-export function iceSliderV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+/** Whether the unit skates on ice (`pulp_wars-s55m.2`): a land-form unit of the Ice Folk kind, in a view with ice. */
+export function iceSkaterV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return (
     view.ice.length > 0 &&
     unit.form === "LAND" &&
-    unitRoleMechanicsV7(view, unit).glides
+    unitKindWalksIceV7(view, unit)
   );
 }
 
@@ -1365,7 +1369,7 @@ export type IceMoveV7 =
  *   the head (`STAGE`, 720) and does not step onto the crossing, or onto
  *   the builder's stand tile, until it is ready (`HOLD`): complete, or one
  *   Freeze short. Then it crosses
- *   (`CROSS`, 1108) by the offered Moves, whose ends are the slides' ends.
+ *   (`CROSS`, 1108) by the offered Moves (skating, `pulp_wars-s55m.2`).
  * - No Move of the plan goes into lethal reach the unit is not already in.
  */
 export function iceCrossingMoveV7(
@@ -1783,7 +1787,7 @@ export function iceCrackScoreV7(
   if (breaks) {
     const sliders = view.units.filter(
       (unit) =>
-        unit.hp > 0 && tools.isHostile(unit.ownerId) && iceSliderV7(view, unit),
+        unit.hp > 0 && tools.isHostile(unit.ownerId) && iceSkaterV7(view, unit),
     );
     const centers = view.cities.filter(
       (city) =>

@@ -34,7 +34,7 @@ import {
 } from "../fixtures/v7-naval-branch";
 import { at } from "../fixtures/v7-revision20";
 
-// The Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r123`;
+// The Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r124`;
 // the user, 2026-11-06: "freezing mechanic should work on tiles with a
 // port, right now it doesn't"; "I expected to be able to freeze an enemy
 // ship same as any other unit and it would last 1 turn"; "ice witch cold
@@ -47,12 +47,18 @@ import { at } from "../fixtures/v7-revision20";
 // Cold Snap also freezes the water around her. Hand-built states only.
 
 describe("the identity", () => {
-  it("is 7r123, with 7r122 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r123");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r123.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r122");
+  // Ice Folk movement (`pulp_wars-s55m.2`) took 7r124 after it.
+  it("was 7r123 after 7r122, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
+    const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r123");
+    expect(at).toBeGreaterThan(0);
+    expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r122");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    const key = OBSOLETE_SAVE_STORAGE_KEYS_V7.indexOf(
+      "pulpWars.save.v7r123.current",
+    );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7[key - 1]).toBe(
       "pulpWars.save.v7r122.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

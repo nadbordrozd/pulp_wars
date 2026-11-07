@@ -210,12 +210,13 @@ describe("the Sunken Wreck under ice (section 21.16)", () => {
           same(command.path.at(-1) as CoordV7, ICE3),
       ),
     ).toBe(false);
-    // A Yeti steps onto the ice and slides to its end, the Wreck.
+    // A Snow Hunter steps onto the ice and glides on (Runners, Ice Folk
+    // movement `pulp_wars-s55m.2`) to its end, the Wreck.
     const slide = withWreck(
       frozenArenaV7({
         factions: ["ICE_FOLK", "ORIGINAL"],
         technologies: [ALL, ALL],
-        units: [{ seat: 0, role: "FIGHTER", at: SHORE }],
+        units: [{ seat: 0, role: "MARKSMAN", at: SHORE }],
         ice: [ICE1, ICE2, ICE3].map((at) => ({ at, seat: 0 as const })),
       }),
     );
@@ -515,24 +516,31 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     ).toEqual({ code: "TECH_REQUIRED", params: { tech: "SHORECRAFT" } });
   });
 
-  it("slides like every Ice Folk body", () => {
+  it("skates like every Ice Folk body (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
     const state = controlled(
       [],
       [ICE1, ICE2, ICE3].map((at) => ({ at, seat: 1 as const })),
     );
     const yeti = navalUnitAtV7(state, SHORE);
-    expect(
-      rejectV7(state, 0, { kind: "MOVE", unitId: yeti.id, path: [ICE1] }),
-    ).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "SLIDE_FORCED" },
-    });
-    const slid = acceptV7(state, 0, {
+    // Half a Move a tile of ice: two tiles for its Move 1, and it may stop
+    // on the first.
+    acceptV7(state, 0, { kind: "MOVE", unitId: yeti.id, path: [ICE1] });
+    const skated = acceptV7(state, 0, {
       kind: "MOVE",
       unitId: yeti.id,
-      path: [ICE1, ICE2, ICE3],
+      path: [ICE1, ICE2],
     });
-    expect(navalUnitV7(slid.state, yeti.id).at).toEqual(ICE3);
+    expect(navalUnitV7(skated.state, yeti.id).at).toEqual(ICE2);
+    expect(
+      rejectV7(state, 0, {
+        kind: "MOVE",
+        unitId: yeti.id,
+        path: [ICE1, ICE2, ICE3],
+      }),
+    ).toEqual({
+      code: "MOVEMENT_ILLEGAL",
+      params: { reason: "BUDGET_EXCEEDED" },
+    });
   });
 
   it("Black Ice follows the seat that owns the ice: a Martian seat has none", () => {

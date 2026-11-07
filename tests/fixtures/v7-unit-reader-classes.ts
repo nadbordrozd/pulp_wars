@@ -599,6 +599,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/movement.ts::publicHostileZoc": "BOARD",
     "src/engine/v7/movement.ts::publicMovementContextV7": "BOARD",
     "src/engine/v7/movement.ts::reachableMovementPathsV7": "BOARD",
+    // Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dive reads
+    // the Masses beside the diver and the unit on the hole (the board).
+    "src/engine/v7/movement.ts::canonicalDiverV7": "BOARD",
+    "src/engine/v7/movement.ts::canonicalDiveV7": "BOARD",
     "src/engine/v7/movement.ts::validateMovementPathCoreV7": "BOARD",
     "src/engine/v7/observation.ts::detectionCoversCoordV7": "BOARD",
     "src/engine/v7/observation.ts::visibleUnitIdsV7": "BOARD",
@@ -877,7 +881,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Move freezes units on the board, and Glacier reads the mover.
     "src/render/ice-folk-presentation-v7.ts::stampedePlanV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::coldAuraMoveTargetsV7": "BOARD",
-    "src/render/ice-folk-presentation-v7.ts::moveUsesGlacierV7": "BOARD",
+    "src/render/ice-folk-presentation-v7.ts::moveUsesSkateV7": "BOARD",
+    "src/render/ice-folk-presentation-v7.ts::moveIsDiveV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianPickEntriesV7":
       "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianSelectionEntriesV7":
@@ -1023,7 +1028,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::withBlackIceResultV7": "BOARD",
     "src/engine/v7/query.ts::publicCrackIceTargetsV7": "BOARD",
     "src/engine/v7/reducer.ts::applyCrackIce": "BOARD",
-    "src/engine/v7/reducer.ts::applyPort": "BOARD",
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Freeze (and a Cold
     // Snap's ring) reads the unit on each tile it reaches, the offer and
     // the result alike.

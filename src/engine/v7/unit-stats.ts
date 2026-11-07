@@ -72,7 +72,7 @@ import {
   shieldOfV7,
   unitShieldMaximumV7,
 } from "./martian";
-import { unitHasRunnersV7, unitSlidesV7 } from "./ice";
+import { unitHasRunnersV7, unitSkatesV7 } from "./ice";
 import {
   batEscapeTilesV7,
   feastReadyV7,
@@ -261,11 +261,15 @@ export interface PublicIceFolkMechanicsV7 {
    * an ice tile in land form.
    */
   readonly onIce: boolean;
-  /** The frozen sea (section 8.6): the unit slides on ice. */
-  readonly slides: boolean;
   /**
-   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
-   * Sled's Runners, its slide is not stopped by a zone of control.
+   * Ice Folk movement (`pulp_wars-s55m.2`, 7r124; `slides` before): the
+   * unit skates, each step onto ice costs it half a Move point.
+   */
+  readonly skates: boolean;
+  /**
+   * Ice Folk movement (`pulp_wars-s55m.2`): Runners, a step from ice onto
+   * ice straight on from the step before costs nothing (the Sled and the
+   * Snow Hunter).
    */
   readonly runners: boolean;
   /**
@@ -1039,7 +1043,7 @@ export function publicUnitStatsV7(
             blizzard:
               unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
             onIce: unit.form === "LAND" && isIceAtV7(state, unit.at),
-            slides: unitSlidesV7(state, unit),
+            skates: unitSkatesV7(state, unit),
             runners: unitHasRunnersV7(state, unit),
             iceCover,
           },

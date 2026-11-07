@@ -735,6 +735,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyBasic": "SEAT",
   "src/engine/v7/reducer.ts::applySpatial": "SEAT",
   "src/engine/v7/reducer.ts::applyPort": "SEAT",
+  // Ice Folk movement (`pulp_wars-s55m.2`): an Ice Folk seat builds no
+  // Great Harbour (a seat rule).
+  "src/engine/v7/reducer.ts::applyShipyard": "SEAT",
   "src/engine/v7/achievements.ts::revision21AchievementCountsV7": "SEAT",
   "src/engine/v7/state-schema.ts::iceValid": "KIND",
   // City names (`pulp_wars-2yc.30`): a city is named from the list of a

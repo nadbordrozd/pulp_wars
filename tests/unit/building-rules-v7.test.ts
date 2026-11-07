@@ -120,8 +120,8 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Port: on Shallow Water in your borders, next to its city's land, not ice; +1 population",
       "Shipyard: one per city, upgrades one of your active Ports; +1 more population",
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Ice Folk Fishing
-      // Hole.
-      "Fishing Hole: on your own ice; feeds mills and Markets like a Farm; +1 population",
+      // Hole, with its dive since Ice Folk movement (`pulp_wars-s55m.2`).
+      "Fishing Hole: on your own ice; +1 population; units dive from one hole to any other",
     ]);
     // The Ice Folk lines name their ice (and their Frost Garden).
     expect(
@@ -138,19 +138,20 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
         ] as const
       ).map((id) => buildingRuleTextV7(id, "ICE_FOLK")),
     ).toEqual([
-      // Bead pulp_wars-5ti.27: the Ice Folk Port is the Ice Harbour.
-      "Ice Harbour: on your ice or Shallow Water (it freezes) by its city's land; +1 population",
+      // Bead pulp_wars-5ti.27: the Ice Folk Port is the Ice Harbour; since
+      // Ice Folk movement (`pulp_wars-s55m.2`) only a captured one.
+      "Ice Harbour: the Ice Folk build none; a captured one keeps working; +1 population",
       "Windmill: one per city, land or ice, by your Frost Gardens or Fishing Holes; +1 each, max 8",
       "Sawmill: one per city, land or ice, next to your Lumber Camps; +1 each, max 8",
       "Forge: one per city, land or ice, next to your Mines; +1 each, max 6",
       "Workshop: one per city, land or ice, by a Frost Garden, Fishing Hole, Lumber Camp or Mine",
       "Market: one per city, land or ice, by a farm, Fishing Hole, camp, mine or mill; 1–3 Coins",
       "Monument: on land or your ice, built with an achievement, any number per city; +3 population",
-      "Fishing Hole: on your own ice; feeds mills and Markets like a Frost Garden; +1 population",
+      "Fishing Hole: on your own ice; +1 population; units dive from one hole to any other",
     ]);
     // Bead pulp_wars-5ti.27: and its Shipyard the Great Harbour.
     expect(buildingRuleTextV7("SHIPYARD", "ICE_FOLK")).toBe(
-      "Great Harbour: one per city, upgrades one of your active Ice Harbours; +1 more population",
+      "Great Harbour: the Ice Folk build none; a captured one keeps working; +2 population",
     );
     // A faction names its own buildings, and the Farms a mill counts.
     expect(buildingRuleTextV7("WINDMILL", "UNDEAD")).toBe(
@@ -466,9 +467,10 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       ]),
     ];
     for (const text of texts) expect(text).not.toMatch(/counts? as/i);
-    // The Fishing Hole still says what it feeds, plainly.
+    // The Fishing Hole says what it gives and its dive, plainly (the mill
+    // lines name the Fishing Holes they count).
     expect(buildingRuleTextV7("FISHING_HOLE", "ICE_FOLK")).toBe(
-      "Fishing Hole: on your own ice; feeds mills and Markets like a Frost Garden; +1 population",
+      "Fishing Hole: on your own ice; +1 population; units dive from one hole to any other",
     );
   });
 });

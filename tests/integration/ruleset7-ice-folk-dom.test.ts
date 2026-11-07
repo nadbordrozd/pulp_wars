@@ -62,14 +62,19 @@ import {
 } from "../fixtures/v7-ice-folk-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
 import {
+  FROZEN_DIVE_UI_V7,
   FROZEN_GLACIER_UI_V7,
+  frozenDiveUiFixtureV7,
   frozenGlacierUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import {
   closeDetailsV7,
   openUnitDetailsV7,
 } from "../fixtures/v7-unit-card-dom";
-import { GLACIER_MOVE_LABEL_V7 } from "../../src/render/frozen-sea-presentation-v7";
+import {
+  DIVE_MOVE_LABEL_V7,
+  SKATE_MOVE_LABEL_V7,
+} from "../../src/render/frozen-sea-presentation-v7";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
@@ -224,6 +229,10 @@ describe("Ice Folk unit dock", () => {
       "Frost Bolt",
       // `pulp_wars-s55m.1`: her Cold Snap freezes water; she has no Freeze.
       "Glide",
+      // Ice Folk movement (`pulp_wars-s55m.2`): every Ice Folk land unit
+      // skates and dives.
+      "Skates",
+      "Dive",
     ]);
     expect(
       document.querySelector(
@@ -353,20 +362,40 @@ describe("Ice Folk unit dock", () => {
   });
 });
 
-describe("Glacier on the ice (Ice Folk Freeze)", () => {
-  it("names the tile only Glacier's +1 Move reaches", () => {
+describe("skating and dives on the ice (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
+  it("names the tile only skating reaches", () => {
     const controller = new FixtureController(frozenGlacierUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, FROZEN_GLACIER_UI_V7.walker);
     expect(requiredElement('[data-landing-marker="glacier"]').textContent).toBe(
-      GLACIER_MOVE_LABEL_V7,
+      SKATE_MOVE_LABEL_V7,
     );
     expect(
       boardPlan(host)
-        .targets.filter((target) => target.glacier === true)
+        .targets.filter((target) => target.skate === true)
         .map((target) => target.at),
     ).toEqual([FROZEN_GLACIER_UI_V7.glacierTile]);
+    expect(document.querySelector('[data-landing-marker="dive"]')).toBeNull();
+    app.destroy();
+  });
+
+  it("names the Fishing Hole dives in the legend and on the board", () => {
+    const controller = new FixtureController(frozenDiveUiFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, FROZEN_DIVE_UI_V7.diver);
+    expect(requiredElement('[data-landing-marker="dive"]').textContent).toBe(
+      DIVE_MOVE_LABEL_V7,
+    );
+    const key = (at: { readonly x: number; readonly y: number }) =>
+      `${String(at.x)},${String(at.y)}`;
+    expect(
+      boardPlan(host)
+        .targets.filter((target) => target.dive === true)
+        .map((target) => key(target.at))
+        .sort(),
+    ).toEqual(FROZEN_DIVE_UI_V7.destinations.map(key).sort());
     app.destroy();
   });
 });

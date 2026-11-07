@@ -3,7 +3,14 @@ import type {
   GameStateV7,
   TechnologyIdV7,
 } from "../../src/engine/index";
-import { frozenArenaV7, frozenShipsV7, lineV7 } from "./v7-frozen-sea";
+import {
+  DIVE_HOLES_V7,
+  DIVE_TERRAIN_V7,
+  frozenArenaV7,
+  frozenShipsV7,
+  lineV7,
+  withFishingHolesV7,
+} from "./v7-frozen-sea";
 
 /**
  * The frozen sea interface (bead pulp_wars-5ti.7, second part): scenes on
@@ -147,22 +154,51 @@ export function frozenShipUiFixtureV7(
 }
 
 /**
- * Ice Folk Freeze (bead `pulp_wars-w49.38`, Glacier's +1 Move across ice):
- * an Ice Folk Sabretooth (it walks on ice; Move 3) on the north shore at
- * the head of a four-tile ice line down column 1, with every Ice Folk
- * Naval technology (Glacier included). Without Glacier it reaches the
- * third ice tile; the fourth, `glacierTile`, only with the bonus.
+ * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's +1 Move across ice
+ * before, bead `pulp_wars-w49.38`): an Ice Folk Yeti (Move 1) on the north
+ * shore at the head of a four-tile ice line down column 1, with every Ice
+ * Folk Naval technology. It skates the first two ice tiles at half a Move
+ * each; the second, `glacierTile` (the name kept), is past its Move and
+ * only skating reaches it.
  */
 export const FROZEN_GLACIER_UI_V7 = {
   walker: { x: 1, y: 2 },
   ice: lineV7({ x: 1, y: 2 }, 0, 1, 4),
-  glacierTile: { x: 1, y: 6 },
+  glacierTile: { x: 1, y: 4 },
 } as const;
 
 export function frozenGlacierUiFixtureV7(): GameStateV7 {
   return frozenArenaV7({
     technologies: [ALL, ALL],
-    units: [{ seat: 0, role: "KNIGHT", at: FROZEN_GLACIER_UI_V7.walker }],
-    ice: FROZEN_GLACIER_UI_V7.ice.map((at) => ({ at, turnsLeft: 3 })),
+    units: [{ seat: 0, role: "FIGHTER", at: FROZEN_GLACIER_UI_V7.walker }],
+    ice: FROZEN_GLACIER_UI_V7.ice.map((at) => ({ at })),
   });
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dive. Seat 0's
+ * capital on (5, 2) with four Fishing Holes on its ice two tiles apart
+ * (`DIVE_HOLES_V7`), every Ice Folk Naval technology, and a Yeti on the
+ * north-west hole, which may dive to the other three.
+ */
+export const FROZEN_DIVE_UI_V7 = {
+  diver: { x: 4, y: 1 },
+  destinations: [
+    { x: 6, y: 1 },
+    { x: 4, y: 3 },
+    { x: 6, y: 3 },
+  ],
+} as const;
+
+export function frozenDiveUiFixtureV7(): GameStateV7 {
+  return withFishingHolesV7(
+    frozenArenaV7({
+      technologies: [ALL, ALL],
+      units: [{ seat: 0, role: "FIGHTER", at: FROZEN_DIVE_UI_V7.diver }],
+      terrain: DIVE_TERRAIN_V7,
+      ports: [false, true],
+      ice: DIVE_HOLES_V7.map((at) => ({ at })),
+    }),
+    DIVE_HOLES_V7,
+  );
 }

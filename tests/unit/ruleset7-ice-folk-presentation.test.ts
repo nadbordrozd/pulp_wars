@@ -70,7 +70,7 @@ import {
   shatterWindowV7,
   snowTooltipV7,
   coldAuraMoveTargetsV7,
-  moveUsesGlacierV7,
+  moveUsesSkateV7,
   stampedeLabelV7,
   stampedePlanV7,
   stampedeSemanticV7,
@@ -625,22 +625,22 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
     expect(coldAuraMoveTargetsV7(view, yetiMove)).toEqual([]);
   });
 
-  it("marks only the ice tile Glacier's +1 Move reaches", () => {
-    const glacier = humanView(frozenGlacierUiFixtureV7());
-    const walker = unitAt(glacier, FROZEN_GLACIER_UI_V7.walker);
-    const marked = queryPlayerCommandsV7(glacier).flatMap((command) =>
+  it("marks only the ice tile skating reaches (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
+    const skating = humanView(frozenGlacierUiFixtureV7());
+    const walker = unitAt(skating, FROZEN_GLACIER_UI_V7.walker);
+    const marked = queryPlayerCommandsV7(skating).flatMap((command) =>
       command.kind === "MOVE" &&
       command.unitId === walker.id &&
-      moveUsesGlacierV7(glacier, command)
+      moveUsesSkateV7(skating, command)
         ? [command.path.at(-1)]
         : [],
     );
     expect(marked).toEqual([FROZEN_GLACIER_UI_V7.glacierTile]);
-    // Without Glacier the tile is not offered at all.
+    // Glacier adds nothing: with Rime alone the same tile is skated to.
     const plain = humanView(
       frozenArenaV7({
         technologies: [["SHORECRAFT"], ["SHORECRAFT"]],
-        units: [{ seat: 0, role: "KNIGHT", at: FROZEN_GLACIER_UI_V7.walker }],
+        units: [{ seat: 0, role: "FIGHTER", at: FROZEN_GLACIER_UI_V7.walker }],
         ice: FROZEN_GLACIER_UI_V7.ice.map((at) => ({ at })),
       }),
     );
@@ -651,7 +651,7 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
           command.path.at(-1)?.x === FROZEN_GLACIER_UI_V7.glacierTile.x &&
           command.path.at(-1)?.y === FROZEN_GLACIER_UI_V7.glacierTile.y,
       ),
-    ).toBe(false);
+    ).toBe(true);
   });
 });
 

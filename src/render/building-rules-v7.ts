@@ -153,7 +153,7 @@ export function buildingRuleTextV7(
     case "SHIPYARD":
       return `${name}: one per city, upgrades one of your active Ports; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
     case "FISHING_HOLE":
-      return `${name}: on your own ice; feeds mills and Markets like a ${farm}; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}`;
+      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; units dive from one hole to any other`;
   }
 }
 
@@ -180,10 +180,12 @@ function iceFolkBuildingRuleTextV7(
       return `${name}: one per city, land or ice, by a farm, ${hole}, camp, mine or mill; 1–${MARKET_INCOME_CAP_V7} Coins`;
     case "MONUMENT":
       return `${name}: on land or your ice, built with an achievement, any number per city; +${MONUMENT_POPULATION_V7} population`;
+    // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): the Ice Folk build no
+    // dock; one they capture keeps working.
     case "PORT":
-      return `${name}: on your ice or Shallow Water (it freezes) by its city's land; +${dockPopulationV7("PORT", 0)} population`;
+      return `${name}: the Ice Folk build none; a captured one keeps working; +${dockPopulationV7("PORT", 0)} population`;
     case "SHIPYARD":
-      return `${name}: one per city, upgrades one of your active ${nameV7("PORT", "ICE_FOLK")}s; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
+      return `${name}: the Ice Folk build none; a captured one keeps working; +${dockPopulationV7("SHIPYARD", 0)} population`;
     default:
       return null;
   }

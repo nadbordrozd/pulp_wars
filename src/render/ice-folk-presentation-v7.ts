@@ -18,12 +18,12 @@ import {
   canEnterTerrainV7,
   effectiveRoleRuleV7,
   isIceAtV7,
+  unitSkatesV7,
   isNeutralOwnerV7,
   previewStampedeV7,
   unitFactionV7,
   roleMechanicsV7,
   tileOccupiedV7,
-  unitCapabilitiesV7,
   unitIsFrozenV7,
   unitIsImmovableV7,
   unitIsMountainBornV7,
@@ -1127,39 +1127,57 @@ export function coldAuraMoveLabelV7(count: number): string {
   return `${COLD_AURA_LABEL_V7}: freezes ${plural(count, "unit")}`;
 }
 
-// ----------------------------------------------------------------- Glacier
+// ------------------------------------------------------ Skating and dives
 
 /**
- * The frozen sea, Glacier (section 21.16): whether an offered Move of an
- * own land-form Ice Folk unit reaches its tile only by Glacier's +1 Move
- * across ice: the tile is farther than the unit's Move, the Move's path
- * enters an ice tile the viewer knows, and the path costs more than the
- * unit's own Move (the engine's public path validation). The distance test
- * keeps a tile the unit reaches anyway unmarked when the offered path
- * happens to step on the ice on its way.
+ * Ice Folk movement (`pulp_wars-s55m.2`, section 21.16): whether an offered
+ * Move is a Fishing Hole dive: a Move of an own land-form unit of the Ice
+ * Folk kind whose path is one tile not next to it (no Ice Folk unit hops).
  */
-export function moveUsesGlacierV7(
+export function moveIsDiveV7(
   view: PlayerViewV7,
   command: Extract<CommandV7, { kind: "MOVE" }>,
 ): boolean {
-  if (view.ice.length === 0) return false;
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  const to = command.path[0];
+  return (
+    unit !== undefined &&
+    to !== undefined &&
+    command.path.length === 1 &&
+    unit.ownerId === view.viewer.id &&
+    unitSkatesV7(view, unit) &&
+    Math.max(Math.abs(to.x - unit.at.x), Math.abs(to.y - unit.at.y)) > 1
+  );
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's +1 Move before): whether
+ * an offered walk of an own land-form Ice Folk unit reaches its tile only
+ * by skating (each step onto ice costs half) or a Runners glide (free
+ * straight on): the tile is farther than the unit's Move, the path enters
+ * an ice tile the viewer knows, and the path is legal (the engine's public
+ * path validation). The distance test keeps a tile the unit reaches anyway
+ * unmarked when the offered path happens to step on the ice on its way.
+ */
+export function moveUsesSkateV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (view.ice.length === 0 || moveIsDiveV7(view, command)) return false;
   const unit = view.units.find((candidate) => candidate.id === command.unitId);
   const to = command.path.at(-1);
   if (
     unit === undefined ||
     to === undefined ||
     unit.ownerId !== view.viewer.id ||
-    unit.form !== "LAND" ||
-    unitFactionV7(view, unit) !== "ICE_FOLK" ||
-    !unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).iceCover ||
+    !unitSkatesV7(view, unit) ||
     !command.path.some((at) => isIceAtV7(view, at))
   )
     return false;
   const move = unitRoleRuleV7(view, unit).move;
   if (Math.max(Math.abs(to.x - unit.at.x), Math.abs(to.y - unit.at.y)) <= move)
     return false;
-  const result = validatePlayerMovementPathV7(view, unit, command.path);
-  return result.legal && result.spentPoints2 > move * 2;
+  return validatePlayerMovementPathV7(view, unit, command.path).legal;
 }
 
 // ------------------------------------------------------------- log lines

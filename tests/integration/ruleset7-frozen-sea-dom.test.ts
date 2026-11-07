@@ -18,7 +18,7 @@ import {
   ICE_MOVE_TEXT_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
-  SLIDE_MOVE_LABEL_V7,
+  SKATE_TRAIL_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
 } from "../../src/render/frozen-sea-presentation-v7";
 import {
@@ -312,30 +312,33 @@ describe("the Ice Witch's Cold Snap: one tap, units and water", () => {
 });
 
 describe("moving on ice", () => {
-  it("a slider sees the tile it stops on, with the slide and its legend", async () => {
+  it("a skater sees the ice tiles it reaches, with its trail and the legend (Ice Folk movement, `pulp_wars-s55m.2`)", async () => {
     const { controller, host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     const yeti = unitAt(FROZEN_UI_V7.bridgeHead);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: yeti.id });
-    const last = required(FROZEN_UI_V7.bridge.at(-1));
+    // A Yeti (Move 1) skates two bridge tiles, half a Move each.
+    const first = required(FROZEN_UI_V7.bridge[0]);
+    const last = required(FROZEN_UI_V7.bridge[1]);
     const destination = required(
       boardPlan(host).targets.find(
         (target) => target.family === "MOVE" && at(target.at) === at(last),
       ),
     );
     expect(destination.slide).toEqual([
-      { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
+      { from: FROZEN_UI_V7.bridgeHead, tiles: [first, last] },
     ]);
-    // No tile along the slide is offered (Ice Folk Freeze,
-    // `pulp_wars-w49.37`: but Glacier's extra point reaches the first bridge
-    // tile by a diagonal step, which starts no slide).
-    for (const tile of FROZEN_UI_V7.bridge.slice(1, -1))
+    // It may stop on the first; the third is out of its reach.
+    expect(
+      boardPlan(host).targets.some((target) => at(target.at) === at(first)),
+    ).toBe(true);
+    for (const tile of FROZEN_UI_V7.bridge.slice(2))
       expect(
         boardPlan(host).targets.some((target) => at(target.at) === at(tile)),
       ).toBe(false);
     const legend = requiredElement<HTMLElement>(
       '.v7-selection-dock [data-landing-marker="slide"]',
     );
-    expect(legend.textContent).toBe(SLIDE_MOVE_LABEL_V7);
+    expect(legend.textContent).toBe(SKATE_TRAIL_LABEL_V7);
     expect(
       document.querySelector('.v7-selection-dock [data-landing-marker="slip"]'),
     ).toBeNull();
@@ -373,7 +376,7 @@ describe("moving on ice", () => {
     app.destroy();
   });
 
-  it("the Sabretooth has plain Moves on ice and no legend", () => {
+  it("the Sabretooth skates too: trails on the ice, never a slip", () => {
     const { host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     host.callbacks?.onSelection({
       kind: "UNIT",
@@ -383,14 +386,10 @@ describe("moving on ice", () => {
       FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
     expect(onIce.length).toBeGreaterThan(1);
-    for (const target of onIce) {
-      expect(target.slide).toBeUndefined();
-      expect(target.slip).toBeUndefined();
-    }
+    expect(onIce.some((target) => target.slide !== undefined)).toBe(true);
+    for (const target of onIce) expect(target.slip).toBeUndefined();
     expect(
-      document.querySelector(
-        '.v7-selection-dock [data-landing-marker="slide"], .v7-selection-dock [data-landing-marker="slip"]',
-      ),
+      document.querySelector('.v7-selection-dock [data-landing-marker="slip"]'),
     ).toBeNull();
     app.destroy();
   });
@@ -530,7 +529,7 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     ).toEqual(["Rime", "Pack Ice", "Hoarfrost", "Black Ice", "Glacier"]);
     const rime = lines("shorecraft");
     expect(rime).toContain(
-      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch's Cold Snap: all around her), and slide across it; a ship in the way is Frozen; the water inside your borders freezes now and whenever they grow",
+      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch's Cold Snap: all around her), and skate across it; a ship in the way is Frozen; the water inside your borders freezes now and whenever they grow",
     );
     expect(rime).toContain("The Ice Folk build no ships");
     expect(rime.join(" ")).not.toMatch(/embark|Patrol Boat/i);
@@ -550,7 +549,7 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     );
     const glacier = lines("submersibles");
     expect(glacier).toContain(
-      "Glacier: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover and +1 Move across it",
+      "Glacier: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover",
     );
     expect(glacier.join(" ")).not.toContain("Submarine");
     expect(

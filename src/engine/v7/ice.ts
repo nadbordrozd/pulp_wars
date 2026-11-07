@@ -77,26 +77,29 @@ export function iceIndexSetV7(
 }
 
 /**
- * Section 8.6: whether the unit slides on ice: a land-form unit whose role
- * Glides under its kind (every Ice Folk land role but the Sabretooth). A
- * body rule, so a mind-controlled Ice Folk unit slides for its controller.
+ * Ice Folk movement (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the forced
+ * slide before): whether the unit **skates**: a land-form unit of the Ice
+ * Folk kind, every role. Each step it makes onto an ice tile costs half a
+ * Move point (ice is its road). A body rule, so a mind-controlled Ice Folk
+ * unit skates for its controller.
  */
-export function unitSlidesV7(
+export function unitSkatesV7(
   roster: FactionRosterV7,
   unit: {
     readonly id: UnitId;
     readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
   },
 ): boolean {
-  return unit.form === "LAND" && unitRoleMechanicsV7(roster, unit).glides;
+  return unit.form === "LAND" && unitKindWalksIceV7(roster, unit);
 }
 
 /**
- * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): Runners,
- * whether the unit's slide is not stopped by a hostile zone of control (the
- * Sled, a body rule of its role under its kind).
+ * Ice Folk movement (`pulp_wars-s55m.2`): **Runners**, whether a step of
+ * the skating unit from ice onto ice in the same direction as the step
+ * before it in the same Move costs nothing (the Sled and the Snow Hunter,
+ * a body rule of the role under its kind), so it glides any distance in a
+ * straight line along ice and may stop on any tile of it.
  */
 export function unitHasRunnersV7(
   roster: FactionRosterV7,
@@ -108,7 +111,27 @@ export function unitHasRunnersV7(
   },
 ): boolean {
   return (
-    unitSlidesV7(roster, unit) && unitRoleMechanicsV7(roster, unit).runners
+    unitSkatesV7(roster, unit) && unitRoleMechanicsV7(roster, unit).runners
+  );
+}
+
+/**
+ * Ice Folk movement (`pulp_wars-s55m.2`): whether the unit's step onto ice
+ * that enters a hostile zone of control does not end its Move while its
+ * next step glides on straight along the ice (the Sled).
+ */
+export function unitGlidesThroughZocV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitFormV7;
+  },
+): boolean {
+  return (
+    unitHasRunnersV7(roster, unit) &&
+    unitRoleMechanicsV7(roster, unit).glidesThroughZoc
   );
 }
 

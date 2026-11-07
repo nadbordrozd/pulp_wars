@@ -394,7 +394,7 @@ describe("Glacier (section 8.10)", () => {
     // The opponent reads it from the unit's public stats.
     expect(queryUnitStatsV7(view, yeti.id)?.iceFolk).toMatchObject({
       onIce: true,
-      slides: true,
+      skates: true,
       iceCover: true,
       onSnow: false,
     });
@@ -436,10 +436,11 @@ describe("Glacier (section 8.10)", () => {
     );
   });
 
-  it("gives an Ice Folk land unit +1 Move for a Move whose path includes ice (Ice Folk Freeze, `pulp_wars-w49.37`)", () => {
+  it("adds no Move on ice since Ice Folk movement (`pulp_wars-s55m.2`; +1 before)", () => {
     // Seat 0 is the Ice Folk: a Yeti (Move 1) on (1, 1); (1, 2) is land
-    // outside its territory, (1, 3) is its ice, and (1, 4) open Deep Water,
-    // so it stops there. The land step and the ice step cost a point each.
+    // outside its territory, (1, 3) is its ice, and (1, 4) open Deep Water.
+    // The land step costs a point and the skate onto the ice half of one:
+    // over the Yeti's Move, with Glacier or without.
     const build = (technologies: readonly TechnologyIdV7[]) =>
       frozenArenaV7({
         technologies: [technologies, ALL],
@@ -466,37 +467,21 @@ describe("Glacier (section 8.10)", () => {
           command.path[1]?.x === 1 &&
           command.path[1]?.y === 3,
       );
-    const glacier = build(ALL);
-    expect(endsOnIce(glacier)).toBe(true);
-    const moved = acceptV7(glacier, 0, move(glacier, ontoIce));
-    expect(navalUnitAtV7(moved.state, { x: 1, y: 3 }).role).toBe("FIGHTER");
-    // A path on land only keeps the ordinary budget.
-    expect(
-      rejectV7(
-        glacier,
-        0,
-        move(glacier, [
-          { x: 1, y: 2 },
-          { x: 2, y: 2 },
-        ]),
-      ),
-    ).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "BUDGET_EXCEEDED" },
-    });
-    // Without Glacier the ice path is over the budget too.
-    const bare = build(NO_GLACIER);
-    expect(endsOnIce(bare)).toBe(false);
-    expect(rejectV7(bare, 0, move(bare, ontoIce))).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "BUDGET_EXCEEDED" },
-    });
+    for (const technologies of [ALL, NO_GLACIER]) {
+      const state = build(technologies);
+      expect(endsOnIce(state)).toBe(false);
+      expect(rejectV7(state, 0, move(state, ontoIce))).toEqual({
+        code: "MOVEMENT_ILLEGAL",
+        params: { reason: "BUDGET_EXCEEDED" },
+      });
+    }
   });
 
   it("offers the cheapest legal path to every tile: no detour over ice, no Move back to the start (`pulp_wars-mm8p`)", () => {
-    // Seat 0 is the Ice Folk: a Sabretooth (Move 3, 6 half-points; 8 with
-    // Glacier on a path over ice) on (1, 1) with its ice on (0, 3) to
-    // (3, 3). Every land step and every ice step costs a point.
+    // Seat 0 is the Ice Folk: a Sabretooth (Move 3, 6 half-points; Glacier
+    // adds none since `pulp_wars-s55m.2`) on (1, 1) with its ice on (0, 3)
+    // to (3, 3). Every land step costs a point and every skate onto the ice
+    // half of one.
     const START: CoordV7 = { x: 1, y: 1 };
     const ICE_ROW: readonly CoordV7[] = [0, 1, 2, 3].map((x) => ({ x, y: 3 }));
     const build = (technologies: readonly TechnologyIdV7[]) =>
@@ -512,14 +497,14 @@ describe("Glacier (section 8.10)", () => {
     const onIce = (at: CoordV7): boolean =>
       ICE_ROW.some((ice) => ice.x === at.x && ice.y === at.y);
     // The cheapest legal Move to every tile, by brute force over every path
-    // of up to 4 steps (4 points: the Glacier budget) through the
-    // canonical validation.
+    // of up to 5 steps (one land step and four skates: the budget) through
+    // the canonical validation.
     const cheapest = (state: GameStateV7): Map<string, number> => {
       const unit = navalUnitAtV7(state, START);
       const costs = new Map<string, number>();
       const visit = (path: readonly CoordV7[]): void => {
         const current = path.at(-1) ?? START;
-        if (path.length === 4) return;
+        if (path.length === 5) return;
         for (let dy = -1; dy <= 1; dy += 1)
           for (let dx = -1; dx <= 1; dx += 1) {
             const next = { x: current.x + dx, y: current.y + dy };
@@ -597,37 +582,17 @@ describe("Glacier (section 8.10)", () => {
         paths.map((entry) => [keyOf(entry.destination), entry.spentPoints2]),
       ),
     ).toEqual(costs);
-    // Glacier adds reach only over ice: a path without ice keeps the 6
-    // half-points, and some tile needs the ice path's 8.
+    // Every path keeps the 6 half-points; a skate onto the ice row costs
+    // half: (3, 3) is a land step and a skate away.
     for (const entry of paths)
-      if (!entry.path.some(onIce))
-        expect(entry.spentPoints2).toBeLessThanOrEqual(6);
-    const beyond = paths.filter((entry) => entry.spentPoints2 === 8);
-    expect(beyond.length).toBeGreaterThan(0);
-    for (const entry of beyond) expect(entry.path.some(onIce)).toBe(true);
-    // Without Glacier those tiles are out of reach, and the rest is
-    // unchanged.
-    const bare = build(NO_GLACIER);
-    const barePaths = offered(bare);
+      expect(entry.spentPoints2).toBeLessThanOrEqual(6);
     expect(
-      new Map(
-        barePaths.map((entry) => [
-          keyOf(entry.destination),
-          entry.spentPoints2,
-        ]),
-      ),
-    ).toEqual(
-      new Map(
-        paths
-          .filter((entry) => entry.spentPoints2 <= 6)
-          .map((entry) => [keyOf(entry.destination), entry.spentPoints2]),
-      ),
-    );
-    expect(barePaths.map((entry) => entry.path)).toEqual(
-      paths
-        .filter((entry) => entry.spentPoints2 <= 6)
-        .map((entry) => entry.path),
-    );
+      paths.find((entry) => keyOf(entry.destination) === "3,3"),
+    ).toMatchObject({ spentPoints2: 3 });
+    expect(paths.some((entry) => entry.path.some(onIce))).toBe(true);
+    // Without Glacier the same paths are offered.
+    const barePaths = offered(build(NO_GLACIER));
+    expect(barePaths).toEqual(paths);
   });
 });
 
