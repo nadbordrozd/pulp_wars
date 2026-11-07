@@ -31,7 +31,7 @@ import {
 import { frozenStateV7, withFishingHolesV7 } from "../fixtures/v7-frozen-sea";
 import { seatV7 } from "../fixtures/v7-naval-branch";
 
-// Fishing Hole links (`pulp_wars-vg5l`, `pulp-wars-poc-7r127`; the user,
+// Fishing Hole links (`pulp_wars-vg5l`, `pulp-wars-poc-7r128`; the user,
 // 2026-11-07: "with no ice harbour how does connecting cities over water
 // work now?"). Since 7r124 the Ice Folk build no dock, so Rime's sea link
 // joined nothing they could build. A Fishing Hole of an Ice Folk seat is now
@@ -102,12 +102,19 @@ function withHostileOn(
 }
 
 describe("the identity", () => {
-  it("is 7r127 after 7r126, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r127");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r127.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r126");
+  // The Mammoth's 2- or 3-tile Stampede (`pulp_wars-57lq`) took 7r128
+  // after it.
+  it("was 7r127 after 7r126, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r128");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r128.current");
+    const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r127");
+    expect(at).toBeGreaterThan(0);
+    expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r126");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    const key = OBSOLETE_SAVE_STORAGE_KEYS_V7.indexOf(
+      "pulpWars.save.v7r127.current",
+    );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7[key - 1]).toBe(
       "pulpWars.save.v7r126.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

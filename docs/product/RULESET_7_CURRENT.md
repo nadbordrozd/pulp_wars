@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r127`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r128`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,23 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r128` (`pulp_wars-57lq`, **the Mammoth's 2- or 3-tile
+Stampede**; the user, 2026-11-07: "right now I have a choice of moving to a
+next tile as a regular move or as a stampede and that's unnecessary")
+gives the Stampede a minimum range of 2
+([section 21.18](#2118-the-mammoths-stampede)): an unmoved Mammoth charges
+2 or 3 tiles in a straight line, and a `STAMPEDE` whose `at` is an adjacent
+tile is rejected (`STAMPEDE_NOT_LEGAL { reason: "DIRECTION" }`) and never
+offered. So an adjacent tile is only ever a Move (or an Attack on a hostile
+unit there) and a tile 2 or 3 away in a straight line only ever a
+Stampede: no tile of a selected unmoved Mammoth carries both, and no
+chooser opens for it. Everything else in section 21.18 is unchanged; a
+charge still stops early before a unit it cannot shove, so it may end 1
+tile out or on its own tile. The Normal AI scores the offered Stampedes as
+before, so it no longer considers a 1-tile charge. No other unit or
+faction changes. A save, replay, or setup of `7r127` is rejected, and the
+browser autosave has a new key.
+
 `pulp-wars-poc-7r127` (`pulp_wars-vg5l`, **Fishing Hole links**; the
 user, 2026-11-07: "with no ice harbour how does connecting cities over
 water work now?") makes the **Fishing Hole** the Ice Folk's dock for the
@@ -2024,10 +2041,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r127`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r128`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r127.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r128.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7367,7 +7384,7 @@ Golem the Snow Golem, with the same numbers.
 - **Mammoth** has Guard parity for capture: unlike the Guard it may
   attack after moving, and it cannot build Field Defense. Every attack it
   makes is a Sweep and a Trample ([section 21.10](#2110-sweep-and-trample)),
-  and an unmoved Mammoth may Stampede instead
+  and an unmoved Mammoth may Stampede 2 or 3 tiles instead
   ([section 21.18](#2118-the-mammoths-stampede)).
 - **Ice Witch** has Captain parity for capture and nothing else: no
   Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED` are never offered
@@ -8062,7 +8079,7 @@ else has, and a passive that rewards the army built around it.
 | T-Rex       | **14**, an Egg of 4 turns, two slots; 28 HP, Attack 4, Defense 2, Move 2; Rampage | Breakthrough apex: the Knight's bite on 28 HP, and its first kill grows it Big and heals it fully                                                                             | Largely the Triceratops: for 6 more Coins and 2 more Egg turns it adds 8 HP, +1 Attack unmoved, and Overrun, and loses the fortification ignore and Push | Rarely: 14 Coins idle four turns in a 6-HP Egg (revision 20's price, set against the 10-HP Knight) | Breakthrough share 10% (25% against shooters); never onto a threatened center                                | **Fails on price**: **11 Coins** (below)                    |
 | Snow Golem  | 9; 10 HP, Attack 2 (3 Planted), Defense 1.5, Move 2, range 1–2; Boulders          | City siege: its throw ignores Walls and Field Defense, Planted it is a Catapult at range 1–2, and it moves and throws in one turn; Mountain-born                              | In the open the Snow Hunter (3) hits as hard as a moved Snow Golem; on a fortified tile it does not                                                      | Against Walls and Field Defense                                                                    | Fights as a ranged unit (`armyClassV7`); siege share 15%; +3 per fortification level ignored; planted throws | **Useful**, unchanged; dear for 10 HP (see the follow-ups)  |
 | Sabretooth  | 9; 14 HP, Attack 3, Defense 1, Move 3; Prowl; no Overrun                          | One bite behind the line                                                                                                                                                      | Yes: a Knight with 1 Attack less and no Overrun; with Attack 3 it kills only 10-HP units, and every Ice Folk unit already shatters a Frozen one          | Hardly: it bites once, alone in the enemy's back line, and dies                                    | Breakthrough share 10%; backline kills +8                                                                    | **Fails: no distinct role**: Overrun and Cold Blood (below) |
-| Mammoth     | 7; 20 HP, Attack 2.5, Defense 2; Sweep, Trample, Stampede                         | Heavy line against crowds: 2 to both flanks, and the unmoved charge through a line                                                                                            | No                                                                                                                                                       | Against a packed line                                                                              | Line share; Sweep and Trample values; Stampede offered                                                       | **Useful**, unchanged                                       |
+| Mammoth     | 7; 20 HP, Attack 2.5, Defense 2; Sweep, Trample, Stampede                         | Heavy line against crowds: 2 to both flanks, and the unmoved 2- or 3-tile charge                                                                                              | No                                                                                                                                                       | Against a packed line                                                                              | Line share; Sweep and Trample values; Stampede offered                                                       | **Useful**, unchanged                                       |
 
 **The changes** (`pulp-wars-poc-7r113`). Only the two failing units
 change; no unit lost anything.
@@ -14730,15 +14747,15 @@ belongs to the Mammoth). It is not an Attack and costs no Coins.
 
 **Legality**, in this order (all rejections atomic):
 
-| #   | Requirement                                                                                                                                                                                     | Rejection                                    |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board, not Frozen.                                                                                                                                      | the ordinary unit errors; `UNIT_FROZEN`      |
-| 2   | Its role has `STAMPEDE`.                                                                                                                                                                        | `UNIT_ROLE_INVALID { role }`                 |
-| 3   | It is in land form.                                                                                                                                                                             | `STAMPEDE_NOT_LEGAL { reason: "EMBARKED" }`  |
-| 4   | It has not used a primary action (Attack, Recover, Capture, a special action) and has no pending continuation.                                                                                  | `UNIT_ALREADY_ACTED`                         |
-| 5   | It has not moved this turn.                                                                                                                                                                     | `STAMPEDE_NOT_LEGAL { reason: "MOVED" }`     |
-| 6   | `at` is 1 to `STAMPEDE_RANGE_V7` (3) tiles away in one straight line, orthogonal or diagonal.                                                                                                   | `STAMPEDE_NOT_LEGAL { reason: "DIRECTION" }` |
-| 7   | Every tile of the line is on the board and explored by the actor, no settlement center, with no chest, mound, Barricade, or visible unit that is not hostile, and ground the Mammoth can enter. | `STAMPEDE_NOT_LEGAL { reason: "BLOCKED" }`   |
+| #   | Requirement                                                                                                                                                                                                                 | Rejection                                    |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board, not Frozen.                                                                                                                                                                  | the ordinary unit errors; `UNIT_FROZEN`      |
+| 2   | Its role has `STAMPEDE`.                                                                                                                                                                                                    | `UNIT_ROLE_INVALID { role }`                 |
+| 3   | It is in land form.                                                                                                                                                                                                         | `STAMPEDE_NOT_LEGAL { reason: "EMBARKED" }`  |
+| 4   | It has not used a primary action (Attack, Recover, Capture, a special action) and has no pending continuation.                                                                                                              | `UNIT_ALREADY_ACTED`                         |
+| 5   | It has not moved this turn.                                                                                                                                                                                                 | `STAMPEDE_NOT_LEGAL { reason: "MOVED" }`     |
+| 6   | `at` is `STAMPEDE_MIN_RANGE_V7` (2) to `STAMPEDE_RANGE_V7` (3) tiles away in one straight line, orthogonal or diagonal (since `7r128`, `pulp_wars-57lq`: 1 to 3 before; an adjacent tile is only ever a Move or an Attack). | `STAMPEDE_NOT_LEGAL { reason: "DIRECTION" }` |
+| 7   | Every tile of the line is on the board and explored by the actor, no settlement center, with no chest, mound, Barricade, or visible unit that is not hostile, and ground the Mammoth can enter.                             | `STAMPEDE_NOT_LEGAL { reason: "BLOCKED" }`   |
 
 **Resolution.** The Mammoth charges along the line, tile by tile:
 
@@ -14780,6 +14797,17 @@ unless that command is offered, otherwise
 visible hostile unit on them (as `splash` entries), assuming nothing stops
 the charge; the result may differ when a hit unit cannot be shoved or a
 hidden unit stands in the way.
+
+**One meaning a tile** (`pulp_wars-57lq`, `7r128`). With a minimum range
+of 2, no `STAMPEDE` shares an `at` with a 1-step Move or an Attack of the
+same Mammoth. On the board, a selected unmoved Mammoth shows its Move
+marks (and any Attack) on the adjacent tiles and the Stampede badge on
+each offered end 2 or 3 tiles out; a tile a Road would also let it walk to
+carries the Stampede alone. Tapping a Stampede badge arms the Stampede and
+chooses that end, drawing its line, hits, and shoves; tapping it again (or
+the dock's Charge) charges, and the charge plays its animation. No tile
+opens a chooser between a Move and a Stampede. The dock keeps its Stampede
+button, as every aimed ability has one.
 
 ## 22. Dwarf faction rules
 

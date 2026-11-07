@@ -33,9 +33,13 @@ The dock never lists one button, portrait or chip per target.
 - **Arming where two actions could claim one target.** A Mind Control, a
   Tractor Beam, a Bolas, a Frost Bolt, a Bomb Run or a Board aims at units
   the unit could also attack; a Tunnel, an Assemble, a Beam Down, a
-  Re-bake, a Sugar Rush, a Freeze or a Stampede aims at tiles it could also
-  move to (a Stampede's end tile is chosen first, then charged by choosing
-  it again or with Charge, as a Tunnel's destination is dug). Each has one button that arms it.
+  Re-bake, a Sugar Rush or a Freeze aims at tiles it could also move to.
+  Each has one button that arms it. A Stampede (Mammoth) has a button too,
+  but since `7r128` (`pulp_wars-57lq`) it shares no tile with a Move: it
+  charges 2 or 3 tiles, the Mammoth moves 1, and on a tile a Road would
+  also let it reach the Stampede badge stands alone. Its end tile is chosen
+  first, then charged by choosing it again or with Charge, as a Tunnel's
+  destination is dug.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is made with the armed button, or, unarmed,

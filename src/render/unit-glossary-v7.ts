@@ -601,7 +601,7 @@ const ENTRIES = {
   ],
   STAMPEDE: [
     "Stampede",
-    "If it has not moved, it charges up to three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside. Nobody strikes back.",
+    "If it has not moved, it charges two or three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside. Nobody strikes back.",
   ],
   BOULDERS: [
     "Boulders",

@@ -11,6 +11,7 @@ import {
   ROCKFALL_ATTACK2_V7,
   SHATTER_HP_V7,
   STAMPEDE_DAMAGE_V7,
+  STAMPEDE_MIN_RANGE_V7,
   STAMPEDE_RANGE_V7,
   SWEEP_DAMAGE_V7,
   UNIT_ROLE_IDS_V7,
@@ -206,7 +207,9 @@ export const FROST_BOLT_NO_TARGET_V7 = `No unfrozen enemy within ${FROST_BOLT_RA
 export const WITCH_SPELL_USED_V7 = "She already cast this turn";
 /** Ice Folk Freeze: the Mammoth's charge. */
 export const STAMPEDE_LABEL_V7 = "Stampede";
-export const STAMPEDE_TOOLTIP_V7 = `Charge up to ${STAMPEDE_RANGE_V7} tiles in a straight line: each enemy in the way takes ${STAMPEDE_DAMAGE_V7} and is shoved aside. Only before it moves; it is its action.`;
+// `pulp_wars-57lq` (7r128): a Stampede goes 2 or 3 tiles; a step to an
+// adjacent tile is always a plain Move.
+export const STAMPEDE_TOOLTIP_V7 = `Charge ${STAMPEDE_MIN_RANGE_V7} or ${STAMPEDE_RANGE_V7} tiles in a straight line: each enemy in the way takes ${STAMPEDE_DAMAGE_V7} and is shoved aside. Only before it moves; it is its action.`;
 export const STAMPEDE_PICK_V7 = "Choose where to charge";
 export const STAMPEDE_CONFIRM_HINT_V7 = "Choose the tile again to charge";
 export const STAMPEDE_NO_LINE_V7 = "No open line to charge";
@@ -460,7 +463,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       STAMPEDE_LABEL_V7,
-      `a ${joinOr(stampeders)} that has not moved charges up to ${numberWord(STAMPEDE_RANGE_V7)} tiles in a straight line; each enemy in its way takes ${STAMPEDE_DAMAGE_V7} and is shoved aside, and nobody strikes back.`,
+      `a ${joinOr(stampeders)} that has not moved charges ${numberWord(STAMPEDE_MIN_RANGE_V7)} or ${numberWord(STAMPEDE_RANGE_V7)} tiles in a straight line (a step to the next tile is a plain Move); each enemy in its way takes ${STAMPEDE_DAMAGE_V7} and is shoved aside, and nobody strikes back.`,
     ],
     [
       "Deep Winter",

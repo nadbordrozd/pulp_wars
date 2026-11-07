@@ -1,6 +1,7 @@
 import type { PlayerId } from "../model/ids";
 import {
   STAMPEDE_DAMAGE_V7,
+  STAMPEDE_MIN_RANGE_V7,
   STAMPEDE_RANGE_V7,
   canEnterTerrainV7,
   seatRoleMechanicsV7,
@@ -36,12 +37,14 @@ import { barricadeAtV7, moundAtV7 } from "./units";
 /**
  * Ice Folk Freeze (`pulp_wars-w49.37`, docs/product/RULESET_7_CURRENT.md
  * section 21.18): the Mammoth's Stampede. An unmoved land-form Mammoth
- * charges up to `STAMPEDE_RANGE_V7` tiles in one straight line (orthogonal
- * or diagonal). Each hostile unit in its way takes `STAMPEDE_DAMAGE_V7`
- * fixed damage and is shoved to the first legal side tile (clockwise of the
- * charge first), and the Mammoth goes on; it stops before a unit that is not
- * hostile or cannot be shoved, a settlement center, a mound, a Barricade, a
- * chest, ground it cannot enter, and the board edge. No retaliation; kills
+ * charges `STAMPEDE_MIN_RANGE_V7` to `STAMPEDE_RANGE_V7` tiles (2 or 3) in
+ * one straight line (orthogonal or diagonal); an adjacent tile is only ever
+ * a Move (`pulp_wars-57lq`, 7r128). Each hostile unit in its way takes
+ * `STAMPEDE_DAMAGE_V7` fixed damage and is shoved to the first legal side
+ * tile (clockwise of the charge first), and the Mammoth goes on; it stops
+ * before a unit that is not hostile or cannot be shoved, a settlement
+ * center, a mound, a Barricade, a chest, ground it cannot enter, and the
+ * board edge. No retaliation; kills
  * are credited to the Mammoth; Sweep and Trample do not apply. The legality
  * helpers read only what the actor knows (explored tiles and visible
  * units), so the public command query and the reducer agree exactly; the
@@ -56,8 +59,9 @@ export interface StampedeLineV7 {
 }
 
 /**
- * The straight line from `from` to `to`: orthogonal or diagonal, 1 to
- * `STAMPEDE_RANGE_V7` tiles; null for any other tile.
+ * The straight line from `from` to `to`: orthogonal or diagonal,
+ * `STAMPEDE_MIN_RANGE_V7` to `STAMPEDE_RANGE_V7` tiles (2 or 3; 1 to 3
+ * before 7r128); null for any other tile.
  */
 export function stampedeLineV7(
   from: CoordV7,
@@ -66,7 +70,7 @@ export function stampedeLineV7(
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   const steps = Math.max(Math.abs(dx), Math.abs(dy));
-  if (steps < 1 || steps > STAMPEDE_RANGE_V7) return null;
+  if (steps < STAMPEDE_MIN_RANGE_V7 || steps > STAMPEDE_RANGE_V7) return null;
   if (dx !== 0 && dy !== 0 && Math.abs(dx) !== Math.abs(dy)) return null;
   return {
     dx: Math.sign(dx) as -1 | 0 | 1,
@@ -154,7 +158,7 @@ export interface StampedeTileFactsV7 {
 
 /**
  * Whether the path to `at` is open as the actor knows it: a straight line
- * of 1 to 3 tiles, each explored, on the board, not a settlement center,
+ * of 2 or 3 tiles, each explored, on the board, not a settlement center,
  * with no chest, mound, Barricade, or visible unit that is not hostile, and
  * ground the Mammoth can enter under the actor's research.
  */

@@ -150,7 +150,12 @@ describe("the Mammoth's Stampede (section 21.18)", () => {
     expect(rejectedV7(state, stampede(state, at(5, 2))).params).toEqual({
       reason: "BLOCKED",
     });
-    expect(offeredV7(state, "STAMPEDE")).toContainEqual(
+    // Since 7r128 (`pulp_wars-57lq`) the open tile before it is a Move, not
+    // a Stampede: a 1-tile charge is no direction.
+    expect(rejectedV7(state, stampede(state, at(3, 2))).params).toEqual({
+      reason: "DIRECTION",
+    });
+    expect(offeredV7(state, "STAMPEDE")).not.toContainEqual(
       stampede(state, at(3, 2)),
     );
     // The village center (5, 5) closes the diagonal beyond (4, 4).

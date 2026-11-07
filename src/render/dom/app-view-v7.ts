@@ -17105,7 +17105,15 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#iceFolkPick = { ...pick, chosen: command.at };
-    this.#notice = semantic ?? `${STAMPEDE_CONFIRM_HINT_V7}.`;
+    // `pulp_wars-57lq`: the chosen end's sentence says how to charge (the
+    // tapped target's own sentence was written before it was chosen).
+    const view = this.#snapshot.view;
+    const plan =
+      view === null ? null : stampedePlanV7(view, command.unitId, command.at);
+    this.#notice =
+      plan === null
+        ? (semantic ?? `${STAMPEDE_CONFIRM_HINT_V7}.`)
+        : `${stampedeSemanticV7(plan)} ${STAMPEDE_CONFIRM_HINT_V7}.`;
     this.#render();
     this.#queueBoardFocus();
   }
@@ -20316,7 +20324,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r127",
+    rulesetId: "pulp-wars-poc-7r128",
     seed,
     width,
     height: width,

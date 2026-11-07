@@ -595,6 +595,64 @@ describe("Ice Folk abilities", () => {
     app.destroy();
   });
 
+  // `pulp_wars-57lq` (7r128): unarmed, the selected Mammoth's Stampede ends
+  // (2 or 3 tiles out) carry the Stampede badge alone and its adjacent tiles
+  // are plain Moves; a tap on a badge chooses that end (no chooser), a
+  // second tap charges.
+  it("charges a Stampede from its board badge in two taps, with no chooser", async () => {
+    const controller = new FixtureController(iceFolkFreezeFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const mammoth = selectUnitAt(controller, host, FREEZE.mammoth);
+    const tiles = required(host.lastModel?.tileActions).tiles;
+    expect(tiles.length).toBeGreaterThan(0);
+    for (const tile of tiles) {
+      expect(tile.actions.map((action) => action.id)).toEqual(["STAMPEDE"]);
+      expect(tile.chooser).toBe(false);
+      expect(
+        Math.max(
+          Math.abs(tile.at.x - FREEZE.mammoth.x),
+          Math.abs(tile.at.y - FREEZE.mammoth.y),
+        ),
+      ).toBeGreaterThanOrEqual(2);
+    }
+    const onTileActions = required(host.callbacks?.onTileActions);
+    onTileActions(FREEZE.stampedeWest, { x: 200, y: 160, size: 96 });
+    await waitUntil(
+      () =>
+        host.lastModel?.interaction.iceFolkPick?.kind === "STAMPEDE" &&
+        host.lastModel.interaction.iceFolkPick.chosen !== null,
+    );
+    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
+      kind: "STAMPEDE",
+      unitId: mammoth.id,
+      chosen: FREEZE.stampedeWest,
+    });
+    expect(document.querySelector('[data-v7-region="tile-chooser"]')).toBe(
+      null,
+    );
+    expect(controller.accepted).toHaveLength(0);
+    expect(document.querySelector("#v7-live")?.textContent ?? "").toContain(
+      "Choose the tile again to charge.",
+    );
+    const west = required(
+      boardPlan(host).targets.find(
+        (entry) =>
+          entry.family === "STAMPEDE" &&
+          entry.at.x === FREEZE.stampedeWest.x &&
+          entry.at.y === FREEZE.stampedeWest.y,
+      ),
+    );
+    host.callbacks?.onCommand(west);
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "STAMPEDE",
+      unitId: mammoth.id,
+      at: FREEZE.stampedeWest,
+    });
+    app.destroy();
+  });
+
   it("charges a chosen Stampede from the dock's Charge", async () => {
     const controller = new FixtureController(iceFolkFreezeFixtureV7());
     const host = new RecordingBoardHost();

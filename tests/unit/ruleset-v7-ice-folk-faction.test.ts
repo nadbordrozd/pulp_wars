@@ -9,6 +9,7 @@ import {
   COMMAND_KIND_ORDER_V7,
   FROST_BOLT_RANGE_V7,
   STAMPEDE_DAMAGE_V7,
+  STAMPEDE_MIN_RANGE_V7,
   STAMPEDE_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
   DEEP_WINTER_RECOVER_V7,
@@ -165,12 +166,14 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
     // tiles around the Witch (2 before), the Frost Bolt 2; the Stampede goes
     // 3 tiles and hits for 3 (Glacier's +1 Move on ice is gone with
-    // `pulp_wars-s55m.2`).
+    // `pulp_wars-s55m.2`); since 7r128 (`pulp_wars-57lq`) it goes at least
+    // 2 tiles.
     expect([
       FROST_BOLT_RANGE_V7,
+      STAMPEDE_MIN_RANGE_V7,
       STAMPEDE_RANGE_V7,
       STAMPEDE_DAMAGE_V7,
-    ]).toEqual([2, 3, 3]);
+    ]).toEqual([2, 2, 3, 3]);
   });
 
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after

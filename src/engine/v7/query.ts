@@ -4965,9 +4965,9 @@ export function previewColdSnapV7(
 
 /**
  * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.18): the `at` of every
- * offered Stampede of an own unmoved Mammoth: each tile 1 to 3 tiles away
- * in the eight directions whose path is open as the viewer knows it, in
- * (y, x) order.
+ * offered Stampede of an own unmoved Mammoth: each tile 2 or 3 tiles away
+ * (`pulp_wars-57lq`, 7r128: never an adjacent one) in the eight
+ * directions whose path is open as the viewer knows it, in (y, x) order.
  */
 function publicStampedeTargetsV7(
   view: PlayerViewV7,

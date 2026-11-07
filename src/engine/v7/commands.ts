@@ -333,8 +333,8 @@ export type CommandV7 =
   | {
       /**
        * Ice Folk Freeze (section 21.18): an unmoved Mammoth charges in a
-       * straight line toward `at`, 1 to 3 tiles away, shoving and hurting
-       * the hostile units in its way.
+       * straight line toward `at`, 2 or 3 tiles away (1 to 3 before
+       * 7r128), shoving and hurting the hostile units in its way.
        */
       readonly kind: "STAMPEDE";
       readonly unitId: UnitId;

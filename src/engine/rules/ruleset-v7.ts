@@ -7236,6 +7236,12 @@ export const COLD_SNAP_RANGE_V7 = 1;
 export const FROST_BOLT_RANGE_V7 = 2;
 /** Ice Folk Freeze: the farthest a Mammoth's Stampede goes (tiles). */
 export const STAMPEDE_RANGE_V7 = 3;
+/**
+ * The nearest tile a Stampede may aim at (`pulp_wars-57lq`, 7r128): an
+ * adjacent tile is only ever a Move (or an Attack), so a 1-tile charge is
+ * not a Stampede.
+ */
+export const STAMPEDE_MIN_RANGE_V7 = 2;
 /** Ice Folk Freeze: the fixed damage a Stampede deals each unit in its path. */
 export const STAMPEDE_DAMAGE_V7 = 3;
 /** The Ice Folk revision (section 6.3): the Blizzard radius (Chebyshev). */

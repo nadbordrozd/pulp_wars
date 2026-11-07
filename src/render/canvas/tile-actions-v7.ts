@@ -263,6 +263,13 @@ export interface TileAbilityV7 extends TileActionLookV7 {
    * the Cult redesign's join-the-chant icon on the Stargazer).
    */
   readonly oneTap?: true;
+  /**
+   * Its tile is never also a Move (`pulp_wars-57lq`, 7r128): the
+   * Mammoth's Stampede is its 2- or 3-tile straight charge, so a tile it
+   * charges to carries the Stampede alone even where a Road would let the
+   * Mammoth walk there; every tile has one meaning and opens no chooser.
+   */
+  readonly replacesMove?: true;
 }
 
 const kind =
@@ -390,6 +397,9 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     pick: (unitId) => ({
       iceFolkPick: { kind: "STAMPEDE", unitId, chosen: null },
     }),
+    // `pulp_wars-57lq`: an adjacent tile is a Move, a 2- or 3-tile
+    // straight charge is a Stampede, never both.
+    replacesMove: true,
   },
   {
     id: "FREEZE",
@@ -765,7 +775,10 @@ export const TILE_ACTION_FULL_SIZE_TILES_V7 = 8;
 export interface TileAbilityTargetsV7 {
   readonly ability: Pick<TileAbilityV7, "id" | "label" | "icon"> &
     Partial<
-      Pick<TileAbilityV7, "onlyBeyondBoard" | "oneTap" | "raster" | "favour">
+      Pick<
+        TileAbilityV7,
+        "onlyBeyondBoard" | "oneTap" | "raster" | "favour" | "replacesMove"
+      >
     >;
   readonly targets: readonly MapCommandTargetV7[];
 }
@@ -830,8 +843,20 @@ export function planTileActionsV7(input: {
           : { semanticLabel: target.semanticLabel }),
       });
     }
+  // `pulp_wars-57lq`: a tile an ability with `replacesMove` reaches is
+  // that ability's alone, never also a Move.
+  const replacing = new Set(
+    input.abilities
+      .filter(({ ability }) => ability.replacesMove === true)
+      .map(({ ability }) => ability.id),
+  );
   const listed: TileActionTileV7[] = [];
-  for (const { at, actions } of tiles.values()) {
+  for (const { at, actions: all } of tiles.values()) {
+    const actions = all.some(
+      (action) => action.ability !== undefined && replacing.has(action.ability),
+    )
+      ? all.filter((action) => action.id !== "MOVE")
+      : all;
     const only = actions.length === 1 ? actions[0] : undefined;
     if (only !== undefined && PLAIN_ACTIONS_V7.has(only.id)) continue;
     const ownUnit = input.ownUnitAt(at);
