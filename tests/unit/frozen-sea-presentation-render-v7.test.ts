@@ -878,6 +878,8 @@ describe("frozen-sea words", () => {
       "Skate",
       "Runners",
       "Dive",
+      // Fishing Hole links (`pulp_wars-vg5l`, 7r127).
+      "Hole links",
       // The frozen sea redesign (bead pulp_wars-5ti.27): the ice stays,
       // other factions crack it, the Ice Folk build on it.
       "Ice stays",

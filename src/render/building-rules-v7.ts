@@ -153,7 +153,7 @@ export function buildingRuleTextV7(
     case "SHIPYARD":
       return `${name}: one per city, upgrades one of your active Ports; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
     case "FISHING_HOLE":
-      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; units dive from one hole to any other`;
+      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; dive between holes; links cities like a ${NAMES.PORT}`;
   }
 }
 

@@ -56,12 +56,18 @@ const iceTiles = (state: GameStateV7, seat: 0 | 1): CoordV7[] =>
     .map((entry) => entry.at);
 
 describe("the identity", () => {
-  it("is 7r126, with 7r125 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r125");
+  // Fishing Hole links (`pulp_wars-vg5l`) took 7r127 after it.
+  it("was 7r126 after 7r125, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r127");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r127.current");
+    const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r126");
+    expect(at).toBeGreaterThan(0);
+    expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r125");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    const key = OBSOLETE_SAVE_STORAGE_KEYS_V7.indexOf(
+      "pulpWars.save.v7r126.current",
+    );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7[key - 1]).toBe(
       "pulpWars.save.v7r125.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

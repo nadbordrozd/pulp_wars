@@ -224,6 +224,15 @@ export const SEA_LINK_UNLOCK_TEXT_V7 =
 /** Navigation: a sea link may cross Deep Water. */
 export const SEA_LINK_DEEP_WATER_NOTE_V7 = "Port links can cross deep water";
 /**
+ * Fishing Hole links (`pulp_wars-vg5l`, 7r127): Rime's line. The Ice Folk
+ * build no dock; their Fishing Holes (and a Port they capture) link cities.
+ */
+export const ICE_SEA_LINK_UNLOCK_TEXT_V7 =
+  "Fishing Holes link cities like Ports: +1 population for each city joined to your capital, and +1 to the capital for each";
+/** Pack Ice: a Fishing Hole link may cross Deep Water. */
+export const ICE_SEA_LINK_DEEP_WATER_NOTE_V7 =
+  "Fishing Hole links can cross deep water";
+/**
  * Bead pulp_wars-5ti.29: the Roads card's line for the network effect
  * (`LAND_ROAD_POPULATION`). Roads do not grant the link population; Road
  * tiles are one way to join cities into the network, as Ports are.

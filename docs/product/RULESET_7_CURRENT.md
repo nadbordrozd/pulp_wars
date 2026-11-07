@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r126`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r127`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,28 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r127` (`pulp_wars-vg5l`, **Fishing Hole links**; the
+user, 2026-11-07: "with no ice harbour how does connecting cities over
+water work now?") makes the **Fishing Hole** the Ice Folk's dock for the
+connection network ([section 9.5](#95-sea-links)). Since `7r124` the Ice
+Folk build no Port, so Rime's sea link joined only a captured dock, and
+ice is no Road: their cities across water could not connect. Now an
+**active** Fishing Hole of an Ice Folk seat (in the territory of an own
+city, no living hostile unit on it, a Frozen one included) is a node of
+the seat's network, **joined to its city's center with no Road**; and,
+with Rime (`seaLink`), two such holes of two different own cities, or a
+hole and an own active dock of another city, are sea-linked when at most
+five eight-way steps of water or ice join them (Deep Water with Pack Ice,
+as for docks). The link gives what a Port link gives (section 9.3): +1
+population for a city joined to the original capital and +1 to the
+capital for each, and Commerce's trade Coin; `naval.seaRoutes` lists it
+and the board draws the dashed sea link between the holes. Another
+faction's seat that holds a Fishing Hole gets no node from it, and no
+other faction's network changes. No mission or Showcase seat starts with
+a Fishing Hole, so every pinned start is unchanged. The Normal AI values
+a hole that links a city through the economic preview, as it values a
+linking Port. A save, replay, or setup of `7r126` is rejected, and the
+browser autosave has a new key.
 `pulp-wars-poc-7r126` (`pulp_wars-s55m.6`, the starting border freeze;
 found in the hand play of the Ice Folk campaign, where Coldharbour's
 shallows in I3 stayed open until a Cold Snap) gives an Ice Folk seat that
@@ -2002,10 +2024,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r126`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r127`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r126.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r127.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6422,9 +6444,13 @@ Roads technology, and sea trade was a separate income.)
   - the center of every city the player owns, with or without Roads;
   - every **active** Port and Shipyard of the player
     ([section 14](#14-naval-rules)), with or without Roads, as if a Road
-    lay on it. A blockaded dock is no node.
-- Nodes join in eight directions, and two docks also join over the sea by a
-  **sea link** ([section 9.5](#95-sea-links)).
+    lay on it. A blockaded dock is no node;
+  - (an Ice Folk seat, `7r127`) every **active** Fishing Hole of the
+    player: one in the territory of an own city with no living hostile
+    unit on it. It is joined to its city's center with no Road between
+    them, wherever in the territory it lies.
+- Nodes join in eight directions, and two docks (or Fishing Holes) also
+  join over the sea by a **sea link** ([section 9.5](#95-sea-links)).
 - So a Port beside its city's center joins that city with no Road built; a
   Port two or more tiles from the center needs Road tiles (or other docks)
   between them, even inside the city's borders; and a city beside another
@@ -6533,8 +6559,9 @@ market income = min(3, 1 + distinct adjacent families)
 
 ### 9.5 Sea links
 
-**One sentence:** two of your Ports in different cities, at most five water
-tiles apart, are joined as if a Road ran between them.
+**One sentence:** two of your Ports (for the Ice Folk, Fishing Holes) in
+different cities, at most five water tiles apart, are joined as if a Road
+ran between them.
 
 (`pulp-wars-poc-7r76`. Through `7r75` this section was **sea trade**: with
 Navigation, +1 Coin for each city other than the original capital with a
@@ -6563,8 +6590,32 @@ benefit of a Port connection.)
   like a connection); a crossing through water the viewer has not
   explored is published as its two docks only. The public economic preview of a command is withheld
   while two own docks might be linked through unexplored tiles.
-- Allies never share a link. The Ice Folk have no ships, and their docks
-  link the same way.
+- **Fishing Holes** (`pulp_wars-vg5l`, `7r127`; the user, 2026-11-07:
+  "with no ice harbour how does connecting cities over water work now?").
+  The Ice Folk build no dock since `7r124`, so their **Fishing Hole** is
+  their sea-link endpoint. With Rime (their `seaLink`), two **active**
+  Fishing Holes of two **different** own cities are sea-linked when a path
+  of at most five eight-way steps of water or ice joins them (Deep Water
+  with Pack Ice, the Ice Folk Navigation, as for a dock); so are an active
+  Fishing Hole and an own active dock (a captured Port or Shipyard) of
+  another city. Holes of one city get no sea link. A hole is always joined
+  to its city's center ([section 9.3](#93-road-population-and-land-trade)),
+  so every such link carries a connection. A Fishing Hole is active while
+  it lies in an own city's territory and no living hostile unit stands on
+  it: a hostile unit there (a Frozen one included) breaks its links, as a
+  blockade breaks a dock's. Only an Ice Folk seat's holes are nodes: a
+  Fishing Hole another faction's seat holds (in a captured city) links
+  nothing. The links are in `seaLinksV7` and `naval.seaRoutes`, drawn as
+  the dashed sea link, and the public economic preview of
+  `BUILD_FISHING_HOLE` counts the link it makes (the Normal AI values such
+  a hole through that preview, as it values a linking Port). Shown: the
+  Fishing Hole line "Fishing Hole: on your own ice; +1 population; dive
+  between holes; links cities like a Port", Rime's card "Fishing Holes
+  link cities like Ports: +1 population for each city joined to your
+  capital, and +1 to the capital for each", Pack Ice's "Fishing Hole links
+  can cross deep water", and the Help row "Hole links".
+- Allies never share a link. The Ice Folk have no ships; a dock they
+  capture links the same way.
 
 ## 10. Recovery and support
 
@@ -14168,6 +14219,7 @@ nothing here happens: the `ice` list is always empty.
 | Skate      | Ice Folk units skate: each step onto ice costs half a move.                                                                                   |
 | Runners    | Sleds and Snow Hunters glide free in a straight line on ice and may stop anywhere; a Sled glides on past enemies.                             |
 | Dive       | Fishing Hole: +1 population. A unit on your Fishing Hole that has not moved may dive to any other free Fishing Hole of yours as its move.     |
+| Hole links | With Rime, Fishing Holes of two of your cities up to five tiles of water or ice apart link them as Ports do (section 9.5).                    |
 | Slip       | Any other unit may walk onto ice, but its Move ends there.                                                                                    |
 | Crack Ice  | Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on (but its own dock). |
 | Build      | The Ice Folk build Fishing Holes, mills, Workshop, Market and Monument on their own ice. They build no harbours.                              |
@@ -14492,7 +14544,8 @@ confusing ... it's pretty generic and doesn't do anything"). An Ice Folk
 seat builds on its own ice in its territory: **the Fishing Hole** (its one
 ice building: `BUILD_FISHING_HOLE`, Rime, `FISHING_HOLE_COST_V7` 3 Coins,
 `FISHING_HOLE_POPULATION_V7` +1 population, a Farm for the mills and the
-Market beside it, and the **dive** above), the Windmill, Sawmill, Forge,
+Market beside it, the **dive** above, and since `7r127` the seat's sea-link
+endpoint: [section 9.5](#95-sea-links)), the Windmill, Sawmill, Forge,
 Workshop, Market, and Monument
 ([sections 8.1 to 8.3](#81-common-placement-gates)). **It builds no dock:**
 its tree unlocks no Port (the Ice Harbour), no Shipyard (the Great
@@ -14542,21 +14595,21 @@ it; Glacier's thick ice), not immunity.
 
 **Interactions.**
 
-| Rule                   | Interaction                                                                                                                                                                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, risings        | No death afloat or on ice leaves a Grave or rises, and Raise Dead never reaches the sea. A shattered unit on ice leaves nothing, as everywhere.                                                                                     |
-| Plague, Bitten, Wail   | Unchanged on ships and on ice. A Black Ice freeze and a bite coexist.                                                                                                                                                               |
-| Kaboom, blasts, bombs  | Hit ships, Submarines, Frozen ships, and units on ice like any unit. A blast never cracks or makes ice (cracking is an action).                                                                                                     |
-| Dinosaurs              | A Triceratops may Charge! onto ice (it slips there); its push moves a land-form target onto ice and never triggers Black Ice. Eggs are never on ice.                                                                                |
-| Martians               | Flyers and walkers cross ice like land; a machine that ends a Move on ice stands. A controlled Ice Folk unit skates and Freezes for its controller (its ice is the controller's: Black Ice and building on it no) and never cracks. |
-| Dwarves                | Tunnels never run under ice and a mound is never on ice; a burrowed unit cannot crack; a bomb run may land on ice; eruptions hit land-form units on ice.                                                                            |
-| Candy                  | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. A Crashed unit cannot crack.                                                                                                                      |
-| Push, Knockback, pulls | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never (a Frozen one may be pushed on the water like any Frozen unit); none of it triggers Black Ice.                                               |
-| Embarking, landing     | A transport may land on adjacent ice (Black Ice freezes the crew). A unit of the Ice Folk kind never embarks; nothing embarks at a dock on ice.                                                                                     |
-| Blockade, sea links    | Any dock may be iced over (its owner or an ally may crack it); a dock on ice is blockaded by land units only; a Frozen ship on a dock still blockades it; sea links run under ice.                                                  |
-| Capture, elimination   | The former owner's ice in the captured city's territory passes to the captor, uncracked (an Ice Folk captor with Rime then freezes that territory: the border freeze); an eliminated seat's ice stays and its cracks are gone.      |
-| Land Grant             | Claims ice tiles as it claims water; with Rime an Ice Folk grant then freezes the city's whole territory (the border freeze: another seat's ice there is taken), otherwise their owner does not change.                             |
-| Map generation         | Unchanged; faction choice never affects any draw.                                                                                                                                                                                   |
+| Rule                   | Interaction                                                                                                                                                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, risings        | No death afloat or on ice leaves a Grave or rises, and Raise Dead never reaches the sea. A shattered unit on ice leaves nothing, as everywhere.                                                                                         |
+| Plague, Bitten, Wail   | Unchanged on ships and on ice. A Black Ice freeze and a bite coexist.                                                                                                                                                                   |
+| Kaboom, blasts, bombs  | Hit ships, Submarines, Frozen ships, and units on ice like any unit. A blast never cracks or makes ice (cracking is an action).                                                                                                         |
+| Dinosaurs              | A Triceratops may Charge! onto ice (it slips there); its push moves a land-form target onto ice and never triggers Black Ice. Eggs are never on ice.                                                                                    |
+| Martians               | Flyers and walkers cross ice like land; a machine that ends a Move on ice stands. A controlled Ice Folk unit skates and Freezes for its controller (its ice is the controller's: Black Ice and building on it no) and never cracks.     |
+| Dwarves                | Tunnels never run under ice and a mound is never on ice; a burrowed unit cannot crack; a bomb run may land on ice; eruptions hit land-form units on ice.                                                                                |
+| Candy                  | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. A Crashed unit cannot crack.                                                                                                                          |
+| Push, Knockback, pulls | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never (a Frozen one may be pushed on the water like any Frozen unit); none of it triggers Black Ice.                                                   |
+| Embarking, landing     | A transport may land on adjacent ice (Black Ice freezes the crew). A unit of the Ice Folk kind never embarks; nothing embarks at a dock on ice.                                                                                         |
+| Blockade, sea links    | Any dock may be iced over (its owner or an ally may crack it); a dock on ice is blockaded by land units only; a Frozen ship on a dock still blockades it; sea links run under ice; any hostile unit on a Fishing Hole breaks its links. |
+| Capture, elimination   | The former owner's ice in the captured city's territory passes to the captor, uncracked (an Ice Folk captor with Rime then freezes that territory: the border freeze); an eliminated seat's ice stays and its cracks are gone.          |
+| Land Grant             | Claims ice tiles as it claims water; with Rime an Ice Folk grant then freezes the city's whole territory (the border freeze: another seat's ice there is taken), otherwise their owner does not change.                                 |
+| Map generation         | Unchanged; faction choice never affects any draw.                                                                                                                                                                                       |
 
 **Worked examples** (full HP unless stated):
 

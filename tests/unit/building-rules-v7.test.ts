@@ -121,7 +121,8 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Shipyard: one per city, upgrades one of your active Ports; +1 more population",
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Ice Folk Fishing
       // Hole, with its dive since Ice Folk movement (`pulp_wars-s55m.2`).
-      "Fishing Hole: on your own ice; +1 population; units dive from one hole to any other",
+      // Fishing Hole links (`pulp_wars-vg5l`, 7r127): it links cities.
+      "Fishing Hole: on your own ice; +1 population; dive between holes; links cities like a Port",
     ]);
     // The Ice Folk lines name their ice (and their Frost Garden).
     expect(
@@ -147,7 +148,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Workshop: one per city, land or ice, by a Frost Garden, Fishing Hole, Lumber Camp or Mine",
       "Market: one per city, land or ice, by a farm, Fishing Hole, camp, mine or mill; 1–3 Coins",
       "Monument: on land or your ice, built with an achievement, any number per city; +3 population",
-      "Fishing Hole: on your own ice; +1 population; units dive from one hole to any other",
+      "Fishing Hole: on your own ice; +1 population; dive between holes; links cities like a Port",
     ]);
     // Bead pulp_wars-5ti.27: and its Shipyard the Great Harbour.
     expect(buildingRuleTextV7("SHIPYARD", "ICE_FOLK")).toBe(
@@ -470,7 +471,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
     // The Fishing Hole says what it gives and its dive, plainly (the mill
     // lines name the Fishing Holes they count).
     expect(buildingRuleTextV7("FISHING_HOLE", "ICE_FOLK")).toBe(
-      "Fishing Hole: on your own ice; +1 population; units dive from one hole to any other",
+      "Fishing Hole: on your own ice; +1 population; dive between holes; links cities like a Port",
     );
   });
 });

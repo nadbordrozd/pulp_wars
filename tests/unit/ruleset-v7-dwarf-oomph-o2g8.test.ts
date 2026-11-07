@@ -38,8 +38,8 @@ import { activeIdV7, at, attackV7 } from "../fixtures/v7-revision20";
 describe("the identity", () => {
   // The Ice Folk freeze rework (`pulp_wars-s55m.1`) took 7r123 after it.
   it("was 7r122 after 7r121, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r127");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r127.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r122");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r121");

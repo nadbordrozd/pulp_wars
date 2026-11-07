@@ -92,8 +92,8 @@ const dive = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
 describe("the identity", () => {
   // The Ice Folk roster rework (`pulp_wars-s55m.4`) took 7r125 after it.
   it("was 7r124 after 7r123, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r127");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r127.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r124");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r123");

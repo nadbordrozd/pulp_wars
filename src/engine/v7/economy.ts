@@ -71,6 +71,48 @@ export function isActivePortV7(
 }
 
 /**
+ * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk build no dock,
+ * so a Fishing Hole of an Ice Folk seat is the seat's dock for the
+ * connection network (section 9.5). Another faction's seat that holds a
+ * Fishing Hole (a captured one) gets no node from it.
+ */
+export function fishingHolesLinkV7(faction: PlayerStateV7["faction"]): boolean {
+  return faction === "ICE_FOLK";
+}
+
+/**
+ * Fishing Hole links (`pulp_wars-vg5l`, 7r127): whether the Fishing Hole on
+ * `at` is an **active** node of `ownerId`'s connection network: the tile is
+ * a Fishing Hole in the territory of a city `ownerId` owns, `ownerId` is an
+ * Ice Folk seat ({@link fishingHolesLinkV7}), and no living hostile unit
+ * stands on it (a Frozen one included), as a blockade breaks a dock.
+ */
+export function isActiveFishingHoleV7(
+  state: Pick<
+    GameStateV7,
+    "board" | "cities" | "players" | "units" | "setup" | "humanPlayerId"
+  >,
+  at: { readonly x: number; readonly y: number },
+  ownerId: PlayerId,
+): boolean {
+  const tile = state.board.tiles[at.y * state.board.width + at.x];
+  if (
+    tile?.at.x !== at.x ||
+    tile.at.y !== at.y ||
+    tile.improvement !== "FISHING_HOLE"
+  )
+    return false;
+  const owner = state.players.find((player) => player.id === ownerId);
+  if (owner === undefined || !fishingHolesLinkV7(owner.faction)) return false;
+  const city = state.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  return (
+    city?.ownerId === ownerId && !isTileEnemyOccupiedV7(state, ownerId, at)
+  );
+}
+
+/**
  * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.4): the
  * Harbours population of the docks of `ownerId`: its `harbourPopulation`
  * capability, read through its own tree (never a raw technology test).
@@ -580,7 +622,8 @@ const LAND_LINKED_CACHE = new WeakMap<
 >();
 /**
  * `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): one sea link of the owner's
- * connection network, between two active docks of different own cities.
+ * connection network, between two active docks of different own cities
+ * (or Fishing Holes of an Ice Folk seat, `pulp_wars-vg5l`).
  */
 export interface SeaLinkV7 {
   readonly from: { readonly x: number; readonly y: number };
@@ -758,6 +801,8 @@ export function combinedNetworkRoadKeysV7(
  * of active docks of two different own cities joined by at most five
  * eight-way steps of water the owner may sail (Shallow Water, and Deep
  * Water with Navigation), explored or not, in board order of their docks.
+ * An active Fishing Hole of an Ice Folk seat is such an endpoint too
+ * (`pulp_wars-vg5l`, 7r127), to another hole or to a dock.
  */
 export function seaLinksV7(
   state: NetworkStateV7,
@@ -770,10 +815,12 @@ export function seaLinksV7(
 /**
  * Every node of the owner's connection network, as `"y,x"` keys: usable
  * Road tiles (with Roads), every own city center, and every own active Port
- * or Shipyard. The eight-way joins between them and {@link seaLinksV7} are
- * the network's edges. The value is the number of the node's **land**
- * component (eight-way joins only, no sea link): a dock with the number of
- * its city's center is joined to it by land.
+ * or Shipyard, and (an Ice Folk seat, `pulp_wars-vg5l`) every own active
+ * Fishing Hole. The eight-way joins between them, the join of each Fishing
+ * Hole to its city's center, and {@link seaLinksV7} are the network's
+ * edges. The value is the number of the node's **land** component (no sea
+ * link): a dock with the number of its city's center is joined to it by
+ * land, and a Fishing Hole always has it.
  */
 export function networkNodeComponentsV7(
   state: NetworkStateV7,
@@ -843,10 +890,15 @@ export function seaTradeCityIdsV7(
     player.researchedTechs,
     player.faction,
   ).seaLink;
+  // Fishing Hole links (`pulp_wars-vg5l`, 7r127): an Ice Folk seat's
+  // Fishing Holes are sea-link endpoints like its docks (a captured one).
+  const holeLinks = fishingHolesLinkV7(player.faction);
   const portCandidates = shorecraft
     ? state.board.tiles.filter(
         (tile) =>
-          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+          (tile.improvement === "PORT" ||
+            tile.improvement === "SHIPYARD" ||
+            (holeLinks && tile.improvement === "FISHING_HOLE")) &&
           tile.biome === null &&
           (tile.terrain !== "DEEP_WATER" || navigation),
       )
@@ -856,7 +908,12 @@ export function seaTradeCityIdsV7(
   if (geometry !== null) {
     const active = new Set<number>();
     portCandidates.forEach((port, index) => {
-      if (isActivePortV7(state, port.at, playerId)) active.add(index);
+      if (
+        port.improvement === "FISHING_HOLE"
+          ? isActiveFishingHoleV7(state, port.at, playerId)
+          : isActivePortV7(state, port.at, playerId)
+      )
+        active.add(index);
     });
     for (
       let leftIndex = 0;
@@ -918,6 +975,37 @@ export function seaTradeCityIdsV7(
       isActivePortV7(state, tile.at, playerId)
     )
       roadKeys.add(coordKey(tile.at));
+  // Fishing Hole links (`pulp_wars-vg5l`, 7r127): an active Fishing Hole of
+  // an Ice Folk seat is a node joined to the center of the city whose
+  // territory holds it, with no Road between them (and to its eight
+  // neighbours, as every node).
+  const holeJoins = new Map<
+    string,
+    { readonly x: number; readonly y: number }[]
+  >();
+  const join = (
+    from: { readonly x: number; readonly y: number },
+    to: { readonly x: number; readonly y: number },
+  ): void => {
+    const joins = holeJoins.get(coordKey(from)) ?? [];
+    joins.push(to);
+    holeJoins.set(coordKey(from), joins);
+  };
+  if (holeLinks)
+    for (const tile of state.board.tiles) {
+      if (
+        tile.improvement !== "FISHING_HOLE" ||
+        !isActiveFishingHoleV7(state, tile.at, playerId)
+      )
+        continue;
+      const center = state.cities.find(
+        (city) => city.id === tile.territoryCityId,
+      )?.at;
+      if (center === undefined) continue;
+      roadKeys.add(coordKey(tile.at));
+      join(tile.at, center);
+      join(center, tile.at);
+    }
   const roadLeft = new Set(roadKeys);
   const landComponents: {
     readonly keys: ReadonlySet<string>;
@@ -944,6 +1032,8 @@ export function seaTradeCityIdsV7(
           const near = { x: at.x + dx, y: at.y + dy };
           if (roadLeft.delete(coordKey(near))) roadQueue.push(near);
         }
+      for (const near of holeJoins.get(coordKey(at)) ?? [])
+        if (roadLeft.delete(coordKey(near))) roadQueue.push(near);
     }
     landComponents.push({ keys: componentKeys, cityIds });
   }

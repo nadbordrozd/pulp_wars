@@ -56,6 +56,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // `pulp_wars-5ti.12` (7r76): the sea link is the owner's Shorecraft
   // capability (`seaLink`), a seat-level economy rule like land trade.
   "src/engine/v7/economy.ts::seaTradeCityIdsV7": "SEAT",
+  // Fishing Hole links (`pulp_wars-vg5l`, 7r127): a Fishing Hole is a
+  // network node of an Ice Folk seat (the hole owner's seat-level economy
+  // rule), in the engine, the public economy graph, and its tile commands.
+  "src/engine/v7/economy.ts::isActiveFishingHoleV7": "SEAT",
+  "src/engine/v7/query.ts::publicActiveFishingHoleKeysV7": "SEAT",
+  "src/engine/v7/query.ts::graphAfterTileCommandV7": "SEAT",
   // Tuning 2 (`pulp_wars-w49.3`): the land trade line reads the viewer's
   // own Commerce capability (a seat-level economy rule).
   "src/render/technology-unlock-text-v7.ts::landTradeStatusV7": "SEAT",

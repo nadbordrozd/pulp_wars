@@ -54,6 +54,12 @@ export const SKATE_RULE_V7 =
 export const RUNNERS_RULE_V7 =
   "Sleds and Snow Hunters glide free in a straight line on ice and may stop anywhere; a Sled glides on past enemies.";
 export const DIVE_RULE_V7 = `Fishing Hole: +${FISHING_HOLE_POPULATION_V7} population. A unit on your Fishing Hole that has not moved may dive to any other free Fishing Hole of yours as its move.`;
+/**
+ * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk sea link.
+ */
+export const HOLE_LINKS_LABEL_V7 = "Hole links";
+export const HOLE_LINKS_RULE_V7 =
+  "With Rime, Fishing Holes of two of your cities up to five tiles of water or ice apart link them as Ports do: a city joined to your capital gets +1 population, the capital +1 for each. An enemy on a hole breaks its links.";
 export const SLIP_RULE_V7 =
   "Any other unit may walk onto ice, but its Move ends there.";
 export const ICE_STAYS_RULE_V7 =
@@ -81,6 +87,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [SKATE_LABEL_V7, SKATE_RULE_V7],
   [RUNNERS_LABEL_V7, RUNNERS_RULE_V7],
   [DIVE_LABEL_V7, DIVE_RULE_V7],
+  [HOLE_LINKS_LABEL_V7, HOLE_LINKS_RULE_V7],
   ["Ice stays", ICE_STAYS_RULE_V7],
   [BORDER_ICE_LABEL_V7, BORDER_ICE_RULE_V7],
   [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],

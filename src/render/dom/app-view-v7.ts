@@ -5,6 +5,8 @@ import {
   FIELD_DEFENSE_UNLOCK_TEXT_V7,
   TRAINING_BLOCKED_CENTER_V7,
   ROAD_LINK_UNLOCK_TEXT_V7,
+  ICE_SEA_LINK_DEEP_WATER_NOTE_V7,
+  ICE_SEA_LINK_UNLOCK_TEXT_V7,
   SEA_LINK_DEEP_WATER_NOTE_V7,
   SEA_LINK_UNLOCK_TEXT_V7,
   cityLinkPopulationV7,
@@ -20314,7 +20316,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r126",
+    rulesetId: "pulp-wars-poc-7r127",
     seed,
     width,
     height: width,
@@ -20571,13 +20573,10 @@ function effectDescription(
     case "MARKET_INCOME_MULTIPLIER":
       return `Markets earn ${effect.multiplier}× income`;
     case "SEA_LINK":
-      // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Folk dock
-      // is the Ice Harbour.
+      // Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk build no
+      // dock (`pulp_wars-s55m.2`); their Fishing Holes link cities.
       return faction === "ICE_FOLK"
-        ? SEA_LINK_UNLOCK_TEXT_V7.replace(
-            /^Ports/,
-            `${factionBuildingV7("PORT", faction)?.name ?? "Port"}s`,
-          )
+        ? ICE_SEA_LINK_UNLOCK_TEXT_V7
         : SEA_LINK_UNLOCK_TEXT_V7;
     case "CAPTAIN_SUPPORT":
       // Bead pulp_wars-2yc.63: the Rally of every faction is Rally.
@@ -20674,7 +20673,7 @@ function navalTechnologyNotesV7(
   // embarking, sailing and warships are not theirs.
   if (faction === "ICE_FOLK") {
     if (technology === "SHORECRAFT") return [ICE_NO_SHIPS_NOTE_V7];
-    if (technology === "NAVIGATION") return [SEA_LINK_DEEP_WATER_NOTE_V7];
+    if (technology === "NAVIGATION") return [ICE_SEA_LINK_DEEP_WATER_NOTE_V7];
     if (technology === "NAVAL_ENGINEERING" || technology === "SUBMERSIBLES")
       return [];
   }

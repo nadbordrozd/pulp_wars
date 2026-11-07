@@ -154,6 +154,7 @@ import {
   cityLevelIncomeV7,
   cityUnitCapacityV7,
   cooperativeAlliesV7,
+  fishingHolesLinkV7,
   marketCoinsV7,
   rewardCandidatesForLevelV7,
 } from "./economy";
@@ -8914,6 +8915,12 @@ type PublicEconomyGraphV7 = {
   /** Revision 17: the viewer's faction resolves its technology capabilities. */
   readonly faction: PlayerViewV7["viewer"]["faction"];
   readonly activePortKeys: ReadonlySet<string>;
+  /**
+   * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the viewer's active
+   * Fishing Holes (an Ice Folk viewer's, in own territory, no visible
+   * hostile unit on them), nodes of its connection network.
+   */
+  readonly activeFishingHoleKeys: ReadonlySet<string>;
   readonly resolvedPendingCityIds: ReadonlySet<CityId>;
   readonly remainingMonumentEntitlements: number;
   /** Exact predecessor when this graph mutation cannot alter trade connectivity. */
@@ -9167,6 +9174,7 @@ function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
         .filter((port) => port.status === "ACTIVE")
         .map((port) => coordKeyV7(port.at)),
     ),
+    activeFishingHoleKeys: publicActiveFishingHoleKeysV7(view),
     resolvedPendingCityIds: new Set(),
     remainingMonumentEntitlements: view.viewer.achievementEntitlements.filter(
       (entitlement) => entitlement.unlocked && !entitlement.spent,
@@ -9174,6 +9182,34 @@ function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
   };
   PUBLIC_ECONOMY_GRAPHS.set(view, graph);
   return graph;
+}
+
+/**
+ * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the public copy of
+ * `isActiveFishingHoleV7`. Own territory is explored and in sight, so a
+ * hostile unit on an own hole is in the view.
+ */
+function publicActiveFishingHoleKeysV7(
+  view: PlayerViewV7,
+): ReadonlySet<string> {
+  if (!fishingHolesLinkV7(view.viewer.faction)) return new Set();
+  const ownedIds = new Set(
+    view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .map((city) => city.id),
+  );
+  return new Set(
+    view.board.tiles
+      .filter(
+        (tile) =>
+          tile.explored &&
+          tile.improvement === "FISHING_HOLE" &&
+          tile.territoryCityId !== null &&
+          ownedIds.has(tile.territoryCityId) &&
+          !publicTileEnemyOccupiedV7(view, tile.at),
+      )
+      .map((tile) => coordKeyV7(tile.at)),
+  );
 }
 
 function replacePublicGraphTileV7(
@@ -9226,6 +9262,24 @@ function graphAfterTileCommandV7(
     BASIC_ECONOMIC_ACTIONS_V7[command.kind as BasicEconomicCommandKindV7];
   const spatial =
     SPATIAL_ECONOMIC_ACTIONS_V7[command.kind as SpatialEconomicCommandKindV7];
+  // Fishing Hole links (`pulp_wars-vg5l`, 7r127): an Ice Folk seat's new
+  // Fishing Hole is a node of its network (no hostile unit stands where it
+  // may be built).
+  if (
+    command.kind === "BUILD_FISHING_HOLE" &&
+    fishingHolesLinkV7(view.viewer.faction)
+  )
+    return {
+      ...replacePublicGraphTileV7(graph, command.at, {
+        resource: projectedResourceAfterMutationV7(view, tile.terrain, null),
+        improvement: "FISHING_HOLE",
+      }),
+      activeFishingHoleKeys: new Set([
+        ...graph.activeFishingHoleKeys,
+        coordKeyV7(command.at),
+      ]),
+      connectivitySource: undefined,
+    };
   if (basic !== undefined)
     return replacePublicGraphTileV7(graph, command.at, {
       resource: projectedResourceAfterMutationV7(view, tile.terrain, null),
@@ -9302,6 +9356,14 @@ function graphAfterTileCommandV7(
           ? tile.resource
           : publicRestoredResourceV7(view, tile.terrain, tile.improvement),
     });
+    if (
+      tile.improvement === "FISHING_HOLE" &&
+      graph.activeFishingHoleKeys.has(coordKeyV7(command.at))
+    ) {
+      const activeFishingHoleKeys = new Set(graph.activeFishingHoleKeys);
+      activeFishingHoleKeys.delete(coordKeyV7(command.at));
+      return { ...next, activeFishingHoleKeys, connectivitySource: undefined };
+    }
     if (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD")
       return next;
     const activePortKeys = new Set(graph.activePortKeys);
@@ -9447,10 +9509,13 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
     .seaLink
     ? graph.board.tiles.filter(
         (tile) =>
-          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+          (((tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+            graph.activePortKeys.has(coordKeyV7(tile.at))) ||
+            // Fishing Hole links (`pulp_wars-vg5l`, 7r127).
+            (tile.improvement === "FISHING_HOLE" &&
+              graph.activeFishingHoleKeys.has(coordKeyV7(tile.at)))) &&
           tile.territoryCityId !== null &&
           ownedIds.has(tile.territoryCityId) &&
-          graph.activePortKeys.has(coordKeyV7(tile.at)) &&
           legalWater.has(coordKeyV7(tile.at)),
       )
     : [];
@@ -9554,6 +9619,24 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       graph.activePortKeys.has(coordKeyV7(tile.at))
     )
       roads.add(coordKeyV7(tile.at));
+  // Fishing Hole links (`pulp_wars-vg5l`, 7r127): an active Fishing Hole is
+  // a node joined to its city's center with no Road between them.
+  const holeJoins: (readonly [string, string])[] = [];
+  const centerOf = new Map(
+    ownedCities.map((city) => [city.id, coordKeyV7(city.at)] as const),
+  );
+  for (const tile of graph.board.tiles) {
+    if (
+      tile.improvement !== "FISHING_HOLE" ||
+      tile.territoryCityId === null ||
+      !graph.activeFishingHoleKeys.has(coordKeyV7(tile.at))
+    )
+      continue;
+    const center = centerOf.get(tile.territoryCityId);
+    if (center === undefined) continue;
+    roads.add(coordKeyV7(tile.at));
+    holeJoins.push([center, coordKeyV7(tile.at)]);
+  }
   const roadComponents: {
     readonly keys: ReadonlySet<string>;
     readonly cityIds: readonly CityId[];
@@ -9565,7 +9648,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   const componentOf = new Map<string, Set<string>>();
   for (const component of landComponents)
     for (const at of component) componentOf.set(at, component);
-  for (const [left, right] of seaEdges) {
+  for (const [left, right] of [...holeJoins, ...seaEdges]) {
     const from = componentOf.get(left);
     const to = componentOf.get(right);
     if (from === undefined || to === undefined || from === to) continue;
@@ -10370,6 +10453,7 @@ class IncrementalPublicRedevelopmentPossibilityWorkV7 implements PublicRedevelop
           researchedTechs: this.view.viewer.researchedTechs,
           faction: this.view.viewer.faction,
           activePortKeys: new Set(),
+          activeFishingHoleKeys: new Set(),
           resolvedPendingCityIds: new Set(),
           remainingMonumentEntitlements: this.remainingMonumentEntitlements,
         };
