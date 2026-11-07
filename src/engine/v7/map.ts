@@ -50,6 +50,7 @@ import {
 } from "./showcase";
 import { initialScoreLedgerV7 } from "./score";
 import { parseGameStateV7 } from "./state-schema";
+import { withStartingBorderFreezeV7 } from "./starting-ice";
 import {
   BIOME_IDS_V7,
   NEUTRAL_OWNER_ID_V7,
@@ -4897,10 +4898,13 @@ function showcaseInitialStateV7(
     pendingChoices: [],
     outcome: null,
   };
+  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): every Showcase
+  // seat knows Rime, so an Ice Folk seat's border water starts frozen.
+  const iced = withStartingBorderFreezeV7(draft);
   // Score and modes (section 3.3): the Showcase's starting score is its peak.
   const state = deepFreeze<GameStateV7>({
-    ...draft,
-    scoreLedger: initialScoreLedgerV7(draft),
+    ...iced,
+    scoreLedger: initialScoreLedgerV7(iced),
   });
   if (parseGameStateV7(state) === null)
     throw new Error("Internal v7 Showcase initial-state invariant failure");

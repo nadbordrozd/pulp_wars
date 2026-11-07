@@ -7901,6 +7901,8 @@ Yeti or a Sled in one turn, and the Normal AI pairs up every turn. A
 mission seat that starts with Rime known starts with open water inside
 its borders (the border freeze fires on a research, a Land Grant or a
 capture, not at setup): Coldharbour's own shallows stayed open until a
-Cold Snap iced them, while Yrsel's froze when it was captured. A Walrus
+Cold Snap iced them, while Yrsel's froze when it was captured (since
+`7r126`, `pulp_wars-s55m.6`, such a seat's border water starts frozen:
+Coldharbour's one free shallow is ice from turn 1). A Walrus
 cannot Freeze after it moves (its "cannot move and attack" covers the
 Freeze).

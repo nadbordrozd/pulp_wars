@@ -110,6 +110,15 @@ export interface NavalArenaOptionsV7 {
    * default.
    */
   readonly levelThree?: readonly [boolean, boolean];
+  /**
+   * The starting border freeze (`pulp_wars-s55m.6`, 7r126): the builder
+   * freezes the border water of an Ice Folk seat that starts with Rime
+   * (Shorecraft, one of the default technologies). The arena is the test
+   * bed of the Freeze, the border freeze and the ice rules, whose cases
+   * place their ice by hand on open water, so it drops that ice unless
+   * this is true (false by default).
+   */
+  readonly startingFreeze?: boolean;
 }
 
 /** The bystander seat's capital ({@link NavalArenaOptionsV7.third}). */
@@ -233,6 +242,7 @@ export function navalArenaV7(options: NavalArenaOptionsV7): GameStateV7 {
   ];
   const built: GameStateV7 = {
     ...sighted,
+    ice: options.startingFreeze === true ? sighted.ice : [],
     players: sighted.players.map((player, index) => {
       const capital = mission.seats[index]?.cities[0]?.at;
       return fogged[index] === true && capital !== undefined

@@ -259,14 +259,14 @@ describe("step two of the Martian pass: the identity", () => {
     // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, took 7r59,
     // Dwarf crowd control, `pulp_wars-w49.33`, 7r60, and Goblin explosions
     // and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-68, -66)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-69, -67)).toEqual([
       "pulp-wars-poc-7r57",
       "pulp-wars-poc-7r58",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-68, -66)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-69, -67)).toEqual([
       "pulpWars.save.v7r57.current",
       "pulpWars.save.v7r58.current",
     ]);

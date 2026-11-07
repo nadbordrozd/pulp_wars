@@ -389,11 +389,11 @@ function harvest(state: GameStateV7, where: CoordV7): Step {
 
 describe("the economy rejig: identity", () => {
   it("is 7r54, with 7r53 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
-    expect(PRIOR_RULESET_7_IDS.at(-72)).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    expect(PRIOR_RULESET_7_IDS.at(-73)).toBe("pulp-wars-poc-7r53");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-72)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-73)).toBe(
       "pulpWars.save.v7r53.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

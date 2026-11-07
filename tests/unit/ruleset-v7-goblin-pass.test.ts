@@ -139,13 +139,13 @@ describe("the Goblin pass: identity", () => {
   // pass 7r53 (tests/unit/ruleset-v7-dinosaur-pass.test.ts), and the
   // economy rejig 7r54, so 7r50 is a prior identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-76, -74)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-77, -75)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-76, -74)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-77, -75)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);

@@ -41,6 +41,7 @@ export * from "./v7/naval-branch";
 export * from "./v7/naval-cult";
 export * from "./v7/ninth-unit";
 export * from "./v7/ice";
+export * from "./v7/starting-ice";
 export * from "./v7/giants";
 export * from "./v7/cult";
 export * from "./v7/cult-channel";

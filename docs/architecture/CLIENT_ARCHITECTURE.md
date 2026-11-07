@@ -759,7 +759,10 @@ Ice Folk frozen sea). The interface (`pulp_wars-5ti.7`) and the art
   called with the canonical board by the reducer and with the view's
   explored tiles by the query, so a preview equals its resolution), and
   the Start and End Turn steps (`resolveBlackIceV7`, `resolveIceCrushV7`,
-  `resolveThawV7`). The registry (`src/engine/rules/ruleset-v7.ts`) holds
+  `resolveThawV7`). `src/engine/v7/starting-ice.ts`
+  (`withStartingBorderFreezeV7`, `pulp_wars-s55m.6`) applies the border
+  freeze (`territoryFreezeV7`) at setup to every seat that starts with
+  Rime; the mission builder and the Showcase call it. The registry (`src/engine/rules/ruleset-v7.ts`) holds
   the helpers every layer shares: `attackIsRamV7`, `attackIsTorpedoV7`,
   `unitIsSubmergedV7`, `boardableAtV7`, `boardedHpV7`, `dockPopulationV7`,
   `isIceAtV7`, and `unitIsIceboundV7`. The slide itself is part of the

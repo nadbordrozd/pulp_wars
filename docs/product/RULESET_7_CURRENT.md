@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r125`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r126`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,24 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r126` (`pulp_wars-s55m.6`, the starting border freeze;
+found in the hand play of the Ice Folk campaign, where Coldharbour's
+shallows in I3 stayed open until a Cold Snap) gives an Ice Folk seat that
+starts a match with **Rime already known** its border freeze at setup:
+after the seats, the territory, the exploration and the units are in
+place, every such seat's cities' territory goes through the same border
+freeze as a research of Rime (section 21.16), with the same tiles and
+exclusions, so its open water starts as its own sound ice. A tile holding
+any unit (a ship, an embarked unit, a neutral Sea Serpent) is left, so no
+ship is frozen and no unit starts on ice; Deep Water freezes only with
+Pack Ice; the live economy is recomputed as after the research. Setup
+emits no event. It applies to every setup that grants starting
+technologies: a mission seat whose definition lists Rime (the campaign
+missions, the labs, and the test boards) and every Showcase seat (every
+technology, so the Showcase's Ice Folk Coast starts frozen). A generated
+map starts every seat without technologies and is unchanged. A save,
+replay, or setup of `7r125` is rejected, and the browser autosave has a
+new key.
 `pulp-wars-poc-7r125` (`pulp_wars-s55m.4`, the Ice Folk roster rework;
 the user, 2026-11-06: "I checked out the tiger and it's lame. This unit
 should be comparable to knight, vampire, mothership ufo etc."; "its slightly
@@ -1984,10 +2002,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r125`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r126`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r125.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r126.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4635,8 +4653,10 @@ Online multiplayer (`pulp_wars-eqc6.1`, `pulp-wars-poc-7r120`;
   [section 2.1](#21-match-setup)); `round` starts at 1 and increments after
   the last seat in turn order. No seat is compensated for moving later.
 - A `SHOWCASE` match starts differently: three developed cities, every
-  technology, eleven units (an Ice Folk seat: eight, and ice where its
-  three boats would stand), the whole board explored, and seat-order turns
+  technology, eleven units (an Ice Folk seat: eight, ice where its
+  three boats would stand, and, by the starting border freeze of
+  `7r126`, the rest of its borders' water frozen too), the whole board
+  explored, and seat-order turns
   ([section 2.5](#25-showcase-setup)). Everything after its first Start Turn
   is the ordinary rules.
 - **Relationships:** in Rival mode every pair of players is hostile. In
@@ -4899,7 +4919,9 @@ land`, 3 with at least `300 + 3 × land` (`land` the board's tiles that
 - **Ice Folk border freeze** (`pulp_wars-5ti.31`, `7r109`): with Rime, a
   Land Grant of an Ice Folk city freezes every freezable water tile of the
   city's whole territory, the old footprint's included, and so does a
-  capture for the city taken
+  capture for the city taken, a research of Rime or Pack Ice for every
+  city, and (`pulp_wars-s55m.6`, `7r126`) the start of a match for a seat
+  that starts with Rime
   ([section 21.16](#2116-the-frozen-sea), the border freeze).
 - Capture transfers the city's exact current footprint with everything on it.
 
@@ -14193,7 +14215,14 @@ nothing here happens: the `ice` list is always empty.
   **capture** (a village captured into a city, or a city taken; after the
   former owner's ice there passed), and a **research** that changes the
   seat's `freezeWater` (Rime, Pack Ice), which
-  freezes the territory of every own city. City levels never grow borders
+  freezes the territory of every own city. **At setup**
+  (`pulp_wars-s55m.6`, `7r126`; `withStartingBorderFreezeV7`), every seat
+  that starts the match with Rime (a mission seat whose definition lists
+  it, every Showcase seat) has the territory of every own city frozen the
+  same way, in seat order, after its territory, exploration and units are
+  placed: no event is emitted (setup has none), the live economy is
+  recomputed, and a tile holding a ship, an embarked unit or any other
+  unit stays open water. City levels never grow borders
   in this ruleset. A seat without Rime, and every seat of another
   faction, freezes nothing. The result is one `WATER_FROZEN` with
   `unitId` null (no unit froze; projected like any `WATER_FROZEN`), right

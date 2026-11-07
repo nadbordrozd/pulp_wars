@@ -189,7 +189,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
   });
 });
 

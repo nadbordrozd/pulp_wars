@@ -53,6 +53,7 @@ import { unitSightRadiusAtV7 } from "../movement";
 import { spatialContributionAtV7 } from "../spatial-economy";
 import { initialScoreLedgerV7 } from "../score";
 import { parseGameStateV7 } from "../state-schema";
+import { withStartingBorderFreezeV7 } from "../starting-ice";
 import {
   IMPROVEMENT_IDS_V7,
   NAVAL_ROLE_IDS_V7,
@@ -666,7 +667,8 @@ export function buildMissionStateV7(
     // RULESET_7_MAP_CURIOSITIES.md section 3: an authored board has only
     // the curiosities its definition places (E1, `pulp_wars-hmyk.14`).
     curiosities: placed.markers,
-    // The frozen sea: an authored board starts without ice.
+    // The frozen sea: an authored board starts without ice (until the
+    // starting border freeze, below).
     ice: [],
     monsters,
     graves: sortedCoords(mission.graves ?? []),
@@ -749,12 +751,15 @@ export function buildMissionStateV7(
       return { ...player, explored: sortedCoords(cells) };
     }),
   };
+  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): an Ice Folk
+  // seat that starts with Rime starts with its border water frozen.
+  const iced = withStartingBorderFreezeV7(sighted);
   // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
   // 3.3): a mission's starting technologies count, but missions record no
   // stars.
   const state = deepFreeze<GameStateV7>({
-    ...sighted,
-    scoreLedger: initialScoreLedgerV7(sighted),
+    ...iced,
+    scoreLedger: initialScoreLedgerV7(iced),
   });
   if (parseGameStateV7(state) === null)
     fail("the built state does not pass the state schema");

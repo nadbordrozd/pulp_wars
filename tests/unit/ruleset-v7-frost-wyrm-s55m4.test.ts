@@ -113,12 +113,18 @@ function play(state: GameStateV7, command: CommandV7) {
 }
 
 describe("the identity", () => {
-  it("is 7r125, with 7r124 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r124");
+  // The starting border freeze (`pulp_wars-s55m.6`) took 7r126 after it.
+  it("was 7r125 after 7r124, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r125");
+    expect(at).toBeGreaterThan(0);
+    expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r124");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    const key = OBSOLETE_SAVE_STORAGE_KEYS_V7.indexOf(
+      "pulpWars.save.v7r125.current",
+    );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7[key - 1]).toBe(
       "pulpWars.save.v7r124.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

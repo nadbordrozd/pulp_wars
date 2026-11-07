@@ -203,10 +203,14 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "ICE_FOLK_2@4:ICE_FOLK":
     "23a24ff15531d8f2a24ce01df35a0f9f7996204456610c0b3ed6fc491929a52e",
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
+  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
+  // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_3@5:ICE_FOLK":
-    "b964f112ea6b17b9829ae3b167f8605c8ad23fae98807d53ae86da78c32bc602",
+    "5949dca8c7d6e4daf179db6206a50b819d4e58063d1b231276c9e96aabb2eb69",
+  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
+  // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_4@4:ICE_FOLK":
-    "7d1dc6d39bcbd474f00d173e36f20af44b7b34fc7c02f42de41e92c03abe3eee",
+    "63ec93d147e64e737b439d86a1441966b333fdc658af3e7f870ea84acd81140a",
   "ICE_FOLK_5@4:ICE_FOLK":
     "b7d24543b2fdd782021adc99292e71986eca472ec6b15bf6d2043b7b4c9de2e0",
   "ICE_FOLK_6@4:ICE_FOLK":
@@ -432,9 +436,12 @@ function missionStateHash(state: GameStateV7): string {
     state.setup.mission ?? { id: "", revision: 0 },
   )?.curiosities;
   if (placed === undefined) expect(monsters).toEqual([]);
-  // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
-  // initial mission state and left out too.
-  expect(ice).toEqual([]);
+  // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in an
+  // initial mission state and left out too. The starting border freeze
+  // (`pulp_wars-s55m.6`, 7r126) freezes the border water of an Ice Folk
+  // seat that starts with Rime (Shorecraft): only such a mission (I3 and
+  // I4, one tile each) hashes its sound `ice` list, so no other pin moves.
+  expect(ice.every((entry) => !entry.cracked)).toBe(true);
   expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
     [],
     [],
@@ -445,6 +452,7 @@ function missionStateHash(state: GameStateV7): string {
   return canonicalHash({
     ...rest,
     ...(monsters.length === 0 ? {} : { monsters }),
+    ...(ice.length === 0 ? {} : { ice }),
     chilled: frozen,
     rulesetId: "*",
     setup: {
@@ -572,10 +580,14 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "ICE_FOLK_2@4:ICE_FOLK":
     "5c90d2d7df4029954d83d466f25b47ff84f0814f50bffd94724dc5c988158a41",
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
+  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
+  // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_3@5:ICE_FOLK":
-    "62b8eec5f20f80489ff659a58a78397e17a9917b666137051023a007a6b32b7c",
+    "d929f1bb648a4640a9b7c4e5337bc997476512b7e148932ec4fbe52b6859c6b7",
+  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
+  // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_4@4:ICE_FOLK":
-    "e05908fe3fe999137eaa1aef3a1f6805d07b2e0e1e0b8edf75e6722166323391",
+    "b58ead6a097fcb3236d8b01fff4872d22eb4f563e46a1265d9417db4262bd485",
   "ICE_FOLK_5@4:ICE_FOLK":
     "d9c9447f508ba1913052244941c04a0e8391b750650b856d63f6cab4c4d00bde",
   "ICE_FOLK_6@4:ICE_FOLK":
@@ -718,9 +730,12 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);
   expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
-  // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
-  // initial mission state and left out too.
-  expect(ice).toEqual([]);
+  // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in an
+  // initial mission state and left out too. The starting border freeze
+  // (`pulp_wars-s55m.6`, 7r126) freezes the border water of an Ice Folk
+  // seat that starts with Rime (Shorecraft): only such a mission (I3 and
+  // I4, one tile each) hashes its sound `ice` list, so no other pin moves.
+  expect(ice.every((entry) => !entry.cracked)).toBe(true);
   expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
     [],
     [],
@@ -730,6 +745,7 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   expect([stuck, toothache, glazedThisTurn]).toEqual([[], [], []]);
   return canonicalHash({
     ...rest,
+    ...(ice.length === 0 ? {} : { ice }),
     chilled: frozen,
     rulesetId: "*",
     setup: {

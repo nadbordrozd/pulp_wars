@@ -107,8 +107,13 @@ describe("frozen sea persistence", () => {
     expect(cx).toBe(2);
     const ice = state.players[0];
     if (ice === undefined) throw new Error("no seat");
+    // The boats' three tiles, and (the starting border freeze,
+    // `pulp_wars-s55m.6`, 7r126: every Showcase seat knows Rime) the rest of
+    // the Coast city's water.
     expect(state.ice.map((entry) => [entry.at.x, entry.at.y])).toEqual([
+      [cx - 1, 12],
       [cx, 12],
+      [cx + 1, 12],
       [cx, 13],
       [cx + 1, 13],
     ]);

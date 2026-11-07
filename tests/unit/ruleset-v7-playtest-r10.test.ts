@@ -44,8 +44,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 

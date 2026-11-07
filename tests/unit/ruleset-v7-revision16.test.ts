@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-110, -70)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r126");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r126.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-111, -71)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -236,7 +236,9 @@ describe("ruleset-7 prior identities", () => {
     // no docks, and the Fishing Hole dive (`pulp_wars-s55m.2`): 7r124. The
     // Frost Wyrm replaces the Sabretooth, the Walrus and the Snow Golem
     // rename the Musk Ox and the Boulder Yeti (`pulp_wars-s55m.4`): 7r125.
-    expect(revision).toBe(125);
+    // An Ice Folk seat that starts with Rime starts with its border water
+    // frozen (`pulp_wars-s55m.6`): 7r126.
+    expect(revision).toBe(126);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -271,7 +273,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r126", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r127", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",
