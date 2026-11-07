@@ -204,7 +204,7 @@ export const SHOWCASE_MOVED_HEAVY_ROLES_V7: Readonly<
  * The role a faction fields on a template's tile. Every unit stands where
  * it stood before 7r55: a moved heavy (Triceratops, Mammoth, Steam Tank)
  * keeps its tile, home city, and entity ID, and the unit that took its old
- * role (Stegosaurus, Musk Ox, Whirligig) stands on the ninth unit's tile.
+ * role (Stegosaurus, Walrus, Whirligig) stands on the ninth unit's tile.
  */
 export function showcaseUnitRoleV7(
   templateRole: UnitRoleIdV7,

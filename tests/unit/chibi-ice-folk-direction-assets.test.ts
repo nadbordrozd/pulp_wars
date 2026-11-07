@@ -15,6 +15,7 @@ import {
 import {
   CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
   ICE_FOLK_FLAG_ANCHORS_V7,
+  ICE_FOLK_RETIRED_ART_IDS_V7,
 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
 import {
   ICE_FOLK_BLIZZARD_V7,
@@ -73,21 +74,32 @@ const UNITS = [
   ["MARKSMAN", "snow-hunter"],
   ["GUARD", "mammoth"],
   ["CAPTAIN", "ice-witch"],
-  ["CATAPULT", "boulder-yeti"],
-  ["KNIGHT", "sabretooth"],
+  // The Ice Folk roster rework (bead pulp_wars-s55m.4): the Snow Golem and
+  // the Frost Wyrm of batch `direction-ice-folk-rework` replace the Boulder
+  // Yeti and the Sabretooth of this batch.
+  ["CATAPULT", "snow-golem"],
+  ["KNIGHT", "frost-wyrm"],
   ["JUGGERNAUT", "frost-giant"],
-  // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the Musk Ox,
-  // a STANDARD_UNIT like the Human unit of the slot. The Mammoth keeps the
+  // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): a
+  // STANDARD_UNIT like the Human unit of the slot (the Walrus of the rework
+  // batch since pulp_wars-s55m.4; the Musk Ox before). The Mammoth keeps the
   // slot GUARD.
-  ["SWORDSMAN", "musk-ox"],
+  ["SWORDSMAN", "walrus"],
 ] as const;
+/** The live assets of the rework batch (tested in chibi-ice-folk-rework-assets). */
+const REWORK = new Set(
+  ["frost-wyrm", "walrus", "snow-golem"].flatMap((name) => [
+    `chibi-direction-ice-folk-${name}`,
+    `chibi-direction-portrait-ice-folk-${name}`,
+  ]),
+);
 const ICONS = [
   ["ICON:ACTION:THROW_BOLAS", "action-throw-bolas"],
   ["ICON:ACTION:COLD_SNAP", "action-cold-snap"],
   ["ICON:ACTION:SHATTER", "action-shatter"],
   ["ICON:ACTION:SWEEP", "action-sweep"],
   ["ICON:ACTION:ROCKFALL", "action-rockfall"],
-  ["ICON:ACTION:PROWL", "action-prowl"],
+  // The Sabretooth's Prowl icon is retired with it (pulp_wars-s55m.4).
   // The Frost Bolt and the Mammoth's Stampede (bead pulp_wars-2yc.118).
   ["ICON:ACTION:FROST_BOLT", "action-frost-bolt"],
   ["ICON:ACTION:ICE_FOLK:STAMPEDE", "action-ice-folk-stampede"],
@@ -148,7 +160,7 @@ describe("Ice Folk production art (pulp_wars-7g3.5)", () => {
     CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the nine units and portraits, sixteen icons, five effects and City 1-3", () => {
+  it("lists the nine units and portraits, the icons, five effects and City 1-3", () => {
     const expected: [string, string][] = [
       ...UNITS.map(
         ([role, name]) =>
@@ -235,15 +247,29 @@ describe("Ice Folk production art (pulp_wars-7g3.5)", () => {
     const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
     const accepted = Object.values(records.assets);
     expect(accepted.every((record) => record.status === "ACCEPTED")).toBe(true);
-    expect(accepted.map((record) => record.id).sort()).toEqual(
-      CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.map((asset) => asset.id).sort(),
+    // The Ice Folk roster rework (pulp_wars-s55m.4): the batch keeps the
+    // retired Sabretooth, Musk Ox and Boulder Yeti (and the Prowl icon) as
+    // records; the live list has the rework batch's three in their place.
+    const live = CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.filter(
+      (asset) => !REWORK.has(asset.id),
     );
+    expect(live).toHaveLength(
+      CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.length - REWORK.size,
+    );
+    expect(accepted.map((record) => record.id).sort()).toEqual(
+      [...live.map((asset) => asset.id), ...ICE_FOLK_RETIRED_ART_IDS_V7].sort(),
+    );
+    for (const id of ICE_FOLK_RETIRED_ART_IDS_V7)
+      expect(
+        CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.some((asset) => asset.id === id),
+        id,
+      ).toBe(false);
     expect(manifest.assets.map((asset) => asset.id).sort()).toEqual(
       accepted.map((record) => record.id).sort(),
     );
     expect(manifest.fixedFactionColours).toBe(true);
     expect(manifest.faction).toBe("ICE_FOLK");
-    for (const entry of CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7) {
+    for (const entry of live) {
       const record = records.assets[entry.id];
       const asset = manifest.assets.find((spec) => spec.id === entry.id);
       if (asset === undefined || record === undefined)

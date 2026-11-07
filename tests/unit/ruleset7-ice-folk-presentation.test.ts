@@ -665,19 +665,20 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Snow",
       "Blizzard",
       "Cold Snap",
-      // Bead pulp_wars-2yc.63: Bolas is Frost Bolt, Trample is Wrecker,
-      // Prowl is Slips past.
+      // Bead pulp_wars-2yc.63: Bolas is Frost Bolt, Trample is Wrecker.
       "Frost Bolt",
       "Cold Blood",
       "Sweep and Wrecker",
       "Mountain-born",
       "Rockfall",
       "Boulders",
-      "Slips past",
+      // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm's
+      // Frost Breath replaced the Sabretooth's Slips past.
+      "Frost Breath",
       "Cold Aura",
       "Stampede",
       "Deep Winter",
-      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox.
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus.
       "Frostbite",
     ]);
     const rule = (name: string): string =>
@@ -698,6 +699,10 @@ describe("Ice Folk Help (section 13.3)", () => {
     expect(rule("Frozen")).toContain("It can be frozen again at once.");
     expect(rule("Stampede")).toContain(`takes ${STAMPEDE_DAMAGE_V7}`);
     expect(rule("Frostbite")).toContain("is Frozen");
+    expect(rule("Frost Breath")).toBe(
+      `a ${label("KNIGHT")} flies over any ground and over Shallow and Deep Water without Navigation, and every enemy its attack leaves alive is Frozen, ships too.`,
+    );
+    expect(rule("Frozen")).toContain(`a ${label("KNIGHT")}'s Frost Breath`);
     for (const [name, text] of ICE_FOLK_HELP_RULES_V7)
       expect(`${name} ${text}`).not.toMatch(/chill|frosted|thaw-immune/i);
   });

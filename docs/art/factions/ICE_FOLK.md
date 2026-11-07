@@ -661,14 +661,20 @@ code glyph and stand-ins of other ice art. Six icons of their own, 48 x 48,
 The user (2026-11-06): "its slightly annoying that there are 2 yeti units
 and 2 similar looking mammoth + ox", and "Ice peeps should be unique and
 cool". The Ice Folk rework (epic `pulp_wars-s55m`) replaces three units in
-their art slots. **Art only:** batch
+their art slots. Batch
 [`direction-ice-folk-rework`](../../../scripts/art/chibi/batches/batch-direction-ice-folk-rework.json)
-holds the six accepted pieces; no runtime manifest lists them yet. The
-roster bead (`pulp_wars-s55m.4`) adds them to the direction registry (the
-lines `npm run art:chibi -- registry --batch direction-ice-folk-rework`
-prints), retires the Sabretooth, Musk Ox and Boulder Yeti assets of
-`direction-ice-folk`, gives the Frost Wyrm its flyer presentation (below)
-and regenerates the unit shadow table (`npm run art:unit-shadows-measure`).
+holds the six accepted pieces. **Wired by the roster bead
+(`pulp_wars-s55m.4`, ruleset 7r125):** the six are in
+`CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7` (the direction registry) exactly as
+`npm run art:chibi -- registry --batch direction-ice-folk-rework` prints
+them; the Sabretooth, Musk Ox and Boulder Yeti assets of
+`direction-ice-folk` (and the Sabretooth's Prowl icon) are retired from
+runtime use (`ICE_FOLK_RETIRED_ART_IDS_V7`; their masters and records stay
+in their batch as history and as the "before" of the review sheets); the
+Frost Wyrm has its flyer presentation (`ICE_FOLK_FLYER_PRESENTATION_V7`:
+`hullBottom` 69, ground line 82, shadow `{ x: 36, y: 81, radiusX: 18,
+radiusY: 4 }`), and the unit shadow table is regenerated
+(`npm run art:unit-shadows-measure`).
 
 | Art slot (replaces)                     | Asset                                 | Canvas  | Sprite  | Accepted recipe                | What it shows                                                                                                                                                                         |
 | --------------------------------------- | ------------------------------------- | ------- | ------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

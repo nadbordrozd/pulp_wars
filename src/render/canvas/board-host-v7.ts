@@ -4912,7 +4912,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       asset: resolved.asset,
       subject,
       garrison,
-      flyer: piece?.martian?.flyer === true || piece?.dwarf?.flyer === true,
+      flyer:
+        piece?.martian?.flyer === true ||
+        piece?.dwarf?.flyer === true ||
+        piece?.iceFolk?.flyer === true,
       growth:
         growthSpriteScaleV7(piece?.growthStage, resolved.asset.width) *
         (piece?.gingerbreadMan === true ? GINGERBREAD_MAN_SPRITE_SCALE_V7 : 1),

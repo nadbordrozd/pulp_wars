@@ -543,10 +543,10 @@ describe("moving on ice", () => {
     expect(ashore.command.path).toHaveLength(FROZEN_UI_V7.bridge.length + 1);
   });
 
-  it("the Sabretooth skates the ice too (every Ice Folk land unit), and never slips", () => {
+  it("the Snow Golem skates the ice too (every Ice Folk ground unit), and never slips", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
-    const sabretooth = unitAt(view, { x: 0, y: 2 });
-    const built = plan(view, sabretooth.id);
+    const golem = unitAt(view, { x: 0, y: 2 });
+    const built = plan(view, golem.id);
     const onIce = built.targets.filter(
       (target) =>
         target.family === "MOVE" &&

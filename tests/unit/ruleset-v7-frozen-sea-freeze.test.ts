@@ -237,7 +237,7 @@ describe("Freeze: the legality rows in order (section 8.4)", () => {
       )?.improvement,
     ).toBe("PORT");
     // The offers are exactly the `at` with a non-empty set, in (y, x) order
-    // (the Musk Ox's Deep Water needs Pack Ice; the hostile dock is one).
+    // (the Walrus's Deep Water needs Pack Ice; the hostile dock is one).
     expect(offeredFreezes(state)).toEqual([
       freeze(state, SHORE, { x: 1, y: 3 }),
       freeze(state, SHORE, { x: 2, y: 3 }),

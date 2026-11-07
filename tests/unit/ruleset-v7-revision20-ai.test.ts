@@ -132,9 +132,9 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
     expect(triceratops.tacticalRole).toBe("LINE");
     expect(policyTacticalRoleV7(triceratops)).toBe("LINE");
     expect(policySiegeRuleV7(triceratops)).toBe(false);
-    // `pulp_wars-7g3.4`: the Mammoth (Sweep) and the Boulder Yeti
+    // `pulp_wars-7g3.4`: the Mammoth (Sweep) and the Snow Golem
     // (Boulders) are line units too.
-    // (7r55: the Mammoth is the heavy role; the Musk Ox, the new
+    // (7r55: the Mammoth is the heavy role; the Walrus, the new
     // defender, keeps its DEFENDER label.)
     for (const role of ["SWORDSMAN", "CATAPULT"] as const) {
       expect(policyTacticalRoleV7(effectiveRoleRuleV7(role, "ICE_FOLK"))).toBe(

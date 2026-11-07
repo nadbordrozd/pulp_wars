@@ -850,7 +850,7 @@ describe("no Rush perks (the Candy redesign, section 6.1)", () => {
             at: at(5, 3),
             ...(rush ? { rush: "RUSHED" } : {}),
           },
-          // A Mammoth (a Musk Ox's Frostbite would freeze the attacker,
+          // A Mammoth (a Walrus's Frostbite would freeze the attacker,
           // which then has no Escape: Ice Folk Freeze, `pulp_wars-w49.37`).
           { seat: 1, role: "SWORDSMAN", at: at(5, 2) },
         ],

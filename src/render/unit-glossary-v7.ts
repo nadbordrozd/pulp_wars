@@ -619,6 +619,16 @@ const ENTRIES = {
     "Frostbite",
     "An enemy that hits it from the next tile and survives is Frozen.",
   ],
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
+  // Wyrm's breath and its flight over the open sea.
+  FROST_BREATH: [
+    "Frost Breath",
+    "Every enemy its attack leaves alive is Frozen, ships too. Its next blow from the next tile can Shatter it.",
+  ],
+  SEA_WINGS: [
+    "Sea wings",
+    "Flies over shallow and deep water with no technology needed.",
+  ],
   // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): every Ice Folk land
   // unit skates and dives; the Sled's and the Snow Hunter's Runners, the
   // Sled's glide past enemies; and every other faction's Crack Ice.
@@ -832,7 +842,7 @@ const ENTRIES = {
   ],
   STATUS_PLANTED: [
     "Planted",
-    "A Boulder Yeti that has not moved this turn throws harder.",
+    "A Snow Golem that has not moved this turn throws harder.",
   ],
   STATUS_RUSHED: [
     "Rushed",
@@ -1041,7 +1051,6 @@ export function abilityGlossaryIdV7(
           : "TEND";
     // Zones of control do not stop it: the Raider's trait by another name.
     case "ETHEREAL":
-    case "PROWL":
       return "SLIPS_PAST";
     // The Mammoth's attack knocks down Field Defense like a Catapult's.
     case "TRAMPLE":
@@ -1102,7 +1111,7 @@ export function roleTraitGlossaryIdsV7(
     if (mechanics.shield > 0) traits.push("SHIELD");
     return traits;
   }
-  // A Banshee's Ethereal and a Sabretooth's Prowl list it already.
+  // A Banshee's Ethereal lists it already.
   if (mechanics.ignoresZocStops) traits.push("SLIPS_PAST");
   if (mechanics.rangedDefense2 !== null)
     traits.push(
@@ -1130,11 +1139,13 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.shield > 0) traits.push("SHIELD");
   if (mechanics.shockFieldDamage > 0) traits.push("SHOCK_FIELD");
   if (mechanics.glides) traits.push("GLIDE");
-  // Ice Folk movement (`pulp_wars-s55m.2`): a kind rule of the Ice Folk.
-  if (rules.snow) traits.push("SKATES");
+  // Ice Folk movement (`pulp_wars-s55m.2`): a kind rule of the Ice Folk,
+  // on the ground (the Ice Folk roster rework: the Frost Wyrm flies).
+  if (rules.snow && mechanics.movementMode === "GROUND") traits.push("SKATES");
+  if (mechanics.fliesOverDeepWater) traits.push("SEA_WINGS");
   if (mechanics.runners) traits.push("RUNNERS");
   if (mechanics.glidesThroughZoc) traits.push("GLIDES_PAST");
-  if (rules.snow) traits.push("DIVE");
+  if (rules.snow && mechanics.movementMode === "GROUND") traits.push("DIVE");
   if (mechanics.frostbite) traits.push("FROSTBITE");
   // `pulp_wars-befg`: the Whirligig's Whirl is its attack, not an ability.
   if (mechanics.whirl && attacks) traits.push("WHIRL");

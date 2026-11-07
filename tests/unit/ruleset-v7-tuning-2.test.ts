@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
-    expect(PRIOR_RULESET_7_IDS.at(-78)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(123);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(PRIOR_RULESET_7_IDS.at(-79)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(124);
   });
 });
 
@@ -165,7 +165,7 @@ describe("1: who moves after a kill", () => {
       "MARTIAN Ray Gunner",
       "MARTIAN Colossus",
       "ICE_FOLK Snow Hunter",
-      "ICE_FOLK Boulder Yeti",
+      "ICE_FOLK Snow Golem",
       "DWARF Clockwork Gunner",
       "CANDY Gumball Gunner",
       "CULT Hexer",
@@ -191,6 +191,8 @@ describe("1: who moves after a kill", () => {
       "UNDEAD Abomination",
       "MARTIAN Saucer",
       "MARTIAN Mothership",
+      // The Ice Folk roster rework (`pulp_wars-s55m.4`): a flyer.
+      "ICE_FOLK Frost Wyrm",
       // The giants' signatures (`pulp_wars-w49.30`): the Frost Giant never
       // advances (it anchors the Ice Folk line).
       "ICE_FOLK Frost Giant",
@@ -303,7 +305,7 @@ describe("3: the Human Knight captures settlements", () => {
       "Scrap Buggy",
       "T-Rex",
       "Mothership",
-      "Sabretooth",
+      "Frost Wyrm",
       // (The ninth unit, 7r55: the Steam Tank is the Dwarf heavy role.)
       "Whirligig",
       "Chocolate Bunny",

@@ -196,7 +196,7 @@ export function cultSummonersWantedV7(total: number): number {
 }
 
 /**
- * A Cult seat's Idol Bearers are capped as an Ice Folk seat's Musk Oxen
+ * A Cult seat's Idol Bearers are capped as an Ice Folk seat's Walruses
  * are: the Idol Bearer does not strike after it moves, so it is the
  * garrison of a center and the warden of a circle. No more than the seat
  * owns cities, nor than a third of the army.

@@ -81,7 +81,8 @@ export function frozenFreezeUiFixtureV7(
 /**
  * The slide: a five-tile ice bridge from the viewer's shore to the far one,
  * with a Yeti (it slides; `sled` makes it a Sled, which has the Move left
- * to step ashore) and a Sabretooth (it walks) at its head. With
+ * to step ashore) and a Snow Golem (it walks; the Sabretooth until the
+ * Frost Wyrm, a flyer, took its slot) at its head. With
  * `slipper`, seat 0 is Human and seat 1 the Ice Folk whose ice it is: the
  * viewer's Fighter slips, its Move ending on the first ice tile.
  */
@@ -103,7 +104,7 @@ export function frozenSlideUiFixtureV7(
         : [
             {
               seat: 0 as const,
-              role: "KNIGHT" as const,
+              role: "CATAPULT" as const,
               at: { x: 0, y: 2 },
             },
           ]),

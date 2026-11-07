@@ -816,8 +816,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Egg makes no Move, and a unit afloat never enters ice).
     // Barricades in skirmish (`pulp_wars-ovqq`): the unit whose endgame
     // route runs through a Barricade is a land-form attacker (an Egg never
-    // attacks, and an embarked unit has no endgame land route).
-    "src/ai/v7.ts": 58,
+    // attacks, and an embarked unit has no endgame land route). The Ice
+    // Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's Frost Breath
+    // is worth more on a target that is not in land form (a ship or an
+    // embarked unit: nothing else of the Ice Folk reaches it).
+    "src/ai/v7.ts": 59,
     // The giants' signatures (`pulp_wars-w49.31`): a giant has its
     // signature in land form only (section 6.0, G2), and so has a Troll
     // that throws; the unit a crush is added to, the unit lined up behind

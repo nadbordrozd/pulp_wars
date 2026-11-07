@@ -274,7 +274,7 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
     expect(preview(state, at(6, 2), at(6, 1))?.splash).toHaveLength(2);
   });
 
-  it("throws the Boulder Yeti planted instead of moving", () => {
+  it("throws the Snow Golem planted instead of moving", () => {
     const pieces = [own("CATAPULT", 6, 3), foe("FIGHTER", 6, 1)];
     // The older policy (a match with a Candy seat; a Dwarf seat before
     // step two of the Dwarf pass, `pulp_wars-w49.28`) offers it no Move.
@@ -282,7 +282,7 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
     expect(unitCandidatesV7(older, at(6, 3), "MOVE")).toEqual([]);
     // Both policies throw before anything else (the army rules, step two
     // of the Ice Folk pass, `pulp_wars-w49.27`, rank the planted throw
-    // above every Move of the Boulder Yeti).
+    // above every Move of the Snow Golem).
     for (const state of [older, asIce(pieces)]) {
       const best = unitCandidatesV7(state, at(6, 3))[0];
       expect(best?.command).toEqual(attackV7(state, at(6, 3), at(6, 1)));
@@ -324,7 +324,7 @@ describe("Ice Folk Normal AI: production and research", () => {
   it("researches the Witch and the Snow Hunter with two cities", () => {
     const view = viewerViewV7(
       asIce([own("FIGHTER", 5, 3), foe("FIGHTER", 1, 1)], {
-        // (The Industry reshuffle, 7r56: and Deep Winter, the Musk Ox's.)
+        // (The Industry reshuffle, 7r56: and Deep Winter, the Walrus's.)
         0: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION"],
       }),
     );

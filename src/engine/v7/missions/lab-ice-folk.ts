@@ -7,7 +7,7 @@ import type { MissionDefinitionV7 } from "./types";
  * docs/validation/TEXT_PLAY.md): the Ice Folk roster in an even middle game,
  * for a hand player to judge in about ten rounds without playing an
  * opening. A generated match of twenty rounds reaches neither the Mammoth
- * (three technologies of Industry) nor the Boulder Yeti and the Sabretooth.
+ * (three technologies of Industry) nor the Snow Golem and the Frost Wyrm.
  * Like the other labs it is an ordinary hidden mission definition with no
  * rule of its own. Its land, its cities, and its Human side are those of
  * `LAB_MARTIAN_MID` and `LAB_DINOSAUR_MID`, so the rosters meet the same
@@ -20,10 +20,10 @@ import type { MissionDefinitionV7 } from "./types";
  * (east), five cities a side with the same levels (a level-4 capital, two
  * level-3 cities, two level-2 cities at the front: 15 Coins a turn each).
  * The Ice Folk own the thirteen technologies that make every Ice Folk unit
- * trainable (Sled, Snow Hunter, Musk Ox with Deep Winter, Ice Witch,
- * Mammoth, Boulder Yeti, Sabretooth) and hold 16 units worth 64 Coins: 5
- * Yetis, 2 Sleds, 2 Snow Hunters, 2 Musk Oxen, an Ice Witch, 2 Mammoths, a
- * Boulder Yeti, and a Sabretooth. They have three free unit slots (two in
+ * trainable (Sled, Snow Hunter, Walrus with Deep Winter, Ice Witch,
+ * Mammoth, Snow Golem, Frost Wyrm) and hold 16 units worth 64 Coins: 5
+ * Yetis, 2 Sleds, 2 Snow Hunters, 2 Walruses, an Ice Witch, 2 Mammoths, a
+ * Snow Golem, and a Frost Wyrm. They have three free unit slots (two in
  * the capital, one in the northern level-3 city; the other cities are full)
  * and 20 Coins before the income of the first turn (35 in hand on it). They
  * own Deep Winter (the Snow reaches two tiles beyond a city's land, and
@@ -37,7 +37,7 @@ import type { MissionDefinitionV7 } from "./types";
  *
  * Revision 2 (Ice Folk Freeze, `pulp_wars-w49.37`): the same board and
  * units under the new numbers (the Sled 4 Coins, the Ice Witch 6 and 10 HP,
- * the Boulder Yeti 9 and 10 HP, the Mammoth 7, the Musk Ox Defense 2): the
+ * the Snow Golem 9 and 10 HP, the Mammoth 7, the Walrus Defense 2): the
  * Ice Folk units are worth 70 Coins now. The numbers quoted above are
  * revision 1's.
  *
@@ -145,7 +145,7 @@ export const LAB_ICE_FOLK_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
-        // Deep Winter: the Musk Ox, the wider Snow, Recover 6.
+        // Deep Winter: the Walrus, the wider Snow, Recover 6.
         "FORTIFICATION",
         "ENGINEERING",
         "METALLURGY",
@@ -165,8 +165,8 @@ export const LAB_ICE_FOLK_MID_V7: MissionDefinitionV7 = {
       // Every center is free, so a city with a slot trains on the first
       // turn.
       units: [
-        // The capital's (two free slots): the Witch, the Sabretooth, and
-        // the Boulder Yeti behind the line.
+        // The capital's (two free slots): the Witch, the Frost Wyrm, and
+        // the Snow Golem behind the line.
         { role: "CAPTAIN", at: { x: 4, y: 7 } },
         { role: "KNIGHT", at: { x: 3, y: 6 } },
         { role: "CATAPULT", at: { x: 4, y: 8 } },

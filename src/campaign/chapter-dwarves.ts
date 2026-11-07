@@ -51,7 +51,7 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "A Steam Mole digs up to 3 tiles under anything.",
         "The clan marches on Copperstep from turn 2.",
-        "Hit a Musk Ox up close and you freeze: shoot it.",
+        "Hit a Walrus up close and you freeze: shoot it.",
       ]),
       closing:
         "The Peak is yours and the forges are lit. Chief Gnash of Whitefang, beaten this year by the living, the dead and now the dwarves, goes off to sulk at Mother Rime's door. Now the Thane must find out how big the lid has to be.",

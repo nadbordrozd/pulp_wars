@@ -248,7 +248,7 @@ export interface CombatPreviewV7 {
    * is the Rockfall value.
    */
   readonly rockfallApplied: boolean;
-  /** Section 7.6: the Boulder Yeti's Planted bonus is in `attack2`. */
+  /** Section 7.6: the Snow Golem's Planted bonus is in `attack2`. */
   readonly plantedApplied: boolean;
   /**
    * Section 6.3: the hit on the defender was halved by a Blizzard;
@@ -334,9 +334,15 @@ export interface CombatPreviewV7 {
   readonly crackApplied: boolean;
   /**
    * The ninth unit: Frostbite. The surviving attacker is Frozen for having
-   * attacked a Musk Ox from the next tile (Ice Folk Freeze, w49.37).
+   * attacked a Walrus from the next tile (Ice Folk Freeze, w49.37).
    */
   readonly frostbiteApplied: boolean;
+  /**
+   * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): Frost Breath.
+   * The attacker is a Frost Wyrm and the attack Freezes its surviving
+   * target (`attackFrostBreathV7`).
+   */
+  readonly frostBreathApplied: boolean;
   /**
    * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1):
    * Crushing Shove. `WILL_CRUSH` when the attacker crushes and its
@@ -1135,7 +1141,7 @@ export type DomainEventV7 =
        * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section
        * 21.15): `sourceUnitId` of `playerId` (a Sled's Bolas, an Ice
        * Witch's Cold Snap or Frost Bolt, a Frost Giant's Cold Aura at the
-       * end of its Move, a Musk Ox's Frostbite, or the shards of a unit a
+       * end of its Move, a Walrus's Frostbite, or the shards of a unit a
        * Frost Giant shattered; null for Black Ice) froze every listed unit;
        * each result is its Frozen entry after the application, in unit-ID
        * order. A projection keeps the results the viewer can see (and a
@@ -1152,6 +1158,7 @@ export type DomainEventV7 =
         | "COLD_AURA"
         | "BLACK_ICE"
         | "FROSTBITE"
+        | "FROST_BREATH"
         | "SHARDS"
         // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze
         // reached a unit afloat.

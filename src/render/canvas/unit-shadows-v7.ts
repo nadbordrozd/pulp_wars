@@ -1,6 +1,7 @@
 import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
 import { navalArtRoleOfSubjectV7 } from "../../assets/chibi-art-v7";
 import { DWARF_FLYER_PRESENTATION_V7 } from "../../assets/chibi-direction-dwarf-presentation";
+import { ICE_FOLK_FLYER_PRESENTATION_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import { MARTIAN_FLYER_PRESENTATION_V7 } from "../../assets/chibi-direction-martian-presentation";
 import {
   UNIT_SHADOW_MEASUREMENTS_V7,
@@ -85,6 +86,8 @@ export const UNIT_SHADOW_FLYERS_V7: Readonly<
   "UNIT:MARTIAN:RAIDER": "chibi-direction-martian-saucer",
   "UNIT:MARTIAN:KNIGHT": "chibi-direction-martian-mothership",
   "UNIT:DWARF:RAIDER": "chibi-direction-dwarf-gyrocopter",
+  // The Ice Folk roster rework (bead `pulp_wars-s55m.4`).
+  "UNIT:ICE_FOLK:KNIGHT": "chibi-direction-ice-folk-frost-wyrm",
 };
 
 /**
@@ -167,7 +170,11 @@ function flyerShadow(assetId: string): UnitShadowEllipseV7 | null {
         ? DWARF_FLYER_PRESENTATION_V7[
             assetId as keyof typeof DWARF_FLYER_PRESENTATION_V7
           ]
-        : null;
+        : assetId in ICE_FOLK_FLYER_PRESENTATION_V7
+          ? ICE_FOLK_FLYER_PRESENTATION_V7[
+              assetId as keyof typeof ICE_FOLK_FLYER_PRESENTATION_V7
+            ]
+          : null;
   return presentation === null ? null : { ...presentation.shadow };
 }
 

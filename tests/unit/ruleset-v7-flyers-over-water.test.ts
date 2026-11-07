@@ -132,10 +132,12 @@ function withOwnPortV7(state: GameStateV7): GameStateV7 {
 }
 
 describe("the flyers", () => {
-  it("are the Saucer, the Mothership, and the Gyrocopter", () => {
+  it("are the Saucer, the Mothership, the Frost Wyrm, and the Gyrocopter", () => {
     expect(FLYERS).toEqual([
       { faction: "MARTIAN", role: "RAIDER" },
       { faction: "MARTIAN", role: "KNIGHT" },
+      // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125).
+      { faction: "ICE_FOLK", role: "KNIGHT" },
       { faction: "DWARF", role: "RAIDER" },
     ]);
   });
@@ -157,7 +159,7 @@ describe("a flyer over water stays in the air as itself (7r116)", () => {
     }
   });
 
-  it("on Deep Water too with Navigation; without it, Deep Water stays closed as before", () => {
+  it("on Deep Water too with Navigation; without it, Deep Water stays closed as before (but to the Frost Wyrm)", () => {
     for (const { faction, role } of FLYERS) {
       const deep = field(faction, [{ seat: 0, role, at: at(2, 2) }, FAR], {
         deepWater: [at(3, 2)],
@@ -171,12 +173,21 @@ describe("a flyer over water stays in the air as itself (7r116)", () => {
         [{ seat: 0, role, at: at(2, 2) }, FAR],
         { deepWater: [at(3, 2)], techs: without(faction, "NAVIGATION") },
       );
-      rejectedV7(noNavigation, move(noNavigation, at(2, 2), at(3, 2)));
+      // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm
+      // flies over Deep Water without Navigation.
+      if (roleMechanicsV7(role, faction).fliesOverDeepWater)
+        expect(
+          unitAtV7(go(noNavigation, at(2, 2), at(3, 2)).state, at(3, 2)).form,
+        ).toBe("LAND");
+      else rejectedV7(noNavigation, move(noNavigation, at(2, 2), at(3, 2)));
     }
   });
 
   it("at its own Port a flyer stays in the air; a foot unit still embarks there", () => {
-    for (const { faction, role } of FLYERS) {
+    // The Ice Folk build no Port (`pulp_wars-s55m.2`) and never embark.
+    for (const { faction, role } of FLYERS.filter(
+      (flyer) => flyer.faction !== "ICE_FOLK",
+    )) {
       const state = withOwnPortV7(
         field(faction, [{ seat: 0, role, at: at(6, 6) }, FAR], {
           water: [at(7, 7)],

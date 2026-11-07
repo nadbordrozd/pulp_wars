@@ -237,7 +237,7 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
       "ICON:TECH:ICE_FOLK:EXPLOSIVES",
     );
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root's card is
-    // the Workshop (the Musk Ox, which it showed at 7r55, is at Deep
+    // the Workshop (the Walrus, which it showed at 7r55, is at Deep
     // Winter, whose card is the icon above).
     expect(technologySubjectV7("DRILL", "ICE_FOLK")).toBe(
       "IMPROVEMENT:ICE_FOLK:WORKSHOP",

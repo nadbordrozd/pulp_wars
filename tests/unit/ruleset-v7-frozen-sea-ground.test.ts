@@ -478,17 +478,18 @@ describe("Glacier (section 8.10)", () => {
   });
 
   it("offers the cheapest legal path to every tile: no detour over ice, no Move back to the start (`pulp_wars-mm8p`)", () => {
-    // Seat 0 is the Ice Folk: a Sabretooth (Move 3, 6 half-points; Glacier
-    // adds none since `pulp_wars-s55m.2`) on (1, 1) with its ice on (0, 3)
-    // to (3, 3). Every land step costs a point and every skate onto the ice
-    // half of one.
+    // Seat 0 is the Ice Folk: a Snow Golem (Move 2, 4 half-points; Glacier
+    // adds none since `pulp_wars-s55m.2`; the Frost Wyrm of
+    // `pulp_wars-s55m.4` flies and never skates) on (1, 1) with its ice on
+    // (0, 3) to (3, 3). Every land step costs a point and every skate onto
+    // the ice half of one.
     const START: CoordV7 = { x: 1, y: 1 };
     const ICE_ROW: readonly CoordV7[] = [0, 1, 2, 3].map((x) => ({ x, y: 3 }));
     const build = (technologies: readonly TechnologyIdV7[]) =>
       frozenArenaV7({
         technologies: [technologies, ALL],
         units: [
-          { seat: 0, role: "KNIGHT", at: START },
+          { seat: 0, role: "CATAPULT", at: START },
           { seat: 1, role: "FIGHTER", at: { x: 9, y: 9 } },
         ],
         ice: ICE_ROW.map((at) => ({ at })),
@@ -497,7 +498,7 @@ describe("Glacier (section 8.10)", () => {
     const onIce = (at: CoordV7): boolean =>
       ICE_ROW.some((ice) => ice.x === at.x && ice.y === at.y);
     // The cheapest legal Move to every tile, by brute force over every path
-    // of up to 5 steps (one land step and four skates: the budget) through
+    // of up to 5 steps (more than the budget allows) through
     // the canonical validation.
     const cheapest = (state: GameStateV7): Map<string, number> => {
       const unit = navalUnitAtV7(state, START);
@@ -582,10 +583,10 @@ describe("Glacier (section 8.10)", () => {
         paths.map((entry) => [keyOf(entry.destination), entry.spentPoints2]),
       ),
     ).toEqual(costs);
-    // Every path keeps the 6 half-points; a skate onto the ice row costs
+    // Every path keeps the 4 half-points; a skate onto the ice row costs
     // half: (3, 3) is a land step and a skate away.
     for (const entry of paths)
-      expect(entry.spentPoints2).toBeLessThanOrEqual(6);
+      expect(entry.spentPoints2).toBeLessThanOrEqual(4);
     expect(
       paths.find((entry) => keyOf(entry.destination) === "3,3"),
     ).toMatchObject({ spentPoints2: 3 });

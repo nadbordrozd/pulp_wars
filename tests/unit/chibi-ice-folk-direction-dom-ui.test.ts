@@ -45,8 +45,10 @@ const ROLES = [
   ["MARKSMAN", "snow-hunter"],
   ["GUARD", "mammoth"],
   ["CAPTAIN", "ice-witch"],
-  ["CATAPULT", "boulder-yeti"],
-  ["KNIGHT", "sabretooth"],
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Snow Golem and
+  // the Frost Wyrm of batch `direction-ice-folk-rework`.
+  ["CATAPULT", "snow-golem"],
+  ["KNIGHT", "frost-wyrm"],
   ["JUGGERNAUT", "frost-giant"],
 ] as const;
 

@@ -79,19 +79,25 @@ export function iceIndexSetV7(
 /**
  * Ice Folk movement (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the forced
  * slide before): whether the unit **skates**: a land-form unit of the Ice
- * Folk kind, every role. Each step it makes onto an ice tile costs half a
- * Move point (ice is its road). A body rule, so a mind-controlled Ice Folk
- * unit skates for its controller.
+ * Folk kind, every role on the ground (the Ice Folk roster rework,
+ * `pulp_wars-s55m.4`: the Frost Wyrm flies and never skates). Each step it
+ * makes onto an ice tile costs half a Move point (ice is its road). A body
+ * rule, so a mind-controlled Ice Folk unit skates for its controller.
  */
 export function unitSkatesV7(
   roster: FactionRosterV7,
   unit: {
     readonly id: UnitId;
     readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
   },
 ): boolean {
-  return unit.form === "LAND" && unitKindWalksIceV7(roster, unit);
+  return (
+    unit.form === "LAND" &&
+    unitKindWalksIceV7(roster, unit) &&
+    unitRoleMechanicsV7(roster, unit).movementMode === "GROUND"
+  );
 }
 
 /**

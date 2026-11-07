@@ -5,6 +5,8 @@ import {
   previewColdSnapV7,
   previewFrostBoltV7,
   unitGlidesV7,
+  unitMovementModeV7,
+  unitOwnerIsIceFolkV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -77,6 +79,12 @@ export interface IceFolkUnitMarkersV7 {
   readonly shatterWindow: number | null;
   /** A land-form Ice Witch (her Blizzard outline when selected or hovered). */
   readonly witch: boolean;
+  /**
+   * The Ice Folk roster rework (bead `pulp_wars-s55m.4`): a land-form Frost
+   * Wyrm (a flyer of the Ice Folk kind): the ground shadow and the lift,
+   * over land or water. Absent on older plans.
+   */
+  readonly flyer?: boolean;
 }
 
 /**
@@ -164,13 +172,18 @@ export function iceFolkUnitMarkersV7(
     (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
       "BLIZZARD",
     );
-  if (turnsLeft === null && !witch) return undefined;
+  const flyer =
+    unit.form === "LAND" &&
+    unitOwnerIsIceFolkV7(view, unit) &&
+    unitMovementModeV7(view, unit) === "FLY";
+  if (turnsLeft === null && !witch && !flyer) return undefined;
   return {
     // Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship is cased
     // like a Frozen land unit.
     frozen: turnsLeft === null || unit.form === "EGG" ? null : { turnsLeft },
     shatterWindow: shatterWindowV7(view, unit),
     witch,
+    ...(flyer ? { flyer } : {}),
   };
 }
 

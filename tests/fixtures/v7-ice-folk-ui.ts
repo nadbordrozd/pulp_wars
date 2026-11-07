@@ -115,7 +115,7 @@ export const ICE_FOLK_UI_V7 = {
   frozenEnemy: { x: 0, y: 5 },
   unfrozenEnemy: { x: 0, y: 2 },
   /**
-   * Unmoved Boulder Yeti two tiles from an enemy Guard on Field Defense in
+   * Unmoved Snow Golem two tiles from an enemy Guard on Field Defense in
    * its own territory (fortified; Boulders ignore it).
    */
   boulderYeti: { x: 5, y: 7 },
@@ -125,8 +125,8 @@ export const ICE_FOLK_UI_V7 = {
   /** Yeti on a Mountain two tiles from an enemy Raider (Rockfall). */
   rockfallYeti: { x: 10, y: 5 },
   rockfallTarget: { x: 10, y: 3 },
-  /** A Sabretooth and a Frost Giant at home. */
-  sabretooth: { x: 9, y: 7 },
+  /** A Frost Wyrm (the Sabretooth before `pulp_wars-s55m.4`) and a Frost Giant at home. */
+  frostWyrm: { x: 9, y: 7 },
   giant: { x: 7, y: 9 },
   /** Forest, Mountain and Road tiles inside the Snow. */
   forest: [
@@ -167,7 +167,7 @@ export function iceFolkUiFixtureV7(
       { seat: 0, role: "CATAPULT", at: at.boulderYeti },
       { seat: 0, role: "MARKSMAN", at: at.hunter },
       { seat: 0, role: "FIGHTER", at: at.rockfallYeti },
-      { seat: 0, role: "KNIGHT", at: at.sabretooth },
+      { seat: 0, role: "KNIGHT", at: at.frostWyrm },
       { seat: 0, role: "JUGGERNAUT", at: at.giant },
       { seat: 1, role: "FIGHTER", at: at.bolasTarget, hp: 7 },
       { seat: 1, role: "MARKSMAN", at: at.snapTarget },
@@ -247,7 +247,7 @@ export function iceFolkVictimFixtureV7(): GameStateV7 {
  *   wounded Raider it kills, or south into a Guard it cannot shove (an own
  *   Yeti and the board's edge flank it).
  * - An own Yeti next to a Frozen enemy Fighter at full HP (it will not
- *   strike back), and an own Sabretooth Frozen during its own turn (two
+ *   strike back), and an own Frost Wyrm Frozen during its own turn (two
  *   turns left: it cannot act now or next turn).
  */
 export const ICE_FOLK_FREEZE_V7 = {

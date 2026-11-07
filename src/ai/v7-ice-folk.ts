@@ -60,6 +60,12 @@ export const SHATTER_SETUP_PRIORITY_V7 = 1179;
  * the blows that can Shatter.
  */
 export const SNOW_HUNTER_CHIP_OFFSET_V7 = 3;
+/**
+ * The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's chip that
+ * breathes frost goes before every other chip, so the Snow Hunters' Cold
+ * Blood and the melee blows that Shatter come after the freeze.
+ */
+export const FROST_WYRM_CHIP_OFFSET_V7 = 4;
 export const MAMMOTH_CHIP_OFFSET_V7 = 2;
 export const MELEE_CHIP_OFFSET_V7 = 1;
 /** Against the Ice Folk: a kill on the Witch outranks every other kill. */
@@ -99,11 +105,17 @@ export const SHATTER_KILL_VALUE_V7 = 4;
 export const TRAMPLE_VALUE_V7 = 8;
 /** A Sweep flank hit that leaves a Frozen unit inside the window. */
 export const FLANK_SETUP_VALUE_V7 = 6;
-/** A Boulder Yeti hit: per fortification level ignored. */
+/** A Snow Golem hit: per fortification level ignored. */
 export const BOULDER_FORTIFICATION_VALUE_V7 = 3;
-/** A Sabretooth kill on a backline unit, and on an isolated unit. */
-export const SABRETOOTH_BACKLINE_VALUE_V7 = 8;
-export const SABRETOOTH_ISOLATED_VALUE_V7 = 4;
+/**
+ * The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's Frost
+ * Breath on a hostile unit not Frozen yet (it loses its owner's next
+ * turn), more on a ship (the Ice Folk have no navy to answer it with) and
+ * on a unit that could strike an own unit next turn.
+ */
+export const FROST_BREATH_FREEZE_VALUE_V7 = 6;
+export const FROST_BREATH_SHIP_VALUE_V7 = 6;
+export const FROST_BREATH_THREAT_VALUE_V7 = 4;
 /**
  * Route tie-breaks: an Ice Folk unit's Move objective (its route progress)
  * is scaled by 8, and these add less than one step, so they decide only at
@@ -128,18 +140,19 @@ export const SLED_BIAS_V7 = 6;
 /** Production: one Mammoth for this many other front units. */
 export const FRONT_UNITS_PER_MAMMOTH_V7 = 2;
 /**
- * The ninth unit (`pulp_wars-w49.17`, 7r55): one Musk Ox per this many
- * other front units (the cheap wall of the line; a first guess).
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): one Walrus (the Musk Ox until
+ * `pulp_wars-s55m.4`) per this many other front units (the cheap wall of
+ * the line; a first guess).
  */
-export const FRONT_UNITS_PER_MUSK_OX_V7 = 3;
+export const FRONT_UNITS_PER_WALRUS_V7 = 3;
 export const MAMMOTH_BIAS_V7 = 6;
 /** Production: the first Witch at war with three front units, then one per eight. */
 export const WITCH_FRONT_V7 = 3;
 export const FRONT_UNITS_PER_WITCH_V7 = 8;
 export const WITCH_BIAS_V7 = 20;
-/** Production: a Boulder Yeti per three and a Sabretooth per six front units. */
+/** Production: a Snow Golem per three and a Frost Wyrm per four front units. */
 export const FRONT_UNITS_PER_BOULDER_V7 = 3;
-export const FRONT_UNITS_PER_SABRETOOTH_V7 = 6;
+export const FRONT_UNITS_PER_FROST_WYRM_V7 = 4;
 export const BIG_UNIT_BIAS_V7 = 30;
 /** Production: a role beyond its need costs this much. */
 export const SURPLUS_COST_V7 = 20;
@@ -365,7 +378,7 @@ export function shatterLethalV7(
 
 export interface IceFolkArmyCountsV7 {
   readonly byRole: ReadonlyMap<UnitRoleIdV7, number>;
-  /** Yetis, Snow Hunters, Mammoths, Boulder Yetis, Sabretooths, Giants. */
+  /** Yetis, Snow Hunters, Walruses, Mammoths, Snow Golems, Frost Wyrms, Giants. */
   readonly front: number;
 }
 
@@ -382,7 +395,7 @@ export function iceFolkArmyCountsV7(view: PlayerViewV7): IceFolkArmyCountsV7 {
       unit.role === "CATAPULT" ||
       unit.role === "KNIGHT" ||
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth is the heavy
-      // line role; the Musk Ox took the `GUARD` role.
+      // line role; the Walrus (the Musk Ox) took the `GUARD` role.
       unit.role === "SWORDSMAN" ||
       unit.role === "JUGGERNAUT"
     )
@@ -397,8 +410,8 @@ export function iceFolkArmyCountsV7(view: PlayerViewV7): IceFolkArmyCountsV7 {
  * preferred role and in the city-action utility (section 12, "produce every
  * role"; "train bodies first under threat"):
  *
- * - the Sled, the Mammoth, the Witch, the Snow Hunter, the Boulder Yeti, and
- *   the Sabretooth gain 10 as the first of their role;
+ * - the Sled, the Mammoth, the Witch, the Snow Hunter, the Snow Golem, and
+ *   the Frost Wyrm gain 10 as the first of their role;
  * - in a threatened city the Yeti gains 12, and the Sled and the Witch are
  *   worth -30 whatever else they would gain (bodies first);
  * - the Yeti's repetition costs 5 a unit instead of 8 (bodies; in the
@@ -409,8 +422,10 @@ export function iceFolkArmyCountsV7(view: PlayerViewV7): IceFolkArmyCountsV7 {
  *   units, otherwise it costs 20: it marches with every wave;
  * - the Witch gains 20 at war with three front units and no Witch, and a
  *   second one with eight per Witch; otherwise she costs 20;
- * - a Boulder Yeti (one per three front units) and a Sabretooth (one per
- *   six) gain 30 when offered, so they are bought when affordable.
+ * - a Snow Golem (one per three front units) and a Frost Wyrm (one per
+ *   four; the Ice Folk roster rework, `pulp_wars-s55m.4`: the striker and
+ *   the answer to ships) gain 30 when offered, so they are bought when
+ *   affordable.
  */
 export function iceFolkProductionAdjustmentV7(
   view: PlayerViewV7,
@@ -453,13 +468,13 @@ export function iceFolkProductionAdjustmentV7(
           : -SURPLUS_COST_V7;
       break;
     }
-    // The ninth unit: the Musk Ox, a cheap wall. A body under threat (as
+    // The ninth unit: the Walrus, a cheap wall. A body under threat (as
     // the Yeti), one per three other front units otherwise.
     case "GUARD": {
       if (threatened) value += THREATENED_YETI_BIAS_V7;
       const others = front - owned;
       value +=
-        owned * FRONT_UNITS_PER_MUSK_OX_V7 < Math.max(2, others)
+        owned * FRONT_UNITS_PER_WALRUS_V7 < Math.max(2, others)
           ? MAMMOTH_BIAS_V7
           : -SURPLUS_COST_V7;
       break;
@@ -478,7 +493,7 @@ export function iceFolkProductionAdjustmentV7(
         value += BIG_UNIT_BIAS_V7;
       break;
     case "KNIGHT":
-      if (owned * FRONT_UNITS_PER_SABRETOOTH_V7 <= front)
+      if (owned * FRONT_UNITS_PER_FROST_WYRM_V7 <= front)
         value += BIG_UNIT_BIAS_V7;
       break;
     default:
@@ -498,10 +513,10 @@ export function iceFolkProductionAdjustmentV7(
  * Sawmilling and Chivalry (the shorter chain first). Returns the next
  * technology to research and its tier, or null.
  *
- * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Musk Ox is at
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Walrus is at
  * Deep Winter, behind the root. The early plan takes the shorter chain
  * first, so it is Scouting (the Sled), the root (Ore and the Workshop),
- * Deep Winter (the Musk Ox): the seat owns Deep Winter before its
+ * Deep Winter (the Walrus): the seat owns Deep Winter before its
  * signature research, whatever its cities and its wounded.
  */
 export function iceFolkResearchV7(
@@ -607,8 +622,8 @@ export function iceFolkResearchV7(
     if (brittle !== null) return brittle;
   }
   if (ownedCities < ICE_SIGNATURE_RESEARCH_CITIES_V7) return null;
-  // The ninth unit (7r55): the Mammoth (Metallurgy, behind the Musk Ox's
-  // Drill and Engineering) with the Boulder Yeti and the Sabretooth, the
+  // The ninth unit (7r55): the Mammoth (Metallurgy, behind the Walrus's
+  // Drill and Engineering) with the Snow Golem and the Frost Wyrm, the
   // shortest chain first.
   return pick(
     ["SWORDSMAN", "CATAPULT", "KNIGHT"],

@@ -318,7 +318,7 @@ describe("Runners: the Sled's glide is not stopped by zones of control (section 
       destination: { x: 2, y: 5 },
       stopped: true,
     });
-    // Never on the Musk Ox, but past it (an own unit is passed).
+    // Never on the Walrus, but past it (an own unit is passed).
     expect(validate(blocked, BRIDGE.slice(0, 4)).legal).toBe(false);
     expect(validate(blocked, BRIDGE)).toMatchObject({
       legal: true,

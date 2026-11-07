@@ -11,6 +11,7 @@
  */
 
 import { DWARF_FLYER_PRESENTATION_V7 } from "../../assets/chibi-direction-dwarf-presentation";
+import { ICE_FOLK_FLYER_PRESENTATION_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import {
   MARTIAN_FLYER_PRESENTATION_V7,
   MARTIAN_PALETTE_V7,
@@ -598,8 +599,9 @@ export const FLYER_LIFT_LEGACY_V7 = 8;
 
 /**
  * The flyer presentation of a sprite asset, or null for every other one:
- * the Martian flyers, and (bead pulp_wars-78i.6) the Dwarf Gyrocopter
- * (DWARF_FLYER_PRESENTATION_V7, the same shape).
+ * the Martian flyers, (bead pulp_wars-78i.6) the Dwarf Gyrocopter
+ * (DWARF_FLYER_PRESENTATION_V7, the same shape), and (bead
+ * pulp_wars-s55m.4) the Ice Folk Frost Wyrm.
  */
 export function flyerPresentationV7(assetId: string): {
   readonly hullBottom: number;
@@ -618,6 +620,10 @@ export function flyerPresentationV7(assetId: string): {
   if (assetId in DWARF_FLYER_PRESENTATION_V7)
     return DWARF_FLYER_PRESENTATION_V7[
       assetId as keyof typeof DWARF_FLYER_PRESENTATION_V7
+    ];
+  if (assetId in ICE_FOLK_FLYER_PRESENTATION_V7)
+    return ICE_FOLK_FLYER_PRESENTATION_V7[
+      assetId as keyof typeof ICE_FOLK_FLYER_PRESENTATION_V7
     ];
   return null;
 }

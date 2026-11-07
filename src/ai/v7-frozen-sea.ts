@@ -11,7 +11,7 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
-import { iceAtV7, unitKindWalksIceV7 } from "../engine/v7/ice";
+import { iceAtV7, unitSkatesV7 } from "../engine/v7/ice";
 import {
   previewColdSnapV7,
   previewCrackIceV7,
@@ -209,6 +209,15 @@ export interface FrozenSeaToolsV7 {
    * consider passes over it, or an allied unit stands on ice beside it).
    */
   readonly plannedThrough: (at: CoordV7) => boolean;
+  /**
+   * The Ice Folk roster rework (`pulp_wars-s55m.4`): whether an own unit's
+   * offered attack that neither kills nor sinks is one the policy would
+   * make (it leaves the unit alive through the visible enemies' next turn,
+   * the Frost Breath's freeze counted). Absent: never.
+   */
+  readonly strikeAcceptable?: (
+    command: Extract<CommandV7, { kind: "ATTACK" }>,
+  ) => boolean;
 }
 
 // --- The glide in a reach estimate ---------------------------------------------
@@ -251,9 +260,7 @@ export function iceGlideLineV7(
 /** Whether the unit skates on ice (`pulp_wars-s55m.2`): a land-form unit of the Ice Folk kind, in a view with ice. */
 export function iceSkaterV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return (
-    view.ice.length > 0 &&
-    unit.form === "LAND" &&
-    unitKindWalksIceV7(view, unit)
+    view.ice.length > 0 && unit.form === "LAND" && unitSkatesV7(view, unit)
   );
 }
 
@@ -1130,7 +1137,10 @@ export function iceColdSnapWaterScoreV7(
  *   counts twice its role's cost plus three for every other own unit
  *   whose Move and range reach it (their attacks are unanswered while it
  *   is Frozen, and a Shatter is possible). Not when the same unit's
- *   offered attack sinks the one ship it Freezes.
+ *   offered attack sinks the one ship it Freezes, nor (the Ice Folk roster
+ *   rework, `pulp_wars-s55m.4`) when it is a Frost Wyrm whose offered
+ *   attack on that ship Freezes it too (Frost Breath) and is one the policy
+ *   would make (`strikeAcceptable`): the blow freezes and hurts.
  * - **Bridge** (1110): it freezes the next tile of the crossing (ten a new
  *   crossing tile, one for every other new tile: the Witch's ring makes the
  *   road wide). The next tile is the first one that is not ice, so a gap a
@@ -1162,14 +1172,25 @@ function iceWaterFreezeScoreV7(
     });
     const sinksIt =
       ships.length === 1 &&
-      tools.commands.some(
-        (offered) =>
-          offered.kind === "ATTACK" &&
-          offered.unitId === actor.id &&
-          offered.targetUnitId === ships[0]?.id &&
-          queryCombatPreviewV7(view, actor.id, offered.targetUnitId)
-            ?.defenderDies === true,
-      );
+      tools.commands.some((offered) => {
+        if (
+          offered.kind !== "ATTACK" ||
+          offered.unitId !== actor.id ||
+          offered.targetUnitId !== ships[0]?.id
+        )
+          return false;
+        const strike = queryCombatPreviewV7(
+          view,
+          actor.id,
+          offered.targetUnitId,
+        );
+        return (
+          strike !== null &&
+          (strike.defenderDies ||
+            (strike.frostBreathApplied &&
+              tools.strikeAcceptable?.(offered) === true))
+        );
+      });
     if (!sinksIt) {
       let strategic = 0;
       for (const ship of ships) {

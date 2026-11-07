@@ -249,7 +249,7 @@ export function linebreakerV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
  * label (the Triceratops keeps `SIEGE`, which only excludes it from War
  * Drums). The Ice Folk revision (`pulp_wars-7g3.4`, section 12, "judge
  * units by their abilities"): the Mammoth (`SWEEP`, labelled `DEFENDER`) and
- * the Boulder Yeti (`BOULDERS`, labelled `SIEGE`) attack after moving and
+ * the Snow Golem (`BOULDERS`, labelled `SIEGE`) attack after moving and
  * march with the wave, so they are line units too. Every other rule keeps
  * its label.
  */

@@ -248,7 +248,7 @@ export interface PublicIceFolkMechanicsV7 {
   /** A Yeti in land form standing on a Mountain (Rockfall reach). */
   readonly rockfall: boolean;
   /**
-   * A Boulder Yeti's attack made now: true when Planted, false after a Move;
+   * A Snow Golem's attack made now: true when Planted, false after a Move;
    * null for every other role and afloat.
    */
   readonly planted: boolean | null;
@@ -674,7 +674,7 @@ export function publicUnitStatsV7(
                   mechanics.plantedBonus2,
                   "PLANTED",
                   "Planted",
-                  "A Boulder Yeti that has not moved this turn has +1 Attack.",
+                  "A Snow Golem that has not moved this turn has +1 Attack.",
                   2,
                 ),
               ]

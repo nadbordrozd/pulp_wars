@@ -446,11 +446,11 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   // Chill, and one comes free with Scouts), the Snow Hunter (Hunting and
   // Marksmanship: the one Ice Folk unit that kills from two tiles and does
   // not advance onto the dead unit's tile; in a hand-played game five Yetis
-  // died on the tile their kill had carried them to), the Musk Ox (the root
+  // died on the tile their kill had carried them to), the Walrus (the root
   // and Deep Winter: the garrison, wider Snow, Recover 6), the Ice Witch
   // (Leadership: Cold Snap and the Blizzard, which halves the bombs and
   // arrows that kill 9-HP Yetis), the Mammoth (Engineering and Mammoths:
-  // Sweep and Trample), the Boulder Yeti, the Sabretooth.
+  // Sweep and Trample), the Snow Golem, the Frost Wyrm.
   ICE_FOLK: Object.freeze([
     "RAIDER",
     "MARKSMAN",
@@ -813,7 +813,7 @@ export function armyClassV7(rule: EffectiveRoleRuleV7): ArmyClassV7 | null {
   // Triceratops, registered as `SIEGE`) fights in the line: it walks up and
   // strikes the unit beside it, needs no screen, and is no fragile target.
   if (rule.abilities.includes("LINEBREAKER")) return "LINE";
-  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Boulder Yeti
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Snow Golem
   // (registered as `SIEGE`) moves two tiles and throws from one or two in
   // the same turn, and strikes back at both: it fights as a ranged unit
   // (it takes a tile with a shot and stays behind the line), not as a
@@ -947,27 +947,30 @@ export const ARMY_SHARES_V7 = Object.freeze({
   }),
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): two fifths line
   // (Yetis, and Mammoths once their technology is owned: the dearer unit of a short
-  // class is bought first), 15% Musk Oxen (the garrisons: a unit that
+  // class is bought first), 15% Walruses (the garrisons: a unit that
   // cannot strike after it moves does not go to war), a fifth Snow Hunters
   // (the shot that brings a Chilled unit into the Shatter window), 15%
-  // Boulder Yetis, a tenth Sabretooths. Against two or more hostile ranged,
-  // siege, or support units a quarter Snow Hunters and a fifth Boulder
-  // Yetis, which answer from two tiles, and still a tenth Sabretooths (with
-  // a fifth, the seat of the lab trained three of the 9-Coin, 14-HP units
-  // with its first 35 Coins). The Sleds are counted apart (below).
+  // Snow Golems (Boulder Yetis then), a tenth Sabretooths. Against two or
+  // more hostile ranged, siege, or support units a quarter Snow Hunters and
+  // a fifth Snow Golems, which answer from two tiles, and still a tenth
+  // Sabretooths (with a fifth, the seat of the lab trained three of the
+  // 9-Coin, 14-HP units with its first 35 Coins). The Sleds are counted
+  // apart (below). The Ice Folk roster rework (`pulp_wars-s55m.4`): the
+  // Frost Wyrm, the faction's striker and its answer to ships, takes 15%
+  // (a tenth Snow Golems; against the ranged mix 15% of each).
   iceFolk: Object.freeze({
     LINE: 40,
     DEFENDER: 15,
     RANGED: 20,
-    SIEGE: 15,
-    BREAKTHROUGH: 10,
+    SIEGE: 10,
+    BREAKTHROUGH: 15,
   }),
   iceFolkFragile: Object.freeze({
     LINE: 35,
     DEFENDER: 10,
     RANGED: 25,
-    SIEGE: 20,
-    BREAKTHROUGH: 10,
+    SIEGE: 15,
+    BREAKTHROUGH: 15,
   }),
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): two fifths line
   // (Hammerers, and Steam Tanks once their technology is owned: the dearer
@@ -1119,7 +1122,7 @@ export const ARMY_CANDY_SKIRMISHER_MAXIMUM_V7 = 2;
 export const ARMY_CANDY_STURDY_V7 = 15;
 /**
  * The Candy army seat: a Candy seat's Marshmallows are capped as an Ice Folk
- * seat's Musk Oxen are (`armyIceFolkDefenderCappedV7`): the Marshmallow does
+ * seat's Walruses are (`armyIceFolkDefenderCappedV7`): the Marshmallow does
  * not strike after it moves, so it is the garrison of a center and the wall
  * beside one. No more than the seat owns cities, nor than a third of the
  * army. A capped Marshmallow costs `ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7`.
@@ -1149,10 +1152,10 @@ export function armyCandyHeavyCappedV7(
  * Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit
  * whose maximum HP is below this is a weak link of a kill chain at any HP:
  * a Human Knight's hit (9 on a Yeti, 10 on a Sled, 8 on a Snow Hunter, 12
- * on an Ice Witch or a Boulder Yeti, 14 on a Sabretooth) kills it at full
- * HP and rides on. A Musk Ox (16 HP: 11, and the Knight is Chilled) and a
+ * on an Ice Witch or a Snow Golem, 14 on a Frost Wyrm) kills it at full
+ * HP and rides on. A Walrus (16 HP: 11, and the Knight is Chilled) and a
  * Mammoth (20 HP: 12) are not. (In the lab one Knight killed a wounded
- * Mammoth, a Snow Hunter, the Ice Witch, a Boulder Yeti, and the Sabretooth
+ * Mammoth, a Snow Hunter, the Ice Witch, a Snow Golem, and the Frost Wyrm
  * in one turn: they stood side by side.)
  */
 export const ARMY_ICE_FOLK_STURDY_V7 = 15;
@@ -1167,7 +1170,7 @@ export const ARMY_ICE_FOLK_STURDY_V7 = 15;
  */
 export const ARMY_DWARF_STURDY_V7 = 15;
 /**
- * Step two of the Ice Folk pass: an Ice Folk seat's Musk Oxen are capped.
+ * Step two of the Ice Folk pass: an Ice Folk seat's Walruses are capped.
  * The Ox does not strike after it moves: it is the garrison of a center and
  * the wall beside one, not an army. No more Oxen than the seat owns cities,
  * and no more than a third of the army (the Dinosaur seat's Ankylosaurus
@@ -1648,7 +1651,7 @@ export function armyGarrisonYieldsToRangedV7(
   // units in another. (No Banshee and no Lich is trained onto a contested
   // center, as before: `armyHelplessGarrisonV7`.)
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk seat
-  // too (to a Snow Hunter; the Boulder Yeti is not trained for a garrison).
+  // too (to a Snow Hunter; the Snow Golem is not trained for a garrison).
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf seat too (to a
   // Clockwork Gunner, which captures and fires twice from a center).
   if (

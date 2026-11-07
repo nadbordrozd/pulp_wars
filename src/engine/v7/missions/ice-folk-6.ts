@@ -10,7 +10,7 @@ import type { MissionDefinitionV7 } from "./types";
  * Unquiet climb out of the barrows on the western slopes in rounds 4, 8
  * and 12. Thane Ironbraid's dwarves hold the Deep Gate on the road and fight
  * beside you; no unit enters an ally's land, so the road skirts its walls.
- * A Musk Ox freezes whoever strikes it from the next tile; a Mammoth's blow
+ * A Walrus freezes whoever strikes it from the next tile; a Mammoth's blow
  * also hits the two enemies beside its target; Rime's Cold Snap freezes
  * every enemy beside her.
  *
@@ -220,7 +220,7 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 6, y: 3 } },
         { role: "MARKSMAN", at: { x: 7, y: 2 } },
         { role: "FIGHTER", at: { x: 2, y: 3 }, home: 1 },
-        // Retune 4: a second Musk Ox, a second Snow Hunter and a Sled.
+        // Retune 4: a second Walrus, a second Snow Hunter and a Sled.
         { role: "GUARD", at: { x: 8, y: 3 } },
         { role: "MARKSMAN", at: { x: 6, y: 2 } },
         { role: "RAIDER", at: { x: 8, y: 2 } },

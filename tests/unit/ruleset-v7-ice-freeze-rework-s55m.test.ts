@@ -49,8 +49,8 @@ import { at } from "../fixtures/v7-revision20";
 describe("the identity", () => {
   // Ice Folk movement (`pulp_wars-s55m.2`) took 7r124 after it.
   it("was 7r123 after 7r122, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r123");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r122");
@@ -220,8 +220,8 @@ describe("a Frozen ship (section 21.2)", () => {
     expect(preview(scene(hp as number, false))?.shatters).toBe(false);
   });
 
-  it("is a Frostbite victim when it attacks a Musk Ox from the next tile", () => {
-    // Seat 0 sails; seat 1's Musk Ox stands on the shore beside the boat.
+  it("is a Frostbite victim when it attacks a Walrus from the next tile", () => {
+    // Seat 0 sails; seat 1's Walrus stands on the shore beside the boat.
     const state = frozenArenaV7({
       factions: ["ORIGINAL", "ICE_FOLK"],
       units: [
@@ -272,7 +272,7 @@ describe("no unit afloat is ever on ice (Icebound is gone)", () => {
 
 describe("a water Freeze and the docks (section 21.16)", () => {
   it("Freezes a hostile ship standing on its own Port, and the Port stays open water", () => {
-    // Seat 1's Port on (6, 7) with its boat on it; seat 0's Musk Ox on its
+    // Seat 1's Port on (6, 7) with its boat on it; seat 0's Walrus on its
     // own ice on (6, 6).
     const state = frozenArenaV7({
       technologies: [["SHORECRAFT"], ["SHORECRAFT"]],

@@ -207,15 +207,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-72, -69)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-73, -70)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-72, -69)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-73, -70)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -1005,7 +1005,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(armyShareClassV7(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR"))).toBe(
       "LINE",
     );
-    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`: the Boulder Yeti
+    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`: the Snow Golem
     // has the siege share of an Ice Folk army and fights as a ranged unit:
     // it moves and throws in one turn, from one or two tiles.)
     for (const faction of ARMY_PLAY_FACTIONS_V7)

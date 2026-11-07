@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 124;
+const REVISION = 125;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -902,10 +902,13 @@ describe("Martian roster (section 3)", () => {
       "SHIELD_CANOPY",
     ];
     // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter flies under
-    // the Martian flyer rule (`FLY`); it is the one exception.
+    // the Martian flyer rule (`FLY`); so does the Ice Folk Frost Wyrm (the
+    // Ice Folk roster rework, `pulp_wars-s55m.4`). They are the exceptions.
     for (const faction of FACTION_IDS_V7.filter((id) => id !== "MARTIAN"))
       for (const role of UNIT_ROLE_IDS_V7) {
-        const gyrocopter = faction === "DWARF" && role === "RAIDER";
+        const gyrocopter =
+          (faction === "DWARF" && role === "RAIDER") ||
+          (faction === "ICE_FOLK" && role === "KNIGHT");
         expect(
           roleMechanicsV7(role, faction),
           `${faction} ${role}`,

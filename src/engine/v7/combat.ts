@@ -82,6 +82,7 @@ import { idolShieldsV7 } from "./cult-warden";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
 import {
+  attackFrostBreathV7,
   attackMaximumRangeV7,
   attackShattersV7,
   blizzardHalvedDamageV7,
@@ -295,7 +296,7 @@ export function attackFortificationV7(
     readonly charge: boolean;
     readonly ignoresCityWalls: boolean;
     readonly disintegrator?: boolean;
-    /** The Ice Folk revision section 7.6: a Boulder Yeti's Boulders. */
+    /** The Ice Folk revision section 7.6: a Snow Golem's Boulders. */
     readonly boulders?: boolean;
     /**
      * The Dwarf revision section 10.1: a Steam Cannon with Blasting
@@ -952,7 +953,8 @@ export function calculateCombatPreviewV7(
     // Flyers over water (`pulp_wars-7pi5`, `7r116`): nor onto open water
     // (only a flyer stands there in land form, in the air); ice is ground.
     !openWaterAtV7(state, defender.at) &&
-    // The Ice Folk revision section 7.7: a Sabretooth never advances onto a
+    // A unit that avoids foreign sites (a surfaced Dwarf rider; a
+    // Sabretooth until any unit could capture) never advances onto a
     // settlement center it does not own.
     advanceSiteAllowedV7(
       state,
@@ -1141,6 +1143,12 @@ export function calculateCombatPreviewV7(
     shockDamage,
     crackApplied: attackCracksV7(state, attacker, defender, defenderDies),
     frostbiteApplied: frostbitten,
+    frostBreathApplied: attackFrostBreathV7(
+      state,
+      attacker,
+      defender,
+      defenderDies,
+    ),
     ...crushPreviewV7(state, attacker, defender, distance, push, {
       defenderDies,
       // A Dinosaur defender that kills the attacker grows (and heals)

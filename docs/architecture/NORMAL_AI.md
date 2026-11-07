@@ -1395,17 +1395,19 @@ Survey Sled, the seat held two cities in round 25: an army seat takes
 Scouts at level 2 for the unit, and an Ice Folk Survey gave none.
 
 **1. The gate and the order** (`ARMY_PLAY_FACTIONS_V7`,
-`ARMY_RESEARCH_ROLES_V7.ICE_FOLK`). The Sled, the Snow Hunter, the Musk Ox,
-the Ice Witch, the Mammoth, the Boulder Yeti, the Sabretooth: from a
+`ARMY_RESEARCH_ROLES_V7.ICE_FOLK`). The Sled, the Snow Hunter, the Walrus,
+the Ice Witch, the Mammoth, the Snow Golem, the Frost Wyrm (the Sabretooth
+before `pulp_wars-s55m.4`): from a
 Gathering opener Scouting, Hunting, Marksmanship, Crafting, Deep Winter,
 Leadership, Engineering, Mammoths, Forestry, Boulders, Raiding, and
-Sabretooths. Brittle is the first of the late technologies.
+Frost Wyrms. Brittle is the first of the late technologies.
 
 **2. The army** (`armySharesV7`, `armyRoleScoreV7`, `armyClassV7`). 40%
-line, 15% defenders, 20% ranged, 15% siege, 10% breakthrough (35, 10, 25,
-20, 10 against an enemy with ranged or siege units); one Sled for
+line, 15% defenders, 20% ranged, 10% siege, 15% breakthrough (35, 10, 25,
+15, 15 against an enemy with ranged or siege units; 15 and 10, and 20 and
+10, before the Frost Wyrm of `pulp_wars-s55m.4`); one Sled for
 `ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7` (4) units,
-`ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7` (3) at most. The Boulder Yeti has
+`ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7` (3) at most. The Snow Golem has
 the siege share and fights as a ranged unit (`armyClassV7` returns
 `RANGED` for a role with Boulders): it moves two tiles and throws from one
 or two in the same turn, so it takes a tile with a shot and stays behind
@@ -1417,7 +1419,7 @@ counts its units that capture; it takes the Survey at level 2 whatever its
 Coins, and the opening and correction rules of the other army seats
 (`armyOpeningSeatV7`, `armyCorrectionSeatV7`).
 
-**4. The Musk Ox is a garrison** (`armyIceFolkDefenderCappedV7`,
+**4. The Walrus is a garrison** (`armyIceFolkDefenderCappedV7`,
 `ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7`, `armyGarrisonYieldsToRangedV7`). No
 more Oxen than the seat owns cities, and no more than a third of the army
 with the new one counted (a seat with three threatened cities fielded five
@@ -1428,7 +1430,7 @@ does to a Marksman.
 **5. What the projection counts** (`iceFolkBlowV7` in
 `publicProjectedDamageWithLookupV7`, with the option `chilled`). For a blow
 of the viewer's own Ice Folk unit: Cold Blood against a unit that is
-Chilled (or assumed Chilled by a plan); Planted taken off a Boulder Yeti's
+Chilled (or assumed Chilled by a plan); Planted taken off a Snow Golem's
 published Attack when the blow is projected from a tile it has yet to move
 to; Rockfall's Attack for a blow from a Mountain at two tiles
 (`iceFolkRockfallTileV7`, which also keeps a hunt's tiles to those the
@@ -1453,7 +1455,7 @@ takes the tile beside the target, and the shooter then has a line in front
 of it).
 
 **7. Shooters out of reach** (`armyIceFolkShooterHeldV7`,
-`armyIceFolkChainReachV7`). A Snow Hunter or a Boulder Yeti makes no Move,
+`armyIceFolkChainReachV7`). A Snow Hunter or a Snow Golem makes no Move,
 whatever offers it, onto a tile a visible hostile melee unit can attack
 next turn with no own line, defender, or breakthrough unit nearer to the
 enemy, nor onto a tile where the visible blows add up to its HP; exempt
@@ -1461,25 +1463,26 @@ are the Move from which its shot kills, the Move onto a center or a
 village, and a unit already in such a reach. A shooter or an Ice Witch
 makes no Move into the reach of a visible unit with Overrun from outside
 it, and a shooter inside it steps out at `ARMY_STEP_BACK_PRIORITY_V7`. In
-the lab a Boulder Yeti glided three tiles ahead of the Mammoths for a
+the lab a Snow Golem glided three tiles ahead of the Mammoths for a
 4-point throw and died, and one Knight killed a Snow Hunter, the Witch, a
-Boulder Yeti, and the Sabretooth in one ride.
+Snow Golem, and the Sabretooth in one ride.
 
 **8. Weak links and escorts** (`armyWeakLinkV7`, `armyEscortValueV7`,
 `ARMY_ICE_FOLK_STURDY_V7`). An Ice Folk unit of less than 15 HP at its
 maximum is a weak link of a kill chain at any HP (a Knight kills each at
-full HP); the Musk Ox and the Mammoth are not, and their Move beside weak
+full HP); the Walrus and the Mammoth are not, and their Move beside weak
 units has an escort's value.
 
 **9. Contact with company** (`armyDinosaurContactHeldV7`, widened). A
 Yeti or a Sled does not step beside an enemy unit where it would die
 unless a unit of its side stands beside that enemy or can still come; the
-Sabretooth's Prowl is left out of the rule.
+Frost Wyrm (the Sabretooth before) is left out of the rule: it has its own
+(the Vampire rule, below).
 
 **Not done.** The seat's Freeze and its plan across water are not part of
 this pass (they came with `pulp_wars-5ti.5`,
 [the frozen sea](#the-frozen-sea-pulp_wars-5ti5)); the
-Mammoth's Sweep and the Sabretooth have no rule of their own; a Bolas with
+Mammoth's Sweep has no rule of its own; a Bolas with
 no blow behind it is still thrown (it costs nothing and the target is
 sluggish for a turn).
 
@@ -2246,7 +2249,7 @@ The research order was looked at and left: the Ogre after the Warboss.
 **[The ninth unit](../product/RULESET_7_NINTH_UNIT.md)**
 (`pulp-wars-poc-7r55`) gave every faction a heavy line unit at Metallurgy
 (the role `SWORDSMAN`) and moved the Triceratops, the Mammoth, and the
-Steam Tank into that role, with the Stegosaurus, the Musk Ox, and the
+Steam Tank into that role, with the Stegosaurus, the Walrus, and the
 Whirligig in the roles they left. The policy got a first pass so that
 nothing breaks. It was not tuned, no game was played by hand, and no
 diagnostic match was run; each faction's playtest is where it is judged.
@@ -2284,7 +2287,7 @@ toward its heavy with its other tier-3 units, the shortest chain first
 Triceratops, now `SWORDSMAN`, and the T-Rex), counts the heavy as a front
 unit, and gives the first one the first-of-role value. The Ice Folk seat's
 Mammoth rules (the share, the Sweep step) follow the Mammoth to its new
-role; a Musk Ox is wanted at one for three other front units
+role; a Walrus is wanted at one for three other front units
 (`FRONT_UNITS_PER_MUSK_OX_V7`) and as a body for a threatened center. A
 Dwarf seat still builds Steam Tanks (at Metallurgy) and builds Whirligigs
 (at Chivalry).
@@ -2318,7 +2321,7 @@ a Move's score; public view only).**
   Raise or Devour its own Wight's marked Grave while no visible hostile
   land unit is within two tiles of it (`ownWightGraveHeldV7`).
 - **Stegosaurus:** the existing siege rules (it stays behind the line and
-  never attacks after moving). **Musk Ox, Jawbreaker, Champion:** the
+  never attacks after moving). **Walrus, Jawbreaker, Champion:** the
   generic defender and line rules.
 
 **Not built.** "Shoot the Shield off before going in" for the enemies of
@@ -5968,10 +5971,11 @@ Shared estimates (every match; all neutral without an Ice Folk seat):
 
 - **Glide and deep snow.** A visible Ice Folk unit's reach (its threatened
   tiles) leaves known Snow at half cost (the Road rule; never the
-  Sabretooth), and another faction's ground unit is stopped by known Snow
+  Frost Wyrm), and another faction's ground unit is stopped by known Snow
   (a Road edge waives it; Fieldcraft is assumed absent, as Forest freedom
-  is). A Sabretooth's reach ignores zones of control and never ends on a
-  settlement center it does not own.
+  is). A Frost Wyrm's reach is a flyer's, over Deep Water too without
+  Navigation (`pulp_wars-s55m.4`; the Sabretooth's reach ignored zones of
+  control before).
 - **Cities are threatened by the reach without Glide.** A unit's danger
   counts an Ice Folk unit's Glide, but the test of whether an own city is
   threatened uses the reach without it: with Glide every city near hostile
@@ -6005,7 +6009,7 @@ Shared estimates (every match; all neutral without an Ice Folk seat):
 - **Labels.** The Mammoth (`SWEEP`, labelled `DEFENDER`) and the Boulder
   Yeti (`BOULDERS`, labelled `SIEGE`) are line units
   (`policyTacticalRoleV7`, the Triceratops precedent): the Mammoth is not
-  kept as a garrison, the Boulder Yeti needs no screen and no siege ring,
+  kept as a garrison, the Snow Golem needs no screen and no siege ring,
   and the volley bonus is not its. The Witch is never counted as a healer
   next to her target (she has no Tend Wounded).
 - A ranged kill whose preview is flagged `hiddenBlizzardPossible` and that
@@ -6014,17 +6018,18 @@ Shared estimates (every match; all neutral without an Ice Folk seat):
 As the Ice Folk:
 
 - **Production.** The Sled, the Mammoth, the Witch, the Snow Hunter, the
-  Boulder Yeti, and the Sabretooth gain 10 as the first of their role. In a
+  Snow Golem, and the Frost Wyrm gain 10 as the first of their role. In a
   threatened city the Yeti gains 12 and the Sled and the Witch are worth -30
   (bodies first); in the preferred role the Yeti's repetition costs 5 a unit
   instead of 8. A Sled gains 6 while there is fewer than one per three front
-  units (Yetis, Snow Hunters, Mammoths, Boulder Yetis, Sabretooths, the
+  units (Yetis, Snow Hunters, Walruses, Mammoths, Snow Golems, Frost Wyrms, the
   Frost Giant) and at least two, otherwise it costs 20; a Mammoth gains 6
   while there is fewer than one per two other front units, otherwise it
   costs 20; the Witch gains 20 at war with three front units and no Witch
   (a second one with eight front units per Witch), otherwise she costs 20; a
-  Boulder Yeti (one per three front units) and a Sabretooth (one per six)
-  gain 30, so they are bought when offered.
+  Snow Golem (one per three front units) and a Frost Wyrm (one per four;
+  one per six for the Sabretooth before `pulp_wars-s55m.4`) gain 30, so
+  they are bought when offered.
 - **Research.** Drill and Scouting (the Mammoth and the Sled) at 1062, just
   above the role plan; with two cities Administration and Marksmanship at
   1170 (the Dinosaur signature priority); Deep Winter (1150) once the seat
@@ -6059,16 +6064,26 @@ As the Ice Folk:
   goes at 1179 (above every chip) and gains half the target's value. Chips
   (900) go in the spec's order: Snow Hunters (903, Cold Blood), Mammoths
   (902, Sweep), the other units (901), Sleds (900).
-- **Sweep, Boulders, the Sabretooth.** A Mammoth's attack gains 8 when it
+- **Sweep, Boulders, the Frost Wyrm.** A Mammoth's attack gains 8 when it
   tramples Field Defense and 6 per flank victim it leaves Chilled in the
   window for another offered attack (the flank damage and kills are the
-  generic splash values). An unmoved Boulder Yeti with an offered attack
+  generic splash values). An unmoved Snow Golem with an offered attack
   makes no routine Move (the planted throw); its hit gains 3 per
-  fortification level ignored. A Sabretooth's kill gains 8 on a ranged,
-  siege, or support unit and 4 on a unit with no friend next to it; it
-  never moves into visible lethal reach unless it can strike from there (a
-  kill or a survivable hit) or it is no worse, and its attack that neither
-  kills nor leaves it alive is not a candidate (the Vampire rule).
+  fortification level ignored. The Frost Wyrm (`pulp_wars-s55m.4`; the
+  Sabretooth's backline and isolated kill values are gone with it) chips
+  first (904, before the Snow Hunters' Cold Blood and the blows that
+  Shatter); its Frost Breath gains 6 on a hostile unit not Frozen yet, 6
+  more on a ship or an embarked unit, and 4 more on a unit whose reach
+  covers an own unit; a hit whose freeze leaves the target at the Shatter
+  threshold or below for another own Ice Folk unit's offered blow from the
+  next tile goes at 1179 and gains half the target's value. It flies over
+  water to strike (its reach is a flyer's, over Deep Water without
+  Navigation), never moves into visible lethal reach unless it can strike
+  from there (a kill or a survivable hit) or it is no worse, and its attack
+  that neither kills nor leaves it alive is not a candidate (the Vampire
+  rule, which counts the target its breath freezes out of the enemy's next
+  turn). A ship's water is not Frozen by a Wyrm whose acceptable strike on
+  it freezes it anyway.
 - **Moves.** The objective (route progress) of an Ice Folk unit's Move is
   scaled by 8 and gains 4 within 1 of an own Witch, 2 on Snow, and 1 for a
   Yeti on a Mountain within Rockfall range of a visible hostile unit: these
@@ -6143,7 +6158,7 @@ contributors and the Witch's rules neutral (33 to 35 without). An earlier
 
 **Usage** (the Ice Folk policy's seats in the 180-game head-to-head; in
 brackets the generic policy's): units trained: Yeti 1,095 (861), Sled 428
-(515), Mammoth 388 (546), Witch 112 (41), Snow Hunter 97 (24), Boulder Yeti
+(515), Mammoth 388 (546), Witch 112 (41), Snow Hunter 97 (24), Snow Golem
 68 (71), Sabretooth 32 (0); seats that trained a Witch 68 of 180 (30), a
 Snow Hunter 51 (16), a Mammoth 131 (119). Chills applied: Bolas 794 (0),
 Cold Snap 450 in 335 casts (0), Cold Aura 397 (276). Shatter kills 294

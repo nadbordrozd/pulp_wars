@@ -49,7 +49,7 @@ import { iceFieldV7, type IcePieceV7 } from "../fixtures/v7-ice-folk";
 // `pulp-wars-poc-7r124`. An Ice Folk seat of the Normal AI plays the army
 // rules in a match of Humans, Undead, Goblins, Martians, Dinosaurs, and Ice
 // Folk: it researches toward its own units in its own order, trains before
-// it researches while it is short of capturers, caps its Musk Oxen, counts
+// it researches while it is short of capturers, caps its Walruses, counts
 // Cold Blood, Planted, and Shatter in the blows it plans, throws the Bolas
 // before the blow that then shatters, and keeps its shooters out of a melee
 // unit's reach. Two-seat field (tests/fixtures/v7-ice-folk.ts, 11 x 11):
@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(PRIOR_RULESET_7_IDS.slice(-66, -64)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(PRIOR_RULESET_7_IDS.slice(-67, -65)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-66, -64)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-67, -65)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -249,7 +249,7 @@ describe("step two of the Ice Folk pass: Scouts", () => {
 describe("step two of the Ice Folk pass: who plays the army rules", () => {
   const pieces = [own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)];
 
-  it("counts an Ice Folk seat among the army factions, its Boulder Yeti a ranged unit with the siege share", () => {
+  it("counts an Ice Folk seat among the army factions, its Snow Golem a ranged unit with the siege share", () => {
     const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK");
     expect([armyShareClassV7(boulder), armyClassV7(boulder)]).toEqual([
       "SIEGE",
@@ -299,7 +299,7 @@ describe("step two of the Ice Folk pass: who plays the army rules", () => {
 });
 
 describe("step two of the Ice Folk pass: the Ice Folk Normal AI's research order", () => {
-  it("is the Sled, the Snow Hunter, the Musk Ox, the Ice Witch, the Mammoth, the Boulder Yeti, the Sabretooth", () => {
+  it("is the Sled, the Snow Hunter, the Walrus, the Ice Witch, the Mammoth, the Snow Golem, the Frost Wyrm", () => {
     expect(ARMY_RESEARCH_ROLES_V7.ICE_FOLK).toEqual([
       "RAIDER",
       "MARKSMAN",
@@ -384,25 +384,27 @@ describe("step two of the Ice Folk pass: the Ice Folk Normal AI's army", () => {
   });
 
   it("has its own shares, and one Sled for every four units, at most three", () => {
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm (the
+    // breakthrough class) takes 15%, five points from the Snow Golems.
     expect(armySharesV7("ICE_FOLK", false)).toEqual({
       LINE: 40,
       DEFENDER: 15,
       RANGED: 20,
-      SIEGE: 15,
-      BREAKTHROUGH: 10,
+      SIEGE: 10,
+      BREAKTHROUGH: 15,
     });
     expect(armySharesV7("ICE_FOLK", true)).toEqual({
       LINE: 35,
       DEFENDER: 10,
       RANGED: 25,
-      SIEGE: 20,
-      BREAKTHROUGH: 10,
+      SIEGE: 15,
+      BREAKTHROUGH: 15,
     });
     expect([
       ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7,
       ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7,
     ]).toEqual([4, 3]);
-    // The Musk Ox (16 HP) and the Mammoth (20) are the sturdy units a
+    // The Walrus (16 HP) and the Mammoth (20) are the sturdy units a
     // Knight's chain does not ride through.
     const sturdy = (
       [
@@ -422,7 +424,7 @@ describe("step two of the Ice Folk pass: the Ice Folk Normal AI's army", () => {
     expect(sturdy).toEqual(["GUARD", "SWORDSMAN"]);
   });
 
-  it("caps its Musk Oxen at one a city and a third of the army", () => {
+  it("caps its Walruses at one a city and a third of the army", () => {
     expect(ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7).toBe(6000);
     expect(armyIceFolkDefenderCappedV7(counts(0, 0), 1)).toBe(false);
     expect(armyIceFolkDefenderCappedV7(counts(1, 6), 1)).toBe(true);
@@ -433,7 +435,7 @@ describe("step two of the Ice Folk pass: the Ice Folk Normal AI's army", () => {
     expect(armyIceFolkDefenderCappedV7(counts(2, 8), 5)).toBe(false);
   });
 
-  it("garrisons a threatened center with one Musk Ox, and trains a Yeti beside it", () => {
+  it("garrisons a threatened center with one Walrus, and trains a Yeti beside it", () => {
     const threatened = (garrison: UnitRoleIdV7): GameStateV7 =>
       field([own(garrison, 8, 8), foe("FIGHTER", 6, 6)], {
         techs: techsOf("GATHERING", "DRILL", "FORTIFICATION"),
@@ -499,7 +501,7 @@ describe("step two of the Ice Folk pass: what the policy counts for its own blow
       }
   });
 
-  it("counts Planted for a Boulder Yeti that stays, and not for one that moves", () => {
+  it("counts Planted for a Snow Golem that stays, and not for one that moves", () => {
     const state = field([
       own("CATAPULT", 6, 4),
       own("FIGHTER", 8, 8),

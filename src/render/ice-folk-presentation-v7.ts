@@ -145,6 +145,17 @@ export const BOULDERS_PREVIEW_V7 = "Ignores fortification";
 export const ROCKFALL_PREVIEW_V7 = `Rockfall: Attack ${half(ROCKFALL_ATTACK2_V7)} from the Mountain`;
 export const PLANTED_PREVIEW_V7 = `Planted: +${half(PLANTED_BONUS2_V7)} Attack`;
 export const COLD_BLOOD_PREVIEW_V7 = `Cold Blood: +${half(COLD_BLOOD_BONUS2_V7)} Attack`;
+/**
+ * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's
+ * attack Freezes the target it leaves alive.
+ */
+export const FROST_BREATH_LABEL_V7 = "Frost Breath";
+export const FROST_BREATH_PREVIEW_V7 = `${FROST_BREATH_LABEL_V7}: target Frozen`;
+export const FROST_BREATH_TOOLTIP_V7 =
+  "Every enemy its attack leaves alive is Frozen, ships too; its next blow from the next tile can shatter it.";
+/** The Frost Wyrm's flight over the sea, in words. */
+export const SEA_WINGS_TOOLTIP_V7 =
+  "Flies over Shallow and Deep Water without Navigation.";
 export const SNOW_COVER_PREVIEW_V7 = "Snow cover";
 export const BLIZZARD_PREVIEW_V7 = "Blizzard: half damage";
 export const HIDDEN_BLIZZARD_PREVIEW_V7 = "A hidden Blizzard may change this";
@@ -203,8 +214,6 @@ export const STAMPEDE_MOVED_V7 = "It moved this turn";
 export const STAMPEDE_CHARGE_V7 = "Charge";
 /** Ice Folk Freeze: the Frost Giant's Move freezes the enemies around it. */
 export const COLD_AURA_LABEL_V7 = "Cold Aura";
-/** Bead pulp_wars-2yc.63: Prowl is Slips past, its name in every faction. */
-export const SABRETOOTH_INFO_V7 = "Slips past: zones of control do not stop it";
 export const MOUNTAIN_BORN_INFO_V7 =
   "Mountain-born: crosses Mountains without Engineering";
 /**
@@ -222,7 +231,7 @@ export const ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7 =
   "Ice Folk cannot build Field Defense";
 
 /**
- * Section 13.2 "Boulder Yeti info": "Planted: Attack 3" or "Moved: Attack
+ * Section 13.2 "Snow Golem info": "Planted: Attack 3" or "Moved: Attack
  * 2", from the registry's Attack and the Planted bonus.
  */
 export function boulderThrowTextV7(planted: boolean): string {
@@ -389,13 +398,13 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
   );
   const rockfall = iceFolkRolesWith("ROCKFALL").map(label);
   const boulders = iceFolkRolesWith("BOULDERS").map(label);
-  const prowlers = iceFolkRolesWith("PROWL").map(label);
+  const breathers = iceFolkRolesWith("FROST_BREATH").map(label);
   const giants = iceFolkRolesWith("COLD_AURA").map(label);
   const stampeders = iceFolkRolesWith("STAMPEDE").map(label);
   return [
     [
       FROZEN_LABEL_V7,
-      `a ${FROST_BOLT_LABEL_V7}, a ${COLD_SNAP_LABEL_V7}, a ${joinOr(giants)}'s ${COLD_AURA_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act on its owner's next turn, it does not strike back while Frozen, and it thaws at the end of that turn. It can be frozen again at once.`,
+      `a ${FROST_BOLT_LABEL_V7}, a ${COLD_SNAP_LABEL_V7}, a ${joinOr(breathers)}'s ${FROST_BREATH_LABEL_V7}, a ${joinOr(giants)}'s ${COLD_AURA_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act on its owner's next turn, it does not strike back while Frozen, and it thaws at the end of that turn. It can be frozen again at once.`,
     ],
     [
       "Shatter",
@@ -441,7 +450,10 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       "Boulders",
       `a ${joinOr(boulders)}'s throw ignores Walls and Field Defense, and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`,
     ],
-    ["Slips past", `zones of control do not stop a ${joinOr(prowlers)}.`],
+    [
+      FROST_BREATH_LABEL_V7,
+      `a ${joinOr(breathers)} flies over any ground and over Shallow and Deep Water without Navigation, and every enemy its attack leaves alive is Frozen, ships too.`,
+    ],
     [
       COLD_AURA_LABEL_V7,
       `a ${joinOr(giants)} freezes every hostile unit next to it when it ends its own Move.`,
@@ -454,7 +466,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       "Deep Winter",
       `with Deep Winter, Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from Ice Folk city centers, and Ice Folk units recover ${DEEP_WINTER_RECOVER_V7} in their own territory.`,
     ],
-    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox's Frostbite.
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus's Frostbite.
     ...ninthUnitHelpRulesV7("ICE_FOLK"),
   ];
 }
@@ -494,8 +506,11 @@ export function iceFolkAbilityNameV7(
       return STAMPEDE_LABEL_V7;
     case "BOULDERS":
       return "Boulders";
-    case "PROWL":
-      return "Slips past";
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm.
+    case "FLY":
+      return "Flies";
+    case "FROST_BREATH":
+      return FROST_BREATH_LABEL_V7;
     case "COLD_AURA":
       return COLD_AURA_LABEL_V7;
     default:
@@ -532,8 +547,10 @@ export function iceFolkAbilityDescriptionV7(
       return STAMPEDE_TOOLTIP_V7;
     case "BOULDERS":
       return `Its throw ignores Walls and Field Defense and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`;
-    case "PROWL":
-      return "Enemy zones of control don't stop its Move.";
+    case "FLY":
+      return "Flies over any terrain, any unit, and Shallow and Deep Water, and ignores zones of control.";
+    case "FROST_BREATH":
+      return FROST_BREATH_TOOLTIP_V7;
     case "COLD_AURA":
       return "Freezes every hostile unit next to it when it ends its own Move.";
     // Charge reads the shared sentence of every faction.
@@ -586,7 +603,7 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("BOULDERS")
       ? ["ignores Walls and Field Defense"]
       : []),
-    ...(abilities.includes("PROWL") ? ["Slips past"] : []),
+    ...(abilities.includes("FROST_BREATH") ? [FROST_BREATH_LABEL_V7] : []),
   ];
   const label = iceFolkLabelV7(role);
   return notes.length === 0
@@ -608,9 +625,13 @@ export function iceFolkRecruitNotesV7(
   const mechanics = roleMechanicsV7(role, faction);
   return [
     ...(mechanics.mountainBorn ? [`${MOUNTAIN_BORN_INFO_V7}.`] : []),
-    ...(mechanics.glides
-      ? ["Moves at half cost from Snow to Snow."]
-      : ["Never glides on Snow."]),
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm
+    // flies, so it neither glides nor skates.
+    ...(mechanics.fliesOverDeepWater
+      ? [SEA_WINGS_TOOLTIP_V7]
+      : mechanics.glides
+        ? ["Moves at half cost from Snow to Snow."]
+        : ["Never glides on Snow."]),
     ...(roleMechanicsV7(role, "ORIGINAL").buildsFieldDefense &&
     !mechanics.buildsFieldDefense
       ? [`${ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7}.`]
@@ -643,7 +664,7 @@ export interface IceFolkUnitInfoLineV7 {
 /**
  * Unit info lines that are not abilities: the unit's Frozen (any owner), and
  * for an Ice Folk unit its Shatter threshold, its Snow and Blizzard, a
- * Yeti's Rockfall reach and a Boulder Yeti's throw now.
+ * Yeti's Rockfall reach and a Snow Golem's throw now.
  */
 export function iceFolkUnitInfoLinesV7(
   view: PlayerViewV7,
@@ -759,6 +780,8 @@ export function iceFolkCombatLinesV7(
   if (preview.rockfallApplied) notes.push(ROCKFALL_PREVIEW_V7);
   if (preview.plantedApplied) notes.push(PLANTED_PREVIEW_V7);
   if (preview.coldBloodApplied) notes.push(COLD_BLOOD_PREVIEW_V7);
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Breath.
+  if (preview.frostBreathApplied) notes.push(FROST_BREATH_PREVIEW_V7);
   const boulders =
     attacker !== undefined &&
     attacker.form === "LAND" &&
@@ -1238,6 +1261,13 @@ export function iceFolkBoundaryNoticeV7(
           break;
         case "FROSTBITE":
           parts.push(`${who} ${sourceName("GUARD")}'s Frostbite froze ${what}`);
+          break;
+        // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's
+        // attack.
+        case "FROST_BREATH":
+          parts.push(
+            `${who} ${sourceName("KNIGHT")}'s ${FROST_BREATH_LABEL_V7} froze ${what}`,
+          );
           break;
         case "BLACK_ICE":
           parts.push(`${who} Black Ice froze ${what}`);

@@ -4541,10 +4541,13 @@ export function drawBoardV7(input: {
           }
           // The Martian revision: a flyer casts a ground shadow (over land
           // or water) and is drawn lifted above it; the ground cue stays put.
-          // The Dwarf revision: the Gyrocopter flies the same way.
+          // The Dwarf revision: the Gyrocopter flies the same way, and so
+          // does the Ice Folk Frost Wyrm (bead pulp_wars-s55m.4).
           if (
             entry.kind === "UNIT" &&
-            (entry.martian?.flyer === true || entry.dwarf?.flyer === true)
+            (entry.martian?.flyer === true ||
+              entry.dwarf?.flyer === true ||
+              entry.iceFolk?.flyer === true)
           ) {
             drawFlyerShadowV7(
               context,

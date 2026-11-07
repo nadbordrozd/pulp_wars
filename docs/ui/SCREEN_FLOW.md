@@ -2018,8 +2018,12 @@ from the extra faction option.
   Dinosaur, Martian and Ice Folk (default Human); saves, resume and the
   Showcase keep Ice Folk seats.
 - **Art and labels.** Units are named by their owner's registration (Yeti,
-  Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti, Sabretooth, Frost
-  Giant). The default look paints the frost-and-fur sprites, portraits,
+  Sled, Snow Hunter, Walrus, Mammoth, Ice Witch, Snow Golem, Frost Wyrm,
+  Frost Giant; the Frost Wyrm, the Walrus and the Snow Golem replaced the
+  Sabretooth, the Musk Ox and the Boulder Yeti in `pulp_wars-s55m.4`, with
+  the art of batch `direction-ice-folk-rework`, the Wyrm drawn as a flyer
+  with a ground shadow over land and water). The default look paints the
+  frost-and-fur sprites, portraits,
   icons and the igloo camps (their bone poles bare since bead
   `pulp_wars-b5f.4`). The
   Classic look and LEGACY draw the Human sprite of the role with a
@@ -2029,7 +2033,10 @@ from the extra faction option.
   "Deep Winter" and Explosives "Brittle" (their own icons) in the tree, its
   detail and research; unit unlocks read "Train Ice Witch (Blizzard, Cold
   Snap, Frost Bolt)", "Train Mammoth (Sweep, Trample, Stampede)", "Train
-  Boulder Yeti (ignores Walls and Field Defense)", all from the registry.
+  Snow Golem (ignores Walls and Field Defense)", "Train Frost Wyrm (Frost
+  Breath)", all from the registry. An attack preview of a Frost Wyrm says
+  "Frost Breath: target Frozen", and its card lists Flies, Frost Breath and
+  Sea wings.
   Rewards read "A free Yeti" and "Frost Giant: A free Frost Giant, once:
   shatters Frozen enemies".
 - **Snow** (`ICE_FOLK_SNOW_OVERLAY_V7`): every explored land tile whose
@@ -2074,7 +2081,7 @@ from the extra faction option.
   leaves it at 4 HP or less shatters it". The glossary's Frozen line is the
   same for every faction. Other chips: "Blizzard" or "Snow" for an Ice
   Folk unit standing in one, "Rockfall" for a Yeti on a Mountain, and the
-  Boulder Yeti's throw now ("Planted: Attack 3" or "Moved: Attack 2"). Unit
+  Snow Golem's throw now ("Planted: Attack 3" or "Moved: Attack 2"). Unit
   info adds "Shatters at 4 HP or less" for an Ice Folk unit, its Snow or
   Blizzard, Rockfall and the throw. Ability lines name Mountain-born,
   Rockfall, Bolas, Cold Blood, Sweep, Trample, Stampede, Blizzard, Cold
@@ -2087,7 +2094,7 @@ from the extra faction option.
   "Snow cover: Snow cover multiplies an unfortified Ice Folk unit's Defense
   by 1.25." The "Snow" chip's tooltip is "On Snow: light cover here, and
   its steps from Snow to Snow cost half" (without the second half for the
-  Sabretooth). **Glide in the movement range:** the range is the engine's
+  Frost Wyrm, which flies). **Glide in the movement range:** the range is the engine's
   offered Moves, so a step off the Snow is a full step; the tiles a unit
   reaches beyond its Move by half-cost steps from Snow onto Snow are
   outlined in **pale ice** instead of the Move teal (whole outlines, also
@@ -2187,7 +2194,7 @@ from the extra faction option.
   LEGACY) code shapes stand in.
 - **Log.** "Your Sled froze a Fighter", "Your Ice Witch's Cold Snap froze 2
   units", "Your Ice Witch's Frost Bolt froze a Marksman", "Player 2's Frost
-  Giant froze 2 units", "Your Musk Ox's Frostbite froze a Knight", "Player
+  Giant froze 2 units", "Your Walrus's Frostbite froze a Knight", "Player
   2's Black Ice froze a Fighter", "Your Mammoth stampeded: 2 units hit, 1
   killed", "Your Yeti shattered a Fighter" (toast), "Your Mammoth trampled
   Field Defense".

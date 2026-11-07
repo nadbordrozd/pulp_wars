@@ -32,7 +32,7 @@ import {
  * queries, and the stats share for the mechanics of the units added to (or
  * moved inside) every roster: the Ogre's Heavyweight (in `gangUpBonusV7`),
  * the Wight's Rise Again, the Shock Trooper's Shock Field, the Jawbreaker's
- * Rock Hard, the Stegosaurus's Thagomizer, and the Musk Ox's Frostbite (the
+ * Rock Hard, the Stegosaurus's Thagomizer, and the Walrus's Frostbite (the
  * Whirligig's Three Hammers became Whirl, `pulp_wars-w49.33`, in
  * `dwarf-crowd-control.ts`). Every helper returns the neutral answer for a
  * unit without the mechanic.
@@ -167,7 +167,7 @@ export function withSortedUnitIdV7(
 // ---------------------------------------------------------- Frostbite ---
 
 /**
- * Frostbite (the Ice Folk Musk Ox): whether an `ATTACK` Chills its own
+ * Frostbite (the Ice Folk Walrus): whether an `ATTACK` Chills its own
  * attacker: made from the next tile on a land-form unit whose role has
  * Frostbite, by a land-form attacker that survives the exchange, is hostile
  * to the Ox by construction (it attacked it), and is not the neutral

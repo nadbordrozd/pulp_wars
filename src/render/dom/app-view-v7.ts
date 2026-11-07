@@ -8489,7 +8489,7 @@ export class Ruleset7DomAppView {
       }
       // The Ice Folk revision (section 13.1): Frozen on a unit of any owner
       // (with its turns left; Ice Folk Freeze, `pulp_wars-w49.38`), and a
-      // Boulder Yeti's throw, from the view's `frozen` list and
+      // Snow Golem's throw, from the view's `frozen` list and
       // `stats.iceFolk`. (Bead pulp_wars-2yc.63: Snow, a Blizzard and a
       // Mountain's Rockfall belong to the tile; the tile dock shows them.)
       if (matchHasIceFolkSeatV7(view)) {
@@ -20314,7 +20314,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r124",
+    rulesetId: "pulp-wars-poc-7r125",
     seed,
     width,
     height: width,

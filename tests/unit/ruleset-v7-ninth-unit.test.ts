@@ -220,12 +220,12 @@ const JOBS: Readonly<Record<FactionIdV7, Readonly<Record<Job, string>>>> = {
   },
   ICE_FOLK: {
     BASIC_LINE: "Yeti",
-    DEFENDER: "Musk Ox",
+    DEFENDER: "Walrus",
     FAST: "Sled",
     RANGED: "Snow Hunter",
     SUPPORT: "Ice Witch",
-    SIEGE: "Boulder Yeti",
-    BREAKTHROUGH: "Sabretooth",
+    SIEGE: "Snow Golem",
+    BREAKTHROUGH: "Frost Wyrm",
     HEAVY_LINE: "Mammoth",
     REWARD_GIANT: "Frost Giant",
   },
@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
-    expect(PRIOR_RULESET_7_IDS.at(-70)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(PRIOR_RULESET_7_IDS.at(-71)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-70)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-71)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -689,7 +689,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       glides: true,
       buildsFieldDefense: false,
     });
-    // The Musk Ox has neither; it Glides and Freezes like every Ice Folk
+    // The Walrus has neither; it Glides and Freezes like every Ice Folk
     // land unit but the Sabretooth and builds no Field Defense.
     expect(effectiveRoleRuleV7("GUARD", "ICE_FOLK").abilities).toEqual([
       "ATTACK",
@@ -794,7 +794,7 @@ describe("the ninth unit: production", () => {
       number,
     ])[] = [
       ["DINOSAUR", "CATAPULT", "SAWMILLING", 7],
-      // (The Musk Ox went on to Deep Winter with every defender at 7r56.)
+      // (The Walrus went on to Deep Winter with every defender at 7r56.)
       ["ICE_FOLK", "GUARD", "FORTIFICATION", 4],
       ["DWARF", "KNIGHT", "CHIVALRY", 9],
     ];
@@ -940,7 +940,7 @@ describe("the ninth unit: technology display names", () => {
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
       SAWMILLING: "Boulders",
-      CHIVALRY: "Sabretooths",
+      CHIVALRY: "Frost Wyrms",
       METALLURGY: "Mammoths",
     },
     DWARF: {
@@ -1127,7 +1127,8 @@ describe("the ninth unit: its own art", () => {
       ["MARTIAN", "SWORDSMAN", "martian-shock-trooper", "FIGHTER"],
       ["CANDY", "SWORDSMAN", "candy-jawbreaker", "GUARD"],
       ["DINOSAUR", "CATAPULT", "dinosaur-stegosaurus", "GUARD"],
-      ["ICE_FOLK", "GUARD", "ice-folk-musk-ox", "GUARD"],
+      // The Walrus (the Musk Ox's art until `pulp_wars-s55m.4`).
+      ["ICE_FOLK", "GUARD", "ice-folk-walrus", "GUARD"],
       ["DWARF", "KNIGHT", "dwarf-whirligig", "MARKSMAN"],
     ];
     for (const [faction, role, name, formerStandIn] of newUnits) {
@@ -1999,7 +2000,7 @@ describe("the Stegosaurus: the Thagomizer", () => {
   });
 });
 
-describe("the Musk Ox: Frostbite", () => {
+describe("the Walrus: Frostbite", () => {
   const OX = at(5, 2);
   const iceFolk = (pieces: readonly CandyPieceV7[], activeSeat = 1) =>
     candyFieldV7(pieces, { factions: ["ICE_FOLK", "ORIGINAL"], activeSeat });
@@ -2341,7 +2342,7 @@ describe("the ninth unit: the Normal AI", () => {
         false,
       ),
     ).toBeGreaterThan(0);
-    // The Musk Ox is a body in a threatened city.
+    // The Walrus is a body in a threatened city.
     expect(
       iceFolkProductionAdjustmentV7(
         view("ICE_FOLK"),

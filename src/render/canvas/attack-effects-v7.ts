@@ -53,7 +53,7 @@ export type AttackEffectIdV7 =
   | "GATLING_BURST"
   /** The Steam Cannon (Dwarf CATAPULT): muzzle flash, steam, iron ball. */
   | "CANNON_BLAST"
-  /** The Boulder Yeti and a Yeti's Rockfall: an ice-crusted boulder. */
+  /** The Snow Golem and a Yeti's Rockfall: an ice-crusted boulder. */
   | "ICE_BOULDER"
   /** The Snow Hunter (Ice Folk MARKSMAN): an ice-tipped harpoon on a line. */
   | "HARPOON"

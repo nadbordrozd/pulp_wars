@@ -43,6 +43,22 @@ export const ICE_FOLK_FLAG_ANCHORS_V7: Readonly<
 };
 
 /** The faction's colours for code-drawn markers, overlays and effects. */
+/**
+ * The Ice Folk roster rework (bead `pulp_wars-s55m.4`): the Frost Wyrm
+ * flies like the Gyrocopter (DWARF_FLYER_PRESENTATION_V7, the same shape).
+ * No shadow is baked into the sprite, which is seated with a gap of empty
+ * rows under it (its lowest pixel, the tail tip, is row 69 of 88; a walker
+ * of the same canvas stands on row 81 to 84). The interface draws the
+ * shadow on the ground line, over land or water, and lifts the sprite.
+ */
+export const ICE_FOLK_FLYER_PRESENTATION_V7 = {
+  "chibi-direction-ice-folk-frost-wyrm": {
+    hullBottom: 69,
+    groundLine: 82,
+    shadow: { x: 36, y: 81, radiusX: 18, radiusY: 4 },
+  },
+} as const;
+
 export const ICE_FOLK_PALETTE_V7 = {
   /** The accent, lit (the `ice-folk-blue` accent step, measured). */
   ice: "#37b1fa",

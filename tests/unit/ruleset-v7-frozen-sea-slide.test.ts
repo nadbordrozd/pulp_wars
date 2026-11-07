@@ -147,21 +147,36 @@ describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
       });
   });
 
-  it("every Ice Folk land role skates, the Sabretooth too, and Glacier adds no Move", () => {
+  it("every Ice Folk ground role skates, the Frost Wyrm flies over the ice, and Glacier adds no Move", () => {
     for (const technologies of [NO_GLACIER, NAVAL_TECHS_V7]) {
       const state = frozenArenaV7({
         technologies: [technologies, technologies],
-        units: [{ seat: 0, role: "KNIGHT", at: { x: 2, y: 2 } }],
-        ice: bridge(2),
+        units: [
+          { seat: 0, role: "CATAPULT", at: { x: 2, y: 2 } },
+          { seat: 0, role: "KNIGHT", at: { x: 7, y: 2 } },
+        ],
+        ice: [...bridge(2), ...bridge(7)],
       });
       const from = { x: 2, y: 2 };
-      expect(effectiveRoleRuleV7("KNIGHT", "ICE_FOLK").move).toBe(3);
-      // Five ice tiles at half a point each, then the shore at a full one.
-      expect(spent(state, from, lineV7(from, 0, 1, 5))).toMatchObject({
+      expect(effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").move).toBe(2);
+      // Four ice tiles at half a point each: the whole Move of 2.
+      expect(spent(state, from, lineV7(from, 0, 1, 4))).toMatchObject({
         legal: true,
-        spentPoints2: 5,
+        spentPoints2: 4,
       });
-      expect(spent(state, from, lineV7(from, 0, 1, 6))).toEqual({
+      expect(spent(state, from, lineV7(from, 0, 1, 5))).toEqual({
+        legal: false,
+        reason: "BUDGET_EXCEEDED",
+      });
+      // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm is a
+      // flyer: it does not skate, each tile is a whole step of its Move 3.
+      const wyrm = { x: 7, y: 2 };
+      expect(effectiveRoleRuleV7("KNIGHT", "ICE_FOLK").move).toBe(3);
+      expect(spent(state, wyrm, lineV7(wyrm, 0, 1, 3))).toMatchObject({
+        legal: true,
+        spentPoints2: 6,
+      });
+      expect(spent(state, wyrm, lineV7(wyrm, 0, 1, 4))).toEqual({
         legal: false,
         reason: "BUDGET_EXCEEDED",
       });

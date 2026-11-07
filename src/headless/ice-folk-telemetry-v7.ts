@@ -3,11 +3,11 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   NEUTRAL_KIND_V7,
+  isIceAtV7,
   unitFactionV7,
 } from "../engine/rules/ruleset-v7";
 import { calculateCombatPreviewV7 } from "../engine/v7/combat";
 import type { CommandV7 } from "../engine/v7/commands";
-import { arePlayersHostileV7 } from "../engine/v7/economy";
 import type { DomainEventV7 } from "../engine/v7/events";
 import { deathCreatesGraveV7 } from "../engine/v7/graves";
 import {
@@ -110,12 +110,15 @@ export interface IceFolkMetricsV7 {
   boulderDamage: number;
   boulderFortificationIgnored: number;
   boulderFieldDefenseDestroyed: number;
-  /** Sabretooth Moves that entered a zone of control and continued; its kills by victim role. */
-  prowlMovesThroughZoc: number;
-  readonly sabretoothKillsByRole: Record<UnitRoleIdV7, number>;
+  /**
+   * The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Wyrm Moves that
+   * crossed or ended over open water; its kills by victim role.
+   */
+  frostWyrmWaterMoves: number;
+  readonly frostWyrmKillsByRole: Record<UnitRoleIdV7, number>;
 }
 
-// The ninth unit (`pulp_wars-w49.17`, 7r55): a Musk Ox's Frostbite.
+// The ninth unit (`pulp_wars-w49.17`, 7r55): a Walrus's Frostbite.
 export type ChillSourceV7 =
   | "BOLAS"
   | "COLD_SNAP"
@@ -124,6 +127,8 @@ export type ChillSourceV7 =
   | "COLD_AURA"
   | "BLACK_ICE"
   | "FROSTBITE"
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's attack.
+  | "FROST_BREATH"
   // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
   | "SHARDS"
   // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze.
@@ -146,6 +151,8 @@ const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
   "BLACK_ICE",
   // The ninth unit (7r55).
   "FROSTBITE",
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`).
+  "FROST_BREATH",
   // The giants' signatures: a Frost Giant's shards.
   "SHARDS",
   // Ice Folk freeze rework (`pulp_wars-s55m.1`).
@@ -216,8 +223,8 @@ export function createIceFolkMetricsV7(): IceFolkMetricsV7 {
     boulderDamage: 0,
     boulderFortificationIgnored: 0,
     boulderFieldDefenseDestroyed: 0,
-    prowlMovesThroughZoc: 0,
-    sabretoothKillsByRole: zero(UNIT_ROLE_IDS_V7),
+    frostWyrmWaterMoves: 0,
+    frostWyrmKillsByRole: zero(UNIT_ROLE_IDS_V7),
   };
 }
 
@@ -261,7 +268,7 @@ export function recordIceFolkV7(
   const actorUnit =
     "unitId" in command ? unitById(before, command.unitId) : undefined;
 
-  // Moves: Glide, deep snow, Mountains, and Prowl.
+  // Moves: Glide, deep snow, Mountains, and the Frost Wyrm over water.
   if (command.kind === "MOVE" && actorUnit !== undefined) {
     const moved = events.find((event) => event.kind === "UNIT_MOVED");
     const path = moved?.kind === "UNIT_MOVED" ? moved.path : [];
@@ -287,20 +294,16 @@ export function recordIceFolkV7(
           metrics.mountainCrossings += 1;
       }
       if (
-        mechanics.ignoresZocStops &&
-        path
-          .slice(0, -1)
-          .some((at) =>
-            before.units.some(
-              (unit) =>
-                unit.hp > 0 &&
-                unit.form === "LAND" &&
-                arePlayersHostileV7(before, actorId, unit.ownerId) &&
-                chebyshev(unit.at, at) === 1,
-            ),
-          )
+        mechanics.fliesOverDeepWater &&
+        path.some((at) => {
+          const terrain = tileAt(before, at)?.terrain;
+          return (
+            (terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER") &&
+            !isIceAtV7(before, at)
+          );
+        })
       )
-        metrics.prowlMovesThroughZoc += 1;
+        metrics.frostWyrmWaterMoves += 1;
     } else if (
       actorUnit.form === "LAND" &&
       mechanics.movementMode === "GROUND" &&
@@ -547,10 +550,10 @@ function recordCombat(
   }
   if (
     preview.defenderDies &&
-    attackerRule.abilities.includes("PROWL") &&
+    attackerMechanics.frostBreath &&
     attacker.form === "LAND"
   )
-    metrics.sabretoothKillsByRole[defender.role] += 1;
+    metrics.frostWyrmKillsByRole[defender.role] += 1;
   // What this hit leaves for a later Shatter this turn.
   if (
     !preview.defenderDies &&

@@ -346,7 +346,7 @@ describe("the rework: Frozen and Frostbite", () => {
   });
 
   it("gives no Feast for a kill that Frostbite freezes", () => {
-    // A 1-HP Musk Ox: the adjacent kill still Frostbites the Vampire.
+    // A 1-HP Walrus: the adjacent kill still Frostbites the Vampire.
     const state = iceField([
       { seat: 0, role: "KNIGHT", at: at(3, 2), hp: 5 },
       { seat: 1, role: "GUARD", at: at(4, 2), hp: 1 },

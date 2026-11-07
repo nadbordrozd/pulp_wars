@@ -2708,6 +2708,7 @@ function combat(input: unknown): boolean {
       "shockDamage",
       "crackApplied",
       "frostbiteApplied",
+      "frostBreathApplied",
       "crush",
       "crushDamage",
       "collisionDamage",
@@ -2786,6 +2787,10 @@ function combat(input: unknown): boolean {
       Number(input.damageToAttacker) + Number(input.attackerShieldDamage) &&
     typeof input.crackApplied === "boolean" &&
     typeof input.frostbiteApplied === "boolean" &&
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Breath needs
+    // a surviving target.
+    typeof input.frostBreathApplied === "boolean" &&
+    (input.frostBreathApplied !== true || input.defenderDies === false) &&
     (input.crackApplied !== true || input.defenderDies === false) &&
     (input.frostbiteApplied !== true || input.attackerDies === false) &&
     (input.attackerShieldDamage === 0 ||
@@ -3435,8 +3440,11 @@ function frozenSource(input: unknown): boolean {
     input === "COLD_AURA" ||
     // The frozen sea (naval branch section 8.8): Black Ice.
     input === "BLACK_ICE" ||
-    // The ninth unit (`pulp_wars-w49.17`, 7r55): a Musk Ox's Frostbite.
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): a Walrus's Frostbite.
     input === "FROSTBITE" ||
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's
+    // Frost Breath.
+    input === "FROST_BREATH" ||
     // The giants' signatures (section 6.6): a Frost Giant's shards.
     input === "SHARDS" ||
     // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze.

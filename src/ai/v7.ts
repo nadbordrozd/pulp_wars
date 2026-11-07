@@ -26,6 +26,7 @@ import {
   roleMechanicsV7,
   technologyCapabilitiesV7,
   unitMovementModeV7,
+  unitDeepWaterMoveV7,
   unitTakesCoverV7,
   unitAlphaAttack2V7,
   SNOW_COVER_V7,
@@ -546,8 +547,10 @@ import {
   MAMMOTH_CHIP_OFFSET_V7,
   MELEE_CHIP_OFFSET_V7,
   ROCKFALL_PEAK_OBJECTIVE_V7,
-  SABRETOOTH_BACKLINE_VALUE_V7,
-  SABRETOOTH_ISOLATED_VALUE_V7,
+  FROST_BREATH_FREEZE_VALUE_V7,
+  FROST_BREATH_SHIP_VALUE_V7,
+  FROST_BREATH_THREAT_VALUE_V7,
+  FROST_WYRM_CHIP_OFFSET_V7,
   SHATTER_ESCAPE_PRIORITY_V7,
   SHATTER_KILL_VALUE_V7,
   SHATTER_SETUP_PRIORITY_V7,
@@ -2402,7 +2405,7 @@ function* tacticalPlanWorkV7(
           same(city.at, objective),
       );
       // The policy's reading of the label (the Triceratops, the Mammoth, and
-      // the Boulder Yeti are line units; every other rule keeps its label).
+      // the Snow Golem are line units; every other rule keeps its label).
       const role = policyTacticalRoleV7(unitRoleRuleV7(view, unit));
       const moveDestinationKeys =
         context.lookup.moveDestinationKeysByUnit.get(unit.id) ?? new Set();
@@ -5117,7 +5120,7 @@ function armyBodiesSeatV7(context: PolicyContextV7): boolean {
     armyDinosaurSeatV7(context) ||
     // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
     // docs/product/RULESET_7_TUNING_ICE_FOLK.md): and an Ice Folk seat. Its
-    // Musk Ox is two technologies away too (the root, then Deep Winter).
+    // Walrus is two technologies away too (the root, then Deep Winter).
     armyIceFolkSeatV7(context) ||
     // Step two of the Dwarf pass (`pulp_wars-w49.28`,
     // docs/product/RULESET_7_TUNING_DWARF.md section 5): and a Dwarf seat.
@@ -5340,7 +5343,7 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   // T-Rex take no village and hold no center.
   const dinosaur = armyDinosaurSeatV7(context);
   // Step two of the Ice Folk pass: an Ice Folk seat counts the units that
-  // capture too: an Ice Witch, a Boulder Yeti, and a Sabretooth took no
+  // capture too: an Ice Witch, a Snow Golem, and a Sabretooth took no
   // village and held no center. Any unit can capture since `pulp_wars-ke95`,
   // so these seats now count every land unit (and every Egg) as well; the
   // split is kept for the AI tuning that follows.
@@ -7313,7 +7316,7 @@ function armyDinosaurContactHeldV7(
 ): boolean {
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
   // docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): an Ice Folk
-  // seat's Yeti, Sled, Mammoth, or Witch too (a Sabretooth has its own
+  // seat's Yeti, Sled, Mammoth, or Witch too (a Frost Wyrm has its own
   // rule). On the older policy two Yetis of a hand-played game walked up
   // alone to three Human units in rounds 9 and 10, struck once, and died.
   // The Candy army seat (`pulp_wars-jdb.13`): a Candy seat's Toffee Trooper,
@@ -7365,7 +7368,7 @@ function armyDinosaurContactHeldV7(
     facts.maximumRange > 1 ||
     facts.abilities.includes("OVERRUN") ||
     facts.abilities.includes("LINEBREAKER") ||
-    facts.abilities.includes("PROWL")
+    facts.abilities.includes("FROST_BREATH")
   )
     return false;
   const hostiles = armyHostilesV7(context);
@@ -7458,9 +7461,9 @@ function dinosaurContactCompanyV7(
 /**
  * Step two of the Ice Folk pass (`pulp_wars-w49.27`,
  * docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): an Ice Folk seat's
- * Snow Hunter or Boulder Yeti (a unit whose role shoots from two tiles)
+ * Snow Hunter or Snow Golem (a unit whose role shoots from two tiles)
  * does not walk out in front of its line, whatever offers the Move (a
- * combined kill too: in the lab a Boulder Yeti glided three tiles ahead of
+ * combined kill too: in the lab a Snow Golem glided three tiles ahead of
  * the Mammoths in the first turn to open a kill nobody else could reach,
  * threw for 4, and was dead a turn later: 8 Coins). The Move is not made
  * when it ends on a tile a visible hostile melee unit can attack next turn
@@ -7560,7 +7563,7 @@ function armyIceFolkShooterHeldV7(
     return true;
   if (!shooter) return false;
   // Nor onto a tile where the visible enemies kill it, from one where they
-  // do not (a Boulder Yeti took a firing tile three tiles ahead of its
+  // do not (a Snow Golem took a firing tile three tiles ahead of its
   // line, in the range of three Marksmen and a Catapult).
   if (
     visibleImmediateDamage(view, actor, to, context) >= actor.hp &&
@@ -9458,7 +9461,7 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
     return true;
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit a
   // Knight's hit kills at full HP (`ARMY_ICE_FOLK_STURDY_V7`): every one
-  // but the Musk Ox, the Mammoth, and the Frost Giant.
+  // but the Walrus, the Mammoth, and the Frost Giant.
   if (
     context.iceFolk &&
     unit.form === "LAND" &&
@@ -9589,7 +9592,7 @@ function armyEscortValueV7(
   // that have not grown, Spitters, the Shaman) and ends the ride.
   const dinosaur = view.viewer.faction === "DINOSAUR";
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk seat's
-  // Musk Ox, and its Mammoth, stand beside the units a Knight kills in one
+  // Walrus, and its Mammoth, stand beside the units a Knight kills in one
   // attack (every other Ice Folk unit) and end the ride; a Knight that
   // strikes the Ox is Chilled.
   const iceFolk =
@@ -11665,7 +11668,7 @@ function* publicThreatenedTilesWorkV7(
   // The Ice Folk revision (`pulp_wars-7g3.4`): an Ice Folk unit Glides off
   // known Snow (half cost); another faction's ground unit is stopped by
   // known Snow (deep snow; Fieldcraft is assumed absent, as Forest freedom
-  // is); a Sabretooth's Prowl ignores zones of control (it may end on any
+  // is); Prowl ignores zones of control (a Human Raider; it may end on any
   // settlement center since `pulp_wars-ke95`; only a Dwarf rider on its
   // surfacing turn avoids foreign ones). Snow flags exist only in a match
   // with an Ice Folk seat, and the other facts only for Ice Folk units, so
@@ -11979,12 +11982,16 @@ function publicMovementTilePossible(
     // The Martian revision: a walker or flyer enters a Mountain without
     // Engineering and crosses Shallow Water (Deep Water needs its owner's
     // private Navigation, so the estimate leaves it out).
-    // The Rift (RULESET_7_RIFT.md section 4): flyers only.
+    // The Rift (RULESET_7_RIFT.md section 4): flyers only. The Ice Folk
+    // roster rework (`pulp_wars-s55m.4`): a Frost Wyrm crosses Deep Water
+    // without Navigation (a public body rule).
     const mode = unitMovementModeV7(view, unit);
     if (mode !== "GROUND")
       return (
         (tile.biome !== null && (tile.terrain !== "RIFT" || mode === "FLY")) ||
-        tile.terrain === "SHALLOW_WATER"
+        tile.terrain === "SHALLOW_WATER" ||
+        (tile.terrain === "DEEP_WATER" &&
+          unitDeepWaterMoveV7(view, unit, false, mode))
       );
     // The shared terrain-entry rule for a ground unit; the Ice Folk
     // revision: a Mountain-born unit enters a Mountain without Engineering.
@@ -12411,6 +12418,10 @@ function frozenSeaToolsV7(context: PolicyContextV7): FrozenSeaToolsV7 {
     },
     objective: (unitId) => context.tactical.objectiveByUnitId.get(unitId),
     commands: context.commands,
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm's
+    // strike on a ship is made when the Vampire rule accepts it.
+    strikeAcceptable: (command) =>
+      vampireAttackAcceptableV7(context, view, command),
     // The frozen sea redesign (`pulp_wars-5ti.26`): the route a unit afloat
     // follows (`navalMovementObjectiveValueV7`): a ship the fleet's, a
     // transport the plan's.
@@ -12738,7 +12749,7 @@ function isPolicyCandidate(
   if (command.kind === "MOVE" && armyDinosaurContactHeldV7(context, command))
     return false;
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): a Snow Hunter or a
-  // Boulder Yeti does not walk out in front of its line. Step two of the
+  // Snow Golem does not walk out in front of its line. Step two of the
   // Dwarf pass (`pulp_wars-w49.28`): nor does a Clockwork Gunner.
   if (command.kind === "MOVE" && armyIceFolkShooterHeldV7(context, command))
     return false;
@@ -14455,7 +14466,7 @@ function* sharedCityContextWorkV7(
                 ? ARMY_MARTIAN_HEAVY_CAP_COST_V7
                 : 0) -
               // Step two of the Ice Folk pass (`pulp_wars-w49.27`): no
-              // more Musk Oxen than cities, nor than a third of the army
+              // more Walruses than cities, nor than a third of the army
               // (`armyIceFolkDefenderCappedV7`).
               (armyIceFolkSeatV7(context) &&
               command.role === "GUARD" &&
@@ -14489,7 +14500,7 @@ function* sharedCityContextWorkV7(
                 : 0) -
               // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md
               // section 15.1): no more Idol Bearers than cities, nor than
-              // a third of the army (`cultIdolBearerCappedV7`, the Musk Ox
+              // a third of the army (`cultIdolBearerCappedV7`, the Walrus
               // cap). (The Chosen's cap went with the Chosen: the Cult
               // redesign's A-R1, `pulp_wars-mch9.38`.)
               (armyCultSeatV7(context) &&
@@ -15767,7 +15778,7 @@ function scoreCommandWithContext(
         strategicValue += martian.strategic;
       }
       // The Ice Folk revision (`pulp_wars-7g3.4`): Shatter, Sweep, Boulders,
-      // the Sabretooth, the order of the chips, and against the Ice Folk the
+      // the Frost Wyrm, the order of the chips, and against the Ice Folk the
       // Witch and the Shatter window.
       if (context.iceFolk && actor !== undefined && targetUnit !== undefined) {
         const ice = iceFolkAttackAdjustmentV7(
@@ -17601,16 +17612,20 @@ function vampireAttackAcceptableV7(
     actor.hp - preview.damageToAttacker + preview.attackerHeal,
   );
   if (hp <= 0) return false;
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): a target the Frost
+  // Wyrm's breath freezes does not act on its owner's next turn.
   const after = projectPublicUnits(
     view,
-    view.units.map((unit) =>
-      unit.id === actor.id
-        ? { ...unit, hp }
-        : unit.id === target.id
-          ? { ...unit, hp: target.hp - preview.damageToDefender }
-          : unit,
-    ),
-    [actor.id, target.id],
+    view.units
+      .filter((unit) => !(preview.frostBreathApplied && unit.id === target.id))
+      .map((unit) =>
+        unit.id === actor.id
+          ? { ...unit, hp }
+          : unit.id === target.id
+            ? { ...unit, hp: target.hp - preview.damageToDefender }
+            : unit,
+      ),
+    preview.frostBreathApplied ? [actor.id] : [actor.id, target.id],
   );
   const wounded = after.units.find((unit) => unit.id === actor.id);
   if (wounded === undefined) return false;
@@ -24405,9 +24420,10 @@ function iceFolkWoundedAtHomeV7(context: PolicyContextV7): boolean {
 }
 
 /**
- * Ice Folk attack rejection: an own Sabretooth's attack that neither kills
+ * Ice Folk attack rejection: an own Frost Wyrm's attack that neither kills
  * nor leaves it alive through the visible enemies' next turn (the Vampire
- * rule; a city save excuses it).
+ * rule, which counts the Frost Breath: the target it freezes does not
+ * strike next turn; a city save excuses it).
  */
 function iceFolkAttackRejectedV7(
   context: PolicyContextV7,
@@ -24420,11 +24436,76 @@ function iceFolkAttackRejectedV7(
     preview.defenderDies ||
     actor.ownerId !== view.viewer.id ||
     policyUnitFactionV7(view, actor) !== "ICE_FOLK" ||
-    !hasAbilityForIceV7(view, actor, "PROWL") ||
+    !hasAbilityForIceV7(view, actor, "FROST_BREATH") ||
     vampireAttackAcceptableV7(context, view, command)
   )
     return false;
   return !attackPurposeFactsV7(context, command, preview).savesCity;
+}
+
+/**
+ * The Ice Folk roster rework (`pulp_wars-s55m.4`): what an own Frost Wyrm's
+ * Frost Breath on a hostile `target` is worth. A freeze of a unit not
+ * Frozen yet takes it out of its owner's next turn
+ * (`FROST_BREATH_FREEZE_VALUE_V7`), more for a ship or an embarked unit
+ * (`FROST_BREATH_SHIP_VALUE_V7`: nothing else of the Ice Folk reaches it)
+ * and for a unit whose reach covers an own unit
+ * (`FROST_BREATH_THREAT_VALUE_V7`). `shatterSetup`: the hit leaves the
+ * target at the Shatter threshold or below, and another own Ice Folk land
+ * unit next to it has an attack on it on offer, so its next blow Shatters
+ * it (the target is Frozen by then).
+ */
+function frostBreathAttackValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  threshold: number,
+): { readonly strategic: number; readonly shatterSetup: boolean } {
+  const view = context.view;
+  const facts = iceFolkCacheV7(context).facts;
+  let strategic = 0;
+  if (!frozenForPolicyV7(facts, target.id)) {
+    strategic += FROST_BREATH_FREEZE_VALUE_V7;
+    if (target.form !== "LAND") strategic += FROST_BREATH_SHIP_VALUE_V7;
+    const reach = context.threatenedTiles.get(target.id);
+    if (
+      reach !== undefined &&
+      view.units.some(
+        (unit) =>
+          unit.ownerId === view.viewer.id &&
+          unit.id !== actor.id &&
+          unit.hp > 0 &&
+          reach.has(coordKey(unit.at)),
+      )
+    )
+      strategic += FROST_BREATH_THREAT_VALUE_V7;
+  }
+  const left = target.hp - preview.damageToDefender;
+  const shatterSetup =
+    target.role !== "JUGGERNAUT" &&
+    left >= 1 &&
+    left <= threshold &&
+    context.commands.some((other) => {
+      if (
+        other.kind !== "ATTACK" ||
+        other.unitId === actor.id ||
+        other.targetUnitId !== target.id
+      )
+        return false;
+      const striker = context.lookup.unitsById.get(other.unitId);
+      return (
+        striker !== undefined &&
+        striker.form === "LAND" &&
+        isIceFolkUnitForPolicyV7(facts, striker) &&
+        distance(striker.at, target.at) === 1
+      );
+    });
+  if (shatterSetup)
+    strategic += Math.floor(
+      targetStrategicValue(view, target.id, context.lookup) / 2,
+    );
+  return { strategic, shatterSetup };
 }
 
 /**
@@ -24438,9 +24519,13 @@ function iceFolkAttackRejectedV7(
  * no own attack kills it outright now, goes at 1179 (above every chip) and
  * gains half the target's value; chips go Snow Hunters, Mammoths, other
  * melee units, Sleds; a Mammoth's Sweep gains 8 for trampled Field Defense
- * and 6 per flank victim left Chilled in the window; a Boulder Yeti gains 3
- * per fortification level ignored; a Sabretooth's kill gains 8 on a backline
- * unit and 4 on an isolated one.
+ * and 6 per flank victim left Chilled in the window; a Snow Golem gains 3
+ * per fortification level ignored. A Frost Wyrm's chip goes first (901 +
+ * 4); its Frost Breath gains 6 on a hostile unit not Frozen yet, 6 more on
+ * a ship, and 4 more on a unit that reaches an own unit next turn; a hit
+ * whose freeze leaves the target at the threshold or below for another own
+ * Ice Folk unit's offered blow from the next tile goes at 1179 and gains
+ * half the target's value (the Ice Folk roster rework, `pulp_wars-s55m.4`).
  *
  * Against the Ice Folk: a kill on the Witch goes at 1182 (above every other
  * kill); a hit on her that this turn's attacks complete goes at 1179
@@ -24478,13 +24563,15 @@ function iceFolkAttackAdjustmentV7(
     const abilities = unitRoleRuleV7(view, actor).abilities;
     if (preview.shatters) strategic += SHATTER_KILL_VALUE_V7;
     if (next === 900)
-      next += abilities.includes("COLD_BLOOD")
-        ? SNOW_HUNTER_CHIP_OFFSET_V7
-        : abilities.includes("SWEEP")
-          ? MAMMOTH_CHIP_OFFSET_V7
-          : abilities.includes("BOLAS")
-            ? 0
-            : MELEE_CHIP_OFFSET_V7;
+      next += abilities.includes("FROST_BREATH")
+        ? FROST_WYRM_CHIP_OFFSET_V7
+        : abilities.includes("COLD_BLOOD")
+          ? SNOW_HUNTER_CHIP_OFFSET_V7
+          : abilities.includes("SWEEP")
+            ? MAMMOTH_CHIP_OFFSET_V7
+            : abilities.includes("BOLAS")
+              ? 0
+              : MELEE_CHIP_OFFSET_V7;
     const threshold = shatterThresholdForPolicyV7(facts, view.viewer.id);
     if (
       !preview.defenderDies &&
@@ -24530,20 +24617,19 @@ function iceFolkAttackAdjustmentV7(
     if (abilities.includes("BOULDERS"))
       strategic +=
         BOULDER_FORTIFICATION_VALUE_V7 * preview.fortificationIgnored;
-    if (abilities.includes("PROWL") && preview.defenderDies) {
-      const role = unitRoleRuleV7(view, target).tacticalRole;
-      if (role === "RANGED" || role === "SIEGE" || role === "SUPPORT")
-        strategic += SABRETOOTH_BACKLINE_VALUE_V7;
-      if (
-        !view.units.some(
-          (unit) =>
-            unit.id !== target.id &&
-            unit.ownerId === target.ownerId &&
-            unit.form === "LAND" &&
-            distance(unit.at, target.at) === 1,
-        )
-      )
-        strategic += SABRETOOTH_ISOLATED_VALUE_V7;
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm
+    // strikes and freezes.
+    if (preview.frostBreathApplied && isHostile(view, target.ownerId)) {
+      const wyrm = frostBreathAttackValueV7(
+        context,
+        actor,
+        target,
+        preview,
+        threshold,
+      );
+      strategic += wyrm.strategic;
+      if (wyrm.shatterSetup && next < SHATTER_SETUP_PRIORITY_V7)
+        next = SHATTER_SETUP_PRIORITY_V7;
     }
   }
   if (isHostile(view, target.ownerId)) {
@@ -24722,8 +24808,8 @@ function iceFolkWitchSnapMoveV7(
  * siege, support, or below half HP) pays 3 for ending on hostile Snow.
  *
  * As the Ice Folk: the Witch takes only her best Move (rule 2) at 1296 and
- * otherwise stays; an unmoved Boulder Yeti with an offered attack makes no
- * routine Move (the planted throw); a Sabretooth never moves into visible
+ * otherwise stays; an unmoved Snow Golem with an offered attack makes no
+ * routine Move (the planted throw); a Frost Wyrm never moves into visible
  * lethal reach unless it strikes from there or it is no worse; at equal
  * route progress a unit ends within 1 of an own Witch, then on Snow, and a
  * Yeti on a Mountain within Rockfall range of a visible hostile unit.
@@ -24832,7 +24918,7 @@ function iceFolkMoveValueV7(
       : reject;
   }
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an army seat's
-  // Snow Hunter or Boulder Yeti that stands in the reach of a visible
+  // Snow Hunter or Snow Golem that stands in the reach of a visible
   // hostile unit with Overrun steps out of it (`armyIceFolkChainReachV7`),
   // to a tile where the visible enemies deal it no more: with a shot from
   // there first. Below every kill, above a hit that does not kill.
@@ -24877,8 +24963,8 @@ function iceFolkMoveValueV7(
     cache.attackers.has(actor.id)
   )
     return reject;
-  // The Sabretooth does not walk into lethal reach for nothing.
-  if (abilities.includes("PROWL") && next >= 0 && next < 1290) {
+  // The Frost Wyrm does not fly into lethal reach for nothing.
+  if (abilities.includes("FROST_BREATH") && next >= 0 && next < 1290) {
     const there = visibleImmediateDamage(view, actor, to, context);
     if (
       there >= actor.hp &&
@@ -27611,7 +27697,7 @@ function screenValue(
   at: CoordV7 | null,
 ): number {
   // Revision 20: a Triceratops (a line unit) screens and needs no screen.
-  // The Ice Folk revision: neither is the Boulder Yeti.
+  // The Ice Folk revision: neither is the Snow Golem.
   const screened = (unit: PublicUnitV7): boolean =>
     (unit.role === "CATAPULT" &&
       !linebreakerV7(view, unit) &&

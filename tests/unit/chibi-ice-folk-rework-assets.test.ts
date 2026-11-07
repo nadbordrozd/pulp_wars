@@ -1,7 +1,11 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
-import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
+import {
+  CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
+  ICE_FOLK_RETIRED_ART_IDS_V7,
+} from "../../src/assets/chibi-direction-ice-folk-art-manifest";
+import { ICE_FOLK_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-ice-folk-presentation";
 import { accentRaster, ACCENT_PRESETS } from "../../scripts/art/chibi/accent";
 import { batchManifestProblems } from "../../scripts/art/chibi/batch-manifest";
 import { extractOwnerMask } from "../../scripts/art/chibi/owner-mask";
@@ -25,9 +29,9 @@ import {
  * The Ice Folk rework art (bead pulp_wars-s55m.3, batch
  * `direction-ice-folk-rework`, docs/art/factions/ICE_FOLK.md "The rework
  * units"): the Frost Wyrm, the Walrus and the Snow Golem and their
- * portraits, replacing the Sabretooth, the Musk Ox and the Boulder Yeti in
- * their art slots. Art only: the roster bead (pulp_wars-s55m.4) registers
- * them and retires the old three.
+ * portraits, replacing the Sabretooth, the Musk Ox and the Boulder Yeti
+ * in their art slots. The roster bead (pulp_wars-s55m.4) registers them in
+ * the live list and retires the old three from runtime use.
  */
 const ROOT = process.cwd();
 const BATCH = "direction-ice-folk-rework";
@@ -75,8 +79,18 @@ describe("Ice Folk rework art (pulp_wars-s55m.3)", () => {
   it("matches its records, the canvas and anchor of the art it replaces, with no mask and no key-colour pixel", async () => {
     const manifest = await loadBatchManifest(ROOT, BATCH);
     const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+    // The art it replaces, as its own batch (`direction-ice-folk`) keeps it.
+    const replacedBatch = await loadBatchManifest(ROOT, "direction-ice-folk");
     const old = new Map(
-      CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
+      replacedBatch.assets.map((asset) => [
+        asset.id,
+        {
+          subject: asset.subject,
+          width: asset.canvas.width,
+          height: asset.canvas.height,
+          assetClass: asset.assetClass,
+        },
+      ]),
     );
     for (const [, name, replaced] of UNITS)
       for (const prefix of [
@@ -192,22 +206,61 @@ describe("Ice Folk rework art (pulp_wars-s55m.3)", () => {
     }
   });
 
-  // The roster bead (pulp_wars-s55m.4) turns this round: it registers the
-  // new art in the direction registry and retires the old three.
-  it("is not wired into the game yet: the live registry still draws the old three", () => {
+  // Turned round by the roster bead (pulp_wars-s55m.4): the new art is in
+  // the live list, exactly as the registry lines print it, and the old
+  // three are retired from runtime use.
+  it("is wired into the game: the live registry draws the new three, and the old three are retired", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH);
+    const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
     const live = chibiDirectionArtRegistryV7();
     for (const [slot, name, replaced] of UNITS) {
       expect(
         live.variants(`UNIT:ICE_FOLK:${slot}`).map((asset) => asset.id),
-      ).toEqual([`chibi-direction-ice-folk-${replaced}`]);
+      ).toEqual([`chibi-direction-ice-folk-${name}`]);
       expect(
         live.variants(`PORTRAIT:ICE_FOLK:${slot}`).map((asset) => asset.id),
-      ).toEqual([`chibi-direction-portrait-ice-folk-${replaced}`]);
-      expect(
-        CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.some((asset) =>
-          asset.id.endsWith(name),
-        ),
-      ).toBe(false);
+      ).toEqual([`chibi-direction-portrait-ice-folk-${name}`]);
+      for (const prefix of [
+        "chibi-direction-ice-folk-",
+        "chibi-direction-portrait-ice-folk-",
+      ]) {
+        const id = `${prefix}${name}`;
+        const entry = CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.find(
+          (asset) => asset.id === id,
+        );
+        const asset = manifest.assets.find((spec) => spec.id === id);
+        const record = records.assets[id];
+        if (entry === undefined || asset === undefined || record === undefined)
+          throw new Error(`${id}: not live`);
+        const line = registryEntry(asset, record);
+        expect(line, id).toContain(`id: "${entry.id}"`);
+        expect(line, id).toContain(`subject: "${entry.subject}"`);
+        expect(line, id).toContain(`assetClass: "${entry.assetClass}"`);
+        expect(line, id).toContain(`width: ${String(entry.width)}`);
+        expect(line, id).toContain(`height: ${String(entry.height)}`);
+        expect(entry.fixedColours, id).toBe(true);
+        expect(
+          entry.url.endsWith(record.master.path.replace(/^public\//, "")),
+          id,
+        ).toBe(true);
+        const retired = `${prefix}${replaced}`;
+        expect(ICE_FOLK_RETIRED_ART_IDS_V7, retired).toContain(retired);
+        expect(
+          CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.some(
+            (other) => other.id === retired,
+          ),
+          retired,
+        ).toBe(false);
+      }
     }
+    // The Frost Wyrm flies: its presentation is the Gyrocopter's shape,
+    // on the sprite's own lowest row.
+    expect(
+      ICE_FOLK_FLYER_PRESENTATION_V7["chibi-direction-ice-folk-frost-wyrm"],
+    ).toEqual({
+      hullBottom: 69,
+      groundLine: 82,
+      shadow: { x: 36, y: 81, radiusX: 18, radiusY: 4 },
+    });
   });
 });

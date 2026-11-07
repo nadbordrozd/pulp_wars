@@ -177,13 +177,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(PRIOR_RULESET_7_IDS.slice(-76, -74)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(PRIOR_RULESET_7_IDS.slice(-77, -75)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-76, -74)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-77, -75)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -962,8 +962,8 @@ describe("research toward the army", () => {
         "KNIGHT",
       ],
       // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Sled, the
-      // Snow Hunter, the Musk Ox (and Deep Winter), the Ice Witch, the
-      // Mammoth, the Boulder Yeti, the Sabretooth.
+      // Snow Hunter, the Walrus (and Deep Winter), the Ice Witch, the
+      // Mammoth, the Snow Golem, the Sabretooth.
       ICE_FOLK: [
         "RAIDER",
         "MARKSMAN",

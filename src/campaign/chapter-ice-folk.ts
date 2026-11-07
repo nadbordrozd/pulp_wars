@@ -91,7 +91,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       objective: "Hold Whitewater and Frostford for 13 turns.",
       hints: Object.freeze([
         "A Crashed sweet cannot attack on its next turn.",
-        "Musk Oxen freeze whoever strikes them up close.",
+        "Walruses freeze whoever strikes them up close.",
         "Knights Overrun anyone left alone in the open.",
       ]),
       closing:
@@ -131,7 +131,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
         "The Heart of Winter is a stone of ice older than the mountain, and it must be set on the summit before the Long Night. Mother Rime will carry it. The Grey Lodge and the dead will try to stop her, because they understand exactly what it is for. Thane Ironbraid's dwarves hold the Deep Gate on the road and will fight beside you. Bring Rime to the summit.",
       objective: "Bring Rime to the Summit by turn 18.",
       hints: Object.freeze([
-        "Musk Oxen freeze whoever strikes them up close.",
+        "Walruses freeze whoever strikes them up close.",
         "A Sled's bolas holds a daemon still for a turn.",
         "Research Engineering to climb the peaks.",
       ]),

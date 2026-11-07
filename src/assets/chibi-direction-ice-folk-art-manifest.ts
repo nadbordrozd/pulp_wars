@@ -20,6 +20,14 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * of DIRECTION_FLAG_ANCHORS_V7, and the board draws the Snow overlay, the
  * Blizzard and the Frozen marker from
  * chibi-direction-ice-folk-presentation.ts.
+ *
+ * The Ice Folk roster rework (bead `pulp_wars-s55m.4`, ruleset 7r125): the
+ * Frost Wyrm, the Walrus and the Snow Golem of batch
+ * `direction-ice-folk-rework` (bead `pulp_wars-s55m.3`) take the art slots
+ * KNIGHT, SWORDSMAN and CATAPULT, and the Sabretooth, the Musk Ox and the
+ * Boulder Yeti of batch `direction-ice-folk` (with the Sabretooth's Prowl
+ * icon) are retired from runtime use (`ICE_FOLK_RETIRED_ART_IDS_V7`). Their
+ * masters and records stay in their batch as history and review evidence.
  */
 export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [
@@ -75,24 +83,24 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       fixedColours: true,
     },
     {
-      id: "chibi-direction-ice-folk-boulder-yeti",
+      id: "chibi-direction-ice-folk-snow-golem",
       subject: "UNIT:ICE_FOLK:CATAPULT",
       assetClass: "LARGE_UNIT",
       width: 72,
       height: 88,
       url: chibiArtUrl(
-        "assets/chibi/units/chibi-direction-ice-folk-boulder-yeti.png",
+        "assets/chibi/units/chibi-direction-ice-folk-snow-golem.png",
       ),
       fixedColours: true,
     },
     {
-      id: "chibi-direction-ice-folk-sabretooth",
+      id: "chibi-direction-ice-folk-frost-wyrm",
       subject: "UNIT:ICE_FOLK:KNIGHT",
       assetClass: "LARGE_UNIT",
       width: 72,
       height: 88,
       url: chibiArtUrl(
-        "assets/chibi/units/chibi-direction-ice-folk-sabretooth.png",
+        "assets/chibi/units/chibi-direction-ice-folk-frost-wyrm.png",
       ),
       fixedColours: true,
     },
@@ -107,27 +115,28 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       ),
       fixedColours: true,
     },
-    // The Musk Ox (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art slot
-    // (the Mammoth keeps the slot GUARD).
+    // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34; the Mammoth
+    // keeps the slot GUARD): the Walrus since `pulp_wars-s55m.4` (the Musk
+    // Ox before).
     {
-      id: "chibi-direction-ice-folk-musk-ox",
+      id: "chibi-direction-ice-folk-walrus",
       subject: "UNIT:ICE_FOLK:SWORDSMAN",
       assetClass: "STANDARD_UNIT",
       width: 56,
       height: 80,
       url: chibiArtUrl(
-        "assets/chibi/units/chibi-direction-ice-folk-musk-ox.png",
+        "assets/chibi/units/chibi-direction-ice-folk-walrus.png",
       ),
       fixedColours: true,
     },
     {
-      id: "chibi-direction-portrait-ice-folk-musk-ox",
+      id: "chibi-direction-portrait-ice-folk-walrus",
       subject: "PORTRAIT:ICE_FOLK:SWORDSMAN",
       assetClass: "PORTRAIT",
       width: 48,
       height: 48,
       url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-musk-ox.png",
+        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-walrus.png",
       ),
       fixedColours: true,
     },
@@ -187,24 +196,24 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       fixedColours: true,
     },
     {
-      id: "chibi-direction-portrait-ice-folk-boulder-yeti",
+      id: "chibi-direction-portrait-ice-folk-snow-golem",
       subject: "PORTRAIT:ICE_FOLK:CATAPULT",
       assetClass: "PORTRAIT",
       width: 48,
       height: 48,
       url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-boulder-yeti.png",
+        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-snow-golem.png",
       ),
       fixedColours: true,
     },
     {
-      id: "chibi-direction-portrait-ice-folk-sabretooth",
+      id: "chibi-direction-portrait-ice-folk-frost-wyrm",
       subject: "PORTRAIT:ICE_FOLK:KNIGHT",
       assetClass: "PORTRAIT",
       width: 48,
       height: 48,
       url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-sabretooth.png",
+        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-frost-wyrm.png",
       ),
       fixedColours: true,
     },
@@ -260,16 +269,6 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-direction-icon-action-cold-snap.png",
-      ),
-    },
-    {
-      id: "chibi-direction-icon-action-prowl",
-      subject: "ICON:ACTION:PROWL",
-      assetClass: "ICON",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/icons/chibi-direction-icon-action-prowl.png",
       ),
     },
     {
@@ -494,3 +493,20 @@ export {
   ICE_FOLK_SNOW_OVERLAY_V7,
   ICE_FOLK_BLIZZARD_V7,
 } from "./chibi-direction-ice-folk-presentation";
+
+/**
+ * The Ice Folk roster rework (bead `pulp_wars-s55m.4`): the assets of batch
+ * `direction-ice-folk` that no longer draw anything at runtime (the
+ * Sabretooth, the Musk Ox and the Boulder Yeti with their portraits, and
+ * the Sabretooth's Prowl icon). Their accepted masters and records stay in
+ * the batch as history and review evidence.
+ */
+export const ICE_FOLK_RETIRED_ART_IDS_V7: readonly string[] = [
+  "chibi-direction-ice-folk-boulder-yeti",
+  "chibi-direction-ice-folk-sabretooth",
+  "chibi-direction-ice-folk-musk-ox",
+  "chibi-direction-portrait-ice-folk-boulder-yeti",
+  "chibi-direction-portrait-ice-folk-sabretooth",
+  "chibi-direction-portrait-ice-folk-musk-ox",
+  "chibi-direction-icon-action-prowl",
+];

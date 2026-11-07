@@ -615,12 +615,12 @@ const ROSTER = [
     ["ATTACK", "CAPTURE", "COLD_BLOOD"],
     true,
   ],
-  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox is the defender
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus is the defender
   // the Mammoth was (4 Coins, 16 HP, Attack 1.5, Defense 2.5, never
   // attacks after moving). The Mammoth is the heavy line role, asserted
   // below the table.
   [
-    "Musk Ox",
+    "Walrus",
     "GUARD",
     "FORTIFICATION",
     4,
@@ -654,7 +654,7 @@ const ROSTER = [
     true,
   ],
   [
-    "Boulder Yeti",
+    "Snow Golem",
     "CATAPULT",
     "SAWMILLING",
     // Ice Folk Freeze: 9 Coins and 10 HP (8 and 12 before).
@@ -671,7 +671,10 @@ const ROSTER = [
     false,
   ],
   [
-    "Sabretooth",
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
+    // Wyrm, a flyer with Frost Breath, replaced the Sabretooth (Prowl,
+    // Overrun and Cold Blood) at the same numbers; a flyer never advances.
+    "Frost Wyrm",
     "KNIGHT",
     "CHIVALRY",
     9,
@@ -681,11 +684,11 @@ const ROSTER = [
     3,
     1,
     1,
-    1,
+    // Sight 2, as every flyer (1 for the Sabretooth).
+    2,
     true,
-    // The tier-3 review A (`pulp_wars-1pwz`): Overrun and Cold Blood.
-    ["ATTACK", "CAPTURE", "PROWL", "OVERRUN", "COLD_BLOOD"],
-    true,
+    ["ATTACK", "CAPTURE", "FLY", "FROST_BREATH"],
+    false,
   ],
   [
     "Frost Giant",
@@ -750,7 +753,7 @@ describe("Ice Folk roster (section 3)", () => {
       expect(roleMechanicsV7(role, "ICE_FOLK"), label).toMatchObject({
         capacitySlots: 1,
         shield: 0,
-        movementMode: "GROUND",
+        movementMode: role === "KNIGHT" ? "FLY" : "GROUND",
         advancesAfterKill,
         buildsFieldDefense: false,
         hatchTurns: null,
@@ -806,8 +809,17 @@ describe("Ice Folk roster (section 3)", () => {
       "JUGGERNAUT",
       "SWORDSMAN",
     ]);
+    // The Ice Folk roster rework: no Ice Folk unit Prowls any more; the
+    // Frost Wyrm flies (over Deep Water without Navigation) and breathes
+    // frost.
     expect(
       UNIT_ROLE_IDS_V7.filter((role) => mechanics(role).ignoresZocStops),
+    ).toEqual([]);
+    expect(
+      UNIT_ROLE_IDS_V7.filter(
+        (role) =>
+          mechanics(role).frostBreath || mechanics(role).fliesOverDeepWater,
+      ),
     ).toEqual(["KNIGHT"]);
     expect(mechanics("SWORDSMAN")).toMatchObject({
       sweepDamage: SWEEP_DAMAGE_V7,
@@ -841,7 +853,7 @@ describe("Ice Folk roster (section 3)", () => {
       "BLIZZARD",
       "COLD_SNAP",
       "BOULDERS",
-      "PROWL",
+      "FROST_BREATH",
       "COLD_AURA",
     ];
     for (const faction of FACTION_IDS_V7.filter((id) => id !== "ICE_FOLK"))
@@ -865,6 +877,8 @@ describe("Ice Folk roster (section 3)", () => {
           plantedBonus2: 0,
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
+          frostBreath: false,
+          fliesOverDeepWater: false,
         });
         expect(
           effectiveRoleRuleV7(role, faction).abilities.filter((ability) =>
@@ -872,8 +886,9 @@ describe("Ice Folk roster (section 3)", () => {
           ),
         ).toEqual([]);
       }
-    // No Ice Folk unit has Escape, Rally, or Tend Wounded; only the
-    // Sabretooth has Overrun (the tier-3 review A, `pulp_wars-1pwz`).
+    // No Ice Folk unit has Escape, Rally, or Tend Wounded; none has
+    // Overrun since the Frost Wyrm replaced the Sabretooth (which had it
+    // from the tier-3 review A, `pulp_wars-1pwz`).
     const all = new Set(
       UNIT_ROLE_IDS_V7.flatMap(
         (role) => effectiveRoleRuleV7(role, "ICE_FOLK").abilities,
@@ -885,7 +900,7 @@ describe("Ice Folk roster (section 3)", () => {
       UNIT_ROLE_IDS_V7.filter((role) =>
         effectiveRoleRuleV7(role, "ICE_FOLK").abilities.includes("OVERRUN"),
       ),
-    ).toEqual(["KNIGHT"]);
+    ).toEqual([]);
   });
 
   it("trains every Ice Folk land unit except the Frost Giant on the city center", () => {
@@ -929,7 +944,7 @@ describe("Ice Folk roster (section 3)", () => {
     }
   });
 
-  it("never offers Field Defense, Rally, Tend Wounded, or Escape to an Ice Folk seat; only the Sabretooth Overruns", () => {
+  it("never offers Field Defense, Rally, Tend Wounded, Escape, or Overrun to an Ice Folk seat", () => {
     const state = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "GUARD", at: at(7, 7) },
@@ -951,9 +966,9 @@ describe("Ice Folk roster (section 3)", () => {
         rejectedV7(state, { kind, unitId: unitAtV7(state, at(9, 7)).id }).code,
         kind,
       ).toBe("UNIT_ROLE_INVALID");
-    // A Sabretooth that kills advances and may attack again (Overrun since
-    // the tier-3 review A, `pulp_wars-1pwz`; never before), and a Sled
-    // that survives has no Escape.
+    // A Frost Wyrm that kills neither advances (a flyer) nor attacks again
+    // (no Overrun since `pulp_wars-s55m.4`), and a Sled that survives has no
+    // Escape.
     const knight = iceFieldV7([
       { seat: 0, role: "KNIGHT", at: at(4, 3) },
       { seat: 0, role: "RAIDER", at: at(4, 1) },
@@ -966,19 +981,13 @@ describe("Ice Folk roster (section 3)", () => {
       unitId: unitAtV7(knight, at(4, 3)).id,
       targetUnitId: unitAtV7(knight, at(5, 3)).id,
     });
-    const cat = unitAtV7(killed.state, at(5, 3));
-    expect(cat.activation.overrunActive).toBe(true);
+    const wyrm = unitAtV7(killed.state, at(4, 3));
+    expect(wyrm.activation.overrunActive).toBe(false);
     expect(
       offeredV7(killed.state, "ATTACK").filter(
-        (command) => "unitId" in command && command.unitId === cat.id,
+        (command) => "unitId" in command && command.unitId === wyrm.id,
       ),
-    ).toEqual([
-      {
-        kind: "ATTACK",
-        unitId: cat.id,
-        targetUnitId: unitAtV7(knight, at(5, 4)).id,
-      },
-    ]);
+    ).toEqual([]);
     const sled = playV7(killed.state, {
       kind: "ATTACK",
       unitId: unitAtV7(killed.state, at(4, 1)).id,
@@ -993,10 +1002,10 @@ describe("Ice Folk roster (section 3)", () => {
     for (const [role, refund] of [
       ["FIGHTER", 1],
       // Ice Folk Freeze (`pulp_wars-w49.37`): half of the Sled's 4, the
-      // Witch's 6, the Boulder Yeti's 9, and the Mammoth's 7.
+      // Witch's 6, the Snow Golem's 9, and the Mammoth's 7.
       ["RAIDER", 2],
       ["MARKSMAN", 1],
-      // (7r55: the Musk Ox, half of 4.)
+      // (7r55: the Walrus, half of 4.)
       ["GUARD", 2],
       ["CAPTAIN", 3],
       ["CATAPULT", 4],
@@ -1132,6 +1141,12 @@ describe("Ice Folk technology (section 4)", () => {
         ]);
       else if (human.id === "EXPLOSIVES")
         expect(ice.unlocks).toEqual([...human.unlocks, { kind: "BRITTLE" }]);
+      // The Ice Folk roster rework (`pulp_wars-s55m.4`): Chivalry grants no
+      // Overrun (the Frost Wyrm has none).
+      else if (human.id === "CHIVALRY")
+        expect(ice.unlocks).toEqual(
+          human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
+        );
       else expect(ice.unlocks).toEqual(human.unlocks);
     });
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.ICE_FOLK).toEqual({
@@ -1145,7 +1160,7 @@ describe("Ice Folk technology (section 4)", () => {
       SUBMERSIBLES: "Glacier",
       // The ninth unit (7r55): the nodes named for their unit.
       SAWMILLING: "Boulders",
-      CHIVALRY: "Sabretooths",
+      CHIVALRY: "Frost Wyrms",
       METALLURGY: "Mammoths",
     });
   });
@@ -1224,11 +1239,11 @@ describe("Ice Folk technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "ICE_FOLK").label);
     expect(role("SCOUTING")).toEqual(["Sled"]);
     expect(role("MARKSMANSHIP")).toEqual(["Snow Hunter"]);
-    expect(role("FORTIFICATION")).toEqual(["Musk Ox"]);
+    expect(role("FORTIFICATION")).toEqual(["Walrus"]);
     expect(role("METALLURGY")).toEqual(["Mammoth"]);
     expect(role("ADMINISTRATION")).toEqual(["Ice Witch"]);
-    expect(role("SAWMILLING")).toEqual(["Boulder Yeti"]);
-    expect(role("CHIVALRY")).toEqual(["Sabretooth"]);
+    expect(role("SAWMILLING")).toEqual(["Snow Golem"]);
+    expect(role("CHIVALRY")).toEqual(["Frost Wyrm"]);
     const state = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
@@ -1438,7 +1453,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     );
     const iceId = seatIdV7(state, 0);
     // The ninth unit (7r55): the Mammoth stands where it stood (the
-    // defender's tile, as the heavy role) and the Musk Ox on the ninth
+    // defender's tile, as the heavy role) and the Walrus on the ninth
     // unit's tile (`showcaseUnitRoleV7`).
     const shape = (source: GameStateV7) =>
       source.units.map((unit) => [
@@ -1483,7 +1498,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
         ]),
     ).toEqual([
       [5, 7],
-      // (7r55: North also homes the Musk Ox.)
+      // (7r55: North also homes the Walrus.)
       [4, 6],
       [0, 6],
     ]);
@@ -1587,7 +1602,7 @@ describe("Ice Folk public unit stats (section 11)", () => {
       snowCover: true,
     });
     expect(stats(at(6, 5)).iceFolk).toMatchObject({ sweepDamage: 2 });
-    // The Attack row lists Planted for an unmoved Boulder Yeti; the Defense
+    // The Attack row lists Planted for an unmoved Snow Golem; the Defense
     // row lists Snow cover.
     expect(
       stats(at(4, 3))

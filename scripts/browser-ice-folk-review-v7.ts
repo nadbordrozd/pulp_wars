@@ -90,7 +90,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__ICE_FOLK_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r124.current";
+const SAVE_KEY = "pulpWars.save.v7r125.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -330,7 +330,7 @@ async function fixtureTour(
   // Markers: the Frozen Fighter and the Frozen Guard, close up.
   await focusCell(connection, at.shatterTarget as Coord);
   await capture(connection, `markers-${suffix}.png`);
-  // The dock of a Frozen enemy, of the Witch and of the Boulder Yeti.
+  // The dock of a Frozen enemy, of the Witch and of the Snow Golem.
   await activate(connection, at.shatterTarget as Coord);
   evidence[`${suffix}FrozenShatterDock`] = await dockText(connection);
   await capture(connection, `frozen-dock-${suffix}.png`);

@@ -3941,8 +3941,8 @@ function applyDisembark(
   )
     return rejected(original, "MOVEMENT_ILLEGAL");
   // The Martian revision section 7.2: a flyer cannot land on a neutral
-  // village center or on the center of a city it does not own (the Ice Folk
-  // revision section 7.7: nor can a Sabretooth).
+  // village center or on the center of a city it does not own (a rule of
+  // a surfaced Dwarf rider only since any unit can capture).
   if (
     unitAvoidsForeignSitesV7(state, {
       id: unit.id,
@@ -7441,7 +7441,7 @@ function resolveAttackExchangeV7(
     : state.splattedThisTurn;
   // The ninth unit (7r55): the Thagomizer Cracks a surviving target for the
   // rest of the active seat's turn; Frostbite Chills a surviving attacker of
-  // a Musk Ox.
+  // a Walrus.
   const ninthUnit = preview.crackApplied
     ? {
         ...state.ninthUnit,
@@ -7454,8 +7454,20 @@ function resolveAttackExchangeV7(
   // Ice Folk Freeze (`pulp_wars-w49.37`): Frostbite freezes the attacker
   // during its own turn, so it stays Frozen through its next turn.
   let frozen = state.frozen;
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): Frost Breath
+  // Freezes the Frost Wyrm's surviving target (another seat's unit, so it
+  // thaws at the end of its owner's next turn), after the deaths.
+  if (preview.frostBreathApplied) {
+    const applied = withFrozenAppliedV7({ ...state, units }, frozen, [
+      defender.id,
+    ]);
+    frozen = applied.frozen;
+    events.push(
+      unitsFrozenEventV7(actor, attacker.id, "FROST_BREATH", applied.results),
+    );
+  }
   if (preview.frostbiteApplied) {
-    const applied = withFrozenAppliedV7(state, state.frozen, [attacker.id]);
+    const applied = withFrozenAppliedV7(state, frozen, [attacker.id]);
     frozen = applied.frozen;
     events.push(
       unitsFrozenEventV7(

@@ -395,7 +395,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::explorationHoldsMoveV7": "BOARD",
     "src/ai/v7.ts::armyAloneV7": "BOARD",
     "src/ai/v7.ts::armyNearestFriendV7": "BOARD",
-    "src/ai/v7.ts::iceFolkAttackAdjustmentV7": "BOARD",
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the own units in a
+    // hostile target's reach that a Frost Wyrm's Frost Breath shields (the
+    // viewer's units on the board; a burrowed one is not struck next turn).
+    "src/ai/v7.ts::frostBreathAttackValueV7": "BOARD",
     "src/ai/v7.ts::iceFolkWoundedAtHomeV7": "BOARD",
     "src/ai/v7.ts::isPolicyCandidate": "BOARD",
     "src/ai/v7.ts::knightOverrunLeafValue": "BOARD",
@@ -492,7 +495,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::dinosaurContactCompanyV7": "BOARD",
     // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the viewer's own
     // Snow Hunter that can come within Bolas range of a hunted unit (it
-    // throws in land form, from the board), and the Boulder Yeti where it
+    // throws in land form, from the board), and the Snow Golem where it
     // stands on the board, for Planted (an Ice Folk seat has no burrowed
     // unit).
     "src/ai/v7.ts::iceFolkBolasSourceV7": "BOARD",

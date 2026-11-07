@@ -421,7 +421,7 @@ describe("Shatter worked examples (section 5.6)", () => {
 });
 
 describe("Shatter exact points (section 5.5)", () => {
-  it("is melee only: a Snow Hunter and a Boulder Yeti shatter at distance 1, not at 2", () => {
+  it("is melee only: a Snow Hunter and a Snow Golem shatter at distance 1, not at 2", () => {
     for (const role of ["MARKSMAN", "CATAPULT"] as const) {
       const near = against(
         "DINOSAUR",

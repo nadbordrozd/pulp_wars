@@ -41,7 +41,7 @@ const move = (
 });
 
 describe("Mountain-born (section 7.1)", () => {
-  it("a Yeti, a Boulder Yeti, and a Frost Giant enter a Mountain without Engineering and are not stopped by it", () => {
+  it("a Yeti, a Snow Golem, and a Frost Giant enter a Mountain without Engineering and are not stopped by it", () => {
     for (const role of ["FIGHTER", "CATAPULT", "JUGGERNAUT"] as const) {
       const state = [at(5, 3), at(6, 3)].reduce(
         mountainV7,
@@ -60,7 +60,7 @@ describe("Mountain-born (section 7.1)", () => {
       );
       expect(unitAtV7(moved.state, at(5, 3)).role, role).toBe(role);
     }
-    // The Boulder Yeti (Move 2) crosses two Mountains without stopping.
+    // The Snow Golem (Move 2) crosses two Mountains without stopping.
     const ridge = [at(5, 3), at(6, 3)].reduce(
       mountainV7,
       iceFieldV7(
@@ -470,8 +470,11 @@ describe("Boulders and Planted (section 7.6)", () => {
   });
 });
 
-describe("Prowl (section 7.7)", () => {
-  it("zones of control do not end a Sabretooth's Move; it does not pass other players' units", () => {
+// The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm
+// replaced the Sabretooth and its Prowl (section 7.7). It flies: zones of
+// control never stop it and it passes over any unit, as every flyer does.
+describe("the Frost Wyrm's flight (formerly Prowl, section 7.7)", () => {
+  it("zones of control do not end the Frost Wyrm's Move; it flies over other players' units", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(3, 3) },
@@ -486,9 +489,15 @@ describe("Prowl (section 7.7)", () => {
       activeIdV7(state),
       move(state, at(3, 3), at(4, 3), at(5, 3), at(6, 3)),
     );
+    // Over the Fighter on (5, 2), but never ending on it.
+    applyOkV7(
+      state,
+      activeIdV7(state),
+      move(state, at(3, 3), at(4, 2), at(5, 2), at(6, 2)),
+    );
     expect(
-      rejectedV7(state, move(state, at(3, 3), at(4, 2), at(5, 2), at(6, 2)))
-        .params.reason,
+      rejectedV7(state, move(state, at(3, 3), at(4, 2), at(5, 2))).params
+        .reason,
     ).toBe("OCCUPIED");
     // Another faction's Knight stops at the first ZOC tile.
     const human = iceFieldV7(
@@ -505,9 +514,9 @@ describe("Prowl (section 7.7)", () => {
   });
 
   // Any unit can capture (`pulp_wars-ke95`, user direction 2026-10-09): the
-  // Sabretooth ends a Move and advances on a settlement center like any
-  // land unit (section 7.7 kept it off foreign ones before).
-  it("ends a Move and advances on a village center, and stands on its own center", () => {
+  // Frost Wyrm ends a Move on a settlement center like any land unit; as a
+  // flyer it never advances after a kill.
+  it("ends a Move on a village center and on its own center, and never advances", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
@@ -537,7 +546,7 @@ describe("Prowl (section 7.7)", () => {
       { techs: { 0: ["SCOUTING", "RAIDING", "CHIVALRY"] } },
     );
     applyOkV7(home, activeIdV7(home), move(home, at(7, 7), at(8, 8)));
-    // A kill on a village center: it advances onto it.
+    // A kill on a village center: a flyer stays where it is.
     const village = iceFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
@@ -546,7 +555,7 @@ describe("Prowl (section 7.7)", () => {
       { techs: { 0: ["SCOUTING", "RAIDING", "CHIVALRY"] } },
     );
     const run = attackV7(village, at(4, 4), at(5, 5));
-    expect(run.combat).toMatchObject({ defenderDies: true, advances: true });
+    expect(run.combat).toMatchObject({ defenderDies: true, advances: false });
   });
 });
 
@@ -587,7 +596,7 @@ describe("previews and offers (section 11)", () => {
     ).toHaveLength(3);
   });
 
-  it("the Boulder Yeti's estimate after a planned Move uses Attack 2", () => {
+  it("the Snow Golem's estimate after a planned Move uses Attack 2", () => {
     const state = iceFieldV7([
       { seat: 0, role: "CATAPULT", at: at(4, 3) },
       { seat: 1, role: "FIGHTER", at: at(6, 3) },

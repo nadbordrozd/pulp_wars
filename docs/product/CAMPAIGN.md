@@ -1454,7 +1454,7 @@ camp and schedule, the clock and the stars are revision 1's; what changed:
 - **The fort**: seven toll-men (two Guards, two Marksmen and three
   Fighters; it was five), `GUARD` with a garrison of 7; Gathering,
   Leadership and Land Grants are forbidden to it, so it no longer grows.
-- **The raiders**: the wave of round 9 brings a Musk Ox (four units, was
+- **The raiders**: the wave of round 9 brings a Walrus (four units, was
   three).
 
 **The problem and its hint.** The fort is the problem: seven men behind
@@ -1479,7 +1479,7 @@ Mountain-born and throw rocks two tiles down into the pocket. Seat 2,
 Humans: a walled level 3 camp in the south-east, `HOLD` until round 6, then
 `RUSH`; Engineering is forbidden to them, so they come through a door.
 Reinforcements: Ice Folk waves north of the gate in rounds 3, 7 and 11 (a
-Boulder Yeti from round 7, a Frost Giant in round 11); Human waves one or
+Snow Golem from round 7, a Frost Giant in round 11); Human waves one or
 two steps from the east door in rounds 6, 9 and 12 (a Juggernaut and a
 Catapult in round 12); your relief of three (a Steam Tank among them) in
 round 9. Land Grants and Farming are forbidden to everybody: the enemy
@@ -1579,9 +1579,9 @@ a landing party of the Baron (a Fighter and a Marksman) comes ashore on
 your spur beside Hjorna, and from round 7 to 11 the Baron `ASSAULT`s
 Coldharbour (he now knows it from the start); in round 12 he holds his
 island again, and from round 16 he races you for the Crater as before. A
-Musk Ox on the village's center (Fortification, "Deep Winter") freezes
+Walrus on the village's center (Fortification, "Deep Winter") freezes
 whoever strikes it, and a frozen raider shatters under a Yeti. The hints
-now say "Raiders land on turn 7. A Musk Ox freezes its attackers." and
+now say "Raiders land on turn 7. A Walrus freezes its attackers." and
 "Level 5 cities send Frost Giants. They shatter the frozen." beside the
 frozen sea; the briefing says to hold the shore first. Board, natives,
 clock and stars are unchanged. Played on `7r100`, the ice redesign
@@ -1993,7 +1993,7 @@ and "A rider who kills keeps charging: let him run."
 
 **5, Dead Men's Road** (revision 3). The raiders come out of their camp in
 round 3 (was 6) and storm Gallows Cross, the Doctor's town, until round 10
-(`GUARD` of the camp with a Musk Ox, `others: ASSAULT`), then hunt the
+(`GUARD` of the camp with a Walrus, `others: ASSAULT`), then hunt the
 nearest town (`RUSH`); both seats know where the dead live (their
 reveals), and what the fort trains beyond its seven sallies out (`others:
 RUSH`). The raiders may not research Scouting and what follows it: no Sled
@@ -2013,7 +2013,7 @@ Cross from turn 3." say it.
 
 **6, The Deep Gate** (revision 2, unchanged). Replayed on `7r99` and on
 `7r100` with the new Ice Folk AI: the autopilot lost the Deep Gate in round 5, and a thoughtful defence held to
-the end with two stars, the Thane killed in round 9 by a Boulder Yeti and
+the end with two stars, the Thane killed in round 9 by a Snow Golem and
 Copperstep's center taken twice and retaken, with one Brass Titan and one
 Gunner left at the end. It already carries the danger this pass asks for.
 
@@ -3321,7 +3321,7 @@ Dry Land 16, seed 9, as before. Three configurations, five games:
    17** (the Doctor killed beside the gate by Yetis out of sight; the
    Mammoth's wave had taken the Ironbraid Gate village). Too much at the
    end of a long road: the schedule is round 6 again, the Mammoth is gone,
-   and the round 9 wave brings a Musk Ox instead.
+   and the round 9 wave brings a Walrus instead.
 3. **Final.** Autopilot: **lost in round 7** ("Doctor Crane was killed.").
    By hand: **won in round 15, three stars.** The line: Forestry and Liches
    on turn 1 and the Muster's Monument; Crafting (round 2), Fortification
@@ -3613,7 +3613,7 @@ in round 2, the Explorer's Monument and a Brass Titan in round 4; blasts
 on the peaks killed or wounded six Yetis in rounds 3 to 6. **Danger:** the
 Baron's wave killed the south door's Hammerer in round 6 and a Fighter
 stood on Copperstep's center in round 8 and again in round 9 (killed each
-time); the Ice Folk wave of round 7 (a Boulder Yeti) killed the Steam Mole
+time); the Ice Folk wave of round 7 (a Snow Golem) killed the Steam Mole
 and, in round 9, the Thane; by round 12 one Brass Titan, two Gunners and a
 Hammerer were left, and the Deep Gate held with the Titan alone on its
 center. It needs no change for this pass.
@@ -3678,14 +3678,14 @@ crossing. Four configurations:
    (no city lost; not by round 24).
 
 The line: Rime and Hunting in round 1; Brisund in round 2, Hjorna in 4,
-Mjolka in 5, Glimra in 14; Crafting (3), Deep Winter (7: a Musk Ox on
+Mjolka in 5, Glimra in 14; Crafting (3), Deep Winter (7: a Walrus on
 Hjorna's center in round 8), Pack Ice (10), Black Ice (11), Gathering
 (12), Forestry (14), Glacier (20); Frost Giants from Brisund (16),
 Coldharbour and Hjorna (20); the ice road down column 6 in rounds 19 to
 23, which the giants slid along; a giant killed the Spitter beside the
 Crater (25) and two the Ankylosaurus on its center (26); a giant stepped
 on in round 27 and captured in round 28. **The danger moments:** in
-round 8 the raiders struck the Musk Ox on Hjorna, whose Frostbite froze
+round 8 the raiders struck the Walrus on Hjorna, whose Frostbite froze
 the Fighter for a Yeti to shatter; the Marksman sniped Yetis until round
 16; from round 17 the Baron's flotilla (a Guard, a Fighter, two Raiders,
 the Marksman, a Juggernaut and Patrol Boats) passed the spur on its way
@@ -6107,14 +6107,14 @@ The danger moments, and what each mission's hand play changed:
   bit Tobbin on the walls.
 - **D2.** With Crafting, Mining and Deep Winter the clan's camps grew to
   level 3 and walled themselves by round 3, a frozen Hammerer was
-  shattered and a Steam Mole killed by Cold Blood after meleeing a Musk Ox.
+  shattered and a Steam Mole killed by Cold Blood after meleeing a Walrus.
   The clan now learns nothing: Yetis on the peaks, Snow Hunters on the
   grass, Gnash a Mammoth. The winning line: the Explorer monument and
   fruit (level 4, Boom), Mining in round 1; a Mole and its rider
   tunnelled under the peaks onto Tusk Camp, the Hammerer killed the Musk
   Ox but was frozen and shattered by a Yeti and the Mole killed by a Snow
   Hunter; a second Mole took Tusk Camp in round 5; the Gunners shot
-  Gnash's Mammoth from range (it had swept a Mole) and the Musk Oxen (no
+  Gnash's Mammoth from range (it had swept a Mole) and the Walruses (no
   frostbite from range); both other camps fell in round 13.
 - **D3.** With every unit homed to a full Gate no Gunner could be
   assembled, and with 4 Favour the Lodge's Horror stood over the gallery
@@ -6794,7 +6794,7 @@ you as the Ice Folk with no choice, so the chapter's starting factions are
 empty. Mother Rime (`RIME`) is the Ice Witch in every mission, and the
 faction's signature, ice, carries the campaign: freezing first and
 striking second (I1), a Frost Giant's smash (I2, I5), a road frozen across
-a strait (I3), Musk Oxen whose Frostbite freezes their attackers (I4, I6).
+a strait (I3), Walruses whose Frostbite freezes their attackers (I4, I6).
 
 ### 22.1 The missions
 
@@ -6830,7 +6830,7 @@ The danger moments, and what each mission's hand play changed:
   Sleds one hit each, and lone Yetis that advanced after a kill died to
   two Goblins or a Kaboom (6 to everything round the Goblin); a frozen
   Brute heals while idle. The villages are gone, the gang starts broke,
-  and Rime has Deep Winter and a Musk Ox. The winning line: the Explorer
+  and Rime has Deep Winter and a Walrus. The winning line: the Explorer
   monument (Scouts: a second Sled), Sled and Witch Frost Bolts froze
   Boiler Hole's centre Goblin and its neighbour, the Ox shattered the
   frozen one and stood on the centre (round 6); the Sleds froze the Wolf
@@ -6857,11 +6857,11 @@ The danger moments, and what each mission's hand play changed:
 - **I4.** With Chivalry and the southern villages the Wardens trained a
   Knight a turn; Oxen on Frostford's centre froze every Knight that struck
   them, but a Knight's Overrun chain killed a Sled, the Witch and two
-  Hunters in the open. Without Chivalry and with a wall of Musk Oxen both
+  Hunters in the open. Without Chivalry and with a wall of Walruses both
   enemies stood off for six rounds. Now the southern villages stay gone,
   Chivalry is back, the Wardens `ASSAULT` Whitewater round the west shore
   and the sweets Frostford, and each sends two waves. The winning line:
-  the Explorer monument at Frostford, Land Grants and Musk Oxen on every
+  the Explorer monument at Frostford, Land Grants and Walruses on every
   front; everything that struck an Ox was frozen, then Hunters (Cold
   Blood) and Rockfall killed or Oxen shattered it; a Knight's Overrun
   killed a Yeti and both Sleds in round 11; Icemoor (not protected) fell
@@ -6900,7 +6900,7 @@ The danger moments, and what each mission's hand play changed:
 ### 22.3 Deviations and follow-ups
 
 - **I1's gang starts broke** (0 Coins) with no valley villages; Rime has
-  Deep Winter and a Musk Ox from the start.
+  Deep Winter and a Walrus from the start.
 - **I2's Abbot guards the tomb** (`GUARD`, garrison 4, the rest `RUSH`).
   The Frost Giant is a player wave in round 10 (`JUGGERNAUT`); E4 (a story
   line on the wave) is not built, and the first hint announces the giant.
@@ -6925,7 +6925,7 @@ The danger moments, and what each mission's hand play changed:
 - **Extensions.** None was needed or built.
 - **Observations for balance work (not changed here).** A Sled's bolas
   each turn takes a Horror (or any one unit) out of the fight indefinitely;
-  a wall of Musk Oxen makes the Normal AI stand off entirely (I4's second
+  a wall of Walruses makes the Normal AI stand off entirely (I4's second
   attempt); a Yeti's Rockfall from a peak hits two tiles away with no
   answer; a city at level 5 gives a Frost Giant that decides any fight it
   reaches, which is why I5's camp starts one level short.
@@ -6999,7 +6999,7 @@ never the clock.
 The earlier campaigns' lessons held here too. Weak extra units only feed
 the Ice Folk's chains (freeze, then shatter): I2's two extra Zombies only
 fed the Giant's Cold Aura, and I4's extra Fighters only walked into a wall
-of Musk Oxen, so they became rifles, whose shots from two tiles draw no
+of Walruses, so they became rifles, whose shots from two tiles draw no
 Frostbite. I2's first wave stands on the snowfields from the start.
 
 This section supersedes section 22.4's numbers. All six missions are now
@@ -7053,7 +7053,7 @@ What decided them:
   on the turn it arrived; a dug-in Steam Mole on Anvil Bay's centre healed
   between attacks and fell to a bolas and two hits in round 16.
 - **I4.** The Knights' Overrun kills anyone soft left in the open (Rime
-  and both Hunters in one turn in the first loss). Musk Oxen on the snow
+  and both Hunters in one turn in the first loss). Walruses on the snow
   line freeze every Knight that strikes them, and the Snow Hunters' Cold
   Blood (9 a shot on a frozen Knight) kill them; the rifles shoot from two
   tiles and draw no Frostbite, so the line bleeds: four Oxen died, the

@@ -376,7 +376,7 @@ describe("moving on ice", () => {
     app.destroy();
   });
 
-  it("the Sabretooth skates too: trails on the ice, never a slip", () => {
+  it("the Snow Golem skates too: trails on the ice, never a slip", () => {
     const { host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     host.callbacks?.onSelection({
       kind: "UNIT",

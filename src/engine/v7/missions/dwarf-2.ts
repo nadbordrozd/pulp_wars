@@ -6,7 +6,7 @@ import type { MissionDefinitionV7 } from "./types";
  * against the Whitefang clan, who sit on the best iron in the north: take
  * the clan's three camps in the ore mountains by round 20. Step 2 of 6.
  * Ice Folk on their own ground: Yetis walk over the peaks, Snow Hunters
- * throw rocks from them, and a Musk Ox freezes whoever hits it up close.
+ * throw rocks from them, and a Walrus freezes whoever hits it up close.
  * The dwarves' answer is underground: a Steam Mole tunnels up to three
  * tiles under anything, peaks included, with a Hammerer riding beside it,
  * and surfaces among the enemy (the eruption hits everyone around it).
@@ -207,8 +207,8 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 13, y: 5 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 1, y0: 10, x1: 5, y1: 13 }] },
-      // Yetis and Musk Oxen only: no Snow Hunters beyond the three on the
-      // peaks, no Sleds, Witches, Sabretooths or giants' kin.
+      // Yetis and Walruses only: no Snow Hunters beyond the three on the
+      // peaks, no Sleds, Witches, Frost Wyrms or giants' kin.
       forbiddenTechnologies: [
         "FARMING",
         "MILLING",

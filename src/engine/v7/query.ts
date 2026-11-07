@@ -221,6 +221,7 @@ import {
   blizzardHalvedDamageV7,
   blizzardProtectsV7,
   canBeFrozenV7,
+  attackFrostBreathV7,
   coldSnapTargetsV7,
   freezeChangesUnitV7,
   frozenTurnsForV7,
@@ -1108,7 +1109,8 @@ function publicLandingTilesV7(
         // The frozen sea: a transport may land on adjacent ice.
         ice: isIceAtV7(view, tile.at),
       }) &&
-      // The Ice Folk revision section 7.7: nor does a Sabretooth.
+      // Nor does a surfaced Dwarf rider (a Sabretooth was refused too until
+      // any unit could capture).
       (!unitAvoidsForeignSitesV7(view, {
         id: unit.id,
         ownerId: unit.ownerId,
@@ -12932,6 +12934,12 @@ function publicCombatPreviewCore(
     shockDamage,
     crackApplied: attackCracksV7(view, attacker, target, defenderDies),
     frostbiteApplied: frostbitten,
+    frostBreathApplied: attackFrostBreathV7(
+      view,
+      attacker,
+      target,
+      defenderDies,
+    ),
     ...publicCrushPreviewV7(view, attacker, target, distance, push, {
       defenderDies,
       hpAfter: grownHpV7(

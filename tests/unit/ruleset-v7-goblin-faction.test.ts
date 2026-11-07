@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
-    expect(PRIOR_RULESET_7_IDS.at(-108)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(123);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-108)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(PRIOR_RULESET_7_IDS.at(-109)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(124);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-109)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -863,7 +863,7 @@ describe("ruleset-7 Goblin technology", () => {
         SEAMANSHIP: "Black Ice",
         SUBMERSIBLES: "Glacier",
         SAWMILLING: "Boulders",
-        CHIVALRY: "Sabretooths",
+        CHIVALRY: "Frost Wyrms",
         METALLURGY: "Mammoths",
       },
       DWARF: {

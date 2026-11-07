@@ -255,7 +255,7 @@ describe("Attack cues: which attacks get one (bead pulp_wars-b5f.5)", () => {
     ).toBe(true);
   });
 
-  it("marks the Boulder Yeti's boulder, a Rockfall, and the Snow Hunter's harpoon", () => {
+  it("marks the Snow Golem's boulder, a Rockfall, and the Snow Hunter's harpoon", () => {
     const at = ICE_FOLK_UI_V7;
     expect(
       attackSteps(iceFolkUiFixtureV7(), at.boulderYeti, at.boulderTarget)[0],

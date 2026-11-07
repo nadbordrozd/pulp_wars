@@ -113,7 +113,7 @@ describe("frozen sea persistence", () => {
       [cx + 1, 13],
     ]);
     // Turn 1: the Sabretooth walks onto the home ice (it never slides), and
-    // the Boulder Yeti walks to the Coast city and freezes the water south
+    // the Snow Golem walks to the Coast city and freezes the water south
     // west of it (the frozen sea redesign: the home ice south of it is its
     // own sound ice, which a Freeze passes over).
     const sabretooth = unitAt(cx + 1, 9);

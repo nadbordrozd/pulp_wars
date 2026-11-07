@@ -1176,8 +1176,12 @@ function drawDirectedGroundV7(
     ring: ground,
     afloat,
   } = directedUnitShadowGeometryV7(entry, sprite, assetId);
-  // The Dwarf revision: the Gyrocopter casts its own shadow too.
-  const flyer = entry.martian?.flyer === true || entry.dwarf?.flyer === true;
+  // The Dwarf revision: the Gyrocopter casts its own shadow too, and so
+  // does the Ice Folk Frost Wyrm (bead pulp_wars-s55m.4).
+  const flyer =
+    entry.martian?.flyer === true ||
+    entry.dwarf?.flyer === true ||
+    entry.iceFolk?.flyer === true;
   const shadowed = direction.unit.base === "SHADOW" && !afloat && !flyer;
   // Bead pulp_wars-2yc.29: with a turn state the ring follows it (FRESH is
   // the strong pulsing cue, ACTIVE the thin ring, SPENT and no state none);

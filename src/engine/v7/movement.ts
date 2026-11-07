@@ -16,6 +16,7 @@ import {
   unitFliesV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
+  unitDeepWaterMoveV7,
   unitIsSummonedV7,
   unitRoleRuleV7,
   type MovementModeV7,
@@ -283,7 +284,14 @@ function validateMovementPathCoreV7(
   const flies = mode === "FLY";
   // The Ice Folk revision section 7.1: Mountain-born (land form only).
   const mountainBorn = unitIsMountainBornV7(state, unit);
-  const navigation = player.researchedTechs.includes("NAVIGATION");
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm flies
+  // over Deep Water without Navigation.
+  const navigation = unitDeepWaterMoveV7(
+    state,
+    unit,
+    player.researchedTechs.includes("NAVIGATION"),
+    mode,
+  );
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
   const revealed: CoordV7[] = [];
@@ -297,7 +305,7 @@ function validateMovementPathCoreV7(
   // from the state before the command. An Ice Folk unit Glides (a step from
   // Snow onto Snow costs half); another faction's ground unit stops on entering
   // Snow, and Snow it could not know about (a hidden Witch's Blizzard)
-  // interrupts the Move. A Sabretooth Prowls through zones of control.
+  // interrupts the Move. A Prowler (a Human Raider) passes zones of control.
   const winter = winterV7(state);
   const glides = unitGlidesV7(state, unit);
   const snowStopped =
@@ -660,8 +668,9 @@ function validateMovementPathCoreV7(
     explored = sight.explored;
     revealed.push(...sight.revealed);
     const observationState = withUnitAtForObservationV7(state, unit.id, step);
-    // The Martian revision section 7.2: a flyer ignores hostile ZOC; the Ice
-    // Folk revision section 7.7: a Sabretooth is not stopped by it.
+    // The Martian revision section 7.2: a flyer ignores hostile ZOC (the
+    // Frost Wyrm too); Prowl (a Human Raider; the Sabretooth until
+    // `pulp_wars-s55m.4`) is not stopped by it.
     const entersZoc =
       !flies &&
       !prowls &&
@@ -1281,7 +1290,14 @@ function validatePlayerMovementPathCoreV7(
   const flies = mode === "FLY";
   // The Ice Folk revision section 7.1: Mountain-born (land form only).
   const mountainBorn = unitIsMountainBornV7(view, unit);
-  const navigation = view.viewer.researchedTechs.includes("NAVIGATION");
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm flies
+  // over Deep Water without Navigation (a public body rule).
+  const navigation = unitDeepWaterMoveV7(
+    view,
+    unit,
+    view.viewer.researchedTechs.includes("NAVIGATION"),
+    mode,
+  );
   let current = unit.at;
   let currentRoadNode = isUsablePublicRoadNodeV7(
     view,
@@ -1290,7 +1306,7 @@ function validatePlayerMovementPathCoreV7(
   );
   let spentPoints2 = 0;
   // The Ice Folk revision (section 6.2): Glide and deep snow from the
-  // public Snow flags; Prowl; a Sabretooth's settlement restriction.
+  // public Snow flags; Prowl; a surfaced rider's settlement restriction.
   const glides = unitGlidesV7(view, unit);
   const snowStopped =
     !batEscape &&
@@ -2081,14 +2097,16 @@ function iceStepV7(
 /**
  * Ice Folk movement (`pulp_wars-s55m.2`): whether the unit may dive now,
  * read from the canonical state. A land-form unit of the Ice Folk kind (a
- * body rule) that stands on a Fishing Hole in its owner's territory and has
- * not moved (no Escape Move), neither Grabbed nor Dragged.
+ * body rule) that skates (`unitSkatesV7`: a ground unit; the Frost Wyrm
+ * flies and never dives, `pulp_wars-s55m.4`), stands on a Fishing Hole in
+ * its owner's territory, and has not moved (no Escape Move), neither
+ * Grabbed nor Dragged.
  */
 function canonicalDiverV7(state: GameStateV7, unit: UnitStateV7): boolean {
   if (
     state.ice.length === 0 ||
     unit.form !== "LAND" ||
-    !unitKindWalksIceV7(state, unit) ||
+    !unitSkatesV7(state, unit) ||
     unit.activation.moved ||
     unit.activation.escapeAvailable ||
     unit.activation.overrunActive ||
@@ -2209,7 +2227,7 @@ function publicDiverV7(
   if (
     context.ice.size === 0 ||
     unit.form !== "LAND" ||
-    !unitKindWalksIceV7(view, unit) ||
+    !unitSkatesV7(view, unit) ||
     unit.activation.moved ||
     unit.activation.escapeAvailable ||
     unit.activation.overrunActive ||

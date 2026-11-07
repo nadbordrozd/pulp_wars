@@ -390,7 +390,9 @@ describe("Ruleset 7 unit glossary", () => {
     expect(idOf("CAPTAIN", "MARTIAN", "RALLY")).toBe("PSYCHIC_COMMAND");
     expect(idOf("CAPTAIN", "GOBLIN", "RALLY")).toBe("BERSERK");
     expect(idOf("MARKSMAN", "UNDEAD", "ETHEREAL")).toBe("SLIPS_PAST");
-    expect(idOf("KNIGHT", "ICE_FOLK", "PROWL")).toBe("SLIPS_PAST");
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm's
+    // Frost Breath replaced the Sabretooth's Prowl.
+    expect(idOf("KNIGHT", "ICE_FOLK", "FROST_BREATH")).toBe("FROST_BREATH");
     expect(idOf("SWORDSMAN", "ICE_FOLK", "TRAMPLE")).toBe("WRECKER");
     expect(idOf("RAIDER", "ICE_FOLK", "BOLAS")).toBe("FROST_BOLT");
     expect(idOf("CAPTAIN", "ICE_FOLK", "FROST_BOLT")).toBe("FROST_BOLT");

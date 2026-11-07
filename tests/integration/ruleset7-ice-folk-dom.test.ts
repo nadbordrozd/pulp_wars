@@ -174,7 +174,7 @@ describe("Ice Folk unit dock", () => {
     app.destroy();
   });
 
-  it("names the Boulder Yeti's throw, the Witch's Blizzard and an Ice Folk unit's threshold", () => {
+  it("names the Snow Golem's throw, the Witch's Blizzard and an Ice Folk unit's threshold", () => {
     const controller = new FixtureController(iceFolkUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -718,7 +718,7 @@ describe("Ice Folk Help and technology", () => {
     ).toBe("Deep Winter");
     // (The Industry reshuffle, 7r56: the defender is trained with it.)
     expect(unlocks("fortification")).toEqual([
-      "Train Musk Ox",
+      "Train Walrus",
       DEEP_WINTER_UNLOCK_TEXT_V7,
     ]);
     expect(

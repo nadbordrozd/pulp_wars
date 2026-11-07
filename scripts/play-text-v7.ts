@@ -3047,7 +3047,7 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the one lab played
   // as the Ice Folk, on the same land.
   LAB_ICE_FOLK_MID:
-    "YOU PLAY THE ICE FOLK in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Ice Folk unit (thirteen technologies) and hold 5 Yetis, 2 Sleds, 2 Snow Hunters, 2 Musk Oxen, an Ice Witch, 2 Mammoths, a Boulder Yeti and a Sabretooth (16 units), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Deep Winter, where the Musk Ox is (your Snow reaches two tiles beyond your cities' land, and Recover heals 6 in your land), and not Brittle (a Shatter at 4 HP or fewer)",
+    "YOU PLAY THE ICE FOLK in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Ice Folk unit (thirteen technologies) and hold 5 Yetis, 2 Sleds, 2 Snow Hunters, 2 Walruses, an Ice Witch, 2 Mammoths, a Snow Golem and a Frost Wyrm (16 units), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Deep Winter, where the Walrus is (your Snow reaches two tiles beyond your cities' land, and Recover heals 6 in your land), and not Brittle (a Shatter at 4 HP or fewer)",
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the one lab played as
   // the Dwarves, on the same land.
   LAB_DWARF_MID:
@@ -3608,14 +3608,17 @@ const NINTH_UNIT_ROLE_CODE_V7: Readonly<
 > = {
   UNDEAD: { SWORDSMAN: "Wi" },
   GOBLIN: { SWORDSMAN: "Og" },
-  ICE_FOLK: { SWORDSMAN: "Mm", GUARD: "Ox" },
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Walrus (`Ox` for
+  // the Musk Ox before) and the Frost Wyrm, a flyer, not a Knight.
+  ICE_FOLK: { SWORDSMAN: "Mm", GUARD: "Wr", KNIGHT: "Fw" },
   DWARF: { SWORDSMAN: "Tk", KNIGHT: "Wh" },
   CANDY: { SWORDSMAN: "Jb" },
 };
 const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
   UNDEAD: "  Undead heavy: Wi wight",
   GOBLIN: "  Goblin heavy: Og ogre",
-  ICE_FOLK: "  Ice Folk: Mm mammoth (the heavy) Ox musk ox (the defender)",
+  ICE_FOLK:
+    "  Ice Folk: Mm mammoth (the heavy) Wr walrus (the defender) Fw frost wyrm (the flyer)",
   DWARF: "  Dwarf: Tk steam tank (the heavy) Wh whirligig",
   CANDY: "  Candy heavy: Jb jawbreaker",
   // The Cultists (`pulp_wars-mch9.5`): the summoned Horror;

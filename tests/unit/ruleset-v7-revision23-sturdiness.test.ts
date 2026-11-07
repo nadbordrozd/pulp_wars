@@ -217,7 +217,7 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // The Ice Folk revision (`pulp_wars-7g3.3`) adds a sixth faction with its
     // own numbers (docs/product/RULESET_7_ICE_FOLK.md section 3); its coarse
     // balance (`pulp_wars-7g3.7`) gave the Yeti 9 HP.
-    // (The ninth unit, 7r55: the defender is the Musk Ox, 16; the Mammoth,
+    // (The ninth unit, 7r55: the defender is the Walrus, 16; the Mammoth,
     // 20, is the heavy role.)
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch and the Boulder
     // Yeti 10 (were 12), the Frost Giant 36 (was 40).

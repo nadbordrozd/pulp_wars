@@ -129,7 +129,7 @@ stated). The rules are in the current rules:
 [Heavyweight](RULESET_7_CURRENT.md#1813-the-ogre-heavyweight),
 [the Stegosaurus](RULESET_7_CURRENT.md#1915-the-stegosaurus-the-thagomizer),
 [Shock Field](RULESET_7_CURRENT.md#2013-the-shock-trooper-shock-field),
-[Frostbite](RULESET_7_CURRENT.md#2117-the-musk-ox-frostbite),
+[Frostbite](RULESET_7_CURRENT.md#2117-the-walrus-frostbite),
 [Three Hammers, since replaced by Whirl](RULESET_7_CURRENT.md#2215-the-whirligig-whirl),
 and [Rock Hard](RULESET_7_CURRENT.md#2312-the-jawbreaker-rock-hard).
 

@@ -502,7 +502,7 @@ describe("the Whirligig's Whirl is its attack (section 22.15, pulp_wars-befg)", 
     const ox = dwarfFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: W },
-        // A Musk Ox (Frostbite).
+        // A Walrus (Frostbite).
         { seat: 1, role: "GUARD", at: at(5, 2) },
       ],
       { factions: ["DWARF", "ICE_FOLK"] },

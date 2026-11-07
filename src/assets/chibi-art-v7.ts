@@ -1029,7 +1029,7 @@ export function unitArtSubjectV7(unit: {
  *
  * The unit that took the vacated role gets the free slot `SWORDSMAN`, so
  * the seven units added at 7r55 (Ogre, Wight, Shock Trooper, Jawbreaker,
- * Stegosaurus, Musk Ox, Whirligig) are all `<FACTION>:SWORDSMAN`: the
+ * Stegosaurus, Walrus, Whirligig) are all `<FACTION>:SWORDSMAN`: the
  * ninth art slot of every non-Human faction. Naval roles are not land art
  * slots and are returned unchanged.
  */
@@ -1061,7 +1061,7 @@ export const MOVED_UNIT_ART_SLOTS_V7: Readonly<
  * the board, the "stand-in" mark in the Gallery). `letter` is the badge.
  *
  * The table is EMPTY since bead `pulp_wars-2yc.34`: the seven units added
- * at 7r55 (Wight, Ogre, Stegosaurus, Shock Trooper, Musk Ox, Whirligig and
+ * at 7r55 (Wight, Ogre, Stegosaurus, Shock Trooper, Walrus, Whirligig and
  * Jawbreaker) have their own sprite and portrait under
  * `UNIT:<FACTION>:SWORDSMAN` and `PORTRAIT:<FACTION>:SWORDSMAN` in the
  * faction direction manifests, so no unit wears the letter badge.

@@ -124,6 +124,33 @@ export function canBeFrozenV7(
 }
 
 /**
+ * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): Frost Breath.
+ * Whether an `ATTACK` by `attacker` Freezes its target: a land-form
+ * attacker whose role under its kind has `frostBreath` (the Frost Wyrm),
+ * a target the attack leaves alive (`defenderDies` false), and a target
+ * its controller can freeze ({@link canBeFrozenV7}: any form but an Egg,
+ * ships and embarked units included; never the Monster or the Herald). A
+ * retaliation is no attack of the Wyrm's and never breathes frost. The
+ * public preview reads the same facts, so it is exact.
+ */
+export function attackFrostBreathV7(
+  state: FactionRosterV7 & {
+    readonly setup: GameStateV7["setup"];
+    readonly humanPlayerId: PlayerId;
+  },
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
+  defender: Pick<UnitStateV7, "ownerId" | "form" | "hp"> & SummonedUnitRefV7,
+  defenderDies: boolean,
+): boolean {
+  return (
+    !defenderDies &&
+    attacker.form === "LAND" &&
+    unitRoleMechanicsV7(state, attacker).frostBreath &&
+    canBeFrozenV7(state, attacker.ownerId, defender)
+  );
+}
+
+/**
  * Section 21.2: the `turnsLeft` a freeze gives a unit of `ownerId` now: 2
  * during that owner's own turn (it stays Frozen through its next turn), 1
  * otherwise (it thaws at the end of its owner's next turn).
@@ -269,6 +296,9 @@ export type FrozenSourceV7 =
   | "COLD_AURA"
   | "BLACK_ICE"
   | "FROSTBITE"
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): a Frost Wyrm's
+  // attack.
+  | "FROST_BREATH"
   // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
   | "SHARDS"
   // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze reached a
@@ -679,7 +709,8 @@ export function blizzardHalvedDamageV7(damage: number): number {
 
 /**
  * Section 6.2 (1): whether the unit Glides: a land-form unit of an Ice Folk
- * seat whose role Glides (every Ice Folk land role but the Sabretooth).
+ * seat whose role Glides (every Ice Folk land role but the Frost Wyrm, a
+ * flyer).
  */
 export function unitGlidesV7(
   roster: FactionRosterV7,

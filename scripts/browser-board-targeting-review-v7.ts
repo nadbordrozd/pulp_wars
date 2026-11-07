@@ -234,7 +234,7 @@ const SHOTS: readonly Shot[] = [
     module: "/tests/fixtures/v7-ice-folk-ui.ts",
     fixture: "iceFolkUiFixtureV7",
     coords: "ICE_FOLK_UI_V7",
-    unit: "sabretooth",
+    unit: "frostWyrm",
     marks: ["MOVE"],
   },
   {

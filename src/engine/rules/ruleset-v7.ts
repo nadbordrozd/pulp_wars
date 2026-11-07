@@ -431,8 +431,10 @@ export type UnitRoleAbilityV7 =
   | "SHIELD_CANOPY"
   // The Ice Folk revision (section 3): Mountain-born, the Yeti's Rockfall,
   // the Sled's Bolas, the Snow Hunter's Cold Blood, the Mammoth's Sweep and
-  // Trample, the Ice Witch's Blizzard and Cold Snap, the Boulder Yeti's
-  // Boulders, the Sabretooth's Prowl, and the Frost Giant's Cold Aura.
+  // Trample, the Ice Witch's Blizzard and Cold Snap, the Snow Golem's
+  // Boulders, and the Frost Giant's Cold Aura. The Ice Folk roster rework
+  // (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's Frost Breath replaced the
+  // Sabretooth's Prowl.
   | "MOUNTAIN_BORN"
   | "ROCKFALL"
   | "BOLAS"
@@ -442,7 +444,7 @@ export type UnitRoleAbilityV7 =
   | "BLIZZARD"
   | "COLD_SNAP"
   | "BOULDERS"
-  | "PROWL"
+  | "FROST_BREATH"
   | "COLD_AURA"
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and
   // the Mammoth's Stampede.
@@ -704,8 +706,9 @@ export interface RoleMechanicsV7 {
   /**
    * The Ice Folk revision (section 6.2): Glide. In land form a step from a
    * Snow tile onto a Snow tile costs one half-point (`pulp_wars-1wy.3`:
-   * both ends, no longer every step that leaves Snow). True for every Ice Folk land
-   * role except the Sabretooth; false for every other faction.
+   * both ends, no longer every step that leaves Snow). True for every Ice
+   * Folk land role except the Frost Wyrm (a flyer; the Sabretooth before
+   * `pulp_wars-s55m.4`); false for every other faction.
    */
   readonly glides: boolean;
   /**
@@ -726,7 +729,8 @@ export interface RoleMechanicsV7 {
   readonly glidesThroughZoc: boolean;
   /**
    * The Ice Folk revision (section 7.7): Prowl. Entering hostile zone of
-   * control does not end the unit's Move (the Sabretooth).
+   * control does not end the unit's Move (the Human Raider; the Sabretooth
+   * until `pulp_wars-s55m.4`).
    */
   readonly ignoresZocStops: boolean;
   /** The Ice Folk revision (section 7.5): the Sweep damage (0 without). */
@@ -919,9 +923,24 @@ export interface RoleMechanicsV7 {
   readonly cracksArmour: boolean;
   /**
    * The ninth unit: Frostbite. A unit that attacks a land-form unit of the
-   * role from the next tile and survives is Frozen (the Ice Folk Musk Ox).
+   * role from the next tile and survives is Frozen (the Ice Folk Walrus,
+   * the Musk Ox before `pulp_wars-s55m.4`).
    */
   readonly frostbite: boolean;
+  /**
+   * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): Frost Breath.
+   * Every `ATTACK` the land-form unit makes (never a retaliation) that
+   * leaves its target alive Freezes the target (any form but an Egg, ships
+   * included), with the one-turn Frozen of the Ice Folk Freeze (the Frost
+   * Wyrm). A body rule of the role under its kind.
+   */
+  readonly frostBreath: boolean;
+  /**
+   * The Ice Folk roster rework (`pulp_wars-s55m.4`): in land form the
+   * flyer crosses and hovers over Deep Water without Navigation (the Frost
+   * Wyrm). Every other flyer needs its controller's Navigation there.
+   */
+  readonly fliesOverDeepWater: boolean;
   /**
    * Dwarf crowd control (`pulp_wars-w49.33`): Whirl, which replaced the
    * ninth unit's Three Hammers. Since `pulp_wars-befg` it is the role's
@@ -1571,7 +1590,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     ["DRILL"],
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender of
     // every faction (the `GUARD` role: Guard, Zombie, Orc Brute,
-    // Ankylosaurus, Shield Projector, Musk Ox, Steam Mole, Marshmallow) is
+    // Ankylosaurus, Shield Projector, Walrus, Steam Mole, Marshmallow) is
     // here, on the other sub-branch from the heavy line unit.
     [
       { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
@@ -2023,6 +2042,8 @@ const mechanics = (
           immovable: false,
           cracksArmour: false,
           frostbite: false,
+          frostBreath: false,
+          fliesOverDeepWater: false,
           whirl: false,
           rallyExcluded: false,
           demolishesFieldDefense: roleId === "CATAPULT",
@@ -3326,9 +3347,9 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
 /**
  * The Ice Folk technology graph (docs/product/RULESET_7_ICE_FOLK.md section
  * 4): identical to ORIGINAL_BASELINE_V5 except that Administration grants
- * `WITCH_SUPPORT` instead of Captain support (Chivalry granted no Overrun
- * until the tier-3 review A, `pulp_wars-1pwz`, gave the Sabretooth one),
- * Fortification (displayed as Deep Winter) grants `DEEP_WINTER` instead of
+ * `WITCH_SUPPORT` instead of Captain support, Chivalry grants no Overrun
+ * (the tier-3 review A, `pulp_wars-1pwz`, gave the Sabretooth one; the
+ * Frost Wyrm of `pulp_wars-s55m.4` has none), Fortification (displayed as Deep Winter) grants `DEEP_WINTER` instead of
  * `BUILD_FIELD_DEFENSE`, and Explosives (displayed as Brittle) keeps both of
  * its unlocks and adds `BRITTLE`.
  *
@@ -3367,29 +3388,33 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
         original.prerequisites,
         [
           ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
-            // The tier-3 review A (`pulp_wars-1pwz`): Chivalry grants
-            // Overrun again (the Sabretooth's).
+            // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125):
+            // Chivalry grants no Overrun (the Frost Wyrm has none; the
+            // Sabretooth had one since the tier-3 review A).
             unlock.kind === "CAPTAIN_SUPPORT"
               ? [{ kind: "WITCH_SUPPORT" }]
-              : unlock.kind === "COMMAND" &&
-                  unlock.command === "BUILD_FIELD_DEFENSE"
-                ? [{ kind: "DEEP_WINTER" }]
-                : // The frozen sea (naval branch sections 2.2 and 8.11):
-                  // the Ice Folk tree unlocks no ship, no Ram, and no
-                  // Board. Ice Folk movement (`pulp_wars-s55m.2`, 7r124):
-                  // nor a dock (no Port or Ice Harbour, no Shipyard or
-                  // Great Harbour), nor Harbours or the naval training
-                  // discount: the Fishing Hole is their one ice building.
-                  (unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) ||
-                    unlock.kind === "RAM" ||
-                    unlock.kind === "HARBOURS" ||
-                    unlock.kind === "NAVAL_TRAINING_DISCOUNT" ||
-                    (unlock.kind === "COMMAND" &&
-                      (unlock.command === "BOARD" ||
-                        unlock.command === "BUILD_PORT" ||
-                        unlock.command === "BUILD_SHIPYARD"))
-                  ? []
-                  : [unlock],
+              : unlock.kind === "OVERRUN"
+                ? []
+                : unlock.kind === "COMMAND" &&
+                    unlock.command === "BUILD_FIELD_DEFENSE"
+                  ? [{ kind: "DEEP_WINTER" }]
+                  : // The frozen sea (naval branch sections 2.2 and 8.11):
+                    // the Ice Folk tree unlocks no ship, no Ram, and no
+                    // Board. Ice Folk movement (`pulp_wars-s55m.2`, 7r124):
+                    // nor a dock (no Port or Ice Harbour, no Shipyard or
+                    // Great Harbour), nor Harbours or the naval training
+                    // discount: the Fishing Hole is their one ice building.
+                    (unlock.kind === "UNIT_ROLE" &&
+                        isNavalRoleV7(unlock.role)) ||
+                      unlock.kind === "RAM" ||
+                      unlock.kind === "HARBOURS" ||
+                      unlock.kind === "NAVAL_TRAINING_DISCOUNT" ||
+                      (unlock.kind === "COMMAND" &&
+                        (unlock.command === "BOARD" ||
+                          unlock.command === "BUILD_PORT" ||
+                          unlock.command === "BUILD_SHIPYARD"))
+                    ? []
+                    : [unlock],
           ),
           ...(original.id === "EXPLOSIVES"
             ? [{ kind: "BRITTLE" } as const]
@@ -3453,12 +3478,13 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD", "FREEZE"],
   }),
-  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox, the Ice Folk
-  // defender at Drill (the Mammoth held this role until 7r54 and is the
-  // `SWORDSMAN` role now). Frostbite is the role mechanic `frostbite`.
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus (the Musk Ox
+  // until `pulp_wars-s55m.4`), the Ice Folk defender at Drill (the Mammoth
+  // held this role until 7r54 and is the `SWORDSMAN` role now). Frostbite
+  // is the role mechanic `frostbite`.
   GUARD: role({
     role: "GUARD",
-    label: "Musk Ox",
+    label: "Walrus",
     tacticalRole: "DEFENDER",
     cost: 4,
     maxHp: 16,
@@ -3495,9 +3521,11 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     // water around her with Rime, so she has no separate `FREEZE`.
     abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FROST_BOLT"],
   }),
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Snow Golem
+  // (the Boulder Yeti before; the same rules).
   CATAPULT: role({
     role: "CATAPULT",
-    label: "Boulder Yeti",
+    label: "Snow Golem",
     tacticalRole: "SIEGE",
     // Ice Folk Freeze (`pulp_wars-w49.37`): 9 Coins and 10 HP (8 and 12
     // before).
@@ -3513,9 +3541,15 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN", "FREEZE"],
   }),
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm
+  // replaced the Sabretooth (Prowl, Overrun, and Cold Blood). A flyer that
+  // crosses Shallow and Deep Water without Navigation, and whose Frost
+  // Breath Freezes every target its attack leaves alive, ships included:
+  // the Ice Folk answer to a battleship. Its next blow from the next tile
+  // Shatters what it froze.
   KNIGHT: role({
     role: "KNIGHT",
-    label: "Sabretooth",
+    label: "Frost Wyrm",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
     maxHp: 14,
@@ -3524,23 +3558,11 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     move: 3,
     range: 1,
     minimumRange: 1,
-    sightRadius: 1,
+    // Sight 2, as every flyer (the Saucer, the Mothership, the Gyrocopter).
+    sightRadius: 2,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    // The tier-3 review A (`pulp_wars-1pwz`): the hunter of the frozen
-    // line. Cold Blood (+0.5 Attack against a Frozen unit, the Snow
-    // Hunter's) and Overrun: a Frozen unit does not strike back, and the
-    // Sabretooth's 3.5 kills or shatters a frozen Fighter, Marksman, Raider,
-    // or Knight, so it runs through the units the Sleds, the Witch, and the
-    // Musk Oxen froze. Elsewhere its Attack 3 kills only the 10-HP units.
-    abilities: [
-      "ATTACK",
-      "CAPTURE",
-      "PROWL",
-      "OVERRUN",
-      "COLD_BLOOD",
-      "FREEZE",
-    ],
+    abilities: ["ATTACK", "CAPTURE", "FLY", "FROST_BREATH", "FREEZE"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3594,11 +3616,12 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
 
 /**
  * The Ice Folk engine mechanics (section 11): no role builds Field Defense;
- * the Yeti, the Boulder Yeti, and the Frost Giant are Mountain-born; every
- * land role but the Sabretooth Glides; the Sabretooth Prowls; the Mammoth
- * Sweeps and Tramples; the Boulder Yeti ignores fortification, is Planted
- * when unmoved, and never advances; the Yeti has Rockfall and the Snow
- * Hunter Cold Blood. Every role uses one slot. Boats are Human boats.
+ * the Yeti, the Snow Golem, and the Frost Giant are Mountain-born; every
+ * land role but the Frost Wyrm Glides; the Frost Wyrm flies (over Deep
+ * Water without Navigation), never advances, and breathes frost; the
+ * Mammoth Sweeps and Tramples; the Snow Golem ignores fortification, is
+ * Planted when unmoved, and never advances; the Yeti has Rockfall and the
+ * Snow Hunter Cold Blood. Every role uses one slot. Boats are Human boats.
  */
 export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: {
@@ -3612,7 +3635,7 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   // glides through zones of control (the redesign's Runners before).
   RAIDER: { glides: true, runners: true, glidesThroughZoc: true },
   MARKSMAN: { glides: true, runners: true, coldBloodBonus2: 1 },
-  // The ninth unit (7r55): the Musk Ox (Frostbite).
+  // The ninth unit (7r55): the Walrus (Frostbite).
   GUARD: { buildsFieldDefense: false, glides: true, frostbite: true },
   CAPTAIN: { glides: true },
   CATAPULT: {
@@ -3622,9 +3645,16 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     ignoresFortification: true,
     plantedBonus2: 2,
   },
-  // The tier-3 review A (`pulp_wars-1pwz`): the Sabretooth's Cold Blood,
-  // the Snow Hunter's `COLD_BLOOD_BONUS2_V7`.
-  KNIGHT: { ignoresZocStops: true, coldBloodBonus2: 1 },
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
+  // Wyrm flies like the Gyrocopter (no advance after a kill), over Deep
+  // Water without Navigation, and its attacks Freeze (Frost Breath). As a
+  // flyer it neither Glides on Snow nor skates on ice.
+  KNIGHT: {
+    movementMode: "FLY",
+    advancesAfterKill: false,
+    fliesOverDeepWater: true,
+    frostBreath: true,
+  },
   // The giants' signatures (section 6.6): Glacial Smash, and the Frost
   // Giant never advances.
   JUGGERNAUT: {
@@ -5408,7 +5438,8 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     SEAMANSHIP: "Black Ice",
     SUBMERSIBLES: "Glacier",
     SAWMILLING: "Boulders",
-    CHIVALRY: "Sabretooths",
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): Sabretooths before.
+    CHIVALRY: "Frost Wyrms",
     METALLURGY: "Mammoths",
   },
   // The Dwarf revision: Fortification and Explosives are renamed.
@@ -7671,6 +7702,27 @@ export function unitFliesV7(
 }
 
 /**
+ * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): whether a Move of
+ * the unit may cross and end over Deep Water: its controller's Navigation
+ * (`navigation`), or a land-form flyer whose role `fliesOverDeepWater` (the
+ * Frost Wyrm, a body rule of its kind, so exact in every view). Shallow
+ * Water needs neither for a flyer.
+ */
+export function unitDeepWaterMoveV7(
+  roster: FactionRosterV7,
+  unit: MartianUnitFactsV7,
+  navigation: boolean,
+  movementMode: MovementModeV7,
+): boolean {
+  return (
+    navigation ||
+    (unit.form === "LAND" &&
+      movementMode === "FLY" &&
+      unitRoleMechanicsV7(roster, unit).fliesOverDeepWater)
+  );
+}
+
+/**
  * `pulp_wars-ke95`: whether a unit's kind can ever capture. Any unit can
  * capture (user direction 2026-10-09): every land role of every faction has
  * `CAPTURE`, flyers and the Prowling Sabretooth included; boats and the
@@ -7758,7 +7810,7 @@ export function halfPowerAttack2V7(attack2: number): number {
  * - Grass and Forest: every land-form unit.
  * - Mountain: a land-form unit whose owner has Engineering, every walker
  *   and flyer (Stride and Flying need no Engineering), and every
- *   Mountain-born unit (the Ice Folk Yeti, Boulder Yeti, and Frost Giant).
+ *   Mountain-born unit (the Ice Folk Yeti, Snow Golem, and Frost Giant).
  * - Shallow Water: afloat units only.
  * - Deep Water: afloat units whose owner has Navigation.
  *

@@ -344,8 +344,8 @@ export function moveOnIceV7(
   if (!command.path.some((at) => ice.has(key(at)))) return null;
   const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
   if (stats?.iceFolk?.skates !== true) {
-    // A walker or a flyer is never stopped by terrain; the Sabretooth is an
-    // Ice Folk unit and does not slip.
+    // A walker or a flyer is never stopped by terrain; the Frost Wyrm is an
+    // Ice Folk flyer and does not slip.
     const slips =
       stats?.iceFolk === undefined &&
       unitMovementModeV7(view, unit) === "GROUND" &&

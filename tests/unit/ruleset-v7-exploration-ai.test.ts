@@ -544,13 +544,14 @@ describe("ruleset-7 Normal AI exploration plan (pulp_wars-nc6)", () => {
         fog: [],
       }),
     );
-    // The Yeti is Mountain-born and glides; the Sabretooth does neither.
+    // The Yeti is Mountain-born and glides; the Frost Wyrm (the Sabretooth
+    // before `pulp_wars-s55m.4`) flies and never glides.
     expect(profile(ice, { x: 3, y: 8 })).toMatchObject({
       terrain: "MOUNTAIN",
       glides: true,
     });
     expect(profile(ice, { x: 3, y: 9 })).toMatchObject({
-      terrain: "GROUND",
+      terrain: "FLY",
       glides: false,
     });
   });

@@ -213,7 +213,7 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
         { role: "KNIGHT", at: { x: 8, y: 12 } },
         { role: "KNIGHT", at: { x: 8, y: 11 } },
         { role: "FIGHTER", at: { x: 9, y: 12 } },
-        // Retune 4: three rifles (hand play: a wall of Musk Oxen kept every
+        // Retune 4: three rifles (hand play: a wall of Walruses kept every
         // Knight off; a shot from two tiles draws no Frostbite).
         { role: "MARKSMAN", at: { x: 7, y: 12 } },
         { role: "MARKSMAN", at: { x: 8, y: 13 } },
@@ -248,7 +248,7 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
         "SUBMERSIBLES",
       ],
       // They ride round the west shore for Whitewater (hand play: under
-      // RUSH they stood off a wall of Musk Oxen for ten rounds).
+      // RUSH they stood off a wall of Walruses for ten rounds).
       directive: { kind: "ASSAULT", target: { x: 4, y: 2 } },
     },
     {

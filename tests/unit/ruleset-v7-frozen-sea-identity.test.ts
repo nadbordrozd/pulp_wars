@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r124");
-    expect(PRIOR_RULESET_7_IDS.slice(-81, -77)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r125");
+    expect(PRIOR_RULESET_7_IDS.slice(-82, -78)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(123);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(124);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r124.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -77)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r125.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -78)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r124");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r125");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -239,7 +239,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       SUBMERSIBLES: "Glacier",
       // The ninth unit (7r55): the nodes named for their unit.
       SAWMILLING: "Boulders",
-      CHIVALRY: "Sabretooths",
+      CHIVALRY: "Frost Wyrms",
       METALLURGY: "Mammoths",
     });
   });
@@ -575,7 +575,7 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
     const ice = seatV7(state, 0);
     const cx = showcaseStripCenterXV7(0, 3);
     const own = state.units.filter((unit) => unit.ownerId === ice.id);
-    // (The ninth unit, 7r55: eight and the Musk Ox.)
+    // (The ninth unit, 7r55: eight and the Walrus.)
     expect(own).toHaveLength(9);
     expect(own.every((unit) => unit.form === "LAND")).toBe(true);
     // The frozen sea redesign: permanent, sound ice (thick: Glacier).

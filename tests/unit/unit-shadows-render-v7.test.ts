@@ -18,6 +18,7 @@ import { CHIBI_DIRECTION_CULT_ART_ASSETS_V7 } from "../../src/assets/chibi-direc
 import { CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-cult-summons-art-manifest";
 import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
+import { ICE_FOLK_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-ice-folk-presentation";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-martian-art-manifest";
 import { MARTIAN_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-martian-presentation";
 import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-undead-art-manifest";
@@ -207,13 +208,19 @@ describe("unit shadow table (pulp_wars-jg1)", () => {
       .filter((anchor) => anchor.motion === "FLYER")
       .map((anchor) => anchor.subject)
       .sort();
+    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm.
     expect(flyers).toEqual([
       "UNIT:DWARF:RAIDER",
+      "UNIT:ICE_FOLK:KNIGHT",
       "UNIT:MARTIAN:KNIGHT",
       "UNIT:MARTIAN:RAIDER",
     ]);
     const presentations: Readonly<Record<string, { readonly shadow: object }>> =
-      { ...MARTIAN_FLYER_PRESENTATION_V7, ...DWARF_FLYER_PRESENTATION_V7 };
+      {
+        ...MARTIAN_FLYER_PRESENTATION_V7,
+        ...DWARF_FLYER_PRESENTATION_V7,
+        ...ICE_FOLK_FLYER_PRESENTATION_V7,
+      };
     for (const subject of flyers) {
       const assetId = UNIT_SHADOW_FLYERS_V7[subject] ?? "";
       expect(liveAsset(subject).id).toBe(assetId);
@@ -306,7 +313,10 @@ describe("unit shadow render plan (pulp_wars-jg1)", () => {
   const sprite = { x: 100, y: 50, width: 72 * 1.5, height: 88 * 1.5 };
 
   it("places the shadow and the ring from the anchor, scaled by the drawn sprite", () => {
-    const subject = "UNIT:ICE_FOLK:KNIGHT" as const;
+    // The Yeti (the Sabretooth until the Ice Folk roster rework,
+    // `pulp_wars-s55m.4`, made the slot a flyer's) on its 56 x 80 canvas.
+    const subject = "UNIT:ICE_FOLK:FIGHTER" as const;
+    const sprite = { x: 100, y: 50, width: 56 * 1.5, height: 80 * 1.5 };
     const asset = liveAsset(subject);
     const anchor = UNIT_SHADOW_TABLE_V7[subject];
     if (anchor?.shadow == null || anchor.ring === null)
@@ -322,11 +332,11 @@ describe("unit shadow render plan (pulp_wars-jg1)", () => {
     expect(geometry.shadow.radiusX).toBeCloseTo(anchor.shadow.radiusX * 1.5);
     expect(geometry.ring.centreY).toBeCloseTo(geometry.shadow.centreY);
     expect(geometry.ring.radiusX).toBeCloseTo(anchor.ring.radiusX * 1.5);
-    // The Sabretooth stands 19 px above its canvas bottom: the shadow no
-    // longer sits at the canvas bottom, where it used to show below it.
+    // The Yeti stands 13 px above its canvas bottom: the shadow no longer
+    // sits at the canvas bottom, where it used to show below it.
     const generic = directedUnitShadowGeometryV7(unitEntry(subject), sprite);
     expect(generic.anchored).toBe(false);
-    expect(geometry.shadow.centreY).toBeLessThan(generic.shadow.centreY - 15);
+    expect(geometry.shadow.centreY).toBeLessThan(generic.shadow.centreY - 10);
 
     const { context, log } = recordingContext();
     drawDirectedUnitBaseV7(
