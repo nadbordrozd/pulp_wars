@@ -127,7 +127,8 @@ describe("Crack Ice: armed and picked on the board", () => {
       unitId: unitAt(UI.yeti).id,
     });
     expect(document.querySelector('[data-action="crack-ice"]')).toBeNull();
-    expect(document.querySelector('[data-action="freeze"]')).not.toBeNull();
+    // (Nor a Freeze button since the one Freeze effect, `pulp_wars-xv0t`.)
+    expect(document.querySelector('[data-action="freeze"]')).toBeNull();
     app.destroy();
   });
 });

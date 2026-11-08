@@ -877,10 +877,11 @@ describe("Mind Control revision: a controlled Ice Witch's Blizzard (section 5.3)
       { factions: ["MARTIAN", "ICE_FOLK", "ORIGINAL"] },
     );
 
-  it("still makes Snow and halves ranged hits only for Ice Folk units of her controller", () => {
+  it("still halves ranged hits, only for Ice Folk units of her controller, and lays no Snow", () => {
     const state = witchField(true);
-    // Her Blizzard is a body rule: Snow around her.
-    expect(isSnowV7(activeViewV7(state), at(6, 5))).toBe(true);
+    // Her Blizzard is a body rule; since the one Freeze effect
+    // (`pulp_wars-xv0t`, 7r133) it lays no Snow around her.
+    expect(isSnowV7(activeViewV7(state), at(6, 5))).toBe(false);
     // A Martian ray on the Ice seat's Yeti beside her: not halved any more.
     const ray = attackV7(state, at(6, 6), at(6, 4));
     expect(ray.combat.blizzardHalved).toBe(false);
@@ -897,19 +898,17 @@ describe("Mind Control revision: a controlled Ice Witch's Blizzard (section 5.3)
     expect(hunter.combat.blizzardHalved).toBe(true);
   });
 
-  it("stops the controller's own ground units in her Snow", () => {
+  it("does not stop the controller's own ground units around her (her Blizzard is no Snow)", () => {
     const state = witchField(true);
-    // The controlled Knight (a Human kind) enters her Snow and tries to go on.
+    // The controlled Knight (a Human kind) walks through her Blizzard: no
+    // Snow stops it since the one Freeze effect (`pulp_wars-xv0t`).
     expect(
       rejectedV7(state, {
         kind: "MOVE",
         unitId: idAt(state, at(7, 3)),
         path: [at(6, 3), at(6, 2)],
-      }),
-    ).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "SNOW_STOPS_MOVE" },
-    });
+      }).params,
+    ).not.toEqual({ reason: "SNOW_STOPS_MOVE" });
   });
 });
 

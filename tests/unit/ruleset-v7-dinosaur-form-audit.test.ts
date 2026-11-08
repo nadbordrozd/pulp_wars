@@ -566,7 +566,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // nobody). Only the Ice Folk walk on ice (`pulp_wars-y242`): the public
     // Push preview reads ice as ground only for a land-form unit that walks
     // on it.
-    "src/engine/v7/query.ts": 8,
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the public Cold Wake
+    // preview, as the Cold Wake, is a land-form Giant's.
+    "src/engine/v7/query.ts": 9,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
@@ -590,7 +592,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // The Mothership redesign (`pulp_wars-ewpj`): MASS_BEAM_DOWN is a
     // land-form Mothership's (`MASS_BEAM_DOWN_NOT_LEGAL { reason:
     // "EMBARKED" }`, as for BEAM_DOWN).
-    "src/engine/v7/reducer.ts": 20,
+    // (18: the one Freeze effect, `pulp_wars-xv0t`, 7r133, took the Bolas's
+    // and the Frost Bolt's land-form tests.)
+    "src/engine/v7/reducer.ts": 18,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat
@@ -665,16 +669,17 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // land-form mover (an embarked unit, an Egg, and a boat are not
     // dragged).
     "src/engine/v7/cult-mass.ts": 2,
-    // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
-    // freezes only when the Giant ends its Move in land form (an embarked
-    // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the
-    // Mammoth in land form (an embarked one is refused `EMBARKED`; an Egg
-    // never reaches it).
-    "src/engine/v7/ice-folk.ts": 1,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Stampede needs the Mammoth in
+    // land form (an embarked one is refused `EMBARKED`; an Egg never
+    // reaches it). (The Frost Giant's Cold Aura test moved to `ice.ts` as
+    // its Cold Wake: the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
     // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry
     // freezes only a unit that ends its Move, landing or Beam Down in land
-    // form (an Egg never moves; a unit that embarked is afloat).
-    "src/engine/v7/ice.ts": 1,
+    // form (an Egg never moves; a unit that embarked is afloat). The one
+    // Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant's Cold Wake
+    // freezes only when the Giant ends its Move in land form (an embarked
+    // Giant, an Egg, and a boat freeze nothing).
+    "src/engine/v7/ice.ts": 2,
     "src/engine/v7/stampede.ts": 1,
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
@@ -745,7 +750,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/ai/v7-goblin.ts": 2,
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Cold Snap counts
     // every target but an Egg (one test fewer).
-    "src/ai/v7-ice-folk.ts": 6,
+    // (5: the one Freeze effect, `pulp_wars-xv0t`, 7r133, took the Bolas's
+    // score; the Cold Snap reads its public preview.)
+    "src/ai/v7-ice-folk.ts": 5,
     // Bolder abilities (`pulp_wars-w49.42`): the legacy Mind Control
     // exposure test (land form only) went with the HP limit (2 before).
     "src/ai/v7-martian.ts": 1,
@@ -824,7 +831,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's Frost Breath
     // is worth more on a target that is not in land form (a ship or an
     // embarked unit: nothing else of the Ice Folk reaches it).
-    "src/ai/v7.ts": 59,
+    // (58: the one Freeze effect, `pulp_wars-xv0t`, 7r133, took the Bolas
+    // hunt's test.)
+    "src/ai/v7.ts": 58,
     // The giants' signatures (`pulp_wars-w49.31`): a giant has its
     // signature in land form only (section 6.0, G2), and so has a Troll
     // that throws; the unit a crush is added to, the unit lined up behind

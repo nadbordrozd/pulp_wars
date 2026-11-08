@@ -24,15 +24,17 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
 export type IceFolkFeedbackEffectV7 =
   /** A unit shattered: the burst and the shards (the casing is the board's). */
   | "SHATTER"
-  /** A Cold Snap: the frost ring from the Witch, then frost on each target. */
+  /**
+   * A Cold Snap or (the one Freeze effect, `pulp_wars-xv0t`, 7r133) a Cold
+   * Wake: the frost ring from the Witch or the Frost Giant, then
+   * frost on each target. (The Bolas, the Cold Aura and the Frost Bolt cues
+   * went with their mechanics.)
+   */
   | "COLD_SNAP"
-  /** A Bolas: the spinning bolas from the Sled, then frost on its target. */
-  | "BOLAS"
-  /** A Cold Aura: a flash over the Giant's eight tiles, frost on each target. */
-  | "COLD_AURA"
-  /** A Frost Bolt: an icy streak from the Witch, then frost on its target. */
-  | "FROST_BOLT"
-  /** A freeze with no thrower (Black Ice, Frostbite): frost on each unit. */
+  /**
+   * A freeze with no ring (Frost Breath, Black Ice, Frostbite): frost on
+   * each unit.
+   */
   | "FROST"
   /**
    * A Stampede: dust and hoof marks race down the line from the Mammoth
@@ -43,9 +45,9 @@ export type IceFolkFeedbackEffectV7 =
   /** A Mammoth's Sweep: a white arc across the three tiles in front of it. */
   | "SWEEP"
   /**
-   * The frozen sea (bead pulp_wars-5ti.7): a Freeze spreading over its
-   * tiles. (Ice melting and the crush went with Icebound,
-   * `pulp_wars-s55m.1`.)
+   * The frozen sea (bead pulp_wars-5ti.7): a freeze spreading over its
+   * tiles, the water it ices and (`pulp_wars-xv0t`) the land it snows. (Ice
+   * melting and the crush went with Icebound, `pulp_wars-s55m.1`.)
    */
   | "ICE_FREEZE"
   /**
@@ -84,9 +86,6 @@ export const ICE_FOLK_EFFECT_DURATIONS_V7: Readonly<
 > = {
   SHATTER: Math.max(...ICE_FOLK_SHATTER_TIMELINE_V7.map((step) => step.toMs)),
   COLD_SNAP: 700,
-  BOLAS: 560,
-  COLD_AURA: 460,
-  FROST_BOLT: 520,
   FROST: 420,
   STAMPEDE: 520,
   SWEEP: 300,
@@ -119,7 +118,6 @@ export const ICE_FOLK_EFFECT_SUBJECTS_V7: readonly `EFFECT:${IceFolkEffectIdV7}`
     "EFFECT:SHATTER",
     "EFFECT:SHATTER_SHARDS",
     "EFFECT:COLD_SNAP",
-    "EFFECT:BOLAS",
     "EFFECT:FROST_HIT",
   ];
 
@@ -361,126 +359,6 @@ export function drawIceFolkFeedbackV7(
     }
     const hit = (progress - (ringShare - 0.1)) / (1 - (ringShare - 0.1));
     if (hit > 0) for (const at of feedback.cells) frostHit(at, clamp01(hit));
-  } else if (feedback.effect === "BOLAS") {
-    const from = feedback.from;
-    const target = feedback.cells[0];
-    const flight = 0.55;
-    if (from !== undefined && target !== undefined && progress < flight) {
-      const local = progress / flight;
-      const start = body(from);
-      const end = body(target);
-      const point = {
-        x: start.x + (end.x - start.x) * local,
-        y:
-          start.y +
-          (end.y - start.y) * local -
-          Math.sin(Math.PI * local) * 40 * zoom,
-      };
-      if (!sprite("EFFECT:BOLAS", point, 1, 1, local * Math.PI * 6)) {
-        // Two ice weights on a cord, spinning.
-        const angle = local * Math.PI * 6;
-        const arm = 12 * zoom;
-        context.save();
-        context.strokeStyle = "#e8dcc2";
-        context.lineWidth = Math.max(1, 1.6 * zoom);
-        context.beginPath();
-        context.moveTo(
-          point.x - Math.cos(angle) * arm,
-          point.y - Math.sin(angle) * arm,
-        );
-        context.lineTo(
-          point.x + Math.cos(angle) * arm,
-          point.y + Math.sin(angle) * arm,
-        );
-        context.stroke();
-        context.fillStyle = ice;
-        context.strokeStyle = outline;
-        for (const sign of [-1, 1]) {
-          context.beginPath();
-          context.arc(
-            point.x + sign * Math.cos(angle) * arm,
-            point.y + sign * Math.sin(angle) * arm,
-            4.5 * zoom,
-            0,
-            Math.PI * 2,
-          );
-          context.fill();
-          context.stroke();
-        }
-        context.restore();
-      }
-    }
-    if (target !== undefined && progress >= flight - 0.05)
-      frostHit(
-        target,
-        clamp01((progress - (flight - 0.05)) / (1 - flight + 0.05)),
-      );
-  } else if (feedback.effect === "COLD_AURA") {
-    const from = feedback.from;
-    if (from !== undefined && progress < 0.5) {
-      // A 200 ms ice-glow flash over the Giant's eight tiles.
-      const alpha = swell(progress / 0.5) * 0.3;
-      context.save();
-      context.globalAlpha *= alpha;
-      context.fillStyle = iceGlow;
-      const size = 128 * zoom;
-      for (let dy = -1; dy <= 1; dy += 1)
-        for (let dx = -1; dx <= 1; dx += 1) {
-          if (dx === 0 && dy === 0) continue;
-          const point = centre({ x: from.x + dx, y: from.y + dy });
-          context.fillRect(point.x - size / 2, point.y - size / 2, size, size);
-        }
-      context.restore();
-    }
-    if (progress >= 0.3)
-      for (const at of feedback.cells)
-        frostHit(at, clamp01((progress - 0.3) / 0.7));
-  } else if (feedback.effect === "FROST_BOLT") {
-    // A pale streak of ice shoots from the Witch to her target, with a
-    // trail of flakes, then frost forms on it.
-    const from = feedback.from;
-    const target = feedback.cells[0];
-    const flight = 0.45;
-    if (from !== undefined && target !== undefined && progress < flight + 0.1) {
-      const local = clamp01(progress / flight);
-      const start = body(from);
-      const end = body(target);
-      const head = {
-        x: start.x + (end.x - start.x) * local,
-        y: start.y + (end.y - start.y) * local,
-      };
-      const tail = clamp01(local - 0.35);
-      const back = {
-        x: start.x + (end.x - start.x) * tail,
-        y: start.y + (end.y - start.y) * tail,
-      };
-      const fade = progress > flight ? 1 - (progress - flight) / 0.1 : 1;
-      context.save();
-      context.globalAlpha *= clamp01(fade);
-      context.lineCap = "round";
-      for (const [colour, width] of [
-        [iceDark, 9],
-        [iceGlow, 6],
-        ["#ffffff", 2.5],
-      ] as const) {
-        context.strokeStyle = colour;
-        context.lineWidth = Math.max(1, width * zoom);
-        context.beginPath();
-        context.moveTo(back.x, back.y);
-        context.lineTo(head.x, head.y);
-        context.stroke();
-      }
-      context.fillStyle = "#ffffff";
-      context.beginPath();
-      context.arc(head.x, head.y, Math.max(2, 6 * zoom), 0, Math.PI * 2);
-      context.fill();
-      context.restore();
-    }
-    if (target !== undefined && progress >= flight - 0.05)
-      frostHit(
-        target,
-        clamp01((progress - (flight - 0.05)) / (1 - flight + 0.05)),
-      );
   } else if (feedback.effect === "FROST") {
     for (const at of feedback.cells) frostHit(at, progress);
   } else if (feedback.effect === "STAMPEDE") {

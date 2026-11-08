@@ -54,7 +54,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
   });
 
-  it("plays the frozen sea in the CHIBI look: Freeze, the Cold Snap, the slide, a Frozen ship", () => {
+  it("plays the frozen sea in the CHIBI look: no Freeze, the Cold Snap, the slide, a Frozen ship", () => {
     // The frozen sea (bead pulp_wars-5ti.7, second part).
     const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
     expect(source).toContain("await captureFrozenSeaEvidence(");
@@ -66,13 +66,11 @@ describe("Ruleset 7 browser smoke script", () => {
       `document.querySelector('.v7-unit-ability[data-ability="\${ability}"] img')`,
     );
     expect(source).toContain("icon.complete && icon.naturalWidth > 0");
-    expect(source).toContain("Freeze must have exactly one dock button");
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): no Freeze button.
+    expect(source).toContain("Freeze must have no dock button");
     expect(source).toContain("Freeze must not be a per-tile dock command");
     expect(source).toContain(
-      "document.querySelector('[data-v7-freeze-pick].v7-board-pick')?.dataset.boardTargets === '3'",
-    );
-    expect(source).toContain(
-      "trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN')",
+      "trace?.command?.kind !== 'COLD_SNAP' || !trace.eventKinds.includes('TILES_FROZEN')",
     );
     expect(source).toContain("the Sled did not reach the far shore");
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship, and
@@ -80,11 +78,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(source).toContain('[data-unit-status="frozen"]');
     expect(source).toContain('[data-action="ice-folk-cold-snap"]');
     expect(source).toContain("Ice Folk technology name: ");
-    // The aiming is captured before the Freeze is accepted, and the slide
-    // after it.
-    expect(source.indexOf("frozen-freeze-aim.png")).toBeLessThan(
-      source.indexOf("the board pick did not accept FREEZE with WATER_FROZEN"),
-    );
+    // The Witch's ring is captured before the slide.
     expect(source.indexOf("frozen-witch-ring.png")).toBeLessThan(
       source.indexOf("frozen-slide.png"),
     );
@@ -461,45 +455,19 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       'capitalText.includes("Snow: your units move at half cost")',
     );
-    // The Sled moves into reach and aims its Bolas from the dock; the
-    // target is picked on the board with Tab and Enter (bead
-    // pulp_wars-9im: the dock lists no targets).
-    const bolas = probe.indexOf(
-      `await pointerClick(connection, '[data-action="ice-folk-bolas"]')`,
-    );
-    expect(bolas).toBeGreaterThan(-1);
-    expect(probe).toContain(
-      `[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]') === null`,
-    );
-    expect(probe).not.toContain(
-      `pointerClick(\n    connection,\n    '[data-v7-ice-folk-pick="bolas"]`,
-    );
-    const bolasTab = probe.indexOf(
-      `await pressKey(connection, "Tab", "Tab")`,
-      bolas,
-    );
-    expect(bolasTab).toBeGreaterThan(bolas);
-    expect(probe.indexOf(`.startsWith('Bolas: ')`, bolasTab)).toBeGreaterThan(
-      bolasTab,
-    );
-    expect(probe).toContain("/Will be (Frozen|Frosted)/.test(hint)");
-    expect(probe).toContain("includes('Sled froze a')");
-    expect(probe).toContain("chilled.entry.turnsLeft < 1");
-    expect(probe).toContain("view.frozen.find(");
-    // Save and resume on a fresh load with the Ice Folk seat and the Frozen
-    // unit.
-    expect(bolas).toBeLessThan(
-      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
-    );
+    // The Sled moves near an enemy (its Bolas went with the one Freeze
+    // effect, `pulp_wars-xv0t`, 7r133).
+    expect(probe).not.toContain("ice-folk-bolas");
+    expect(probe).toContain("the Sled did not move: ");
+    // Save and resume on a fresh load with the Ice Folk seat and the Sled
+    // where it went.
     expect(probe).toContain(`'["ICE_FOLK","UNDEAD","GOBLIN","DINOSAUR"]'`);
     expect(probe).toContain(
       "JSON.stringify(resumed) !== JSON.stringify(chilled)",
     );
-    for (const name of [
-      "ice-folk-bolas-desktop.png",
-      "ice-folk-frozen-desktop.png",
-    ])
-      expect(probe).toContain(`await capture(connection, "${name}")`);
+    expect(probe).toContain(
+      `await capture(connection, "ice-folk-moved-desktop.png")`,
+    );
     // No fixture import: the probe also runs against a deployed bundle.
     expect(probe).not.toContain("/tests/fixtures/");
   });
@@ -918,7 +886,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r132.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r133.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1141,12 +1109,13 @@ describe("Ruleset 7 browser smoke script", () => {
     // three revision-17 Goblin probe captures, four Dinosaur probe captures
     // (revision 20 adds the Charge! attack preview), two Martian probe
     // captures (pulp_wars-t6s.4) and the Mind Control fixture capture
-    // (pulp_wars-b5f.3, dev server only), two Ice Folk probe captures
-    // (pulp_wars-7g3.6), two Dwarf probe captures (pulp_wars-78i.6), and
+    // (pulp_wars-b5f.3, dev server only), one Ice Folk probe capture
+    // (pulp_wars-7g3.6; two until the Bolas went with the one Freeze
+    // effect, `pulp_wars-xv0t`), two Dwarf probe captures (pulp_wars-78i.6), and
     // one revision-18 Showcase capture, two campaign captures
     // (pulp_wars-68k.5: the list, and the fixture win's Victory dialog), and
     // two Perfection captures (pulp_wars-kaw6.4: the setup and the launch).
-    expect(source.match(/await capture\(/g)).toHaveLength(26);
+    expect(source.match(/await capture\(/g)).toHaveLength(25);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
@@ -1201,7 +1170,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
     },
     persisted: {
       version: 7,
-      rulesetId: "pulp-wars-poc-7r132",
+      rulesetId: "pulp-wars-poc-7r133",
       commandIndex: 3,
     },
     ordinaryBoundary: {

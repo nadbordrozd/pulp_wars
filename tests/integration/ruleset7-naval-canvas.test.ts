@@ -15,7 +15,6 @@ import {
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
 import {
   FROZEN_UI_V7,
-  frozenFreezeUiFixtureV7,
   frozenShipUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import {
@@ -75,67 +74,6 @@ describe("Board on the board host", () => {
       expect(target?.semanticLabel).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
     }
     expect(callbacks.onCommand).not.toHaveBeenCalled();
-    rig.host.destroy();
-  });
-
-  it("steps through an armed Freeze's tiles with Tab and Enter freezes", () => {
-    // The frozen sea (bead pulp_wars-5ti.7, second part).
-    const state = frozenFreezeUiFixtureV7();
-    const view = viewForV7(state, state.humanPlayerId);
-    const yeti = unitAt(view, FROZEN_UI_V7.yeti);
-    const callbacks = { onSelection: vi.fn(), onCommand: vi.fn() };
-    const rig = hostRig(view, callbacks);
-    const tab = (): boolean => {
-      const event = new KeyboardEvent("keydown", {
-        key: "Tab",
-        bubbles: true,
-        cancelable: true,
-      });
-      rig.canvas.dispatchEvent(event);
-      return event.defaultPrevented;
-    };
-    const description = (): string =>
-      document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? "";
-    rig.host.update({
-      matchInstanceId: 1,
-      view,
-      offeredCommands: queryPlayerCommandsV7(view),
-      interactive: true,
-      motion: "REDUCED",
-      animationSpeed: "NORMAL",
-      presentationPaused: false,
-      highContrast: false,
-      interaction: {
-        selection: { kind: "UNIT", unitId: yeti.id },
-        selectedUnitId: yeti.id,
-        selectedAchievement: null,
-        freezePick: { kind: "FREEZE", unitId: yeti.id },
-      },
-    });
-    expect(rig.plan().targets.map((target) => target.family)).toEqual([
-      "FREEZE",
-      "FREEZE",
-      "FREEZE",
-    ]);
-    for (let step = 0; step < 3; step += 1) {
-      expect(tab(), String(step)).toBe(true);
-      // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a line that reaches
-      // the Patrol Boat Freezes it instead.
-      expect(description()).toMatch(
-        /^Freeze: ([123] tiles? of ice\. |1 ship is Frozen)/,
-      );
-      expect(description()).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
-    }
-    // Past the last tile Tab leaves the board.
-    expect(tab()).toBe(false);
-    rig.canvas.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
-    );
-    expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
-    expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
-      family: "FREEZE",
-      command: { kind: "FREEZE", unitId: yeti.id },
-    });
     rig.host.destroy();
   });
 

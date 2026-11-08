@@ -617,7 +617,10 @@ export type IceFolkArtSubjectV7 =
   | `UNIT:ICE_FOLK:${IceFolkArtRoleV7}`
   | `PORTRAIT:ICE_FOLK:${IceFolkArtRoleV7}`
   | `CITY:ICE_FOLK:${1 | 2 | 3}`
-  | `ICON:ACTION:${"THROW_BOLAS" | "COLD_SNAP" | "SWEEP" | "ROCKFALL" | "PROWL" | "SHATTER" | "FREEZE"}`
+  // `THROW_BOLAS`, `FROST_BOLT` and `FREEZE` name rasters of retired
+  // commands (the one Freeze effect, `pulp_wars-xv0t`, 7r133): no button
+  // draws them; the art stays registered until the set is retired.
+  | `ICON:ACTION:${"THROW_BOLAS" | "FROST_BOLT" | "COLD_SNAP" | "SWEEP" | "ROCKFALL" | "PROWL" | "SHATTER" | "FREEZE"}`
   // The Mammoth's Stampede (bead pulp_wars-2yc.118): `ICON:ACTION:STAMPEDE`
   // is the Triceratops's Charge!.
   | "ICON:ACTION:ICE_FOLK:STAMPEDE"

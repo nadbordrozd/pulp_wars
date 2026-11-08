@@ -63,10 +63,13 @@ export const GIANT_FIELD_DEFENSE_VALUE_V7 = 8;
  * own shot from where it stands (the army's breakthrough tier, 1177).
  */
 export const OVERSTRIDE_BREAKTHROUGH_VALUE_V7 = 10;
-/** Each unit a Frost Giant's Move or its shards newly freeze. */
+/**
+ * Each unit a Frost Giant's Move newly freezes (its Cold Wake; the shards
+ * of its Glacial Smash froze units too until `pulp_wars-xv0t`, 7r133).
+ */
 export const GLACIAL_FREEZE_VALUE_V7 = 6;
 /**
- * A Frost Giant's Move whose Cold Aura freezes a unit beside its new tile
+ * A Frost Giant's Move whose Cold Wake freezes a unit beside its new tile
  * goes before its own blow (the frozen unit does not strike back): above
  * the committed blows (1174, 1176), below a kill (1180). With a Glacial
  * Smash to follow it has the tier of a Shatter setup (1179).
@@ -632,7 +635,7 @@ export function hostileTossLandingsV7(
  * Giant with a unit its smash would kill"): the visible enemies' damage
  * `total` (the Giant's own blow among it) leaves the unit alive at the
  * Giant's threshold or below, the Giant can come beside it (`reaches`; its
- * Cold Aura freezes the units around the tile its Move ends on), and the
+ * Cold Wake freezes the units around the tile its Move ends on), and the
  * unit can be Frozen and shattered (land form, no giant). A Frozen Giant
  * does nothing.
  */
@@ -662,31 +665,12 @@ export function glacialSmashLethalV7(
 }
 
 /**
- * The units the shards of an own Frost Giant's shattering blow on `target`
- * newly freeze (section 6.6): every other unit around the shattered unit's
- * tile that the Giant's owner can freeze and that is not Frozen yet.
+ * The units the Cold Wake of an own Frost Giant (its Cold Aura before the
+ * one Freeze effect, `pulp_wars-xv0t`, 7r133) freezes when its Move ends on
+ * `to` (current rules section 21.12): every unit around `to` that its owner
+ * can freeze. `fresh` are those not Frozen yet (the wake's targets).
  */
-export function glacialShardsV7(
-  view: PlayerViewV7,
-  giant: PublicUnitV7,
-  target: PublicUnitV7,
-): readonly PublicUnitV7[] {
-  return view.units.filter(
-    (unit) =>
-      unit.id !== target.id &&
-      unit.id !== giant.id &&
-      chebyshev(unit.at, target.at) === 1 &&
-      canBeFrozenV7(view, giant.ownerId, unit) &&
-      !unitIsFrozenV7(view, unit),
-  );
-}
-
-/**
- * The units the Cold Aura of an own Frost Giant freezes when its Move ends
- * on `to` (current rules section 21.12): every unit around `to` that its
- * owner can freeze. `fresh` are those not Frozen yet.
- */
-export function coldAuraTargetsV7(
+export function coldWakeTargetsV7(
   view: PlayerViewV7,
   giant: PublicUnitV7,
   to: CoordV7,

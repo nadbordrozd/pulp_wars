@@ -31,13 +31,14 @@ import {
 // Shallow Water, rows 4 to 6 Deep Water): seat 0's capital on (5, 2) holds
 // x 4 to 6, y 1 to 3 with its Port on (4, 3); seat 1's capital on (5, 8)
 // holds x 4 to 6, y 7 to 9 with its Port on (6, 7). Every state here is the
-// first turn of a playable match.
+// first turn of a playable match. The one Freeze effect (`pulp_wars-xv0t`,
+// 7r133): a dock never freezes, so each seat's Port stays open water.
 
 const RIME: readonly TechnologyIdV7[] = ["SHORECRAFT"];
 const PACK_ICE: readonly TechnologyIdV7[] = ["SHORECRAFT", "NAVIGATION"];
 const NONE: readonly TechnologyIdV7[] = [];
+/** Seat 0's border water but its Port on (4, 3). */
 const SEAT_0_WATER: readonly CoordV7[] = [
-  { x: 4, y: 3 },
   { x: 5, y: 3 },
   { x: 6, y: 3 },
 ];
@@ -59,8 +60,8 @@ describe("the identity", () => {
   // Fishing Hole links (`pulp_wars-vg5l`) took 7r127 after it, and the
   // Mammoth's 2- or 3-tile Stampede (`pulp_wars-57lq`) 7r128.
   it("was 7r126 after 7r125, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r126");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r125");
@@ -76,7 +77,7 @@ describe("the identity", () => {
 });
 
 describe("the starting border freeze", () => {
-  it("an Ice Folk seat that starts with Rime starts with its border water as sound ice, its Port included", () => {
+  it("an Ice Folk seat that starts with Rime starts with its border water as sound ice, its Port left open", () => {
     const state = arena({
       factions: ["ICE_FOLK", "ORIGINAL"],
       technologies: [RIME, RIME],
@@ -109,7 +110,7 @@ describe("the starting border freeze", () => {
         units: [],
       }).ice,
     ).toEqual([]);
-    // Seat 1 (an AI seat): its Port on (6, 7) and the rest of row 7.
+    // Seat 1 (an AI seat): row 7 but its Port on (6, 7).
     const ai = arena({
       factions: ["ORIGINAL", "ICE_FOLK"],
       technologies: [RIME, RIME],
@@ -119,7 +120,6 @@ describe("the starting border freeze", () => {
     expect(iceTiles(ai, 1)).toEqual([
       { x: 4, y: 7 },
       { x: 5, y: 7 },
-      { x: 6, y: 7 },
     ]);
   });
 
@@ -141,10 +141,7 @@ describe("the starting border freeze", () => {
       technologies: [RIME, RIME],
       units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 3 } }],
     });
-    expect(iceTiles(state, 0)).toEqual([
-      { x: 4, y: 3 },
-      { x: 5, y: 3 },
-    ]);
+    expect(iceTiles(state, 0)).toEqual([{ x: 5, y: 3 }]);
     const boat = navalUnitAtV7(state, { x: 6, y: 3 });
     expect(boat).toMatchObject({
       ownerId: seatV7(state, 1).id,
@@ -174,10 +171,7 @@ describe("the starting border freeze", () => {
       ),
     };
     const iced = withStartingBorderFreezeV7(afloat);
-    expect(iced.ice.map((entry) => entry.at)).toEqual([
-      { x: 4, y: 3 },
-      { x: 6, y: 3 },
-    ]);
+    expect(iced.ice.map((entry) => entry.at)).toEqual([{ x: 6, y: 3 }]);
     expect(iced.units).toBe(afloat.units);
     expect(iced.frozen).toEqual([]);
   });
@@ -210,7 +204,6 @@ describe("the starting border freeze", () => {
     ).toBe("DEEP_WATER");
     expect(iceTiles(rime, 0)).toEqual([
       { x: 6, y: 2 },
-      { x: 4, y: 3 },
       { x: 5, y: 3 },
     ]);
     const packIce = arena({
@@ -221,7 +214,6 @@ describe("the starting border freeze", () => {
     });
     expect(iceTiles(packIce, 0)).toEqual([
       { x: 6, y: 2 },
-      { x: 4, y: 3 },
       { x: 5, y: 3 },
       { x: 6, y: 3 },
     ]);
@@ -275,9 +267,12 @@ describe("the starting border freeze", () => {
         continue;
       if (tile.territoryCityId === null) continue;
       // Every Showcase seat knows Pack Ice: every free water tile of the
-      // Ice Folk borders is ice, and no water in another seat's borders is.
-      // (The ice on the tiles of its boats lies outside its borders.)
-      if (!own.has(tile.territoryCityId))
+      // Ice Folk borders but a dock is ice, and no water in another seat's
+      // borders is. (The ice on the tiles of its boats lies outside its
+      // borders.)
+      const dock =
+        tile.improvement === "PORT" || tile.improvement === "SHIPYARD";
+      if (!own.has(tile.territoryCityId) || dock)
         expect(iced.has(key(tile.at)), key(tile.at)).toBe(false);
       else if (!occupied.has(key(tile.at)))
         expect(iced.has(key(tile.at)), key(tile.at)).toBe(true);

@@ -118,7 +118,9 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   CRUMBS_STALE: NONE,
   TILES_GLAZED: NONE,
   TILES_REVEALED: NONE,
-  WATER_FROZEN: NONE,
+  // The one Freeze effect (`pulp_wars-xv0t`): its units are in the
+  // UNITS_FROZEN before it.
+  TILES_FROZEN: NONE,
   // The frozen sea redesign: a Crack frees a ship, it disrupts nothing.
   ICE_CRACKED: NONE,
   // Only units afloat are icebound; a watched unit is in land form.
@@ -376,6 +378,8 @@ export const DISRUPTION_STATE_KEY_CLASSES_V7: Readonly<
   treasureChests: "OTHER",
   curiosities: "OTHER",
   ice: "OTHER",
+  // The one Freeze effect (`pulp_wars-xv0t`): stored Snow, a tile layer.
+  snow: "OTHER",
   graves: "OTHER",
   crumbs: "OTHER",
   glazedThisTurn: "OTHER",

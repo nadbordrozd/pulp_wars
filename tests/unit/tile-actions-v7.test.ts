@@ -391,16 +391,12 @@ describe("tile actions: the factions' scenes", () => {
       expect(tile.actions.map((action) => action.id)).not.toContain("BEHOLD");
   });
 
-  it("badges a Yeti's Freeze tiles, with the Attack on the boat it could hit", () => {
+  it("badges none of a Yeti's tiles: its Freeze is gone and the boat is a lone Attack", () => {
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Yeti's water
+    // tiles were Freeze badges, and the boat a choice of Attack and Freeze.
     const plan = planOf(tileActionsYetiFixtureV7(), A.yeti);
-    expect(
-      tileActionsAtV7(plan, A.freezeAt)?.actions.map((action) => action.id),
-    ).toEqual(["FREEZE"]);
-    expect(
-      tileActionsAtV7(plan, FROZEN_UI_V7.prey)?.actions.map(
-        (action) => action.id,
-      ),
-    ).toEqual(["ATTACK", "FREEZE"]);
+    expect(tileActionsAtV7(plan, A.freezeAt)).toBeUndefined();
+    expect(tileActionsAtV7(plan, FROZEN_UI_V7.prey)).toBeUndefined();
   });
 
   it("leaves the Ice Witch's ring to her button", () => {

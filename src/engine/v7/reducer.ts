@@ -109,37 +109,33 @@ import {
 import { hasExactKeysV7 } from "./schema";
 import { rewardArrivalV7, rewardUnitRoleV7 } from "./reward-arrival";
 import {
+  canonicalFreezeTileFactsV7,
   crackIceResultV7,
-  freezeSetV7,
+  freezeChangesAnythingV7,
+  freezeRingTilesV7,
+  freezeTilesV7,
   iceAtV7,
   iceBuildableV7,
   iceIsThickV7,
-  freezeLineV7,
   releaseEliminatedIceV7,
   resolveBlackIceOnEntryV7,
+  resolveColdWakeV7,
   territoryFreezeV7,
   territoryFrozenEventsV7,
   unitCracksIceV7,
-  withFrozenV7,
+  withFreezeAppliedV7,
   withoutIceV7,
-  type FreezeTileFactsV7,
 } from "./ice";
 import {
   attackMaximumRangeV7,
-  canBeFrozenV7,
-  coldSnapTargetsV7,
-  freezeChangesUnitV7,
   frozenCountdownV7,
   isFrozenV7,
   isIceFolkLandUnitV7,
   prunedIceFolkV7,
-  resolveColdAuraV7,
   unitAvoidsForeignSitesV7,
   unitsFrozenEventV7,
   withFrozenAppliedV7,
   withFrozenCuredV7,
-  withinBolasRangeV7,
-  withinFrostBoltRangeV7,
   frozenUnitNamedV7,
   winterV7,
 } from "./ice-folk";
@@ -441,7 +437,6 @@ import {
   type HeldRewardUnitV7,
   type CoordV7,
   type CuriosityV7,
-  type FrozenStatusV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchSetupV7,
@@ -529,17 +524,14 @@ export type RuleErrorCodeV7 =
   | "MASS_BEAM_DOWN_NOT_LEGAL"
   | "MIND_CONTROL_NOT_LEGAL"
   | "TRACTOR_BEAM_NOT_LEGAL"
-  // The Ice Folk revision: an illegal Bolas (`EMBARKED`, `TARGET_IMMUNE`,
-  // `OUT_OF_RANGE`, and since `pulp_wars-zir6` `ALREADY_FROZEN`) or Cold
-  // Snap (`EMBARKED`, `NO_TARGET`, `ALREADY_FROZEN`).
-  | "BOLAS_NOT_LEGAL"
+  // The Ice Folk revision: an illegal Cold Snap (`EMBARKED`, `NO_TARGET`;
+  // `ALREADY_FROZEN` went with the one Freeze effect, `pulp_wars-xv0t`,
+  // 7r133, and so did `BOLAS_NOT_LEGAL` and `FROST_BOLT_NOT_LEGAL`).
   | "COLD_SNAP_NOT_LEGAL"
   // Ice Folk Freeze (`pulp_wars-w49.37`): a command naming a Frozen unit
-  // (`UNIT_FROZEN { unitId }`), an illegal Frost Bolt (`EMBARKED`,
-  // `TARGET_IMMUNE`, `OUT_OF_RANGE`, `ALREADY_FROZEN`), or Stampede
-  // (`EMBARKED`, `MOVED`, `DIRECTION`, `BLOCKED`).
+  // (`UNIT_FROZEN { unitId }`), or an illegal Stampede (`EMBARKED`,
+  // `MOVED`, `DIRECTION`, `BLOCKED`).
   | "UNIT_FROZEN"
-  | "FROST_BOLT_NOT_LEGAL"
   | "STAMPEDE_NOT_LEGAL"
   // The Dwarf revision: an illegal Tunnel (`EMBARKED`, `SURFACED`,
   // `DESTINATION`, `RIDER`, `RIDER_DESTINATION`), bombing run (`EMBARKED`,
@@ -567,9 +559,7 @@ export type RuleErrorCodeV7 =
   // `TARGET_HEALTHY`). A torpedo at a land unit is `ATTACK_NOT_LEGAL` with
   // the reason `NOT_AFLOAT` (section 5.3).
   | "BOARD_NOT_LEGAL"
-  // The frozen sea (section 8.4): an illegal Freeze (`OUT_OF_RANGE`,
-  // `NO_TARGET`).
-  | "FREEZE_NOT_LEGAL"
+  // (`FREEZE_NOT_LEGAL` went with `FREEZE`, `pulp_wars-xv0t`, 7r133.)
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): an
   // illegal Crack Ice (`OUT_OF_RANGE`, `NO_ICE`, `OCCUPIED`, `BUILT`).
   | "CRACK_ICE_NOT_LEGAL"
@@ -2016,11 +2006,6 @@ function revealReleasedUnitsV7(
 }
 
 /**
- * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.12): after an accepted
- * `MOVE` or `DISEMBARK` of `unitId`, a Frost Giant's Cold Aura freezes the
- * units around the tile it ended on. Returns `result` itself otherwise.
- */
-/**
  * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.8): after an
  * accepted `MOVE`, `DISEMBARK`, or `BEAM_DOWN` of `unitId` (the passenger
  * for a Beam Down), Black Ice freezes it when it ended on the ice of a seat
@@ -2045,16 +2030,26 @@ function withBlackIceResultV7(
   return next;
 }
 
-function withColdAuraResultV7(
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): after an accepted `MOVE`
+ * of `unitId`, a Frost Giant's Cold Wake
+ * freezes every tile around the tile it ended on, reading the units its
+ * owner sees after the Move. Returns `result` itself otherwise.
+ */
+function withColdWakeResultV7(
   unitId: UnitStateV7["id"],
   result: ApplyCommandResultV7,
 ): ApplyCommandResultV7 {
   if (!result.accepted) return result;
-  const aura = resolveColdAuraV7(result.state, unitId);
-  if (aura.events.length === 0) return result;
-  const next = accepted(checked(aura.state), [
+  const actor = result.state.units.find((unit) => unit.id === unitId)?.ownerId;
+  if (actor === undefined) return result;
+  const wake = resolveColdWakeV7(result.state, unitId, (unit) =>
+    isUnitVisibleToPlayerV7(result.state, actor, unit),
+  );
+  if (wake.events.length === 0) return result;
+  const next = accepted(checked(wake.state), [
     ...result.events,
-    ...aura.events,
+    ...wake.events,
   ]);
   if (!next.accepted) throw new RangeError("INVALID_STATE");
   return next;
@@ -2099,12 +2094,10 @@ function navalFactsMayChangeV7(
     "MOVE",
     "REDEVELOP",
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md sections 2.4 and
-    // 2.6): a Freeze over an own dock moves its blockade rule onto the ice,
-    // and a Pillage may remove an Ice Harbour. Ice Folk freeze rework
-    // (`pulp_wars-s55m.1`): so does a Cold Snap's water ring, any dock may
-    // be iced over, and a Crack may open a dock again.
-    "FREEZE",
-    "COLD_SNAP",
+    // 2.6): a Pillage may remove an Ice Harbour and a Crack may open a dock
+    // iced over before. (A freeze never ices a dock since the one Freeze
+    // effect, `pulp_wars-xv0t`, 7r133, so `COLD_SNAP` and the retired
+    // `FREEZE` left this list.)
     "CRACK_ICE",
     "PILLAGE",
     "WAIL",
@@ -2235,20 +2228,18 @@ function applyCommandCoreV7(
   if (command.kind === "BUILD_SHIPYARD")
     return applyShipyard(stateInput, state, actor, command.at);
   if (command.kind === "DISEMBARK")
-    return withColdAuraResultV7(
+    return withBlackIceResultV7(
+      state,
       command.unitId,
-      withBlackIceResultV7(
-        state,
-        command.unitId,
-        applyDisembark(stateInput, state, actor, command),
-      ),
+      applyDisembark(stateInput, state, actor, command),
     );
   if (command.kind === "CHOOSE_CITY_REWARD")
     return applyReward(stateInput, state, actor, command);
-  // Ice Folk Freeze (`pulp_wars-w49.37`, section 21.12): a Frost Giant
-  // that ends its own Move or landing freezes the units around it.
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant that
+  // completes its own Move freezes every tile around it (its Cold Wake; its
+  // Cold Aura before).
   if (command.kind === "MOVE")
-    return withColdAuraResultV7(
+    return withColdWakeResultV7(
       command.unitId,
       withBlackIceResultV7(
         state,
@@ -2319,18 +2310,11 @@ function applyCommandCoreV7(
     return applyMindControl(stateInput, state, actor, command);
   if (command.kind === "TRACTOR_BEAM")
     return applyTractorBeam(stateInput, state, actor, command);
-  if (command.kind === "THROW_BOLAS")
-    return applyThrowBolas(stateInput, state, actor, command);
   if (command.kind === "COLD_SNAP")
     return applyColdSnap(stateInput, state, actor, command.unitId);
-  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and the
-  // Mammoth's Stampede.
-  if (command.kind === "FROST_BOLT")
-    return applyFrostBolt(stateInput, state, actor, command);
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede.
   if (command.kind === "STAMPEDE")
     return applyStampedeV7(DWARF_KIT_V7, stateInput, state, actor, command);
-  if (command.kind === "FREEZE")
-    return applyFreeze(stateInput, state, actor, command);
   if (command.kind === "CRACK_ICE")
     return applyCrackIce(stateInput, state, actor, command);
   if (command.kind === "TUNNEL")
@@ -5159,225 +5143,14 @@ function applyTractorBeam(
 }
 
 /**
- * The Ice Folk revision (section 21.9): `THROW_BOLAS`. Rejections in the
- * order of the section's table; the result freezes the target (Ice Folk
- * Freeze, `pulp_wars-w49.37`), and the Sled has used its primary action.
- */
-function applyThrowBolas(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: Extract<CommandV7, { kind: "THROW_BOLAS" }>,
-): ApplyCommandResultV7 {
-  return applySingleFreeze(original, state, actor, command, {
-    ability: "BOLAS",
-    error: "BOLAS_NOT_LEGAL",
-    inRange: withinBolasRangeV7,
-    source: "BOLAS",
-  });
-}
-
-/**
- * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.6): `FROST_BOLT`, the Ice
- * Witch freezes one visible hostile unit exactly Chebyshev 2 away (1 or 2
- * before `pulp_wars-ev6q`, 7r129; an adjacent one is `OUT_OF_RANGE`). Its
- * legality
- * is the Bolas table with the role ability `FROST_BOLT` and the error
- * `FROST_BOLT_NOT_LEGAL`.
- */
-function applyFrostBolt(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: Extract<CommandV7, { kind: "FROST_BOLT" }>,
-): ApplyCommandResultV7 {
-  return applySingleFreeze(original, state, actor, command, {
-    ability: "FROST_BOLT",
-    error: "FROST_BOLT_NOT_LEGAL",
-    inRange: withinFrostBoltRangeV7,
-    source: "FROST_BOLT",
-  });
-}
-
-/** The shared single-target freeze of `THROW_BOLAS` and `FROST_BOLT`. */
-function applySingleFreeze(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: {
-    readonly unitId: UnitStateV7["id"];
-    readonly targetUnitId: UnitStateV7["id"];
-  },
-  rule: {
-    readonly ability: "BOLAS" | "FROST_BOLT";
-    readonly error: "BOLAS_NOT_LEGAL" | "FROST_BOLT_NOT_LEGAL";
-    readonly inRange: (from: CoordV7, to: CoordV7) => boolean;
-    readonly source: "BOLAS" | "FROST_BOLT";
-  },
-): ApplyCommandResultV7 {
-  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
-    return rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const source = actorCheck.unit;
-  if (!unitRoleRuleV7(state, source).abilities.includes(rule.ability))
-    return rejected(original, "UNIT_ROLE_INVALID", { role: source.role });
-  if (
-    source.activation.overrunActive ||
-    primaryUsed(source) ||
-    primaryActionBlockedAfterMoveV7(state, source)
-  )
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: source.id });
-  if (source.form !== "LAND")
-    return rejected(original, rule.error, { reason: "EMBARKED" });
-  const target = state.units.find(
-    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
-  );
-  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
-    return rejected(original, "TARGET_NOT_FOUND", {
-      targetUnitId: command.targetUnitId,
-    });
-  if (!arePlayersHostileV7(state, actor, target.ownerId))
-    return rejected(original, "TARGET_ALLIED");
-  if (!canBeFrozenV7(state, actor, target))
-    return rejected(original, rule.error, { reason: "TARGET_IMMUNE" });
-  if (!rule.inRange(source.at, target.at))
-    return rejected(original, rule.error, { reason: "OUT_OF_RANGE" });
-  // No pointless actions (`pulp_wars-zir6`, 7r107): a freeze that would not
-  // change the target's Frozen entry (it is Frozen for as long already).
-  if (!freezeChangesUnitV7(state, state.frozen, target))
-    return rejected(original, rule.error, { reason: "ALREADY_FROZEN" });
-  try {
-    const applied = withFrozenAppliedV7(state, state.frozen, [target.id]);
-    return accepted(
-      checked({
-        ...state,
-        commandIndex: nextSafe(state.commandIndex),
-        frozen: applied.frozen,
-        units: state.units.map((unit) =>
-          unit.id === source.id
-            ? {
-                ...unit,
-                activation: {
-                  ...unit.activation,
-                  specialActed: true,
-                  handled: true,
-                },
-              }
-            : unit,
-        ),
-      }),
-      [unitsFrozenEventV7(actor, source.id, rule.source, applied.results)],
-    );
-  } catch (cause) {
-    return arithmeticFailure(original, cause);
-  }
-}
-
-/**
- * Ice Folk freeze rework (`pulp_wars-s55m.1`): what a Freeze by `actor`
- * reads of one tile of the canonical state (`freezeSetV7`). A unit on the
- * tile is freezable when the actor sees it, can Freeze it, and a freeze
- * would change its entry.
- */
-function freezeTileFactsAtV7(
-  state: GameStateV7,
-  actor: PlayerId,
-): (at: CoordV7) => FreezeTileFactsV7 | undefined {
-  const player = requirePlayer(state, actor);
-  return (at) => {
-    const tile = tileAtV7(state.board, at);
-    if (tile === undefined) return undefined;
-    const occupant = state.units.find(
-      (candidate) => candidate.hp > 0 && same(candidate.at, at),
-    );
-    const entry = iceAtV7(state, at);
-    return {
-      explored: isExplored(player, at),
-      terrain: tile.terrain,
-      ice:
-        entry === undefined
-          ? null
-          : { own: entry.ownerId === actor, cracked: entry.cracked },
-      unit:
-        occupant === undefined
-          ? null
-          : {
-              id: occupant.id,
-              form: occupant.form,
-              freezable:
-                isUnitVisibleToPlayerV7(state, actor, occupant) &&
-                canBeFrozenV7(state, actor, occupant) &&
-                freezeChangesUnitV7(state, state.frozen, occupant),
-            },
-    };
-  };
-}
-
-/**
- * The state after a Freeze or a Cold Snap made `tiles` ice for `actor` and
- * Froze `unitIds`, with the acting unit handled, accepted with `events`. A
- * dock made ice is an Ice Harbour (or an enemy dock iced over): the live
- * economy is recomputed, since its blockade rule changes.
- */
-function acceptedWaterFreezeV7(
-  state: GameStateV7,
-  actor: PlayerId,
-  actingUnitId: UnitStateV7["id"],
-  tiles: readonly CoordV7[],
-  frozen: readonly FrozenStatusV7[],
-  events: readonly DomainEventV7[],
-): ApplyCommandResultV7 {
-  const frozenState: GameStateV7 = {
-    ...state,
-    commandIndex: nextSafe(state.commandIndex),
-    ice: withFrozenV7(state.ice, tiles, actor),
-    frozen,
-    units: state.units.map((candidate) =>
-      candidate.id === actingUnitId
-        ? {
-            ...candidate,
-            activation: {
-              ...candidate.activation,
-              specialActed: true,
-              handled: true,
-            },
-          }
-        : candidate,
-    ),
-  };
-  const docks = tiles.some((at) => {
-    const improvement = tileAtV7(state.board, at)?.improvement;
-    return improvement === "PORT" || improvement === "SHIPYARD";
-  });
-  if (!docks) return accepted(checked(frozenState), events);
-  const recalculation = recomputeLiveEconomyV7(
-    frozenState,
-    { board: frozenState.board, cities: frozenState.cities },
-    frozenState.populationContributions,
-  );
-  return accepted(
-    checked({
-      ...frozenState,
-      cities: recalculation.cities,
-      populationContributions: recalculation.populationContributions,
-    }),
-    [...events, ...economyAndGrowth(recalculation.changes)],
-  );
-}
-
-/**
- * The Ice Folk revision (section 21.6): `COLD_SNAP`. Ice Folk Freeze
- * (`pulp_wars-w49.37`): the Witch freezes every unit she can freeze that her
- * owner sees on the eight tiles around her, and has used her primary
- * action. Ice Folk freeze rework (`pulp_wars-s55m.1`; the user: "the
- * coldsnap should freeze water around her ... it's the same ability"):
- * with Rime the same cast also freezes every freezable water tile within
- * Chebyshev `WITCH_FREEZE_RADIUS_V7` of her (the ring of her old `FREEZE`).
- * Ships, embarked units, and units on docks are Frozen like anyone. Legal
- * when it Freezes at least one unit it changes or changes at least one
- * tile.
+ * The Ice Folk revision (section 21.6): `COLD_SNAP`. The one Freeze effect
+ * (`pulp_wars-xv0t`, 7r133, docs/product/ICE_FOLK_REDESIGN_2026-11.md
+ * section 3.1): the Witch freezes every tile of the eight around her (water
+ * to ice with Rime, Deep Water with Pack Ice; open neutral land to stored
+ * Snow; a hostile unit she sees on it Frozen for one turn; docks,
+ * territory land, Rifts, and her own sound ice unchanged), and has used her
+ * primary action. Legal only when it changes something (a unit Frozen or a
+ * tile frozen; `NO_TARGET` otherwise).
  */
 function applyColdSnap(
   original: GameStateV7,
@@ -5401,11 +5174,6 @@ function applyColdSnap(
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: witch.id });
   if (witch.form !== "LAND")
     return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "EMBARKED" });
-  const targets = coldSnapTargetsV7(
-    state,
-    witch,
-    state.units.filter((unit) => isUnitVisibleToPlayerV7(state, actor, unit)),
-  );
   // A unit-level unlock (the Mind Control revision section 5.2): the
   // controller's research through the Witch's kind's tree.
   const capabilities = unitCapabilitiesV7(
@@ -5413,138 +5181,43 @@ function applyColdSnap(
     witch,
     requirePlayer(state, actor).researchedTechs,
   );
-  const water =
-    capabilities.freezeWater === "NONE"
-      ? null
-      : freezeSetV7({
-          from: witch.at,
-          at: witch.at,
-          ring: true,
-          line: 0,
-          freezeWater: capabilities.freezeWater,
-          tileAt: freezeTileFactsAtV7(state, actor),
-        });
-  const tiles = water?.tiles ?? [];
-  if (targets.length === 0 && tiles.length === 0)
+  const freeze = freezeTilesV7({
+    tiles: freezeRingTilesV7(witch.at),
+    freezeWater: capabilities.freezeWater,
+    tileAt: canonicalFreezeTileFactsV7(state, actor, (unit) =>
+      isUnitVisibleToPlayerV7(state, actor, unit),
+    ),
+  });
+  // No pointless actions (`pulp_wars-zir6`, 7r107): a cast that changes
+  // nothing is refused.
+  if (!freezeChangesAnythingV7(freeze))
     return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "NO_TARGET" });
-  // No pointless actions (`pulp_wars-zir6`, 7r107): an area cast needs at
-  // least one target it changes (a unit or a tile); already Frozen targets
-  // still count in it.
-  if (
-    tiles.length === 0 &&
-    !targets.some((unit) => freezeChangesUnitV7(state, state.frozen, unit))
-  )
-    return rejected(original, "COLD_SNAP_NOT_LEGAL", {
-      reason: "ALREADY_FROZEN",
-    });
   try {
-    const applied = withFrozenAppliedV7(state, state.frozen, [
-      ...targets.map((unit) => unit.id),
-      ...(water?.units ?? []),
-    ]);
-    const events: DomainEventV7[] = [];
-    if (applied.results.length > 0)
-      events.push(
-        unitsFrozenEventV7(actor, witch.id, "COLD_SNAP", applied.results),
-      );
-    if (tiles.length > 0)
-      events.push({
-        kind: "WATER_FROZEN",
-        playerId: actor,
-        unitId: witch.id,
-        tiles,
-      });
-    return acceptedWaterFreezeV7(
+    const applied = withFreezeAppliedV7(
       state,
       actor,
       witch.id,
-      tiles,
-      applied.frozen,
-      events,
+      "COLD_SNAP",
+      freeze,
     );
-  } catch (cause) {
-    return arithmeticFailure(original, cause);
-  }
-}
-
-/**
- * The naval branch, the frozen sea
- * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): `FREEZE`. An Ice
- * Folk land unit turns the water next to it to ice: two tiles out in a
- * straight line from `at` (three with Hoarfrost; the Ice Witch freezes her
- * ring with her Cold Snap since `pulp_wars-s55m.1`). It is a primary
- * action, not an Attack, and costs no Coins. The frozen sea redesign
- * (RULESET_7_ICE_REDESIGN.md section 2.4): every tile of the freeze set
- * gets a sound entry owned by the actor (open water and any dock made ice,
- * another player's ice taken, the actor's own cracked ice mended; its sound
- * ice is passed over). Ice Folk freeze rework (`pulp_wars-s55m.1`): a unit
- * afloat the line reaches is Frozen and its tile stays open water. A Freeze
- * that changes nothing is refused (`NO_TARGET`). A Freeze moves no unit; a
- * dock it freezes is an Ice Harbour (the live economy is recomputed: its
- * blockade rule changes).
- */
-function applyFreeze(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: Extract<CommandV7, { kind: "FREEZE" }>,
-): ApplyCommandResultV7 {
-  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
-    return rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const unit = actorCheck.unit;
-  if (
-    unit.form !== "LAND" ||
-    !unitRoleRuleV7(state, unit).abilities.includes("FREEZE")
-  )
-    return rejected(original, "UNIT_ROLE_INVALID", { role: unit.role });
-  const player = requirePlayer(state, actor);
-  // A unit-level unlock (the Mind Control revision section 5.2): the
-  // controller's research through the unit's kind's tree.
-  const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
-  if (capabilities.freezeWater === "NONE")
-    return rejected(original, "TECH_REQUIRED", { tech: "SHORECRAFT" });
-  if (
-    unit.activation.overrunActive ||
-    primaryUsed(unit) ||
-    primaryActionBlockedAfterMoveV7(state, unit)
-  )
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
-  if (chebyshev(command.at, unit.at) !== 1)
-    return rejected(original, "FREEZE_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
-  const frozen = freezeSetV7({
-    from: unit.at,
-    at: command.at,
-    ring: false,
-    line: freezeLineV7(capabilities),
-    freezeWater: capabilities.freezeWater,
-    tileAt: freezeTileFactsAtV7(state, actor),
-  });
-  if (frozen.tiles.length === 0 && frozen.units.length === 0)
-    return rejected(original, "FREEZE_NOT_LEGAL", { reason: "NO_TARGET" });
-  try {
-    const applied = withFrozenAppliedV7(state, state.frozen, frozen.units);
-    const events: DomainEventV7[] = [];
-    if (applied.results.length > 0)
-      events.push(
-        unitsFrozenEventV7(actor, unit.id, "FREEZE", applied.results),
-      );
-    if (frozen.tiles.length > 0)
-      events.push({
-        kind: "WATER_FROZEN",
-        playerId: actor,
-        unitId: unit.id,
-        tiles: frozen.tiles,
-      });
-    return acceptedWaterFreezeV7(
-      state,
-      actor,
-      unit.id,
-      frozen.tiles,
-      applied.frozen,
-      events,
+    return accepted(
+      checked({
+        ...applied.state,
+        commandIndex: nextSafe(state.commandIndex),
+        units: applied.state.units.map((candidate) =>
+          candidate.id === witch.id
+            ? {
+                ...candidate,
+                activation: {
+                  ...candidate.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : candidate,
+        ),
+      }),
+      applied.events,
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -7521,30 +7194,9 @@ function resolveAttackExchangeV7(
       ),
     );
   }
-  // The giants' signatures (section 6.6): the shards of a unit a Frost
-  // Giant shattered freeze every unit around its tile that the Giant's
-  // owner can freeze, after the death events.
-  if (
-    preview.shatters &&
-    unitUsesSignatureV7(state, attacker, "GLACIAL_SMASH")
-  ) {
-    const shards = units
-      .filter(
-        (unit) =>
-          unit.id !== defender.id &&
-          unit.id !== attacker.id &&
-          chebyshev(unit.at, defender.at) === 1 &&
-          canBeFrozenV7(state, attacker.ownerId, unit),
-      )
-      .map((unit) => unit.id);
-    if (shards.length > 0) {
-      const applied = withFrozenAppliedV7({ ...state, units }, frozen, shards);
-      frozen = applied.frozen;
-      events.push(
-        unitsFrozenEventV7(actor, attacker.id, "SHARDS", applied.results),
-      );
-    }
-  }
+  // (A Frost Giant's shards retired with the one Freeze effect,
+  // `pulp_wars-xv0t`, 7r133: Glacial Smash freezes nothing; its Cold Wake
+  // freezes after its Move.)
   // The Candy revision section 8: the Bounce, after the Push, the advance,
   // and the Charge! follow and before any death-blast chain. It is not a
   // Move: the attacker keeps its activation and reveals its sight.

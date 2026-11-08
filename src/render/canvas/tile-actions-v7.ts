@@ -37,22 +37,14 @@ import {
 import { summonPickV7 } from "./cult-channel-board-plan-v7";
 import { tossPassengersV7 } from "./giant-board-plan-v7";
 import { tunnelRidersV7 } from "../dwarf-tunnel-v7";
-import { freezesRingV7 } from "../frozen-sea-presentation-v7";
 import {
   BEAM_DOWN_LABEL_V7,
   MASS_BEAM_DOWN_LABEL_V7,
   MIND_CONTROL_LABEL_V7,
   TRACTOR_BEAM_LABEL_V7,
 } from "../martian-presentation-v7";
-import {
-  BOLAS_LABEL_V7,
-  FROST_BOLT_LABEL_V7,
-  STAMPEDE_LABEL_V7,
-} from "../ice-folk-presentation-v7";
-import {
-  CRACK_ICE_LABEL_V7,
-  FREEZE_LABEL_V7,
-} from "../frozen-sea-presentation-v7";
+import { STAMPEDE_LABEL_V7 } from "../ice-folk-presentation-v7";
+import { CRACK_ICE_LABEL_V7 } from "../frozen-sea-presentation-v7";
 import {
   ASSEMBLE_LABEL_V7,
   BARRICADE_LABEL_V7,
@@ -113,11 +105,9 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   MASS_BEAM_DOWN: "AIMED",
   MIND_CONTROL: "AIMED",
   TRACTOR_BEAM: "AIMED",
-  THROW_BOLAS: "AIMED",
-  FROST_BOLT: "AIMED",
   STAMPEDE: "AIMED",
-  // A line role's Freeze is aimed; the Ice Witch's ring is not (bar only).
-  FREEZE: "AIMED",
+  // (The Bolas, the Frost Bolt and a line role's Freeze were aimed until
+  // the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.1, bead
   // pulp_wars-5ti.27): Crack Ice has one dock button; its tile is picked on
   // the board.
@@ -359,26 +349,8 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
       martianPick: { kind: "MASS_BEAM_DOWN", unitId, chosen: null },
     }),
   },
-  // The Ice Folk.
-  {
-    id: "THROW_BOLAS",
-    label: BOLAS_LABEL_V7,
-    icon: "bolas",
-    dockAction: "ice-folk-bolas",
-    families: ["THROW_BOLAS"],
-    offered: kind("THROW_BOLAS"),
-    pick: (unitId) => ({ iceFolkPick: { kind: "THROW_BOLAS", unitId } }),
-  },
-  {
-    id: "FROST_BOLT",
-    label: FROST_BOLT_LABEL_V7,
-    icon: "snowflake",
-    raster: "ICON:ACTION:FROST_BOLT",
-    dockAction: "ice-folk-frost-bolt",
-    families: ["FROST_BOLT"],
-    offered: kind("FROST_BOLT"),
-    pick: (unitId) => ({ iceFolkPick: { kind: "FROST_BOLT", unitId } }),
-  },
+  // The Ice Folk (the Bolas and the Frost Bolt went with the one Freeze
+  // effect, `pulp_wars-xv0t`, 7r133).
   {
     id: "STAMPEDE",
     label: STAMPEDE_LABEL_V7,
@@ -392,20 +364,6 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     // `pulp_wars-57lq`: an adjacent tile is a Move, a 2- or 3-tile
     // straight charge is a Stampede, never both.
     replacesMove: true,
-  },
-  {
-    id: "FREEZE",
-    label: FREEZE_LABEL_V7,
-    icon: "snowflake",
-    dockAction: "freeze",
-    families: ["FREEZE"],
-    offered: kind("FREEZE"),
-    pick: (unitId) => ({ freezePick: { kind: "FREEZE", unitId } }),
-    // The Ice Witch's Freeze is her whole ring: cast by its button.
-    applies: (view, unitId) => {
-      const unit = view.units.find((candidate) => candidate.id === unitId);
-      return unit !== undefined && !freezesRingV7(view, unit);
-    },
   },
   // The frozen sea redesign (bead pulp_wars-5ti.27): every other faction's
   // unit or ship cracks the ice next to it.

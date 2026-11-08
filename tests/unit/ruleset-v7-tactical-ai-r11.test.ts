@@ -1070,7 +1070,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // One tile, one meaning (`pulp_wars-3u8d`, 7r131) removes BOARD,
           // RECOVER, and SWALLOW, moving the later command kinds back (was
           // e160e8…3801: the same decision with the old kind ordinals).
-          "67e33d530e838dab6821a56afcb2da20eaf071a05e8acfbfa35cfaedd36d64e3",
+          // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes
+          // THROW_BOLAS, FREEZE and FROST_BOLT, moving the later command
+          // kinds back (was 67e33d…64e3: the same decision with the old kind
+          // ordinals).
+          "cca660cfd902deb88248d1e0ffb15759d2a3086f2e5fb9df77d01c5b22767748",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1214,7 +1218,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // One tile, one meaning (`pulp_wars-3u8d`, 7r131) removes BOARD,
           // RECOVER, and SWALLOW, moving the later command kinds back (was
           // 9f97e8…5367: the same decision with the old kind ordinals).
-          "741724ad13f34248346778225736538ea91538182ec33b5c7b284c46eacdb9de",
+          // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes
+          // THROW_BOLAS, FREEZE and FROST_BOLT, moving the later command
+          // kinds back (was 741724…b9de: the same decision with the old kind
+          // ordinals).
+          "6dc144752dc986a8128ba7d48bf1edbe85dfb8d1210600d4651a8c38a64d1f25",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

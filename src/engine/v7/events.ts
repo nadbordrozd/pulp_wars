@@ -1146,30 +1146,22 @@ export type DomainEventV7 =
   | {
       /**
        * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section
-       * 21.15): `sourceUnitId` of `playerId` (a Sled's Bolas, an Ice
-       * Witch's Cold Snap or Frost Bolt, a Frost Giant's Cold Aura at the
-       * end of its Move, a Walrus's Frostbite, or the shards of a unit a
-       * Frost Giant shattered; null for Black Ice) froze every listed unit;
+       * 21.15): `sourceUnitId` of `playerId` (an Ice Witch's Cold Snap, a
+       * Frost Giant's Cold Wake at the end of its Move, a Walrus's
+       * Frostbite, a Frost Wyrm's Frost Breath; null for Black Ice) froze
+       * every listed unit;
        * each result is its Frozen entry after the application, in unit-ID
        * order. A projection keeps the results the viewer can see (and a
        * target owner's own entries, with `sourceUnitId` null when the source
-       * is hidden).
+       * is hidden). The one Freeze effect (`pulp_wars-xv0t`, 7r133) retired
+       * the sources `BOLAS`, `FROST_BOLT`, `COLD_AURA`, `SHARDS`, and
+       * `FREEZE`.
        */
       readonly kind: "UNITS_FROZEN";
       readonly playerId: PlayerId;
       readonly sourceUnitId: UnitId | null;
       readonly source:
-        | "BOLAS"
-        | "COLD_SNAP"
-        | "FROST_BOLT"
-        | "COLD_AURA"
-        | "BLACK_ICE"
-        | "FROSTBITE"
-        | "FROST_BREATH"
-        | "SHARDS"
-        // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze
-        // reached a unit afloat.
-        | "FREEZE";
+        "COLD_SNAP" | "COLD_WAKE" | "BLACK_ICE" | "FROSTBITE" | "FROST_BREATH";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly turnsLeft: 1 | 2;
@@ -1177,14 +1169,16 @@ export type DomainEventV7 =
     }
   | {
       /**
-       * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
-       * the unit `unitId` of `playerId` froze `tiles` (in (y, x) order; the
-       * redesign: a tile that was ice is taken or mended; at least one).
-       * Units afloat a Freeze or a Cold Snap reached are in the
-       * `UNITS_FROZEN` before it. A projection keeps the tiles the viewer
-       * has explored, and is dropped when no tile is left.
+       * The one Freeze effect (`pulp_wars-xv0t`, 7r133; `WATER_FROZEN`
+       * before, in its place): the unit `unitId` of `playerId` froze tiles:
+       * `tiles` became its ice (open water made ice, another seat's ice
+       * taken, a crack mended) and `snow` became stored Snow (open neutral
+       * land), each in (y, x) order, at least one tile in all. Units a Cold
+       * Snap or a Cold Wake Froze are in the `UNITS_FROZEN` before it. A
+       * projection keeps the tiles the viewer has explored, and is dropped
+       * when no tile is left.
        */
-      readonly kind: "WATER_FROZEN";
+      readonly kind: "TILES_FROZEN";
       readonly playerId: PlayerId;
       /**
        * Null in a projection to a viewer that cannot see the unit, and in
@@ -1193,6 +1187,7 @@ export type DomainEventV7 =
        */
       readonly unitId: UnitId | null;
       readonly tiles: readonly CoordV7[];
+      readonly snow: readonly CoordV7[];
     }
   | {
       /**

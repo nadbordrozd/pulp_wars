@@ -60,7 +60,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // selected unit, the own unit or any unit standing on a badged tile, and
     // whether a Freeze is the Ice Witch's ring (her own unit). Each is a
     // piece on the board; a burrowed unit is not drawn and takes no command.
-    "src/render/canvas/tile-actions-v7.ts::<module>": "BOARD",
     "src/render/canvas/tile-actions-v7.ts::tileActionPlanForSelectionV7":
       "BOARD",
     "src/render/feedback-plan-v7.ts::feedbackPlanV7": "BOARD",
@@ -249,7 +248,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // blocks a Freeze line (a burrowed unit stands on no ice, Freezes
     // nothing, is no ship, and a mound is never on water).
     "src/ai/v7-frozen-sea.ts::computeIcePlan": "BOARD",
-    "src/ai/v7-frozen-sea.ts::freezeTakes": "BOARD",
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the score of a
     // water freeze reads the ships it Freezes and the units that reach them.
     "src/ai/v7-frozen-sea.ts::iceWaterFreezeScoreV7": "BOARD",
@@ -274,8 +272,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-goblin.ts::explosionChainValueV7": "BOARD",
     "src/ai/v7-goblin.ts::gangUpForPolicyV7": "BOARD",
     "src/ai/v7-goblin.ts::hypotheticalBlastV7": "BOARD",
-    "src/ai/v7-ice-folk.ts::bolasScoreV7": "BOARD",
-    "src/ai/v7-ice-folk.ts::coldSnapScoreV7": "BOARD",
     "src/ai/v7-ice-folk.ts::iceFolkArmyCountsV7": "BOARD",
     "src/ai/v7-ice-folk.ts::iceFolkFactsV7": "BOARD",
     "src/ai/v7-ice-folk.ts::iceFolkResearchV7": "BOARD",
@@ -502,7 +498,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // throws in land form, from the board), and the Snow Golem where it
     // stands on the board, for Planted (an Ice Folk seat has no burrowed
     // unit).
-    "src/ai/v7.ts::iceFolkBolasSourceV7": "BOARD",
     "src/ai/v7.ts::iceFolkBlowV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",
     // The Undead pass (`pulp_wars-w49.13`): the free tiles a Vampire flies to.
@@ -568,7 +563,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/event-projection.ts::visibility": "BOARD",
     "src/engine/v7/explosions.ts::resolveExplosionChainV7": "BOARD",
     "src/engine/v7/explosions.ts::resolveStateExplosionChainV7": "BOARD",
-    "src/engine/v7/ice-folk.ts::resolveColdAuraV7": "BOARD",
     // Ice Folk Freeze (`pulp_wars-w49.37`): Frozen holds a unit standing on
     // the board (a Freeze, Bolas, Frost Bolt, Cold Snap, Frostbite, Black
     // Ice, or a shard of Glacial Smash takes a target there), and the
@@ -576,7 +570,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // the Mammoth's line and the side tiles it shoves into.
     "src/engine/v7/ice-folk.ts::frozenUnitNamedV7": "BOARD",
     "src/engine/v7/ice-folk.ts::withFrozenAppliedV7": "BOARD",
-    "src/engine/v7/query.ts::previewSingleFreezeV7": "BOARD",
     "src/engine/v7/query.ts::publicStampedeFactsV7": "BOARD",
     "src/engine/v7/query.ts::previewStampedeV7": "BOARD",
     "src/engine/v7/stampede.ts::canonicalStampedeFactsV7": "BOARD",
@@ -667,7 +660,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::publicActiveOwnedPort": "BOARD",
     "src/engine/v7/query.ts::publicAttackChainV7": "BOARD",
     "src/engine/v7/query.ts::publicBeamDownPassengersV7": "BOARD",
-    "src/engine/v7/query.ts::publicSingleFreezeTargetsV7": "BOARD",
     "src/engine/v7/query.ts::publicBombTargetsV7": "BOARD",
     "src/engine/v7/query.ts::publicCaptureTarget": "BOARD",
     "src/engine/v7/query.ts::publicCityBesieged": "BOARD",
@@ -722,7 +714,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
 
     "src/engine/v7/reducer.ts::applyReward": "BOARD",
     "src/engine/v7/reducer.ts::applyTendWounded": "BOARD",
-    "src/engine/v7/reducer.ts::applySingleFreeze": "BOARD",
     "src/engine/v7/reducer.ts::applyTractorBeam": "BOARD",
     "src/engine/v7/reducer.ts::applyTrain": "BOARD",
     "src/engine/v7/reducer.ts::applyTrainNaval": "BOARD",
@@ -838,8 +829,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The frozen sea interface (`pulp_wars-5ti.7`): Freeze's unit and the
     // ships it locks in, the slide of a Move, and the frozen-sea notices
     // read what stands on the board (nothing burrows under ice or water).
-    "src/render/canvas/frozen-sea-board-plan-v7.ts::freezePickTargetsV7":
-      "BOARD",
     "src/render/canvas/frozen-sea-board-plan-v7.ts::addFrozenPreviewEntries":
       "BOARD",
     "src/render/canvas/frozen-sea-board-plan-v7.ts::addFreezeRingEntriesV7":
@@ -894,7 +883,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // predicate, which reads the view's `burrowed` list), a Frost Giant's
     // Move freezes units on the board, and Glacier reads the mover.
     "src/render/ice-folk-presentation-v7.ts::stampedePlanV7": "BOARD",
-    "src/render/ice-folk-presentation-v7.ts::coldAuraMoveTargetsV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::moveUsesSkateV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::moveIsDiveV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianPickEntriesV7":
@@ -965,7 +953,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/board-renderer-v7.ts::overstrideTrampleV7": "BOARD",
     "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.pinGiantFeedback":
       "BOARD",
-    "src/render/ice-folk-presentation-v7.ts::bolasPreviewLinesV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkBoundaryNoticeV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkCombatLinesV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkFieldDefenseBlockedV7":
@@ -1050,12 +1037,24 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Snap's ring) reads the unit on each tile it reaches, the offer and
     // the result alike.
     "src/engine/v7/query.ts::publicFreezeTileFactsV7": "BOARD",
-    "src/engine/v7/query.ts::publicFreezeTargetsV7": "BOARD",
-    "src/engine/v7/query.ts::publicColdSnapChangesV7": "BOARD",
-    "src/engine/v7/reducer.ts::freezeTileFactsAtV7": "BOARD",
-    "src/engine/v7/reducer.ts::acceptedWaterFreezeV7": "BOARD",
-    "src/engine/v7/query.ts::previewFreezeV7": "BOARD",
-    "src/engine/v7/reducer.ts::applyFreeze": "BOARD",
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the freeze of a
+    // ring of tiles (a Cold Snap, a Frost Giant's Cold Wake) reads who
+    // stands on each tile of the board (a unit afloat keeps its water, a
+    // hostile unit is Frozen); a burrowed unit stands on no tile and is
+    // never Frozen. The previews, the board's wake ring, and the Normal AI's
+    // Giant reads are the same board reads.
+    "src/ai/v7-giants.ts::coldWakeTargetsV7": "BOARD",
+    "src/engine/v7/ice.ts::freezeChangesAnythingV7": "BOARD",
+    "src/engine/v7/ice.ts::canonicalFreezeTileFactsV7": "BOARD",
+    "src/engine/v7/ice.ts::withFreezeAppliedV7": "BOARD",
+    "src/engine/v7/ice.ts::resolveColdWakeV7": "BOARD",
+    "src/engine/v7/query.ts::previewColdWakeV7": "BOARD",
+    "src/engine/v7/reducer.ts::withColdWakeResultV7": "BOARD",
+    "src/render/canvas/board-renderer-v7.ts::drawIceFolkFocusPreviewV7":
+      "BOARD",
+    "src/render/canvas/ice-folk-board-plan-v7.ts::coldWakeMoveExtrasV7":
+      "BOARD",
+    "src/render/ice-folk-presentation-v7.ts::freezeSummaryV7": "BOARD",
     "src/engine/v7/state-schema.ts::iceValid": "ALL",
     "src/headless/candy-telemetry-v7.ts::recordCandyV7": "BOARD",
     // The Candy UI (`pulp_wars-jdb.6`): the dock, the board plan and the
@@ -1133,8 +1132,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-giants.ts::crushColumnV7": "BOARD",
     "src/ai/v7-giants.ts::stompCrowdV7": "BOARD",
     "src/ai/v7-giants.ts::hostileTossLandingsV7": "BOARD",
-    "src/ai/v7-giants.ts::glacialShardsV7": "BOARD",
-    "src/ai/v7-giants.ts::coldAuraTargetsV7": "BOARD",
     "src/ai/v7.ts::giantAttackValueV7": "BOARD",
     "src/ai/v7.ts::giantMoveValueV7": "BOARD",
     "src/engine/v7/reducer.ts::withSwallowedOutcomesResultV7": "BOARD",

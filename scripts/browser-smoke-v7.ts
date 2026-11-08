@@ -183,7 +183,7 @@ try {
   await evaluate(
     connection,
     `(() => {
-      localStorage.removeItem('pulpWars.save.v7r132.current');
+      localStorage.removeItem('pulpWars.save.v7r133.current');
       localStorage.setItem('pulpWars.save.v7.current', 'old-v7-bytes');
       localStorage.setItem('pulpWars.save.v7r2.current', 'old-v7r2-bytes');
       localStorage.setItem('pulpWars.save.v7r3.current', 'old-v7r3-bytes');
@@ -381,7 +381,7 @@ try {
       if (!initial) throw new Error('command-zero public trace missing');
       const view = snapshot.view;
       if (!view) throw new Error('returned public view missing');
-      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r132.current') ?? 'null');
+      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r133.current') ?? 'null');
       const safe = JSON.parse(controller.exportSafeLog()?.source ?? 'null');
       const debug = controller.exportDebugBundle({ acknowledgeHiddenInformation: true });
       if (!debug.ok) throw new Error('spoiler debug export missing');
@@ -654,7 +654,7 @@ try {
     readonly campaign: string | null;
   }>(
     connection,
-    `({ campaign: localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}), current: localStorage.getItem('pulpWars.save.v7r132.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7r20: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7r21: localStorage.getItem('pulpWars.save.v7r21.current'), oldV7r22: localStorage.getItem('pulpWars.save.v7r22.current'), oldV7r23: localStorage.getItem('pulpWars.save.v7r23.current'), oldV7r24: localStorage.getItem('pulpWars.save.v7r24.current'), oldV7r25: localStorage.getItem('pulpWars.save.v7r25.current'), oldV7r26: localStorage.getItem('pulpWars.save.v7r26.current'), oldV7r27: localStorage.getItem('pulpWars.save.v7r27.current'), oldV7r28: localStorage.getItem('pulpWars.save.v7r28.current'), oldV7r29: localStorage.getItem('pulpWars.save.v7r29.current'), oldV7r30: localStorage.getItem('pulpWars.save.v7r30.current'), oldV7r31: localStorage.getItem('pulpWars.save.v7r31.current'), oldV7r32: localStorage.getItem('pulpWars.save.v7r32.current'), oldV7r33: localStorage.getItem('pulpWars.save.v7r33.current'), oldV7r34: localStorage.getItem('pulpWars.save.v7r34.current'), oldV7r35: localStorage.getItem('pulpWars.save.v7r35.current'), oldV7r36: localStorage.getItem('pulpWars.save.v7r36.current'), oldV7r37: localStorage.getItem('pulpWars.save.v7r37.current'), oldV7r38: localStorage.getItem('pulpWars.save.v7r38.current'), oldV7r39: localStorage.getItem('pulpWars.save.v7r39.current'), oldV7r40: localStorage.getItem('pulpWars.save.v7r40.current'), oldV7r41: localStorage.getItem('pulpWars.save.v7r41.current'), oldV7r42: localStorage.getItem('pulpWars.save.v7r42.current'), oldV7r44: localStorage.getItem('pulpWars.save.v7r44.current'), retiredPrototype: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ campaign: localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}), current: localStorage.getItem('pulpWars.save.v7r133.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7r20: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7r21: localStorage.getItem('pulpWars.save.v7r21.current'), oldV7r22: localStorage.getItem('pulpWars.save.v7r22.current'), oldV7r23: localStorage.getItem('pulpWars.save.v7r23.current'), oldV7r24: localStorage.getItem('pulpWars.save.v7r24.current'), oldV7r25: localStorage.getItem('pulpWars.save.v7r25.current'), oldV7r26: localStorage.getItem('pulpWars.save.v7r26.current'), oldV7r27: localStorage.getItem('pulpWars.save.v7r27.current'), oldV7r28: localStorage.getItem('pulpWars.save.v7r28.current'), oldV7r29: localStorage.getItem('pulpWars.save.v7r29.current'), oldV7r30: localStorage.getItem('pulpWars.save.v7r30.current'), oldV7r31: localStorage.getItem('pulpWars.save.v7r31.current'), oldV7r32: localStorage.getItem('pulpWars.save.v7r32.current'), oldV7r33: localStorage.getItem('pulpWars.save.v7r33.current'), oldV7r34: localStorage.getItem('pulpWars.save.v7r34.current'), oldV7r35: localStorage.getItem('pulpWars.save.v7r35.current'), oldV7r36: localStorage.getItem('pulpWars.save.v7r36.current'), oldV7r37: localStorage.getItem('pulpWars.save.v7r37.current'), oldV7r38: localStorage.getItem('pulpWars.save.v7r38.current'), oldV7r39: localStorage.getItem('pulpWars.save.v7r39.current'), oldV7r40: localStorage.getItem('pulpWars.save.v7r40.current'), oldV7r41: localStorage.getItem('pulpWars.save.v7r41.current'), oldV7r42: localStorage.getItem('pulpWars.save.v7r42.current'), oldV7r44: localStorage.getItem('pulpWars.save.v7r44.current'), retiredPrototype: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
@@ -742,7 +742,7 @@ try {
     await pointerClick(connection, '[data-action="results-menu"]');
     await waitForExpression(
       connection,
-      `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return snapshot?.phase === 'EMPTY' && snapshot.view === null && localStorage.getItem('pulpWars.save.v7r132.current') === null && document.querySelector('.v7-match-root') === null && document.querySelector('[data-v7-region="results"]') === null && document.querySelector('nav.v7-main-menu [data-action="new-game"]') !== null && document.querySelector('[data-action="resume"]') === null && document.activeElement?.dataset?.action === 'new-game'; })()`,
+      `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return snapshot?.phase === 'EMPTY' && snapshot.view === null && localStorage.getItem('pulpWars.save.v7r133.current') === null && document.querySelector('.v7-match-root') === null && document.querySelector('[data-v7-region="results"]') === null && document.querySelector('nav.v7-main-menu [data-action="new-game"]') !== null && document.querySelector('[data-action="resume"]') === null && document.activeElement?.dataset?.action === 'new-game'; })()`,
     );
     const artifacts = {
       "desktop-ai-return.png": await fileSha256(
@@ -759,7 +759,7 @@ try {
         acceptance:
           timingMode === "STRICT" ? "FUNCTIONAL_AND_TIMING" : "FUNCTIONAL",
         timing: { mode: timingMode, ...timing },
-        rulesetId: "pulp-wars-poc-7r132",
+        rulesetId: "pulp-wars-poc-7r133",
         runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
         productionEntry: "src/main.ts",
         route: "DEFAULT_NO_RULESET_PARAMETER",
@@ -1005,7 +1005,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
   const launchSelector = '[data-action="launch"]';
   const canvasSelector = "canvas.board-canvas-v7";
   const artKey = "pulpWars.ruleset7.artSet.v1";
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const artUrl = (value: string | null): string => {
     const url = new URL(baseUrl);
     if (value === null) url.searchParams.delete("art");
@@ -1146,7 +1146,7 @@ async function probeUndeadSetup(connection: Connection): Promise<string> {
       `globalThis.__V7_UNDEAD_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
@@ -1394,7 +1394,7 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
       `globalThis.__V7_GOBLIN_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
@@ -1621,7 +1621,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     for (let step = 0; step < Math.abs(dy); step += 1)
       await pressKey(connection, vertical, vertical);
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,
@@ -1948,7 +1948,7 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
     for (let step = 0; step < Math.abs(dy); step += 1)
       await pressKey(connection, vertical, vertical);
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,
@@ -2280,12 +2280,11 @@ async function probeMindControlFixture(
  * launches from the production setup, its strip under Snow (the view's
  * flags; the cursor on the capital names what Snow does for the viewer);
  * the Sled is selected with the keyboard and moved, by a keyboard-chosen
- * offered Move, to a tile within Bolas reach of an enemy; its Bolas button
- * aims, the dock lists the targets with the preview's Frozen or Frosted hint,
- * and the throw leaves the target Frozen (a `frozen` entry, Ice Folk Freeze,
- * `pulp_wars-w49.37`); and the save resumes with its Ice Folk seat and the
- * Frozen unit on a fresh default-route
- * load. It uses no fixture, so it also runs against a deployed bundle.
+ * offered Move, to a tile near an enemy; and the save resumes with its Ice
+ * Folk seat and the Sled where it went on a fresh default-route load. (The
+ * Sled's Bolas, which this probe threw before, went with the one Freeze
+ * effect, `pulp_wars-xv0t`, 7r133.) It uses no fixture, so it also runs
+ * against a deployed bundle.
  */
 async function probeIceFolkMatch(connection: Connection): Promise<string> {
   const defaultUrl = (): string => {
@@ -2338,7 +2337,7 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
       await pressKey(connection, vertical, vertical);
   };
   const cursorText = `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? ''`;
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,
@@ -2374,7 +2373,7 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
     readonly snow: number;
     readonly capital: { readonly x: number; readonly y: number };
     readonly sled: { readonly x: number; readonly y: number };
-    /** An offered Move of the Sled that ends within Bolas reach of an enemy. */
+    /** An offered Move of the Sled that ends within 2 tiles of an enemy. */
     readonly to: { readonly x: number; readonly y: number } | null;
   }
   const started = await evaluate<IceFolkStartV7>(
@@ -2395,7 +2394,7 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
   const capitalText = await evaluate<string>(connection, cursorText);
   if (!capitalText.includes("Snow: your units move at half cost"))
     throw new Error(`Snow description missing: ${capitalText}`);
-  // The Sled, selected with Enter, moves to a tile in Bolas reach.
+  // The Sled, selected with Enter, moves to a tile near an enemy.
   await arrows(
     started.sled.x - started.capital.x,
     started.sled.y - started.capital.y,
@@ -2413,60 +2412,23 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
     `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && ${settled}`,
     300,
   );
-  // Escape clears the selection; Enter on the same cell selects the Sled.
-  await focusBoard();
-  await pressKey(connection, "Escape", "Escape");
-  await pressKey(connection, "Enter", "Enter");
-  await waitForExpression(
-    connection,
-    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Sled' && document.querySelector('[data-action="ice-folk-bolas"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
-  );
-  await pointerClick(connection, '[data-action="ice-folk-bolas"]');
-  // Bead pulp_wars-9im: the Bolas targets are picked on the board (the
-  // dock lists none): Tab steps to the first one in reading order, whose
-  // description carries the hint, and Enter throws.
-  await waitForExpression(
-    connection,
-    `Number(document.querySelector('[data-v7-ice-folk-pick="bolas"].v7-board-pick')?.dataset.boardTargets ?? '0') >= 1 && document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]') === null`,
-  );
-  const targetId = await evaluate<number>(
-    connection,
-    `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const targets = s.offeredCommands.filter((command) => command.kind === 'THROW_BOLAS').map((command) => s.view.units.find((unit) => unit.id === command.targetUnitId)).filter((unit) => unit !== undefined).sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x); return targets[0]?.id ?? -1; })()`,
-  );
-  await focusBoard();
-  await pressKey(connection, "Tab", "Tab");
-  await waitForExpression(
-    connection,
-    `(document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? '').startsWith('Bolas: ')`,
-  );
-  const hint = await evaluate<string>(connection, cursorText);
-  if (!/Will be (Frozen|Frosted)/.test(hint))
-    throw new Error(`Bolas hint missing: ${hint}`);
-  await capture(connection, "ice-folk-bolas-desktop.png");
-  await pressKey(connection, "Enter", "Enter");
-  await waitForExpression(
-    connection,
-    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 2 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Sled froze a') && ${settled}`,
-    300,
-  );
-  const chilledExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const entry = view.frozen.find((item) => item.unitId === ${targetId}); return { entry: entry ?? null, commandIndex: view.commandIndex, factions: view.setup.factions }; })()`;
-  interface IceFolkChilledV7 {
-    readonly entry: {
-      readonly unitId: number;
-      readonly turnsLeft: number;
-    } | null;
+  const movedExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const sled = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'RAIDER' && unit.form === 'LAND'); return { at: sled?.at ?? null, commandIndex: view.commandIndex, factions: view.setup.factions }; })()`;
+  interface IceFolkMovedV7 {
+    readonly at: { readonly x: number; readonly y: number } | null;
     readonly commandIndex: number;
     readonly factions: readonly string[];
   }
-  const chilled = await evaluate<IceFolkChilledV7>(
-    connection,
-    chilledExpression,
-  );
-  if (chilled.entry === null || chilled.entry.turnsLeft < 1)
-    throw new Error(`Bolas left no Frozen entry: ${JSON.stringify(chilled)}`);
-  await capture(connection, "ice-folk-frozen-desktop.png");
+  const chilled = await evaluate<IceFolkMovedV7>(connection, movedExpression);
+  if (
+    chilled.at === null ||
+    chilled.at.x !== to.x ||
+    chilled.at.y !== to.y ||
+    chilled.commandIndex !== 1
+  )
+    throw new Error(`the Sled did not move: ${JSON.stringify(chilled)}`);
+  await capture(connection, "ice-folk-moved-desktop.png");
   // The save resumes on a fresh default-route load with its Ice Folk seat
-  // and the Frozen unit.
+  // and the Sled where it went.
   await navigateFresh(
     `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
   );
@@ -2476,10 +2438,7 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
     `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["ICE_FOLK","UNDEAD","GOBLIN","DINOSAUR"]' && s.view.commandIndex === ${chilled.commandIndex}; })()`,
     900,
   );
-  const resumed = await evaluate<IceFolkChilledV7>(
-    connection,
-    chilledExpression,
-  );
+  const resumed = await evaluate<IceFolkMovedV7>(connection, movedExpression);
   if (JSON.stringify(resumed) !== JSON.stringify(chilled))
     throw new Error(`Ice Folk save did not resume: ${JSON.stringify(resumed)}`);
   await evaluate(
@@ -2487,7 +2446,7 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
-  return `Showcase launch as Ice Folk vs three Humans (${started.snow} Snow tiles), Sled moved to ${to.x},${to.y}, Bolas left the target Frozen, and resume`;
+  return `Showcase launch as Ice Folk vs three Humans (${started.snow} Snow tiles), Sled moved to ${to.x},${to.y}, and resume`;
 }
 
 /**
@@ -2549,7 +2508,7 @@ async function probeDwarfMatch(connection: Connection): Promise<string> {
     for (let step = 0; step < Math.abs(dy); step += 1)
       await pressKey(connection, vertical, vertical);
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,
@@ -2743,7 +2702,7 @@ async function probeShowcaseMatch(connection: Connection): Promise<string> {
       `globalThis.__V7_SHOWCASE_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,
@@ -2880,7 +2839,7 @@ async function probeCampaign(connection: Connection): Promise<string> {
       `globalThis.__V7_CAMPAIGN_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   const humanTurn = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`;
   const openCampaign = async (): Promise<void> => {
@@ -3598,7 +3557,7 @@ async function probePerfectionStart(connection: Connection): Promise<string> {
     url.searchParams.delete("art");
     return url.href;
   };
-  const saveKey = "pulpWars.save.v7r132.current";
+  const saveKey = "pulpWars.save.v7r133.current";
   const modeKey = "pulpWars.ruleset7.gameMode.v1";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   const navigateFresh = async (): Promise<void> => {

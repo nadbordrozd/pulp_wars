@@ -220,8 +220,9 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // (The ninth unit, 7r55: the defender is the Walrus, 16; the Mammoth,
     // 20, is the heavy role.)
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch and the Boulder
-    // Yeti 10 (were 12), the Frost Giant 36 (was 40).
-    expect(hp("ICE_FOLK")).toEqual([9, 10, 8, 16, 10, 10, 14, 36]);
+    // Yeti 10 (were 12), the Frost Giant 36 (was 40). The one Freeze effect
+    // (`pulp_wars-xv0t`, 7r133): the Sled 12 (was 10).
+    expect(hp("ICE_FOLK")).toEqual([9, 12, 8, 16, 10, 10, 14, 36]);
     // The Dwarf revision (`pulp_wars-78i.3`) adds a seventh faction
     // (docs/product/RULESET_7_DWARVES.md section 3).
     // (The ninth unit, 7r55: the breakthrough unit is the Whirligig, 12;

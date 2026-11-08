@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { publicThreatenedTilesForPolicyV7 } from "../../src/ai/v7";
 import {
-  FROST_BOLT_MIN_RANGE_V7,
-  FROST_BOLT_RANGE_V7,
   MIND_CONTROL_RANGE_V7,
   PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
@@ -111,11 +109,11 @@ function meanings(
 
 describe("the identity (pulp_wars-ev6q)", () => {
   it("was 7r129 after 7r128, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r128");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r128");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
       "pulpWars.save.v7r128.current",
     );
   });
@@ -373,7 +371,7 @@ describe("the Steam Mole: walk 1, tunnel 2 or 3 (pulp_wars-ev6q)", () => {
   });
 });
 
-describe("the Ice Witch: Frost Bolt exactly 2 tiles away (pulp_wars-ev6q)", () => {
+describe("the Ice Witch (pulp_wars-ev6q; her Frost Bolt went with pulp_wars-xv0t)", () => {
   const WITCH = at(5, 3);
   const witchField = () =>
     iceFieldV7([
@@ -382,58 +380,33 @@ describe("the Ice Witch: Frost Bolt exactly 2 tiles away (pulp_wars-ev6q)", () =
       { seat: 1, role: "MARKSMAN", at: at(3, 1) },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
     ]);
-  const bolt = (state: GameStateV7, target: CoordV7): CommandV7 => ({
-    kind: "FROST_BOLT",
-    unitId: unitAtV7(state, WITCH).id,
-    targetUnitId: unitAtV7(state, target).id,
-  });
 
-  it("reaches exactly 2 tiles", () => {
-    expect([FROST_BOLT_MIN_RANGE_V7, FROST_BOLT_RANGE_V7]).toEqual([2, 2]);
-  });
-
-  it("rejects a Frost Bolt on a neighbour as OUT_OF_RANGE and never offers it; offers one 2 away", () => {
-    const state = witchField();
-    expect(rejectedV7(state, bolt(state, at(6, 3)))).toEqual({
-      code: "FROST_BOLT_NOT_LEGAL",
-      params: { reason: "OUT_OF_RANGE" },
-    });
-    expect(offeredV7(state, "FROST_BOLT")).toEqual([bolt(state, at(3, 1))]);
-    // Cold Snap is unchanged: it freezes the neighbour.
-    expect(offeredV7(state, "COLD_SNAP")).toEqual([
-      { kind: "COLD_SNAP", unitId: unitAtV7(state, WITCH).id },
-    ]);
-    const run = playV7(state, bolt(state, at(3, 1)));
-    expect(run.events[0]).toMatchObject({
-      kind: "UNITS_FROZEN",
-      source: "FROST_BOLT",
-      results: [{ unitId: unitAtV7(state, at(3, 1)).id, turnsLeft: 1 }],
-    });
-  });
-
-  it("marks a neighbouring enemy as Attack alone and an enemy 2 away as Frost Bolt alone", () => {
+  it("marks a neighbouring enemy as Attack alone and nothing 2 away; her Cold Snap freezes the neighbour", () => {
     const state = witchField();
     const marked = meanings(state, WITCH);
     expect(marked.get("6,3")).toEqual(["ATTACK"]);
-    expect(marked.get("3,1")).toEqual(["FROST_BOLT"]);
+    expect(marked.has("3,1")).toBe(false);
     for (const [where, ids] of marked) expect(ids, where).toHaveLength(1);
-  });
-
-  it("the Normal AI bolts only at 2 tiles", () => {
-    const state = witchField();
-    const bolts = unitCandidatesV7(state, WITCH, "FROST_BOLT");
-    expect(bolts.map((candidate) => candidate.command)).toEqual([
-      bolt(state, at(3, 1)),
+    expect(offeredV7(state, "COLD_SNAP")).toEqual([
+      { kind: "COLD_SNAP", unitId: unitAtV7(state, WITCH).id },
     ]);
+    const run = playV7(state, {
+      kind: "COLD_SNAP",
+      unitId: unitAtV7(state, WITCH).id,
+    });
+    expect(run.events[0]).toMatchObject({
+      kind: "UNITS_FROZEN",
+      source: "COLD_SNAP",
+      results: [{ unitId: unitAtV7(state, at(6, 3)).id, turnsLeft: 1 }],
+    });
   });
 });
 
 describe("the texts (pulp_wars-ev6q)", () => {
-  it("drop the Brain's limit and give the Mole's and the Witch's reach", () => {
+  it("drop the Brain's limit and give the Mole's reach", () => {
     expect(glossaryEntryV7("MIND_CONTROL").text).toMatch(/as many as it likes/);
     expect(glossaryEntryV7("MIND_CONTROL").text).not.toMatch(/three/);
     expect(glossaryEntryV7("TUNNEL").text).toMatch(/two or three tiles away/);
-    expect(glossaryEntryV7("FROST_BOLT").text).toMatch(/never at a neighbour/);
     expect(glossaryEntryV7("NO_ROADS").text).toMatch(/Roads do not speed it/);
     expect(
       recruitmentRolePresentationV7("GUARD", "DWARF").restrictions,

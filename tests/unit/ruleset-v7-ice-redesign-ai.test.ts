@@ -14,7 +14,7 @@ import {
   ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
   iceCrackScoreV7,
   iceCrackedOpenTilesV7,
-  iceFreezeScoreV7,
+  iceColdSnapTilesScoreV7,
   iceSeaPlanV7,
   iceSeaResearchV7,
   type FrozenSeaToolsV7,
@@ -81,6 +81,13 @@ const COLUMN: readonly CoordV7[] = lineV7({ x: 3, y: 2 }, 0, 1, 5);
 const WEST: CoordV7 = { x: 4, y: 3 };
 const MIDDLE: CoordV7 = { x: 5, y: 3 };
 const EAST: CoordV7 = { x: 6, y: 3 };
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): an Ice Witch's Cold
+ * Snap is the freeze (the line `FREEZE` of a Yeti before); her technology.
+ */
+const WITCH: readonly TechnologyIdV7[] = ["GATHERING", "ADMINISTRATION"];
+/** The keeper of the home ice: a Witch beside the capital's waters. */
+const KEEPER: CoordV7 = { x: 6, y: 2 };
 
 const viewOf = (state: GameStateV7, seat: 0 | 1 = 0): PlayerViewV7 =>
   viewForV7(state, seatV7(state, seat).id);
@@ -155,13 +162,13 @@ const column = (count: number): readonly FrozenIceV7[] =>
   COLUMN.slice(0, count).map((at) => ({ at }));
 
 describe("the Ice Folk seat: a crossing is built once", () => {
-  it("rebuilds a tile a Crack broke out of its crossing with the crossing's own Freeze", () => {
-    // The crossing (3, 3) to (3, 7) with (3, 5) cracked open; the builder
-    // stands on the ice before the gap (no Coins for home ice).
+  it("rebuilds a tile a Crack broke out of its crossing with the crossing's own Cold Snap", () => {
+    // The crossing (3, 3) to (3, 7) with (3, 5) cracked open; the builder,
+    // an Ice Witch, stands on the ice before the gap (no Coins for home ice).
     const { state, view } = scene({
-      technologies: [PACK_ICE, PACK_ICE],
+      technologies: [[...PACK_ICE, ...WITCH], PACK_ICE],
       coins: [0, 60],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 3, y: 4 } }],
+      units: [{ seat: 0, role: "CAPTAIN", at: { x: 3, y: 4 } }],
       ice: [...column(2), ...COLUMN.slice(3).map((at) => ({ at }))],
     });
     const builder = idAt(state, { x: 3, y: 4 });
@@ -172,56 +179,58 @@ describe("the Ice Folk seat: a crossing is built once", () => {
       stand: { x: 3, y: 4 },
       builders: [builder],
     });
-    const best = bestOf(view, builder);
-    expect(best?.command).toEqual({
-      kind: "FREEZE",
-      unitId: builder,
-      at: { x: 3, y: 5 },
+    const snap: CommandV7 = { kind: "COLD_SNAP", unitId: builder };
+    expect(
+      iceColdSnapTilesScoreV7(view, toolsOf(view), plan, snap)?.priority,
+    ).toBe(ICE_BRIDGE_FREEZE_PRIORITY_V7);
+    expect(
+      candidates(view).some(
+        (item) => JSON.stringify(item.command) === JSON.stringify(snap),
+      ),
+    ).toBe(true);
+    const result = acceptV7(state, 0, snap);
+    expect(eventOf(result.events, "TILES_FROZEN").tiles).toContainEqual({
+      x: 3,
+      y: 5,
     });
-    expect(best?.score.priority).toBe(ICE_BRIDGE_FREEZE_PRIORITY_V7);
-    const result = acceptV7(state, 0, best?.command as CommandV7);
-    expect(eventOf(result.events, "WATER_FROZEN").tiles).toEqual([
-      { x: 3, y: 5 },
-    ]);
-    // Complete again: nobody freezes it any more (the old refreeze is gone).
+    // Complete again: nobody refreezes it (the old refreeze is gone).
     const after = viewOf(result.state);
     expect(iceSeaPlanV7(after, toolsOf(after))?.complete).toBe(true);
-    expect(
-      candidates(after).filter((item) => item.command.kind === "FREEZE"),
-    ).toEqual([]);
   });
 });
 
 describe("the Ice Folk seat builds its economy on the ice", () => {
   it("freezes own-territory water for a Fishing Hole, then cuts the Fishing Hole there", () => {
-    // The Yeti beside the capital is the crossing's builder; the garrison
-    // is free for home ice.
+    // The Witch on the shore is the crossing's builder; the second Witch,
+    // beside the capital's waters, is free for home ice.
     const { state, view } = scene({
-      technologies: [RIME, RIME],
+      technologies: [[...RIME, ...WITCH], RIME],
       ports: [false, true],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 6, y: 1 } }],
+      units: [
+        { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
+        { seat: 0, role: "CAPTAIN", at: KEEPER },
+      ],
     });
-    const garrison = idAt(state, { x: 5, y: 2 });
-    const freeze = candidates(view).find(
-      (item) =>
-        item.command.kind === "FREEZE" && item.command.unitId === garrison,
-    );
-    expect(freeze?.score.priority).toBe(ICE_HOME_FREEZE_PRIORITY_V7);
-    const command = freeze?.command as Extract<CommandV7, { kind: "FREEZE" }>;
-    const scored = iceFreezeScoreV7(
+    const command: Extract<CommandV7, { kind: "COLD_SNAP" }> = {
+      kind: "COLD_SNAP",
+      unitId: idAt(state, KEEPER),
+    };
+    const scored = iceColdSnapTilesScoreV7(
       view,
       toolsOf(view),
       iceSeaPlanV7(view, toolsOf(view)),
       command,
     );
-    expect(scored?.reason).toBe("HOME");
-    // No Fishing Hole is on offer before the Freeze.
+    expect(scored).toMatchObject({
+      reason: "HOME",
+      priority: ICE_HOME_FREEZE_PRIORITY_V7,
+    });
+    // No Fishing Hole is on offer before the Cold Snap.
     const frozen = acceptV7(state, 0, command);
-    const tiles = eventOf(frozen.events, "WATER_FROZEN").tiles;
+    const tiles = eventOf(frozen.events, "TILES_FROZEN").tiles;
     expect(tiles).toEqual(scored?.preview.tiles);
-    const site = tiles.find((at) =>
-      [WEST, MIDDLE, EAST].some((t) => same(t, at)),
-    );
+    // The Port on (4, 3) is never iced over.
+    const site = tiles.find((at) => [MIDDLE, EAST].some((t) => same(t, at)));
     if (site === undefined) throw new Error("no home tile frozen");
     const hole: CommandV7 = { kind: "BUILD_FISHING_HOLE", at: site };
     expect(queryPlayerCommandsV7(view)).not.toContainEqual(hole);
@@ -252,13 +261,16 @@ describe("the Ice Folk seat builds its economy on the ice", () => {
     expect(population(result.state) - population(frozen.state)).toBe(1);
     // Without the Coins for a building there is no reason to freeze it.
     const broke = scene({
-      technologies: [RIME, RIME],
+      technologies: [[...RIME, ...WITCH], RIME],
       ports: [false, true],
       coins: [0, 60],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 6, y: 1 } }],
+      units: [
+        { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
+        { seat: 0, role: "CAPTAIN", at: KEEPER },
+      ],
     });
     expect(
-      iceFreezeScoreV7(
+      iceColdSnapTilesScoreV7(
         broke.view,
         toolsOf(broke.view),
         iceSeaPlanV7(broke.view, toolsOf(broke.view)),
@@ -296,17 +308,19 @@ describe("the Ice Folk seat builds its economy on the ice", () => {
   it("takes another seat's ice in its territory to build on it", () => {
     // Ice of the Human seat (a captor's, say) in the capital's waters.
     const { state, view } = scene({
-      technologies: [RIME, RIME],
+      technologies: [[...RIME, ...WITCH], RIME],
       ports: [false, true],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 6, y: 1 } }],
+      units: [
+        { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
+        { seat: 0, role: "CAPTAIN", at: KEEPER },
+      ],
       ice: [{ at: EAST, seat: 1 }],
     });
-    const command: Extract<CommandV7, { kind: "FREEZE" }> = {
-      kind: "FREEZE",
-      unitId: idAt(state, { x: 5, y: 2 }),
-      at: EAST,
+    const command: Extract<CommandV7, { kind: "COLD_SNAP" }> = {
+      kind: "COLD_SNAP",
+      unitId: idAt(state, KEEPER),
     };
-    const scored = iceFreezeScoreV7(
+    const scored = iceColdSnapTilesScoreV7(
       view,
       toolsOf(view),
       iceSeaPlanV7(view, toolsOf(view)),
@@ -465,7 +479,13 @@ describe("the Ice Folk seat researches Glacier when its ice is cracked", () => {
     };
     const one = research(once.state);
     expect(one.gaps).toEqual([{ x: 3, y: 4 }]);
-    expect(one.want?.tech).not.toBe("SUBMERSIBLES");
+    // One gap is no evidence yet: Glacier stays below the due research (the
+    // one Freeze effect, `pulp_wars-xv0t`: with Hoarfrost unlocking
+    // nothing, Glacier is the seat's last ice technology to buy, so it may
+    // be the pick, at its own low priority).
+    expect(
+      one.want?.tech === "SUBMERSIBLES" ? one.want.priority : 0,
+    ).toBeLessThan(ICE_SEA_DUE_RESEARCH_PRIORITY_V7);
     const two = research(twice.state);
     expect(two.gaps).toEqual([
       { x: 3, y: 4 },

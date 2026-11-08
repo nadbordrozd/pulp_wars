@@ -5971,6 +5971,16 @@ without a Martian seat decides as before.
 
 ## Ice Folk play (`pulp_wars-7g3.4`)
 
+> **The one Freeze effect** (`pulp_wars-xv0t`, `7r133`): the Bolas, the
+> Frost Bolt, the line `FREEZE`, and the Cold Aura are gone, and with them
+> their scoring and the Bolas source of the shatter hunt. The Witch casts
+> Cold Snap when it Freezes a hostile unit (`coldSnapScoreV7`) or when its
+> ice serves a planned crossing (`iceColdSnapTilesScoreV7`); the crossing
+> planner (`src/ai/v7-frozen-sea.ts`) builds with Cold Snaps and the Frost
+> Giant's Cold Wake Moves (`previewColdWakeV7`); a Frost Giant's Move is
+> scored by the units its Cold Wake Freezes. Text below that names the
+> removed abilities describes the policy before `7r133`.
+
 **Ice Folk Freeze (`pulp_wars-w49.37`).** Chill and Sluggish became one
 status, Frozen ([current rules section 21.2](../product/RULESET_7_CURRENT.md#212-frozen)).
 The policy reads `view.frozen` where this section says Chill (the option

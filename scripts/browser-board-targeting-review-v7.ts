@@ -183,15 +183,8 @@ const SHOTS: readonly Shot[] = [
     then: "pickUp",
     marks: ["PLACE"],
   },
-  {
-    name: "bolas-on-snow",
-    module: "/tests/fixtures/v7-ice-folk-ui.ts",
-    fixture: "iceFolkUiFixtureV7",
-    coords: "ICE_FOLK_UI_V7",
-    unit: "sled",
-    action: "ice-folk-bolas",
-    marks: ["ATTACK"],
-  },
+  // (The Sled's Bolas on Snow went with the one Freeze effect,
+  // `pulp_wars-xv0t`, 7r133.)
   {
     name: "tunnel-pick",
     module: "/tests/fixtures/v7-dwarf-ui.ts",

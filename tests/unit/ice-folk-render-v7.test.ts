@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
-  previewBolasV7,
   previewColdSnapV7,
   projectEventsV7,
   queryCombatPreviewV7,
@@ -59,8 +58,6 @@ import { DIRECTION_FLAG_ANCHORS_V7 } from "../../src/render/canvas/visual-direct
 import {
   FROZEN_NO_STRIKE_BACK_V7,
   SHATTERS_PREVIEW_V7,
-  bolasPreviewLinesV7,
-  coldSnapChangedTargetsV7,
   iceFolkCombatLinesV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
@@ -245,12 +242,8 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
     expect(technologySubjectV7("FORTIFICATION", "ORIGINAL")).toBe(
       "ICON:TECH:FORTIFICATION",
     );
-    const bolas: CommandV7 = {
-      kind: "THROW_BOLAS",
-      unitId: 1 as never,
-      targetUnitId: 2 as never,
-    };
-    expect(commandSubjectV7(bolas, "ICE_FOLK")).toBe("ICON:ACTION:THROW_BOLAS");
+    // (The Bolas's `ICON:ACTION:THROW_BOLAS` went with the command, the one
+    // Freeze effect, `pulp_wars-xv0t`.)
     expect(
       commandSubjectV7({ kind: "COLD_SNAP", unitId: 1 as never }, "ICE_FOLK"),
     ).toBe("ICON:ACTION:COLD_SNAP");
@@ -479,34 +472,6 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
   const state = iceFolkUiFixtureV7();
   const view = humanView(state);
 
-  it("aims a Bolas: only its targets, each with its freeze hint", () => {
-    const sled = unitAt(view, AT.sled);
-    const plan = planFor(view, AT.sled, {
-      iceFolkPick: { kind: "THROW_BOLAS", unitId: sled.id },
-    });
-    const offered = queryPlayerCommandsV7(view).filter(
-      (command) => command.kind === "THROW_BOLAS" && command.unitId === sled.id,
-    );
-    expect(plan.targets.map((target) => target.family)).toEqual(
-      offered.map(() => "THROW_BOLAS"),
-    );
-    const target = plan.targets.find(
-      (candidate) =>
-        candidate.at.x === AT.bolasTarget.x &&
-        candidate.at.y === AT.bolasTarget.y,
-    );
-    const preview = previewBolasV7(
-      view,
-      sled.id,
-      unitAt(view, AT.bolasTarget).id,
-    );
-    if (preview === null) throw new Error("no Bolas preview");
-    const lines = bolasPreviewLinesV7(view, preview);
-    // Ice Folk Freeze (`pulp_wars-w49.38`): a target not yet Frozen.
-    expect(target?.previewLabel).toBe("Freeze");
-    expect(target?.previewNote).toBe(lines.slice(1).join(" · "));
-  });
-
   it("aims a Cold Snap: every target carries the one command, inside its reach", () => {
     const witch = unitAt(view, AT.witch);
     const plan = planFor(view, AT.witch, {
@@ -514,9 +479,9 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
     });
     const preview = previewColdSnapV7(view, witch.id);
     if (preview === null) throw new Error("no Cold Snap preview");
-    // No pointless actions (`pulp_wars-zir6`): a unit Frozen already is in
-    // the cast but is not marked.
-    expect(plan.targets).toHaveLength(coldSnapChangedTargetsV7(preview).length);
+    // No pointless actions (`pulp_wars-zir6`): a unit Frozen already is no
+    // target (the one Freeze effect, `pulp_wars-xv0t`).
+    expect(plan.targets).toHaveLength(preview.targets.length);
     expect(plan.targets.length).toBeGreaterThan(0);
     expect(
       plan.targets.every(
@@ -619,21 +584,7 @@ describe("Ice Folk cues (section 13.1, ICE_FOLK.md effects)", () => {
     });
   });
 
-  it("throws the Bolas from the Sled and rings the Cold Snap from the Witch", () => {
-    const bolas = boundary(
-      state,
-      (command) =>
-        command.kind === "THROW_BOLAS" &&
-        command.targetUnitId === id(AT.bolasTarget),
-    );
-    expect(bolas).toEqual([
-      expect.objectContaining({
-        kind: "ICE_FOLK",
-        effect: "BOLAS",
-        from: AT.sled,
-        cells: [AT.bolasTarget],
-      }),
-    ]);
+  it("rings the Cold Snap from the Witch", () => {
     const snap = boundary(state, (command) => command.kind === "COLD_SNAP");
     expect(snap[0]).toMatchObject({
       kind: "ICE_FOLK",
@@ -675,10 +626,7 @@ describe("Ice Folk cues (section 13.1, ICE_FOLK.md effects)", () => {
     for (const effect of [
       "SHATTER",
       "COLD_SNAP",
-      "BOLAS",
-      "COLD_AURA",
       "SWEEP",
-      "FROST_BOLT",
       "FROST",
       "STAMPEDE",
     ] as const) {
@@ -724,6 +672,8 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     target.at.x === where.x && target.at.y === where.y;
 
   it("shows the turns left on a unit Frozen for two of its turns", () => {
+    // (Frozen during its own turn, as by a Walrus's Frostbite, which the
+    // one Freeze effect, `pulp_wars-xv0t`, keeps.)
     const plan = planFor(view, null);
     const own = plan.entries.find(
       (entry) => entry.kind === "UNIT" && at(entry, FREEZE.frozenOwn),
@@ -742,29 +692,8 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     expect(twos(plan) - twos(once)).toBe(1);
   });
 
-  it("aims a Frost Bolt: one target each, exactly two tiles away, with its hint", () => {
+  it("aims a Cold Snap at the tile next to her only (no Frost Bolt any more)", () => {
     const witch = unitAt(view, FREEZE.witch);
-    const plan = planFor(view, FREEZE.witch, {
-      iceFolkPick: { kind: "FROST_BOLT", unitId: witch.id },
-    });
-    // No pointless actions (`pulp_wars-zir6`): the unit Frozen already is
-    // no target. `pulp_wars-ev6q` (7r129): nor is the one next to her.
-    expect(plan.targets.map((target) => target.family)).toEqual(["FROST_BOLT"]);
-    const label = (where: CoordV7) =>
-      plan.targets.find((target) => at(target, where))?.previewLabel;
-    expect(label(FREEZE.boltTarget)).toBe("Freeze");
-    expect(label(FREEZE.snapTarget)).toBeUndefined();
-    expect(label(FREEZE.boltFrozen)).toBeUndefined();
-    // Its reach (the ring of tiles exactly 2 away: the 5 x 5 round her
-    // less the 3 x 3 she stands in) is outlined.
-    expect(
-      plan.entries.filter(
-        (entry) =>
-          entry.kind === "ABILITY_AREA" &&
-          entry.key.startsWith("ability-area:FROST_BOLT:"),
-      ),
-    ).toHaveLength(16);
-    // A Cold Snap reaches only the tile next to her.
     const snap = planFor(view, FREEZE.witch, {
       iceFolkPick: { kind: "COLD_SNAP", unitId: witch.id },
     });
@@ -773,23 +702,19 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     ]);
   });
 
-  it("marks the enemies a Frost Giant's Move would freeze", () => {
+  it("marks the enemies and the ring a Frost Giant's Move would freeze (its Cold Wake)", () => {
     const plan = planFor(view, FREEZE.giant);
     const target = plan.targets.find(
       (candidate) =>
         candidate.family === "MOVE" && at(candidate, FREEZE.giantTo),
     );
-    expect(target?.coldAura).toEqual([FREEZE.giantPreyA, FREEZE.giantPreyB]);
+    expect(target?.coldWake?.units).toEqual([
+      FREEZE.giantPreyA,
+      FREEZE.giantPreyB,
+    ]);
     expect(target?.previewLabel).toBe("Freezes 2");
-    expect(target?.semanticLabel).toBe(
-      "Cold Aura: freezes 2 units: Fighter, Marksman",
-    );
-    expect(
-      plan.targets.find(
-        (candidate) =>
-          candidate.family === "MOVE" && at(candidate, { x: 1, y: 2 }),
-      )?.coldAura,
-    ).toBeUndefined();
+    expect(target?.semanticLabel).toMatch(/^Cold Wake: freezes 2 units/);
+    expect(target?.semanticLabel).toContain("Fighter, Marksman");
     const focused = texts(draw(plan, { previewFocus: FREEZE.giantTo }));
     expect(focused.filter((text) => text === "Freeze")).toHaveLength(2);
     expect(texts(draw(plan)).filter((text) => text === "Freeze")).toHaveLength(
@@ -944,29 +869,5 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     expect(
       steps.every((step) => step.kind !== "MOVE" || step.pushSlide === true),
     ).toBe(true);
-  });
-
-  it("streaks a Frost Bolt from the Witch to its target", () => {
-    const command = queryPlayerCommandsV7(view).find(
-      (candidate) =>
-        candidate.kind === "FROST_BOLT" &&
-        candidate.targetUnitId === id(FREEZE.boltTarget),
-    );
-    if (command === undefined) throw new Error("no Frost Bolt");
-    const result = applyCommandV7(state, state.humanPlayerId, command);
-    if (!result.accepted) throw new Error("rejected");
-    const steps = corePresentationPlanV7(
-      view,
-      projectEventsV7(state, result.state, state.humanPlayerId, result.events),
-      humanView(result.state),
-    );
-    expect(steps).toEqual([
-      expect.objectContaining({
-        kind: "ICE_FOLK",
-        effect: "FROST_BOLT",
-        from: FREEZE.witch,
-        cells: [FREEZE.boltTarget],
-      }),
-    ]);
   });
 });

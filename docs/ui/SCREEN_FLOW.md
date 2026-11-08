@@ -1996,6 +1996,17 @@ without a Martian seat looks as before apart from the extra faction option.
 
 ## Current Ruleset 7 Ice Folk overlay
 
+> **The one Freeze effect** (`pulp_wars-xv0t`, `7r133`): the Sled's
+> Bolas, the Ice Witch's Frost Bolt, the line Freeze and its Freeze button,
+> the Frost Giant's Cold Aura and shards, and the Blizzard's Snow are gone,
+> with their buttons, target chips, board targets, cues, log lines and
+> glossary rows. The Witch's Cold Snap is one press that freezes the ring
+> round her (ice on water, Snow on neutral land, hostile units Frozen), and
+> a Frost Giant's Move destination tints the ring its **Cold Wake** will
+> freeze while hovered. Text below that names the removed abilities
+> describes the overlay before `7r133`
+> ([current rules section 21](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules)).
+
 This overlay implements
 [Ice Folk spec section 13](../product/RULESET_7_ICE_FOLK.md#13-ui-requirements)
 (`pulp_wars-7g3.6`) with the production art of the

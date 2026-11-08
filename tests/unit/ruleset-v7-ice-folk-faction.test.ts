@@ -2,12 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   BLIZZARD_RADIUS_V7,
-  BOLAS_RANGE_V7,
   BRITTLE_SHATTER_HP_V7,
   COLD_BLOOD_BONUS2_V7,
   COLD_SNAP_RANGE_V7,
   COMMAND_KIND_ORDER_V7,
-  FROST_BOLT_RANGE_V7,
   STAMPEDE_DAMAGE_V7,
   STAMPEDE_MIN_RANGE_V7,
   STAMPEDE_RANGE_V7,
@@ -153,7 +151,6 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     expect([
       SHATTER_HP_V7,
       BRITTLE_SHATTER_HP_V7,
-      BOLAS_RANGE_V7,
       COLD_SNAP_RANGE_V7,
       BLIZZARD_RADIUS_V7,
       DEEP_WINTER_RADIUS_V7,
@@ -162,18 +159,18 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       ROCKFALL_ATTACK2_V7,
       PLANTED_BONUS2_V7,
       COLD_BLOOD_BONUS2_V7,
-    ]).toEqual([3, 4, 2, 1, 1, 2, 6, 2, 3, 2, 1]);
+    ]).toEqual([3, 4, 1, 1, 2, 6, 2, 3, 2, 1]);
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
-    // tiles around the Witch (2 before), the Frost Bolt 2; the Stampede goes
+    // tiles around the Witch (2 before; the Bolas's and the Frost Bolt's 2
+    // went with the one Freeze effect, `pulp_wars-xv0t`); the Stampede goes
     // 3 tiles and hits for 3 (Glacier's +1 Move on ice is gone with
     // `pulp_wars-s55m.2`); since 7r128 (`pulp_wars-57lq`) it goes at least
     // 2 tiles.
     expect([
-      FROST_BOLT_RANGE_V7,
       STAMPEDE_MIN_RANGE_V7,
       STAMPEDE_RANGE_V7,
       STAMPEDE_DAMAGE_V7,
-    ]).toEqual([2, 2, 3, 3]);
+    ]).toEqual([2, 3, 3]);
   });
 
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
@@ -208,11 +205,12 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-n5fa`, 7r130) removes RIBBIT (87).
     // (84: one tile, one meaning, `pulp_wars-3u8d`, 7r131, removes BOARD,
     // RECOVER and SWALLOW.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // (81: the one Freeze effect, `pulp_wars-xv0t`, 7r133, removes
+    // THROW_BOLAS, FREEZE and FROST_BOLT.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(81);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 17)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
       "BREAK_OFF",
-      "FROST_BOLT",
       "STAMPEDE",
       // The Cult's Favour (`pulp_wars-mch9.4`), after the Freeze block.
       "SACRIFICE",
@@ -239,11 +237,10 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "CAPTURE",
     ]);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
-    expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 3)).toEqual([
       "TRACTOR_BEAM",
-      "THROW_BOLAS",
       "COLD_SNAP",
-      "FREEZE", // the frozen sea (pulp_wars-5ti.3) inserts FREEZE after COLD_SNAP
+      "CRACK_ICE",
     ]);
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
@@ -274,7 +271,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
-    // WATER_FROZEN (154).
+    // WATER_FROZEN (154; `TILES_FROZEN` in its place since the one Freeze
+    // effect, `pulp_wars-xv0t`).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
     // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
     // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160). The reversible join
@@ -298,10 +296,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
 
   it("parses the commands and the new events and literals strictly", () => {
     const commands: readonly CommandV7[] = [
-      { kind: "THROW_BOLAS", unitId: 5 as never, targetUnitId: 7 as never },
       { kind: "COLD_SNAP", unitId: 5 as never },
       // Ice Folk Freeze (`pulp_wars-w49.37`).
-      { kind: "FROST_BOLT", unitId: 5 as never, targetUnitId: 7 as never },
       { kind: "STAMPEDE", unitId: 5 as never, at: at(3, 3) },
     ];
     for (const command of commands) {
@@ -313,7 +309,12 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
         false,
       );
     }
-    expect(parseCommandV7({ kind: "THROW_BOLAS", unitId: 5 }).ok).toBe(false);
+    // The one Freeze effect (`pulp_wars-xv0t`): the retired commands.
+    for (const kind of ["THROW_BOLAS", "FROST_BOLT", "FREEZE"])
+      expect(
+        parseCommandV7({ kind, unitId: 5, targetUnitId: 7 }).ok,
+        kind,
+      ).toBe(false);
     expect(
       parseCommandV7({ kind: "COLD_SNAP", unitId: 5, targetUnitId: 7 }).ok,
     ).toBe(false);
@@ -329,9 +330,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     };
     const valid: readonly unknown[] = [
       frozen,
-      { ...frozen, source: "BOLAS", results: [frozen.results[0]] },
-      { ...frozen, source: "FROST_BOLT", results: [frozen.results[0]] },
-      { ...frozen, source: "COLD_AURA" },
+      { ...frozen, source: "COLD_WAKE", results: [frozen.results[0]] },
+      { ...frozen, source: "FROSTBITE", results: [frozen.results[0]] },
       {
         kind: "MAMMOTH_STAMPEDED",
         playerId: 1,
@@ -379,6 +379,12 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     const invalid: readonly unknown[] = [
       { ...frozen, extra: 1 },
       { ...frozen, source: "WAIL" },
+      // The one Freeze effect (`pulp_wars-xv0t`): the retired sources.
+      { ...frozen, source: "BOLAS" },
+      { ...frozen, source: "FROST_BOLT" },
+      { ...frozen, source: "COLD_AURA" },
+      { ...frozen, source: "SHARDS" },
+      { ...frozen, source: "FREEZE" },
       { ...frozen, results: [] },
       // Unsorted, duplicated, the source itself, a thawing result.
       { ...frozen, results: [...frozen.results].reverse() },
@@ -593,9 +599,10 @@ const ROSTER = [
     "Sled",
     "RAIDER",
     "SCOUTING",
-    // Ice Folk Freeze (`pulp_wars-w49.37`): 4 Coins (3 before).
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 4 Coins (3 before). The one
+    // Freeze effect (`pulp_wars-xv0t`): 12 HP (10 before).
     4,
-    10,
+    12,
     4,
     2,
     2,
@@ -603,7 +610,7 @@ const ROSTER = [
     1,
     2,
     true,
-    ["ATTACK", "CAPTURE", "CHARGE", "BOLAS"],
+    ["ATTACK", "CAPTURE", "CHARGE", "ESCAPE"],
     true,
   ],
   [
@@ -657,7 +664,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FROST_BOLT"],
+    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP"],
     true,
   ],
   [
@@ -713,7 +720,9 @@ const ROSTER = [
     true,
     // The giants' signatures (`pulp_wars-w49.30`): Glacial Smash instead of
     // Push, and the Frost Giant never advances.
-    ["ATTACK", "CAPTURE", "COLD_AURA", "MOUNTAIN_BORN", "GLACIAL_SMASH"],
+    // The one Freeze effect (`pulp_wars-xv0t`): its Cold Wake in the Cold
+    // Aura's place.
+    ["ATTACK", "CAPTURE", "COLD_WAKE", "MOUNTAIN_BORN", "GLACIAL_SMASH"],
     false,
   ],
 ] as const;
@@ -751,11 +760,9 @@ describe("Ice Folk roster (section 3)", () => {
         sightRadius,
         technology,
         mayUsePrimaryActionAfterMove,
-        // The frozen sea (naval branch section 8.4): every Ice Folk land
-        // role lists Freeze last; it does nothing before Rime. The Ice Folk
-        // freeze rework (`pulp_wars-s55m.1`): but the Witch, whose Cold Snap
-        // freezes her water.
-        abilities: role === "CAPTAIN" ? abilities : [...abilities, "FREEZE"],
+        // The one Freeze effect (`pulp_wars-xv0t`, 7r133): no role lists
+        // `FREEZE` any more (every land role but the Witch did).
+        abilities,
       });
       expect(roleMechanicsV7(role, "ICE_FOLK"), label).toMatchObject({
         capacitySlots: 1,
@@ -787,14 +794,7 @@ describe("Ice Folk roster (section 3)", () => {
       sightRadius: 1,
       technology: "METALLURGY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: [
-        "ATTACK",
-        "CAPTURE",
-        "SWEEP",
-        "TRAMPLE",
-        "STAMPEDE",
-        "FREEZE",
-      ],
+      abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "STAMPEDE"],
     });
     // The role mechanics of section 11.
     const mechanics = (role: UnitRoleIdV7) => roleMechanicsV7(role, "ICE_FOLK");
@@ -893,16 +893,22 @@ describe("Ice Folk roster (section 3)", () => {
           ),
         ).toEqual([]);
       }
-    // No Ice Folk unit has Escape, Rally, or Tend Wounded; none has
-    // Overrun since the Frost Wyrm replaced the Sabretooth (which had it
-    // from the tier-3 review A, `pulp_wars-1pwz`).
+    // No Ice Folk unit has Rally or Tend Wounded, and only the Sled has
+    // Escape (the one Freeze effect, `pulp_wars-xv0t`: in its Bolas's
+    // place); none has Overrun since the Frost Wyrm replaced the Sabretooth
+    // (which had it from the tier-3 review A, `pulp_wars-1pwz`).
     const all = new Set(
       UNIT_ROLE_IDS_V7.flatMap(
         (role) => effectiveRoleRuleV7(role, "ICE_FOLK").abilities,
       ),
     );
-    for (const ability of ["ESCAPE", "RALLY", "TEND_WOUNDED"])
+    for (const ability of ["RALLY", "TEND_WOUNDED"])
       expect(all.has(ability as never), ability).toBe(false);
+    expect(
+      UNIT_ROLE_IDS_V7.filter((role) =>
+        effectiveRoleRuleV7(role, "ICE_FOLK").abilities.includes("ESCAPE"),
+      ),
+    ).toEqual(["RAIDER"]);
     expect(
       UNIT_ROLE_IDS_V7.filter((role) =>
         effectiveRoleRuleV7(role, "ICE_FOLK").abilities.includes("OVERRUN"),
@@ -951,7 +957,7 @@ describe("Ice Folk roster (section 3)", () => {
     }
   });
 
-  it("never offers Field Defense, Rally, Tend Wounded, Escape, or Overrun to an Ice Folk seat", () => {
+  it("never offers Field Defense, Rally, Tend Wounded, or Overrun to an Ice Folk seat, and Escape only to a Sled", () => {
     const state = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "GUARD", at: at(7, 7) },
@@ -974,8 +980,8 @@ describe("Ice Folk roster (section 3)", () => {
         kind,
       ).toBe("UNIT_ROLE_INVALID");
     // A Frost Wyrm that kills neither advances (a flyer) nor attacks again
-    // (no Overrun since `pulp_wars-s55m.4`), and a Sled that survives has no
-    // Escape.
+    // (no Overrun since `pulp_wars-s55m.4`), and a Sled that survives has
+    // Escape (the one Freeze effect, `pulp_wars-xv0t`).
     const knight = iceFieldV7([
       { seat: 0, role: "KNIGHT", at: at(4, 3) },
       { seat: 0, role: "RAIDER", at: at(4, 1) },
@@ -1001,7 +1007,7 @@ describe("Ice Folk roster (section 3)", () => {
       targetUnitId: unitAtV7(killed.state, at(5, 1)).id,
     });
     expect(unitAtV7(sled.state, at(4, 1)).activation.escapeAvailable).toBe(
-      false,
+      true,
     );
   });
 
@@ -1105,7 +1111,8 @@ describe("Ice Folk technology (section 4)", () => {
           { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
         ],
         NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
-        NAVAL_ENGINEERING: [{ kind: "LONG_FREEZE" }],
+        // (Hoarfrost's long line went with `FREEZE`: `pulp_wars-xv0t`.)
+        NAVAL_ENGINEERING: [],
         SEAMANSHIP: [{ kind: "BLACK_ICE" }],
         SUBMERSIBLES: [{ kind: "GLACIER" }],
       };
@@ -1233,12 +1240,16 @@ describe("Ice Folk technology (section 4)", () => {
     expect(ice.mountainMovement).toBe(true);
   });
 
-  it("every technology keeps a live unlock for an Ice Folk seat (the section 4 audit)", () => {
+  it("every technology keeps a live unlock for an Ice Folk seat (the section 4 audit), but Hoarfrost", () => {
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Hoarfrost's long
+    // Freeze line went with `FREEZE`; the node is empty until the naval
+    // branch is rebuilt (docs/product/ICE_FOLK_REDESIGN_2026-11.md 3.4).
     for (const node of ICE_FOLK_BASELINE_V1_NODES)
-      expect(
-        node.unlocks.length + node.unlockedRoles.length,
-        node.id,
-      ).toBeGreaterThan(0);
+      if (node.id !== "NAVAL_ENGINEERING")
+        expect(
+          node.unlocks.length + node.unlockedRoles.length,
+          node.id,
+        ).toBeGreaterThan(0);
     const role = (tech: string) =>
       UNIT_ROLE_IDS_V7.filter(
         (id) => effectiveRoleRuleV7(id, "ICE_FOLK").technology === tech,
@@ -1403,7 +1414,8 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
       });
       const created = newUnitsV7(before, after);
       expect(created).toHaveLength(1);
-      expect(created[0]).toMatchObject({ role: "RAIDER", hp: 10, maxHp: 10 });
+      // The one Freeze effect (`pulp_wars-xv0t`): a Sled has 12 HP.
+      expect(created[0]).toMatchObject({ role: "RAIDER", hp: 12, maxHp: 12 });
       expect(unitRoleRuleV7(after, must(created[0])).label).toBe("Sled");
     });
 
@@ -1600,12 +1612,13 @@ describe("Ice Folk public unit stats (section 11)", () => {
       mountainBorn: true,
       onSnow: false,
     });
-    // The Witch's Blizzard: her tile and the eight around it.
+    // The Witch's Blizzard: her tile and the eight around it (no Snow under
+    // her since the one Freeze effect, `pulp_wars-xv0t`).
     expect(stats(at(6, 3)).iceFolk).toMatchObject({
       blizzard: true,
-      onSnow: true,
+      onSnow: false,
       inBlizzard: true,
-      snowCover: true,
+      snowCover: false,
     });
     expect(stats(at(6, 5)).iceFolk).toMatchObject({ sweepDamage: 2 });
     // The Attack row lists Planted for an unmoved Snow Golem; the Defense

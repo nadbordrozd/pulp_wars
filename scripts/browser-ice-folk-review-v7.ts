@@ -90,7 +90,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__ICE_FOLK_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r132.current";
+const SAVE_KEY = "pulpWars.save.v7r133.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -370,42 +370,9 @@ async function fixtureTour(
   evidence[`${suffix}ShatterCursor`] = await cursorText(connection);
   await capture(connection, `attack-shatter-${suffix}.png`);
   await deselect(connection);
-  // Bolas: the button, the targets with their hints, a throw.
-  await activate(connection, at.sled as Coord);
-  evidence[`${suffix}SledDock`] = await dockText(connection);
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="ice-folk-bolas"]')?.click()`,
-  );
-  await delay(700);
-  evidence[`${suffix}BolasPanel`] = await evaluate(
-    connection,
-    `document.querySelector('[data-v7-ice-folk-pick]')?.textContent ?? null`,
-  );
-  await capture(connection, `bolas-pick-${suffix}.png`);
-  await evaluate(
-    connection,
-    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
-  );
-  await keys(connection, ["ArrowLeft", "ArrowLeft"]);
-  evidence[`${suffix}BolasCursor`] = await cursorText(connection);
-  await capture(connection, `bolas-hover-${suffix}.png`);
-  await evaluate(
-    connection,
-    `${REVIEW}.boardHost.activate(${JSON.stringify(at.bolasTarget)})`,
-  );
-  await waitFor(
-    connection,
-    `${REVIEW}.traces.some((trace) => trace.command.kind === 'THROW_BOLAS')`,
-  );
-  await delay(1_200);
-  evidence[`${suffix}AfterBolas`] = await evaluate(
-    connection,
-    `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
-  );
-  await capture(connection, `bolas-after-${suffix}.png`);
-  // Cold Snap: the targets and the one confirm.
-  await deselect(connection);
+  // (The Sled's Bolas went with the one Freeze effect, `pulp_wars-xv0t`,
+  // 7r133.)
+  // Cold Snap: one press casts.
   await activate(connection, at.witch as Coord);
   evidence[`${suffix}WitchDock`] = await dockText(connection);
   await capture(connection, `witch-ring-${suffix}.png`);
@@ -460,9 +427,8 @@ async function fixtureTour(
     connection,
     `${REVIEW}.boardHost.pinIceFolkFeedback([
       { effect: 'COLD_SNAP', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.snapTarget)}, ${JSON.stringify(at.snapAlreadyFrozen)}], progress: 0.35 },
-      { effect: 'BOLAS', from: ${JSON.stringify(at.sled)}, cells: [${JSON.stringify(at.bolasTarget)}], progress: 0.3 },
       { effect: 'SWEEP', from: ${JSON.stringify(at.mammoth)}, cells: [${JSON.stringify(at.sweepTarget)}], progress: 0.5 },
-      { effect: 'COLD_AURA', from: ${JSON.stringify(at.giant)}, cells: [], progress: 0.25 },
+      { effect: 'COLD_SNAP', from: ${JSON.stringify(at.giant)}, cells: [], progress: 0.25 },
     ])`,
   );
   await delay(300);
@@ -556,9 +522,10 @@ async function fixtureTour(
 /**
  * Ice Folk Freeze (bead pulp_wars-w49.38) on its own fixture: the Frozen
  * marker and card (an enemy, and an own unit with two turns left), the
- * "won't strike back" preview, Cold Snap and Frost Bolt aiming, a Frost
- * Giant's Cold Aura on a Move tile, a Stampede's preview (open and
- * blocked), its cue frame by frame and a real charge, and a Frost Bolt cue.
+ * "won't strike back" preview, the Cold Snap, a Frost Giant's Cold Wake on
+ * a Move tile, and a Stampede's preview (open and blocked), its cue frame
+ * by frame and a real charge. (The Frost Bolt went with the one Freeze
+ * effect, `pulp_wars-xv0t`, 7r133.)
  */
 async function freezeTour(
   connection: Connection,
@@ -593,22 +560,11 @@ async function freezeTour(
   );
   await delay(600);
   await capture(connection, `cold-snap-${suffix}.png`);
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="ice-folk-pick-cancel"]')?.click()`,
-  );
-  await delay(300);
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="ice-folk-frost-bolt"]')?.click()`,
-  );
-  await delay(600);
-  await capture(connection, `frost-bolt-${suffix}.png`);
   await deselect(connection);
   await activate(connection, at.giant as Coord);
   await keys(connection, ["ArrowDown"]);
   evidence[`${suffix}GiantCursor`] = await cursorText(connection);
-  await capture(connection, `cold-aura-move-${suffix}.png`);
+  await capture(connection, `cold-wake-move-${suffix}.png`);
   await deselect(connection);
   await activate(connection, at.mammoth as Coord);
   await evaluate(
@@ -643,12 +599,6 @@ async function freezeTour(
     await delay(250);
     await capture(connection, `stampede-cue-${frame}-${suffix}.png`);
   }
-  await evaluate(
-    connection,
-    `${REVIEW}.boardHost.pinIceFolkFeedback([{ effect: 'FROST_BOLT', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.boltTarget)}], progress: 0.3 }])`,
-  );
-  await delay(250);
-  await capture(connection, `frost-bolt-cue-${suffix}.png`);
   await evaluate(connection, `${REVIEW}.boardHost.pinIceFolkFeedback([])`);
   await activate(connection, at.mammoth as Coord);
   await evaluate(

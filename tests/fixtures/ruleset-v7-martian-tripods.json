@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r132",
+  "rulesetId": "pulp-wars-poc-7r133",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r132",
+    "rulesetId": "pulp-wars-poc-7r133",
     "seed": 20261401,
     "width": 16,
     "height": 16,
@@ -5282,6 +5282,7 @@
   "treasureChests": [],
   "curiosities": [],
   "ice": [],
+  "snow": [],
   "monsters": [],
   "graves": [],
   "plagued": [],

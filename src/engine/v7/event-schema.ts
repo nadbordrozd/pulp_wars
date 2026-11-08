@@ -409,8 +409,9 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
   UNITS_FROZEN: ["kind", "playerId", "sourceUnitId", "source", "results"],
-  // The naval branch, the frozen sea (section 8.4 and the redesign's 2.9).
-  WATER_FROZEN: ["kind", "playerId", "unitId", "tiles"],
+  // The naval branch, the frozen sea (section 8.4 and the redesign's 2.9);
+  // the one Freeze effect (`pulp_wars-xv0t`): `TILES_FROZEN` with `snow`.
+  TILES_FROZEN: ["kind", "playerId", "unitId", "tiles", "snow"],
   ICE_CRACKED: ["kind", "playerId", "unitId", "at", "broken"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
@@ -1690,15 +1691,14 @@ function validPayload(
         frozenSource(e.source) &&
         frozenResults(e.results, e.sourceUnitId)
       );
-    case "WATER_FROZEN":
-      // The frozen sea (section 8.4): at least one tile, in (y, x) order.
-      // The border freeze (`pulp_wars-5ti.31`): `unitId` null, no unit
-      // froze.
+    case "TILES_FROZEN":
+      // The one Freeze effect (`pulp_wars-xv0t`): at least one tile in all,
+      // each list in (y, x) order. The border freeze (`pulp_wars-5ti.31`):
+      // `unitId` null, no unit froze.
       return (
         id(e.playerId) &&
         (e.unitId === null || id(e.unitId)) &&
-        sortedCoords(e.tiles) &&
-        (e.tiles as readonly unknown[]).length > 0
+        tilesFrozenLists(e.tiles, e.snow)
       );
     case "ICE_CRACKED":
       // The frozen sea redesign (section 2.9).
@@ -3439,21 +3439,30 @@ function ascendingIds(input: unknown): boolean {
 /** Ice Folk Freeze (`pulp_wars-w49.37`): the source of a `UNITS_FROZEN`. */
 function frozenSource(input: unknown): boolean {
   return (
-    input === "BOLAS" ||
     input === "COLD_SNAP" ||
-    input === "FROST_BOLT" ||
-    input === "COLD_AURA" ||
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant's Cold
+    // Wake (`BOLAS`, `FROST_BOLT`, `COLD_AURA`, `SHARDS`, and `FREEZE`
+    // retired).
+    input === "COLD_WAKE" ||
     // The frozen sea (naval branch section 8.8): Black Ice.
     input === "BLACK_ICE" ||
     // The ninth unit (`pulp_wars-w49.17`, 7r55): a Walrus's Frostbite.
     input === "FROSTBITE" ||
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's
     // Frost Breath.
-    input === "FROST_BREATH" ||
-    // The giants' signatures (section 6.6): a Frost Giant's shards.
-    input === "SHARDS" ||
-    // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze.
-    input === "FREEZE"
+    input === "FROST_BREATH"
+  );
+}
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`): the `tiles` (ice) and `snow`
+ * lists of a `TILES_FROZEN`, each in (y, x) order, at least one tile in all.
+ */
+function tilesFrozenLists(tiles: unknown, snow: unknown): boolean {
+  return (
+    sortedCoords(tiles) &&
+    sortedCoords(snow) &&
+    (tiles as readonly unknown[]).length + (snow as readonly unknown[]).length >
+      0
   );
 }
 /**
@@ -3491,7 +3500,7 @@ function parseProjectedUnitsFrozen(input: unknown): PlayerEventV7 | null {
     : null;
 }
 /**
- * The frozen sea (naval branch section 12): `WATER_FROZEN` projected to a
+ * The frozen sea (naval branch section 12): `TILES_FROZEN` projected to a
  * viewer that explored a frozen tile but cannot see the freezing unit
  * (`unitId` null).
  */
@@ -3504,12 +3513,11 @@ function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
       typeof input.broken === "boolean"
       ? (input as unknown as PlayerEventV7)
       : null;
-  return hasExactKeysV7(input, FIELDS.WATER_FROZEN) &&
-    input.kind === "WATER_FROZEN" &&
+  return hasExactKeysV7(input, FIELDS.TILES_FROZEN) &&
+    input.kind === "TILES_FROZEN" &&
     input.unitId === null &&
     id(input.playerId) &&
-    sortedCoords(input.tiles) &&
-    (input.tiles as readonly unknown[]).length > 0
+    tilesFrozenLists(input.tiles, input.snow)
     ? (input as unknown as PlayerEventV7)
     : null;
 }

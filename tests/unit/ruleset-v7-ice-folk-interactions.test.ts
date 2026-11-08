@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isSnowV7 } from "../../src/engine/index";
+import { isBlizzardV7 } from "../../src/engine/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { frozenAtV7, iceFieldV7 } from "../fixtures/v7-ice-folk";
@@ -49,10 +49,10 @@ describe("Undead (section 10.1)", () => {
       ],
       { factions: ["ICE_FOLK", "UNDEAD"], activeSeat: 1, techs: { 0: [] } },
     );
-    expect(isSnowV7(state, at(6, 1))).toBe(true);
+    expect(isBlizzardV7(state, at(6, 1))).toBe(true);
     const run = attackV7(state, at(5, 3), at(5, 2));
     expect(run.combat.defenderInfected).toBe(true);
-    expect(isSnowV7(run.state, at(6, 1))).toBe(false);
+    expect(isBlizzardV7(run.state, at(6, 1))).toBe(false);
   });
 });
 
@@ -96,7 +96,7 @@ describe("Dinosaurs (section 10.3)", () => {
 });
 
 describe("Martians (section 10.4)", () => {
-  it("a full-power ray at distance 2 on a Yeti beside a Witch deals 4", () => {
+  it("a full-power ray at distance 2 on a Yeti beside a Witch deals 5 (halved; no Snow cover since `pulp_wars-xv0t`)", () => {
     const state = besideWitch("MARTIAN", {
       seat: 1,
       role: "MARKSMAN",
@@ -105,7 +105,7 @@ describe("Martians (section 10.4)", () => {
     expect(attackV7(state, at(5, 5), at(5, 3)).combat).toMatchObject({
       rayPower: "FULL",
       blizzardHalved: true,
-      damageToDefender: 4,
+      damageToDefender: 5,
     });
   });
 
@@ -135,7 +135,7 @@ describe("Martians (section 10.4)", () => {
       ],
       { factions: ["ICE_FOLK", "MARTIAN"], activeSeat: 1, techs: { 0: [] } },
     );
-    expect(isSnowV7(control, at(6, 4))).toBe(true);
+    expect(isBlizzardV7(control, at(6, 4))).toBe(true);
     const mind = playV7(control, {
       kind: "MIND_CONTROL",
       unitId: unitAtV7(control, at(4, 3)).id,
@@ -143,7 +143,7 @@ describe("Martians (section 10.4)", () => {
     });
     // The Mind Control revision (section 5.3): her Blizzard is a body rule;
     // she keeps it under her controller.
-    expect(isSnowV7(mind.state, at(6, 4))).toBe(true);
+    expect(isBlizzardV7(mind.state, at(6, 4))).toBe(true);
     expect(unitAtV7(mind.state, at(5, 3)).ownerId).toBe(
       unitAtV7(control, at(4, 3)).ownerId,
     );

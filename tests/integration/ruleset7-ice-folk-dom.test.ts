@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   effectiveRoleRuleV7,
-  previewBolasV7,
   previewColdSnapV7,
   projectEventsV7,
   queryPlayerCommandsV7,
@@ -25,7 +24,6 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
-import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   recruitmentRolePresentationV7,
@@ -35,13 +33,10 @@ import {
   BRITTLE_UNLOCK_TEXT_V7,
   COLD_SNAP_NO_TARGET_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
-  FROST_BOLT_NO_TARGET_V7,
   FROZEN_CANNOT_ACT_V7,
   GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_HELP_RULES_V7,
   SHATTERS_PREVIEW_V7,
-  bolasPreviewLinesV7,
-  coldSnapChangedTargetsV7,
   coldSnapSummaryV7,
   frozenChipV7,
   stampedePlanV7,
@@ -225,14 +220,15 @@ describe("Ice Folk unit dock", () => {
     ).toEqual([
       "Blizzard",
       "Cold Snap",
-      // Ice Folk Freeze (`pulp_wars-w49.37`).
-      "Frost Bolt",
-      // `pulp_wars-s55m.1`: her Cold Snap freezes water; she has no Freeze.
+      // (Her Frost Bolt went with the one Freeze effect, `pulp_wars-xv0t`.)
       "Glide",
       // Ice Folk movement (`pulp_wars-s55m.2`): every Ice Folk land unit
       // skates and dives.
       "Skates",
       "Dive",
+      // The one Freeze effect (`pulp_wars-xv0t`): what her Cold Snap does
+      // to each tile.
+      "Freeze",
     ]);
     expect(
       document.querySelector(
@@ -260,7 +256,7 @@ describe("Ice Folk unit dock", () => {
     // The unit information explains its Frozen chip in plain words.
     requiredButton("unit-help").click();
     expect(requiredElement('[data-tactical-state="frozen"]').textContent).toBe(
-      "Frozen · 1 turnIt cannot move or act or strike back until it thaws at the end of its owner's turn (the chip counts them). Ice Folk can shatter a weak Frozen unit.",
+      "Frozen · 1 turnIt cannot move or act or strike back until it thaws at the end of its owner's next turn. Ice Folk can shatter a weak Frozen unit.",
     );
     // The engine offers it no primary action.
     expect(
@@ -277,7 +273,7 @@ describe("Ice Folk unit dock", () => {
     app.destroy();
   });
 
-  it("names Snow and the Blizzard on a tile for the viewer's faction", () => {
+  it("names the Blizzard on a tile for the viewer's faction, with no Snow under it", () => {
     const controller = new FixtureController(iceFolkVictimFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -286,9 +282,10 @@ describe("Ice Folk unit dock", () => {
       kind: "TILE",
       at: { x: ICE_FOLK_VICTIM_V7.witch.x + 1, y: ICE_FOLK_VICTIM_V7.witch.y },
     });
-    expect(requiredElement<HTMLElement>('[data-winter="snow"]').title).toBe(
-      snowTooltipV7(view),
-    );
+    // The one Freeze effect (`pulp_wars-xv0t`): the Blizzard lays no Snow
+    // (the tile is open grass, outside every border).
+    expect(document.querySelector('[data-winter="snow"]')).toBeNull();
+    expect(snowTooltipV7(view).length).toBeGreaterThan(0);
     expect(
       requiredElement<HTMLElement>('[data-winter="blizzard"]').textContent,
     ).toBe("Blizzard");
@@ -401,62 +398,17 @@ describe("skating and dives on the ice (Ice Folk movement, `pulp_wars-s55m.2`)",
 });
 
 describe("Ice Folk abilities", () => {
-  it("throws a Bolas: the button, the targets with their hints, then a target", async () => {
+  it("gives the Sled no Bolas button (the one Freeze effect, `pulp_wars-xv0t`)", () => {
     const controller = new FixtureController(iceFolkUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const sled = selectUnitAt(controller, host, AT.sled);
-    const target = unitAt(controller, AT.bolasTarget);
-    const button = requiredButton("ice-folk-bolas");
-    expect(button.getAttribute("aria-pressed")).toBe("false");
-    button.click();
-    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
-      kind: "THROW_BOLAS",
-      unitId: sled.id,
-    });
-    const view = required(controller.snapshot().view);
-    const offered = queryPlayerCommandsV7(view).filter(
-      (command) => command.kind === "THROW_BOLAS" && command.unitId === sled.id,
-    );
-    expect(boardPlan(host).targets.map((entry) => entry.family)).toEqual(
-      offered.map(() => "THROW_BOLAS"),
-    );
-    const preview = required(previewBolasV7(view, sled.id, target.id));
-    // Bead pulp_wars-9im: the target is picked on the board, which carries
-    // its hint; the dock lists no targets.
-    expect(document.querySelector('[data-action^="bolas-"]')).toBe(null);
-    expect(document.querySelector(".v7-martian-choice-button")).toBe(null);
-    const choice = () =>
-      required(
-        boardPlan(host).targets.find(
-          (entry) =>
-            entry.family === "THROW_BOLAS" &&
-            entry.at.x === AT.bolasTarget.x &&
-            entry.at.y === AT.bolasTarget.y,
-        ),
-      );
-    for (const line of bolasPreviewLinesV7(view, preview))
-      expect(choice().semanticLabel).toContain(line);
-    expect(targetHighlightStyleV7(choice().family)).toBe("ATTACK");
-    // Escape leaves the aiming; the button aims again.
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-    );
-    expect(host.lastModel?.interaction.iceFolkPick ?? null).toBe(null);
-    requiredButton("ice-folk-bolas").click();
-    host.callbacks?.onCommand(choice());
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "THROW_BOLAS",
-      unitId: sled.id,
-      targetUnitId: target.id,
-    });
-    await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("RAIDER")} froze a Fighter`,
+    selectUnitAt(controller, host, AT.sled);
+    expect(document.querySelector('[data-action="ice-folk-bolas"]')).toBe(null);
+    expect(
+      boardPlan(host).targets.some(
+        (entry) => (entry.family as string) === "THROW_BOLAS",
       ),
-    );
-    expect(host.lastModel?.interaction.iceFolkPick ?? null).toBe(null);
+    ).toBe(false);
     app.destroy();
   });
 
@@ -475,7 +427,7 @@ describe("Ice Folk abilities", () => {
     expect(button.getAttribute("aria-label")).toContain(
       coldSnapSummaryV7(preview),
     );
-    expect(coldSnapChangedTargetsV7(preview).length).toBeGreaterThan(0);
+    expect(preview.targets.length).toBeGreaterThan(0);
     button.click();
     expect(document.querySelector("[data-v7-ice-folk-pick]")).toBeNull();
     await waitUntil(() => controller.accepted.length === 1);
@@ -485,53 +437,26 @@ describe("Ice Folk abilities", () => {
     });
     await waitUntil(() =>
       (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("CAPTAIN")}'s Cold Snap froze ${preview.targets.length} units`,
+        `Your ${label("CAPTAIN")}'s Cold Snap froze ${preview.targets.length === 1 ? "a " : `${preview.targets.length} `}`,
       ),
     );
     app.destroy();
   });
 
-  it("aims a Frost Bolt from its own button and freezes the picked unit", async () => {
+  it("gives the Witch one ability button, her Cold Snap (no Frost Bolt)", () => {
     const controller = new FixtureController(iceFolkFreezeFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const witch = selectUnitAt(controller, host, FREEZE.witch);
-    // One button each; the generic per-command buttons are gone.
+    selectUnitAt(controller, host, FREEZE.witch);
+    // One button each; the generic per-command buttons are gone, and the
+    // Frost Bolt went with the one Freeze effect (`pulp_wars-xv0t`).
     expect(
       [...document.querySelectorAll(".v7-selection-dock .v7-action-label")].map(
         (node) => node.textContent,
       ),
-    ).toEqual(["Cold Snap", "Frost Bolt", "Disband", "Wait"]);
-    requiredButton("ice-folk-frost-bolt").click();
-    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
-      kind: "FROST_BOLT",
-      unitId: witch.id,
-    });
-    expect(
-      requiredElement("[data-v7-ice-folk-pick]").getAttribute(
-        "data-v7-ice-folk-pick",
-      ),
-    ).toBe("frost_bolt");
-    const target = required(
-      boardPlan(host).targets.find(
-        (entry) =>
-          entry.family === "FROST_BOLT" &&
-          entry.at.x === FREEZE.boltTarget.x &&
-          entry.at.y === FREEZE.boltTarget.y,
-      ),
-    );
-    expect(target.previewLabel).toBe("Freeze");
-    host.callbacks?.onCommand(target);
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "FROST_BOLT",
-      unitId: witch.id,
-      targetUnitId: unitAt(controller, FREEZE.boltTarget).id,
-    });
-    await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("CAPTAIN")}'s Frost Bolt froze a Marksman`,
-      ),
+    ).toEqual(["Cold Snap", "Disband", "Wait"]);
+    expect(document.querySelector('[data-action="ice-folk-frost-bolt"]')).toBe(
+      null,
     );
     app.destroy();
   });
@@ -683,19 +608,18 @@ describe("Ice Folk abilities", () => {
     app.destroy();
   });
 
-  it("names why a Witch without an enemy in reach cannot cast", () => {
+  it("names why a Witch whose Cold Snap would change nothing cannot cast", () => {
+    // On her capital (8, 8) her ring is her own territory (no Snow) with no
+    // water and no enemy (the one Freeze effect, `pulp_wars-xv0t`).
     const controller = new FixtureController(
-      iceFolkUiFieldV7([{ seat: 0, role: "CAPTAIN", at: { x: 5, y: 3 } }]),
+      iceFolkUiFieldV7([{ seat: 0, role: "CAPTAIN", at: { x: 8, y: 8 } }]),
     );
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    selectUnitAt(controller, host, { x: 5, y: 3 });
+    selectUnitAt(controller, host, { x: 8, y: 8 });
     const button = requiredButton("ice-folk-cold-snap");
     expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.dataset.disabledReason).toBe(COLD_SNAP_NO_TARGET_V7);
-    const bolt = requiredButton("ice-folk-frost-bolt");
-    expect(bolt.getAttribute("aria-disabled")).toBe("true");
-    expect(bolt.dataset.disabledReason).toBe(FROST_BOLT_NO_TARGET_V7);
     app.destroy();
   });
 

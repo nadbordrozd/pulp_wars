@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  BOLAS_RANGE_V7,
   BRITTLE_SHATTER_HP_V7,
   COLD_BLOOD_BONUS2_V7,
   COLD_SNAP_RANGE_V7,
@@ -13,9 +12,7 @@ import {
   SWEEP_DAMAGE_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
-  previewBolasV7,
   previewColdSnapV7,
-  previewFrostBoltV7,
   previewStampedeV7,
   projectEventsV7,
   queryCombatPreviewV7,
@@ -33,7 +30,6 @@ import {
   BOULDERS_PREVIEW_V7,
   COLD_BLOOD_PREVIEW_V7,
   COLD_SNAP_NO_TARGET_V7,
-  FROST_BOLT_NO_TARGET_V7,
   FROZEN_CANNOT_ACT_V7,
   FROZEN_LABEL_V7,
   FROZEN_NO_STRIKE_BACK_V7,
@@ -45,11 +41,10 @@ import {
   ROCKFALL_PREVIEW_V7,
   SNOW_COVER_PREVIEW_V7,
   TRAMPLE_PREVIEW_V7,
-  WILL_BE_FROZEN_V7,
-  bolasPreviewLinesV7,
   boulderThrowTextV7,
-  coldSnapChangedTargetsV7,
   coldSnapSummaryV7,
+  coldWakeMovePreviewV7,
+  freezeSummaryV7,
   frozenCannotActV7,
   frozenChipV7,
   frozenThawTextV7,
@@ -69,7 +64,6 @@ import {
   shatterThresholdAgainstV7,
   shatterWindowV7,
   snowTooltipV7,
-  coldAuraMoveTargetsV7,
   moveUsesSkateV7,
   stampedeLabelV7,
   stampedePlanV7,
@@ -143,10 +137,8 @@ describe("Ice Folk texts (section 13.2)", () => {
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
     // tiles around the Witch.
     expect(COLD_SNAP_RANGE_V7).toBe(1);
-    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): and the water.
-    expect(COLD_SNAP_NO_TARGET_V7).toBe(
-      "No unfrozen enemy or open water next to her",
-    );
+    // The one Freeze effect (`pulp_wars-xv0t`): every tile around her.
+    expect(COLD_SNAP_NO_TARGET_V7).toBe("Nothing around her to freeze");
     const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").attack2;
     expect(boulderThrowTextV7(true)).toBe(
       `Planted: Attack ${half(boulder + PLANTED_BONUS2_V7)}`,
@@ -168,15 +160,15 @@ describe("Ice Folk texts (section 13.2)", () => {
       "Mountain-born",
     );
     expect(iceFolkAbilityNameV7("MOUNTAIN_BORN", "ORIGINAL")).toBeNull();
-    // Bead pulp_wars-2yc.63: the Sled's Bolas is the Witch's Frost Bolt.
-    expect(iceFolkCommandLabelV7("THROW_BOLAS")).toBe("Frost Bolt");
+    // The one Freeze effect (`pulp_wars-xv0t`): the Bolas and the Frost
+    // Bolt are gone; the Cold Wake replaced the Cold Aura.
     expect(iceFolkCommandLabelV7("COLD_SNAP")).toBe("Cold Snap");
-    // Ice Folk Freeze (`pulp_wars-w49.38`): the Witch's Frost Bolt and the
-    // Mammoth's Stampede.
-    expect(iceFolkCommandLabelV7("FROST_BOLT")).toBe("Frost Bolt");
     expect(iceFolkCommandLabelV7("STAMPEDE")).toBe("Stampede");
-    expect(iceFolkAbilityDescriptionV7("COLD_AURA", "ICE_FOLK")).toBe(
-      "Freezes every hostile unit next to it when it ends its own Move.",
+    expect(iceFolkAbilityDescriptionV7("COLD_WAKE", "ICE_FOLK")).toBe(
+      "After each Move, it freezes every tile around it.",
+    );
+    expect(iceFolkAbilityDescriptionV7("COLD_SNAP", "ICE_FOLK")).toBe(
+      "Freezes every tile around the Witch.",
     );
     expect(iceFolkRewardLabelV7("MILITIA")).toEqual([
       "Militia",
@@ -184,7 +176,13 @@ describe("Ice Folk texts (section 13.2)", () => {
     ]);
     expect(iceFolkRewardLabelV7("JUGGERNAUT")?.[0]).toBe(label("JUGGERNAUT"));
     expect(iceFolkRoleUnlockTextV7("CAPTAIN")).toBe(
-      `Train ${label("CAPTAIN")} (Blizzard, Cold Snap, Frost Bolt)`,
+      `Train ${label("CAPTAIN")} (Blizzard, Cold Snap)`,
+    );
+    // The Walrus's Frostbite is a role mechanic (its recruit notes), not an
+    // ability: the one Freeze effect (`pulp_wars-xv0t`) took its `FREEZE`.
+    expect(iceFolkRoleUnlockTextV7("GUARD")).toBe(`Train ${label("GUARD")}`);
+    expect(iceFolkRoleUnlockTextV7("JUGGERNAUT")).toBe(
+      `Train ${label("JUGGERNAUT")} (Cold Wake)`,
     );
     expect(iceFolkRoleUnlockTextV7("SWORDSMAN")).toBe(
       `Train ${label("SWORDSMAN")} (Sweep, Wrecker, Stampede)`,
@@ -221,7 +219,8 @@ describe("Frozen and the Shatter window (section 13.1)", () => {
   it("says when a Frozen unit thaws, from its owner's turn", () => {
     const view = humanView(iceFolkFreezeFixtureV7());
     const own = unitAt(view, FREEZE.frozenOwn);
-    // Frozen during its own turn: this turn and the next one.
+    // Frozen during its own turn (a Walrus's Frostbite, which the one
+    // Freeze effect, `pulp_wars-xv0t`, keeps): this turn and the next one.
     expect(frozenChipV7(view, own)).toMatchObject({
       label: "Frozen · 2 turns",
       turnsLeft: 2,
@@ -377,10 +376,13 @@ describe("Ice Folk attack previews (section 13.1)", () => {
       ICE_FOLK_VICTIM_V7.blizzardYeti,
     );
     expect(shot.blizzardHalved).toBe(true);
+    // The one Freeze effect (`pulp_wars-xv0t`): the Blizzard lays no Snow,
+    // so the Yeti beside the Witch off her Snow has no Snow cover.
+    expect(shot.snowCover).toBe(false);
     expect(iceFolkCombatLinesV7(victim, shot).notes).toEqual([
-      SNOW_COVER_PREVIEW_V7,
       BLIZZARD_PREVIEW_V7,
     ]);
+    expect(SNOW_COVER_PREVIEW_V7).toBe("Snow cover");
     expect(
       iceFolkCombatLinesV7(victim, { ...shot, hiddenBlizzardPossible: true })
         .notes,
@@ -393,46 +395,30 @@ describe("Ice Folk attack previews (section 13.1)", () => {
   });
 });
 
-describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
+describe("Cold Snap previews (sections 13.1 and 13.2)", () => {
   const view = humanView(iceFolkUiFixtureV7());
-
-  it("hints Will be Frozen and the units that could then shatter", () => {
-    const sled = unitAt(view, AT.sled);
-    const target = unitAt(view, AT.bolasTarget);
-    const bolas = previewBolasV7(view, sled.id, target.id);
-    if (bolas === null) throw new Error("no Bolas preview");
-    expect(bolasPreviewLinesV7(view, bolas)).toEqual([
-      WILL_BE_FROZEN_V7,
-      ...(bolas.shatterSetups.length === 0
-        ? []
-        : [
-            `${bolas.shatterSetups.map((id) => label(view.units.find((unit) => unit.id === id)?.role ?? "FIGHTER")).join(" and ")} can then shatter it`,
-          ]),
-    ]);
-    expect(bolas.shatterSetups).toEqual([unitAt(view, AT.bolasPartner).id]);
-  });
 
   it("summarises a Cold Snap from its preview", () => {
     const snap = previewColdSnapV7(view, unitAt(view, AT.witch).id);
     if (snap === null) throw new Error("no Cold Snap preview");
-    // No pointless actions (`pulp_wars-zir6`): it counts the units it
-    // changes (not those Frozen already).
-    const changed = coldSnapChangedTargetsV7(snap);
-    expect(changed).toEqual(
-      snap.targets.filter((target) => !target.alreadyFrozen),
-    );
+    // The one Freeze effect (`pulp_wars-xv0t`): the units it Freezes (none
+    // Frozen already), the water it ices and the land it snows.
     expect(coldSnapSummaryV7(snap)).toBe(
-      `Freezes ${changed.length} unit${changed.length === 1 ? "" : "s"}`,
-    );
-    expect(
-      coldSnapSummaryV7({
-        ...snap,
-        targets: [
-          { unitId: 1 as never, alreadyFrozen: false },
-          { unitId: 2 as never, alreadyFrozen: true },
-        ],
+      freezeSummaryV7({
+        units: snap.targets.length,
+        tiles: snap.tiles.length,
+        snow: snap.snow.length,
       }),
-    ).toBe("Freezes 1 unit");
+    );
+    expect(freezeSummaryV7({ units: 2, tiles: 1, snow: 3 })).toBe(
+      "Freezes 2 units, 1 water tile, and 3 land tiles",
+    );
+    expect(freezeSummaryV7({ units: 1, tiles: 0, snow: 0 })).toBe(
+      "Freezes 1 unit",
+    );
+    expect(freezeSummaryV7({ units: 0, tiles: 0, snow: 0 })).toBe(
+      "Freezes nothing",
+    );
   });
 
   it("names why a Witch or a Frozen unit has no ability", () => {
@@ -452,7 +438,7 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
         [
           {
             seat: 0,
-            role: "RAIDER",
+            role: "CAPTAIN",
             at: { x: 5, y: 3 },
             frozen: 1,
           },
@@ -465,21 +451,12 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
       iceFolkAbilityUnavailableTextV7(
         frozen,
         unitAt(frozen, { x: 5, y: 3 }),
-        "THROW_BOLAS",
+        "COLD_SNAP",
         false,
       ),
     ).toBe(FROZEN_CANNOT_ACT_V7);
-    expect(BOLAS_RANGE_V7).toBeGreaterThan(1);
-    // Ice Folk Freeze (`pulp_wars-w49.38`): a Witch with nobody in reach of
-    // her Frost Bolt, and a Mammoth that moved or has no open line.
-    expect(
-      iceFolkAbilityUnavailableTextV7(
-        lonely,
-        unitAt(lonely, { x: 5, y: 3 }),
-        "FROST_BOLT",
-        false,
-      ),
-    ).toBe(FROST_BOLT_NO_TARGET_V7);
+    // Ice Folk Freeze (`pulp_wars-w49.38`): a Mammoth that moved or has no
+    // open line.
     const mammoths = humanView(
       iceFolkUiFieldV7([
         { seat: 0, role: "SWORDSMAN", at: { x: 5, y: 3 } },
@@ -521,22 +498,16 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
 describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
   const state = iceFolkFreezeFixtureV7();
   const view = humanView(state);
-  const witch = unitAt(view, FREEZE.witch);
   const mammoth = unitAt(view, FREEZE.mammoth);
 
-  it("hints Will be Frozen, and offers no Frost Bolt on a unit that is Frozen already", () => {
-    const fresh = previewFrostBoltV7(
-      view,
-      witch.id,
-      unitAt(view, FREEZE.boltTarget).id,
-    );
-    if (fresh === null) throw new Error("no Frost Bolt");
-    expect(bolasPreviewLinesV7(view, fresh)[0]).toBe(WILL_BE_FROZEN_V7);
-    // No pointless actions (`pulp_wars-zir6`): a freeze would change
-    // nothing on a unit Frozen already, so it is no target.
+  it("offers no Frost Bolt any more (the one Freeze effect)", () => {
     expect(
-      previewFrostBoltV7(view, witch.id, unitAt(view, FREEZE.boltFrozen).id),
-    ).toBeNull();
+      queryPlayerCommandsV7(view).some(
+        (command) =>
+          (command.kind as string) === "FROST_BOLT" ||
+          (command.kind as string) === "THROW_BOLAS",
+      ),
+    ).toBe(false);
   });
 
   it("walks a Stampede: the hits, the shove, the kill and the end", () => {
@@ -599,7 +570,7 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
     expect(stampedePlanV7(view, mammoth.id, { x: 0, y: 0 })).toBeNull();
   });
 
-  it("names the enemies a Frost Giant's Move would freeze", () => {
+  it("names the enemies a Frost Giant's Move would freeze (its Cold Wake)", () => {
     const giant = unitAt(view, FREEZE.giant);
     const moves = queryPlayerCommandsV7(view).filter(
       (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
@@ -611,18 +582,20 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
           command.path.at(-1)?.x === at.x && command.path.at(-1)?.y === at.y,
       );
       if (move === undefined) throw new Error("no Move");
-      return coldAuraMoveTargetsV7(view, move).map((unit) => unit.at);
+      return (coldWakeMovePreviewV7(view, move)?.targets ?? []).map(
+        (unitId) => view.units.find((unit) => unit.id === unitId)?.at,
+      );
     };
     expect(to(FREEZE.giantTo)).toEqual([FREEZE.giantPreyA, FREEZE.giantPreyB]);
     expect(to({ x: 1, y: 2 })).toEqual([]);
-    // Another unit's Move freezes nobody.
+    // A Yeti's Move has no wake.
     const yeti = unitAt(view, FREEZE.yeti);
     const yetiMove = queryPlayerCommandsV7(view).find(
       (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
         command.kind === "MOVE" && command.unitId === yeti.id,
     );
     if (yetiMove === undefined) throw new Error("no Yeti Move");
-    expect(coldAuraMoveTargetsV7(view, yetiMove)).toEqual([]);
+    expect(coldWakeMovePreviewV7(view, yetiMove)).toBeNull();
   });
 
   it("marks only the ice tile skating reaches (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
@@ -658,15 +631,17 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
 describe("Ice Folk Help (section 13.3)", () => {
   it("states the rules in the spec's sentences, with no Chill left", () => {
     expect(ICE_FOLK_HELP_RULES_V7.map(([name]) => name)).toEqual([
-      // Ice Folk Freeze (`pulp_wars-w49.37`): Frozen replaces Chill.
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133): what a freeze
+      // does to a tile, then Frozen.
+      "Freeze",
       "Frozen",
       "Shatter",
       "Brittle",
       "Snow",
       "Blizzard",
       "Cold Snap",
-      // Bead pulp_wars-2yc.63: Bolas is Frost Bolt, Trample is Wrecker.
-      "Frost Bolt",
+      // The Frost Giant's (its Cold Aura before); the Frost Bolt is gone.
+      "Cold Wake",
       "Cold Blood",
       "Sweep and Wrecker",
       "Mountain-born",
@@ -675,10 +650,10 @@ describe("Ice Folk Help (section 13.3)", () => {
       // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm's
       // Frost Breath replaced the Sabretooth's Slips past.
       "Frost Breath",
-      "Cold Aura",
       "Stampede",
       "Deep Winter",
-      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus.
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus, which keeps
+      // it through the one Freeze effect (the user's design change).
       "Frostbite",
     ]);
     const rule = (name: string): string =>
@@ -694,17 +669,25 @@ describe("Ice Folk Help (section 13.3)", () => {
     );
     expect(DEEP_WINTER_RADIUS_V7).toBe(2);
     expect(rule("Sweep and Wrecker")).toContain(`deals ${SWEEP_DAMAGE_V7}`);
-    expect(rule("Frost Bolt")).toContain(label("RAIDER"));
-    expect(rule("Frost Bolt")).toContain(label("CAPTAIN"));
+    expect(rule("Freeze")).toContain(
+      "Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn.",
+    );
+    expect(rule("Cold Wake")).not.toContain(label("GUARD"));
+    expect(rule("Cold Wake")).toContain(label("JUGGERNAUT"));
+    expect(rule("Frostbite")).toContain("is Frozen");
+    expect(rule("Frozen")).toContain("Frostbite");
+    expect(rule("Cold Snap")).toContain(label("CAPTAIN"));
+    expect(rule("Blizzard")).not.toContain("Snow");
     expect(rule("Frozen")).toContain("It can be frozen again at once.");
     expect(rule("Stampede")).toContain(`takes ${STAMPEDE_DAMAGE_V7}`);
-    expect(rule("Frostbite")).toContain("is Frozen");
     expect(rule("Frost Breath")).toBe(
       `a ${label("KNIGHT")} flies over any ground and over Shallow and Deep Water without Navigation, and every enemy its attack leaves alive is Frozen, ships too.`,
     );
     expect(rule("Frozen")).toContain(`a ${label("KNIGHT")}'s Frost Breath`);
     for (const [name, text] of ICE_FOLK_HELP_RULES_V7)
-      expect(`${name} ${text}`).not.toMatch(/chill|frosted|thaw-immune/i);
+      expect(`${name} ${text}`).not.toMatch(
+        /chill|frosted|thaw-immune|frost bolt|bolas/i,
+      );
   });
 });
 
@@ -751,15 +734,17 @@ describe("Ice Folk log lines (section 13.2)", () => {
     return command;
   };
 
-  it("logs a Bolas, a Cold Snap, a Shatter and a Trample", () => {
+  it("logs a Cold Snap, a Shatter and a Trample", () => {
     const state = iceFolkUiFixtureV7();
     const view = humanView(state);
-    expect(
-      apply(state, find(view, "THROW_BOLAS", AT.sled, AT.bolasTarget)).text,
-    ).toBe(`Your ${label("RAIDER")} froze a Fighter`);
     const snap = previewColdSnapV7(view, unitAt(view, AT.witch).id);
+    const only = view.units.find(
+      (unit) => unit.id === snap?.targets[0]?.unitId,
+    );
     expect(apply(state, find(view, "COLD_SNAP", AT.witch)).text).toBe(
-      `Your ${label("CAPTAIN")}'s Cold Snap froze ${snap?.targets.length ?? 0} units`,
+      snap?.targets.length === 1
+        ? `Your ${label("CAPTAIN")}'s Cold Snap froze a ${only === undefined ? "unit" : effectiveRoleRuleV7(only.role, "ORIGINAL").label}`
+        : `Your ${label("CAPTAIN")}'s Cold Snap froze ${snap?.targets.length ?? 0} units`,
     );
     expect(
       apply(state, find(view, "ATTACK", AT.yeti, AT.shatterTarget)).text,
@@ -769,13 +754,9 @@ describe("Ice Folk log lines (section 13.2)", () => {
     ).toBe(`Your ${label("SWORDSMAN")} trampled Field Defense`);
   });
 
-  it("logs a Frost Bolt, a Cold Aura and a Stampede (Ice Folk Freeze)", () => {
+  it("logs a Cold Wake and a Stampede (Ice Folk Freeze)", () => {
     const state = iceFolkFreezeFixtureV7();
     const view = humanView(state);
-    expect(
-      apply(state, find(view, "FROST_BOLT", FREEZE.witch, FREEZE.boltTarget))
-        .text,
-    ).toBe(`Your ${label("CAPTAIN")}'s Frost Bolt froze a Marksman`);
     const giant = unitAt(view, FREEZE.giant);
     const move = queryPlayerCommandsV7(view).find(
       (command) =>
@@ -786,7 +767,7 @@ describe("Ice Folk log lines (section 13.2)", () => {
     );
     if (move === undefined) throw new Error("no Giant Move");
     expect(apply(state, move).text).toBe(
-      `Your ${label("JUGGERNAUT")} froze 2 units`,
+      `Your ${label("JUGGERNAUT")}'s Cold Wake froze 2 units`,
     );
     const mammoth = unitAt(view, FREEZE.mammoth);
     const charge = queryPlayerCommandsV7(view).find(

@@ -85,28 +85,33 @@ describe("tile actions in the DOM", () => {
       tileActionsAtV7(required(hexer.host.lastModel).tileActions, A.hexed) ??
         null,
     ).toBeNull();
-    // A Yeti's Freeze beside its Attack on a boat is a choice the user
-    // keeps.
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Yeti has no
+    // Freeze, so its Attack on a boat is a lone Attack too (it was a choice
+    // of Attack and Freeze).
     document.body.innerHTML = '<div id="app"></div>';
     const yeti = rig(tileActionsYetiFixtureV7());
     select(yeti, A.yeti);
-    const plan = required(yeti.host.lastModel).tileActions;
     expect(
-      tileActionsAtV7(plan, FROZEN_UI_V7.prey)?.actions.map(
-        (action) => action.id,
-      ),
-    ).toEqual(["ATTACK", "FREEZE"]);
+      tileActionsAtV7(
+        required(yeti.host.lastModel).tileActions,
+        FROZEN_UI_V7.prey,
+      ) ?? null,
+    ).toBeNull();
   });
 
-  it("opens a chooser on a tile with an Attack and a Freeze; Freeze freezes", async () => {
-    // (A Hexer's Attack and Ribbit were this chooser's pair until
-    // `pulp_wars-n5fa`, 7r130, made the shot frog.)
-    const scene = rig(tileActionsYetiFixtureV7());
-    select(scene, A.yeti);
-    tap(scene, FROZEN_UI_V7.prey);
+  it("opens a chooser on a tile with two actions: a menu by the tile, read and walked by keys", async () => {
+    // (A Yeti's Attack and Freeze on a boat were this chooser's pair until
+    // the one Freeze effect, `pulp_wars-xv0t`, 7r133, and a Hexer's Attack
+    // and Ribbit before `pulp_wars-n5fa`, 7r130: a Stargazer's own Initiate,
+    // a star tile and a unit to select, is the pair now.)
+    const scene = rig(tileActionsStargazerFixtureV7());
+    select(scene, A.stargazer);
+    const plan = required(required(scene.host.lastModel).tileActions);
+    const own = required(plan.tiles.find((tile) => tile.ownUnit));
+    tap(scene, own.at);
     const panel = required(chooser());
     expect(panel.getAttribute("role")).toBe("menu");
-    expect(rows()).toEqual(["attack", "freeze"]);
+    expect(rows()).toEqual(["starfall", "select"]);
     // Every row has an accessible name; nothing names a tile.
     for (const row of panel.querySelectorAll<HTMLElement>("[role=menuitem]"))
       expect(row.getAttribute("aria-label")).toMatch(/^[A-Z][a-z]/);
@@ -115,38 +120,27 @@ describe("tile actions in the DOM", () => {
     expect(panel.style.left).toMatch(/px$/);
     expect(panel.style.top).toMatch(/px$/);
     await settle();
-    expect(document.activeElement).toBe(requiredButton("tile-choice-attack"));
+    expect(document.activeElement).toBe(requiredButton("tile-choice-starfall"));
     // The arrow keys move between the rows.
     panel.dispatchEvent(
       new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
     );
-    expect(document.activeElement).toBe(requiredButton("tile-choice-freeze"));
-    requiredButton("tile-choice-freeze").click();
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]?.kind).toBe("FREEZE");
-    expect(chooser()).toBeNull();
-  });
-
-  it("attacks from the chooser as a tap on the Attack mark does", async () => {
-    const scene = rig(tileActionsYetiFixtureV7());
-    select(scene, A.yeti);
-    tap(scene, FROZEN_UI_V7.prey);
-    requiredButton("tile-choice-attack").click();
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]?.kind).toBe("ATTACK");
+    expect(document.activeElement).toBe(requiredButton("tile-choice-select"));
   });
 
   it("closes the chooser with Escape and with a press elsewhere, sending nothing", async () => {
-    const scene = rig(tileActionsYetiFixtureV7());
-    select(scene, A.yeti);
-    tap(scene, FROZEN_UI_V7.prey);
+    const scene = rig(tileActionsStargazerFixtureV7());
+    select(scene, A.stargazer);
+    const plan = required(required(scene.host.lastModel).tileActions);
+    const own = required(plan.tiles.find((tile) => tile.ownUnit)).at;
+    tap(scene, own);
     required(chooser()).dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
     expect(chooser()).toBeNull();
     // The selection stays; only the chooser closed.
     expect(document.querySelector(".v7-selection-dock")).not.toBeNull();
-    tap(scene, FROZEN_UI_V7.prey);
+    tap(scene, own);
     expect(chooser()).not.toBeNull();
     document
       .querySelector(".v7-selection-dock")
@@ -154,18 +148,6 @@ describe("tile actions in the DOM", () => {
     expect(chooser()).toBeNull();
     await settle();
     expect(scene.controller.accepted).toEqual([]);
-  });
-
-  it("does a tile's one action at once: a Yeti's Freeze", async () => {
-    const scene = rig(tileActionsYetiFixtureV7());
-    select(scene, A.yeti);
-    tap(scene, A.freezeAt);
-    expect(chooser()).toBeNull();
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]).toMatchObject({
-      kind: "FREEZE",
-      at: A.freezeAt,
-    });
   });
 
   it("takes the enemy beside a Brain with one tap: Mind Control is its only action there", async () => {

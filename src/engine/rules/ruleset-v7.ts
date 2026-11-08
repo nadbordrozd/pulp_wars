@@ -342,18 +342,14 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "HARBOURS"; readonly population: 1 }
   /**
-   * The naval branch, the frozen sea (section 8.4): the owner's units
-   * Freeze Shallow Water (Rime, the Ice Folk `SHORECRAFT`), or Deep Water
-   * too (Pack Ice, the Ice Folk `NAVIGATION`).
+   * The frozen sea (naval branch section 8.4): the owner's freezes make
+   * ice on Shallow Water (Rime, the Ice Folk `SHORECRAFT`), or Deep Water
+   * too (Pack Ice, the Ice Folk `NAVIGATION`); the one Freeze effect
+   * (`pulp_wars-xv0t`, 7r133).
    */
   | { readonly kind: "FREEZE"; readonly depth: "SHALLOW" | "DEEP" }
-  /**
-   * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r124`):
-   * Hoarfrost (the Ice Folk `NAVAL_ENGINEERING`, Icebound before): the
-   * owner's Freeze line reaches `LONG_FREEZE_LINE_V7` tiles instead of
-   * `FREEZE_LINE_V7` (the Ice Witch's ring is unchanged).
-   */
-  | { readonly kind: "LONG_FREEZE" }
+  // (`LONG_FREEZE`, Hoarfrost's longer Freeze line, retired with the
+  // `FREEZE` command: the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
   /**
    * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`).
    * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.8): a
@@ -436,14 +432,15 @@ export type UnitRoleAbilityV7 =
   | "MASS_BEAM_DOWN"
   | "SHIELD_CANOPY"
   // The Ice Folk revision (section 3): Mountain-born, the Yeti's Rockfall,
-  // the Sled's Bolas, the Snow Hunter's Cold Blood, the Mammoth's Sweep and
-  // Trample, the Ice Witch's Blizzard and Cold Snap, the Snow Golem's
-  // Boulders, and the Frost Giant's Cold Aura. The Ice Folk roster rework
-  // (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's Frost Breath replaced the
-  // Sabretooth's Prowl.
+  // the Snow Hunter's Cold Blood, the Mammoth's Sweep and Trample, the Ice
+  // Witch's Blizzard and Cold Snap, the Snow Golem's Boulders. The Ice Folk
+  // roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's Frost
+  // Breath replaced the Sabretooth's Prowl. The one Freeze effect
+  // (`pulp_wars-xv0t`, 7r133): the Frost Giant's Cold Wake (its Cold Aura
+  // before); the Sled's Bolas, the Witch's Frost
+  // Bolt, and every role's `FREEZE` retired.
   | "MOUNTAIN_BORN"
   | "ROCKFALL"
-  | "BOLAS"
   | "COLD_BLOOD"
   | "SWEEP"
   | "TRAMPLE"
@@ -451,10 +448,8 @@ export type UnitRoleAbilityV7 =
   | "COLD_SNAP"
   | "BOULDERS"
   | "FROST_BREATH"
-  | "COLD_AURA"
-  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and
-  // the Mammoth's Stampede.
-  | "FROST_BOLT"
+  | "COLD_WAKE"
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede.
   | "STAMPEDE"
   // The Dwarf revision (section 3): the Hammerer rides the tunnel and digs
   // in; the Gyrocopter's bombing run; clockwork and the Gunner's two shots;
@@ -510,9 +505,6 @@ export type UnitRoleAbilityV7 =
   // ship's Drowned Crew (with Drowned Crews, a hostile ship it sinks rises
   // as the owner's Ghost Ship).
   | "DROWNED_CREW"
-  // The naval branch, the frozen sea (section 8.4): every Ice Folk land
-  // role Freezes.
-  | "FREEZE"
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6):
   // the Human Juggernaut's Crushing Shove, the Undead Abomination's Swallow,
   // the Goblin Troll's Goblin Toss, the Dinosaur Brontosaurus's Thunder
@@ -938,7 +930,9 @@ export interface RoleMechanicsV7 {
   /**
    * The ninth unit: Frostbite. A unit that attacks a land-form unit of the
    * role from the next tile and survives is Frozen (the Ice Folk Walrus,
-   * the Musk Ox before `pulp_wars-s55m.4`).
+   * the Musk Ox before `pulp_wars-s55m.4`). The one Freeze effect
+   * (`pulp_wars-xv0t`, 7r133) keeps it on the Walrus: the user, "walrus
+   * freezing units that hit it is fine".
    */
   readonly frostbite: boolean;
   /**
@@ -3389,9 +3383,10 @@ const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
     { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
   ],
   NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
-  // Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost, a longer
-  // Freeze line, replaces Icebound (no ship is ever locked in the ice).
-  NAVAL_ENGINEERING: [{ kind: "LONG_FREEZE" }],
+  // (Hoarfrost's longer Freeze line retired with `FREEZE`: the one Freeze
+  // effect, `pulp_wars-xv0t`, 7r133. The node unlocks nothing until the
+  // naval branch is rebuilt, docs/product/ICE_FOLK_REDESIGN_2026-11.md
+  // section 3.4.)
   SEAMANSHIP: [{ kind: "BLACK_ICE" }],
   SUBMERSIBLES: [{ kind: "GLACIER" }],
 });
@@ -3461,15 +3456,17 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "MOUNTAIN_BORN", "ROCKFALL", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "MOUNTAIN_BORN", "ROCKFALL"],
   }),
   RAIDER: role({
     role: "RAIDER",
     label: "Sled",
     tacticalRole: "SKIRMISHER",
-    // Ice Folk Freeze (`pulp_wars-w49.37`): 3 Coins before.
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 3 Coins before. The one Freeze
+    // effect (`pulp_wars-xv0t`, 7r133): 12 HP (10 before), the Raider's
+    // Escape instead of the Bolas.
     cost: 4,
-    maxHp: 10,
+    maxHp: 12,
     attack2: 4,
     defense2: 2,
     move: 2,
@@ -3478,7 +3475,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE", "BOLAS", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "ESCAPE"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -3494,12 +3491,14 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD"],
   }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Walrus (the Musk Ox
   // until `pulp_wars-s55m.4`), the Ice Folk defender at Drill (the Mammoth
   // held this role until 7r54 and is the `SWORDSMAN` role now). Frostbite
-  // is the role mechanic `frostbite`.
+  // is the role mechanic `frostbite`; the one Freeze effect
+  // (`pulp_wars-xv0t`, 7r133) took its line `FREEZE` and gave it no Cold
+  // Wake (the Frost Giant alone carries that).
   GUARD: role({
     role: "GUARD",
     label: "Walrus",
@@ -3515,7 +3514,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "CAPTURE", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE"],
   }),
   CAPTAIN: role({
     role: "CAPTAIN",
@@ -3533,11 +3532,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    // Ice Folk Freeze: Cold Snap freezes every adjacent hostile unit and the
-    // Frost Bolt one unit within 2 (one of the two a turn). The Ice Folk
-    // freeze rework (`pulp_wars-s55m.1`): her Cold Snap also freezes the
-    // water around her with Rime, so she has no separate `FREEZE`.
-    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FROST_BOLT"],
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Cold Snap freezes
+    // every tile around her (water to ice, open neutral land to Snow, a
+    // hostile unit Frozen); her Frost Bolt retired.
+    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP"],
   }),
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Snow Golem
   // (the Boulder Yeti before; the same rules).
@@ -3557,7 +3555,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN"],
   }),
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm
   // replaced the Sabretooth (Prowl, Overrun, and Cold Blood). A flyer that
@@ -3580,7 +3578,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "FLY", "FROST_BREATH", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "FLY", "FROST_BREATH"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3597,15 +3595,16 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    // The giants' signatures (section 6.6): Glacial Smash instead of Push
-    // (Freeze stays last, as on every Ice Folk land role).
+    // The giants' signatures (section 6.6): Glacial Smash instead of Push.
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Cold Wake (it
+    // freezes every tile around it after each Move) replaced its Cold Aura
+    // and its shards; it is the one unit with a Cold Wake.
     abilities: [
       "ATTACK",
       "CAPTURE",
-      "COLD_AURA",
+      "COLD_WAKE",
       "MOUNTAIN_BORN",
       "GLACIAL_SMASH",
-      "FREEZE",
     ],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
@@ -3628,7 +3627,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "STAMPEDE", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "STAMPEDE"],
   }),
 });
 
@@ -5131,7 +5130,7 @@ export function unitIsSummonedV7(unit: SummonedUnitRefV7): boolean {
 /**
  * The Cultists (`pulp_wars-mch9.7`, section 4.2): whether the unit is
  * Unstoppable (the Herald, bound or Unbound). No status sticks to it:
- * Frozen (a Frost Bolt, a Cold Snap, Black Ice, Frostbite), Stuck,
+ * Frozen (a Cold Snap, a Cold Wake, Frost Breath, Black Ice, Frostbite), Stuck,
  * Toothache, Splatted, Cracked. Nothing shoves it: no Push, Charge! push,
  * Knockback, Tractor Beam, Bounce, Boo!, or gate shove moves it (its
  * registration is `immovable`), and a Crushing Shove it does not yield to
@@ -7269,27 +7268,13 @@ export function terrainGivesCoverV7(
 export const SHATTER_HP_V7 = 3;
 /** The Ice Folk revision (section 5.5): the Shatter threshold with Brittle. */
 export const BRITTLE_SHATTER_HP_V7 = 4;
-/** The Ice Folk revision (section 7.3): the Bolas reach (Chebyshev). */
-export const BOLAS_RANGE_V7 = 2;
-/**
- * The nearest unit a Sled's Bolas may aim at (`pulp_wars-3u8d`, 7r131): an
- * adjacent enemy is only ever an Attack, so a Bolas flies exactly 2 tiles
- * (Chebyshev), as the Ice Witch's Frost Bolt (`pulp_wars-ev6q`, 7r129).
- */
-export const BOLAS_MIN_RANGE_V7 = 2;
 /**
  * Ice Folk Freeze (`pulp_wars-w49.37`): the Cold Snap reach (Chebyshev):
- * every adjacent unit (2 before).
+ * every adjacent tile (2 before). The one Freeze effect (`pulp_wars-xv0t`,
+ * 7r133): the ring a Cold Snap or a Cold Wake freezes (the unit's own tile
+ * excepted). (The Bolas and Frost Bolt reaches retired with them.)
  */
 export const COLD_SNAP_RANGE_V7 = 1;
-/** Ice Folk Freeze: the Ice Witch's Frost Bolt reach (Chebyshev). */
-export const FROST_BOLT_RANGE_V7 = 2;
-/**
- * The nearest unit a Frost Bolt may aim at (`pulp_wars-ev6q`, 7r129): an
- * adjacent enemy is only ever an Attack (Cold Snap freezes the ring), so a
- * Frost Bolt flies exactly 2 tiles.
- */
-export const FROST_BOLT_MIN_RANGE_V7 = 2;
 /** Ice Folk Freeze: the farthest a Mammoth's Stampede goes (tiles). */
 export const STAMPEDE_RANGE_V7 = 3;
 /**
@@ -7544,15 +7529,9 @@ export const ICE_CRACKS_THICK_V7 = 2;
 export const FISHING_HOLE_COST_V7 = 3;
 /** The frozen sea redesign (section 2.6): the Fishing Hole's population. */
 export const FISHING_HOLE_POPULATION_V7 = 1;
-/** The frozen sea (section 8.4): the tiles of a Freeze line. */
-export const FREEZE_LINE_V7 = 2;
-/**
- * Ice Folk freeze rework (`pulp_wars-s55m.1`, `pulp-wars-poc-7r124`): the
- * tiles of a Freeze line with Hoarfrost (`longFreeze`).
- */
-export const LONG_FREEZE_LINE_V7 = 3;
-/** The frozen sea (section 8.4): the Ice Witch's Freeze ring (Chebyshev). */
-export const WITCH_FREEZE_RADIUS_V7 = 1;
+// (`FREEZE_LINE_V7`, `LONG_FREEZE_LINE_V7`, and `WITCH_FREEZE_RADIUS_V7`
+// retired with `FREEZE`: the one Freeze effect, `pulp_wars-xv0t`, 7r133,
+// freezes the ring of `COLD_SNAP_RANGE_V7`.)
 /** The frozen sea (section 8.11): Sea Dog for an Ice Folk seat. */
 export const ICE_SEA_DOG_UNITS_V7 = 5;
 
@@ -8415,15 +8394,12 @@ export interface TechnologyCapabilitiesV7 {
    */
   readonly harbourPopulation: 0 | 1;
   /**
-   * The frozen sea (naval branch section 8.4): what the units of the player
-   * Freeze: nothing, Shallow Water (Rime), or Deep Water too (Pack Ice).
+   * The frozen sea (naval branch section 8.4): what water the player's
+   * freezes make ice of: none, Shallow Water (Rime), or Deep Water too
+   * (Pack Ice). The one Freeze effect (`pulp_wars-xv0t`, 7r133): without
+   * it a freeze still Freezes units and lays Snow.
    */
   readonly freezeWater: "NONE" | "SHALLOW" | "DEEP";
-  /**
-   * Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost, the owner's
-   * Freeze line reaches `LONG_FREEZE_LINE_V7` tiles.
-   */
-  readonly longFreeze: boolean;
   /** The frozen sea (section 8.8): Black Ice. */
   readonly blackIce: boolean;
   /**
@@ -8576,7 +8552,6 @@ export function technologyCapabilitiesV7(
   let harbourPopulation: 0 | 1 = 0;
   let freezeShallow = false;
   let freezeDeep = false;
-  let longFreeze = false;
   let blackIce = false;
   let thickIce = false;
   let iceCover = false;
@@ -8714,9 +8689,6 @@ export function technologyCapabilitiesV7(
         if (unlock.depth === "DEEP") freezeDeep = true;
         else freezeShallow = true;
         break;
-      case "LONG_FREEZE":
-        longFreeze = true;
-        break;
       case "BLACK_ICE":
         blackIce = true;
         break;
@@ -8836,7 +8808,6 @@ export function technologyCapabilitiesV7(
     harbourPopulation,
     // Pack Ice requires Rime, so `DEEP` implies the shallows.
     freezeWater: freezeDeep ? "DEEP" : freezeShallow ? "SHALLOW" : "NONE",
-    longFreeze,
     blackIce,
     thickIce,
     iceCover,

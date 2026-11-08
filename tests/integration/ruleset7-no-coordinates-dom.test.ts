@@ -205,11 +205,9 @@ const FIXTURES: readonly (readonly [
   [
     "Ice Folk abilities",
     () => iceFolkUiFixtureV7(),
-    [
-      "ice-folk-bolas aimed",
-      "ice-folk-bolas performed",
-      "ice-folk-cold-snap aimed",
-    ],
+    // (The Sled's Bolas went with the one Freeze effect, `pulp_wars-xv0t`,
+    // 7r133.)
+    ["ice-folk-cold-snap aimed"],
   ],
   ["Ice Folk victim", iceFolkVictimFixtureV7, []],
   // Bead pulp_wars-9im: the Candy abilities, each picked on the board.
@@ -236,14 +234,11 @@ const FIXTURES: readonly (readonly [
   // beside one boarder. A Board is the ship's Attack on a prize since
   // `pulp_wars-3u8d` (7r131): no button, and the dock lists neither ship.
   ["Naval boarding", navalBoardingFixtureV7, []],
-  // The frozen sea (bead pulp_wars-5ti.7, second part): a Yeti's Freeze is
-  // armed and its tile picked on the board, the Ice Witch's casts her
-  // ring; the ice chips, the slide, the slip and an icebound ship.
-  [
-    "Frozen sea: Freeze",
-    frozenFreezeUiFixtureV7,
-    ["freeze aimed", "freeze performed"],
-  ],
+  // The frozen sea (bead pulp_wars-5ti.7, second part): the Ice Witch
+  // casts her ring (a Yeti's Freeze, armed and picked on the board, went
+  // with the one Freeze effect, `pulp_wars-xv0t`, 7r133); the ice chips,
+  // the slide, the slip and an icebound ship.
+  ["Frozen sea: Freeze", frozenFreezeUiFixtureV7, []],
   ["Frozen sea: slide", frozenSlideUiFixtureV7, []],
   ["Frozen sea: slip", () => frozenSlideUiFixtureV7({ slipper: true }), []],
   ["Frozen sea: icebound", frozenShipUiFixtureV7, []],

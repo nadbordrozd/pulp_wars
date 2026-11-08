@@ -1,12 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   BLIZZARD_RADIUS_V7,
-  BOLAS_MIN_RANGE_V7,
-  BOLAS_RANGE_V7,
-  COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
-  FROST_BOLT_MIN_RANGE_V7,
-  FROST_BOLT_RANGE_V7,
   factionRulesV7,
   ownerResearchedTechsV7,
   technologyCapabilitiesV7,
@@ -155,7 +150,10 @@ export function attackFrostBreathV7(
 /**
  * Section 21.2: the `turnsLeft` a freeze gives a unit of `ownerId` now: 2
  * during that owner's own turn (it stays Frozen through its next turn), 1
- * otherwise (it thaws at the end of its owner's next turn).
+ * otherwise (it thaws at the end of its owner's next turn). Either way the
+ * unit loses one turn of its own: the one Freeze effect (`pulp_wars-xv0t`,
+ * 7r133) keeps this, since Frostbite (and, until it goes, Black Ice) still
+ * freezes a unit during its own turn.
  */
 export function frozenTurnsForV7(
   state: {
@@ -218,9 +216,8 @@ export function withFrozenAppliedV7(
  * now would change its Frozen entry ({@link withFrozenAppliedV7}): it has
  * none, or its `turnsLeft` is below what a freeze gives now. A unit that is
  * Frozen for at least that long already would keep its count unchanged, so
- * a Frost Bolt (Bolas) at it is refused (`ALREADY_FROZEN`) and a Cold Snap
- * needs at least one target it changes. `frozen` is the state's list or a
- * view's (a view lists every visible unit's entry).
+ * a Cold Snap needs at least one target (or tile) it changes. `frozen` is
+ * the state's list or a view's (a view lists every visible unit's entry).
  */
 export function freezeChangesUnitV7(
   state: {
@@ -275,10 +272,15 @@ export function withFrozenCuredV7(
 
 /**
  * Section 21.2 removal: the entries of units that left the board (death,
- * rising, Disband, displacement, elimination). Every reducer output runs
+ * rising, Disband, displacement, elimination), and (`pulp_wars-xv0t`) the
+ * stored Snow that melted in a territory. Every reducer output runs
  * through this before validation.
  */
 export function prunedIceFolkV7(state: GameStateV7): GameStateV7 {
+  return withSnowMeltedV7(prunedFrozenV7(state));
+}
+
+function prunedFrozenV7(state: GameStateV7): GameStateV7 {
   if (state.frozen.length === 0) return state;
   // The Dwarf revision section 5.2: a burrowed unit keeps its entry.
   const alive = new Set(
@@ -290,22 +292,31 @@ export function prunedIceFolkV7(state: GameStateV7): GameStateV7 {
   return frozen.length === state.frozen.length ? state : { ...state, frozen };
 }
 
-/** The sources of a `UNITS_FROZEN` event (section 21.15). */
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.2): stored Snow melts
+ * the moment its tile becomes any player's territory (a new city, a Land
+ * Grant, a capture). Every reducer output runs through this (with the
+ * Frozen pruning), so no command needs its own melt.
+ */
+export function withSnowMeltedV7(state: GameStateV7): GameStateV7 {
+  if (state.snow.length === 0) return state;
+  const { width, tiles } = state.board;
+  const snow = state.snow.filter(
+    (at) => tiles[at.y * width + at.x]?.territoryCityId === null,
+  );
+  return snow.length === state.snow.length ? state : { ...state, snow };
+}
+
+/**
+ * The sources of a `UNITS_FROZEN` event (section 21.15). The one Freeze
+ * effect (`pulp_wars-xv0t`, 7r133): the Cold Snap, the Frost Giant's Cold
+ * Wake, Black Ice (until the naval branch is rebuilt), the Walrus's
+ * Frostbite, and the Frost Wyrm's Frost Breath; `BOLAS`, `FROST_BOLT`,
+ * `COLD_AURA`, `SHARDS`, and `FREEZE` retired.
+ */
 export type FrozenSourceV7 =
-  | "BOLAS"
-  | "COLD_SNAP"
-  | "FROST_BOLT"
-  | "COLD_AURA"
-  | "BLACK_ICE"
-  | "FROSTBITE"
-  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): a Frost Wyrm's
-  // attack.
-  | "FROST_BREATH"
-  // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
-  | "SHARDS"
-  // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze reached a
-  // ship (or an embarked unit) on open water.
-  | "FREEZE";
+  "COLD_SNAP" | "COLD_WAKE" | "BLACK_ICE" | "FROSTBITE" | "FROST_BREATH";
 
 /** One `UNITS_FROZEN` event (section 21.15). */
 export function unitsFrozenEventV7(
@@ -326,89 +337,10 @@ export function unitsFrozenEventV7(
   };
 }
 
-/**
- * Section 21.6: the Cold Snap targets of `witch` among `units` (the units
- * the Witch's owner can see): every unit that can be Frozen on the eight
- * tiles around her (`COLD_SNAP_RANGE_V7` 1), in unit-ID order.
- */
-export function coldSnapTargetsV7<
-  U extends Pick<UnitStateV7, "id" | "ownerId" | "form" | "hp" | "at">,
->(
-  state: {
-    readonly setup: GameStateV7["setup"];
-    readonly humanPlayerId: PlayerId;
-  },
-  witch: Pick<UnitStateV7, "id" | "ownerId" | "at">,
-  units: readonly U[],
-): readonly U[] {
-  return units
-    .filter(
-      (unit) =>
-        unit.id !== witch.id &&
-        chebyshev(unit.at, witch.at) <= COLD_SNAP_RANGE_V7 &&
-        canBeFrozenV7(state, witch.ownerId, unit),
-    )
-    .sort((left, right) => left.id - right.id);
-}
-
-/**
- * Section 21.9: the Bolas reach check: Chebyshev exactly 2
- * (`BOLAS_MIN_RANGE_V7` to `BOLAS_RANGE_V7`; `pulp_wars-3u8d`, 7r131: never
- * an adjacent unit, which is the Sled's Attack; 1 or 2 before).
- */
-export function withinBolasRangeV7(from: CoordV7, to: CoordV7): boolean {
-  const distance = chebyshev(from, to);
-  return distance >= BOLAS_MIN_RANGE_V7 && distance <= BOLAS_RANGE_V7;
-}
-
-/**
- * Section 21.6: the Frost Bolt reach check: Chebyshev exactly 2
- * (`FROST_BOLT_MIN_RANGE_V7` to `FROST_BOLT_RANGE_V7`; `pulp_wars-ev6q`,
- * 7r129: never an adjacent unit, which is an Attack or the Cold Snap's;
- * 1 or 2 before).
- */
-export function withinFrostBoltRangeV7(from: CoordV7, to: CoordV7): boolean {
-  const distance = chebyshev(from, to);
-  return distance >= FROST_BOLT_MIN_RANGE_V7 && distance <= FROST_BOLT_RANGE_V7;
-}
-
-/**
- * Section 21.12: the Frost Giant's Cold Aura. When a land-form unit whose
- * role has `COLD_AURA` ends its own `MOVE` or `DISEMBARK` (and nothing
- * else: an advance, a push, a pull, or a placement does not count), every
- * unit that can be Frozen by its owner on the eight tiles around it is
- * Frozen, with one `UNITS_FROZEN` (source `COLD_AURA`) when there is at
- * least one. Returns the state unchanged for every other unit.
- */
-export function resolveColdAuraV7(
-  state: GameStateV7,
-  giantId: UnitId,
-): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  if (!matchHasIceFolkV7(state)) return { state, events: [] };
-  const giant = state.units.find((unit) => unit.id === giantId && unit.hp > 0);
-  if (
-    giant === undefined ||
-    giant.form !== "LAND" ||
-    !unitRoleRuleV7(state, giant).abilities.includes("COLD_AURA")
-  )
-    return { state, events: [] };
-  const targets = state.units
-    .filter(
-      (unit) =>
-        unit.id !== giant.id &&
-        chebyshev(unit.at, giant.at) === 1 &&
-        canBeFrozenV7(state, giant.ownerId, unit),
-    )
-    .map((unit) => unit.id);
-  if (targets.length === 0) return { state, events: [] };
-  const applied = withFrozenAppliedV7(state, state.frozen, targets);
-  return {
-    state: { ...state, frozen: applied.frozen },
-    events: [
-      unitsFrozenEventV7(giant.ownerId, giant.id, "COLD_AURA", applied.results),
-    ],
-  };
-}
+// (The Cold Snap targets, the Bolas and Frost Bolt reaches, and the Frost
+// Giant's Cold Aura retired with the one Freeze effect, `pulp_wars-xv0t`,
+// 7r133: the Cold Snap and the Cold Wake freeze the ring of tiles, in
+// `./ice`.)
 
 /** Commands a Frozen unit may still give (section 21.3). */
 const FROZEN_ALLOWED_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set([
@@ -458,12 +390,14 @@ export function frozenUnitNamedV7(
 
 /** The derived winter of a state: Snow and Blizzard tiles by board index. */
 export interface WinterV7 {
-  /** Board indices of the Snow tiles (land only). */
+  /**
+   * Board indices of the Snow tiles (land only): territory, Deep Winter,
+   * and stored Snow (since `pulp_wars-xv0t`, 7r133, the Blizzard lays no
+   * Snow).
+   */
   readonly snow: ReadonlySet<number>;
   /** Board indices within `BLIZZARD_RADIUS_V7` of a land-form Witch. */
   readonly blizzard: ReadonlySet<number>;
-  /** Board indices of the Snow from territory and Deep Winter only. */
-  readonly groundSnow: ReadonlySet<number>;
   /** The land-form Ice Witches (any Ice Folk seat). */
   readonly witches: readonly Pick<UnitStateV7, "id" | "ownerId" | "at">[];
 }
@@ -471,7 +405,6 @@ export interface WinterV7 {
 const NO_WINTER_V7: WinterV7 = Object.freeze({
   snow: new Set<number>(),
   blizzard: new Set<number>(),
-  groundSnow: new Set<number>(),
   witches: [],
 });
 
@@ -481,16 +414,23 @@ const WINTER_CACHE_V7 = new WeakMap<object, WinterV7>();
 export type WinterFactsV7 = Pick<
   GameStateV7,
   "setup" | "board" | "players" | "cities" | "units" | "mindControlled"
->;
+> & {
+  /**
+   * The stored Snow (`pulp_wars-xv0t`, 7r133). A retained public view
+   * captured before it has no list; it reads as empty.
+   */
+  readonly snow?: GameStateV7["snow"];
+};
 
 /**
  * Sections 6.1 and 6.3: the Snow and Blizzard tiles of `state`, derived from
  * the current state at every read (memoised per state object only, which is
  * immutable). Snow is a land tile (biome not null) that is in the territory
- * of a city owned by an Ice Folk seat, or within Chebyshev 1 of a land-form
- * Ice Witch, or has no territory and lies within Chebyshev 2 of the center
- * of a city whose Ice Folk owner has Deep Winter. Water is never Snow; the
- * Blizzard covers water tiles too (for drawing only).
+ * of a city owned by an Ice Folk seat, or has no territory and lies within
+ * Chebyshev 2 of the center of a city whose Ice Folk owner has Deep Winter,
+ * or holds stored Snow (the one Freeze effect, `pulp_wars-xv0t`, 7r133;
+ * since then the Blizzard of a Witch lays no Snow). Water is never Snow;
+ * the Blizzard covers water tiles too (for drawing only).
  */
 export function winterV7(state: WinterFactsV7): WinterV7 {
   if (!state.setup.factions.includes("ICE_FOLK")) return NO_WINTER_V7;
@@ -512,14 +452,16 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
     )
       deepWinterCenters.push(city.at);
   }
-  const groundSnow = new Set<number>();
+  const snow = new Set<number>();
+  // The one Freeze effect: the stored Snow (only ever on neutral land).
+  for (const at of state.snow ?? []) snow.add(at.y * width + at.x);
   for (let index = 0; index < tiles.length; index += 1) {
     const tile = tiles[index];
     // Section 6.1: Water and Rift tiles are never Snow.
     if (tile === undefined || tile.biome === null || tile.terrain === "RIFT")
       continue;
     if (tile.territoryCityId !== null) {
-      if (iceCityIds.has(tile.territoryCityId)) groundSnow.add(index);
+      if (iceCityIds.has(tile.territoryCityId)) snow.add(index);
       continue;
     }
     if (
@@ -527,7 +469,7 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
         (center) => chebyshev(center, tile.at) <= DEEP_WINTER_RADIUS_V7,
       )
     )
-      groundSnow.add(index);
+      snow.add(index);
   }
   // Only the Ice Witch's role has `BLIZZARD` (under her kind; the Mind
   // Control revision: a controlled Witch keeps her Blizzard).
@@ -550,18 +492,9 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
         x += 1
       )
         blizzard.add(y * width + x);
-  const snow = new Set(groundSnow);
-  for (const index of blizzard)
-    if (
-      tiles[index] !== undefined &&
-      tiles[index]?.biome !== null &&
-      tiles[index]?.terrain !== "RIFT"
-    )
-      snow.add(index);
   const result: WinterV7 = {
     snow,
     blizzard,
-    groundSnow,
     witches: witches.map((unit) => ({
       id: unit.id,
       ownerId: unit.ownerId,
@@ -613,9 +546,9 @@ function viewTileFlag(
 }
 
 /**
- * Section 6.5: the winter a viewer knows of, by board index: the territory
- * and Deep Winter Snow (public on every tile), and the Blizzard (and its
- * Snow) of every Witch the viewer can see (her tile is explored by the
+ * Section 6.5: the winter a viewer knows of, by board index: the Snow
+ * (territory, Deep Winter, and stored Snow: public on every tile), and the
+ * Blizzard of every Witch the viewer can see (her tile is explored by the
  * viewer, or she is the viewer's own). The view's tile flags are this
  * projection on explored tiles.
  */
@@ -629,7 +562,7 @@ export function knownWinterV7(
 } {
   const winter = winterV7(state);
   if (winter.snow.size === 0 && winter.blizzard.size === 0) return winter;
-  const { width, height, tiles } = state.board;
+  const { width, height } = state.board;
   const blizzard = new Set<number>();
   for (const witch of winter.witches) {
     if (
@@ -649,24 +582,16 @@ export function knownWinterV7(
       )
         blizzard.add(y * width + x);
   }
-  const snow = new Set(winter.groundSnow);
-  for (const index of blizzard)
-    if (
-      tiles[index] !== undefined &&
-      tiles[index]?.biome !== null &&
-      tiles[index]?.terrain !== "RIFT"
-    )
-      snow.add(index);
-  return { snow, blizzard };
+  return { snow: winter.snow, blizzard };
 }
 
 /**
  * Section 10.10: whether a Witch the viewer cannot see may stand within
  * `BLIZZARD_RADIUS_V7` of `unit`, a land-form Ice Folk unit: a tile in that
- * radius (the unit's own excepted) is unexplored. Her Blizzard may then add
- * Snow, and so Snow cover, under the unit and halve a ranged hit on it,
- * which the view does not show (a Witch on an explored tile is known,
- * section 6.5). Shared by the combat and Wail previews.
+ * radius (the unit's own excepted) is unexplored. Her Blizzard may then
+ * halve a ranged hit on it, which the view does not show (a Witch on an
+ * explored tile is known, section 6.5; since `pulp_wars-xv0t`, 7r133, it
+ * lays no Snow). Shared by the combat and Wail previews.
  */
 export function hiddenBlizzardPossibleV7(
   view: PlayerViewV7,

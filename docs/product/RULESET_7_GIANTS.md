@@ -609,7 +609,7 @@ Abomination's): after a shatter or any kill it stays.
 **Kept and changed.** Cold Aura, Mountain-born, Glide, Freeze kept; Push
 lost; never advances. Since `pulp_wars-w49.37` the Cold Aura follows the
 Giant's own Move or landing
-([current rules section 21.12](RULESET_7_CURRENT.md#2112-the-frost-wyrm-and-the-cold-aura)),
+([current rules section 21.12](RULESET_7_CURRENT.md#2112-the-frost-wyrm-and-the-cold-wake)),
 and the Giant has 36 HP.
 
 **Worked examples** (open Grass unless stated, the target Frozen; they

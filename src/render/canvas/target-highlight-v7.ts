@@ -147,11 +147,10 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   ATTACK: "ATTACK",
   MIND_CONTROL: "ATTACK",
   TRACTOR_BEAM: "ATTACK",
-  THROW_BOLAS: "ATTACK",
   COLD_SNAP: "ATTACK",
-  // Ice Folk Freeze (`pulp_wars-w49.38`): a Frost Bolt target, and the end
-  // of a Stampede's line (the charge harms what stands in it).
-  FROST_BOLT: "ATTACK",
+  // Ice Folk Freeze (`pulp_wars-w49.38`): the end of a Stampede's line (the
+  // charge harms what stands in it). (The Bolas and Frost Bolt targets went
+  // with `pulp_wars-xv0t`, 7r133.)
   STAMPEDE: "ATTACK",
   BOMB_TARGET: "ATTACK",
   // Dwarf crowd control: an enemy an aimed Whirl hits.
@@ -174,9 +173,8 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   // place too; a unit to Top Up is helped.
   REBAKE_CRUMBS: "PLACE",
   TOP_UP: "SUPPORT",
-  // The frozen sea: the tile a line role's Freeze starts on.
-  FREEZE: "PLACE",
-  // The frozen sea redesign (bead pulp_wars-5ti.27): an ice tile Crack Ice
+  // (The frozen sea's line-role Freeze target went with `FREEZE`, the one
+  // Freeze effect, `pulp_wars-xv0t`, 7r133.) The frozen sea redesign (bead pulp_wars-5ti.27): an ice tile Crack Ice
   // breaks harms its owner's work (Attack); over an own or allied frozen
   // ship the target says its own Help style.
   CRACK_ICE: "ATTACK",

@@ -44,6 +44,9 @@ export function normalizedInitialState(state: GameStateV7): string {
     // The frozen sea (`pulp_wars-5ti.3`) adds the `ice` list, empty in every
     // generated initial state.
     ice: _ice,
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133) adds the `snow` list
+    // (stored Snow), empty in every generated initial state.
+    snow: _snow,
     // The ninth unit (`pulp_wars-w49.17`, 7r55) adds the `ninthUnit`
     // record, empty in every initial state.
     ninthUnit: _ninthUnit,
@@ -98,6 +101,7 @@ export function normalizedInitialState(state: GameStateV7): string {
     throw new Error("a held victim in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
   if (_ice.length !== 0) throw new Error("ice in an initial state");
+  if (_snow.length !== 0) throw new Error("Snow in an initial state");
   if (_beamed.length !== 0 || _tractor.length !== 0)
     throw new Error("a per-turn Martian fact in an initial state");
   const {

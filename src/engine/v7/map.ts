@@ -4775,6 +4775,8 @@ function initialMapStateFromV7(
     curiosities: generated.map.curiosities,
     // The frozen sea (naval branch section 8.3): no ice at the start.
     ice: [],
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): no stored Snow.
+    snow: [],
     monsters: neutral.entries,
     graves: [],
     plagued: [],
@@ -4858,6 +4860,8 @@ function showcaseInitialStateV7(
     curiosities: [],
     // The frozen sea (naval branch section 3.3): an Ice Folk seat's ice.
     ice: entities.ice,
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): no stored Snow.
+    snow: [],
     monsters: [],
     graves: [],
     plagued: [],

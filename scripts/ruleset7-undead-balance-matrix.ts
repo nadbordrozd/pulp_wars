@@ -2144,7 +2144,7 @@ interface IceFolkSeatStats {
   chills: Counts;
   newFreezes: number;
   coldSnapCasts: number;
-  bolasThrows: number;
+  coldWakeFreezes: number;
   sweepAttacks: number;
   sweepFlankHits: number;
   sweepFlankKills: number;
@@ -2169,7 +2169,7 @@ interface IceFolkMatchStats {
     IceFolkMetricsV7,
     | "shattersBySetup"
     | "shattersByChillSource"
-    | "bolasFollowedByShatter"
+    | "coldWakeFollowedByShatter"
     | "sluggishTurns"
     | "sluggishTurnsWithoutAction"
     | "coldSnapTargets"
@@ -2230,7 +2230,7 @@ function iceFolkTelemetry(
       chills: {},
       newFreezes: 0,
       coldSnapCasts: 0,
-      bolasThrows: 0,
+      coldWakeFreezes: 0,
       sweepAttacks: 0,
       sweepFlankHits: 0,
       sweepFlankKills: 0,
@@ -2262,10 +2262,16 @@ function iceFolkTelemetry(
     const actor = seats.get(record.playerId);
     if (actor !== undefined && command.kind === "COLD_SNAP")
       actor.coldSnapCasts += 1;
-    if (actor !== undefined && command.kind === "THROW_BOLAS")
-      actor.bolasThrows += 1;
     const result = applyCommandV7(state, record.playerId, command);
     if (!result.accepted) throw new Error("Ice Folk telemetry replay rejected");
+    if (
+      actor !== undefined &&
+      result.events.some(
+        (event) =>
+          event.kind === "UNITS_FROZEN" && event.source === "COLD_WAKE",
+      )
+    )
+      actor.coldWakeFreezes += 1;
     state = result.state;
     const after = new Map(state.units.map((unit) => [unit.id as number, unit]));
     const unitOf = (unitId: number) => units.get(unitId) ?? after.get(unitId);
@@ -2414,7 +2420,7 @@ function iceFolkTelemetry(
     match: {
       shattersBySetup: metrics.shattersBySetup,
       shattersByChillSource: metrics.shattersByChillSource,
-      bolasFollowedByShatter: metrics.bolasFollowedByShatter,
+      coldWakeFollowedByShatter: metrics.coldWakeFollowedByShatter,
       sluggishTurns: metrics.sluggishTurns,
       sluggishTurnsWithoutAction: metrics.sluggishTurnsWithoutAction,
       coldSnapTargets: metrics.coldSnapTargets,
@@ -3034,7 +3040,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r132",
+    rulesetId: "pulp-wars-poc-7r133",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
@@ -3708,7 +3714,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r132",
+          rulesetId: "pulp-wars-poc-7r133",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -5451,8 +5457,8 @@ function iceFolkAggregate(group: readonly MatrixEntry[]) {
       byChillSource: sumCounts(
         matches.map((match) => match.shattersByChillSource),
       ),
-      bolasFollowedByShatter: sum(
-        matches.map((match) => match.bolasFollowedByShatter),
+      coldWakeFollowedByShatter: sum(
+        matches.map((match) => match.coldWakeFollowedByShatter),
       ),
       retaliationAvoided: sum(
         matches.map((match) => match.shatterRetaliationAvoided),
@@ -5466,7 +5472,7 @@ function iceFolkAggregate(group: readonly MatrixEntry[]) {
       witchTurnsWithoutTarget: sum(
         matches.map((match) => match.witchTurnsWithoutTarget),
       ),
-      bolasThrows: total((seat) => seat.bolasThrows),
+      coldWakeFreezes: total((seat) => seat.coldWakeFreezes),
       sluggishTurns: sum(matches.map((match) => match.sluggishTurns)),
       sluggishTurnsWithoutAction: sum(
         matches.map((match) => match.sluggishTurnsWithoutAction),
@@ -6011,8 +6017,8 @@ function iceFolkMarkdown(
     `Cap rates: non-Ice Folk reference ${iceFolk.capRates.nonIceFolkReference}; ${flat(iceFolk.capRates.byPairing)}`,
     `Ice Folk (mixed 1v1) trained: ${flat(all.trained)}; seat-games ${all.seatGames}`,
     `Ice Folk kills per loss: ${flat(all.killsPerLoss)}; kill share ${flat(all.killShare)}`,
-    `Shatter: ${all.shatter.kills} (${all.shatter.shareOfKills} of kills); set-ups ${flat(all.shatter.bySetup)}; chill sources ${flat(all.shatter.byChillSource)}; Bolas then Shatter ${all.shatter.bolasFollowedByShatter}`,
-    `Chill: ${flat(all.chill.bySource)}; Cold Snap ${all.chill.coldSnapCasts} casts; Bolas ${all.chill.bolasThrows}; sluggish turns ${all.chill.sluggishTurns} (${all.chill.sluggishTurnsWithoutAction} without action)`,
+    `Shatter: ${all.shatter.kills} (${all.shatter.shareOfKills} of kills); set-ups ${flat(all.shatter.bySetup)}; chill sources ${flat(all.shatter.byChillSource)}; Cold Wake then Shatter ${all.shatter.coldWakeFollowedByShatter}`,
+    `Chill: ${flat(all.chill.bySource)}; Cold Snap ${all.chill.coldSnapCasts} casts; Cold Wake ${all.chill.coldWakeFreezes}; sluggish turns ${all.chill.sluggishTurns} (${all.chill.sluggishTurnsWithoutAction} without action)`,
     `Sweep ${all.sweep.attacks} attacks, ${all.sweep.flankHits} flank hits, ${all.sweep.flankKills} flank kills; Rockfall ${all.rockfall.shots} shots, ${all.rockfall.kills} kills`,
     `Witch: in ${all.witch.seatGames}/${all.seatGames} seat-games, ${all.witch.trained} trained, ${all.witch.deaths} killed (${flat(all.witch.killedBy)}), ${all.witch.aliveAtEnd} alive at the end; win with/without ${pct(all.watch.winWithWitch)} / ${pct(all.watch.winWithoutWitch)}`,
     "",

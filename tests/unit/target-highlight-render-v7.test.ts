@@ -73,10 +73,9 @@ const EVERY_FAMILY: Readonly<
   ATTACK: "ATTACK",
   MIND_CONTROL: "ATTACK",
   TRACTOR_BEAM: "ATTACK",
-  THROW_BOLAS: "ATTACK",
   COLD_SNAP: "ATTACK",
-  // Ice Folk Freeze (`pulp_wars-w49.38`).
-  FROST_BOLT: "ATTACK",
+  // Ice Folk Freeze (`pulp_wars-w49.38`); the Bolas and the Frost Bolt went
+  // with the one Freeze effect (`pulp_wars-xv0t`).
   STAMPEDE: "ATTACK",
   BOMB_TARGET: "ATTACK",
   WHIRL: "ATTACK",
@@ -95,7 +94,6 @@ const EVERY_FAMILY: Readonly<
   // The Candy redesign (`pulp_wars-jdb.14`).
   REBAKE_CRUMBS: "PLACE",
   TOP_UP: "SUPPORT",
-  FREEZE: "PLACE",
   CRACK_ICE: "ATTACK",
   // The giants' signatures (`pulp_wars-w49.32`).
   STOMP: "ATTACK",
@@ -590,13 +588,8 @@ describe("target plans per action family", () => {
     }
   });
 
-  it("Ice Folk: Bolas and Cold Snap attack", () => {
+  it("Ice Folk: Cold Snap attacks", () => {
     const state = iceFolkUiFixtureV7();
-    expect(
-      stylesOf(state, ICE_FOLK_UI_V7.sled, (unitId) => ({
-        iceFolkPick: { kind: "THROW_BOLAS", unitId },
-      })),
-    ).toEqual({ THROW_BOLAS: "ATTACK" });
     expect(
       stylesOf(state, ICE_FOLK_UI_V7.witch, (unitId) => ({
         iceFolkPick: { kind: "COLD_SNAP", unitId },

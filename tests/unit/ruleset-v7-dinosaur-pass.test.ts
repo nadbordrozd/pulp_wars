@@ -207,15 +207,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-80, -77)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-81, -78)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -77)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -78)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",

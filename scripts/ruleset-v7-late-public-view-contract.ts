@@ -214,7 +214,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
     // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone) (was
     // 829d22…e4b8).
-    "01d2345f33acf211dbd8cdf04e028c38bf8aff332d41f7a66d69704ffe84acf5",
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes THROW_BOLAS,
+    // FREEZE and FROST_BOLT, moving the later command kinds back (was
+    // 01d234…acf5: the same decision with the old kind ordinals); the
+    // revision-12-ordinal value is unchanged.
+    "a4e786ec079fb6330fc908f76110cc37cfb1896a155743288df84b5c392e0f34",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -310,10 +314,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r132",
+    rulesetId: "pulp-wars-poc-7r133",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r132",
+      rulesetId: "pulp-wars-poc-7r133",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

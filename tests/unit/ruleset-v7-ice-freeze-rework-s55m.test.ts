@@ -49,8 +49,8 @@ import { at } from "../fixtures/v7-revision20";
 describe("the identity", () => {
   // Ice Folk movement (`pulp_wars-s55m.2`) took 7r124 after it.
   it("was 7r123 after 7r122, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r123");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r122");
@@ -270,24 +270,26 @@ describe("no unit afloat is ever on ice (Icebound is gone)", () => {
   });
 });
 
-describe("a water Freeze and the docks (section 21.16)", () => {
+describe("a freeze and the docks (section 21.16)", () => {
   it("Freezes a hostile ship standing on its own Port, and the Port stays open water", () => {
-    // Seat 1's Port on (6, 7) with its boat on it; seat 0's Walrus on its
-    // own ice on (6, 6).
+    // Seat 1's Port on (6, 7) with its boat on it; seat 0's Frost Giant
+    // walks on its own ice from (5, 6) to (6, 6): its Cold Wake (the one
+    // Freeze effect, `pulp_wars-xv0t`; a Walrus's water Freeze before)
+    // reaches the Port.
     const state = frozenArenaV7({
       technologies: [["SHORECRAFT"], ["SHORECRAFT"]],
       units: [
-        { seat: 0, role: "GUARD", at: { x: 6, y: 6 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 5, y: 6 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 7 } },
       ],
-      ice: [{ at: { x: 6, y: 6 } }],
+      ice: [{ at: { x: 5, y: 6 } }, { at: { x: 6, y: 6 } }],
     });
-    const ox = navalUnitAtV7(state, { x: 6, y: 6 });
+    const giant = navalUnitAtV7(state, { x: 5, y: 6 });
     const boat = navalUnitAtV7(state, { x: 6, y: 7 });
     const command: CommandV7 = {
-      kind: "FREEZE",
-      unitId: ox.id,
-      at: { x: 6, y: 7 },
+      kind: "MOVE",
+      unitId: giant.id,
+      path: [{ x: 6, y: 6 }],
     };
     const result = acceptV7(state, 0, command);
     expect(iceEntryV7(result.state, { x: 6, y: 7 })).toBeUndefined();
@@ -372,9 +374,12 @@ describe("the Ice Witch's Cold Snap: units and water at once (section 21.6)", ()
       unitId: unitAtV7(state, WITCH).id,
       targets: [],
       tiles: [at(4, 2), at(6, 4)],
+      // The one Freeze effect (`pulp_wars-xv0t`): the open neutral land of
+      // her ring goes to Snow.
+      snow: [at(5, 2), at(6, 2), at(4, 3), at(6, 3), at(4, 4), at(5, 4)],
     });
     const result = playV7(state, snap(state));
-    expect(result.events.map((event) => event.kind)).toEqual(["WATER_FROZEN"]);
+    expect(result.events.map((event) => event.kind)).toEqual(["TILES_FROZEN"]);
     expect(result.state.ice.map((entry) => entry.at)).toEqual([
       at(4, 2),
       at(6, 4),
@@ -400,37 +405,45 @@ describe("the Ice Witch's Cold Snap: units and water at once (section 21.6)", ()
     expect(result.state.ice.map((entry) => entry.at)).toEqual([at(4, 2)]);
     expect(result.events.map((event) => event.kind)).toEqual([
       "UNITS_FROZEN",
-      "WATER_FROZEN",
+      "TILES_FROZEN",
     ]);
   });
 
   it("is neither offered nor accepted when it would change nothing", () => {
-    // No water and no unit: no target.
-    const empty = iceFieldV7([{ seat: 0, role: "CAPTAIN", at: WITCH }]);
-    expect(offeredForV7(empty, WITCH, "COLD_SNAP")).toEqual([]);
-    expect(rejectedV7(empty, snap(empty))).toEqual({
+    // On her capital (8, 8) every tile of her ring is her own territory
+    // (never Snow-stored): no water and no unit, no target.
+    const HOME = at(8, 8);
+    const home = (state: GameStateV7): CommandV7 => ({
+      kind: "COLD_SNAP",
+      unitId: unitAtV7(state, HOME).id,
+    });
+    const empty = iceFieldV7([{ seat: 0, role: "CAPTAIN", at: HOME }]);
+    expect(offeredForV7(empty, HOME, "COLD_SNAP")).toEqual([]);
+    expect(rejectedV7(empty, home(empty))).toEqual({
       code: "COLD_SNAP_NOT_LEGAL",
       params: { reason: "NO_TARGET" },
     });
-    // Every unit Frozen already and no open water: nothing changes.
+    // Every unit Frozen already and no open water: nothing changes (the
+    // one Freeze effect, `pulp_wars-xv0t`: `ALREADY_FROZEN` went with the
+    // Frost Bolt; the reason is `NO_TARGET`).
     const frozen = withFrozenUnitsV7(
       iceFieldV7([
-        { seat: 0, role: "CAPTAIN", at: WITCH },
-        { seat: 1, role: "FIGHTER", at: at(5, 4) },
+        { seat: 0, role: "CAPTAIN", at: HOME },
+        { seat: 1, role: "FIGHTER", at: at(8, 7) },
       ]),
-      [{ at: at(5, 4), turnsLeft: 1 }],
+      [{ at: at(8, 7), turnsLeft: 1 }],
     );
-    expect(rejectedV7(frozen, snap(frozen)).params).toEqual({
-      reason: "ALREADY_FROZEN",
+    expect(rejectedV7(frozen, home(frozen)).params).toEqual({
+      reason: "NO_TARGET",
     });
     // Without Rime, water is not a target.
-    const noRime = iceFieldV7([{ seat: 0, role: "CAPTAIN", at: WITCH }], {
-      water: [at(4, 2)],
+    const noRime = iceFieldV7([{ seat: 0, role: "CAPTAIN", at: HOME }], {
+      water: [at(9, 9)],
       techs: { 0: ["GATHERING", "ADMINISTRATION"] },
     });
-    expect(offeredForV7(noRime, WITCH, "COLD_SNAP")).toEqual([]);
+    expect(offeredForV7(noRime, HOME, "COLD_SNAP")).toEqual([]);
     expect(
-      applyCommandV7(noRime, seatV7(noRime, 0).id, snap(noRime)).accepted,
+      applyCommandV7(noRime, seatV7(noRime, 0).id, home(noRime)).accepted,
     ).toBe(false);
   });
 });

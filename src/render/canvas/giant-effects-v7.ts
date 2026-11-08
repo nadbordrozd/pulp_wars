@@ -205,7 +205,10 @@ export interface GiantFeedbackV7 {
   readonly cells: readonly CoordV7[];
   /** The "−N" of each cell (CRUSH, STOMP, TRAMPLE) or of the DIGEST. */
   readonly amounts?: readonly number[];
-  /** SHARDS: the units the shards freeze (a frost sparkle on each). */
+  /**
+   * SHARDS: the units the shards freeze (a frost sparkle on each). The
+   * plan sets none since the shards freeze nobody (`pulp_wars-xv0t`).
+   */
   readonly marks?: readonly CoordV7[];
   /** HAMMER: the target stood on a walled centre and the Walls fall. */
   readonly walls?: boolean;

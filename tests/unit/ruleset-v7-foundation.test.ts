@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -153,11 +153,15 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT (87).
     // (84: one tile, one meaning, `pulp_wars-3u8d`, 7r131, removes BOARD,
     // RECOVER and SWALLOW.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // (81: the one Freeze effect, `pulp_wars-xv0t`, 7r133, removes
+    // THROW_BOLAS, FREEZE and FROST_BOLT.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(81);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
+    // (Right after it since FROST_BOLT went with the one Freeze effect,
+    // `pulp_wars-xv0t`, 7r133.)
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
-      COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF") + 2,
+      COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF") + 1,
     );
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
@@ -216,9 +220,11 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "MIND_CONTROL",
       "TRACTOR_BEAM",
       // The Ice Folk revision inserts its two right after TRACTOR_BEAM.
-      "THROW_BOLAS",
+      // (THROW_BOLAS and FREEZE went with the one Freeze effect,
+      // `pulp_wars-xv0t`, 7r133.)
       "COLD_SNAP",
-      "FREEZE", // the frozen sea (pulp_wars-5ti.3) inserts FREEZE after COLD_SNAP
+      "CRACK_ICE",
+      "TUNNEL",
     ]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(

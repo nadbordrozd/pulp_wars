@@ -206,6 +206,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // turns its ice lasts). Black Ice is a seat rule in the engine too
   // (`resolveBlackIceV7`): the ice of a Martian controller never freezes
   // units, so the owner of ice is read by its own faction.
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a ship fears the ice
+  // only in a match with an Ice Folk seat (the seats' factions).
+  "src/ai/v7-frozen-sea.ts::iceShipMoveRejectedV7": "SEAT",
   "src/ai/v7-frozen-sea.ts::iceSeaSeatV7": "SEAT",
   "src/ai/v7-frozen-sea.ts::computeIcePlan": "SEAT",
   "src/ai/v7-frozen-sea.ts::blackIceSeat": "SEAT",

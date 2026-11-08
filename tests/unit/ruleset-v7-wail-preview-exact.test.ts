@@ -9,10 +9,7 @@ import {
   type GameStateV7,
 } from "../../src/engine/index";
 import { HIDDEN_BLIZZARD_PREVIEW_V7 } from "../../src/render/ice-folk-presentation-v7";
-import {
-  wailPreviewDescriptionV7,
-  wailTargetLabelV7,
-} from "../../src/render/undead-presentation-v7";
+import { wailPreviewDescriptionV7 } from "../../src/render/undead-presentation-v7";
 import { dwarfFieldV7 } from "../fixtures/v7-dwarf";
 import { applyOkV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { iceFieldV7 } from "../fixtures/v7-ice-folk";
@@ -135,64 +132,36 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     expect(offered["6,2"]?.dies).toBe(true);
   });
 
-  it("flags a target a hidden Witch's Blizzard may cover, and only that one", () => {
-    // Ice Folk seat 0's Witch on (5, 2) makes (4..6, 1..3) Snow; seat 1
-    // has not explored her tile, so its view shows no Snow there. Seat 1
-    // has not explored (8, 6) either, beside the Yeti on territory Snow.
-    // `pulp_wars-1wy.3`: the unit beside the Witch is a Mammoth, which
-    // Snow cover x 1.25 saves a point (a Yeti takes 2 either way).
+  it("flags no target: a hidden Witch's Blizzard changes no Wail (the one Freeze effect)", () => {
+    // Ice Folk seat 0's Witch on (5, 2); seat 1 has not explored her tile.
+    // Her Blizzard made (4..6, 1..3) Snow until the one Freeze effect
+    // (`pulp_wars-xv0t`, 7r133) and the Mammoth beside her was flagged (a
+    // hidden Witch could give it Snow cover); her Blizzard lays no Snow now
+    // and never halves a Wail, so every target is exact and unflagged.
     const visible = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },
         { seat: 0, role: "SWORDSMAN", at: at(6, 3) },
         { seat: 0, role: "FIGHTER", at: at(4, 4) },
         { seat: 0, role: "FIGHTER", at: at(7, 7) },
-        // The Vampire and Banshee rework (`pulp_wars-ty6i`): 7 of 8 HP, so
-        // Snow cover still saves the Mammoth a point at Attack 1.5.
         { seat: 1, role: "MARKSMAN", at: at(6, 5), hp: 7 },
       ],
       { factions: ["ICE_FOLK", "UNDEAD"], activeSeat: 1, techs: { 0: [] } },
     );
     const hidden = unexploreV7(visible, 1, [at(5, 2), at(8, 6)]);
-    expect(isSnowV7(hidden, at(6, 3))).toBe(true);
-
-    // With the Witch in sight, the Snow is known: exact, no flag.
-    const seen = offeredAndActual(visible, at(6, 5));
-    expect(seen.offered).toEqual(seen.actual);
-
-    const { view, preview, offered, actual } = offeredAndActual(
-      hidden,
-      at(6, 5),
-    );
-    // The Mammoth at (6, 3) beside the hidden Witch: the preview reads open
-    // ground (3) and is flagged; the Wail deals 2 (Snow cover).
-    expect(offered["6,3"]).toEqual({
-      ...actual["6,3"],
-      damage: 3,
-      flagged: true,
-    });
-    expect(actual["6,3"]?.damage).toBe(2);
-    // A Yeti with every neighbour explored is exact and unflagged, and so
-    // is one on known Snow beside an unexplored tile (a Blizzard cannot
-    // change its cover).
-    expect(offered["4,4"]).toEqual(actual["4,4"]);
-    expect(offered["7,7"]).toEqual(actual["7,7"]);
-    // The UI shows the combat preview's caveat for it.
-    const flagged = preview.targets.find((target) => target.at.x === 6);
-    if (flagged === undefined) throw new Error("no flagged target");
-    // The Vampire and Banshee rework (`pulp_wars-iqhp`): the survivor is
-    // also terrified.
-    expect(wailTargetLabelV7(flagged)).toBe("−3? · Terror");
-    expect(wailPreviewDescriptionV7(view, preview)).toContain(
-      HIDDEN_BLIZZARD_PREVIEW_V7,
-    );
-    const exact = previewWailV7(
-      viewForV7(visible, activeIdV7(visible)),
-      unitAtV7(visible, at(6, 5)).id,
-    );
-    if (exact === null) throw new Error("no Wail preview");
-    expect(
-      wailPreviewDescriptionV7(viewForV7(visible, activeIdV7(visible)), exact),
-    ).not.toContain(HIDDEN_BLIZZARD_PREVIEW_V7);
+    expect(isSnowV7(hidden, at(6, 3))).toBe(false);
+    for (const state of [visible, hidden]) {
+      const { view, preview, offered, actual } = offeredAndActual(
+        state,
+        at(6, 5),
+      );
+      expect(offered).toEqual(actual);
+      expect(
+        preview.targets.some((target) => target.hiddenBlizzardPossible),
+      ).toBe(false);
+      expect(wailPreviewDescriptionV7(view, preview)).not.toContain(
+        HIDDEN_BLIZZARD_PREVIEW_V7,
+      );
+    }
   });
 });

@@ -115,8 +115,8 @@ function play(state: GameStateV7, command: CommandV7) {
 describe("the identity", () => {
   // The starting border freeze (`pulp_wars-s55m.6`) took 7r126 after it.
   it("was 7r125 after 7r124, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r125");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r124");
@@ -147,7 +147,8 @@ describe("the Frost Wyrm (the KNIGHT slot)", () => {
       sightRadius: 2,
       technology: "CHIVALRY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: ["ATTACK", "CAPTURE", "FLY", "FROST_BREATH", "FREEZE"],
+      // (`FREEZE` went with the one Freeze effect, `pulp_wars-xv0t`.)
+      abilities: ["ATTACK", "CAPTURE", "FLY", "FROST_BREATH"],
     });
     expect(roleMechanicsV7("KNIGHT", "ICE_FOLK")).toMatchObject({
       movementMode: "FLY",
@@ -181,15 +182,16 @@ describe("the Frost Wyrm (the KNIGHT slot)", () => {
       label: "Walrus",
       cost: 4,
       maxHp: 16,
-      abilities: ["ATTACK", "CAPTURE", "FREEZE"],
+      abilities: ["ATTACK", "CAPTURE"],
     });
+    // The one Freeze effect (`pulp_wars-xv0t`) keeps the Walrus's Frostbite.
     expect(roleMechanicsV7("GUARD", "ICE_FOLK").frostbite).toBe(true);
     expect(effectiveRoleRuleV7("CATAPULT", "ICE_FOLK")).toMatchObject({
       label: "Snow Golem",
       cost: 9,
       maxHp: 10,
       range: 2,
-      abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN", "FREEZE"],
+      abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN"],
     });
     expect(roleMechanicsV7("CATAPULT", "ICE_FOLK")).toMatchObject({
       ignoresFortification: true,
@@ -414,9 +416,10 @@ describe("the Normal AI and the Frost Wyrm", () => {
     ]);
   });
 
-  it("strikes a ship beside it rather than freezing its water: the blow freezes and hurts", () => {
-    // With Rime the Wyrm could Freeze the boat's water (which Freezes the
-    // boat); its Frost Breath does that and deals damage.
+  it("strikes a ship beside it: the blow freezes and hurts", () => {
+    // The Wyrm's Frost Breath Freezes the boat and deals damage (its
+    // `FREEZE` of the boat's water went with the one Freeze effect,
+    // `pulp_wars-xv0t`, 7r133).
     const state = iceFieldV7(
       [own("KNIGHT", at(2, 2)), ship("PATROL_BOAT", at(3, 2)), FAR],
       { water: [at(3, 1), at(3, 2), at(3, 3)] },
@@ -427,7 +430,7 @@ describe("the Normal AI and the Frost Wyrm", () => {
       (command) =>
         "unitId" in command && command.unitId === unitAtV7(state, at(2, 2)).id,
     );
-    expect(offered.some((command) => command.kind === "FREEZE")).toBe(true);
+    expect(offered.some((command) => command.kind === "ATTACK")).toBe(true);
     const ranked = unitCandidatesV7(state, at(2, 2)).map(
       (candidate) => candidate.command,
     );
@@ -436,14 +439,8 @@ describe("the Normal AI and the Frost Wyrm", () => {
         command.kind === "ATTACK" &&
         command.targetUnitId === unitAtV7(state, at(3, 2)).id,
     );
-    expect(strike).toBeGreaterThanOrEqual(0);
-    // No Freeze of the boat's water is preferred to the blow (a Freeze of
-    // that tile is no candidate, or ranks below it).
-    const freeze = ranked.findIndex(
-      (command) =>
-        command.kind === "FREEZE" && command.at.x === 3 && command.at.y === 2,
+    expect(strike).toBe(
+      ranked.findIndex((command) => command.kind === "ATTACK"),
     );
-    expect(freeze === -1 || freeze > strike).toBe(true);
-    expect(ranked[0]?.kind).not.toBe("FREEZE");
   });
 });

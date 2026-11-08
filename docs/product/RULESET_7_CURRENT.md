@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r132`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r133`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -329,9 +329,9 @@ Frozen unit cannot move or act on its owner's next turn and does not
 retaliate, and thaws at the end of that turn
 ([sections 21.2](#212-frozen) and [21.3](#213-what-a-frozen-unit-cannot-do)).
 The Ice Witch's Cold Snap reaches the eight tiles around her and she gains
-**Frost Bolt** ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)),
+**Frost Bolt** ([section 21.6](#216-the-blizzard-and-cold-snap)),
 the Frost Giant's Cold Aura acts after its own Move
-([section 21.12](#2112-the-frost-wyrm-and-the-cold-aura)), Glacier gives +1 Move
+([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)), Glacier gives +1 Move
 across ice ([section 21.16](#2116-the-frozen-sea)), the Mammoth gains
 **Stampede** ([section 21.18](#2118-the-mammoths-stampede)), and five Ice
 Folk numbers changed ([section 11](#11-unit-roster)). The state and view
@@ -447,6 +447,46 @@ the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
 
+`pulp-wars-poc-7r133` (`pulp_wars-xv0t`, **one Freeze effect**; the
+user, 2026-11-08, on the Ice Folk: "too many freezing mechanics that look
+alike", and "walrus freezing units that hit it is fine. we can have the
+special giant unit freeze everything around it whenever it moves"; Bead 1
+of [the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md)) gives the Ice
+Folk one way to freeze a tile and fewer freezes
+([section 21](#21-ice-folk-faction-rules)). (1) **Freezing a tile** is one
+rule ([section 21.16](#2116-the-frozen-sea)): open water becomes the
+freezer's ice (Rime; Deep Water with Pack Ice), another seat's ice is
+taken, the freezer's cracked ice is mended, open land outside every
+territory becomes **stored Snow**, a hostile unit on the tile is
+**Frozen**, and a dock, a Rift, territory land and the freezer's sound ice
+are left; water holding a unit afloat stays water. (2) **Stored Snow**
+(`GameStateV7.snow`, new) is Snow like the derived kind, stays until its
+tile becomes any player's territory (it melts then), and lies only on
+open neutral land ([section 21.5](#215-snow)); the Blizzard lays no Snow
+any more (its ranged-damage halving stays). (3) The **Ice Witch's Cold
+Snap** freezes every tile of the ring round her
+([section 21.6](#216-the-blizzard-and-cold-snap)), offered only when it
+changes something; the **Frost Giant's Cold Wake** freezes every tile of
+the ring round the tile its own `MOVE` ends on (its Cold Aura and the
+shards of Glacial Smash are gone; [section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)).
+(4) **Removed:** the command `FREEZE` (the line Freeze of seven roles and
+Hoarfrost's longer line: the Ice Folk Naval Engineering unlocks nothing
+for now), `FROST_BOLT`, and `THROW_BOLAS` (the Sled has 12 HP and the
+Raider's Escape instead); the event `WATER_FROZEN` is renamed
+`TILES_FROZEN` with a `snow` list; the `UNITS_FROZEN` sources are
+`COLD_SNAP`, `COLD_WAKE`, `BLACK_ICE`, `FROSTBITE`, and `FROST_BREATH`.
+The Walrus keeps its **Frostbite** ([section 21.17](#2117-the-walrus-frostbite)):
+Frozen still means "loses one of its own turns" (`turnsLeft` 2 for a unit
+frozen during its own turn, as by Frostbite or Black Ice). Black Ice, the
+Snow Golem's Boulders, Glacier and thick ice stay until the redesign's
+later beads. The Normal AI builds its crossings with Cold Snaps and a
+Frost Giant's Moves, scores the Cold Snap from its public preview, and a
+ship keeps out of a Witch's or Frost Giant's reach. Removing the three
+command kinds moves every later kind's ordinal back (the AI's tie-break
+fingerprints and decision pins were retaken: the same decisions with the
+old ordinals). A save, replay, or setup of `7r132` is rejected, and the
+browser autosave has a new key.
+
 `pulp-wars-poc-7r132` (`pulp_wars-y242`, **only the Ice Folk walk on
 ice**; the user, 2026-11-08: "Implement all the recommendations 1 to 11
 except number 9", finding 4 of
@@ -495,7 +535,7 @@ Tentacle**; the user, 2026-11-08: "Implement all the recommendations 1 to
 Moon Gun) of [the simplification review](SIMPLIFICATION_REVIEW_2026-11.md))
 removes the remaining tiles that offered two commands, by rule rather than
 by a chooser. (1) The **Sled's Bolas flies exactly 2 tiles**
-([section 21.9](#219-bolas-and-cold-blood)): a `THROW_BOLAS` at a
+([section 21.9](#219-cold-blood)): a `THROW_BOLAS` at a
 neighbour is `BOLAS_NOT_LEGAL { reason: "OUT_OF_RANGE" }`
 (`BOLAS_MIN_RANGE_V7` 2) and never offered, so a neighbouring enemy means
 Attack alone, as for the Ice Witch's Frost Bolt since `7r129`. (2) The
@@ -606,7 +646,7 @@ mechanic `ignoresRoads`: a step from a Road node costs a whole step and a
 Road edge waives no stop), so its Move is always one tile. A tile next to
 a selected Mole means Move (or Attack), a tile 2 or 3 away Tunnel. (3) The
 Ice Folk **Ice Witch's Frost Bolt flies exactly 2 tiles**
-([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)): a
+([section 21.6](#216-the-blizzard-and-cold-snap)): a
 `FROST_BOLT` at an adjacent unit is rejected
 (`FROST_BOLT_NOT_LEGAL { reason: "OUT_OF_RANGE" }`,
 `FROST_BOLT_MIN_RANGE_V7` 2) and never offered; her Cold Snap freezes her
@@ -2178,8 +2218,8 @@ the shared terrain rules `canEnterTerrainV7`, `terrainStopsMoveV7`, and
 combat, Graves, Infect, Wail, Plague and Bitten afflictions, explosions,
 Eggs, growth, Shields, Cooling, controlled units and their release, and
 Mind Control cooldowns (`martian.ts`; the kind resolver `unitFactionV7` and
-`unitCapabilitiesV7` in `ruleset-v7.ts`), Frozen, Snow, the Blizzard, and the Cold Aura
-(`ice-folk.ts`), the ice tiles, the Freeze set, the thaw, Black Ice, and
+`unitCapabilitiesV7` in `ruleset-v7.ts`), Frozen, Snow, the Blizzard, and the Cold Wake
+(`ice-folk.ts`), the ice tiles, the freezing of a tile, the thaw, Black Ice, and
 the crush (`ice.ts`), the Board target rule (`naval-branch.ts`; the Ram,
 Submerged, Torpedo, icebound, and dock-population helpers are in
 `ruleset-v7.ts`), Dig In, clockwork, Knockback, and the rider brake
@@ -2214,10 +2254,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r132`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r133`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r132.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r133.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -5234,7 +5274,7 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
 - The action becomes available at the owner's Start Turn. A captured city's
   action is unavailable until its new owner's next Start Turn.
 - Research, construction, harvesting, unit commands (Beam Down, Mind
-  Control, the Tractor Beam, Bolas, Cold Snap, Frost Bolt, Stampede, Tunnel,
+  Control, the Tractor Beam, Cold Snap, Stampede, Tunnel,
   Bomb Run, and Assemble included), and reward choices never
   spend it; reward units still appear after the action is spent.
 - The flag is visible only to the city's owner.
@@ -5413,7 +5453,7 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
   A flyer and a Sabretooth may end a Move on a village or a foreign center
   like any land unit
   ([section 20.6](#206-movement-stride-flying-and-crossing-water),
-  [section 21.12](#2112-the-frost-wyrm-and-the-cold-aura)) and capture there on
+  [section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)) and capture there on
   their owner's next turn; a surfaced Steam Mole or rider is not eligible
   on its surfacing turn
   ([section 22.3](#223-the-mound-surfacing-and-the-eruption)), and a rider
@@ -6042,7 +6082,7 @@ The Ice Folk tree (`ICE_FOLK_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
 the Human one, with four unlock differences outside the Naval branch and a
 Naval branch of its own. **Administration** grants
-`WITCH_SUPPORT` (the Ice Witch's Cold Snap and Frost Bolt; her Blizzard needs no unlock)
+`WITCH_SUPPORT` (the Ice Witch's Cold Snap; her Blizzard needs no unlock; her Frost Bolt went with `7r133`)
 instead of Captain support. **Chivalry** grants no Overrun (the Undead
 precedent). **Fortification**, displayed as **Deep Winter**, grants
 `DEEP_WINTER` instead of the Field Defense command: neutral land within two
@@ -6058,7 +6098,7 @@ ship, the Ram, and Board, and gains the frozen sea
 **Rime**, grants `FREEZE { depth: "SHALLOW" }`; **Navigation**, displayed as
 **Pack Ice**, `FREEZE { depth: "DEEP" }`; **Naval Engineering**, displayed
 as **Hoarfrost** (Icebound, `ICEBOUND`, before `pulp_wars-s55m.1`),
-`LONG_FREEZE`; **Seamanship**, displayed as **Black Ice**,
+nothing since `7r133` (`LONG_FREEZE` before); **Seamanship**, displayed as **Black Ice**,
 `BLACK_ICE`; and **Submersibles**, displayed as **Glacier**,
 `GLACIER { iceTurns: 5 }` beside Harbours. The tree unlocks no naval role,
 so an Ice Folk seat never trains a ship, and a unit of the Ice Folk kind
@@ -6073,24 +6113,24 @@ movement of ships, and Naval Engineering's `NAVAL_TRAINING_DISCOUNT`, which
 its tree keeps and which does nothing). The Ice Folk unlocks that read
 differently from the Human table are:
 
-| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                                                                                                                |
-| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Administration    | same          | Ice Witch (Blizzard, Cold Snap, Frost Bolt); Market; Disband                                                                                                                                                                    |
-| Sawmilling        | same          | Sawmill; Snow Golem (ignores Walls and Field Defense)                                                                                                                                                                           |
-| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                                                                                                                        |
-| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                                                                                          |
-| Scouting          | same          | Sled (Bolas); Sled Sight 2                                                                                                                                                                                                      |
-| Raiding           | same          | Pillage; Sled Charge                                                                                                                                                                                                            |
-| Chivalry          | Frost Wyrms   | Frost Wyrm (flies, Frost Breath; `7r125`; no Overrun); Cultivate Forest                                                                                                                                                         |
-| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                                                                                    |
-| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                                                                                               |
-| Fortification     | Deep Winter   | Walrus (Frostbite; `7r56`); Snow spreads two tiles from your city centers; an idle unit recovers 6 in your territory                                                                                                            |
-| Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                                                                                 |
-| Shorecraft        | Rime          | Harvest Fish; Freeze Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole (and its dive); your units skate on ice; no Port, no Patrol Boat, and no embarking (`pulp_wars-s55m.2`: no Ice Harbour) |
-| Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea links may cross Deep Water                                                                                                                                                                |
-| Naval Engineering | Hoarfrost     | A Freeze line reaches three tiles (`pulp_wars-s55m.1`; Icebound before); no Shipyard and no training discount (`pulp_wars-s55m.2`: no Great Harbour)                                                                            |
-| Seamanship        | Black Ice     | hostile land units on your ice are Frozen at the start of your turn                                                                                                                                                             |
-| Submersibles      | Glacier       | your ice is thick (two Cracks break it; your Freeze mends a crack); your units on ice have Snow cover (× 1.25); no Harbours and no extra Move (`pulp_wars-s55m.2`)                                                              |
+| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                                                                                                          |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Administration    | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                                                                                                                                                          |
+| Sawmilling        | same          | Sawmill; Snow Golem (ignores Walls and Field Defense)                                                                                                                                                                     |
+| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                                                                                                                  |
+| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                                                                                    |
+| Scouting          | same          | Sled (Escape; `7r133`, Bolas before); Sled Sight 2                                                                                                                                                                        |
+| Raiding           | same          | Pillage; Sled Charge                                                                                                                                                                                                      |
+| Chivalry          | Frost Wyrms   | Frost Wyrm (flies, Frost Breath; `7r125`; no Overrun); Cultivate Forest                                                                                                                                                   |
+| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                                                                              |
+| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                                                                                         |
+| Fortification     | Deep Winter   | Walrus (Frostbite; `7r56`); Snow spreads two tiles from your city centers; an idle unit recovers 6 in your territory                                                                                                      |
+| Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                                                                           |
+| Shorecraft        | Rime          | Harvest Fish; your freezes ice Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole (and its dive); your units skate on ice; no Port, no Patrol Boat, and no embarking (`pulp_wars-s55m.2`) |
+| Navigation        | Pack Ice      | your freezes ice Deep Water; Gather Pearls; sea links may cross Deep Water                                                                                                                                                |
+| Naval Engineering | Hoarfrost     | nothing (`7r133`; a Freeze line of three tiles before, Icebound before `pulp_wars-s55m.1`); no Shipyard and no training discount (`pulp_wars-s55m.2`)                                                                     |
+| Seamanship        | Black Ice     | hostile land units on your ice are Frozen at the start of your turn                                                                                                                                                       |
+| Submersibles      | Glacier       | your ice is thick (two Cracks break it; your Freeze mends a crack); your units on ice have Snow cover (× 1.25); no Harbours and no extra Move (`pulp_wars-s55m.2`)                                                        |
 
 The Dwarf tree (`DWARF_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -6227,12 +6267,12 @@ and `crumbsBite` (0 or 3), and the Cult unlocks through `offering`,
 `switcheroo`, and `greatSummoning`, never through a raw `FORTIFICATION`,
 `EXPLOSIVES`, `RAIDING`, or `MARKSMANSHIP` test. The naval branch is read
 the same way: `ram`, `boarding`, and `harbourPopulation` (0 or 1), and for
-the Ice Folk `freezeWater` (`NONE`, `SHALLOW`, or `DEEP`), `longFreeze`
-(Hoarfrost; `icebound` before `pulp_wars-s55m.1`),
+the Ice Folk `freezeWater` (`NONE`, `SHALLOW`, or `DEEP`; `longFreeze`,
+Hoarfrost's, is gone since `7r133`),
 `blackIce`, `iceTurns` (3, or 5 with Glacier), and `iceCover`, never
 through a raw `SEAMANSHIP` or `SUBMERSIBLES` test (the Ice Folk Glacier
 grants Harbours through the same capability). Unit-level reads (the Ram,
-Board, Freeze, Hoarfrost, the ice turns, and the ice cover) go through
+Board, a freeze's water depth, the ice turns, and the ice cover) go through
 `unitCapabilitiesV7`, the owner's research read through the unit's kind's
 tree; Black Ice is read from the seat's own faction and research. The one
 raw read is Board's Deep Water gate, the boarder's owner's Navigation
@@ -6902,8 +6942,8 @@ benefit of a Port connection.)
   ([section 18.10](#1810-berserk-ram-and-troll-regeneration)), and the
   Martian Brain has Psychic Command and Mind Control and no attack (since
   `7r129`; [section 20.8](#208-mind-control)), and the Ice Folk Ice Witch has
-  Attack, Cold Snap, and Frost Bolt and no Rally
-  ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)); none of these four has
+  Attack and Cold Snap and no Rally
+  ([section 21.6](#216-the-blizzard-and-cold-snap)); none of these four has
   Tend Wounded (`TEND_WOUNDED` is never offered and is rejected with
   `UNIT_ROLE_INVALID`). The Dwarf Engineer has Attack, **Repair** (its
   Tend Wounded), and Assemble, and no Rally (`RALLY` is never offered and
@@ -7539,14 +7579,14 @@ units cross Mountains without Engineering and without stopping
 | Unit        | Role         | Tech           | Cost |  HP |               Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                         |
 | ----------- | ------------ | -------------- | ---: | --: | -------------------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------------------------------------- |
 | Yeti        | `FIGHTER`    | start          |    2 |  9⁸ |                2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                         |
-| Sled        | `RAIDER`     | Scouting       |    4 |  10 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Bolas; Charge (Raiding); no Escape                                                                |
+| Sled        | `RAIDER`     | Scouting       |    4 |  12 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                    |
 | Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
 | Walrus      | `GUARD`      | Fortification  |    4 |  16 |              1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                              |
 | Mammoth     | `SWORDSMAN`  | Metallurgy     |    7 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
-| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap; Frost Bolt at exactly 2 (`7r129`); no Rally; no Tend Wounded                 |
+| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); no Rally; no Tend Wounded                                |
 | Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |  10 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | yes     | Boulders (ignore fortification); Planted; Mountain-born; never advances                           |
 | Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
-| Frost Giant | `JUGGERNAUT` | reward only    |    — |  36 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Aura; Mountain-born; never advances                                           |
+| Frost Giant | `JUGGERNAUT` | reward only    |    — |  36 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                 |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -7567,14 +7607,14 @@ Golem the Snow Golem, with the same numbers.
   cost, Attack, and Move, with 9 HP and Defense 1.5. It cannot build Field
   Defense. It is Mountain-born and has Rockfall.
 - **Sled** (a dog sled and its driver) has Raider parity for Sight 2,
-  capture, Pillage, the advance, Fieldcraft Forest freedom, and Charge with
-  Raiding; it has no Escape. Its primary actions are Attack and Bolas
-  ([section 21.9](#219-bolas-and-cold-blood)), whose target is Frozen and
-  exactly 2 tiles away (`7r131`), so a neighbouring enemy means Attack.
+  capture, Pillage, the advance, Fieldcraft Forest freedom, Charge with
+  Raiding, and **Escape** (since `7r133`, with 12 HP: its Bolas went with
+  the one Freeze effect; [section 21.9](#219-cold-blood)). Its primary
+  action is Attack.
 - **Snow Hunter** has Marksman parity (range 1–2, minimum range 1, capture,
   Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
   tuning 2, `7r47`) and Cold Blood
-  ([section 21.9](#219-bolas-and-cold-blood)).
+  ([section 21.9](#219-cold-blood)).
 - **Mammoth** has Guard parity for capture: unlike the Guard it may
   attack after moving, and it cannot build Field Defense. Every attack it
   makes is a Sweep and a Trample ([section 21.10](#2110-sweep-and-trample)),
@@ -7583,10 +7623,9 @@ Golem the Snow Golem, with the same numbers.
 - **Ice Witch** has Captain parity for capture and nothing else: no
   Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED` are never offered
   and are rejected with `UNIT_ROLE_INVALID`). She carries the Blizzard; her
-  primary actions are Attack, Cold Snap, and Frost Bolt
-  ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)). Since
-  `7r129` her Frost Bolt flies exactly 2 tiles, so a neighbouring enemy is
-  only ever her Attack's (her Cold Snap freezes the ring).
+  primary actions are Attack and Cold Snap
+  ([section 21.6](#216-the-blizzard-and-cold-snap)), which freezes the
+  ring of eight tiles round her (since `7r133`; her Frost Bolt is gone).
 - **Snow Golem** has range 1–2 with minimum range 1 and may attack after
   moving, unlike the Catapult; like it, it captures, never advances,
   keeps the `SIEGE` label, and every attack it makes destroys Field Defense
@@ -7597,20 +7636,22 @@ Golem the Snow Golem, with the same numbers.
   `CAPTURE` only: it flies, over Shallow and Deep Water without
   Navigation, never advances after a kill, has no Charge and no Overrun,
   and its **Frost Breath** Freezes every target its attack leaves alive,
-  ships included ([section 21.12](#2112-the-frost-wyrm-and-the-cold-aura)):
+  ships included ([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)):
   the Ice Folk answer to a navy, and the blow that sets up the next one's
   Shatter. Since `pulp_wars-ke95` it ends a Move on any settlement center
   like any land unit, so it captures.
 - **Frost Giant** has Juggernaut parity (reward only, capture, no
   Pillage, no Disband) and the Juggernaut's numbers but 36 HP (40 before
-  `pulp_wars-w49.37`), plus the Cold Aura
-  ([section 21.12](#2112-the-frost-wyrm-and-the-cold-aura)). It is Mountain-born.
+  `pulp_wars-w49.37`), plus the **Cold Wake** (since `7r133`; the Cold
+  Aura and its shards before): after each of its Moves it freezes every
+  tile round it ([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)).
+  It is Mountain-born.
   Since `w49.30` it has Glacial Smash instead of Push and never advances
   after a kill ([section 11.1](#111-the-giants-signatures)).
 - **No ships.** The Ice Folk tree unlocks no naval role, so an Ice Folk
   seat never has a Patrol Boat, a Battleship, or a Submarine, and a unit of
-  the Ice Folk kind never embarks; its land units Freeze the sea and slide
-  on the ice instead ([section 21.16](#2116-the-frozen-sea)). The three
+  the Ice Folk kind never embarks; its Ice Witches and Frost Giants freeze
+  the sea, and its land units slide on the ice instead ([section 21.16](#2116-the-frozen-sea)). The three
   ship roles stay in the Ice Folk registration with the Human numbers and
   no unlock (the registry requires every role; the reward-only
   `JUGGERNAUT` role has no unlock either), and no rule gives the seat a
@@ -7620,13 +7661,13 @@ Golem the Snow Golem, with the same numbers.
   Ice Witch and Mammoth 3; Snow Golem and Frost Wyrm 4. The Frost Giant cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Yeti `ATTACK`,
   `CAPTURE`, `MOUNTAIN_BORN`, `ROCKFALL`; Sled `ATTACK`, `CAPTURE`, `CHARGE`,
-  `BOLAS`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Mammoth `ATTACK`,
-  `CAPTURE`, `SWEEP`, `TRAMPLE`, `STAMPEDE`; Ice Witch `ATTACK`, `CAPTURE`,
-  `BLIZZARD`, `COLD_SNAP`, `FROST_BOLT`; Snow Golem `ATTACK`, `CAPTURE`,
-  `BOULDERS`, `MOUNTAIN_BORN`; Frost Wyrm `ATTACK`, `CAPTURE`, `FLY`,
-  `FROST_BREATH` (`7r125`); Frost
-  Giant `ATTACK`, `CAPTURE`, `PUSH`,
-  `COLD_AURA`, `MOUNTAIN_BORN`; and every one of the eight also `FREEZE`.
+  `ESCAPE`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Walrus `ATTACK`,
+  `CAPTURE`; Mammoth `ATTACK`, `CAPTURE`, `SWEEP`, `TRAMPLE`, `STAMPEDE`;
+  Ice Witch `ATTACK`, `CAPTURE`, `BLIZZARD`, `COLD_SNAP`; Snow Golem
+  `ATTACK`, `CAPTURE`, `BOULDERS`, `MOUNTAIN_BORN`; Frost Wyrm `ATTACK`,
+  `CAPTURE`, `FLY`, `FROST_BREATH` (`7r125`); Frost Giant `ATTACK`,
+  `CAPTURE`, `COLD_WAKE`, `MOUNTAIN_BORN`, `GLACIAL_SMASH`. Since `7r133`
+  none has `FREEZE`, `BOLAS`, `FROST_BOLT`, or `COLD_AURA`.
   Mountain-born, Glide, Prowl,
   the Sweep damage, Trample, ignoring fortification, the Planted bonus, the
   Rockfall Attack, Cold Blood, and the advance are role mechanics
@@ -8025,7 +8066,6 @@ rest of this document keeps the older names where it describes a rule.
 | `OVERRUN`                              | Overrun; Ram (Goblin); Rampage (Dinosaur)           | Overrun                           |
 | `ETHEREAL`, `PROWL`, `ignoresZocStops` | Ethereal (Banshee); Prowl (Sabretooth); Slips past  | Slips past                        |
 | `TRAMPLE`, `demolishesFieldDefense`    | Trample (Mammoth); Wrecker                          | Wrecker                           |
-| `BOLAS` (`THROW_BOLAS`), `FROST_BOLT`  | Bolas (Sled); Frost Bolt (Ice Witch)                | Frost Bolt                        |
 | `LINEBREAKER`                          | Charge! (Triceratops)                               | Gore                              |
 | naval roles                            | Ship ("Built at a Port. It heals only next to ...") | Heals at Ports                    |
 
@@ -8304,7 +8344,7 @@ change; no unit lost anything.
 
 1. **The Sabretooth hunts the frozen line.** It gains **Overrun** (the
    Knight's) and **Cold Blood** (the Snow Hunter's +0.5 Attack against a
-   Frozen unit, [section 21.9](#219-bolas-and-cold-blood)); Chivalry
+   Frozen unit, [section 21.9](#219-cold-blood)); Chivalry
    grants Overrun in the Ice Folk tree again. A Frozen unit never strikes
    back, and the Sabretooth's 3.5 deals a Frozen Fighter 10 (2 left: a
    Shatter), a Marksman or a Raider 12 (dead), and a Knight 12 (1 left: a
@@ -8587,12 +8627,12 @@ Candy, and Cult campaigns. No match was played.
 - Primary actions are Attack, Capture, and specials
   (Rally/Frenzy/Berserk/War Drums/Psychic Command, Tend and Repair, Field
   Defense, Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind
-  Control, Tractor Beam, Bolas, Cold Snap, Frost Bolt, Stampede, Freeze,
+  Control, Tractor Beam, Cold Snap, Stampede,
   Crack Ice, Board, Bomb Run, Assemble). Guard,
   Zombie, Orc Brute, Ankylosaurus, Shield Projector, Catapult, Lich, Rocket
   Cart, Steam Cannon, and Battleship cannot attack after moving; the
   Triceratops (revision 20), the Tripod, the Mammoth, the Snow Golem, and
-  the Steam Mole can. Board (an `ATTACK` since `7r131`), `FREEZE`, and `CRACK_ICE` (the frozen sea
+  the Steam Mole can. Board (an `ATTACK` since `7r131`) and `CRACK_ICE` (the frozen sea
   redesign, `7r100`: every land unit and ship of the eight other factions,
   [section 21.16](#2116-the-frozen-sea)) follow the same flag, so a
   Battleship that moved cannot board or crack. Every read of this role flag for a unit
@@ -8640,8 +8680,9 @@ Candy, and Cult campaigns. No match was played.
   Vampire and Banshee rework the Vampire's Escape is a **Bat Escape**, a
   flight of at most 2 tiles,
   [section 17.12](#1712-the-vampire-and-banshee-rework); the Ghoul,
-  Wolf Rider, Raptor, Saucer,
-  Sled, and Gyrocopter have none; never granted for an attack that Frostbite freezes):
+  Wolf Rider, Raptor, Saucer, and Gyrocopter have none; the Ice Folk Sled
+  has it since `7r133`, the one Freeze effect, in its Bolas's place; never
+  granted for an attack that Frostbite freezes):
   after an accepted
   Attack that the Raider survives, including after a melee kill with its
   ordinary advance, the Raider may make exactly one more ordinary `MOVE` this
@@ -8745,10 +8786,8 @@ The audit of every command (`7r107`):
 
 | Ability (command)                                                                                                                                                                                                                                | Where it would change nothing                                                                                                                        | Decision                                                                                                                                                                         |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frost Bolt (`FROST_BOLT`, the Ice Witch) and the Sled's Frost Bolt (`THROW_BOLAS`)                                                                                                                                                               | the target is Frozen already for as long as a freeze gives (every Frozen enemy: a freeze in your turn gives it 1)                                    | **new**: `FROST_BOLT_NOT_LEGAL` / `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }`, not offered                                                                                    |
-| Cold Snap (`COLD_SNAP`, area)                                                                                                                                                                                                                    | every target around the Witch is Frozen already                                                                                                      | **new**: `COLD_SNAP_NOT_LEGAL { reason: "ALREADY_FROZEN" }` (`NO_TARGET` with nobody at all); legal with one unfrozen target                                                     |
+| Cold Snap (`COLD_SNAP`, area)                                                                                                                                                                                                                    | no tile of the ring would change (no unit to Freeze, no water to ice, no land to make Snow)                                                          | `COLD_SNAP_NOT_LEGAL { reason: "NO_TARGET" }` (since `7r133`; `ALREADY_FROZEN` and the Frost Bolt's row went with the one Freeze effect)                                         |
 | Thunder Stomp (`STOMP`, area)                                                                                                                                                                                                                    | no hostile ground unit or Egg and no Field Defense around the Brontosaurus                                                                           | **new**: `STOMP_NOT_LEGAL { reason: "NO_TARGET" }` (it was legal); a Field Defense alone keeps it legal (it is smashed)                                                          |
-| Freeze (`FREEZE`, the frozen sea)                                                                                                                                                                                                                | only the actor's own sound ice in the freeze set                                                                                                     | already refused (`FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`, `7r100`)                                                                                                            |
 | Crack Ice (`CRACK_ICE`)                                                                                                                                                                                                                          | no ice on the tile                                                                                                                                   | already refused (`NO_ICE`)                                                                                                                                                       |
 | Tend Wounded and Repair (`TEND_WOUNDED`)                                                                                                                                                                                                         | a full-HP unit with no Plague, Bitten, Frozen, or frog; a Barricade at full HP                                                                       | already no target (`HEAL_TARGET_NOT_FOUND` with none); a full-HP afflicted unit stays a target: it is cured                                                                      |
 | Rally: Inspire, Frenzy, War Drums, Psychic Command (`RALLY`, area)                                                                                                                                                                               | the unit is Inspired already (it does not stack or refresh)                                                                                          | already no target; with none, `HEAL_TARGET_NOT_FOUND`. A unit that has attacked stays a target (an Overrun, a twin shot, a Feast, or a thaw by Tend Wounded may still use it)    |
@@ -8853,7 +8892,7 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   (`noRetaliationReason: "FROZEN"`,
   [section 21.3](#213-what-a-frozen-unit-cannot-do)). A hit from distance 2 or more on an Ice Folk
   unit in a Blizzard of its own seat's Ice Witch is first halved, rounded up
-  ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)). An Ice Folk attack from
+  ([section 21.6](#216-the-blizzard-and-cold-snap)). An Ice Folk attack from
   distance 1 that leaves a Frozen non-`JUGGERNAUT` defender at 1 HP up to
   its owner's Shatter threshold kills it instead (**Shatter**, no
   retaliation, [section 21.4](#214-shatter)). An Armoured unit (the
@@ -8920,7 +8959,7 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
 - **Rockfall, Planted, Cold Blood** (Ice Folk,
   [sections 21.8](#218-mountain-born-and-rockfall),
   [21.11](#2111-boulders-and-planted), and
-  [21.9](#219-bolas-and-cold-blood)): a Yeti attacking from a Mountain at
+  [21.9](#219-cold-blood)): a Yeti attacking from a Mountain at
   distance 2 uses Attack 1.5; an unmoved Snow Golem has +1 Attack; a Snow
   Hunter has +0.5 Attack against a Frozen defender, at any distance. The
   preview carries `rockfallApplied`, `plantedApplied`, and
@@ -9299,27 +9338,27 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   seat's Port (Rime) stands on **its own ice** (Shallow or Deep) or on open
   Shallow Water with no unit on it, which it **freezes first** (an ice
   entry of the builder; `PORT_BUILT.iceMade` true), so an Ice Folk dock is
-  always on ice and its units walk and slide across it. A captured dock
-  that its new Ice Folk owner freezes over is an Ice Harbour too.
+  always on ice and its units walk and slide across it. (Since
+  `pulp_wars-s55m.2` the Ice Folk build no Port, and since `7r133` no
+  freeze ices a dock, so a captured dock stays open water.)
 - **Shipyard** (Naval Engineering, 5 Coins, one per city): upgrades an active
   Port in place (the Ice Folk **Great Harbour**, Icebound, on its ice). It keeps all Port functions, gives +2 live population in
   total (+3 with Harbours), and makes naval training 2 Coins cheaper
   (minimum 1): Patrol Boat 3, Submarine 7, Battleship 14. It is never built
   under an enemy unit (`TILE_ENEMY_OCCUPIED`), an enemy ship frozen onto the
-  dock by a Freeze included (`7r121`, `pulp_wars-ez0i`: the engine accepted
+  dock by a freeze included (`7r121`, `pulp_wars-ez0i`: the engine accepted
   that command before, though it was never offered).
 - **Active and blockaded docks:** a Port or Shipyard is active while its city's
   owner owns it and no hostile unit stands on it in the dock's ground form:
   on open water a naval or embarked unit, **on a dock on ice a land-form
   unit** (the frozen sea redesign, `7r100`; since `7r132` only one that
   walks on ice can stand there; an icebound ship there
-  blockades nothing, so a Freeze that locks a blockader on an own dock
-  lifts the blockade; never an Egg). A
+  blockades nothing; never an Egg). A
   blockaded dock gives 0 population and cannot train, embark, harvest its
   resource, recover ships, or join the connection network (it is no Road
   node and ends no sea link; [section 9.5](#95-sea-links)) until the
   blockader leaves.
-- **A dock on ice** (an Ice Harbour, or any dock frozen over) keeps every
+- **A dock on ice** (from a state before `7r133`: no freeze ices a dock now) keeps every
   economic function (population, Harvest Fish, sea links, the Shipyard
   upgrade) and no ship function: nothing trains (`TRAIN_NAVAL` is
   `INVALID_TILE`, never offered), embarks, or recovers **on** it; next to
@@ -9470,9 +9509,9 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   replaces the floe the
   [Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe)
   deferred). No embarked or naval unit of any faction can be
-  Frozen or shattered, and a Frozen unit cannot embark. `THROW_BOLAS`,
-  `COLD_SNAP`, `FROST_BOLT`, and `FREEZE` move no unit and touch no dock,
-  so they are not on the blockade-event list below.
+  Frozen or shattered, and a Frozen unit cannot embark. `COLD_SNAP` moves
+  no unit and touches no dock, so it is not on the blockade-event list
+  below.
 - **Candy boats** are the **Sugar Sails fleet** (`7r97`,
   [themed branches section 8](RULESET_7_NAVAL_FACTIONS.md#8-candy-sugar-sails)):
   the **Gumdrop Tug** (Patrol Boat, 5 Coins), the **Pie Galleon**
@@ -9836,7 +9875,7 @@ Harbours from it.
   for drawing); unexplored tiles carry neither. `UNITS_FROZEN` is projected with the results of units the viewer owns or can see before or after the
   command, and with `sourceUnitId` null when the viewer cannot see the
   source and is not its owner; with no result left it is dropped. A shattered unit's death is projected like any `UNIT_DIED`, and
-  `MAMMOTH_STAMPEDED` like a giant's event. Bolas, Frost Bolt, Cold Snap,
+  `MAMMOTH_STAMPEDED` like a giant's event. Cold Snap, Cold Wake,
   and Sweep previews are exact; a combat preview whose defender is a
   land-form Ice Folk unit with an unexplored tile within 1 sets
   `hiddenBlizzardPossible`, because a hidden Witch could change its cover
@@ -9898,10 +9937,11 @@ Harbours from it.
   city's public population may show Harbours; a Patrol Boat lists `RAM`
   whatever its owner has researched, so the Ram shows only when it is used.
   `SHIP_BOARDED` reaches the actor, the former owner, and every viewer that
-  has explored the prize's tile. `WATER_FROZEN` and `ICE_MELTED` reach
+  has explored the prize's tile. `TILES_FROZEN` (`WATER_FROZEN` before
+  `7r133`; its ice and Snow tiles alike) and `ICE_MELTED` reach
   every viewer with the tiles it has explored (before or after the command)
   and the units it owns or can see, and are dropped when no tile is left;
-  `WATER_FROZEN.unitId` is null for a viewer that cannot see the Freezing
+  `TILES_FROZEN.unitId` is null for a viewer that cannot see the freezing
   unit and does not own it, and for every viewer of a border freeze
   (`7r109`, no unit froze). `UNITS_CRUSHED` is projected like Plague
   damage: the results of units the viewer owns or could see. The Ram, the
@@ -10119,8 +10159,9 @@ Harbours from it.
   yields to a Snow Hunter. It knows Cold Blood, that a Snow Golem loses
   Planted by a Move, Rockfall from a Mountain, and that an adjacent blow
   which leaves a Frozen unit at 1 to 3 HP (4 with Brittle) kills it; its
-  combined kills may begin with a Bolas or a Frost Bolt, thrown from where a Sled or a Snow
-  Hunter stands or after its Move, then the shots from two tiles, then the
+  combined kills may begin with a Cold Snap or a Frost Giant's Move (its
+  Cold Wake; the Bolas and the Frost Bolt before `7r133`), then the shots
+  from two tiles, then the
   blow that shatters, which waits for them. A Snow Hunter or a Snow Golem
   makes no Move into the reach of a melee unit with no unit of its own
   nearer to the enemy, nor onto a tile it dies on, unless its shot kills;
@@ -10268,8 +10309,8 @@ Harbours from it.
   A Brontosaurus Stomps when the Stomp's hits are worth more than its best
   attack, unless the attack kills. A Cooling Colossus strides over a screen
   to a ranged, siege, or support unit, and a trample that kills is a kill.
-  A Frost Giant steps where its Cold Aura freezes a unit and then smashes
-  it. A Brass Titan strikes the garrison of a walled center before the
+  A Frost Giant steps where its Cold Wake freezes a unit (the Cold Aura
+  before `7r133`) and then smashes it. A Brass Titan strikes the garrison of a walled center before the
   other units do, and walks toward the nearest hostile city with Walls. A
   Gingerbread Giant with 26 HP or more breaks off its two Gingerbread Men
   toward an enemy within four tiles, after any Re-bake. Every seat reads a
@@ -10960,10 +11001,10 @@ Harbours from it.
   Scouting, then (with two cities) Administration and Marksmanship, Deep
   Winter and Brittle, then Sawmilling and Chivalry (the free opener keeps
   the ordinary scorer); moves the Ice Witch first to the densest own group
-  out of melee and casts Cold Snap whenever it is offered; throws the Bolas
-  or the Frost Bolt at the unit an offered attack would then shatter (else
-  at the most dangerous unit not yet Frozen, never at one already Frozen or
-  under a Cold Snap); scores a Stampede by its kills and damage
+  out of melee and casts Cold Snap whenever it Freezes a hostile unit (or
+  its ice serves a crossing, [section 21.16](#2116-the-frozen-sea); since
+  `7r133` a Cold Snap that only makes Snow is not cast, and the Bolas and
+  the Frost Bolt are gone); scores a Stampede by its kills and damage
   (`pulp_wars-w49.37`: offered commands only, untuned); orders its attacks
   so that a hit that leaves a Frozen unit in the Shatter window comes before
   the finishing blow; values Sweep flanks and
@@ -13527,8 +13568,8 @@ cost.
 - **Commands:** `BEAM_DOWN { kind, unitId, passengerUnitId, to }`,
   `MIND_CONTROL { kind, unitId, targetUnitId }`, and
   `TRACTOR_BEAM { kind, unitId, targetUnitId }`, in that order right after
-  `HATCH` in `COMMAND_KIND_ORDER_V7` (the Ice Folk `THROW_BOLAS` and
-  `COLD_SNAP`, then the Dwarf `TUNNEL`, `BOMB_RUN`, and `ASSEMBLE` follow
+  `HATCH` in `COMMAND_KIND_ORDER_V7` (the Ice Folk `COLD_SNAP`, with
+  `THROW_BOLAS` before it until `7r133`, then the Dwarf `TUNNEL`, `BOMB_RUN`, and `ASSEMBLE` follow
   them). `MOVE` accepts a machine's path over and onto
   water and a flyer's path over units, with an unchanged shape. A pending
   city reward blocks the three commands like every command.
@@ -13677,9 +13718,10 @@ only to units of an `ICE_FOLK` seat, except where a rule names its target
 (Frozen and Shatter act on other players' units, deep snow stops them, and
 other factions' units crack the ice, and only their walkers and flyers
 stand on it since `7r132`);
-in a match without one the lists `frozen` and `ice` are empty, no tile is Snow or
-Blizzard (the view flags are false), no `THROW_BOLAS`, `COLD_SNAP`,
-`FROST_BOLT`, `STAMPEDE`, or `FREEZE` is offered or accepted, every role has
+in a match without one the lists `frozen`, `ice`, and `snow` are empty, no
+tile is Snow or Blizzard (the view flags are false), no `COLD_SNAP` or
+`STAMPEDE` is offered or accepted (`THROW_BOLAS`, `FROST_BOLT`, and
+`FREEZE` are gone since `7r133`), every role has
 `mountainBorn` false, the shared rules
 `unitMayActAfterMoveV7` and `canEnterTerrainV7` return what the role flag
 and Engineering returned before, every `curedFrozen` is false, every unit's
@@ -13699,35 +13741,34 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 
 ### 21.1 Roles, Mountain-born, and labels
 
-| Mechanical role | Ice Folk unit | Kind                                                           |
-| --------------- | ------------- | -------------------------------------------------------------- |
-| `FIGHTER`       | Yeti          | Mountain-born; Rockfall                                        |
-| `RAIDER`        | Sled          | Freeze source (Bolas); Charge                                  |
-| `MARKSMAN`      | Snow Hunter   | Cold Blood                                                     |
-| `GUARD`         | Walrus        | Freeze source (Frostbite, `7r55`; the Walrus before `7r125`)   |
-| `CAPTAIN`       | Ice Witch     | Blizzard; Freeze source (Cold Snap, Frost Bolt); no `FREEZE`   |
-| `CATAPULT`      | Snow Golem    | Boulders; Planted; Mountain-born (the Snow Golem before)       |
-| `KNIGHT`        | Frost Wyrm    | Flyer over Deep Water; Frost Breath (`7r125`); no Glide        |
-| `SWORDSMAN`     | Mammoth       | Sweep, Trample, and Stampede (`GUARD` before `7r55`)           |
-| `JUGGERNAUT`    | Frost Giant   | Freeze source (Cold Aura, Glacial Smash shards); Mountain-born |
+| Mechanical role | Ice Folk unit | Kind                                                         |
+| --------------- | ------------- | ------------------------------------------------------------ |
+| `FIGHTER`       | Yeti          | Mountain-born; Rockfall                                      |
+| `RAIDER`        | Sled          | Charge; Escape (the Bolas until `7r133`)                     |
+| `MARKSMAN`      | Snow Hunter   | Cold Blood                                                   |
+| `GUARD`         | Walrus        | Freeze source (Frostbite, `7r55`; the Walrus before `7r125`) |
+| `CAPTAIN`       | Ice Witch     | Blizzard; Freeze source (Cold Snap)                          |
+| `CATAPULT`      | Snow Golem    | Boulders; Planted; Mountain-born (the Snow Golem before)     |
+| `KNIGHT`        | Frost Wyrm    | Flyer over Deep Water; Frost Breath (`7r125`); no Glide      |
+| `SWORDSMAN`     | Mammoth       | Sweep, Trample, and Stampede (`GUARD` before `7r55`)         |
+| `JUGGERNAUT`    | Frost Giant   | Freeze source (Cold Wake); Glacial Smash; Mountain-born      |
 
 - **Ice Folk units** are the eight land roles in land form. The Ice Folk
   have no boat and never embark ([section 21.16](#2116-the-frozen-sea)), so
   an Ice Folk unit is never afloat; the Snow rules and the Blizzard's
   protection never apply to an afloat unit of any faction (Shatter does
   since `pulp_wars-s55m.1`: a Frozen ship shatters like a land unit). Snow works **per faction** and the
-  Blizzard's protection **per seat** ([section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)).
-- **Freeze sources** (Ice Folk Freeze, `pulp_wars-w49.37`) are the Sled
-  (Bolas), the Ice Witch (Cold Snap or Frost Bolt), the Walrus
-  (Frostbite), the Frost Wyrm (Frost Breath, `7r125`), the Frost Giant
-  (Cold Aura and the shards of Glacial Smash), and, with Black Ice, the
-  seat's ice ([section 21.16](#2116-the-frozen-sea)). No other attack
-  freezes. The
-  water-freezing command `FREEZE` of the frozen sea makes ice, and since
-  the Ice Folk freeze rework (`pulp_wars-s55m.1`, `7r123`) it also Freezes
-  a hostile unit afloat its line reaches (source `FREEZE`): every source
-  Freezes ships, embarked units, and units on docks exactly like land
-  units.
+  Blizzard's protection **per seat** ([section 21.6](#216-the-blizzard-and-cold-snap)).
+- **Freeze sources** (the one Freeze effect, `pulp_wars-xv0t`, `7r133`):
+  the Ice Witch's **Cold Snap** and the Frost Giant's **Cold Wake** freeze
+  every tile of a ring ([section 21.16](#2116-the-frozen-sea): water to
+  ice, open neutral land to Snow, a hostile unit Frozen); the Frost Wyrm's
+  **Frost Breath** and the Walrus's **Frostbite** Freeze a unit only; and,
+  with Black Ice, the seat's ice ([section 21.16](#2116-the-frozen-sea)).
+  No other attack freezes. Every source Freezes ships, embarked units, and
+  units on docks exactly like land units. (The Sled's Bolas, the Witch's
+  Frost Bolt, the line `FREEZE` of seven roles, the Giant's Cold Aura and
+  its shards went with `7r133`.)
 - **Tactical labels** are the Human ones of the same mechanical role: the
   Mammoth is `DEFENDER`, the Ice Witch `SUPPORT`, and the Snow Golem
   `SIEGE`. They have no rule effect for the Ice Folk (the faction has no
@@ -13743,10 +13784,10 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   Giant. Capture-capable: every Ice Folk land unit, the Frost Wyrm
   included (`pulp_wars-ke95`).
   Every Ice Folk land unit except the Frost Giant is trained on the city
-  center with `TRAIN`. Seven roles **Freeze** water (ability `FREEZE`,
-  with Rime); the Ice Witch freezes the water around her with her **Cold
-  Snap** instead (`pulp_wars-s55m.1`: she has no `FREEZE`). All but the
-  Frost Wyrm, a flyer, **skate** on ice (`pulp_wars-s55m.2`, `7r124`).
+  center with `TRAIN`. The Ice Witch's **Cold Snap** and the Frost Giant's
+  **Cold Wake** make ice (with Rime); no role has `FREEZE` since `7r133`.
+  All but the Frost Wyrm, a flyer, **skate** on ice (`pulp_wars-s55m.2`,
+  `7r124`).
 
 ### 21.2 Frozen
 
@@ -13793,9 +13834,9 @@ stays Frozen for the rest of that turn and through its next one.
   and cover, fortification, Armoured, and Walls do not matter. No source deals
   damage, draws retaliation, or is an attack; each emits one
   `UNITS_FROZEN { playerId, sourceUnitId, source, results }` (`source`
-  `BOLAS`, `COLD_SNAP`, `FROST_BOLT`, `COLD_AURA`, `BLACK_ICE`, `FROSTBITE`,
-  `SHARDS`, or, since `pulp_wars-s55m.1`, `FREEZE` (a water Freeze reached
-  a unit afloat); `results` the targets' entries after the application, in
+  `COLD_SNAP`, `COLD_WAKE`, `BLACK_ICE`, `FROSTBITE`, or `FROST_BREATH`
+  since `7r133`; `BOLAS`, `FROST_BOLT`, `COLD_AURA`, `SHARDS`, and `FREEZE`
+  before; `results` the targets' entries after the application, in
   unit-ID order).
 - **No thaw immunity.** A unit may be frozen again on the turn after it
   thaws, every turn: there is no rule that protects a unit that was just
@@ -13812,11 +13853,11 @@ turnsLeft 1  → the entry is removed (the unit thaws)
 turnsLeft 2  → turnsLeft := 1
 ```
 
-| When                                | Frozen by a Bolas on Ice Folk turn `N`       |
-| ----------------------------------- | -------------------------------------------- |
-| Ice Folk turn `N` (after the Bolas) | Frozen: Shatter-eligible; no retaliation     |
-| The unit's owner's next turn        | **Frozen**: cannot move or act; thaws at end |
-| Ice Folk turn `N + 1`               | not Frozen (unless frozen again)             |
+| When                                    | Frozen by a Cold Snap on Ice Folk turn `N`   |
+| --------------------------------------- | -------------------------------------------- |
+| Ice Folk turn `N` (after the Cold Snap) | Frozen: Shatter-eligible; no retaliation     |
+| The unit's owner's next turn            | **Frozen**: cannot move or act; thaws at end |
+| Ice Folk turn `N + 1`                   | not Frozen (unless frozen again)             |
 
 - **Removal.** The entry is removed when the unit thaws or leaves the board
   for any reason (death, rising, Disband, displacement, elimination); Mind
@@ -13924,31 +13965,43 @@ Defense 1.5):
 [section 11.1](#111-the-giants-signatures)): a land-form Frost Giant's
 attack from distance 1 uses the threshold `GLACIAL_SMASH_HP_V7` 8 instead
 of its owner's 3 (4 with Brittle); a `JUGGERNAUT` defender still never
-shatters. The preview carries `glacialSmash`. When a Frost Giant's attack
-shatters a unit, its **shards** freeze every other unit around the shattered
-unit's tile that the Giant's owner can freeze (giants included), by the
-rule of [section 21.2](#212-frozen); one
-`UNITS_FROZEN { source: "SHARDS" }` follows the death events. A Frozen
+shatters. The preview carries `glacialSmash`. The **shards** that froze
+the units around a shattered unit are gone since `7r133` (the one Freeze
+effect: the Giant freezes with its Cold Wake). A Frozen
 Ankylosaurus at 17 of 20 HP takes 9 from the Giant and would keep 8:
 shattered; at 18 it keeps 9.
 
 ### 21.5 Snow
 
-**Which tiles are Snow.** Snow is a derived property of a land tile, the
-same for every viewer and seat, never stored, and computed from the current
-state at every read (`winterV7`, memoised per immutable state only):
+**Which tiles are Snow.** Snow is a property of a land tile, the same for
+every viewer and seat, computed from the current state at every read
+(`winterV7`, memoised per immutable state only):
 
 ```text
 snow(tile) =
      tile is land and not a Rift, and
      (  tile's territory belongs to a city owned by an ICE_FOLK seat        (territory)
-     or tile is within Chebyshev 1 of a land-form Ice Witch                 (Blizzard)
+     or tile is in the state's stored `snow` list                           (stored Snow)
      or tile has no territory and is within Chebyshev 2 (DEEP_WINTER_RADIUS_V7)
         of the center of a city whose Ice Folk owner has Deep Winter )      (Deep Winter)
 ```
 
+- **Stored Snow** (the one Freeze effect, `pulp_wars-xv0t`, `7r133`):
+  `GameStateV7.snow: CoordV7[]`, sorted by `(y, x)`, hashed, saved, and
+  replayed. A freeze of a tile (a Cold Snap's or a Cold Wake's ring,
+  [section 21.16](#2116-the-frozen-sea)) lays it on open land outside
+  every territory; it stays where it was laid (nothing has to be done to
+  keep it) and **melts the moment its tile becomes any player's
+  territory** (a new city, a Land Grant, a capture: after every command
+  the list keeps only tiles without territory). State parsing rejects an
+  entry off the board, on water or a Rift, in a territory, unsorted or
+  duplicated, and any entry in a match without an Ice Folk seat. It is
+  public: the view's `snow` flag shows it on every explored tile.
+- **The Blizzard lays no Snow** since `7r133` (it made its 3 × 3 Snow
+  before); its ranged-damage halving stays
+  ([section 21.6](#216-the-blizzard-and-cold-snap)).
 - Within one `MOVE` it is read once, from the state before the command, for
-  every step (this matters only for a Witch's own Move).
+  every step.
 - A captured Ice Folk city stops being Snow in the capture command, a city
   an Ice Folk seat captures becomes Snow in it, and a besieged Ice Folk city
   is still Snow (the besieger gets nothing from it). A Land Grant widens the
@@ -13971,22 +14024,21 @@ snow(tile) =
    command. So a Move-1 unit on Snow moves two tiles while it stays on
    Snow, a Sled up to four, and a step off the Snow is a full step:
 
-   | Mover                                          | Reach                                                             |
-   | ---------------------------------------------- | ----------------------------------------------------------------- |
-   | Yeti trained on a center, leaving home         | 1 tile (the center to the edge costs a half-point, off it a full) |
-   | Yeti inside its own territory or Deep Winter   | 2 tiles                                                           |
-   | Sled leaving home                              | 2 tiles, like a Raider                                            |
-   | Sled inside Snow                               | up to 4 steps                                                     |
-   | Ice Witch and her escort (the "Blizzard ball") | 1 tile a turn: only her 3 × 3 was Snow before the Move            |
-   | a unit inside her Blizzard                     | 2 steps across it                                                 |
+   | Mover                                        | Reach                                                             |
+   | -------------------------------------------- | ----------------------------------------------------------------- |
+   | Yeti trained on a center, leaving home       | 1 tile (the center to the edge costs a half-point, off it a full) |
+   | Yeti inside its own territory or Deep Winter | 2 tiles                                                           |
+   | Sled leaving home                            | 2 tiles, like a Raider                                            |
+   | Sled inside Snow                             | up to 4 steps                                                     |
+   | a unit on a patch of stored Snow             | 2 steps across it (the Blizzard made no Snow since `7r133`)       |
 
    The **Frost Wyrm never Glides** (role mechanic `glides`; a flyer). Every other
    Move rule is unchanged: Forest and unexplored cells still end an Ice
    Folk unit's Move, zones of control too, and a Mountain stops the units
    that are not Mountain-born. The public movement query reads both ends
-   from the view's `snow` flags; Snow the viewer cannot know of (a hidden
-   Witch's Blizzard) can only make a step cheaper for the reducer, so every
-   offered `MOVE` is accepted.
+   from the view's `snow` flags (every Snow tile is public since `7r133`:
+   a hidden Witch's Blizzard made Snow the viewer could not know of
+   before), so every offered `MOVE` is accepted.
 
 2. **Snow cover** (`pulp_wars-1wy.3`, `7r37`: × 1.25; before it × 1.5). A
    defender on Snow whose **own fortification level is 0** has cover
@@ -14021,22 +14073,24 @@ Overrun continuation, or a Tractor Beam, which are not Moves.
 
 Examples (engine formula, full HP; a Yeti has 9 HP and Defense 1.5):
 
-| Attack on a Yeti                                    | In the open | On Snow | On Snow in its Witch's Blizzard |
-| --------------------------------------------------- | ----------: | ------: | ------------------------------: |
-| Fighter (melee; the Yeti retaliates 3)              |           5 |       5 |                               5 |
-| Marksman from distance 2                            |           5 |       5 |                               3 |
-| Catapult                                            |          11 |      10 |                               5 |
-| Lich (splash on the Yeti's neighbours from the hit) |           9 |       8 |                               4 |
-| Spitter from distance 2 (Acid: no cover)            |           5 |       5 |                               3 |
-| full-power Ray Gunner from distance 2               |           9 |       8 |                               4 |
+| Attack on a Yeti                                    | In the open | On Snow | In its Witch's Blizzard (open ground, `7r133`) |
+| --------------------------------------------------- | ----------: | ------: | ---------------------------------------------: |
+| Fighter (melee; the Yeti retaliates 3)              |           5 |       5 |                                              5 |
+| Marksman from distance 2                            |           5 |       5 |                                              3 |
+| Catapult                                            |          11 |      10 |                                              6 |
+| Lich (splash on the Yeti's neighbours from the hit) |           9 |       8 |                                              5 |
+| Spitter from distance 2 (Acid: no cover)            |           5 |       5 |                                              3 |
+| full-power Ray Gunner from distance 2               |           9 |       8 |                                              5 |
 
-### 21.6 The Blizzard, Cold Snap, and Frost Bolt
+### 21.6 The Blizzard and Cold Snap
 
 **The Blizzard** of an Ice Witch in land form is her tile and the eight
 tiles around it (`BLIZZARD_RADIUS_V7` 1), clipped to the board. It moves
 with her and ends when she dies, embarks, or otherwise leaves the board.
 
-- Its land tiles are Snow ([section 21.5](#215-snow)).
+- It lays **no Snow** since `7r133` (the one Freeze effect,
+  `pulp_wars-xv0t`; its land tiles were Snow before,
+  [section 21.5](#215-snow)). The view's `blizzard` flag still marks it.
 - **Half ranged damage.** When a unit attacks **from distance 2 or more** a
   land-form Ice Folk unit that stands in the Blizzard of an Ice Witch of
   **its own seat**, the hit is `ceil(damage / 2)` (`blizzardHalved`),
@@ -14046,79 +14100,57 @@ with her and ends when she dies, embarks, or otherwise leaves the board.
   Pierce, or Sweep hit on another unit (computed from the halved primary
   hit when the primary target was in the Blizzard), Wail, Kaboom, death
   blasts, or Plague. Blizzards do not stack, and the Witch is in her own.
+  (A hidden Witch can change no Wail since `7r133`, so no Wail target is
+  flagged `hiddenBlizzardPossible`.)
 - **Per faction and per seat** (root ruling 4). Snow and its effects are
   per faction: every land-form Ice Folk unit, of any seat, gets Glide and
   Snow cover on every Snow tile, whichever seat's territory, Deep Winter, or
-  Witch made it, and every other faction's ground unit is stopped by every
+  freeze made it, and every other faction's ground unit is stopped by every
   Snow tile. The halving is per seat: it protects only the land-form units
   owned by the same seat as the Witch, never a unit of another seat (an
   enemy Ice Folk unit included), an embarked unit, or a boat.
 
-`COLD_SNAP { kind, unitId }` and `FROST_BOLT { kind, unitId, targetUnitId }`
-(Ice Folk Freeze, `pulp_wars-w49.37`) are primary actions of the Ice Witch
-(they need Administration, which unlocks her as `WITCH_SUPPORT`). Neither is
-an Attack, and neither costs Coins. Both are primary actions, so the Witch
-uses **one of the two per turn** (and neither after an Attack).
+`COLD_SNAP { kind, unitId }` (Ice Folk Freeze, `pulp_wars-w49.37`) is a
+primary action of the Ice Witch (she needs Administration, which unlocks
+her as `WITCH_SUPPORT`). It is not an Attack and costs no Coins, and the
+Witch casts it at most once a turn (and not after an Attack).
 
-- **One ability: units and water** (the Ice Folk freeze rework,
-  `pulp_wars-s55m.1`, `7r123`; the user, 2026-11-06: "the coldsnap should
-  freeze water around her. she shouldnt have separate freezeing water thing
-  and freezing everything else. it's the same ability"). The Witch has no
-  `FREEZE`; her Cold Snap Freezes every unit beside her and, with Rime (her
-  capabilities' `freezeWater`), freezes the water around her: the ring of
-  the frozen sea's Freeze ([section 21.16](#2116-the-frozen-sea)), every
-  freezable tile within Chebyshev `WITCH_FREEZE_RADIUS_V7` 1 of her, her own
-  tile included when she stands on cracked or foreign ice, any dock
-  included; a tile holding a unit afloat stays open water (the unit is one
-  of the cast's targets).
+- **The ring** (the one Freeze effect, `pulp_wars-xv0t`, `7r133`; the
+  user: "too many freezing mechanics that look alike"). Her Cold Snap
+  **freezes every tile of the eight around her** (`COLD_SNAP_RANGE_V7` 1),
+  each by the one rule of [section 21.16](#2116-the-frozen-sea): water
+  becomes her owner's ice with Rime (Deep Water with Pack Ice), another
+  seat's ice is taken and her own cracked ice mended, open land outside
+  every territory becomes stored Snow, and every hostile unit there that
+  can be Frozen and that her owner sees is **Frozen**; a dock, a Rift,
+  territory land, her own sound ice, and water holding a unit afloat keep
+  their ground. Her own tile is not in the ring. A unit Frozen already is
+  no target (its entry is kept).
 - **Cold Snap legality.** An own land-form Witch that has not used a primary
-  action and has not landed this turn (she may have moved), with a target
-  or a tile to freeze. Rejections, atomic, in this order: the ordinary unit
-  errors; a Frozen Witch → `UNIT_FROZEN`; a role without `COLD_SNAP` →
-  `UNIT_ROLE_INVALID { role }`; a primary action used or a pending
-  continuation → `UNIT_ALREADY_ACTED`; embarked →
-  `COLD_SNAP_NOT_LEGAL { reason: "EMBARKED" }`; no target and no tile →
-  `COLD_SNAP_NOT_LEGAL { reason: "NO_TARGET" }`; no tile and every target
-  Frozen already for as long → `COLD_SNAP_NOT_LEGAL { reason:
-"ALREADY_FROZEN" }` (no pointless actions, `7r107`,
-  [section 12.4](#124-no-pointless-actions): a cast that freezes a tile is
-  never pointless).
-- **Cold Snap targets.** Every unit that can be Frozen (ships and embarked
-  units included), is visible to the Witch's owner, and stands on one of
-  the eight tiles around her (Chebyshev `COLD_SNAP_RANGE_V7` 1; 2 before
-  `pulp_wars-w49.37`), already Frozen units included: they are renewed and
-  listed in `UNITS_FROZEN`, but the board marks only the units the cast
-  changes.
-- **Cold Snap result.** Every target is Frozen at once
-  ([section 21.2](#212-frozen)) and every tile of the ring gets a sound ice
-  entry of the Witch's owner; the Witch has used her primary action and is
-  handled. No damage, retaliation, Field Defense destruction, or reveal.
-  Events: `UNITS_FROZEN` (source `COLD_SNAP`) when there is a target, then
-  `WATER_FROZEN { unitId: the Witch }` when a tile froze; a dock iced over
-  recomputes the live economy, so `COLD_SNAP` is on the blockade-event
-  list. Only visible units and explored tiles are read, so the preview
-  equals the result.
+  action and has not landed this turn (she may have moved), whose ring
+  would change something (a unit Frozen or a tile frozen). Rejections,
+  atomic, in this order: the ordinary unit errors; a Frozen Witch →
+  `UNIT_FROZEN`; a role without `COLD_SNAP` → `UNIT_ROLE_INVALID { role }`;
+  a primary action used or a pending continuation → `UNIT_ALREADY_ACTED`;
+  embarked → `COLD_SNAP_NOT_LEGAL { reason: "EMBARKED" }`; nothing would
+  change → `COLD_SNAP_NOT_LEGAL { reason: "NO_TARGET" }` (no pointless
+  actions, `7r107`, [section 12.4](#124-no-pointless-actions);
+  `ALREADY_FROZEN` is gone with the Frost Bolt).
+- **Cold Snap result.** The ring is frozen; the Witch has used her primary
+  action and is handled. No damage, retaliation, Field Defense
+  destruction, or reveal. Events: `UNITS_FROZEN` (source `COLD_SNAP`) when
+  a unit was Frozen, then `TILES_FROZEN { playerId, unitId: the Witch,
+tiles, snow }` when a tile froze. Only visible units and explored tiles
+  are read, so the preview equals the result.
 - **One tap.** The interface casts the Cold Snap on one press of its
   button, a finger's tap included, with no confirmation (the user: "ice
   witch cold snap should not require confirmation. just snap"); hovering or
-  focusing the button lifts the ring and its "Ice N" label on her tile and
-  the units it would Freeze, and the quiet ring is drawn while she is
-  selected.
-- **Frost Bolt** freezes **one** unit exactly Chebyshev 2 from the Witch
-  (`FROST_BOLT_MIN_RANGE_V7` to `FROST_BOLT_RANGE_V7`, both 2; since
-  `7r129`, `pulp_wars-ev6q`: within 2, distance 1 included, before). A
-  Frost Bolt at a unit next to her is `OUT_OF_RANGE` and never offered: a
-  neighbouring enemy is an Attack, and her Cold Snap freezes every
-  neighbour, so no tile next to a selected Witch carries two commands. The
-  Sled's Bolas flies exactly 2 too since `7r131` (`pulp_wars-3u8d`). Its legality is the Bolas table of
-  [section 21.9](#219-bolas-and-cold-blood) with the ability `FROST_BOLT`
-  and the error `FROST_BOLT_NOT_LEGAL` (reasons `EMBARKED`,
-  `TARGET_IMMUNE`, `OUT_OF_RANGE`, `ALREADY_FROZEN`); its result is the Bolas result with the
-  event source `FROST_BOLT`. The interface calls it FROST BOLT; the
-  frozen-sea `FREEZE` keeps its own name. Since `pulp_wars-2yc.63` the
-  interface calls the Sled's Bolas a Frost Bolt too: the two are one
-  mechanic (the ability `BOLAS` and the command `THROW_BOLAS` are
-  unchanged).
+  focusing the button lifts the ring and its "Ice N · Snow N" label on her
+  tile and the units it would Freeze, and the quiet ring is drawn while
+  she is selected.
+- **The Frost Bolt is gone** (`7r133`): it froze one unit exactly 2 tiles
+  from her. The Sled's Bolas, the same freeze, is gone too
+  ([section 21.9](#219-cold-blood)).
 
 ### 21.7 Deep Winter and Brittle
 
@@ -14160,31 +14192,12 @@ advances. The public command query and `queryThreatenedTilesV7` include the
 distance-2 tiles of a Yeti on a Mountain and from every Mountain it can
 reach. Example: a Rockfall deals a full-HP Fighter 3 and a Marksman 4.
 
-### 21.9 Bolas and Cold Blood
+### 21.9 Cold Blood
 
-`THROW_BOLAS { kind, unitId, targetUnitId }` is a primary action of the
-Sled (it needs no technology beyond Scouting, which unlocks the Sled). It is
-not an Attack and costs no Coins. Legality, in this order (all rejections
-atomic):
-
-| #   | Requirement                                                                                                                                                                  | Rejection                                      |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                                                               | the ordinary unit errors                       |
-| 2   | Its role has `BOLAS`.                                                                                                                                                        | `UNIT_ROLE_INVALID { role }`                   |
-| 3   | It is not Frozen; it has not used a primary action and has not landed this turn.                                                                                             | `UNIT_FROZEN`; `UNIT_ALREADY_ACTED`            |
-| 4   | It is in land form.                                                                                                                                                          | `BOLAS_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                     | `TARGET_NOT_FOUND`                             |
-| 6   | It is hostile to the actor.                                                                                                                                                  | `TARGET_ALLIED`                                |
-| 7   | It can be Frozen: land form (not embarked, naval, an Egg, or the Monster).                                                                                                   | `BOLAS_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
-| 8   | It is exactly Chebyshev distance 2 from the Sled (`BOLAS_MIN_RANGE_V7` to `BOLAS_RANGE_V7`, both 2; since `7r131`, `pulp_wars-3u8d`: within 2, distance 1 included, before). | `BOLAS_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 9   | The freeze changes it: it is not Frozen for as long already (`7r107`, section 12.4).                                                                                         | `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }` |
-
-- **Result.** The target is Frozen ([section 21.2](#212-frozen)). An
-  already Frozen enemy is no target since `7r107` (row 9: the freeze would
-  keep its count; before, it was legal and kept the larger count). The Sled has used its primary action
-  and is handled. No damage, retaliation, Field Defense destruction, or
-  advance; event `UNITS_FROZEN` (source `BOLAS`). It may follow a Move;
-  there is no line of sight and no cover against it.
+The Sled's `THROW_BOLAS` (a freeze of one unit exactly 2 tiles away) is
+gone since `7r133` (the one Freeze effect, `pulp_wars-xv0t`): the Sled has
+12 HP (10 before) and the Raider's **Escape** (a Move after its attack,
+[section 12.2](#122-activation)) instead.
 
 **Cold Blood** (the Snow Hunter; the Sabretooth had it from `7r113` to
 `7r124`): its attack on a **Frozen** defender has
@@ -14238,7 +14251,7 @@ it can shatter. Examples (full HP): planted, it deals a Guard on a Walled
 center with Field Defense 7 (a Yeti without Brittle deals that Guard 2 and
 takes 8 of its 9 HP), and a Fighter 8; after a Move, a Guard 4.
 
-### 21.12 The Frost Wyrm and the Cold Aura
+### 21.12 The Frost Wyrm and the Cold Wake
 
 **The Frost Wyrm** (`KNIGHT`; `pulp_wars-s55m.4`, `7r125`; the Sabretooth
 before, whose Prowl, Overrun, and Cold Blood are gone). A **flyer** (role
@@ -14249,8 +14262,8 @@ in land form crosses and hovers over Shallow Water and, with the role
 mechanic `fliesOverDeepWater`, **Deep Water without Navigation** (every
 other flyer needs its controller's Navigation there; a body rule, so the
 public movement query and the Normal AI's reach are exact). Over water it
-stays in the air in land form as every flyer since `7r116`: it attacks,
-Freezes water with Rime, and is no afloat unit (no blockade, no embark). It
+stays in the air in land form as every flyer since `7r116`: it attacks
+and is no afloat unit (no blockade, no embark). It
 never advances after a kill (`advancesAfterKill` false), never Glides on
 Snow, never skates on ice, never dives through a Fishing Hole, and takes
 no cover (a flyer), but it has Snow cover's absence and the Blizzard's
@@ -14275,17 +14288,27 @@ like every Ice Folk blow ([section 21.4](#214-shatter)): what its breath
 froze, the next blow (its own next turn, or any other Ice Folk unit's
 now) breaks. Mind-controlled, it breathes for its controller.
 
-**Cold Aura** (the Frost Giant; Ice Folk Freeze, `pulp_wars-w49.37`).
-When a land-form Frost Giant completes its own `MOVE` or `DISEMBARK`, every
-unit that its owner can freeze on the eight tiles around its new tile is
-Frozen ([section 21.2](#212-frozen)), with one `UNITS_FROZEN` (source
-`COLD_AURA`) after the Move's events when there is at least one target.
-Nothing else triggers it: not the Start Turn (as before `pulp_wars-w49.37`),
-an advance, a Push or pull of the Giant, a placement (reward, Beam Down), or
-a Giant that stays put. The Giant never shatters a `JUGGERNAUT`-role unit
-and cannot itself be shattered (it can be Frozen). Since `pulp_wars-w49.30`
-the Frost Giant has Glacial Smash instead of Push and never advances after a
-kill ([section 21.4](#214-shatter)).
+**Cold Wake** (the Frost Giant; the one Freeze effect, `pulp_wars-xv0t`,
+`7r133`; its Cold Aura, which Froze only the units around it, before; the
+user: "we can have the special giant unit freeze everything around it
+whenever it moves. it's a powerful ability but makes sense for the special
+unit"). When a land-form Frost Giant completes its own `MOVE`, every tile
+of the eight around its new tile is frozen by the one rule of
+[section 21.16](#2116-the-frozen-sea), with its owner's Rime for the water
+(through its kind's tree, so a mind-controlled Giant freezes for its
+controller): water to ice, open neutral land to Snow, and every hostile
+unit there its owner sees and can freeze Frozen. One `UNITS_FROZEN`
+(source `COLD_WAKE`) when a unit was Frozen, then one `TILES_FROZEN`, after
+the Move's events (and after Black Ice). Nothing else triggers it: not a
+landing, the Start Turn, an advance, a Push or pull of the Giant, a
+placement (reward, Beam Down), or a Giant that stays put. The public
+`previewColdWakeV7(view, unitId, at)` gives the ring a Move ending on `at`
+would freeze (`{ unitId, at, targets, tiles, snow }`), and the board tints
+that ring while the destination is hovered. The Giant never shatters a
+`JUGGERNAUT`-role unit and cannot itself be shattered (it can be Frozen).
+Since `pulp_wars-w49.30` the Frost Giant has Glacial Smash instead of Push
+and never advances after a kill ([section 21.4](#214-shatter)); its shards
+are gone since `7r133`. No other unit has a Cold Wake.
 
 ### 21.13 Attack resolution order
 
@@ -14337,26 +14360,27 @@ tail.
 | Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): Eggs are never Frozen or shattered; deep snow cuts a run-up and a Pounce short; Charge! and Wallbreaker ignore fortification but not Snow cover, which is read from the defender's own fortification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Frozen ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to the Tractor Beam (a Brain takes it since `7r99`); a mind-controlled Ice Folk unit keeps its Ice Folk rules (a controlled Witch's Blizzard serves her controller).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Snow Golem's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A Frozen Captain cannot Rally and a Frozen Knight cannot attack. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it. A Frozen unit on a center still besieges it but cannot capture it until it thaws. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; Bolas and Cold Snap spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it. A Frozen unit on a center still besieges it but cannot capture it until it thaws. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; a Cold Snap spends no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Boats, water            | The Ice Folk have no boats and never embark; they freeze the sea ([section 21.16](#2116-the-frozen-sea)). Since `pulp_wars-s55m.1` an embarked or naval unit of any faction is Frozen like a land unit, does not strike back while Frozen, and shatters to an Ice Folk blow from the next tile in the window (no ship is ever icebound or crushed any more); a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Rift                    | A Rift is never Snow and Mountain-born does not cover it, so no Ice Folk unit enters one. A flyer on a Rift is in land form: it can be Frozen, attacked from an adjacent tile, and shattered; the attacker does not advance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but does not thaw it). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Bolas and a Cold Snap are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but does not thaw it). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Cold Snap and a Cold Wake are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Dwarf rules             | [Section 22.13](#2213-interactions-with-other-rules): tunnels ignore Snow, and a surfaced unit stands on Snow like any ground unit; deep snow ends a Dwarf ground unit's Move (only the Move-2 Steam Tank notices), and the Gyrocopter flies over it. Every Dwarf land unit can be Frozen, constructs and the Brass Titan included, and shattered, except the Brass Titan (`JUGGERNAUT`); a mound is neither; a burrowed unit's Frozen entry keeps counting down at its owner's End Turn, and the Engineer's Repair thaws it. A Frozen Gyrocopter cannot bomb, a Frozen Mole cannot tunnel, a Frozen Hammerer cannot ride, a Frozen Gunner cannot fire, and a Frozen Engineer can neither Repair nor Assemble. The Shatter test reads a Steam Tank's HP after the Plated cap. The Blizzard halves a Gunner's or a Steam Cannon's shot from distance 2 or more, never a bomb or an eruption (not attacks); bombs and eruptions also ignore Snow cover. |
 
 ### 21.15 Commands, events, errors, and queries
 
-- **Commands:** `THROW_BOLAS { kind, unitId, targetUnitId }` and
-  `COLD_SNAP { kind, unitId }`, in that order right after `TRACTOR_BEAM` in
-  `COMMAND_KIND_ORDER_V7`; `FROST_BOLT { kind, unitId, targetUnitId }` and
-  `STAMPEDE { kind, unitId, at }` (`pulp_wars-w49.37`), in that order right
-  after `BREAK_OFF`. `MOVE` accepts the Glide costs, the Mountain-born
+- **Commands:** `COLD_SNAP { kind, unitId }` right after `TRACTOR_BEAM` in
+  `COMMAND_KIND_ORDER_V7`, and `STAMPEDE { kind, unitId, at }`
+  (`pulp_wars-w49.37`) right after `BREAK_OFF` (`THROW_BOLAS`, before
+  `COLD_SNAP`, and `FROST_BOLT`, before `STAMPEDE`, are gone since
+  `7r133`, so every later kind's ordinal moved back). `MOVE` accepts the Glide costs, the Mountain-born
   paths, and the Frost Wyrm's flight (over Deep Water without Navigation,
   `7r125`), and applies deep snow;
   `ATTACK` accepts a Yeti's distance-2 target from a Mountain. A pending city reward blocks these commands like every command.
 - **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`): `UNITS_FROZEN` (named
   `UNITS_CHILLED` before `pulp_wars-w49.37`, in the same place) right after
   `UNITS_RALLIED`, with `results: [{ unitId, turnsLeft }]`;
-  `MAMMOTH_STAMPEDED` right after `GIANT_BROKE_OFF`
+  `MAMMOTH_STAMPEDED` right after `GIANT_BROKE_OFF`; `TILES_FROZEN` (the
+  one Freeze effect, `7r133`; `WATER_FROZEN` before, in its place)
   ([section 21.18](#2118-the-mammoths-stampede)).
   `UNIT_DIED.cause` gains `SHATTER` and `STAMPEDE` (never followed by `GRAVE_CREATED`; it
   may be followed by `BITTEN_UNIT_RISEN`); `FIELD_DEFENSE_DESTROYED.reason`
@@ -14373,9 +14397,9 @@ tail.
   Boulders report `fortificationLevel: 0` and `fortificationIgnored`; a
   Trample is read from `sweep` and the target tile's Field Defense.
 - **Errors:** `UNIT_FROZEN { unitId }` (a Frozen ship's refused command
-  too, since `pulp_wars-s55m.1`); `BOLAS_NOT_LEGAL` and
-  `FROST_BOLT_NOT_LEGAL` (reasons `EMBARKED`, `TARGET_IMMUNE`,
-  `OUT_OF_RANGE`), `COLD_SNAP_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`), and
+  too, since `pulp_wars-s55m.1`); `COLD_SNAP_NOT_LEGAL` (`EMBARKED`,
+  `NO_TARGET`; `BOLAS_NOT_LEGAL` and `FROST_BOLT_NOT_LEGAL` are gone since
+  `7r133`), and
   `STAMPEDE_NOT_LEGAL` (`EMBARKED`, `MOVED`, `DIRECTION`, `BLOCKED`); the
   movement failure reasons gain `SNOW_STOPS_MOVE` (`SETTLEMENT_FORBIDDEN`
   covered the Sabretooth, the Frost Wyrm's predecessor, until
@@ -14384,19 +14408,19 @@ tail.
 - **Registration:** faction `ICE_FOLK`, tree `ICE_FOLK_BASELINE_V1`,
   display name "Ice Folk"; unlock kinds `WITCH_SUPPORT`, `DEEP_WINTER`, and
   `BRITTLE`; capabilities `deepWinter` and `shatterThreshold`; abilities
-  `MOUNTAIN_BORN`, `ROCKFALL`, `BOLAS`, `COLD_BLOOD`, `SWEEP`, `TRAMPLE`,
-  `BLIZZARD`, `COLD_SNAP`, `FROST_BOLT`, `BOULDERS`, `FROST_BREATH`
-  (`PROWL` until `7r124`), `COLD_AURA`, and `STAMPEDE`; role
+  `MOUNTAIN_BORN`, `ROCKFALL`, `COLD_BLOOD`, `SWEEP`, `TRAMPLE`,
+  `BLIZZARD`, `COLD_SNAP`, `BOULDERS`, `FROST_BREATH` (`PROWL` until
+  `7r124`), `COLD_WAKE` (`7r133`; `COLD_AURA` before), and `STAMPEDE`
+  (`BOLAS` and `FROST_BOLT` are gone since `7r133`); role
   mechanics `mountainBorn`, `glides`, `sweepDamage`,
   `tramplesFieldDefense`, `ignoresFortification`, `plantedBonus2`,
-  `rockfallAttack2`, `coldBloodBonus2`, `frostBreath`, and
-  `fliesOverDeepWater` (`7r125`), with `buildsFieldDefense` false
+  `rockfallAttack2`, `coldBloodBonus2`, `frostbite` (the Walrus),
+  `frostBreath`, and `fliesOverDeepWater` (`7r125`), with `buildsFieldDefense` false
   for the Yeti and the Mammoth and `advancesAfterKill` false for the Boulder
   Yeti; faction rules `snow` true and `treasureUnitRole` `RAIDER`; constants
-  `SHATTER_HP_V7` 3, `BRITTLE_SHATTER_HP_V7` 4, `BOLAS_RANGE_V7` 2,
-  `COLD_SNAP_RANGE_V7` 1, `FROST_BOLT_RANGE_V7` 2, `STAMPEDE_RANGE_V7` 3,
-  `STAMPEDE_DAMAGE_V7` 3, `GLACIER_ICE_MOVE_BONUS_V7` 1,
-  `BLIZZARD_RADIUS_V7` 1,
+  `SHATTER_HP_V7` 3, `BRITTLE_SHATTER_HP_V7` 4, `COLD_SNAP_RANGE_V7` 1 (the
+  ring of the Cold Snap and the Cold Wake), `STAMPEDE_RANGE_V7` 3,
+  `STAMPEDE_DAMAGE_V7` 3, `BLIZZARD_RADIUS_V7` 1,
   `DEEP_WINTER_RADIUS_V7` 2, `DEEP_WINTER_RECOVER_V7` 6, `SWEEP_DAMAGE_V7`
   2, `ROCKFALL_ATTACK2_V7` 3, `PLANTED_BONUS2_V7` 2, and
   `COLD_BLOOD_BONUS2_V7` 1.
@@ -14407,26 +14431,22 @@ tail.
 - **`queryPlayerCommandsV7`** offers, for an Ice Folk seat, `MOVE` commands
   that follow Glide, Mountain-born, skating, and the Frost Wyrm's flight;
   `ATTACK` at distance 2 for a
-  Yeti on a Mountain; `THROW_BOLAS` for every legal `(Sled, target)` and
-  `FROST_BOLT` for every legal `(Witch, target)` in unit-ID then target-ID
-  order; `COLD_SNAP` for every Witch with a target; and `STAMPEDE` for
+  Yeti on a Mountain; `COLD_SNAP` for every Witch whose ring would change
+  something; and `STAMPEDE` for
   every open end of every line of an unmoved Mammoth. For every seat it
   withholds every command naming a Frozen unit (but Promote, Disband, and
   Wait) and offers no `MOVE` through a known Snow stop. It never offers an
   Ice Folk seat Field Defense, Rally, or Tend Wounded. Every offered
   command is accepted.
-- **`previewColdSnapV7`** since `pulp_wars-s55m.1` also returns `tiles`:
-  the water tiles the cast makes ice, in (y, x) order (empty without Rime).
-- **`previewBolasV7(view, unitId, targetUnitId)`** returns null unless that
-  command is offered, otherwise
-  `{ unitId, targetUnitId, alreadyFrozen, turnsLeft, shatterSetups }`,
-  where `shatterSetups` lists the viewer's own units whose offered attack on
-  the target would shatter it once it is Frozen;
-  **`previewFrostBoltV7`** returns the same for an offered Frost Bolt.
-  **`previewColdSnapV7(view, unitId)`** returns null unless the command is
-  offered, otherwise `{ unitId, targets: [{ unitId, alreadyFrozen }] }` in unit-ID
-  order. **`previewStampedeV7(view, unitId, at)`**: see
-  [section 21.18](#2118-the-mammoths-stampede).
+- **`previewColdSnapV7(view, unitId)`** returns null unless the command is
+  offered, otherwise `{ unitId, targets: [{ unitId }], tiles, snow }`:
+  the units it Freezes in unit-ID order, and the tiles it makes ice and
+  Snow in (y, x) order (since `7r133`; `alreadyFrozen` is gone).
+  **`previewColdWakeV7(view, unitId, at)`** gives the same for a Frost
+  Giant's Move ending on `at` (`{ unitId, at, targets, tiles, snow }`;
+  null for a unit without a Cold Wake). `previewBolasV7` and
+  `previewFrostBoltV7` are gone. **`previewStampedeV7(view, unitId, at)`**:
+  see [section 21.18](#2118-the-mammoths-stampede).
 - `queryCombatPreviewV7` and `estimateCombatV7` include Snow cover, the
   Blizzard of visible Witches, Rockfall, Planted (from the unit's `moved`
   flag; Attack 2 for an attack after a planned Move), Cold Blood, Sweep, and
@@ -14439,7 +14459,7 @@ tail.
   paths, a Frost Wyrm its flight over water (Deep Water too), a Yeti the
   distance-2 tiles
   from every Mountain origin, and a Snow Golem range 2 from every tile it
-  can reach; it adds nothing for a Bolas, a Frost Bolt, a Cold Snap, or a Stampede, and
+  can reach; it adds nothing for a Cold Snap or a Stampede, and
   a Frozen unit of any seat threatens nothing.
 - **Public unit stats** carry, for every unit, `frozen` (null, or `{ turnsLeft }`), and for units of an Ice Folk seat the
   `iceFolk` block: `onSnow`, `inBlizzard`, `snowCover`, `glides`,
@@ -14450,9 +14470,9 @@ tail.
   the source `PLANTED`; a snowy cover row reads `SNOW`.
 - `PublicPlayerV7` and the leaderboard carry `ICE_FOLK` and
   `ICE_FOLK_BASELINE_V1`.
-- The commands, events, errors, and queries of the frozen sea (`FREEZE`,
-  the `ice` list, `WATER_FROZEN`, `ICE_CRACKED`, `previewFreezeV7`) are in
-  [section 21.16](#2116-the-frozen-sea).
+- The rules, events, errors, and queries of the frozen sea (freezing a
+  tile, the `ice` and `snow` lists, `TILES_FROZEN`, `ICE_CRACKED`, Crack
+  Ice) are in [section 21.16](#2116-the-frozen-sea).
 
 ### 21.16 The frozen sea
 
@@ -14462,9 +14482,9 @@ The Ice Folk Naval branch (`pulp_wars-5ti.3`, `pulp-wars-poc-7r44`; the
 ([RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md); the user,
 2026-10-18: "ice should stay by default. other factions should have the
 option to crack ice around them"). An Ice Folk seat never builds a ship.
-With **Rime** its units freeze the water next to them, two tiles out in a
-line (three with Hoarfrost; the Ice Witch: every tile around her, with her
-Cold Snap), and **the ice stays**. Their
+With **Rime** the Ice Witch's Cold Snap and the Frost Giant's Cold Wake
+freeze the water round them (the one Freeze effect, `pulp_wars-xv0t`,
+`7r133`; a line Freeze of seven roles before), and **the ice stays**. Their
 units **skate** across it (half a Move a tile; the Sled and the Snow Hunter
 glide free in a straight line); their cities **build on it** (Fishing
 Holes, between which their units **dive**, and their mills and markets;
@@ -14476,15 +14496,16 @@ or flyer crosses it like land, and every ground unit and ship of the
 other eight factions may **Crack** the ice next to it back into open
 water. **Pack Ice** freezes
 the deep sea, **Black Ice** freezes an enemy that steps onto the ice,
-**Hoarfrost** lengthens the Freeze line, and **Glacier** makes the ice
-thick enough to take two Cracks. A Freeze that reaches an enemy ship
-Freezes it like any unit (Icebound and its crush are gone,
-`pulp_wars-s55m.1`). In a match without an Ice Folk seat
-nothing here happens: the `ice` list is always empty.
+**Hoarfrost** unlocks nothing for now (its longer Freeze line went with
+`FREEZE`, `7r133`), and **Glacier** makes the ice thick enough to take two
+Cracks. A freeze that reaches an enemy ship Freezes it like any unit
+(Icebound and its crush are gone, `pulp_wars-s55m.1`). In a match without
+an Ice Folk seat nothing here happens: the `ice` and `snow` lists are
+always empty.
 
 | Rule       | One sentence                                                                                                                                   |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Freeze     | A unit turns the water next to it to ice, two tiles out in a line; a ship in the way is Frozen; the Witch's Cold Snap ices around her.         |
+| Freeze     | Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn (a Cold Snap, a Frost Giant's Move).             |
 | Ice stays  | Ice never melts; it is gone only when someone cracks it.                                                                                       |
 | Border ice | With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.                                               |
 | Skate      | Ice Folk units skate: each step onto ice costs half a move.                                                                                    |
@@ -14496,8 +14517,7 @@ nothing here happens: the `ice` list is always empty.
 | Build      | The Ice Folk build Fishing Holes, mills, Workshop, Market and Monument on their own ice. They build no harbours.                               |
 | No ships   | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                                     |
 | Black Ice  | An enemy that steps onto your ice is Frozen.                                                                                                   |
-| Hoarfrost  | Your Freeze line reaches three tiles.                                                                                                          |
-| Glacier    | Your ice is thick: others must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have Snow cover.                   |
+| Glacier    | Your ice is thick: others must Crack Ice twice to break it, and your freezes mend a crack; your units on it have Snow cover.                   |
 
 **Ice tiles.**
 
@@ -14516,7 +14536,8 @@ nothing here happens: the `ice` list is always empty.
   an Ice Folk seat that owns a unit in `NAVAL` form, and it admits a
   land-form unit on a water tile only where that tile is ice, and a unit
   afloat only on a water tile without ice (`pulp_wars-s55m.1`). Ice may lie
-  on a dock (an Ice Harbour) and under any Ice Folk building.
+  under any Ice Folk building, and on a dock only where an older state put
+  it (no freeze ices a dock since `7r133`).
 - **View.** `PlayerViewV7.ice` lists the entries on tiles the viewer has
   explored as `{ at, ownerId, cracked, thick }` (`permanent` and
   `turnsLeft` are gone). `thick` is the owner's Glacier (`thickIce`,
@@ -14527,7 +14548,7 @@ nothing here happens: the `ice` list is always empty.
   leaves the list only by a Crack or by the elimination release below (a
   Redevelop or a Pillage removes the building and leaves the ice).
   Nothing anyone does keeps ice alive, so nothing has to be done.
-- **Ownership.** A Freeze makes or takes the tile for the actor's owner.
+- **Ownership.** A freeze makes or takes the tile for the freezer's owner.
   **Capture:** when a city changes owner, every ice entry of the former
   owner on that city's territory passes to the captor, with `cracked`
   false; ice elsewhere keeps its owner. **Elimination:** an eliminated seat's ice
@@ -14540,7 +14561,7 @@ nothing here happens: the `ice` list is always empty.
   should get covered with ice IF you have the relevant technology"). When
   an Ice Folk city's borders grow, every tile of **that city's whole territory** goes through the Freeze table below on its own, with the
   seat's own `freezeWater` (`territoryFreezeV7`): open water with no unit
-  (an own dock too, which becomes an Ice Harbour) is made ice; another
+  is made ice (never a dock since `7r133`); another
   player's ice is taken; own cracked ice is mended; own sound ice, an
   unexplored tile, Deep Water without Pack Ice, and a tile holding any
   unit afloat are left (no unit acts, so no ship is Frozen). There is no line, no
@@ -14557,8 +14578,9 @@ nothing here happens: the `ice` list is always empty.
   recomputed, and a tile holding a ship, an embarked unit or any other
   unit stays open water. City levels never grow borders
   in this ruleset. A seat without Rime, and every seat of another
-  faction, freezes nothing. The result is one `WATER_FROZEN` with
-  `unitId` null (no unit froze; projected like any `WATER_FROZEN`), right
+  faction, freezes nothing. The result is one `TILES_FROZEN` with
+  `unitId` null and an empty `snow` (no unit froze, and territory land is
+  never Snow; projected like any `TILES_FROZEN`), right
   after `LAND_GRANTED` and its `TILES_REVEALED`, after the capture's
   `TILES_REVEALED`, or after `TECH_RESEARCHED`, and the live economy is
   recomputed as the command does anyway. No unit acts, nothing is
@@ -14613,58 +14635,45 @@ nothing here happens: the `ice` list is always empty.
   naval unit projects no ZOC onto ice. No afloat unit is ever on ice
   (`pulp_wars-s55m.1`: Icebound is gone).
 
-**Freeze.** `FREEZE { kind, unitId, at }` is a primary action of every Ice
-Folk land role but the Ice Witch (ability `FREEZE`; she freezes water with
-her Cold Snap since `pulp_wars-s55m.1`, [section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)).
-It is not an Attack and costs no Coins.
-Legality, in this order (all rejections atomic):
+**Freezing a tile: the one Freeze effect** (`pulp_wars-xv0t`, `7r133`;
+Bead 1 of [the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md); the
+user: "too many freezing mechanics that look alike"). Every ability that
+freezes tiles, the Ice Witch's **Cold Snap**
+([section 21.6](#216-the-blizzard-and-cold-snap)) and the Frost Giant's
+**Cold Wake** ([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)),
+freezes each tile of its ring (the eight tiles round the Witch, or round
+the tile the Giant's Move ends on) by one rule (`freezeTileV7`), read for
+the freezer's seat from the tiles it has explored and the units it sees:
 
-| #   | Requirement                                                                                                              | Rejection                                     |
-| --- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                           | the ordinary unit errors                      |
-| 2   | Its role, under its kind, has `FREEZE` (a land role of the Ice Folk but the Witch), and it is in land form.              | `UNIT_ROLE_INVALID { role }`                  |
-| 3   | Its kind's capabilities under its owner have `freezeWater` `SHALLOW` or `DEEP` (Rime).                                   | `TECH_REQUIRED { tech: "SHORECRAFT" }`        |
-| 4   | It is not Frozen, and it has not used a primary action.                                                                  | `UNIT_FROZEN`; `UNIT_ALREADY_ACTED`           |
-| 5   | `at` is one of the eight tiles next to the unit.                                                                         | `FREEZE_NOT_LEGAL { reason: "OUT_OF_RANGE" }` |
-| 6   | The freeze set (below: tiles and units) is not empty: **a Freeze that changes nothing is neither offered nor accepted**. | `FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`    |
+| The tile                                               | Freezing it does                                                       |
+| ------------------------------------------------------ | ---------------------------------------------------------------------- |
+| a hostile unit stands on it (any form but an Egg)      | the unit is **Frozen** ([section 21.2](#212-frozen)), plus a row below |
+| open water, no unit afloat, not a dock                 | becomes the freezer's **ice** (Rime; Deep Water needs Pack Ice)        |
+| open water holding a unit afloat, or any dock          | stays water (a hostile unit afloat there is Frozen)                    |
+| another seat's ice                                     | becomes the freezer's ice (`cracked` false)                            |
+| the freezer's own cracked ice                          | the crack is mended                                                    |
+| land outside every territory, not a Rift, not yet Snow | becomes **stored Snow** ([section 21.5](#215-snow))                    |
+| territory land, a Rift, Snow already, own sound ice    | unchanged                                                              |
+| a tile the freezer has not explored                    | unchanged                                                              |
 
-A tile is **freezable** when it is on the board, explored by the actor, and
-water (Shallow, or Deep with `freezeWater` `DEEP`, Pack Ice); any dock, of
-any player, is freezable (`pulp_wars-s55m.1`: a hostile dock never froze
-before; its owner may crack it open, Crack Ice row 7). Then:
-
-| Tile                                           | Freeze does                                       |
-| ---------------------------------------------- | ------------------------------------------------- |
-| open water with no unit (any dock too)         | makes ice (an own frozen dock is an Ice Harbour)  |
-| open water holding a unit afloat it can Freeze | stays water; the unit is **Frozen** (Rime alone)  |
-| ice of another player (any occupant)           | takes it for the actor (`cracked` false)          |
-| the actor's own **cracked** ice (any occupant) | mends the crack                                   |
-| the actor's own sound ice                      | **nothing: passed over** (not taken, not offered) |
-
-- **A line** (`FREEZE_LINE_V7` 2; `LONG_FREEZE_LINE_V7` 3 with Hoarfrost,
-  `freezeLineV7`): the tile `at` and the one beyond it (two beyond with
-  Hoarfrost), outward from the unit. Each is taken if freezable; the
-  actor's own sound ice is passed over and the line goes on; any other
-  tile ends the line, and so does a tile that holds a unit afloat (after
-  Freezing it, when the actor can: a hostile unit it sees that a freeze
-  would change). So a Yeti on a shore with one tile of its ice in front freezes
-  the second tile, and a unit at the tip of a bridge freezes the next two.
-- **A ring, for the Ice Witch's Cold Snap** (`WITCH_FREEZE_RADIUS_V7` 1;
-  the role with the Blizzard; [section 21.6](#216-the-blizzard-cold-snap-and-frost-bolt)):
-  every freezable tile within Chebyshev 1 of her, her own tile included
-  when she stands on cracked or foreign ice.
-- **Result.** Every tile of the set gets `{ at, ownerId: the actor,
-cracked: false }`, replacing any earlier entry. The Freezing unit is
-  marked like a unit that used a special action (`specialActed` and
-  `handled`), and every unit of the set is Frozen. Events: `UNITS_FROZEN`
-  (source `FREEZE`, the Freezing unit as the source) when a unit was
-  Frozen, then `WATER_FROZEN { playerId, unitId, tiles }` when a tile
-  froze. A Freeze over a dock recomputes the live economy (its blockade
-  rule changes), so `FREEZE` is on the blockade-event list.
-- **Preview.** `previewFreezeV7(view, unitId, at)` returns null unless the
-  command is offered, otherwise `{ unitId, tiles, mended, taken,
-frozenUnits }` (`refreshed`, `turns`, `permanent`, and `icebound` are
-  gone): exact.
+- Without Rime a freeze still Freezes units on water and still makes
+  Snow; it only makes no ice. **Docks are never frozen**: no Ice Harbour
+  is made any more, no dock is iced shut, and a ship on a dock is Frozen
+  like any ship.
+- **Result.** Every frozen water tile gets `{ at, ownerId: the freezer's
+owner, cracked: false }`, replacing any earlier entry; every Snow tile is
+  added to the stored `snow` list. Events: one `UNITS_FROZEN` (source
+  `COLD_SNAP` or `COLD_WAKE`, the freezing unit as the source) when a unit
+  was Frozen, then one `TILES_FROZEN { playerId, unitId, tiles, snow }`
+  (the ice tiles and the Snow tiles, each in (y, x) order, at least one in
+  all) when a tile froze; a projection keeps the tiles the viewer has
+  explored and drops an event with none left.
+- **What is gone** (`7r133`): the command `FREEZE` (the line of two tiles,
+  three with Hoarfrost, of every Ice Folk land role but the Witch), its
+  `FREEZE_NOT_LEGAL` and `previewFreezeV7`, the unlock `LONG_FREEZE` and
+  the capability `longFreeze`, and the constants `FREEZE_LINE_V7`,
+  `LONG_FREEZE_LINE_V7`, and `WITCH_FREEZE_RADIUS_V7`. A dock was
+  freezable before (an own frozen dock was an Ice Harbour).
 
 **Crack Ice.** `CRACK_ICE { kind, unitId, at }`, a primary action of every
 unit **not of the Ice Folk kind** (a kind rule, so a mind-controlled Ice
@@ -14691,13 +14700,13 @@ refusals (`UNIT_IS_EGG`, `UNIT_ALREADY_HANDLED`).
 
 - **Result.** Thick ice (its owner has Glacier) that is not cracked
   becomes `cracked: true`: still ice in every way; the next Crack breaks
-  it, and a Freeze of its owner mends it (`ICE_CRACKS_THICK_V7` 2). Any
+  it, and a freeze of its owner mends it (`ICE_CRACKS_THICK_V7` 2). Any
   other ice **breaks**: the entry goes and the tile is open water again
   (its Fish, Pearls, or Wreck as before; a dock opened again recomputes
   the live economy, so `CRACK_ICE` is on the blockade-event list). The
   cracking unit has used its primary action and is handled. Event
   `ICE_CRACKED { playerId, unitId, at, broken }` (`freed` is gone with
-  Icebound), right after `WATER_FROZEN` in `DOMAIN_EVENT_KIND_ORDER_V7`;
+  Icebound), right after `TILES_FROZEN` in `DOMAIN_EVENT_KIND_ORDER_V7`;
   projected to every viewer that explored `at`, with `unitId` null when it
   cannot see the unit.
 - **Preview.** `previewCrackIceV7(view, unitId, at)` returns null unless
@@ -14744,7 +14753,7 @@ tile it reaches, ice included.
   interrupted with `ZOC` for a zone first seen during the Move). The Snow
   Hunter's glide stops in a zone like any step.
 - Glided and skated tiles are ordinary path tiles: they reveal sight, count
-  toward the Charge path length and the Bolas reach, and a Wreck salvage
+  toward the Charge path length, and a Wreck salvage
   at the end of the Move. A skating unit passes its own units on ice as on
   land and never ends on a unit. A route search keys an ice tile of a
   Runners path by the direction of its last step (`glideDirection`), so
@@ -14787,7 +14796,8 @@ having started off that seat's ice**, is Frozen at once
 gets `turnsLeft` 2 (Shatter-eligible on the next Ice Folk turn, Frozen
 through its owner's next turn, thawed after it). One `UNITS_FROZEN`
 (source `BLACK_ICE`, `sourceUnitId` null) right after the command's events
-(before a Frost Giant's Cold Aura). A unit already on the seat's ice that
+(before a Frost Giant's Cold Wake). Black Ice stays until the naval branch
+is rebuilt (the Ice Folk redesign's later beads). A unit already on the seat's ice that
 walks along it, a unit pushed, pulled, or knocked onto it, a unit that
 advances onto it after an attack, and a unit standing on ice the seat
 newly takes are not frozen, and **nothing happens at the Start Turn** (the
@@ -14805,32 +14815,28 @@ meet Black Ice.
 icebound and then it is stuck there doing nothing indefinitely ... I
 expected to be able to freeze an enemy ship same as any other unit and it
 would last 1 turn"). **Icebound and the crush are gone.** No unit afloat is
-ever on ice: a Freeze never makes ice under one, a ship never enters ice,
-and state parsing rejects a unit afloat on an ice tile. A Freeze (or a
-Cold Snap) that reaches a hostile ship or embarked unit **Freezes** it
+ever on ice: a freeze never makes ice under one, a ship never enters ice,
+and state parsing rejects a unit afloat on an ice tile. A Cold Snap or a
+Cold Wake that reaches a hostile ship or embarked unit **Freezes** it
 ([section 21.2](#212-frozen)): it cannot sail, shoot, board, crack, or
 strike back through its owner's next turn, it may be shattered by an Ice
 Folk blow from the next tile, and it thaws as any Frozen unit does. Its
 tile stays open water.
 
 - **Hoarfrost** (the Ice Folk `NAVAL_ENGINEERING`, displayed as Icebound
-  before): the unlock `LONG_FREEZE`, capability `longFreeze`: the seat's
-  Freeze line reaches `LONG_FREEZE_LINE_V7` 3 tiles (`FREEZE_LINE_V7` 2
-  without). The Witch's ring is unchanged. Since `pulp_wars-s55m.2` the
-  node unlocks nothing else (no Great Harbour, no training discount); it
-  is not empty. A research of Hoarfrost freezes no territory (it does not
-  change `freezeWater`).
-- **Docks.** Any dock (Port or Shipyard, of any player) may be iced over
-  by a Freeze; it stays its owner's dock, in its owner's territory, and a
-  dock on ice trains, embarks, and recovers nothing and is blockaded only
-  by a hostile land-form unit standing on it, so a seafaring seat's iced-over
-  Port is shut to its ships until it is cracked. **The dock's owner and its
-  allies may Crack the ice on it** although it is built on (Crack Ice row
-  7); everyone else must Pillage a building on ice. A ship on a dock is
+  before): **unlocks nothing** since `7r133` (its `LONG_FREEZE`, a Freeze
+  line of 3 tiles, went with `FREEZE`); the node is empty until the
+  naval branch is rebuilt. A research of Hoarfrost freezes no territory.
+- **Docks.** No freeze ices a dock since `7r133` (any dock could be iced
+  over by a Freeze before, and shut to its owner's ships). A dock on ice
+  from an older state stays its owner's dock and is blockaded only by a
+  hostile land-form unit standing on it; **the dock's owner and its allies
+  may Crack the ice on it** although it is built on (Crack Ice row 7);
+  everyone else must Pillage a building on ice. A ship on a dock is
   Frozen like any ship, and the dock stays open water under it.
 
 **Glacier.** The capability `thickIce` (`7r100`; `iceTurns` before): the
-seat's ice takes two Cracks to break, and a Freeze of the seat mends a
+seat's ice takes two Cracks to break, and a freeze of the seat mends a
 crack. And `iceCover`: a land-form unit of the Ice Folk kind on ice whose
 own fortification level is 0 has the Snow cover, **× 1.25**
 (`SNOW_COVER_V7`; the preview's `iceCover`, and the public `iceCover`
@@ -14853,7 +14859,8 @@ Harbour), and no Harbours, and its `BUILD_PORT` and `BUILD_SHIPYARD` are
 refused with `INVALID_TILE { action }`. A dock it captures keeps working
 (an iced-over one is still called the Ice Harbour or the Great Harbour on
 the board): it gives its population (without Harbours), and an Ice Folk
-unit walks onto it. A dock on ice is blockaded by a hostile land-form unit
+unit walks onto it (no freeze ices it since `7r133`). A dock on ice is
+blockaded by a hostile land-form unit
 standing on it and never by a ship; nothing trains, embarks, or recovers
 on it. Built ice cannot be cracked; an enemy that wants a building on ice
 gone stands on it and **Pillages** it (Raiding, as on land), and the ice
@@ -14887,7 +14894,7 @@ to the ice, and every ship, can open it, one tile per action (thick: two);
 a dock iced over is cracked open by its owner or an ally, and a ship on a
 dock is only ever Frozen for a turn; a transport lands on the land beside
 it, and walkers and flyers cross it (since `7r132` no other ground unit
-walks on it: it cracks it instead); Black Ice and a Freeze freeze once
+walks on it: it cracks it instead); Black Ice and a freeze freeze once
 and never trap. There is
 deliberately no uncrackable ice, Ice Folk home waters included (the root's
 decision on the redesign's open question): the counter is tempo and
@@ -14902,70 +14909,72 @@ it; Glacier's thick ice), not immunity.
 | Plague, Bitten, Wail   | Unchanged on ships and on ice. A Black Ice freeze and a bite coexist.                                                                                                                                                                                  |
 | Kaboom, blasts, bombs  | Hit ships, Submarines, Frozen ships, and units on ice like any unit. A blast never cracks or makes ice (cracking is an action).                                                                                                                        |
 | Dinosaurs              | A Triceratops never Charges onto ice nor follows onto it (`7r132`); its push moves an Ice Folk target onto ice and never triggers Black Ice. Eggs are never on ice.                                                                                    |
-| Martians               | Flyers and walkers cross ice like land and never crack it; a machine that ends a Move on ice stands. A controlled Ice Folk unit skates and Freezes for its controller (its ice is the controller's: Black Ice and building on it no) and never cracks. |
+| Martians               | Flyers and walkers cross ice like land and never crack it; a machine that ends a Move on ice stands. A controlled Ice Folk unit skates and freezes for its controller (its ice is the controller's: Black Ice and building on it no) and never cracks. |
 | Dwarves                | Tunnels never run under ice and a mound is never on ice; a burrowed unit cannot crack; a bomb run may land on ice; eruptions hit land-form units on ice.                                                                                               |
 | Candy                  | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. A Crashed unit cannot crack.                                                                                                                                         |
 | Push, Knockback, pulls | A land-form unit of the Ice Folk kind, a walker, or a flyer may be pushed, knocked back, or pulled onto ice; any other land-form unit (`7r132`) and an afloat unit never (a Frozen ship may be pushed on the water); none of it triggers Black Ice.    |
 | Embarking, landing     | Only a walker lands on adjacent ice from a transport (Black Ice freezes it; any other crew since `7r132` never). A unit of the Ice Folk kind never embarks; nothing embarks at a dock on ice.                                                          |
-| Blockade, sea links    | Any dock may be iced over (its owner or an ally may crack it); a dock on ice is blockaded by land units only; a Frozen ship on a dock still blockades it; sea links run under ice; any hostile unit on a Fishing Hole breaks its links.                |
+| Blockade, sea links    | No freeze ices a dock (`7r133`); a dock on ice is blockaded by land units only; a Frozen ship on a dock still blockades it; sea links run under ice; any hostile unit on a Fishing Hole breaks its links.                                              |
 | Capture, elimination   | The former owner's ice in the captured city's territory passes to the captor, uncracked (an Ice Folk captor with Rime then freezes that territory: the border freeze); an eliminated seat's ice stays and its cracks are gone.                         |
 | Land Grant             | Claims ice tiles as it claims water; with Rime an Ice Folk grant then freezes the city's whole territory (the border freeze: another seat's ice there is taken), otherwise their owner does not change.                                                |
 | Map generation         | Unchanged; faction choice never affects any draw.                                                                                                                                                                                                      |
 
 **Worked examples** (full HP unless stated):
 
-| Situation                                                                             | Result                                                                                                                                                                      |
-| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A Yeti on the shore freezes toward an island 4 Shallow tiles away                     | turn 1: tiles 1 and 2; turn 2: it skates to 2 (half a Move a tile), freezes 3 and 4; turn 3: it skates to 4. The bridge stays for the rest of the match; nobody refreezes   |
-| A Human Swordsman on the island shore cracks tile 4 (no Glacier)                      | tile 4 is water again; next Ice Folk turn a Yeti on tile 3 freezes 4 (and 5 if it is water)                                                                                 |
-| The same with Glacier                                                                 | tile 4 is cracked; the Ice Folk mend it with any Freeze over it before the second Crack                                                                                     |
-| A Yeti on the shore freezes toward an enemy Patrol Boat on the water in front of it   | the boat is Frozen through its owner's next turn and its tile stays water; a second Yeti's blow in the window shatters it                                                   |
-| A Human Knight beside Ice Folk ice (`7r132`)                                          | it may not ride onto the ice: the tile is Crack Ice alone, and a crack (two on thick ice) opens it to water                                                                 |
-| A Martian Tripod steps onto Ice Folk ice (Black Ice)                                  | Frozen at once; on the Ice Folk turn two hits Shatter it; if it lives, it thaws after its next turn and may then walk off or attack (it never cracks)                       |
-| An Ice Folk coastal city with five shallow tiles in its footprint, Rime, Milling      | the Witch's Cold Snap freezes them in one action; three Fishing Holes (9 Coins, +3) and a Windmill on the ice beside them and one Frost Garden (5 Coins, +4): +7 population |
-| A Sled on a long ice sheet, a Human Guard's zone of control between it and a Marksman | it glides straight through the zone (Runners) to the tile beside the Marksman and attacks with Charge                                                                       |
-| Four Fishing Holes round an Ice Folk city, a Yeti on one, an enemy beside another     | the Yeti dives to the far hole (its whole Move) and attacks the enemy from there                                                                                            |
-| The Ice Folk capture a Human port city                                                | its Port is theirs; any Freeze over it puts ice under it, making it an Ice Harbour their units can walk on                                                                  |
+| Situation                                                                             | Result                                                                                                                                                               |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| An Ice Witch on the shore casts toward an island 3 Shallow tiles away                 | turn 1: the three water tiles in front of her are ice, and the open land round her Snow; turn 2: she skates out a tile and casts again: the next row. The ice stays  |
+| A Human Swordsman on the island shore cracks the newest tile (no Glacier)             | it is water again; the next Ice Folk turn a Cold Snap beside it freezes it back                                                                                      |
+| The same with Glacier                                                                 | the tile is cracked; any Ice Folk freeze over it mends it before the second Crack                                                                                    |
+| A Frost Giant walks onto the ice beside an enemy Patrol Boat                          | its Cold Wake Freezes the boat through its owner's next turn (its tile stays water) and ices the open water round the Giant; a Yeti's blow in the window shatters it |
+| A Human Knight beside Ice Folk ice (`7r132`)                                          | it may not ride onto the ice: the tile is Crack Ice alone, and a crack (two on thick ice) opens it to water                                                          |
+| A Martian Tripod steps onto Ice Folk ice (Black Ice)                                  | Frozen at once; on the Ice Folk turn two hits Shatter it; if it lives, it thaws after its next turn and may then walk off or attack (it never cracks)                |
+| An Ice Folk coastal city with five shallow tiles in its footprint, Rime, Milling      | the border freeze already made them ice; three Fishing Holes (9 Coins, +3) and a Windmill on the ice beside them and one Frost Garden (5 Coins, +4): +7 population   |
+| A Sled on a long ice sheet, a Human Guard's zone of control between it and a Marksman | it glides straight through the zone (Runners) to the tile beside the Marksman and attacks with Charge                                                                |
+| Four Fishing Holes round an Ice Folk city, a Yeti on one, an enemy beside another     | the Yeti dives to the far hole (its whole Move) and attacks the enemy from there                                                                                     |
+| The Ice Folk capture a Human port city                                                | its Port is theirs and keeps working as a dock; no freeze ices it (`7r133`; an Ice Harbour before)                                                                   |
 
 **Commands, events, errors, and queries.**
 
-- **Commands:** `FREEZE { kind, unitId, at }` right after `COLD_SNAP`,
-  `CRACK_ICE { kind, unitId, at }` right after `FREEZE`, and
+- **Commands:** `CRACK_ICE { kind, unitId, at }` right after `COLD_SNAP`
+  (`FREEZE`, between them, is gone since `7r133`), and
   `BUILD_FISHING_HOLE { kind, at }` right after `BUILD_LUMBER_CAMP` in
   `COMMAND_KIND_ORDER_V7`. `MOVE` validates skating, Runners, dives, and
   the ice refusal (`7r132`; the slip before). A pending city reward blocks
   them like every command.
-- **Events:** `WATER_FROZEN` and `ICE_CRACKED`, in that order right after
+- **Events:** `TILES_FROZEN` (`WATER_FROZEN` until `7r133`, in its place,
+  with `snow` added) and `ICE_CRACKED`, in that order right after
   `UNITS_FROZEN` in `DOMAIN_EVENT_KIND_ORDER_V7` (`ICE_MELTED`,
   `UNITS_CRUSHED`, and the `UNIT_DIED` cause `CRUSHED` are gone with
   Icebound, `pulp_wars-s55m.1`); `PORT_BUILT` has `iceMade`;
   `ECONOMIC_BUILDING_BUILT` covers the Fishing Hole; `UNITS_FROZEN.source`
-  `BLACK_ICE` fires inside a Move, a landing, or a Beam Down, and `FREEZE`
-  inside a Freeze; `UNIT_MOVE_INTERRUPTED.reason` has `ICE`. Projection:
+  `BLACK_ICE` fires inside a Move, a landing, or a Beam Down, and
+  `COLD_WAKE` after a Frost Giant's Move; `UNIT_MOVE_INTERRUPTED.reason`
+  has `ICE`. Projection:
   [section 15](#15-fog-and-observation).
-- **Errors:** `FREEZE_NOT_LEGAL` (`OUT_OF_RANGE`, `NO_TARGET`);
-  `CRACK_ICE_NOT_LEGAL` (`OUT_OF_RANGE`, `NO_ICE`, `OCCUPIED`, `BUILT`);
+- **Errors:** `CRACK_ICE_NOT_LEGAL` (`OUT_OF_RANGE`, `NO_ICE`, `OCCUPIED`, `BUILT`);
   `MOVEMENT_ILLEGAL` reason `ICE_FORBIDDEN` (since `7r132`; the slip's
   `ICE_STOPS_MOVE` is gone with it, and `SLIDE_FORCED` is gone,
   `pulp_wars-s55m.2`; every `ICEBOUND` reason is gone, `pulp_wars-s55m.1`;
   a Frozen ship's refusal is `UNIT_FROZEN`); an Ice Folk seat's
   `BUILD_PORT` and `BUILD_SHIPYARD` are `INVALID_TILE { action }`.
-- **Registration:** ability `FREEZE` on every Ice Folk land role but the
-  Ice Witch; Crack Ice
+- **Registration:** no role has `FREEZE` since `7r133` (every Ice Folk
+  land role but the Ice Witch had it); Crack Ice
   is a kind rule (`unitCracksIceV7`: every unit not of the Ice Folk kind
   whose role's movement mode is `GROUND`, in land, naval, or embarked
   form) rather than a role-table ability, and so are skating, the dive,
   and walking on ice (`unitWalksOnIceV7`: the Ice Folk kind, or a walker
   or flyer; `canEnterTerrainV7`'s `iceFolk`); role mechanics `runners` (the Sled and the
   Snow Hunter) and `glidesThroughZoc` (the Sled); improvement `FISHING_HOLE`
-  (appended to `IMPROVEMENT_IDS_V7`); unlock kinds `FREEZE { depth }`,
-  `LONG_FREEZE` (Hoarfrost; `ICEBOUND` before `pulp_wars-s55m.1`),
-  `BLACK_ICE`, and `GLACIER` (no field), and the Ice Folk Rime's
-  `COMMAND BUILD_FISHING_HOLE`; capabilities `freezeWater`, `longFreeze`,
-  `blackIce`, `thickIce`, and `iceCover`; constants `ICE_CRACKS_THICK_V7` 2,
-  `FISHING_HOLE_COST_V7` 3, `FISHING_HOLE_POPULATION_V7` 1,
-  `FREEZE_LINE_V7` 2, `LONG_FREEZE_LINE_V7` 3, `WITCH_FREEZE_RADIUS_V7` 1,
-  and `ICE_SEA_DOG_UNITS_V7` 5 (`ICE_TURNS_V7`, `GLACIER_ICE_TURNS_V7`,
+  (appended to `IMPROVEMENT_IDS_V7`); unlock kinds `FREEZE { depth }` (what
+  water the seat's freezes reach), `BLACK_ICE`, and `GLACIER` (no field;
+  `LONG_FREEZE`, Hoarfrost's, is gone since `7r133`), and the Ice Folk
+  Rime's `COMMAND BUILD_FISHING_HOLE`; capabilities `freezeWater`,
+  `blackIce`, `thickIce`, and `iceCover` (`longFreeze` is gone); constants
+  `ICE_CRACKS_THICK_V7` 2, `FISHING_HOLE_COST_V7` 3,
+  `FISHING_HOLE_POPULATION_V7` 1, and `ICE_SEA_DOG_UNITS_V7` 5
+  (`FREEZE_LINE_V7`, `LONG_FREEZE_LINE_V7`, and `WITCH_FREEZE_RADIUS_V7`
+  are gone since `7r133`) (`ICE_TURNS_V7`, `GLACIER_ICE_TURNS_V7`,
   `ICE_CRUSH_DAMAGE_V7`, and since `pulp_wars-s55m.2`
   `GLACIER_ICE_MOVE_BONUS_V7` are gone).
 - **Helpers:** `isIceAtV7` and `iceAtV7` read through an index of the
@@ -14974,14 +14983,15 @@ it; Glacier's thick ice), not immunity.
   `unitKindWalksIceV7`, `unitWalksOnIceV7`, and `seatKindWalksIceV7`
   (`7r132`, in the ruleset module),
   `publicDiveDestinationsForUnitV7`,
-  `unitCracksIceV7`, `iceIsThickV7`, `iceBuildableV7`, `freezeSetV7`,
-  `freezeLineV7`, `crackIceResultV7`, `resolveBlackIceOnEntryV7`, and
+  `unitCracksIceV7`, `iceIsThickV7`, `iceBuildableV7`, `freezeTileV7`,
+  `freezeTilesV7`, `freezeRingTilesV7`, `resolveColdWakeV7`,
+  `territoryFreezeV7` (`freezeSetV7` and `freezeLineV7` are gone since
+  `7r133`), `crackIceResultV7`, `resolveBlackIceOnEntryV7`, and
   `releaseEliminatedIceV7` (`resolveThawV7`, `resolveBlackIceV7`,
   `iceIsPermanentV7`, `unitIsIceboundV7`, and `resolveIceCrushV7` are
   gone).
-- **`queryPlayerCommandsV7`** offers `FREEZE` for every `at` that changes
-  something (a tile or a unit afloat), `COLD_SNAP` when its units or its
-  water ring change something, `CRACK_ICE` for every legal `at` (an own or
+- **`queryPlayerCommandsV7`** offers `COLD_SNAP` when its ring changes
+  something, `CRACK_ICE` for every legal `at` (an own or
   allied iced-over dock included), every build on own ice
   (`BUILD_FISHING_HOLE` among them, never `BUILD_PORT` or
   `BUILD_SHIPYARD`), and every `MOVE` with skating, Runners, and the dives;
@@ -14997,7 +15007,7 @@ it; Glacier's thick ice), not immunity.
   button, the snow pad under buildings on ice, the Fishing Hole and Ice
   Harbour sprites) bead `pulp_wars-5ti.27`
   ([section 25](#25-known-discrepancies)). The interface already shows ice
-  without a countdown, thick and cracked ice, and the new Freeze labels;
+  without a countdown, thick and cracked ice, and the ring labels;
   the frozen sea has not been balance-checked.
 
 ### 21.17 The Walrus: Frostbite
@@ -15015,8 +15025,10 @@ The **Walrus** (the Walrus until `pulp_wars-s55m.4`, `7r125`; the same
 rules) is the defender it left (role `GUARD`, `DEFENDER`; at
 Fortification, shown as Deep Winter, since `7r56`; at Drill before): 4
 Coins, 16 HP, Attack 1.5, Defense 2 (2.5 before `pulp_wars-w49.37`), Move 1,
-melee, no attack after moving, captures, Glides, Freezes water with Rime,
-builds no Field Defense. Its numbers are first guesses.
+melee, no attack after moving, captures, Glides, builds no Field Defense
+(its line `FREEZE` went with the one Freeze effect, `pulp_wars-xv0t`,
+`7r133`, which kept its Frostbite: the user, "walrus freezing units that
+hit it is fine"; it has no Cold Wake). Its numbers are first guesses.
 
 - **Frostbite** (`frostbite`). A land-form unit that attacks a land-form
   Walrus from the next tile and survives the exchange is Frozen
@@ -15280,8 +15292,8 @@ Legality, in this order (all rejections atomic):
   ([section 15](#15-fog-and-observation)). The mound announces the exact
   tile and turn of the eruption.
 - **Untouchable.** A burrowed unit is not in `units`, so no attack, bomb,
-  splash, Pierce, Sweep, Kaboom or death blast, Wail, Plague spread, Bolas,
-  Cold Snap, Cold Aura, Mind Control, Tractor Beam, Push, Charge! push,
+  splash, Pierce, Sweep, Kaboom or death blast, Wail, Plague spread,
+  Cold Snap, Cold Wake, Mind Control, Tractor Beam, Push, Charge! push,
   Knockback, or Overrun finds it. It exerts no ZOC, never besieges, and
   never blocks training, capture, or Land Grant. Every command naming it is
   rejected with `UNIT_ALREADY_HANDLED` and never offered.

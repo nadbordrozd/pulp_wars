@@ -215,7 +215,10 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 0399f8…4feb).
-      "352e13325f7a0202804b3a96c507e6a22e688b4fa783804b9c8220daa1facec7",
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes THROW_BOLAS,
+      // FREEZE and FROST_BOLT, moving the later command kinds back (was
+      // 352e13…acec7: the same surface with the old kind ordinals).
+      "f19f546005dc04a0bfc8c50bb47a9d626fc76b8bbf6679ae670e944dd411ffbf",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

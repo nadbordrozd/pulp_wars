@@ -3,7 +3,6 @@ import {
   isBlizzardV7,
   isSnowV7,
   queryPlayerCommandsV7,
-  validatePlayerMovementPathV7,
   viewForV7,
   wailTargetsV7,
   type CommandV7,
@@ -70,6 +69,20 @@ const snowSet = (state: GameStateV7): readonly string[] =>
     .filter((tile) => isSnowV7(state, tile.at))
     .map((tile) => `${tile.at.x},${tile.at.y}`)
     .sort();
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): `state` with stored Snow
+ * (a freeze's) on `tiles` (open neutral land), the Blizzard laying none.
+ */
+const withStoredSnow = (
+  state: GameStateV7,
+  tiles: readonly CoordV7[],
+): GameStateV7 =>
+  checkedV7({
+    ...state,
+    snow: [...tiles].sort(
+      (left, right) => left.y - right.y || left.x - right.x,
+    ),
+  });
 const square = (x0: number, x1: number, y0: number, y1: number) => {
   const result: string[] = [];
   for (let x = x0; x <= x1; x += 1)
@@ -78,7 +91,7 @@ const square = (x0: number, x1: number, y0: number, y1: number) => {
 };
 
 describe("which tiles are Snow (section 6.1)", () => {
-  it("is the Ice Folk territory, the Deep Winter ring, and every Witch's Blizzard; never water", () => {
+  it("is the Ice Folk territory, the Deep Winter ring, and stored Snow; never water, and the Blizzard lays none", () => {
     const territory = iceFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(4, 3) },
@@ -97,8 +110,8 @@ describe("which tiles are Snow (section 6.1)", () => {
       { techs: { 0: ["DRILL", "FORTIFICATION"] } },
     );
     expect(snowSet(deep)).toEqual(square(6, 10, 6, 10));
-    // A Witch: her tile and the eight around it, on any ground, with water
-    // excluded from Snow but included in the Blizzard.
+    // A Witch: her Blizzard covers her tile and the eight around it, water
+    // included, but lays no Snow (the one Freeze effect, `pulp_wars-xv0t`).
     const witch = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 3) },
@@ -106,44 +119,31 @@ describe("which tiles are Snow (section 6.1)", () => {
       ],
       { techs: { 0: [] }, water: [at(5, 2)] },
     );
-    expect(snowSet(witch)).toEqual(
-      [...square(7, 9, 7, 9), ...square(3, 5, 2, 4)]
-        .filter((key) => key !== "5,2")
-        .sort(),
-    );
+    expect(snowSet(witch)).toEqual(square(7, 9, 7, 9));
     expect(isBlizzardV7(witch, at(5, 2))).toBe(true);
     expect(isBlizzardV7(witch, at(6, 2))).toBe(false);
-    // Another seat's Ice Folk Snow is Snow for everyone; two sources do not
-    // add up.
-    expect(isSnowV7(witch, at(4, 3))).toBe(true);
+    // Stored Snow (a freeze laid it) is Snow for everyone.
+    const stored = withStoredSnow(witch, [at(3, 3)]);
+    expect(snowSet(stored)).toEqual([...square(7, 9, 7, 9), "3,3"].sort());
   });
 
-  it("follows the Witch's Move and her death, and never stores anything (a Witch never embarks since the frozen sea)", () => {
-    let state = iceFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(4, 3) },
-        { seat: 1, role: "FIGHTER", at: at(1, 1) },
-      ],
-      { techs: { 0: [] } },
+  it("stays where a freeze laid it when a Witch moves, and lies only on open neutral land", () => {
+    let state = withStoredSnow(
+      iceFieldV7(
+        [
+          { seat: 0, role: "CAPTAIN", at: at(4, 3) },
+          { seat: 1, role: "FIGHTER", at: at(1, 1) },
+        ],
+        { techs: { 0: [] } },
+      ),
+      [at(3, 3)],
     );
     expect(isSnowV7(state, at(3, 3))).toBe(true);
     state = moveV7(state, at(4, 3), [at(5, 3)]).state;
-    expect(isSnowV7(state, at(3, 3))).toBe(false);
-    expect(isSnowV7(state, at(6, 3))).toBe(true);
-    // No stored Snow: the state's only Ice Folk list is `chilled`.
-    expect(
-      Object.keys(state).filter((key) => /snow|blizzard/i.test(key)),
-    ).toEqual([]);
-    // Dead: no Blizzard.
-    const dying = iceFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(4, 3), hp: 1 },
-        { seat: 1, role: "KNIGHT", at: at(5, 3) },
-      ],
-      { techs: { 0: [] }, activeSeat: 1 },
-    );
-    const killed = attackV7(dying, at(5, 3), at(4, 3));
-    expect(isSnowV7(killed.state, at(3, 3))).toBe(false);
+    // Her Move carries no Snow along; the stored Snow stays.
+    expect(isSnowV7(state, at(3, 3))).toBe(true);
+    expect(isSnowV7(state, at(6, 3))).toBe(false);
+    expect(state.snow).toEqual([at(3, 3)]);
   });
 
   it("follows the owner: a captured Ice Folk city stops being Snow, a city the Ice Folk capture becomes Snow", () => {
@@ -227,7 +227,7 @@ describe("Glide (section 6.2, 1)", () => {
     walk(state, at(7, 7), at(8, 7), at(9, 7), at(10, 7));
   });
 
-  it("a Witch's own Move reads the Snow from before the command", () => {
+  it("a Witch has no Glide off Snow: her Blizzard is no Snow", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 3) },
@@ -235,15 +235,19 @@ describe("Glide (section 6.2, 1)", () => {
       ],
       { techs: { 0: [] } },
     );
-    // (4, 3) -> (5, 3) -> (5, 4): both tiles are in her Blizzard before the
-    // command, so both steps cost half. (6, 3) is not Snow before the
-    // command, whatever her Blizzard would cover after it: the step onto it
-    // costs a full point (`pulp_wars-1wy.3`), so she leaves her Blizzard's
-    // old footprint by one tile a turn.
-    walk(state, at(4, 3), at(5, 3), at(5, 4));
+    // (4, 3) -> (5, 3) -> (5, 4) cost half a point each while her Blizzard
+    // was Snow; since the one Freeze effect (`pulp_wars-xv0t`) both steps
+    // are on open grass and cost a full point.
     walk(state, at(4, 3), at(5, 3));
-    expect(moveReason(state, at(4, 3), at(5, 3), at(6, 3))).toBe(
+    expect(moveReason(state, at(4, 3), at(5, 3), at(5, 4))).toBe(
       "BUDGET_EXCEEDED",
+    );
+    // On stored Snow she glides again.
+    walk(
+      withStoredSnow(state, [at(4, 3), at(5, 3), at(5, 4)]),
+      at(4, 3),
+      at(5, 3),
+      at(5, 4),
     );
   });
 });
@@ -384,7 +388,9 @@ describe("Snow cover (section 6.2, 2)", () => {
 
 describe("deep snow (section 6.2, 3)", () => {
   it("ends the Move of another faction's ground unit on entering Snow: SNOW_STOPS_MOVE", () => {
-    // The Witch on (7, 1): (6..8, 0..2) is Snow.
+    // Stored Snow on (6..8, 0..2) (the Blizzard laid it before the one
+    // Freeze effect, `pulp_wars-xv0t`).
+    const snow = [6, 7, 8].flatMap((x) => [0, 1, 2].map((y) => at(x, y)));
     for (const [faction, role] of [
       ["ORIGINAL", "KNIGHT"],
       ["ORIGINAL", "RAIDER"],
@@ -392,17 +398,20 @@ describe("deep snow (section 6.2, 3)", () => {
       ["DINOSAUR", "KNIGHT"],
       ["GOBLIN", "RAIDER"],
     ] as const) {
-      const state = iceFieldV7(
-        [
-          { seat: 0, role: "CAPTAIN", at: at(7, 1) },
-          { seat: 1, role, at: at(4, 2) },
-        ],
-        {
-          factions: ["ICE_FOLK", faction],
-          activeSeat: 1,
-          // No Fieldcraft.
-          techs: { 1: ["SCOUTING", "RAIDING", "CHIVALRY", "DRILL"] },
-        },
+      const state = withStoredSnow(
+        iceFieldV7(
+          [
+            { seat: 0, role: "FIGHTER", at: at(9, 9) },
+            { seat: 1, role, at: at(4, 2) },
+          ],
+          {
+            factions: ["ICE_FOLK", faction],
+            activeSeat: 1,
+            // No Fieldcraft.
+            techs: { 1: ["SCOUTING", "RAIDING", "CHIVALRY", "DRILL"] },
+          },
+        ),
+        snow,
       );
       expect(
         moveReason(state, at(4, 2), at(5, 2), at(6, 2), at(6, 3)),
@@ -476,58 +485,7 @@ describe("deep snow (section 6.2, 3)", () => {
     walk(ice, at(5, 6), at(6, 6), at(6, 5));
   });
 
-  it("a hidden Witch's Blizzard interrupts the Move there (reason SNOW)", () => {
-    // The Witch on (8, 3): (7..9, 2..4) is her Blizzard. The Human Knight
-    // (Move 3, no Fieldcraft) walks (6, 2), (7, 2), (7, 1).
-    const visible = iceFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(8, 3) },
-        { seat: 1, role: "KNIGHT", at: at(5, 2) },
-      ],
-      {
-        activeSeat: 1,
-        techs: { 1: ["SCOUTING", "RAIDING", "CHIVALRY"] },
-      },
-    );
-    const path = [at(6, 2), at(7, 2), at(7, 1)];
-    // Seen, the Snow tile ends the Move: the path is illegal.
-    expect(moveReason(visible, at(5, 2), ...path)).toBe("SNOW_STOPS_MOVE");
-    // Hidden (her tile and the tiles east of (7, x) unexplored), the path
-    // is offered and accepted, and interrupted on the Snow tile.
-    const hidden = unexploreV7(
-      visible,
-      1,
-      [8, 9, 10].flatMap((x) => [1, 2, 3, 4, 5].map((y) => at(x, y))),
-    );
-    const view = viewForV7(hidden, activeIdV7(hidden));
-    expect(
-      view.board.tiles.find((tile) => tile.at.x === 7 && tile.at.y === 2),
-    ).toMatchObject({ explored: true, snow: false, blizzard: false });
-    const command = move(hidden, at(5, 2), ...path);
-    // The public validator accepts the path (it cannot know the Snow).
-    expect(
-      validatePlayerMovementPathV7(view, unitAtV7(hidden, at(5, 2)), path)
-        .legal,
-    ).toBe(true);
-    const result = applyOkV7(hidden, activeIdV7(hidden), command);
-    expect(
-      result.events.find((event) => event.kind === "UNIT_MOVE_INTERRUPTED"),
-    ).toEqual({
-      kind: "UNIT_MOVE_INTERRUPTED",
-      unitId: unitAtV7(hidden, at(5, 2)).id,
-      at: at(7, 2),
-      reason: "SNOW",
-    });
-    expect(unitAtV7(result.state, at(7, 2)).role).toBe("KNIGHT");
-    // The Witch is revealed by the mover's own sight.
-    expect(
-      viewForV7(result.state, activeIdV7(result.state)).units.some(
-        (unit) => unit.at.x === 8 && unit.at.y === 3,
-      ),
-    ).toBe(true);
-  });
-
-  it("the view's Snow and Blizzard flags show a visible Witch and hide a hidden one", () => {
+  it("the view's Blizzard flag shows a visible Witch and hides a hidden one; her Blizzard is no Snow", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },
@@ -535,7 +493,6 @@ describe("deep snow (section 6.2, 3)", () => {
       ],
       { activeSeat: 1, techs: { 0: [] }, water: [at(4, 1)] },
     );
-    expect(viewSnowV7(state, at(6, 3))).toBe(true);
     const human = viewForV7(state, seatIdV7(state, 1));
     const flags = (where: CoordV7) => {
       const tile = human.board.tiles.find(
@@ -543,13 +500,14 @@ describe("deep snow (section 6.2, 3)", () => {
       );
       return tile?.explored === true ? [tile.snow, tile.blizzard] : null;
     };
-    expect(flags(at(6, 3))).toEqual([true, true]);
-    // Water: Blizzard (for drawing), never Snow.
+    // The one Freeze effect (`pulp_wars-xv0t`): the Blizzard, no Snow.
+    expect(flags(at(6, 3))).toEqual([false, true]);
     expect(flags(at(4, 1))).toEqual([false, true]);
     expect(flags(at(7, 3))).toEqual([false, false]);
-    // Territory Snow is public.
+    // Territory Snow is public, and so is stored Snow.
     expect(flags(at(7, 7))).toEqual([true, false]);
-    // A hidden Witch: neither flag on the explored tiles next to her.
+    expect(viewSnowV7(withStoredSnow(state, [at(3, 3)]), at(3, 3))).toBe(true);
+    // A hidden Witch: no Blizzard flag on the explored tiles next to her.
     const hidden = unexploreV7(state, 1, [at(5, 2)]);
     const view = viewForV7(hidden, seatIdV7(hidden, 1));
     const tile = view.board.tiles.find(
@@ -560,43 +518,36 @@ describe("deep snow (section 6.2, 3)", () => {
       snow: false,
       blizzard: false,
     });
-    // The owner always sees her own Witch.
-    expect(
-      viewSnowV7(
-        checkedV7({
-          ...hidden,
-          activeSeatIndex: hidden.turnOrder.indexOf(seatIdV7(hidden, 0)),
-        }),
-        at(6, 3),
-      ),
-    ).toBe(true);
   });
 });
 
 describe("the Blizzard's ranged-damage halving (section 6.3)", () => {
   it("halves a hit from distance 2 or more on a unit of the Witch's seat, rounded up; never from distance 1", () => {
     // A Human Marksman shoots a Yeti beside a Witch on neutral ground.
+    const pieces = [
+      { seat: 0 as const, role: "FIGHTER" as const, at: at(5, 3) },
+      { seat: 1 as const, role: "MARKSMAN" as const, at: at(5, 5) },
+      { seat: 1 as const, role: "MARKSMAN" as const, at: at(4, 4) },
+    ];
     const state = iceFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(5, 2) },
-        { seat: 0, role: "FIGHTER", at: at(5, 3) },
-        { seat: 1, role: "MARKSMAN", at: at(5, 5) },
-        { seat: 1, role: "MARKSMAN", at: at(4, 4) },
-      ],
+      [{ seat: 0, role: "CAPTAIN", at: at(5, 2) }, ...pieces],
       { activeSeat: 1, techs: { 0: [] } },
     );
+    const bare = iceFieldV7(pieces, { activeSeat: 1, techs: { 0: [] } });
+    const full = attackV7(bare, at(5, 5), at(5, 3)).combat.damageToDefender;
     const far = attackV7(state, at(5, 5), at(5, 3));
-    // 5 at Snow cover x 1.25 (`pulp_wars-1wy.3`; 4 at x 1.5), halved: 3.
+    // The one Freeze effect (`pulp_wars-xv0t`): no Snow under her Blizzard,
+    // so no Snow cover; the hit is halved, rounded up.
     expect(far.combat).toMatchObject({
       blizzardHalved: true,
-      snowCover: true,
-      damageToDefender: 3,
+      snowCover: false,
+      damageToDefender: Math.ceil(full / 2),
     });
     const near = attackV7(far.state, at(4, 4), at(5, 3));
     expect(near.combat.blizzardHalved).toBe(false);
   });
 
-  it("is per seat: an enemy Ice Folk unit in her Blizzard has Snow cover but is shot at full damage", () => {
+  it("is per seat: an enemy Ice Folk unit in her Blizzard is shot at full damage", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },
@@ -607,7 +558,6 @@ describe("the Blizzard's ranged-damage halving (section 6.3)", () => {
     );
     expect(attackV7(state, at(5, 5), at(5, 3)).combat).toMatchObject({
       blizzardHalved: false,
-      snowCover: true,
     });
     // Seat 0's own unit in its Witch's Blizzard is halved against seat 1's
     // Ice Folk shooter.

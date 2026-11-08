@@ -69,16 +69,7 @@ describe("abilities never find a mound (sections 5.3 and 13)", () => {
         }).code,
         kind,
       ).toBe("TARGET_NOT_FOUND");
-    const ice = moundAgainst("ICE_FOLK", [
-      { seat: 1, role: "RAIDER", at: at(5, 5) },
-    ]);
-    expect(
-      refusalV7(ice.state, {
-        kind: "THROW_BOLAS",
-        unitId: unitAtV7(ice.state, at(5, 5)).id,
-        targetUnitId: ice.moleId as never,
-      }).code,
-    ).toBe("TARGET_NOT_FOUND");
+    // (The Sled's Bolas went with the one Freeze effect, `pulp_wars-xv0t`.)
   });
 
   it("leaves a mound out of Wail, Cold Snap, and Kaboom", () => {

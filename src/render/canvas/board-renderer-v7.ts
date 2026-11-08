@@ -205,7 +205,7 @@ import {
 } from "./ice-folk-canvas-v7";
 import {
   addIceFolkPickEntriesV7,
-  coldAuraMoveExtrasV7,
+  coldWakeMoveExtrasV7,
   moveIsGlideV7,
   iceFolkAttackTargetExtrasV7,
   iceFolkPickTargetsV7,
@@ -288,10 +288,8 @@ import {
   ribbitCombatNotesV7,
 } from "../cult-ritual-presentation-v7";
 import {
-  addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
   crackIcePickTargetsV7,
-  freezePickTargetsV7,
   moveOnIceLabelV7,
   moveOnIceV7,
   seaIceCellsV7,
@@ -728,14 +726,13 @@ export interface MapCommandTargetV7 {
     | "MIND_CONTROL"
     | "TRACTOR_BEAM"
     /**
-     * The Ice Folk revision: a Bolas target, and a Cold Snap target (every
-     * one carries the same command, so choosing any of them casts it). Ice
-     * Folk Freeze (`pulp_wars-w49.38`): a Frost Bolt target, and the end
-     * tile of a Stampede line (chosen once, then charged).
+     * The Ice Folk revision: a Cold Snap target (every one carries the same
+     * command, so choosing any of them casts it). Ice Folk Freeze
+     * (`pulp_wars-w49.38`): the end tile of a Stampede line (chosen once,
+     * then charged). (The Bolas and the Frost Bolt went with
+     * `pulp_wars-xv0t`, 7r133.)
      */
-    | "THROW_BOLAS"
     | "COLD_SNAP"
-    | "FROST_BOLT"
     | "STAMPEDE"
     /**
      * The Dwarf revision: a Tunnel destination (TUNNEL digs at once, the
@@ -791,11 +788,6 @@ export interface MapCommandTargetV7 {
     | "STOMP"
     | "BREAK_OFF_FIRST"
     | "BREAK_OFF"
-    /**
-     * The frozen sea: the tile next to the unit that an aimed Freeze starts
-     * on (its line runs on from there).
-     */
-    | "FREEZE"
     /**
      * The frozen sea redesign (bead pulp_wars-5ti.27): an ice tile next to
      * the unit that an aimed Crack Ice breaks or cracks.
@@ -973,11 +965,15 @@ export interface MapCommandTargetV7 {
     readonly lethal: boolean;
   }[];
   /**
-   * Ice Folk Freeze (`pulp_wars-w49.38`): the tiles of the units a Frost
-   * Giant's Move to this tile would freeze (its Cold Aura), shown while the
-   * tile is focused.
+   * The one Freeze effect (`pulp_wars-xv0t`, 7r133): what a Frost
+   * Giant's Move to this tile would freeze (its Cold Wake): the tiles
+   * of the units it Freezes, and the ring of tiles it ices or snows, shown
+   * while the tile is focused (the ring in the quiet Cold Snap tint).
    */
-  readonly coldAura?: readonly CoordV7[];
+  readonly coldWake?: {
+    readonly units: readonly CoordV7[];
+    readonly ring: readonly CoordV7[];
+  };
   /**
    * The chain lightning (`pulp_wars-737.22`): the visible units a Zap's
    * first jump may hit (every unit next to the target), shaded lightly
@@ -1120,8 +1116,6 @@ export interface MapCommandTargetV7 {
     readonly over: CoordV7;
     readonly to: CoordV7;
   };
-  /** The frozen sea: every tile an aimed Freeze turns to ice. */
-  readonly freeze?: { readonly tiles: readonly CoordV7[] };
   /**
    * The frozen sea: the slides of a Move across ice (an arrow from the tile
    * the unit steps from to the tile it stops on), drawn for every such
@@ -2179,10 +2173,8 @@ export function buildBoardRenderPlanV7(
       targets,
       interaction.cursor ?? null,
     );
-  if (freezePick !== null) {
-    if (freezePick.kind === "FREEZE")
-      addFreezePickEntriesV7(entries, view, commands, targets, freezePick);
-  } else if (
+  if (
+    freezePick === null &&
     iceFolkMatch &&
     selectedUnitId !== null &&
     !kaboomPreview &&
@@ -2479,9 +2471,7 @@ export function boardMapTargetsV7(
                     ? cultTrickPickTargetsV7(view, commands, cultPick)
                     : cultChannelPickTargetsV7(view, commands, cultPick)
                 : freezePick !== null
-                  ? freezePick.kind === "CRACK_ICE"
-                    ? crackIcePickTargetsV7(view, commands, freezePick)
-                    : freezePickTargetsV7(view, commands, freezePick)
+                  ? crackIcePickTargetsV7(view, commands, freezePick)
                   : giantPick !== null
                     ? giantPickTargetsV7(
                         view,
@@ -6900,9 +6890,12 @@ function drawIceFolkFocusPreviewV7(
       defer,
     );
   const freezing = plan.targets.filter(
-    (target) => target.coldAura !== undefined,
+    (target) => target.coldWake !== undefined,
   );
-  for (const at of focused(freezing)?.coldAura ?? [])
+  const wake = focused(freezing)?.coldWake;
+  for (const at of wake?.ring ?? [])
+    drawAbilityAreaCellV7(context, x(at), y(at), camera.zoom, "FREEZE");
+  for (const at of wake?.units ?? [])
     drawAbilityTargetV7(
       context,
       x(at),
@@ -8157,8 +8150,8 @@ function commandMapTargets(
         : glacier
           ? SKATE_MOVE_LABEL_V7
           : null;
-      const coldAura = iceFolkMatch
-        ? coldAuraMoveExtrasV7(view, command)
+      const coldWake = iceFolkMatch
+        ? coldWakeMoveExtrasV7(view, command)
         : null;
       // Map curiosities: a Move that ends on a hostile neutral unit's
       // provoke tiles (next to the Spider, too close to a saucer camp, in
@@ -8211,15 +8204,17 @@ function commandMapTargets(
               ...(dive
                 ? { dive: true as const, semanticLabel: DIVE_MOVE_LABEL_V7 }
                 : {}),
-              ...(coldAura === null
+              ...(coldWake === null
                 ? {}
                 : {
-                    previewLabel: coldAura.label,
-                    coldAura: coldAura.tiles,
+                    ...(coldWake.label === null
+                      ? {}
+                      : { previewLabel: coldWake.label }),
+                    coldWake: { units: coldWake.units, ring: coldWake.ring },
                     semanticLabel: [
                       glide ? GLIDE_MOVE_LABEL_V7 : null,
                       iceLabel,
-                      coldAura.semantic,
+                      coldWake.semantic,
                     ]
                       .filter((part): part is string => part !== null)
                       .join(". "),

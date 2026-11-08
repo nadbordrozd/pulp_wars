@@ -14,7 +14,6 @@ import {
   BREAK_OFF_PRIORITY_V7,
   CRUSH_BACKSTOP_VALUE_V7,
   GIANT_FIELD_DEFENSE_VALUE_V7,
-  GLACIAL_FREEZE_VALUE_V7,
   SIEGE_HAMMER_APPROACH_VALUE_V7,
   SIEGE_HAMMER_FIRST_PRIORITY_V7,
   SIEGE_HAMMER_LEVEL_VALUE_V7,
@@ -1155,7 +1154,7 @@ describe("Overstride: against a Colossus", () => {
 });
 
 describe("Glacial Smash: the Frost Giant's own seat", () => {
-  it("steps beside a unit, freezes it with the Cold Aura, and smashes it", () => {
+  it("steps beside a unit, freezes it with the Cold Wake (the Cold Aura before), and smashes it", () => {
     // A full Guard (17 HP) two tiles away with a Fighter beside it.
     const state = field(
       ["ICE_FOLK", "ORIGINAL"],
@@ -1172,10 +1171,10 @@ describe("Glacial Smash: the Frost Giant's own seat", () => {
       unitId: step.unitId,
       targetUnitId: unitIdAtV7(state, at(5, 3)),
     });
-    // The Cold Aura froze what the policy counted, and the engine's
+    // The Cold Wake froze what the policy counted, and the engine's
     // preview of the blow after the step is the Glacial Smash it planned.
     const frozen = turn.events.filter((event) => event.kind === "UNITS_FROZEN");
-    expect(frozen[0]).toMatchObject({ source: "COLD_AURA" });
+    expect(frozen[0]).toMatchObject({ source: "COLD_WAKE" });
     const moved = apply(state, step).state;
     expect(
       moved.frozen.map((entry) => entry.unitId).sort((a, b) => a - b),
@@ -1219,9 +1218,9 @@ describe("Glacial Smash: the Frost Giant's own seat", () => {
     expect(unitAtV7(turn.state, to).role).toBe(GIANT);
   });
 
-  it("counts the units its shards newly freeze, as the event has them", () => {
-    // The Guard is Frozen already; two Fighters stand beside it, out of
-    // the Giant's own reach.
+  it("values the smash the same with or without units beside its target (no shards)", () => {
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the shards are gone,
+    // so two Fighters beside the Frozen Guard add nothing to the blow.
     const state = field(
       ["ICE_FOLK", "ORIGINAL"],
       [
@@ -1242,20 +1241,14 @@ describe("Glacial Smash: the Frost Giant's own seat", () => {
     );
     const blow = (scene: GameStateV7) => attackV7(scene, at(4, 3), at(5, 3));
     expect(previewOf(state, at(4, 3), at(5, 3)).glacialSmash).toBe(true);
-    expect(
-      scoreV7(state, blow(state)).strategicValue -
-        scoreV7(lone, blow(lone)).strategicValue,
-    ).toBe(2 * GLACIAL_FREEZE_VALUE_V7);
-    const shards = apply(state, blow(state)).events.find(
-      (event) => event.kind === "UNITS_FROZEN" && event.source === "SHARDS",
+    expect(scoreV7(state, blow(state)).strategicValue).toBe(
+      scoreV7(lone, blow(lone)).strategicValue,
     );
     expect(
-      shards?.kind === "UNITS_FROZEN"
-        ? shards.results.map((entry) => entry.unitId)
-        : [],
-    ).toEqual(
-      [unitIdAtV7(state, at(6, 3)), unitIdAtV7(state, at(6, 2))].sort(),
-    );
+      apply(state, blow(state)).events.some(
+        (event) => event.kind === "UNITS_FROZEN",
+      ),
+    ).toBe(false);
   });
 });
 
@@ -1299,7 +1292,7 @@ describe("Glacial Smash: against a Frost Giant", () => {
       ),
     ]);
     expect(moveCandidateV7(state, at(7, 3), at(6, 3))).toBeUndefined();
-    // The engine: the Giant steps beside the Guard (the Cold Aura freezes
+    // The engine: the Giant steps beside the Guard (the Cold Wake freezes
     // it) and its blow shatters it.
     const there = asFoe(scene(at(6, 3)));
     const giant = unitIdAtV7(there, at(4, 3));

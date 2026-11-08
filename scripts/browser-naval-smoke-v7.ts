@@ -1022,52 +1022,6 @@ async function captureFrozenSeaEvidence(
       name,
       argument,
     );
-  // A phone capture of an aimed ability: it is disarmed, armed again at
-  // the phone's size (so the camera frames its targets as it would for a
-  // player on a phone) and captured.
-  const phone = async (
-    file: string,
-    cancel: string,
-    arm: string,
-    armed: string,
-  ): Promise<void> => {
-    await evaluate(
-      connection,
-      `document.querySelector('[data-action="${cancel}"]').click()`,
-    );
-    await connection.send("Emulation.setDeviceMetricsOverride", {
-      width: 390,
-      height: 844,
-      deviceScaleFactor: 2,
-      mobile: true,
-    });
-    await delay(400);
-    await evaluate(
-      connection,
-      `document.querySelector('.v7-selection-dock [data-action="${arm}"]').click()`,
-    );
-    await waitForExpression(connection, armed);
-    await delay(400);
-    await evaluate(
-      connection,
-      `(() => {
-        const dock = document.querySelector('.v7-selection-dock');
-        if (!(dock instanceof HTMLElement)) throw new Error('the aiming dock is missing on a phone');
-        const bounds = dock.getBoundingClientRect();
-        if (bounds.right > innerWidth + 1 || bounds.height > innerHeight * 0.5)
-          throw new Error('the aiming dock does not fit a phone');
-      })()`,
-    );
-    await capture(connection, file, directory);
-    await connection.send("Emulation.setDeviceMetricsOverride", {
-      width: 1440,
-      height: 1000,
-      deviceScaleFactor: 1,
-      mobile: false,
-    });
-    await delay(300);
-  };
-
   // The naval art in the CHIBI look: the Bow Ram and Torpedo lines of a
   // ship's information carry their icons.
   const naval = await tools.scene(
@@ -1109,53 +1063,22 @@ async function captureFrozenSeaEvidence(
     await delay(100);
   }
 
-  // Freeze, a line role: one button arms it, the tile is picked on the board.
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Yeti beside the
+  // water has no Freeze (one button arming a line Freeze before).
   const freeze = await frozen("frozenFreezeUiFixtureV7");
   await activate(freeze.yeti);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock [data-action="freeze"][data-freeze-ability="line"]') instanceof HTMLButtonElement`,
-  );
-  await evaluate(
-    connection,
-    `(() => {
-      const buttons = document.querySelectorAll('.v7-selection-dock [data-freeze-ability="line"]');
-      if (buttons.length !== 1) throw new Error('Freeze must have exactly one dock button');
-      if (document.querySelector('[data-action^="command-freeze"]') !== null)
-        throw new Error('Freeze must not be a per-tile dock command');
-      buttons[0].click();
-    })()`,
-  );
-  await waitForExpression(
-    connection,
-    `document.querySelector('[data-v7-freeze-pick].v7-board-pick')?.dataset.boardTargets === '3'`,
-  );
-  await delay(250);
-  await capture(connection, "frozen-freeze-aim.png", directory);
-  await phone(
-    "frozen-freeze-aim-phone.png",
-    "freeze-pick-cancel",
-    "freeze",
-    `document.querySelector('[data-v7-freeze-pick].v7-board-pick')?.dataset.boardTargets === '3'`,
-  );
-  await waitForExpression(
-    connection,
-    `document.querySelector('[data-v7-freeze-pick].v7-board-pick') !== null`,
-  );
-  await activate(freeze.freezeAt);
-  await waitForExpression(
-    connection,
-    `globalThis.__NAVAL_DOM__.traces.length === 1`,
+    `document.querySelector('.v7-selection-dock h2') !== null`,
   );
   const frozenLine = await evaluate<Record<string, unknown>>(
     connection,
     `(() => {
-      const trace = globalThis.__NAVAL_DOM__.traces[0];
-      if (trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN'))
-        throw new Error('the board pick did not accept FREEZE with WATER_FROZEN');
-      const ice = globalThis.__NAVAL_DOM__.snapshot().view.ice;
-      if (ice.length !== 3) throw new Error('the Freeze (Hoarfrost) did not make three ice tiles');
-      return { command: trace.command.kind, ice: ice.length };
+      if (document.querySelector('[data-action="freeze"]') !== null)
+        throw new Error('Freeze must have no dock button');
+      if (document.querySelector('[data-action^="command-freeze"]') !== null)
+        throw new Error('Freeze must not be a per-tile dock command');
+      return { freezeButton: false };
     })()`,
   );
   await tools.settle();
@@ -1188,8 +1111,8 @@ async function captureFrozenSeaEvidence(
     connection,
     `(() => {
       const trace = globalThis.__NAVAL_DOM__.traces[0];
-      if (trace?.command?.kind !== 'COLD_SNAP' || !trace.eventKinds.includes('WATER_FROZEN'))
-        throw new Error("the Witch's Cold Snap did not accept COLD_SNAP with WATER_FROZEN");
+      if (trace?.command?.kind !== 'COLD_SNAP' || !trace.eventKinds.includes('TILES_FROZEN'))
+        throw new Error("the Witch's Cold Snap did not accept COLD_SNAP with TILES_FROZEN");
       return { command: trace.command.kind, ice: globalThis.__NAVAL_DOM__.snapshot().view.ice.length };
     })()`,
   );
@@ -1298,7 +1221,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r132', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r133', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only

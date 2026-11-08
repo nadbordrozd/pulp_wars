@@ -1,10 +1,40 @@
 # Ice Folk redesign: one freeze, a real naval branch (2026-11)
 
-> **Status** (2026-11-08, `pulp_wars-fofr`). A design proposal. Nothing
-> here is built yet; the rules in force are
-> [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) section 21 at
-> `pulp-wars-poc-7r132`. The implementation is split into the beads of
-> [section 6](#6-implementation-plan), one ruleset revision each.
+> **Status** (2026-11-08, `pulp_wars-fofr`). A design proposal, being
+> built in the beads of [section 6](#6-implementation-plan), one ruleset
+> revision each; the rules in force are
+> [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) section 21.
+>
+> - **Bead 1 is done** in `pulp-wars-poc-7r133` (`pulp_wars-xv0t`): the one
+>   Freeze rule, stored Snow, docks never frozen, the Witch's Cold Snap
+>   ring, the Frost Giant's Cold Wake; `FREEZE`, `FROST_BOLT`,
+>   `THROW_BOLAS` (the Sled has Escape and 12 HP), the Cold Aura, the
+>   shards, and the Blizzard's Snow are gone. Beads 2 to 6 are not built.
+> - **Design change during bead 1** (the user, 2026-11-08: "walrus
+>   freezing units that hit it is fine. we can have the special giant unit
+>   freeze everything around it whenever it moves. it's a powerful ability
+>   but makes sense for the special unit"): **the Walrus keeps Frostbite**
+>   and gets no Cold Wake; **the Cold Wake is the Frost Giant's alone**.
+>   Sections 1, 3.1, 3.3 and the bead plan below say so; the Walrus's
+>   place in the rebuilt naval branch (3.4, 4.1, 5.2) still describes it as
+>   the bridge builder, which bead 4 must revisit (see 3.4).
+> - **Decisions taken in bead 1:** (1) Frozen still means "loses one of its
+>   owner's own turns": a freeze in the unit's own turn (Frostbite, Black
+>   Ice) gives `turnsLeft` 2, every other freeze 1 (with 1 for Frostbite it
+>   would thaw at that same turn's end and do nothing). (2) Stored Snow is a
+>   separate `snow` list in the state (not ice entries with a land flag),
+>   omitted from canonical hashes while empty. (3) `WATER_FROZEN` became
+>   `TILES_FROZEN { playerId, unitId, tiles, snow }`. (4) A Cold Snap is
+>   offered whenever its ring changes something, Snow alone included; the
+>   Normal AI casts it only when it Freezes a hostile unit or its ice serves
+>   a planned crossing. Its `ALREADY_FROZEN` refusal is gone (`NO_TARGET`).
+>   (5) The AI builds crossings with Cold Snaps and the Giant's wake (the
+>   Walrus builds nothing now). (6) Hoarfrost unlocks nothing until bead 4;
+>   Black Ice, Glacier, and the Ice Harbour rules stay until bead 4. (7) The
+>   Wail preview's hidden-Blizzard flag went (a hidden Witch can no longer
+>   change Snow cover). (8) The retired action icons and the BOLAS and
+>   Frost Bolt art stay registered in the asset manifests (removing art is
+>   bead 4's asset work).
 
 The user played the Ice Folk on 2026-11-08 and listed what does not work:
 too many freezing mechanics that look alike, a Mammoth whose sweep is
@@ -25,25 +55,28 @@ into beads (section 6).
   turns open land into Snow, and Freezes a hostile unit standing there for
   one turn. Every ability that freezes a tile uses this one rule.
 - **Three tile freezers, one each way:**
-  - the **Walrus** freezes every tile around it each time it moves
-    (**Cold Wake**); the Frost Giant carries the same Cold Wake;
+  - the **Frost Giant** (the reward unit) freezes every tile around it
+    each time it moves (**Cold Wake**; decided during bead 1: the user
+    gave it to "the special giant unit", not the Walrus);
   - the **Ice Witch** freezes every tile around her on command (**Cold
     Snap**);
   - the **Snow Golem**'s shot freezes the one tile it hits (**Snowball**).
-- **One unit-only freeze:** the Frost Wyrm's **Frost Breath** (its attack
-  Freezes the survivor; no tile changes). It stays because it is a clearly
-  different verb: a blow, not a spell.
+- **Two unit-only freezes:** the Frost Wyrm's **Frost Breath** (its attack
+  Freezes the survivor; no tile changes), a clearly different verb: a blow,
+  not a spell; and the Walrus's **Frostbite** (a unit that strikes it from
+  the next tile and survives is Frozen), kept at the user's word "walrus
+  freezing units that hit it is fine".
 - **Everyone else loses their freezing powers:** the `FREEZE` command of
-  seven roles, the Frost Bolt, the Sled's Bolas, the Walrus's Frostbite,
-  Glacial Smash's shards, Black Ice, and the Blizzard's Snow are removed.
+  seven roles, the Frost Bolt, the Sled's Bolas, Glacial Smash's shards,
+  Black Ice, and the Blizzard's Snow are removed.
 - **Mammoth:** its Sweep hits each flank unit for the normal damage of its
   attack (a fixed 2 today), and its Attack rises from 2.5 to 3.
 - **Sea trade over ice only:** an Ice Folk sea link needs an unbroken chain
   of their own ice between the two endpoints, and then has no length limit,
   like a Road.
 - **The naval branch is rebuilt** so each of its five technologies does
-  for the Ice Folk what it does for a seafaring faction: Rime (the Walrus,
-  the bridge builder; Fishing Holes), Pack Ice (deep water; Pearls),
+  for the Ice Folk what it does for a seafaring faction: Rime (the Walrus;
+  Fishing Holes), Pack Ice (deep water; Pearls),
   Harpoons (+1 Attack against ships, the Ram's twin), Ice Fortress (the
   Shipyard's and Battleship's twin), Under the Ice (the dive and +1
   population per hole, the Submarine's and Harbours' twin). Glacier,
@@ -153,7 +186,7 @@ What the branch gives, by need:
 
 | Need                   | Every seafaring faction                                                           | Ice Folk at `7r132`                                | Ice Folk proposed (section 3.4)                                                      |
 | ---------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Cross water            | T1: embark at a Port (Move 2 afloat); T2: Deep Water                              | T1: everyone Freezes a 2-tile line; T2: Deep Water | T1: the Walrus's Cold Wake (and the Witch, Golem, Giant) ices water; T2: deep        |
+| Cross water            | T1: embark at a Port (Move 2 afloat); T2: Deep Water                              | T1: everyone Freezes a 2-tile line; T2: Deep Water | T1: the Witch's Cold Snap (and the Golem, the Giant's wake) ices water; T2: deep     |
 | A unit of the branch   | T1 Patrol Boat; T3 Battleship; T3 Submarine                                       | none                                               | T1 the Walrus                                                                        |
 | Attack ships           | Patrol Boat (Ram, T2), Submarine, Battleship                                      | Freeze lines, then Shatter from the ice            | Harpoons (+1 Attack against units afloat, T2), Cold Wake, Snowball, Shatter          |
 | Attack land from water | Battleship, range 3, splash (T3)                                                  | nothing                                            | Ice Fortress: a fortified sea post, ranged units on it reach 1 further (T3)          |
@@ -176,10 +209,11 @@ What the branch gives, by need:
 | land that is no player's territory, not a Rift    | becomes **Snow** (stored; section 3.2)                                       |
 | land in any player's territory, own ice, a Rift   | unchanged                                                                    |
 
-- **Frozen lasts one turn, always.** Every source now acts on the freezer's
-  own turn, so the "two turns when frozen during its own turn" case
-  (Frostbite, Black Ice) is gone: `turnsLeft` is always 1, and the unit
-  thaws at the end of its owner's next turn. Everything else about Frozen
+- **Frozen costs the unit one of its own turns.** Every tile freeze acts
+  on the freezer's own turn, so the unit has `turnsLeft` 1 and thaws at
+  the end of its owner's next turn. Frostbite (kept, 3.3) and Black Ice
+  (until bead 4) freeze a unit during its own turn, so they keep
+  `turnsLeft` 2, which costs it its next turn too (bead 1's reading). Everything else about Frozen
   stays (21.2, 21.3): no move or action, no strike back, Shatter window,
   cured by Tend Wounded, Repair and Frosting, no immunity.
 - Without Rime a freeze still Freezes units on water and still makes Snow;
@@ -188,8 +222,8 @@ What the branch gives, by need:
 - **Docks are never frozen.** No Ice Harbour or Great Harbour, no dock iced
   shut. A ship on a dock is Frozen like any ship.
 - Events: one `UNITS_FROZEN` (sources `COLD_SNAP`, `COLD_WAKE`, `SNOWBALL`,
-  `FROST_BREATH`) and one `TILES_FROZEN` (the renamed `WATER_FROZEN`,
-  listing ice and Snow tiles).
+  `FROST_BREATH`, `FROSTBITE`, and `BLACK_ICE` until bead 4) and one
+  `TILES_FROZEN` (the renamed `WATER_FROZEN`, listing ice and Snow tiles).
 
 **Glossary line (Freeze):** "Freezing a tile turns water to ice and open
 land to Snow; an enemy on it is Frozen for a turn."
@@ -220,29 +254,32 @@ land to Snow; an enemy on it is Frozen for a turn."
 
 | Unit        | Ability (new or kept)                          | Kind          | Rule                                                                                                                                                    |
 | ----------- | ---------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Walrus      | **Cold Wake** (new; replaces Frostbite)        | tile, passive | when it completes its own `MOVE` (a dive included), it freezes every tile of the 8 around its new tile                                                  |
-| Frost Giant | **Cold Wake** (replaces Cold Aura and shards)  | tile, passive | the same rule as the Walrus; Glacial Smash (Shatter threshold 8) stays                                                                                  |
+| Frost Giant | **Cold Wake** (replaces Cold Aura and shards)  | tile, passive | when it completes its own `MOVE`, it freezes every tile of the 8 around its new tile; Glacial Smash (Shatter threshold 8) stays                         |
 | Ice Witch   | **Cold Snap** (kept, widened)                  | tile, active  | primary action: freezes every tile of the 8 around her; offered only when it changes something (a unit Frozen, a tile frozen); one tap, no confirmation |
 | Snow Golem  | **Snowball** (new; replaces Boulders, Planted) | tile, attack  | every attack it makes freezes the target's tile after the exchange (a surviving target is Frozen)                                                       |
 | Frost Wyrm  | **Frost Breath** (kept)                        | unit only     | its attack Freezes the target it leaves alive; the tile is untouched                                                                                    |
+| Walrus      | **Frostbite** (kept; the user, during bead 1)  | unit only     | a unit that strikes it from the next tile and survives is Frozen (its own turn: `turnsLeft` 2); no tile changes; no Cold Wake                           |
 
 **Removed:** `FREEZE` (the command, the ability on seven roles, the line,
-Hoarfrost's long line); `FROST_BOLT`; `THROW_BOLAS`; Frostbite; Cold Aura's
-unit-only freeze (merged into Cold Wake); Glacial Smash's shards; Black Ice;
-the Blizzard's Snow; the "mend a crack" Freeze.
+Hoarfrost's long line); `FROST_BOLT`; `THROW_BOLAS`; Cold Aura's
+unit-only freeze (merged into Cold Wake); Glacial Smash's shards; Black Ice
+(bead 4); the Blizzard's Snow; the "mend a crack" Freeze (bead 4, with
+Glacier; a tile freeze still mends an own crack until then).
 
 Why these carriers:
 
-- **The Walrus moves the ice.** A sea animal is the natural bridge builder,
-  it is a slow defender (Move 1, no attack after moving), so its Cold Wake
-  is a deliberate walk, not a raid. It becomes the naval branch's unit
-  (section 3.4). Each Move lays a ring of ice: a Walrus on a shore lays a
-  3-wide road one tile a turn, and the army glides along it at 2 tiles a
-  turn (Sled 4).
-- **The Frost Giant keeps what it had**, now as the same rule as the
-  Walrus, so there is one moving freeze, not two. The campaign leans on the
-  Giant's freezing (I2, I5, late I1), and a reward unit in every level-5
-  city is the right place for the biggest freeze.
+- **The Frost Giant moves the ice.** The user: "we can have the special
+  giant unit freeze everything around it whenever it moves. it's a
+  powerful ability but makes sense for the special unit". It is slow (Move
+  1), so its Cold Wake is a deliberate walk, not a raid: each Move lays a
+  ring of ice and Snow, a 3-wide road one tile a turn, and Freezes every
+  enemy beside its new tile. The campaign leans on the Giant's freezing
+  (I2, I5, late I1), and a reward unit in every level-6 city is the right
+  place for the biggest freeze.
+- **The Walrus keeps Frostbite** (the user: "walrus freezing units that
+  hit it is fine"): a defender that punishes melee, with no tile freeze,
+  so it is no second moving freeze. (The proposal before had the Walrus
+  carry the Cold Wake as the bridge builder; that went.)
 - **The Witch is the active area freeze.** She already froze her
   neighbours and her water; now that ring also lays Snow, and her two other
   spells (Frost Bolt, the moving Blizzard Snow) go.
@@ -252,15 +289,16 @@ Why these carriers:
   frost on the victim, the "units are sometimes frozen without the ground"
   the user allowed for.
 
-So four of the nine Ice Folk units freeze (plus the reward Giant's wake),
-each in a different way, and the Yeti, Sled, Snow Hunter and Mammoth do
-not.
+So four of the nine Ice Folk units freeze (the Witch, the Golem, the Wyrm,
+the Walrus), plus the reward Giant's wake, each in a different way, and
+the Yeti, Sled, Snow Hunter and Mammoth do not.
 
 Glossary lines:
 
 | Entry        | Line                                                |
 | ------------ | --------------------------------------------------- |
 | Cold Wake    | "After each Move, it freezes every tile around it." |
+| Frostbite    | "A unit that strikes it up close is Frozen."        |
 | Cold Snap    | "Freezes every tile around the Witch."              |
 | Snowball     | "Its shot freezes the tile it hits."                |
 | Frost Breath | "Its attack leaves the target Frozen."              |
@@ -282,8 +320,13 @@ seafaring factions.
 
 - **The Walrus** (`GUARD` role, now at Rime): 5 Coins (4 now), 16 HP,
   Attack 1.5, Defense 2, Move 1, melee, no attack after moving, captures,
-  Glides, Cold Wake. Its Frostbite goes. The Ice Folk Fortification node
-  (Deep Winter) keeps Deep Winter and no longer unlocks a unit.
+  Glides, Frostbite. The Ice Folk Fortification node (Deep Winter) keeps
+  Deep Winter and no longer unlocks a unit. **Open for bead 4:** this
+  proposal made the Walrus Rime's unit as the bridge builder (Cold Wake);
+  since bead 1 the Walrus has no Cold Wake (the Giant has it), so the
+  Witch's Cold Snap and the Giant build the crossings, and bead 4 decides
+  whether the Walrus still moves to Rime (as a sea-ice defender) or stays
+  at Fortification.
 - **Harpoons** is a combat modifier like the Ram, on every Ice Folk attack
   on a unit in `NAVAL` or `EMBARKED` form (the preview row "Harpoon +1").
   A Yeti harpoons a Patrol Boat for 8 instead of 5; a Frozen boat at 10 HP
@@ -444,11 +487,11 @@ freeze, Fishing Holes, Sea Dog, and the Wreck salvage.
 | Freeze, then Shatter | any freezer Freezes; the next melee blow kills a unit it leaves at 1 to 3 HP, with no strike back; Snow Hunters add Cold Blood from range               | the freezers' techs         |
 | Frost and Sweep      | the Witch's Cold Snap Freezes her ring; a Mammoth's blow hits three Frozen units at full damage, none strikes back, each one left at 3 or less shatters | Administration + Metallurgy |
 | Snowball and Smash   | the Golem Freezes a big unit at range 3; the Frost Giant's Glacial Smash kills it at 8 HP or less                                                       | Sawmilling + a level-5 city |
-| The walking bridge   | a Walrus walks out on the sea laying a 3-wide road; ships next to it are Frozen; Yetis and Sleds glide out and harpoon them, and Frozen boats shatter   | Rime (+ Harpoons)           |
+| The walking bridge   | a Frost Giant walks out on the sea laying a 3-wide road; ships next to it are Frozen; Yetis and Sleds glide out and harpoon them; boats shatter         | Rime + a level-6 city       |
 | Winter road          | Cold Wakes and Cold Snaps leave Snow on neutral land: the army glides 2 tiles a turn (Sled 4) with Snow cover, and enemy riders stop on entering        | Rime / Administration       |
-| Dive and freeze      | under the ice, a Walrus dives to a far Fishing Hole; its Cold Wake freezes the ring around the hole on arrival                                          | Under the Ice               |
+| Dive and freeze      | under the ice, a unit dives to a far Fishing Hole and a Witch beside it freezes the ring (a Walrus's Cold Wake before bead 1; revisit in bead 4)        | Under the Ice               |
 | Sea battery          | a Snow Golem on an Ice Fortress shoots 4 tiles, fortified, and Freezes each ship it hits for the Sleds to harpoon                                       | Ice Fortress + Sawmilling   |
-| Ice is trade         | the bridges between cities are the sea links: every Walrus road is also income, and worth guarding                                                      | Rime                        |
+| Ice is trade         | the bridges between cities are the sea links: every ice road is also income, and worth guarding                                                         | Rime                        |
 
 ### 4.2 Why it is not always-winning
 
@@ -501,16 +544,17 @@ All of it is through the public queries and exact previews, as now.
   Glacier research values, Runners' `iceGlideLineV7`.
 - **Rework the crossing planner** (`iceSeaPlanV7`, `findCrossing`,
   `iceCrossingMoveV7` in `src/ai/v7-frozen-sea.ts`): a crossing is built
-  by Walrus Moves along the planned line (each Move's Cold Wake previewed:
-  tiles iced, units Frozen) and Witch Cold Snaps, not by Freeze lines.
-- **Score the Cold Wake on every Walrus and Giant Move** (units Frozen,
+  by Witch Cold Snaps and Frost Giant Moves along the planned line (each
+  Move's Cold Wake previewed: tiles iced, units Frozen), not by Freeze
+  lines (done in bead 1).
+- **Score the Cold Wake on every Giant Move** (units Frozen,
   Shatter setups, tiles iced or snowed) and the Snowball on every Golem
   attack (the Frozen target's Shatter setups), from the previews.
 - **Research and build:** Rime now brings the Ice Folk defender (army
   growth reads the Walrus at `SHORECRAFT`); Harpoons, Ice Fortress
   (`BUILD_ICE_FORTRESS` site choice) and Under the Ice values; a Fishing
   Hole's value counts only links its ice chain makes.
-- **The other factions:** threat tiles include a Walrus's or Giant's wake
+- **The other factions:** threat tiles include a Giant's wake
   reach (2 tiles: one step plus the ring) and a Golem's range; `iceCrackScoreV7`
   values a crack that breaks an Ice Folk sea link; ships fear Walruses on
   the ice, not Freeze lines (`iceHostileFreezersV7`, `iceFreezeReachesV7`).
@@ -524,14 +568,14 @@ The Ice Folk chapter (`src/campaign/chapter-ice-folk.ts`, missions
 sections 22 and 27) was calibrated against the current kit, so every
 mission needs a look; hand play (`play-text`) needs the user's go-ahead.
 
-| Mission                  | What changes for it                                                                                                                                                                                                                                                                                             |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| I1 The Warm Mountain     | Rime held the pocket "behind Cold Snaps, Frost Bolts and the Sled's bolas"; Frost Bolt and Bolas are gone, the Walrus gains Cold Wake. Hint "Frozen enemies can't act: freeze first, then strike." still true. Likely a little harder; replay first.                                                            |
-| I2 Waking the Giants     | the Frost Giant decides it; it keeps its wake (now also tiles) but loses the shards that froze the Abbot. Hint "freeze, then smash" still true. Replay.                                                                                                                                                         |
-| I3 The Frozen Strait     | built on Freeze lines and Hoarfrost. Its seat starts with Rime, Pack Ice and Naval Engineering (now the Ice Fortress) and a Walrus, which is now the bridge builder; the Steam Launches' Port can no longer be iced shut. Hint "Freeze toward an enemy ship to Freeze it for a turn." must change. Full retune. |
-| I4 A Year Without Summer | won by Walrus Frostbite against Knights. Frostbite is gone; the Walrus is now at Rime (the seat starts with Shorecraft, so it stays trainable). Hint "Walruses freeze whoever strikes them up close." must change. Replay.                                                                                      |
-| I5 The Ember Lodge       | the Giant's shards go (it won I5 with Glacial Smash, which stays); "Hoarfrost Camp" is a place name and stays; hint "A giant's blow shatters a badly hurt Frozen enemy." still true.                                                                                                                            |
-| I6 The Winter Crown      | hints "Walruses freeze whoever strikes them up close." and "A Sled's bolas holds a daemon still for a turn." must change; the Sleds lose the bolas that held the Horrors. Replay.                                                                                                                               |
+| Mission                  | What changes for it                                                                                                                                                                                                                                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I1 The Warm Mountain     | Rime held the pocket "behind Cold Snaps, Frost Bolts and the Sled's bolas"; Frost Bolt and Bolas are gone (the Walrus keeps Frostbite). Hint "Frozen enemies can't act: freeze first, then strike." still true. Likely a little harder; replay first.                                                                           |
+| I2 Waking the Giants     | the Frost Giant decides it; it keeps its wake (now also tiles) but loses the shards that froze the Abbot. Hint "freeze, then smash" still true. Replay.                                                                                                                                                                         |
+| I3 The Frozen Strait     | built on Freeze lines and Hoarfrost. Its seat starts with Rime, Pack Ice and Naval Engineering (now the Ice Fortress) and a Walrus; its Witch now builds the bridge with Cold Snaps; the Steam Launches' Port can no longer be iced shut. Hint "Freeze toward an enemy ship to Freeze it for a turn." must change. Full retune. |
+| I4 A Year Without Summer | won by Walrus Frostbite against Knights. Frostbite stays (decided during bead 1), so the hint "Walruses freeze whoever strikes them up close." stays true; the Walrus may move to Rime in bead 4 (the seat starts with Shorecraft). Replay.                                                                                     |
+| I5 The Ember Lodge       | the Giant's shards go (it won I5 with Glacial Smash, which stays); "Hoarfrost Camp" is a place name and stays; hint "A giant's blow shatters a badly hurt Frozen enemy." still true.                                                                                                                                            |
+| I6 The Winter Crown      | hint "A Sled's bolas holds a daemon still for a turn." must change (bead 1: "An Ice Witch's Cold Snap holds a daemon still for a turn."); the Sleds lose the bolas that held the Horrors. Replay.                                                                                                                               |
 
 - Texts that name removed mechanics: the chapter's hints above; the
   mission definition comments of I3 (Freeze lines, Hoarfrost, Black Ice);
@@ -540,7 +584,7 @@ mission needs a look; hand play (`play-text`) needs the user's go-ahead.
   re-checked for the Walrus's move to `SHORECRAFT` (a seat that forbids
   Shorecraft can no longer train Walruses).
 - Ice Folk seats in other campaigns (`CULT_5`, `DWARF_2`, `HUMAN_4`,
-  `UNDEAD_6`) are on dry boards; they lose Frost Bolt, Bolas and Frostbite.
+  `UNDEAD_6`) are on dry boards; they lose Frost Bolt and Bolas.
   Their pins move only with the ruleset.
 - The Ice Folk lab mission (`lab-ice-folk.ts`) and the Showcase need their
   Freeze examples replaced.
@@ -553,17 +597,19 @@ replays simply do not load under the new revision. Shape changes, by bead:
 
 - `ice` entries may lie on land (stored Snow), or a new `snow` list (the
   bead decides; one list with a land flag is preferred); `ice.cracked` and
-  the view's `thick` and `cracked` go; `frozen.turnsLeft` is always 1.
+  the view's `thick` and `cracked` go; `frozen.turnsLeft` stays 1 or 2
+  (bead 1 kept 2 for Frostbite).
 - Commands `FREEZE`, `FROST_BOLT` and `THROW_BOLAS` are removed;
   `BUILD_ICE_FORTRESS` is added; improvement `ICE_FORTRESS` is appended.
-- `UNITS_FROZEN.source` loses `BOLAS`, `FROST_BOLT`, `FROSTBITE`,
-  `SHARDS`, `BLACK_ICE`, `FREEZE`, `COLD_AURA`, and gains `COLD_WAKE` and
-  `SNOWBALL`; `WATER_FROZEN` becomes `TILES_FROZEN`.
+- `UNITS_FROZEN.source` loses `BOLAS`, `FROST_BOLT`, `SHARDS`, `FREEZE`,
+  and `COLD_AURA` (bead 1) and `BLACK_ICE` (bead 4), keeps `FROSTBITE`,
+  and gains `COLD_WAKE` (bead 1) and `SNOWBALL` (bead 2); `WATER_FROZEN`
+  becomes `TILES_FROZEN` (bead 1).
 - Unlock kinds `LONG_FREEZE`, `BLACK_ICE`, `GLACIER` and capabilities
   `longFreeze`, `blackIce`, `thickIce`, `iceCover` go; `HARPOONS`,
   `ICE_FORTRESS` and `UNDER_THE_ICE` (with `dive` and the hole population)
   come.
-- Combat preview: `frostbiteApplied`, `iceCover`, `plantedApplied` and
+- Combat preview: `iceCover`, `plantedApplied` and
   Boulders' `fortificationIgnored` for the Golem go; `harpoon` and
   `snowball` come; Sweep `splash` entries carry formula damage and may
   carry `shatters`.
@@ -586,7 +632,7 @@ replays simply do not load under the new revision. Shape changes, by bead:
   the Ice; a Snowball projectile for the Golem (or a recolour of its
   boulder). **Sound (ElevenLabs script):** a harpoon hit is optional; the
   existing impact sounds can serve.
-- **Board:** no new controls. A Walrus's or Giant's Move destination shows
+- **Board:** no new controls. A Frost Giant's Move destination shows
   the ring it will freeze in the quiet Cold Snap tint while hovered (a
   preview, never a chooser); the Golem's attack preview says "Freezes";
   Harpoon is a preview row; the Ice Fortress is a build entry. Every tile
@@ -616,26 +662,28 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
 
 - **Scope:** the Freeze rule of 3.1 and the Snow, ice and thaw rules of
   3.2 (stored Snow on neutral land that melts in any territory; docks never
-  freeze; `turnsLeft` always 1). Carriers: Witch Cold Snap (ring of tiles),
-  Walrus Cold Wake (replacing Frostbite; the Walrus stays at Fortification
-  until bead 4), Frost Giant Cold Wake (replacing Cold Aura; shards gone).
-  Remove `FREEZE` (all roles), `FROST_BOLT`, `THROW_BOLAS` (the Sled gains
-  Escape and 12 HP), Frostbite, shards, and the Blizzard's Snow (its ranged
-  halving stays). Black Ice stays until bead 4. AI: the crossing planner on
-  Walrus Moves and Cold Snaps; Cold Wake scoring; removals of 5.1. UI:
-  remove the buttons and badges, the wake-ring hover tint, glossary and
-  Help lines, the hints of I3, I4 and I6. Rules doc: 21.1 to 21.6, 21.12,
-  21.16, 21.17.
+  freeze; a tile freeze gives `turnsLeft` 1). Carriers: Witch Cold Snap
+  (ring of tiles), Frost Giant Cold Wake (replacing Cold Aura; shards
+  gone). **The Walrus keeps Frostbite and has no Cold Wake** (the user's
+  change during the bead). Remove `FREEZE` (all roles), `FROST_BOLT`,
+  `THROW_BOLAS` (the Sled gains Escape and 12 HP), shards, and the
+  Blizzard's Snow (its ranged halving stays). Black Ice stays until bead 4.
+  AI: the crossing planner on Cold Snaps and Giant Moves; Cold Wake
+  scoring; removals of 5.1. UI: remove the buttons and badges, the
+  wake-ring hover tint, glossary and Help lines, the hints of I3 and I6.
+  Rules doc: 21.1 to 21.6, 21.12, 21.16, 21.17. **Done** in `7r133`
+  (`pulp_wars-xv0t`).
 - **Acceptance:** hand-built states show a Cold Snap and a Cold Wake
   freezing water (with Rime), neutral land (Snow) and hostile units in the
   same action, leaving territory land, Rifts and docks unchanged, and a
   ship on a dock Frozen with its tile still water; stored Snow melts when a
   Land Grant takes its tile; a Frozen unit has `turnsLeft` 1 and thaws
   after its owner's next turn; `FREEZE`, `FROST_BOLT` and `THROW_BOLAS` are
-  neither offered nor accepted; an attack on a Walrus freezes nobody; a
-  Sled Escapes after an attack; previews equal results; the Normal AI
-  builds a crossing with a Walrus in a hand-built strait; every glossary
-  entry carries at most one number.
+  neither offered nor accepted; a Walrus's Frostbite still Freezes its
+  melee attacker and a Walrus's Move freezes no tile; a Sled Escapes after
+  an attack; previews equal results; the Normal AI builds a crossing with
+  Cold Snaps in a hand-built strait; every glossary entry carries at most
+  one number.
 - **Focused tests:** the `ruleset-v7-ice-folk-*`, `ruleset-v7-frozen-sea-*`
   (not `*.sim.test.ts`), `ruleset-v7-ice-freeze-rework-s55m`,
   `ruleset-v7-frostbite-thaw-s55m8`, `ruleset-v7-ice-border-freeze`,

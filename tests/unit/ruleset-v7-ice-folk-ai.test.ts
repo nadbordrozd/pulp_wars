@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  BOLAS_SHATTER_PRIORITY_V7,
   COLD_SNAP_PRIORITY_V7,
   ICE_OBJECTIVE_SCALE_V7,
   ICE_SIGNATURE_RESEARCH_PRIORITY_V7,
@@ -176,9 +175,11 @@ describe("Ice Folk Normal AI: the Witch", () => {
 });
 
 describe("Ice Folk Normal AI: Chill, then Shatter", () => {
-  it("throws the Bolas on the unit a Yeti then shatters", () => {
+  it("casts the Cold Snap on the unit a Yeti then shatters (the Bolas's place)", () => {
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Witch's Cold
+    // Snap is the Chill; the Sled's Bolas is gone.
     const pieces = [
-      own("RAIDER", 6, 2),
+      own("CAPTAIN", 7, 1),
       own("FIGHTER", 5, 0),
       foe("FIGHTER", 6, 0, { hp: 7 }),
     ];
@@ -191,28 +192,12 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
       foe("FIGHTER", 6, 0, { hp: 7, frozen: { turnsLeft: 1 } }),
     ]);
     expect(preview(chilled, at(5, 0), at(6, 0))?.shatters).toBe(true);
-    const sled = unitCandidatesV7(state, at(6, 2));
-    expect(sled[0]?.command).toEqual({
-      kind: "THROW_BOLAS",
-      unitId: unitIdAtV7(state, at(6, 2)),
-      targetUnitId: unitIdAtV7(state, at(6, 0)),
+    const witch = unitCandidatesV7(state, at(7, 1), "COLD_SNAP");
+    expect(witch[0]?.command).toEqual({
+      kind: "COLD_SNAP",
+      unitId: unitIdAtV7(state, at(7, 1)),
     });
-    expect(sled[0]?.score.priority).toBe(BOLAS_SHATTER_PRIORITY_V7);
-  });
-
-  it("does not throw at a unit the Witch's Cold Snap covers this turn", () => {
-    // Ice Folk Freeze: the Fighter is next to the Witch (Cold Snap range 1).
-    const state = asIce([
-      own("RAIDER", 6, 3),
-      own("CAPTAIN", 7, 2),
-      own("FIGHTER", 5, 0),
-      foe("FIGHTER", 6, 1, { hp: 7 }),
-    ]);
-    expect(
-      unitCandidatesV7(state, at(6, 3), "THROW_BOLAS").map(
-        (candidate) => candidate.command,
-      ),
-    ).toEqual([]);
+    expect(witch[0]?.score.priority).toBe(COLD_SNAP_PRIORITY_V7);
   });
 
   it("chips a Chilled unit into the window before the blow that shatters it", () => {
@@ -394,15 +379,24 @@ describe("Ice Folk Normal AI: against the Ice Folk", () => {
     };
     const yeti = foe("FIGHTER", 5, 2);
     expect(shatterable([own("FIGHTER", 5, 4), yeti])).toBe(false);
-    expect(shatterable([own("FIGHTER", 5, 4), yeti, foe("RAIDER", 9, 4)])).toBe(
-      true,
-    );
-    // A Frozen Sled freezes nothing.
+    // The one Freeze effect (`pulp_wars-xv0t`): a Witch's Glide and Cold
+    // Snap reach 3 tiles, a Frost Giant's step and Cold Wake 2 (the Sled's
+    // Bolas is gone).
+    expect(
+      shatterable([own("FIGHTER", 5, 4), yeti, foe("CAPTAIN", 8, 4)]),
+    ).toBe(true);
+    expect(
+      shatterable([own("FIGHTER", 5, 4), yeti, foe("CAPTAIN", 9, 4)]),
+    ).toBe(false);
+    expect(
+      shatterable([own("FIGHTER", 5, 4), yeti, foe("JUGGERNAUT", 7, 4)]),
+    ).toBe(true);
+    // A Frozen Witch freezes nothing.
     expect(
       shatterable([
         own("FIGHTER", 5, 4),
         yeti,
-        foe("RAIDER", 9, 4, { frozen: { turnsLeft: 1 } }),
+        foe("CAPTAIN", 8, 4, { frozen: { turnsLeft: 1 } }),
       ]),
     ).toBe(false);
     // Frozen during its own turn (Frostbite): still Frozen on the Ice Folk

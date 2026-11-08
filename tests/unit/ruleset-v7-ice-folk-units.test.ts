@@ -560,7 +560,7 @@ describe("the Frost Wyrm's flight (formerly Prowl, section 7.7)", () => {
 });
 
 describe("previews and offers (section 11)", () => {
-  it("every offered Bolas, Cold Snap, and Ice Folk attack is accepted", () => {
+  it("every offered Cold Snap and Ice Folk attack is accepted", () => {
     const state = mountainV7(
       iceFieldV7([
         { seat: 0, role: "RAIDER", at: at(4, 3) },
@@ -574,13 +574,8 @@ describe("previews and offers (section 11)", () => {
       ]),
       at(3, 3),
     );
-    const offered = offeredV7(state, "THROW_BOLAS", "COLD_SNAP", "ATTACK");
-    // `pulp_wars-3u8d` (7r131): the Sled's Bolas flies exactly 2 tiles, so
-    // only the Marksman (5, 5) is a target (the two Fighters are its
-    // neighbours: Attacks).
-    expect(
-      offered.filter((command) => command.kind === "THROW_BOLAS"),
-    ).toHaveLength(1);
+    // (The Sled's Bolas went with the one Freeze effect, `pulp_wars-xv0t`.)
+    const offered = offeredV7(state, "COLD_SNAP", "ATTACK");
     expect(
       offered.filter((command) => command.kind === "COLD_SNAP"),
     ).toHaveLength(1);

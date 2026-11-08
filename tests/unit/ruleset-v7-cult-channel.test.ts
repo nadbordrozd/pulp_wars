@@ -858,7 +858,7 @@ describe("the Cult's channel: the Horror is a unit of its own (section 4.2)", ()
 
 describe("the Cult's channel: a bound Horror and the other factions (sections 4.2 and 13.1)", () => {
   const targeted = (
-    kind: "MIND_CONTROL" | "TRACTOR_BEAM" | "FROST_BOLT" | "ATTACK",
+    kind: "MIND_CONTROL" | "TRACTOR_BEAM" | "ATTACK",
     state: GameStateV7,
     from: CoordV7,
   ): CommandV7 =>
@@ -936,11 +936,16 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
   });
 
   it("can be Frozen and pushed while bound", () => {
-    const witch = horrorField([{ seat: 1, role: "CAPTAIN", at: at(5, 6) }], {
+    const witch = horrorField([{ seat: 1, role: "CAPTAIN", at: at(5, 5) }], {
       factions: ["CULT", "ICE_FOLK"],
       activeSeat: 1,
     });
-    const frozen = playV7(witch, targeted("FROST_BOLT", witch, at(5, 6)));
+    // A Cold Snap from the Witch beside it (the Frost Bolt went with the one
+    // Freeze effect, `pulp_wars-xv0t`, 7r133).
+    const frozen = playV7(witch, {
+      kind: "COLD_SNAP",
+      unitId: unitAtV7(witch, at(5, 5)).id,
+    });
     expect(frozen.state.frozen).toEqual([
       expect.objectContaining({ unitId: unitAtV7(witch, at(5, 4)).id }),
     ]);
@@ -992,7 +997,7 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
     const helper = unitAtV7(base, at(6, 2));
     const state = checkedV7({
       ...base,
-      frozen: [{ unitId: helper.id, turnsLeft: 2 }],
+      frozen: [{ unitId: helper.id, turnsLeft: 1 }],
     });
     expect(
       rejectedV7(state, summon(state, at(5, 2), at(6, 2), at(5, 3))),

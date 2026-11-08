@@ -634,17 +634,11 @@ import {
 import {
   BLIZZARD_LABEL_V7,
   BLIZZARD_TOOLTIP_V7,
-  BOLAS_LABEL_V7,
-  BOLAS_PICK_V7,
-  BOLAS_TOOLTIP_V7,
   BRITTLE_UNLOCK_TEXT_V7,
   COLD_SNAP_CAST_V7,
   COLD_SNAP_LABEL_V7,
   COLD_SNAP_TOOLTIP_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
-  FROST_BOLT_LABEL_V7,
-  FROST_BOLT_PICK_V7,
-  FROST_BOLT_TOOLTIP_V7,
   GLIDE_MOVE_LABEL_V7,
   SNOW_LABEL_V7,
   STAMPEDE_CHARGE_V7,
@@ -653,7 +647,6 @@ import {
   STAMPEDE_PICK_V7,
   STAMPEDE_TOOLTIP_V7,
   WITCH_SUPPORT_UNLOCK_TEXT_V7,
-  coldSnapChangedTargetsV7,
   coldSnapSummaryV7,
   frozenCannotActV7,
   frozenChipV7,
@@ -709,26 +702,19 @@ import {
   CRACK_ICE_TOOLTIP_V7,
   crackIceUnavailableTextV7,
   FREEZE_DEEP_UNLOCK_V7,
-  FREEZE_LABEL_V7,
-  FREEZE_LINE_TOOLTIP_V7,
-  FREEZE_PICK_V7,
   FREEZE_SHALLOW_UNLOCK_V7,
   ICE_LAND_GRANT_UNLOCK_V7,
   DIVE_MOVE_LABEL_V7,
   SKATE_MOVE_LABEL_V7,
-  HOARFROST_UNLOCK_V7,
   ICE_MOVE_TEXT_V7,
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
   SKATE_TRAIL_LABEL_V7,
-  freezeUnavailableTextV7,
-  FREEZE_FROZEN_MOVED_V7,
   frozenSeaBoundaryNoticeV7,
   glacierUnlockTextV7,
   iceChipLabelV7,
   iceChipTooltipV7,
   unitHasCrackIceV7,
-  unitHasFreezeV7,
 } from "../frozen-sea-presentation-v7";
 import {
   moveOnIceV7,
@@ -1240,13 +1226,11 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // The Mothership redesign (`pulp_wars-ewpj`): one Mass Beam Down button;
   // its tile is picked on the board.
   "MASS_BEAM_DOWN",
-  // The Ice Folk revision: Bolas and Cold Snap have one button per unit
-  // each; the targets are highlighted (and a Bolas target picked) on the
-  // board. Ice Folk Freeze (`pulp_wars-w49.38`): Frost Bolt and Stampede
-  // likewise (a Frost Bolt target, and a Stampede's end tile, on the board).
-  "THROW_BOLAS",
+  // The Ice Folk revision: Cold Snap has one button per unit; its targets
+  // are highlighted on the board. Ice Folk Freeze (`pulp_wars-w49.38`):
+  // Stampede likewise (its end tile on the board). (The Bolas and the
+  // Frost Bolt went with the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
   "COLD_SNAP",
-  "FROST_BOLT",
   "STAMPEDE",
   // The Dwarf revision: Tunnel, Bomb Run and Assemble have one button per
   // unit each; the destination, target, landing and tile are picked on the
@@ -1277,11 +1261,8 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "TOSS",
   "STOMP",
   "BREAK_OFF",
-  // The frozen sea (bead pulp_wars-5ti.7): likewise Freeze: one button per
-  // unit; a line role's arms it and the tile is picked on the board, the
-  // Ice Witch's casts her ring (BOARD_TARGETING.md section 3.5).
-  "FREEZE",
-  // The Cultists (bead pulp_wars-mch9.17): a Summoner has one Sacrifice and
+  // (The frozen sea's Freeze button went with the `FREEZE` command,
+  // `pulp_wars-xv0t`, 7r133.) The Cultists (bead pulp_wars-mch9.17): a Summoner has one Sacrifice and
   // one Seize button; each arms it and the victim is picked on the board
   // (BOARD_TARGETING.md section 3.7).
   "SACRIFICE",
@@ -1442,9 +1423,10 @@ const GIANT_PICK_ENTRIES_V7: readonly {
 ];
 
 /**
- * The Ice Folk revision and Ice Folk Freeze (`pulp_wars-w49.38`): the four
- * aimed Ice Folk abilities, each with its role ability, button name,
- * tooltip and icon.
+ * The Ice Folk revision and Ice Folk Freeze (`pulp_wars-w49.38`): the two
+ * aimed Ice Folk abilities (the Bolas and the Frost Bolt went with the one
+ * Freeze effect, `pulp_wars-xv0t`, 7r133), each with its role ability,
+ * button name, tooltip and icon.
  */
 const ICE_FOLK_ABILITY_ENTRIES_V7: readonly {
   readonly kind: IceFolkAbilityKindV7;
@@ -1454,24 +1436,10 @@ const ICE_FOLK_ABILITY_ENTRIES_V7: readonly {
   readonly icon: UiIconIdV7;
 }[] = [
   {
-    kind: "THROW_BOLAS",
-    ability: "BOLAS",
-    label: BOLAS_LABEL_V7,
-    tooltip: BOLAS_TOOLTIP_V7,
-    icon: "bolas",
-  },
-  {
     kind: "COLD_SNAP",
     ability: "COLD_SNAP",
     label: COLD_SNAP_LABEL_V7,
     tooltip: COLD_SNAP_TOOLTIP_V7,
-    icon: "snowflake",
-  },
-  {
-    kind: "FROST_BOLT",
-    ability: "FROST_BOLT",
-    label: FROST_BOLT_LABEL_V7,
-    tooltip: FROST_BOLT_TOOLTIP_V7,
     icon: "snowflake",
   },
   {
@@ -1486,12 +1454,8 @@ const ICE_FOLK_ABILITY_ENTRIES_V7: readonly {
 /** The `data-action` of an Ice Folk ability's button. */
 function iceFolkAbilityActionV7(kind: IceFolkAbilityKindV7): string {
   switch (kind) {
-    case "THROW_BOLAS":
-      return "ice-folk-bolas";
     case "COLD_SNAP":
       return "ice-folk-cold-snap";
-    case "FROST_BOLT":
-      return "ice-folk-frost-bolt";
     case "STAMPEDE":
       return "ice-folk-stampede";
   }
@@ -8874,9 +8838,9 @@ export class Ruleset7DomAppView {
         // Map curiosities round 3: the Tesla Tower's Zap and the Moon
         // Gun's Fire likewise.
         ...this.#curiosityActionButtons(unit.id),
-        // The frozen sea: Freeze likewise, and every other faction's Crack
-        // Ice (the frozen sea redesign, bead pulp_wars-5ti.27).
-        ...this.#freezeActionButtons(view, unit.id),
+        // The frozen sea: every other faction's Crack Ice (the frozen sea
+        // redesign, bead pulp_wars-5ti.27; the line roles' Freeze went with
+        // `pulp_wars-xv0t`, 7r133).
         ...this.#crackIceActionButtons(view, unit.id),
         // The Cultists: Sacrifice and Seize likewise, and the channel:
         // Summon, Channel, Behold!, Anchor and Boo!.
@@ -11012,13 +10976,8 @@ export class Ruleset7DomAppView {
       case "TRACTOR_BEAM":
         this.#startMartianPick(id, unitId);
         return;
-      case "THROW_BOLAS":
-      case "FROST_BOLT":
       case "STAMPEDE":
         this.#startIceFolkPick(id, unitId);
-        return;
-      case "FREEZE":
-        this.#startFreezePick(unitId);
         return;
       case "CRACK_ICE":
         this.#startFreezePick(unitId, "CRACK_ICE");
@@ -16902,8 +16861,7 @@ export class Ruleset7DomAppView {
         MARTIAN_FROZEN_MOVED_V7 ||
       (abilities.includes("BOMB_RUN") &&
         dwarfAbilityUnavailableTextV7(view, unit, "BOMB_RUN", false) ===
-          BOMB_FROZEN_V7) ||
-      freezeUnavailableTextV7(view, unit, false) === FREEZE_FROZEN_MOVED_V7;
+          BOMB_FROZEN_V7);
     const frozenReason = frozenCannotActV7(view, unit);
     if (buttons.length === 0 && !namedElsewhere && frozenReason !== null) {
       const frozen = button(
@@ -16952,10 +16910,10 @@ export class Ruleset7DomAppView {
     const preview =
       command === undefined ? null : previewColdSnapV7(view, unit.id);
     const summary = preview === null ? "" : ` ${coldSnapSummaryV7(preview)}.`;
-    action.title = `${COLD_SNAP_TOOLTIP_V7}.${summary}`;
+    action.title = `${COLD_SNAP_TOOLTIP_V7}${summary}`;
     action.setAttribute(
       "aria-label",
-      `${COLD_SNAP_LABEL_V7}. ${COLD_SNAP_TOOLTIP_V7}.${summary}`,
+      `${COLD_SNAP_LABEL_V7}. ${COLD_SNAP_TOOLTIP_V7}${summary}`,
     );
     action.dataset.boardTiles = String(preview?.tiles.length ?? 0);
     action.disabled = this.#localBusy();
@@ -16980,19 +16938,15 @@ export class Ruleset7DomAppView {
     };
   }
 
-  /** Starts aiming a Bolas, Frost Bolt or Stampede. */
+  /** Starts aiming a Stampede (or a Cold Snap's confirmation). */
   #startIceFolkPick(kind: IceFolkAbilityKindV7, unitId: UnitId): void {
     if (this.#localBusy()) return;
     this.#iceFolkPick =
       kind === "STAMPEDE" ? { kind, unitId, chosen: null } : { kind, unitId };
     this.#notice =
-      kind === "THROW_BOLAS"
-        ? `${BOLAS_PICK_V7}.`
-        : kind === "FROST_BOLT"
-          ? `${FROST_BOLT_LABEL_V7}: ${FROST_BOLT_PICK_V7.toLowerCase()}.`
-          : kind === "STAMPEDE"
-            ? `${STAMPEDE_LABEL_V7}: ${STAMPEDE_PICK_V7.toLowerCase()}.`
-            : `${COLD_SNAP_LABEL_V7}: confirm to freeze every highlighted unit.`;
+      kind === "STAMPEDE"
+        ? `${STAMPEDE_LABEL_V7}: ${STAMPEDE_PICK_V7.toLowerCase()}.`
+        : `${COLD_SNAP_LABEL_V7}: confirm to freeze every highlighted unit.`;
     this.#pendingFocusAction = null;
     this.#render();
     // The board takes the keyboard, so the arrow keys and Enter pick.
@@ -17077,16 +17031,10 @@ export class Ruleset7DomAppView {
       "section",
       "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-board-pick",
     );
-    panel.dataset.v7IceFolkPick =
-      pick.kind === "THROW_BOLAS" ? "bolas" : pick.kind.toLowerCase();
+    panel.dataset.v7IceFolkPick = pick.kind.toLowerCase();
     const lines = el(this.#document, "div", "v7-martian-choices");
     let prompt: string;
-    if (pick.kind === "THROW_BOLAS" || pick.kind === "FROST_BOLT") {
-      // Bead pulp_wars-9im: the targets are highlighted and picked on the
-      // board, each with its hint; the dock lists none.
-      prompt = pick.kind === "THROW_BOLAS" ? BOLAS_PICK_V7 : FROST_BOLT_PICK_V7;
-      panel.dataset.boardTargets = String(commands.length);
-    } else if (pick.kind === "STAMPEDE") {
+    if (pick.kind === "STAMPEDE") {
       panel.dataset.boardTargets = String(commands.length);
       const chosen =
         pick.chosen === null
@@ -17129,16 +17077,13 @@ export class Ruleset7DomAppView {
         return null;
       }
       prompt = coldSnapSummaryV7(preview);
-      // No pointless actions (`pulp_wars-zir6`): the units it changes.
-      const changed = coldSnapChangedTargetsV7(preview);
-      panel.dataset.boardTargets = String(changed.length);
+      // No pointless actions (`pulp_wars-zir6`): the units it Freezes (a
+      // Frozen unit is no target since `pulp_wars-xv0t`).
+      panel.dataset.boardTargets = String(preview.targets.length);
       // Each target is labelled on the board; the cast button names them
       // for assistive technology.
-      const targets = changed
-        .map(
-          (target) =>
-            `${nameOf(target.unitId)}: ${target.alreadyFrozen ? "Stays Frozen" : "Will be Frozen"}`,
-        )
+      const targets = preview.targets
+        .map((target) => `${nameOf(target.unitId)}: Will be Frozen`)
         .join(". ");
       const cast = button(
         this.#document,
@@ -17178,72 +17123,6 @@ export class Ruleset7DomAppView {
     buttons.append(cancel);
     panel.append(buttons);
     return panel;
-  }
-
-  /**
-   * The frozen sea (bead pulp_wars-5ti.7; BOARD_TARGETING.md section 3.5):
-   * the one Freeze button of an own unit with the ability. A line role's
-   * button arms it (pressed while aiming) and the tile to freeze toward is
-   * picked on the board (the Ice Witch freezes her ring with her Cold Snap
-   * since `pulp_wars-s55m.1`). Without an offered Freeze, a unit next to
-   * water shows the button disabled with the engine's reason; every other
-   * unit shows none.
-   */
-  #freezeActionButtons(
-    view: PlayerViewV7,
-    unitId: UnitId,
-  ): readonly HTMLButtonElement[] {
-    const unit = view.units.find((candidate) => candidate.id === unitId);
-    if (
-      unit === undefined ||
-      unit.ownerId !== view.viewer.id ||
-      !matchHasIceFolkSeatV7(view) ||
-      this.#snapshot.offeredCommands.length === 0
-    )
-      return [];
-    if (!unitHasFreezeV7(view, unit)) return [];
-    const commands = this.#snapshot.offeredCommands.filter(
-      (command): command is Extract<CommandV7, { kind: "FREEZE" }> =>
-        command.kind === "FREEZE" && command.unitId === unit.id,
-    );
-    const reason = freezeUnavailableTextV7(view, unit, commands.length > 0);
-    if (commands.length === 0 && reason === null) return [];
-    const action = button(this.#document, "", "freeze", "v7-context-action");
-    action.append(
-      this.#chibiArt("ICON:ACTION:FREEZE", CHIBI_DOM_BOXES_V7.action)
-        ?.element ??
-        uiIconV7(this.#document, "snowflake", "v7-ui-icon v7-command-icon"),
-      text(this.#document, "span", FREEZE_LABEL_V7, "v7-action-label"),
-    );
-    action.dataset.freezeAbility = "line";
-    if (reason !== null) {
-      // aria-disabled keeps the reason reachable by keyboard and touch.
-      action.setAttribute("aria-disabled", "true");
-      action.dataset.disabledReason = reason;
-      action.title = reason;
-      action.setAttribute(
-        "aria-label",
-        `${FREEZE_LABEL_V7} unavailable. ${reason}`,
-      );
-      action.onclick = () => {
-        this.#notice = `${reason}.`;
-        this.#showToast(`${reason}.`);
-        this.#pendingFocusAction = "freeze";
-        this.#render();
-      };
-      return [action];
-    }
-    action.disabled = this.#localBusy();
-    const aiming = this.#freezePick !== null;
-    action.title = FREEZE_LINE_TOOLTIP_V7;
-    action.setAttribute(
-      "aria-label",
-      `${FREEZE_LABEL_V7}. ${FREEZE_LINE_TOOLTIP_V7}`,
-    );
-    action.setAttribute("aria-pressed", String(aiming));
-    action.onclick = () =>
-      aiming ? this.#cancelFreezePick() : this.#startFreezePick(unit.id);
-    return [action];
   }
 
   /**
@@ -17313,36 +17192,32 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Starts aiming the selected unit's Freeze, or (the frozen sea redesign,
-   * bead pulp_wars-5ti.27) its Crack Ice.
+   * Starts aiming the selected unit's Crack Ice (the frozen sea redesign,
+   * bead pulp_wars-5ti.27; a line role's Freeze until `pulp_wars-xv0t`).
    */
-  #startFreezePick(
-    unitId: UnitId,
-    kind: FreezePickV7["kind"] = "FREEZE",
-  ): void {
+  #startFreezePick(unitId: UnitId, kind: FreezePickV7["kind"]): void {
     if (this.#localBusy()) return;
     this.#freezePick = { kind, unitId };
-    this.#notice = `${kind === "CRACK_ICE" ? CRACK_ICE_PICK_V7 : FREEZE_PICK_V7}.`;
+    this.#notice = `${CRACK_ICE_PICK_V7}.`;
     this.#pendingFocusAction = null;
     this.#render();
     // The board takes the keyboard, so Tab and Enter pick.
     this.#queueBoardFocus();
   }
 
-  /** Leaves the aiming, and returns focus to the Freeze (or Crack) button. */
+  /** Leaves the aiming, and returns focus to the Crack Ice button. */
   #cancelFreezePick(): void {
     const pick = this.#freezePick;
     this.#freezePick = null;
-    this.#pendingFocusAction =
-      pick === null ? null : pick.kind === "CRACK_ICE" ? "crack-ice" : "freeze";
+    this.#pendingFocusAction = pick === null ? null : "crack-ice";
     this.#render();
   }
 
   /**
-   * The Freeze (or Crack Ice) aiming panel in the dock: the action's icon
-   * and name, its "?" and Cancel. The tiles are highlighted and picked on
-   * the board, each with what freezes (or breaks); the dock lists none.
-   * Null (and the aiming ends) when nothing is offered any more.
+   * The Crack Ice aiming panel in the dock: the action's icon and name, its
+   * "?" and Cancel. The tiles are highlighted and picked on the board, each
+   * with what breaks; the dock lists none. Null (and the aiming ends) when
+   * nothing is offered any more.
    */
   #freezePickPanel(unitId: UnitId): HTMLElement | null {
     const pick = this.#freezePick;
@@ -17354,32 +17229,21 @@ export class Ruleset7DomAppView {
       this.#freezePick = null;
       return null;
     }
-    const crack = pick.kind === "CRACK_ICE";
     const panel = el(
       this.#document,
       "section",
       "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-freeze-pick v7-board-pick",
     );
-    panel.dataset.v7FreezePick = crack ? "crack" : "line";
+    panel.dataset.v7FreezePick = "crack";
     panel.dataset.boardTargets = String(commands.length);
-    panel.setAttribute(
-      "aria-label",
-      crack ? CRACK_ICE_PICK_V7 : FREEZE_PICK_V7,
-    );
+    panel.setAttribute("aria-label", CRACK_ICE_PICK_V7);
     panel.append(
-      crack
-        ? this.#pickHead(
-            "ICON:ACTION:CRACK_ICE",
-            "ice-pick",
-            CRACK_ICE_LABEL_V7,
-            `${CRACK_ICE_PICK_V7}. ${CRACK_ICE_RULE_V7}`,
-          )
-        : this.#pickHead(
-            "ICON:ACTION:FREEZE",
-            "snowflake",
-            FREEZE_LABEL_V7,
-            `${FREEZE_PICK_V7}. ${FREEZE_LINE_TOOLTIP_V7}`,
-          ),
+      this.#pickHead(
+        "ICON:ACTION:CRACK_ICE",
+        "ice-pick",
+        CRACK_ICE_LABEL_V7,
+        `${CRACK_ICE_PICK_V7}. ${CRACK_ICE_RULE_V7}`,
+      ),
     );
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     const cancel = button(
@@ -20078,7 +19942,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r132",
+    rulesetId: "pulp-wars-poc-7r133",
     seed,
     width,
     height: width,
@@ -20289,8 +20153,6 @@ function effectDescription(
       return effect.depth === "DEEP"
         ? FREEZE_DEEP_UNLOCK_V7
         : FREEZE_SHALLOW_UNLOCK_V7;
-    case "LONG_FREEZE":
-      return HOARFROST_UNLOCK_V7;
     case "BLACK_ICE":
       return BLACK_ICE_UNLOCK_V7;
     case "GLACIER":
@@ -20670,7 +20532,6 @@ function technologyEffectGroupIdV7(
     case "SUGAR_SAILS":
     case "DEEP_OFFERINGS":
     case "HARBOURS":
-    case "LONG_FREEZE":
     case "BLACK_ICE":
     case "GLACIER":
     case "OVERRUN":
@@ -21407,8 +21268,8 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   MASS_BEAM_DOWN: "beam-down",
   MIND_CONTROL: "mind-control",
   TRACTOR_BEAM: "tractor-beam",
-  // The Ice Folk revision: LEGACY glyphs of Bolas and Cold Snap.
-  THROW_BOLAS: "bolas",
+  // The Ice Folk revision: the LEGACY glyph of Cold Snap (the Bolas went
+  // with `pulp_wars-xv0t`, 7r133).
   COLD_SNAP: "snowflake",
   // The Dwarf revision: LEGACY glyphs of Tunnel, Bomb Run and Assemble;
   // Dwarf crowd control: Whirl and Barricade (LEGACY glyphs; CHIBI draws

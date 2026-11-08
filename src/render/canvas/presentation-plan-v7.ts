@@ -1544,15 +1544,12 @@ export function corePresentationPlanV7(
           cells: event.tiles.filter(isExplored),
           unitIds: [...event.newUnitIds],
         });
-    } else if (event.kind === "UNITS_FROZEN" && event.source === "SHARDS") {
-      // The giants' signatures: the shards' freeze is part of the Glacial
-      // Smash cue, planned with the Frost Giant's attack.
     } else if (event.kind === "UNITS_FROZEN") {
-      // The Ice Folk revision: a Bolas flies from the Sled, a Cold Snap
-      // rings out from the Witch, a Cold Aura pulses round the Giant; frost
-      // forms on each Frozen unit. Ice Folk Freeze (`pulp_wars-w49.38`): a
-      // Frost Bolt streaks from the Witch, and Black Ice and Frostbite
-      // freeze their units where they stand.
+      // The Ice Folk revision: a Cold Snap rings out from the Witch, and
+      // (the one Freeze effect, `pulp_wars-xv0t`, 7r133) a Cold Wake from
+      // the Frost Giant; frost forms on each Frozen unit. A Frost Wyrm's
+      // breath, Black Ice and Frostbite freeze their units where they
+      // stand.
       const cells = event.results.flatMap((result) => {
         const unit = unitAnywhere(result.unitId);
         return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
@@ -1564,15 +1561,9 @@ export function corePresentationPlanV7(
       if (cells.length > 0)
         pushIceFolk({
           effect:
-            event.source === "BOLAS"
-              ? "BOLAS"
-              : event.source === "FROST_BOLT"
-                ? "FROST_BOLT"
-                : event.source === "COLD_SNAP"
-                  ? "COLD_SNAP"
-                  : event.source === "COLD_AURA"
-                    ? "COLD_AURA"
-                    : "FROST",
+            event.source === "COLD_SNAP" || event.source === "COLD_WAKE"
+              ? "COLD_SNAP"
+              : "FROST",
           cells,
           ...(source === undefined ||
           !isExplored(source.at) ||
@@ -1645,10 +1636,11 @@ export function corePresentationPlanV7(
       for (const result of event.results)
         if (result.shovedTo !== null)
           origins.set(result.unitId, result.shovedTo);
-    } else if (event.kind === "WATER_FROZEN") {
-      // The frozen sea: frost spreads from the Freezing unit over the
-      // tiles the viewer knows.
-      const cells = event.tiles.filter(isExplored);
+    } else if (event.kind === "TILES_FROZEN") {
+      // The frozen sea: frost spreads from the freezing unit over the tiles
+      // the viewer knows (the one Freeze effect, `pulp_wars-xv0t`: the
+      // water it ices and the land it snows).
+      const cells = [...event.tiles, ...event.snow].filter(isExplored);
       const source =
         event.unitId === null ? undefined : unitAnywhere(event.unitId);
       if (cells.length > 0)
@@ -2028,20 +2020,14 @@ export function corePresentationPlanV7(
           unitId: defender.id,
         });
       // The giants' signatures (section 6.6): a Frost Giant's shatter
-      // bursts bigger, its shards flying to the eight tiles around and
-      // freezing the units there.
+      // bursts bigger, its shards flying to the eight tiles around (they
+      // freeze nobody since the one Freeze effect, `pulp_wars-xv0t`).
       if (
         shatters &&
         (
           unitRoleRuleV7(before, attacker).abilities as readonly string[]
         ).includes("GLACIAL_SMASH")
       ) {
-        const shards = envelope.events.find(
-          (candidate) =>
-            candidate.kind === "UNITS_FROZEN" &&
-            candidate.source === "SHARDS" &&
-            candidate.sourceUnitId === attacker.id,
-        );
         const ring: CoordV7[] = [];
         for (let dy = -1; dy <= 1; dy += 1)
           for (let dx = -1; dx <= 1; dx += 1) {
@@ -2060,15 +2046,6 @@ export function corePresentationPlanV7(
           from: defender.at,
           cells: ring,
           unitIds: [],
-          marks:
-            shards?.kind === "UNITS_FROZEN"
-              ? shards.results.flatMap((result) => {
-                  const unit = unitAnywhere(result.unitId);
-                  return unit === undefined || !isExplored(unit.at)
-                    ? []
-                    : [unit.at];
-                })
-              : [],
         });
       }
       // The Candy revision: a Pie Launcher's hit leaves its target Splatted

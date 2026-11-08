@@ -15,10 +15,7 @@ import {
   giantCommandUnavailableTextV7,
 } from "../../src/render/giant-presentation-v7";
 import {
-  BOLAS_NO_TARGET_V7,
   COLD_SNAP_NO_TARGET_V7,
-  FROST_BOLT_NO_TARGET_V7,
-  coldSnapChangedTargetsV7,
   iceFolkAbilityUnavailableTextV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import { unitAtV7 } from "../fixtures/v7-goblin-arena";
@@ -52,72 +49,25 @@ const aiScores = (state: GameStateV7, command: CommandV7): boolean =>
 
 const idAt = (state: GameStateV7, where: CoordV7) => unitAtV7(state, where).id;
 
-describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () => {
-  /**
-   * An Ice Folk Sled on (4, 5) and Ice Witch on (5, 5) of seat 0; a Human
-   * Fighter Frozen on (5, 3) and a free one on (6, 3), both exactly 2 from
-   * either (the Sled's Bolas flies exactly 2 since `pulp_wars-3u8d`, 7r131).
-   */
-  const field = (): GameStateV7 =>
-    iceFieldV7([
-      { seat: 0, role: "RAIDER", at: at(4, 5) },
-      { seat: 0, role: "CAPTAIN", at: at(5, 5) },
-      { seat: 1, role: "FIGHTER", at: at(5, 3), frozen: { turnsLeft: 1 } },
-      { seat: 1, role: "FIGHTER", at: at(6, 3) },
-    ]);
+describe("a freeze of a unit Frozen already", () => {
+  // (The Frost Bolt and the Sled's Bolas, aimed at one unit, went with the
+  // one Freeze effect, `pulp_wars-xv0t`, 7r133: the Cold Snap below is the
+  // aimed freeze left.)
 
-  for (const [kind, error, from] of [
-    ["THROW_BOLAS", "BOLAS_NOT_LEGAL", at(4, 5)],
-    ["FROST_BOLT", "FROST_BOLT_NOT_LEGAL", at(5, 5)],
-  ] as const)
-    it(`${kind}: refused with ALREADY_FROZEN, never offered, never scored by the AI`, () => {
-      const state = field();
-      const pointless: CommandV7 = {
-        kind,
-        unitId: idAt(state, from),
-        targetUnitId: idAt(state, at(5, 3)),
-      };
-      expect(rejectedV7(state, pointless)).toEqual({
-        code: error,
-        params: { reason: "ALREADY_FROZEN" },
-      });
-      expect(aiScores(state, pointless)).toBe(false);
-      // The unfrozen Fighter stays a target, and is frozen.
-      const useful: CommandV7 = {
-        kind,
-        unitId: idAt(state, from),
-        targetUnitId: idAt(state, at(6, 3)),
-      };
-      expect(offeredV7(state, kind)).toEqual([useful]);
-      expect(frozenAtV7(playV7(state, useful).state, at(6, 3))).toEqual({
-        unitId: idAt(state, at(6, 3)),
-        turnsLeft: 1,
-      });
-    });
-
-  it("leaves the Sled without a Frost Bolt when every enemy in reach is Frozen, and says why", () => {
+  it("leaves the Witch without a Cold Snap when it would change nothing, and says why", () => {
+    // On her capital (8, 8) her ring is her own territory (no Snow) with no
+    // water: only the Frozen Fighter is in it.
     const state = iceFieldV7([
-      { seat: 0, role: "RAIDER", at: at(3, 4) },
-      { seat: 0, role: "CAPTAIN", at: at(5, 5) },
-      { seat: 1, role: "FIGHTER", at: at(5, 4), frozen: { turnsLeft: 1 } },
+      { seat: 0, role: "CAPTAIN", at: at(8, 8) },
+      { seat: 1, role: "FIGHTER", at: at(8, 7), frozen: { turnsLeft: 1 } },
     ]);
-    expect(offeredV7(state, "THROW_BOLAS", "FROST_BOLT", "COLD_SNAP")).toEqual(
-      [],
-    );
+    expect(offeredV7(state, "COLD_SNAP")).toEqual([]);
     const view = activeView(state);
-    const sled = view.units.find((unit) => unit.id === idAt(state, at(3, 4)));
-    const witch = view.units.find((unit) => unit.id === idAt(state, at(5, 5)));
-    if (sled === undefined || witch === undefined) throw new Error("no unit");
-    expect(
-      iceFolkAbilityUnavailableTextV7(view, sled, "THROW_BOLAS", false),
-    ).toBe(BOLAS_NO_TARGET_V7);
-    expect(
-      iceFolkAbilityUnavailableTextV7(view, witch, "FROST_BOLT", false),
-    ).toBe(FROST_BOLT_NO_TARGET_V7);
+    const witch = view.units.find((unit) => unit.id === idAt(state, at(8, 8)));
+    if (witch === undefined) throw new Error("no unit");
     expect(
       iceFolkAbilityUnavailableTextV7(view, witch, "COLD_SNAP", false),
     ).toBe(COLD_SNAP_NO_TARGET_V7);
-    expect(BOLAS_NO_TARGET_V7).toBe("No unfrozen enemy 2 tiles away");
   });
 
   it("is pointless only while the entry is as long as a freeze gives now (a refresh that extends stays legal)", () => {
@@ -145,65 +95,65 @@ describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () 
 });
 
 describe("Cold Snap, an area freeze", () => {
-  /** An Ice Witch of seat 0 on (5, 3) and the given Human units next to her. */
+  /**
+   * An Ice Witch of seat 0 on her capital (8, 8) and the given Human units
+   * next to her: her ring is her own territory, so it lays no Snow (the one
+   * Freeze effect, `pulp_wars-xv0t`).
+   */
   const witchWith = (frozen: readonly [boolean, boolean]): GameStateV7 =>
     iceFieldV7([
-      { seat: 0, role: "CAPTAIN", at: at(5, 3) },
+      { seat: 0, role: "CAPTAIN", at: at(8, 8) },
       {
         seat: 1,
         role: "FIGHTER",
-        at: at(4, 3),
+        at: at(7, 8),
         ...(frozen[0] ? { frozen: { turnsLeft: 1 } as const } : {}),
       },
       {
         seat: 1,
         role: "GUARD",
-        at: at(6, 4),
+        at: at(9, 9),
         ...(frozen[1] ? { frozen: { turnsLeft: 1 } as const } : {}),
       },
     ]);
 
-  it("is legal while it changes one unit in its area; the Frozen one is renewed but not marked", () => {
+  it("is legal while it changes one unit in its area; the Frozen one is no target", () => {
     const state = witchWith([true, false]);
     const snap: CommandV7 = {
       kind: "COLD_SNAP",
-      unitId: idAt(state, at(5, 3)),
+      unitId: idAt(state, at(8, 8)),
     };
     expect(offeredV7(state, "COLD_SNAP")).toEqual([snap]);
     const preview = previewColdSnapV7(activeView(state), snap.unitId);
     if (preview === null) throw new Error("no Cold Snap preview");
-    // Both are in the cast; only the unfrozen Guard is a marked target.
-    expect(preview.targets.map((target) => target.alreadyFrozen)).toEqual(
-      [idAt(state, at(4, 3)), idAt(state, at(6, 4))]
-        .sort((left, right) => left - right)
-        .map((id) => id === idAt(state, at(4, 3))),
-    );
-    expect(coldSnapChangedTargetsV7(preview).map((t) => t.unitId)).toEqual([
-      idAt(state, at(6, 4)),
-    ]);
+    // The one Freeze effect (`pulp_wars-xv0t`): only the unfrozen Guard is
+    // a target (a Frozen unit keeps its entry).
+    expect(preview.targets).toEqual([{ unitId: idAt(state, at(9, 9)) }]);
     const cast = playV7(state, snap);
-    expect(frozenAtV7(cast.state, at(4, 3))?.turnsLeft).toBe(1);
-    expect(frozenAtV7(cast.state, at(6, 4))?.turnsLeft).toBe(1);
+    expect(frozenAtV7(cast.state, at(7, 8))?.turnsLeft).toBe(1);
+    expect(frozenAtV7(cast.state, at(9, 9))?.turnsLeft).toBe(1);
   });
 
-  it("is refused with ALREADY_FROZEN, never offered or scored, when every unit in its area is Frozen", () => {
+  it("is refused with NO_TARGET, never offered or scored, when every unit in its area is Frozen", () => {
     const state = witchWith([true, true]);
     const snap: CommandV7 = {
       kind: "COLD_SNAP",
-      unitId: idAt(state, at(5, 3)),
+      unitId: idAt(state, at(8, 8)),
     };
+    // The one Freeze effect (`pulp_wars-xv0t`): `ALREADY_FROZEN` went with
+    // the Frost Bolt; nothing to change is `NO_TARGET`.
     expect(rejectedV7(state, snap)).toEqual({
       code: "COLD_SNAP_NOT_LEGAL",
-      params: { reason: "ALREADY_FROZEN" },
+      params: { reason: "NO_TARGET" },
     });
     expect(aiScores(state, snap)).toBe(false);
-    // Nobody at all is still NO_TARGET.
+    // Nobody at all is NO_TARGET too.
     const alone = iceFieldV7([
-      { seat: 0, role: "CAPTAIN", at: at(5, 3) },
-      { seat: 1, role: "FIGHTER", at: at(8, 3) },
+      { seat: 0, role: "CAPTAIN", at: at(8, 8) },
+      { seat: 1, role: "FIGHTER", at: at(5, 3) },
     ]);
     expect(
-      rejectedV7(alone, { kind: "COLD_SNAP", unitId: idAt(alone, at(5, 3)) })
+      rejectedV7(alone, { kind: "COLD_SNAP", unitId: idAt(alone, at(8, 8)) })
         .params,
     ).toEqual({ reason: "NO_TARGET" });
   });

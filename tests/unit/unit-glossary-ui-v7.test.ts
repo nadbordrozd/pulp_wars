@@ -400,8 +400,8 @@ describe("Ruleset 7 unit glossary", () => {
     // Frost Breath replaced the Sabretooth's Prowl.
     expect(idOf("KNIGHT", "ICE_FOLK", "FROST_BREATH")).toBe("FROST_BREATH");
     expect(idOf("SWORDSMAN", "ICE_FOLK", "TRAMPLE")).toBe("WRECKER");
-    expect(idOf("RAIDER", "ICE_FOLK", "BOLAS")).toBe("FROST_BOLT");
-    expect(idOf("CAPTAIN", "ICE_FOLK", "FROST_BOLT")).toBe("FROST_BOLT");
+    // (The Bolas and the Frost Bolt went with the one Freeze effect,
+    // `pulp_wars-xv0t`, 7r133.)
     // The old names are gone from every unit's lines.
     const retired = [
       "Pounce",

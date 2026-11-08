@@ -1,8 +1,7 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  FREEZE_LINE_V7,
-  WITCH_FREEZE_RADIUS_V7,
+  COLD_SNAP_RANGE_V7,
   isIceAtV7,
   technologyCapabilitiesV7,
   unitIsFrozenV7,
@@ -14,8 +13,8 @@ import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import { iceAtV7, unitSkatesV7 } from "../engine/v7/ice";
 import {
   previewColdSnapV7,
+  previewColdWakeV7,
   previewCrackIceV7,
-  previewFreezeV7,
   queryCombatPreviewV7,
   type CrackIcePreviewV7,
 } from "../engine/v7/query";
@@ -34,15 +33,18 @@ import type {
  * **An Ice Folk seat** has no ship and so no naval plan; it has an ice plan
  * (`iceSeaPlanV7`): the crossing it freezes toward an objective it cannot
  * walk to, the builder that freezes it, and the wave that waits at its head
- * and skates across. The same seat Freezes hostile ships with a water
- * Freeze or a Cold Snap (`pulp_wars-s55m.1`: through their owner's next
- * turn; Icebound is gone), mends and retakes its crossing, Freezes the
- * water of its own territory for
- * the buildings it can put on the ice and beside a threatened center, and
- * researches its five ice technologies when the board asks for them.
+ * and skates across. The one Freeze effect (`pulp_wars-xv0t`, 7r133): the
+ * builder is an Ice Witch, who casts her Cold Snap from the crossing's tip,
+ * or a Frost Giant, whose Cold Wake freezes the ring around every tile it
+ * ends a Move on (it walks out along the crossing, one new tile a Move).
+ * The same seat mends and retakes its crossing with them, freezes the
+ * water of its own territory for the buildings it can put on the ice and
+ * beside a threatened center, and researches its ice technologies when
+ * the board asks for them. (The `FREEZE` command of every role is gone.)
  *
- * **Every seat** plays against the ice: a ship stays out of the Freeze reach
- * of a seat that has been seen to Freeze, a land unit does not end a Move on
+ * **Every seat** plays against the ice: a ship stays out of the reach of a
+ * hostile Witch's Cold Snap and a hostile Frost Giant's Cold
+ * Wake (`pulp_wars-xv0t`), a land unit does not end a Move on
  * hostile ice (Black Ice is assumed, research being private), a transport
  * lands beside the ice, and every other seat Cracks the ice
  * (`iceCrackScoreV7`) to open an own or allied dock iced over, to break a
@@ -57,7 +59,7 @@ import type {
  * rule here reads a thaw.
  *
  * Every function reads only the viewer's public view and the public
- * previews (`previewFreezeV7`, `previewCrackIceV7`, `queryCombatPreviewV7`),
+ * previews (`previewColdSnapV7`, `previewColdWakeV7`, `previewCrackIceV7`),
  * draws nothing from the PRNG, and returns its neutral value at once in a
  * view without ice, without an Ice Folk seat, or (the plan) without water:
  * Dry Land and every match without an Ice Folk seat decide as before.
@@ -67,7 +69,7 @@ import type {
 
 /** Rime or Pack Ice for a crossing the plan needs (the naval plan's own research has 1280 too). */
 export const ICE_SEA_PLAN_RESEARCH_PRIORITY_V7 = 1280;
-/** Hoarfrost or Black Ice when the board asks (the due naval research of a seafaring seat has 1170 too). */
+/** Black Ice when the board asks (the due naval research of a seafaring seat has 1170 too). */
 export const ICE_SEA_DUE_RESEARCH_PRIORITY_V7 = 1170;
 /** Glacier, last: above the generic research, below training. */
 export const ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7 = 1075;
@@ -86,23 +88,33 @@ export const ICE_SEA_BATTLESHIP_RADIUS_V7 = 3;
 /** The Witch builds a crossing whose stand tile is within this many tiles of her. */
 export const ICE_SEA_WITCH_BUILDER_RADIUS_V7 = 6;
 /**
- * A Freeze that reaches a hostile ship and Freezes it (`pulp_wars-s55m.1`):
- * before every attack on it (they are unanswered afterwards).
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): the crossing tiles the
+ * wave lets the builder still freeze when it goes (a Witch's next Cold
+ * Snap or a Frost Giant's next Move freezes one tile of the crossing).
  */
-export const ICE_FREEZE_SHIP_PRIORITY_V7 = 1297;
-/** A builder's Move to the tile it Freezes the crossing from: before its Freeze. */
+export const ICE_SEA_READY_GAP_V7 = 1;
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): an Ice Witch's training
+ * value while the crossing still to build has no builder (no own Witch and
+ * no own Frost Giant): her Cold Snaps build it.
+ */
+export const ICE_BUILDER_TRAINING_BIAS_V7 = 30;
+/**
+ * A builder's Move to the tile it freezes the crossing from (a Frost
+ * Giant's Cold Wake does it on arrival): before its Cold Snap.
+ */
 export const ICE_BUILD_MOVE_PRIORITY_V7 = 1112;
-/** A Freeze that extends the crossing (or fills a gap a Crack broke in it): below every kill, above routine Moves. */
+/** A Cold Snap that extends the crossing (or fills a gap a Crack broke in it): below every kill, above routine Moves. */
 export const ICE_BRIDGE_FREEZE_PRIORITY_V7 = 1110;
-/** A Freeze that mends a cracked crossing tile, or takes one another seat holds. */
+/** A Cold Snap that mends a cracked crossing tile, or takes one another seat holds. */
 export const ICE_MEND_PRIORITY_V7 = 1109;
 /** The wave's Move onto and along a crossing that is ready. */
 export const ICE_CROSS_MOVE_PRIORITY_V7 = 1108;
 /** The wave's walk to the head of the crossing: a routine Move with a goal. */
 export const ICE_STAGE_MOVE_PRIORITY_V7 = 720;
 /**
- * A Freeze of own-territory water that a building on offer would use, or
- * beside a threatened center, by a unit with nothing better to do.
+ * A Cold Snap that ices own-territory water a building on offer would use,
+ * or beside a threatened center, by a Witch with nothing better to do.
  */
 export const ICE_HOME_FREEZE_PRIORITY_V7 = 712;
 /** An attack on a unit that stands on ice: it has no terrain cover and cannot be fortified. */
@@ -181,7 +193,8 @@ const isWater = (tile: ExploredTileV7): boolean => tile.biome === null;
  * `unit` on `at` on their next turn), and `standTiles`: the tiles a visible
  * hostile unit can stand on and still use its primary action this turn (its
  * own tile, and every tile its Move reaches when it may act after a Move;
- * the slide is followed).
+ * the slide is followed; every tile its Move reaches for a Frost Giant,
+ * whose Cold Wake freezes on arrival).
  */
 export interface FrozenSeaToolsV7 {
   readonly isHostile: (ownerId: PlayerId) => boolean;
@@ -209,15 +222,6 @@ export interface FrozenSeaToolsV7 {
    * consider passes over it, or an allied unit stands on ice beside it).
    */
   readonly plannedThrough: (at: CoordV7) => boolean;
-  /**
-   * The Ice Folk roster rework (`pulp_wars-s55m.4`): whether an own unit's
-   * offered attack that neither kills nor sinks is one the policy would
-   * make (it leaves the unit alive through the visible enemies' next turn,
-   * the Frost Breath's freeze counted). Absent: never.
-   */
-  readonly strikeAcceptable?: (
-    command: Extract<CommandV7, { kind: "ATTACK" }>,
-  ) => boolean;
 }
 
 // --- The glide in a reach estimate ---------------------------------------------
@@ -290,13 +294,21 @@ export interface IcePlanV7 {
   readonly unfrozen: number;
   /** Every crossing tile is ice. */
   readonly complete: boolean;
-  /** The crossing is complete or one Freeze short of it: the wave goes. */
+  /** The crossing is complete or one tile short of it: the wave goes. */
   readonly ready: boolean;
   /** An unfrozen crossing tile is Deep Water and the seat has no Pack Ice. */
   readonly needsPackIce: boolean;
-  /** Where a builder stands to Freeze the next tile; null when complete. */
+  /**
+   * Where a builder stands to freeze the next tile (the head on the shore,
+   * then the newest crossing ice: it is next to the next tile); null when
+   * complete.
+   */
   readonly stand: CoordV7 | null;
-  /** The unit with the Build job (none or one: ice is permanent, a crossing is built once). */
+  /**
+   * The unit with the Build job (none or one: ice is permanent, a crossing
+   * is built once): a near own Witch, else an own Frost Giant, else the
+   * nearest own Witch (`pulp_wars-xv0t`).
+   */
   readonly builders: readonly UnitId[];
   /** Route steps to the target over ground, ice, and the crossing, by tile key. */
   readonly steps: ReadonlyMap<string, number>;
@@ -345,6 +357,10 @@ export function landGrantIceTilesV7(
         tile.territoryCityId !== cityId &&
         !(tile.territoryCityId === null && tile.territoryOwnerId === null)
       )
+        continue;
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a dock never
+      // freezes.
+      if (tile.improvement === "PORT" || tile.improvement === "SHIPYARD")
         continue;
       const ice = iceAtV7(view, tile.at);
       if (ice !== undefined && ice.ownerId === view.viewer.id && !ice.cracked)
@@ -754,10 +770,12 @@ function computeIcePlan(
   for (const [index, value] of routeSteps)
     steps.set(keyOf({ x: index % width, y: Math.floor(index / width) }), value);
   // Builders (section 13.2): the Witch when she is near (her Cold Snap's
-  // ring makes the road three wide); otherwise the cheapest line unit. The
-  // frozen sea
-  // redesign (`pulp_wars-5ti.26`): ice is permanent, so one builder builds
-  // the crossing once and nobody refreezes behind it.
+  // ring makes the road three wide); otherwise a Frost Giant, whose Cold
+  // Wake freezes the ring around every tile it ends a Move on; otherwise
+  // the nearest Witch however far (the one Freeze effect,
+  // `pulp_wars-xv0t`, 7r133; every line unit's `FREEZE` before). The frozen
+  // sea redesign (`pulp_wars-5ti.26`): ice is permanent, so one builder
+  // builds the crossing once and nobody refreezes behind it.
   const rime =
     technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
       .freezeWater !== "NONE";
@@ -767,12 +785,11 @@ function computeIcePlan(
       : ownUnits.filter((unit) => {
           const rule = unitRoleRuleV7(view, unit);
           return (
-            // The Witch freezes water with her Cold Snap
-            // (`pulp_wars-s55m.1`).
-            (rule.abilities.includes("FREEZE") ||
-              rule.abilities.includes("COLD_SNAP")) &&
-            // Not Frozen, and a role that may Freeze after its Move.
-            unitMayActAfterMoveV7(view, unit) &&
+            (rule.abilities.includes("COLD_WAKE") ||
+              // The Witch casts after her Move.
+              (rule.abilities.includes("COLD_SNAP") &&
+                unitMayActAfterMoveV7(view, unit))) &&
+            !unitIsFrozenV7(view, unit) &&
             // Home side only: a unit that has crossed has other work.
             (steps.get(keyOf(unit.at)) ?? -1) >= (steps.get(keyOf(stand)) ?? 0)
           );
@@ -783,36 +800,41 @@ function computeIcePlan(
         (city) => city.ownerId === view.viewer.id && same(city.at, unit.at),
       ),
     );
-  const witch =
+  const witches =
+    stand === null
+      ? []
+      : freezers
+          .filter((unit) =>
+            unitRoleRuleV7(view, unit).abilities.includes("BLIZZARD"),
+          )
+          .sort(
+            (left, right) =>
+              chebyshev(left.at, stand) - chebyshev(right.at, stand) ||
+              left.id - right.id,
+          );
+  const witch = witches
+    .filter(
+      (unit) =>
+        stand !== null &&
+        chebyshev(unit.at, stand) <= ICE_SEA_WITCH_BUILDER_RADIUS_V7,
+    )
+    .sort((left, right) => left.id - right.id)[0];
+  const waker =
     stand === null
       ? undefined
       : freezers
           .filter(
             (unit) =>
-              unitRoleRuleV7(view, unit).abilities.includes("BLIZZARD") &&
-              chebyshev(unit.at, stand) <= ICE_SEA_WITCH_BUILDER_RADIUS_V7,
+              !unitRoleRuleV7(view, unit).abilities.includes("BLIZZARD"),
           )
-          .sort((left, right) => left.id - right.id)[0];
-  const builders =
-    stand === null
-      ? []
-      : witch !== undefined
-        ? [witch.id]
-        : freezers
-            .filter(
-              (unit) =>
-                !unitRoleRuleV7(view, unit).abilities.includes("BLIZZARD"),
-            )
-            .sort(
-              (left, right) =>
-                garrison(left) - garrison(right) ||
-                (unitRoleRuleV7(view, left).cost ?? 0) -
-                  (unitRoleRuleV7(view, right).cost ?? 0) ||
-                chebyshev(left.at, stand) - chebyshev(right.at, stand) ||
-                left.id - right.id,
-            )
-            .slice(0, 1)
-            .map((unit) => unit.id);
+          .sort(
+            (left, right) =>
+              garrison(left) - garrison(right) ||
+              chebyshev(left.at, stand) - chebyshev(right.at, stand) ||
+              left.id - right.id,
+          )[0];
+  const builder = witch ?? waker ?? witches[0];
+  const builders = builder === undefined ? [] : [builder.id];
   return {
     target,
     shortcut,
@@ -824,8 +846,8 @@ function computeIcePlan(
     ready:
       complete ||
       (!needsPackIce &&
-        unfrozen <= FREEZE_LINE_V7 &&
-        next >= crossing.length - FREEZE_LINE_V7),
+        unfrozen <= ICE_SEA_READY_GAP_V7 &&
+        next >= crossing.length - ICE_SEA_READY_GAP_V7),
     needsPackIce,
     stand,
     builders,
@@ -929,10 +951,11 @@ function nextOf(
  * - **Glacier** (the frozen sea redesign) at the due 1170 once at least two
  *   of the seat's ice tiles are seen cracked open (`iceCrackedOpenTilesV7`:
  *   thick ice holds two Cracks and a Freeze mends one); otherwise last
- *   (1075), with a crossing, once the other four are researched;
- * - **Hoarfrost** (`pulp_wars-s55m.1`, Icebound before) at the due 1170
- *   while a crossing is still to be frozen (its three-tile line builds it
- *   faster), after Black Ice and Glacier's evidence.
+ *   (1075), with a crossing, once Rime, Pack Ice, and Black Ice are
+ *   researched;
+ * - (Hoarfrost, whose three-tile Freeze line built a crossing faster, went
+ *   with the `FREEZE` command, `pulp_wars-xv0t`, 7r133: the node unlocks
+ *   nothing until the naval branch is rebuilt.)
  *
  * A technology on the way to the wanted one is asked for in its place. The
  * free opener keeps the ordinary scorer (the caller never asks then).
@@ -1011,18 +1034,10 @@ export function iceSeaResearchV7(
       priority: ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
       strategic: 45,
     });
-  // Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost, a longer
-  // Freeze line, while the crossing is still to be frozen.
-  if (plan !== null && !plan.complete && researched.includes("SHORECRAFT"))
-    wants.push({
-      path: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
-      priority: ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
-      strategic: 30,
-    });
   if (
     plan !== null &&
     researched.includes("SHORECRAFT") &&
-    (["NAVIGATION", "NAVAL_ENGINEERING", "SEAMANSHIP"] as const).every((tech) =>
+    (["NAVIGATION", "SEAMANSHIP"] as const).every((tech) =>
       researched.includes(tech),
     )
   )
@@ -1058,47 +1073,29 @@ export function iceSeaCrossingTechV7(
 // --- Freeze ----------------------------------------------------------------------
 
 export interface IceFreezeScoreV7 {
-  readonly reason: "SHIP" | "BRIDGE" | "MEND" | "HOME";
+  readonly reason: "BRIDGE" | "MEND" | "HOME";
   readonly priority: number;
   readonly strategic: number;
   readonly immediate: number;
-  /** What the freeze changes (for a `FREEZE`, its `previewFreezeV7`). */
+  /** What the freeze changes (for a `COLD_SNAP`, its `previewColdSnapV7`). */
   readonly preview: IceWaterFreezeV7;
 }
 
-/** What a water freeze changes: its tiles and the ships it Freezes. */
+/** What a freeze changes on the water: its tiles (made, mended, taken). */
 export interface IceWaterFreezeV7 {
   readonly tiles: readonly CoordV7[];
   readonly mended: readonly CoordV7[];
   readonly taken: readonly CoordV7[];
-  readonly frozenUnits: readonly UnitId[];
 }
 
 /**
- * Section 13.2: what an offered `FREEZE` is for, read from
- * `previewFreezeV7`, or null: the policy never Freezes without one of
- * these reasons ("never a Freeze that only refreshes ice no crossing or
- * wall needs"). See `iceWaterFreezeScoreV7` for the reasons.
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): the water part of an
+ * offered `COLD_SNAP` (the Witch's ring, from `previewColdSnapV7`), or null
+ * without a reason (`iceWaterFreezeScoreV7`). The units the cast Freezes
+ * are the Cold Snap's own targets (scored by `coldSnapScoreV7`), and Snow
+ * is only a tie-break there, so only the ice tiles count here.
  */
-export function iceFreezeScoreV7(
-  view: PlayerViewV7,
-  tools: FrozenSeaToolsV7,
-  plan: IcePlanV7 | null,
-  command: Extract<CommandV7, { kind: "FREEZE" }>,
-): IceFreezeScoreV7 | null {
-  const preview = previewFreezeV7(view, command.unitId, command.at);
-  if (preview === null) return null;
-  return iceWaterFreezeScoreV7(view, tools, plan, command.unitId, preview);
-}
-
-/**
- * Ice Folk freeze rework (`pulp_wars-s55m.1`): the water part of an offered
- * `COLD_SNAP` (the Witch's ring, from `previewColdSnapV7`), scored like a
- * Freeze, or null without a reason. The ships of the ring are the Cold
- * Snap's own targets (scored by `coldSnapScoreV7`), so only the tiles
- * count here.
- */
-export function iceColdSnapWaterScoreV7(
+export function iceColdSnapTilesScoreV7(
   view: PlayerViewV7,
   tools: FrozenSeaToolsV7,
   plan: IcePlanV7 | null,
@@ -1107,45 +1104,44 @@ export function iceColdSnapWaterScoreV7(
   if (!iceSeaSeatV7(view)) return null;
   const preview = previewColdSnapV7(view, command.unitId);
   if (preview === null || preview.tiles.length === 0) return null;
-  const known = new Set(
-    view.ice
-      .filter((entry) => entry.ownerId !== view.viewer.id || entry.cracked)
-      .map((entry) => keyOf(entry.at)),
+  return iceWaterFreezeScoreV7(
+    view,
+    tools,
+    plan,
+    command.unitId,
+    iceWaterFreezeOfV7(view, preview.tiles),
   );
-  const mended = preview.tiles.filter((at) =>
-    view.ice.some(
-      (entry) =>
-        same(entry.at, at) && entry.ownerId === view.viewer.id && entry.cracked,
-    ),
-  );
-  const taken = preview.tiles.filter(
-    (at) => known.has(keyOf(at)) && !mended.some((tile) => same(tile, at)),
-  );
-  return iceWaterFreezeScoreV7(view, tools, plan, command.unitId, {
-    tiles: preview.tiles,
-    mended,
-    taken,
-    frozenUnits: [],
-  });
 }
 
 /**
- * Section 13.2: what a water freeze by `actorId` is for, or null.
+ * The water a freeze makes the viewer's ice (`tiles`), split into the
+ * viewer's own cracks it mends and the other seats' ice it takes.
+ */
+export function iceWaterFreezeOfV7(
+  view: PlayerViewV7,
+  tiles: readonly CoordV7[],
+): IceWaterFreezeV7 {
+  const mended: CoordV7[] = [];
+  const taken: CoordV7[] = [];
+  for (const at of tiles) {
+    const entry = iceEntry(view, at);
+    if (entry === undefined) continue;
+    if (entry.ownerId === view.viewer.id) {
+      if (entry.cracked) mended.push(at);
+    } else taken.push(at);
+  }
+  return { tiles, mended, taken };
+}
+
+/**
+ * Section 13.2: what a water freeze by `actorId` (a Witch's Cold Snap) is
+ * for, or null.
  *
- * - **Ship** (1297, `pulp_wars-s55m.1`; Icebound before): it Freezes a
- *   hostile ship on open water through its owner's next turn. Each ship
- *   counts twice its role's cost plus three for every other own unit
- *   whose Move and range reach it (their attacks are unanswered while it
- *   is Frozen, and a Shatter is possible). Not when the same unit's
- *   offered attack sinks the one ship it Freezes, nor (the Ice Folk roster
- *   rework, `pulp_wars-s55m.4`) when it is a Frost Wyrm whose offered
- *   attack on that ship Freezes it too (Frost Breath) and is one the policy
- *   would make (`strikeAcceptable`): the blow freezes and hurts.
  * - **Bridge** (1110): it freezes the next tile of the crossing (ten a new
- *   crossing tile, one for every other new tile: the Witch's ring makes the
- *   road wide). The next tile is the first one that is not ice, so a gap a
- *   Crack broke is rebuilt by the same Freeze; a complete crossing is never
- *   frozen again.
+ *   crossing tile, one for every other new tile: the ring makes the road
+ *   wide). The next tile is the first one that is not ice, so a gap a
+ *   Crack broke is rebuilt by the same freeze; a complete crossing is
+ *   never frozen again.
  * - **Mend** (1109, the frozen sea redesign): it mends a cracked crossing
  *   tile, or takes back one another seat holds.
  * - **Home ice** (712, re-aimed by the redesign): new ice in own territory
@@ -1153,8 +1149,11 @@ export function iceColdSnapWaterScoreV7(
  *   a tile), a tile that would then host a building the seat can afford
  *   (`iceBuildSiteV7`: a Fishing Hole, one more beside a contributor for a
  *   mill, Workshop, or Market), and a mended crack of the home ice. Never
- *   by the crossing's builder. An Ice Harbour may stand on the ice, so no
- *   Port site is kept open.
+ *   by the crossing's builder. Since `pulp_wars-xv0t` (7r133) a freeze
+ *   never ices a dock.
+ *
+ * (A Freeze that reached a ship, 1297, went with the `FREEZE` command: a
+ * Cold Snap's ships are its own targets.)
  */
 function iceWaterFreezeScoreV7(
   view: PlayerViewV7,
@@ -1165,60 +1164,6 @@ function iceWaterFreezeScoreV7(
 ): IceFreezeScoreV7 | null {
   const actor = view.units.find((unit) => unit.id === actorId);
   if (actor === undefined) return null;
-  if (preview.frozenUnits.length > 0) {
-    const ships = preview.frozenUnits.flatMap((id) => {
-      const ship = view.units.find((unit) => unit.id === id);
-      return ship === undefined ? [] : [ship];
-    });
-    const sinksIt =
-      ships.length === 1 &&
-      tools.commands.some((offered) => {
-        if (
-          offered.kind !== "ATTACK" ||
-          offered.unitId !== actor.id ||
-          offered.targetUnitId !== ships[0]?.id
-        )
-          return false;
-        const strike = queryCombatPreviewV7(
-          view,
-          actor.id,
-          offered.targetUnitId,
-        );
-        return (
-          strike !== null &&
-          (strike.defenderDies ||
-            (strike.frostBreathApplied &&
-              tools.strikeAcceptable?.(offered) === true))
-        );
-      });
-    if (!sinksIt) {
-      let strategic = 0;
-      for (const ship of ships) {
-        const reachers = view.units.filter((unit) => {
-          if (
-            unit.hp <= 0 ||
-            unit.id === actor.id ||
-            unit.ownerId !== view.viewer.id ||
-            unit.form !== "LAND"
-          )
-            return false;
-          const rule = unitRoleRuleV7(view, unit);
-          return (
-            rule.abilities.includes("ATTACK") &&
-            chebyshev(unit.at, ship.at) <= Math.floor(rule.move) + rule.range
-          );
-        }).length;
-        strategic += 2 * (unitRoleRuleV7(view, ship).cost ?? 0) + 3 * reachers;
-      }
-      return {
-        reason: "SHIP",
-        priority: ICE_FREEZE_SHIP_PRIORITY_V7,
-        strategic,
-        immediate: 5 * ships.length,
-        preview,
-      };
-    }
-  }
   // The frozen sea redesign: the tiles newly made ice (not mended or taken).
   const fresh = preview.tiles.filter(
     (at) =>
@@ -1381,10 +1326,13 @@ export type IceMoveV7 =
  * to `to` is to the ice plan, or null when the plan has nothing to say.
  *
  * - A **builder** goes to the stand tile (the head on the shore, then the
- *   newest ice): `BUILD` at 1112, ahead of its Freeze, the stand tile
- *   itself first. On the stand tile with its action unused it stays
- *   (`HOLD`), it never goes past it, and it makes no other Move unless it
- *   would die where it stands.
+ *   newest ice): `BUILD` at 1112, the stand tile itself first. A Witch
+ *   then casts her Cold Snap there; a Frost Giant's Cold Wake freezes the next
+ *   tile on arrival (the one Freeze effect, `pulp_wars-xv0t`, 7r133), so
+ *   any of its Moves whose wake freezes the next crossing tile is a
+ *   `BUILD` too (`previewColdWakeV7`), the stand tile first. On the stand
+ *   tile with nothing left to do it stays (`HOLD`), it never goes past it,
+ *   and it makes no other Move unless it would die where it stands.
  * - **The wave** (every other own land unit on the home side; on a
  *   shortcut only the units whose objective is the target) walks toward
  *   the head (`STAGE`, 720) and does not step onto the crossing, or onto
@@ -1429,6 +1377,23 @@ export function iceCrossingMoveV7(
   const builder = plan.builders.includes(actor.id);
   if (builder && plan.stand !== null) {
     const stand = plan.stand;
+    // The one Freeze effect (`pulp_wars-xv0t`): a Frost Giant's Move whose
+    // Cold Wake freezes the next crossing tile builds it.
+    const nextTile = plan.crossing[plan.next];
+    const wake =
+      nextTile === undefined ? null : previewColdWakeV7(view, actor.id, to);
+    if (
+      wake !== null &&
+      nextTile !== undefined &&
+      wake.tiles.some((at) => same(at, nextTile))
+    )
+      return lethal()
+        ? { kind: "HOLD" }
+        : {
+            kind: "BUILD",
+            priority: ICE_BUILD_MOVE_PRIORITY_V7,
+            strategic: (same(to, stand) ? 40 : 30) + wake.tiles.length,
+          };
     if (same(actor.at, stand))
       return actor.activation.specialActed || actor.activation.attacked
         ? null
@@ -1569,56 +1534,37 @@ export function iceLandingRejectedV7(
 }
 
 /**
- * The visible hostile land units that may Freeze a ship on their next turn:
- * a role with `FREEZE` (or the Witch's `COLD_SNAP`), not Frozen, of a seat
- * that has been seen to Freeze (it owns ice the viewer knows of).
+ * The visible hostile land units that may Freeze a ship on their next turn
+ * (the one Freeze effect, `pulp_wars-xv0t`, 7r133): a Witch (`COLD_SNAP`)
+ * and a Frost Giant (`COLD_WAKE`), not Frozen. (A seat no longer
+ * needs ice to freeze a ship, so the old "seen to Freeze" gate is gone.)
  */
 export function iceHostileFreezersV7(
   view: PlayerViewV7,
   tools: Pick<FrozenSeaToolsV7, "isHostile">,
 ): readonly PublicUnitV7[] {
-  if (view.ice.length === 0) return [];
-  const seen = new Set(view.ice.map((entry) => entry.ownerId));
-  return view.units.filter(
-    (unit) =>
-      unit.hp > 0 &&
-      unit.form === "LAND" &&
-      seen.has(unit.ownerId) &&
-      tools.isHostile(unit.ownerId) &&
-      !unitIsFrozenV7(view, unit) &&
-      (unitRoleRuleV7(view, unit).abilities.includes("FREEZE") ||
-        unitRoleRuleV7(view, unit).abilities.includes("COLD_SNAP")),
-  );
+  return view.units.filter((unit) => {
+    if (
+      unit.hp <= 0 ||
+      unit.form !== "LAND" ||
+      !tools.isHostile(unit.ownerId) ||
+      unitIsFrozenV7(view, unit)
+    )
+      return false;
+    const abilities = unitRoleRuleV7(view, unit).abilities;
+    return abilities.includes("COLD_SNAP") || abilities.includes("COLD_WAKE");
+  });
 }
 
 /**
- * Whether the Freeze of `freezer` standing on `from` reaches the tile `at`
- * with a ship on it (section 8.4): the Witch's Cold Snap within 1; a
- * line's first tile; or its second tile, in a straight line, when the tile
- * between is water that can freeze and holds no ship (an empty tile or
- * ice). Pack Ice is assumed; Hoarfrost's third tile is not (a near miss).
+ * Whether a freeze of `freezer` reaches a ship on `at` from `from` (one of
+ * its stand tiles): its ring (`COLD_SNAP_RANGE_V7`) around the tile. A Cold
+ * Wake needs a Move to `from`, a Cold Snap may follow one; both are read
+ * the same (a near miss at most).
  */
-function freezeTakes(
-  view: PlayerViewV7,
-  freezer: PublicUnitV7,
-  from: CoordV7,
-  at: CoordV7,
-): boolean {
+function freezeTakes(from: CoordV7, at: CoordV7): boolean {
   const range = chebyshev(from, at);
-  if (unitRoleRuleV7(view, freezer).abilities.includes("BLIZZARD"))
-    return range <= WITCH_FREEZE_RADIUS_V7;
-  if (range === 1) return true;
-  if (range !== FREEZE_LINE_V7) return false;
-  const dx = at.x - from.x;
-  const dy = at.y - from.y;
-  if (Math.abs(dx) % 2 !== 0 || Math.abs(dy) % 2 !== 0) return false;
-  const between = { x: from.x + dx / 2, y: from.y + dy / 2 };
-  const tile = exploredTile(view, between);
-  if (tile === undefined || !isWater(tile) || isDock(tile)) return false;
-  return (
-    isIceAtV7(view, between) ||
-    !view.units.some((unit) => unit.hp > 0 && same(unit.at, between))
-  );
+  return range >= 1 && range <= COLD_SNAP_RANGE_V7;
 }
 
 /** Whether a visible hostile unit can Freeze a ship that stands on `at` on its next turn. */
@@ -1630,19 +1576,17 @@ export function iceFreezeReachesV7(
   const tile = exploredTile(view, at);
   if (tile === undefined || !isWater(tile)) return false;
   return iceHostileFreezersV7(view, tools).some((freezer) =>
-    tools
-      .standTiles(freezer)
-      .some((from) => freezeTakes(view, freezer, from, at)),
+    tools.standTiles(freezer).some((from) => freezeTakes(from, at)),
   );
 }
 
 /**
  * Section 13.3: whether a Move of an own ship to `to` is refused: a
- * visible hostile unit can Freeze it there this turn (its reach by a Move,
- * the slide on known ice included, plus the Freeze), and it cannot where
- * the ship stands (a ship already in reach may go anywhere). A Battleship
- * therefore shells the ice from three tiles and comes no nearer. Ships
- * only.
+ * visible hostile Witch or Frost Giant can Freeze it there this
+ * turn (its reach by a Move, the slide on known ice included, plus its
+ * ring), and it cannot where the ship stands (a ship already in reach may
+ * go anywhere). A Battleship therefore shells the ice from three tiles and
+ * comes no nearer. Ships only.
  */
 export function iceShipMoveRejectedV7(
   view: PlayerViewV7,
@@ -1651,9 +1595,9 @@ export function iceShipMoveRejectedV7(
   to: CoordV7,
 ): boolean {
   if (
-    view.ice.length === 0 ||
     actor.form !== "NAVAL" ||
-    actor.ownerId !== view.viewer.id
+    actor.ownerId !== view.viewer.id ||
+    !view.players.some((player) => player.faction === "ICE_FOLK")
   )
     return false;
   return (

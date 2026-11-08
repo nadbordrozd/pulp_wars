@@ -730,7 +730,7 @@ describe("the mound (section 5.3)", () => {
     ).toEqual(expect.arrayContaining([at(5, 2), at(5, 3)]));
   });
 
-  it("keeps the Frozen entry of a burrowed unit counting down at its owner's End Turn", () => {
+  it("thaws the Frozen entry of a burrowed unit at its owner's End Turn", () => {
     const state = withBurrowedV7(
       dwarfFieldV7(
         [
@@ -738,7 +738,8 @@ describe("the mound (section 5.3)", () => {
             seat: 0,
             role: "GUARD",
             at: at(5, 3),
-            frozen: { turnsLeft: 2 },
+            // The one Freeze effect (`pulp_wars-xv0t`): always one turn.
+            frozen: { turnsLeft: 1 },
           },
           ENEMY,
         ],
@@ -750,12 +751,10 @@ describe("the mound (section 5.3)", () => {
       kind: "END_TURN",
     });
     if (!ended.accepted) throw new Error(ended.error.code);
-    expect(ended.state.frozen).toEqual([
-      {
-        unitId: moundAtTileV7(state, at(5, 3)).unit.id,
-        turnsLeft: 1,
-      },
+    expect(state.frozen.map((entry) => entry.unitId)).toEqual([
+      moundAtTileV7(state, at(5, 3)).unit.id,
     ]);
+    expect(ended.state.frozen).toEqual([]);
     expect(ended.state.burrowed).toHaveLength(1);
   });
 });

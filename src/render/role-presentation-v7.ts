@@ -37,7 +37,6 @@ import {
   iceFolkAbilityNameV7,
   iceFolkRecruitNotesV7,
 } from "./ice-folk-presentation-v7";
-import { FREEZE_RULE_V7 } from "./frozen-sea-presentation-v7";
 import { ninthUnitRecruitNotesV7 } from "./ninth-unit-presentation-v7";
 import {
   navalRamDescriptionV7,
@@ -259,9 +258,6 @@ export function roleAbilityDescriptionV7(
       // Themed naval branches (`pulp_wars-5ti.18`): the faction's own boat,
       // and a Horned Prow's run-up.
       return navalRamDescriptionV7(faction);
-    // The frozen sea (`pulp_wars-5ti.7`): every Ice Folk land role.
-    case "FREEZE":
-      return `With Rime: ${FREEZE_RULE_V7.replace(/^A unit/, "it")}`;
     case "SUBMERGED":
       return SUBMERGED_RULE_V7;
     case "TORPEDO":

@@ -23,6 +23,7 @@ import {
   neutralRegenerationV7,
   neutralStepsV7,
   parseGameStateV7,
+  previewColdSnapV7,
   previewMonsterV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -601,35 +602,23 @@ describe("the Serpent and the frozen sea (section 8.7)", () => {
   const iceFolk = (options: Parameters<typeof serpentArenaV7>[0] = {}) =>
     serpentArenaV7({ factions: ["ICE_FOLK", "GOBLIN"], ...options });
 
-  it("never has its tile frozen: a Freeze skips it", () => {
+  it("never has its tile frozen: a Cold Snap skips it", () => {
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the line Freeze is
+    // gone; an Ice Witch's ring holds the Serpent's tile, which stays water.
     const state = iceFolk({
       serpentAt: at(8, 9),
-      pieces: [{ seat: 0, role: "FIGHTER", at: at(9, 9) }],
+      pieces: [{ seat: 0, role: "CAPTAIN", at: at(9, 9) }],
     });
-    const fighter = unitAt(state, at(9, 9));
-    const commands = queryPlayerCommandsV7(viewForV7(state, P1)).filter(
-      (command) => command.kind === "FREEZE" && command.unitId === fighter.id,
-    );
+    const witch = unitAt(state, at(9, 9));
+    const preview = previewColdSnapV7(viewForV7(state, P1), witch.id);
+    expect(preview?.tiles ?? []).not.toContainEqual(at(8, 9));
+    const frozen = applyAcceptedV7(state, P1, {
+      kind: "COLD_SNAP",
+      unitId: witch.id,
+    });
     expect(
-      commands.some(
-        (command) =>
-          command.kind === "FREEZE" && command.at.x === 8 && command.at.y === 9,
-      ),
+      frozen.state.ice.some((entry) => entry.at.x === 8 && entry.at.y === 9),
     ).toBe(false);
-    expect(commands.length).toBeGreaterThan(0);
-    expect(
-      rejectionV7(state, P1, {
-        kind: "FREEZE",
-        unitId: fighter.id,
-        at: at(8, 9),
-      }),
-    ).toEqual({ code: "FREEZE_NOT_LEGAL", params: { reason: "NO_TARGET" } });
-    for (const command of commands) {
-      const frozen = applyAcceptedV7(state, P1, command);
-      expect(
-        frozen.state.ice.some((entry) => entry.at.x === 8 && entry.at.y === 9),
-      ).toBe(false);
-    }
   });
 
   it("is fenced in by ice and still bites a unit on the ice beside it", () => {

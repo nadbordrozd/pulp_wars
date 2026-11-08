@@ -71,7 +71,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       objective: "Take Anvil Bay by turn 22.",
       hints: Object.freeze([
         "Ice with a unit on it can't be broken: hold your road.",
-        "Freeze toward an enemy ship to Freeze it for a turn.",
+        "An Ice Witch's Cold Snap freezes the sea around her.",
         "Soldiers in boats can't strike back.",
       ]),
       closing:
@@ -132,7 +132,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       objective: "Bring Rime to the Summit by turn 18.",
       hints: Object.freeze([
         "Walruses freeze whoever strikes them up close.",
-        "A Sled's bolas holds a daemon still for a turn.",
+        "An Ice Witch's Cold Snap holds a daemon still for a turn.",
         "Research Engineering to climb the peaks.",
       ]),
       closing:

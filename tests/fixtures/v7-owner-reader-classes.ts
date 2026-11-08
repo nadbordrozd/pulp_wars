@@ -219,12 +219,15 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // seat's commands.
   "src/engine/v7/ice.ts::iceIsThickV7": "NEUTRAL_SAFE",
   "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "NEUTRAL_SAFE",
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant's Cold
+  // Wake reads its owner's record for the water it freezes; an owner that
+  // is no player has none (the missing record freezes nothing).
+  "src/engine/v7/ice.ts::resolveColdWakeV7": "NEUTRAL_SAFE",
   "src/engine/v7/reducer.ts::applyBasic": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyCrackIce": "PLAYER_ONLY",
-  "src/engine/v7/reducer.ts::applyFreeze": "PLAYER_ONLY",
-  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the Freeze facts and
-  // the Cold Snap read the acting seat's own record.
-  "src/engine/v7/reducer.ts::freezeTileFactsAtV7": "PLAYER_ONLY",
+  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the Cold Snap reads
+  // the acting seat's own record (the line Freeze did too, until
+  // `pulp_wars-xv0t`).
   "src/engine/v7/reducer.ts::applyColdSnap": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::iceValid": "NEUTRAL_AWARE",
   // The ninth unit (`pulp_wars-w49.17`, 7r55). A marked Grave belongs to

@@ -162,14 +162,14 @@ describe("the giants' signatures: the identity", () => {
   // Monument skin rule (`pulp_wars-eu3r.3`) 7r69, and the Vampire and
   // Banshee rework (`pulp_wars-ty6i`) 7r70.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(PRIOR_RULESET_7_IDS.slice(-71, -69)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(PRIOR_RULESET_7_IDS.slice(-72, -70)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-71, -69)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-72, -70)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -1857,15 +1857,11 @@ describe("Glacial Smash (section 6.6)", () => {
     expect(run.combat).toMatchObject({ shatters: false, glacialSmash: false });
   });
 
-  it("freezes the units around a shattered unit with its shards", () => {
+  it("freezes nobody around a shattered unit: its shards went with the one Freeze effect", () => {
+    // `pulp_wars-xv0t` (7r133): the Frost Giant's freezing is its Cold Wake
+    // after a Move; Glacial Smash only shatters.
     const pieces: Parameters<typeof iceFieldV7>[0] = [
       { seat: 1, role: "FIGHTER", at: at(6, 3) },
-      {
-        seat: 1,
-        role: "KNIGHT",
-        at: at(6, 4),
-        frozen: { turnsLeft: 1 },
-      },
       { seat: 1, role: "JUGGERNAUT", at: at(6, 2) },
       { seat: 0, role: "FIGHTER", at: at(5, 4) },
     ];
@@ -1873,25 +1869,10 @@ describe("Glacial Smash (section 6.6)", () => {
     const state = frost(hp, "GUARD", pieces);
     const run = attackV7(state, at(4, 3), at(5, 3));
     expect(run.combat.shatters).toBe(true);
-    const shards = run.events.find(
-      (event) => event.kind === "UNITS_FROZEN" && event.source === "SHARDS",
+    expect(run.events.some((event) => event.kind === "UNITS_FROZEN")).toBe(
+      false,
     );
-    if (shards?.kind !== "UNITS_FROZEN") throw new Error("no shards");
-    expect(shards.sourceUnitId).toBe(idAt(state, 4, 3));
-    const byId = new Map(shards.results.map((entry) => [entry.unitId, entry]));
-    // Ice Folk Freeze (`pulp_wars-w49.37`): the Fighter and the giant are
-    // Frozen; the Knight was Frozen already and is renewed.
-    expect(byId.get(idAt(state, 6, 3))).toEqual({
-      unitId: idAt(state, 6, 3),
-      turnsLeft: 1,
-    });
-    expect(byId.get(idAt(state, 6, 2))).toMatchObject({ turnsLeft: 1 });
-    expect(byId.get(idAt(state, 6, 4))).toMatchObject({ turnsLeft: 1 });
-    expect(byId.has(idAt(state, 5, 4))).toBe(false);
-    const kinds = kindsV7(run.events);
-    expect(kinds.lastIndexOf("UNIT_DIED")).toBeLessThan(
-      run.events.indexOf(shards),
-    );
+    expect(run.state.frozen).toEqual([]);
   });
 });
 

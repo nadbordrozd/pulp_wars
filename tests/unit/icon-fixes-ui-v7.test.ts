@@ -119,7 +119,9 @@ describe("icon fixes (pulp_wars-2yc.118)", () => {
     expect(rasters.get("BUILD_BARRICADE")).toBe("ICON:ACTION:BUILD_BARRICADE");
     expect(rasters.get("ASSEMBLE")).toBe("ICON:ACTION:ASSEMBLE");
     expect(rasters.get("TUNNEL")).toBe("ICON:ACTION:TUNNEL");
-    expect(rasters.get("FROST_BOLT")).toBe("ICON:ACTION:FROST_BOLT");
+    // (The Frost Bolt's badge went with the command: the one Freeze
+    // effect, `pulp_wars-xv0t`, 7r133; its raster stays registered.)
+    expect(rasters.has("FROST_BOLT")).toBe(false);
     // Dark icons are murky in the dark disc: these keep their glyphs.
     for (const id of [
       "BOMB_RUN",

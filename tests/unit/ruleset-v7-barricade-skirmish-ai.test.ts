@@ -384,11 +384,15 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
   // removes BOARD, RECOVER, and SWALLOW, so those ordinals move by three and
   // the fingerprints were retaken again (was 99ccc2ff, d527d65b, 4543d7f5,
   // fa46e1b5, and d5bc23f5): the same commands and candidates, the scores
-  // differing only in the kind ordinal of the tie-break.
+  // differing only in the kind ordinal of the tie-break. The one Freeze
+  // effect (`pulp_wars-xv0t`, 7r133) removes THROW_BOLAS, FREEZE, and
+  // FROST_BOLT, so the later ordinals move back and the fingerprints were
+  // retaken (was d489301f, b461f449, 210f59c1, 94ca1ea5, and 93a900ca; with
+  // the 7r132 kind order re-inserted they are reproduced exactly).
   const cases: Record<string, readonly [() => PlayerViewV7, string]> = {
     "the walled city": [
       () => viewOf(skirmish({ pieces: FIGHTERS, mountains: RING })),
-      "d489301f",
+      "44085991",
     ],
     "the fog": [
       () =>
@@ -402,12 +406,12 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             fog: WEST,
           }),
         ),
-      "b461f449",
+      "4522e523",
     ],
     "the endgame": [
       () =>
         endgameView(viewOf(skirmish({ pieces: FIGHTERS, mountains: RING }))),
-      "210f59c1",
+      "84cfe05b",
     ],
     "the gap in the wall": [
       () =>
@@ -418,7 +422,7 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             fog: WEST,
           }),
         ),
-      "94ca1ea5",
+      "4eaa5e17",
     ],
     "the Dwarf seat": [
       () =>
@@ -433,7 +437,7 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             activeSeat: 1,
           }),
         ),
-      "93a900ca",
+      "100e1310",
     ],
   };
   for (const [name, [make, expected]] of Object.entries(cases))

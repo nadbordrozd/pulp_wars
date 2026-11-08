@@ -145,7 +145,7 @@ const ENTRIES = {
   ],
   GLACIAL_SMASH: [
     "Glacial Smash",
-    "Its hit shatters a Frozen enemy that it leaves badly hurt, and the flying shards freeze the enemies around it. It never advances.",
+    "Its hit shatters a Frozen enemy that it leaves badly hurt. It never advances.",
   ],
   SIEGE_HAMMER: [
     "Siege Hammer",
@@ -587,27 +587,19 @@ const ENTRIES = {
     "Crosses mountains freely, with no technology needed.",
   ],
   ROCKFALL: ["Rockfall", "From a mountain it can attack 2 tiles away."],
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133,
+  // docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3): what a Cold Snap
+  // and a Cold Wake do to each tile (the `FREEZE` command of seven roles
+  // before).
   FREEZE: [
     "Freeze",
-    "Turns the water next to it to ice that stays until it is cracked, or Freezes a ship in the way. Unlocked by a technology.",
+    "Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn.",
   ],
   COLD_BLOOD: ["Cold Blood", "Hits a Frozen unit harder."],
-  BLIZZARD: [
-    "Blizzard",
-    "Snow follows her: your units next to her take less damage from ranged attacks.",
-  ],
-  COLD_SNAP: [
-    "Cold Snap",
-    "Freezes every enemy next to her, ships too, and with Rime the water around her.",
-  ],
-  // Ice Folk Freeze (`pulp_wars-w49.37`): the Witch's Frost Bolt and the
-  // Mammoth's Stampede. Bead pulp_wars-2yc.63: the Sled's Bolas is the same
-  // freeze, so it is a Frost Bolt too. `pulp_wars-3u8d` (7r131): both fly
-  // exactly 2 tiles, never at a neighbour.
-  FROST_BOLT: [
-    "Frost Bolt",
-    "Freezes one enemy exactly 2 tiles away, never at a neighbour, without damage.",
-  ],
+  BLIZZARD: ["Blizzard", "Ranged hits on your units next to her are halved."],
+  COLD_SNAP: ["Cold Snap", "Freezes every tile around the Witch."],
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede. (The
+  // Witch's and the Sled's Frost Bolt went with `pulp_wars-xv0t`, 7r133.)
   STAMPEDE: [
     "Stampede",
     "If it has not moved, it charges two or three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside. Nobody strikes back.",
@@ -616,24 +608,21 @@ const ENTRIES = {
     "Boulders",
     "Its throw ignores Walls and Field Defense, and hits harder when it has not moved.",
   ],
-  COLD_AURA: [
-    "Cold Aura",
-    "Freezes every enemy next to it when it ends its own move.",
-  ],
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Frost Giant's
+  // (its Cold Aura before).
+  COLD_WAKE: ["Cold Wake", "After each Move, it freezes every tile around it."],
   SWEEP: [
     "Sweep",
     "Its attack also hurts the enemies on both sides of the target.",
   ],
+  // The Walrus keeps it through the one Freeze effect (`pulp_wars-xv0t`).
   FROSTBITE: [
     "Frostbite",
     "An enemy that hits it from the next tile and survives is Frozen.",
   ],
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
   // Wyrm's breath and its flight over the open sea.
-  FROST_BREATH: [
-    "Frost Breath",
-    "Every enemy its attack leaves alive is Frozen, ships too. Its next blow from the next tile can Shatter it.",
-  ],
+  FROST_BREATH: ["Frost Breath", "Its attack leaves the target Frozen."],
   SEA_WINGS: [
     "Sea wings",
     "Flies over shallow and deep water with no technology needed.",
@@ -847,7 +836,7 @@ const ENTRIES = {
   // status of a unit.
   STATUS_FROZEN: [
     "Frozen",
-    "It cannot move or act or strike back until it thaws at the end of its owner's turn (the chip counts them). Ice Folk can shatter a weak Frozen unit.",
+    "It cannot move or act or strike back until it thaws at the end of its owner's next turn. Ice Folk can shatter a weak Frozen unit.",
   ],
   STATUS_PLANTED: [
     "Planted",
@@ -1064,9 +1053,6 @@ export function abilityGlossaryIdV7(
     // The Mammoth's attack knocks down Field Defense like a Catapult's.
     case "TRAMPLE":
       return "WRECKER";
-    // The Sled's freeze is the Witch's Frost Bolt.
-    case "BOLAS":
-      return "FROST_BOLT";
     // Themed naval branches (`pulp_wars-5ti.18`): a Ram with a run-up
     // bonus is the Dinosaur Horned Prow.
     case "RAM":
@@ -1156,6 +1142,13 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.glidesThroughZoc) traits.push("GLIDES_PAST");
   if (rules.snow && mechanics.movementMode === "GROUND") traits.push("DIVE");
   if (mechanics.frostbite) traits.push("FROSTBITE");
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): what freezing a tile
+  // does, for the Witch's Cold Snap and the Frost Giant's Cold Wake.
+  if (
+    rule.abilities.includes("COLD_SNAP") ||
+    rule.abilities.includes("COLD_WAKE")
+  )
+    traits.push("FREEZE");
   // `pulp_wars-befg`: the Whirligig's Whirl is its attack, not an ability.
   if (mechanics.whirl && attacks) traits.push("WHIRL");
   if (mechanics.repairsAsMachine && !mechanics.construct)

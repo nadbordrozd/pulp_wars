@@ -204,6 +204,8 @@ const STATE_KEYS = [
   "scoreLedger",
   "setup",
   "shields",
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the stored Snow.
+  "snow",
   "splattedThisTurn",
   "stuck",
   "sugarRush",
@@ -305,6 +307,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       : parseCuriosities(input.curiosities, setup, board, treasureChests);
   // The frozen sea (naval branch section 8.3): the ice tiles.
   const ice = parseIce(input.ice);
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the stored Snow.
+  const snow = parseSortedCoords(input.snow);
   const graves = parseSortedCoords(input.graves);
   const plagued = parsePlagued(input.plagued);
   const bitten = parseBitten(input.bitten);
@@ -389,6 +393,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     treasureChests === null ||
     curiosities === null ||
     ice === null ||
+    snow === null ||
     monsters === null ||
     graves === null ||
     plagued === null ||
@@ -497,6 +502,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       cult,
       curiosities,
       ice,
+      snow,
       choices,
       outcome,
       humanPlayerId,
@@ -526,6 +532,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     treasureChests,
     curiosities,
     ice,
+    snow,
     monsters,
     graves,
     plagued,
@@ -2900,6 +2907,27 @@ function parseIce(input: unknown): readonly IceTileV7[] | null {
  * only when its owner has thick ice; a building on water stands on ice,
  * except a Port or Shipyard on open Shallow Water.
  */
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.2): the stored Snow
+ * (already strictly ascending by (y, x)) is empty in a match without an Ice
+ * Folk seat, and every entry lies on a land tile of the board that is not a
+ * Rift and is no player's territory (stored Snow melts in any territory).
+ */
+function snowValid(value: CrossInput): boolean {
+  if (value.snow.length === 0) return true;
+  if (!value.setup.factions.includes("ICE_FOLK")) return false;
+  return value.snow.every((at) => {
+    const tile = tileAt(value.board, at);
+    return (
+      tile !== undefined &&
+      tile.biome !== null &&
+      tile.terrain !== "RIFT" &&
+      tile.territoryCityId === null
+    );
+  });
+}
+
 function iceValid(
   value: CrossInput,
   playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
@@ -3171,6 +3199,7 @@ interface CrossInput {
   cult: CultStateV7;
   curiosities: readonly CuriosityV7[];
   ice: readonly IceTileV7[];
+  snow: readonly CoordV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -3533,6 +3562,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     !giantsValid(value, playerById, kindOf) ||
     !cultValid(value, playerById) ||
     !iceValid(value, playerById, kindOf) ||
+    !snowValid(value) ||
     // The Dinosaur pass, correction: `huntedThisTurn` is empty in a match
     // without a Dinosaur seat, and names units on the board that do not
     // belong to the active seat.

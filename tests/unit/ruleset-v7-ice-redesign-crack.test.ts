@@ -126,12 +126,12 @@ describe("Crack Ice: the result (section 2.9)", () => {
     expect(parseGameStateV7(result.state)).not.toBeNull();
   });
 
-  it("cracks thick ice first and breaks it with the second Crack; the owner's Freeze mends a crack", () => {
+  it("cracks thick ice first and breaks it with the second Crack; the owner's Cold Snap mends a crack", () => {
     const state = scene(
       [
         { seat: 0, role: "FIGHTER", at: SHORE },
         { seat: 0, role: "GUARD", at: { x: 1, y: 2 } },
-        { seat: 1, role: "FIGHTER", at: { x: 3, y: 2 } },
+        { seat: 1, role: "CAPTAIN", at: { x: 3, y: 2 } },
       ],
       [ICE],
       ALL,
@@ -165,13 +165,13 @@ describe("Crack Ice: the result (section 2.9)", () => {
     const second = acceptV7(first.state, 0, crack(first.state, guard, ICE));
     expect(second.events[0]).toMatchObject({ broken: true });
     expect(iceEntryV7(second.state, ICE)).toBeUndefined();
-    // On the Ice Folk turn a Freeze over the cracked tile mends it.
+    // On the Ice Folk turn a Cold Snap over the cracked tile mends it (a
+    // Freeze line before the one Freeze effect, `pulp_wars-xv0t`).
     const theirs = turnOf(first.state, 1);
-    const yeti = navalUnitAtV7(theirs, { x: 3, y: 2 });
+    const witch = navalUnitAtV7(theirs, { x: 3, y: 2 });
     const mend = acceptV7(theirs, 1, {
-      kind: "FREEZE",
-      unitId: yeti.id,
-      at: ICE,
+      kind: "COLD_SNAP",
+      unitId: witch.id,
     });
     expect(iceEntryV7(mend.state, ICE)?.cracked).toBe(false);
   });

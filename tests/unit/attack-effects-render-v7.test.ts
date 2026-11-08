@@ -805,13 +805,14 @@ describe("The giants' signature cues (bead pulp_wars-w49.32)", () => {
           cell.x === glacial.frostGiant.x && cell.y === glacial.frostGiant.y,
       ),
     ).toBe(false);
-    expect(shards?.marks).toEqual(
-      expect.arrayContaining([glacial.shardFighter, glacial.shardKnight]),
-    );
-    // The shards' Chill is the cue's, not a Cold Aura of its own.
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the shards freeze
+    // nobody, so the cue marks no unit and no freeze follows the blow.
+    expect(shards?.marks ?? []).toEqual([]);
     expect(
       smash.some(
-        (step) => step.kind === "ICE_FOLK" && step.effect === "COLD_AURA",
+        (step) =>
+          step.kind === "ICE_FOLK" &&
+          (step.effect === "COLD_SNAP" || step.effect === "FROST"),
       ),
     ).toBe(false);
     const siege = GIANTS_UI_V7.siege;

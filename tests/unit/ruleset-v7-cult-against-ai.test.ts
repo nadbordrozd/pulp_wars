@@ -924,28 +924,8 @@ describe("against the new Cult: Doorstep in the strand hunt (A-R4)", () => {
     ).toBeLessThan(CULT_AGAINST_WARD_PRIORITY_V7);
   });
 
-  it("puts the idol down with a Bolas when that frees the Mass", () => {
-    let state = cultFieldV7(
-      [
-        own("RAIDER", 6, 4),
-        cult("GUARD", 4, 4),
-        cult("FIGHTER", 3, 5),
-        GARRISON,
-      ],
-      { coins: 0, factions: ["ICE_FOLK", "CULT"] },
-    );
-    state = summon(state, at(4, 3), "MASS");
-    const bolas = (play: boolean) =>
-      candidates(state, at(6, 4), "THROW_BOLAS", play).find(
-        (candidate) =>
-          candidate.command.kind === "THROW_BOLAS" &&
-          candidate.command.targetUnitId === unitAtV7(state, at(4, 4)).id,
-      );
-    expect(bolas(true)?.score.priority).toBe(CULT_AGAINST_WARD_PRIORITY_V7);
-    // Before this module the Sled saw no worth in a Bolas on a unit that
-    // stands still.
-    expect(bolas(false)).toBeUndefined();
-  });
+  // (The Sled's Bolas on the idol went with the one Freeze effect,
+  // `pulp_wars-xv0t`, 7r133.)
 });
 
 describe("against the new Cult: the warden (A-R4)", () => {

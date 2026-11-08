@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(PRIOR_RULESET_7_IDS.slice(-74, -72)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(PRIOR_RULESET_7_IDS.slice(-75, -73)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-74, -72)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-75, -73)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -543,10 +543,15 @@ describe("step two of the Ice Folk pass: what the policy counts for its own blow
 });
 
 describe("step two of the Ice Folk pass: Chill, then Shatter", () => {
-  /** A Sled two tiles from a Human Fighter at `hp`, a Yeti beside it. */
+  /**
+   * An Ice Witch beside a Human Fighter at `hp` (the Fighter in her ring,
+   * the Yeti not), a Yeti beside it. The one Freeze effect
+   * (`pulp_wars-xv0t`, 7r133): the Witch's Cold Snap is the Chill (the
+   * Sled's Bolas before).
+   */
   const position = (hp: number): GameStateV7 =>
     field([
-      own("RAIDER", 5, 5),
+      own("CAPTAIN", 6, 3),
       own("FIGHTER", 4, 3),
       own("FIGHTER", 8, 8),
       foe("FIGHTER", 5, 3, { hp }),
@@ -559,49 +564,30 @@ describe("step two of the Ice Folk pass: Chill, then Shatter", () => {
    * turn.
    */
   const duel = (state: GameStateV7, commands: readonly CommandV7[]) => {
-    const ids = [unitAtV7(state, at(5, 5)).id, unitAtV7(state, at(4, 3)).id];
+    const ids = [unitAtV7(state, at(6, 3)).id, unitAtV7(state, at(4, 3)).id];
     return unitCommands(commands).filter(
       (command) => "unitId" in command && ids.includes(command.unitId),
     );
   };
 
-  it("throws the Bolas first, and the Yeti's blow then shatters the Fighter", () => {
+  it("casts the Cold Snap first, and the Yeti's blow then shatters the Fighter", () => {
     // A Fighter at 9 HP: the Yeti's hit alone leaves 4 (and the Yeti takes
-    // the answer). Chilled, the same hit shatters it (Brittle: 4).
+    // the answer). Frozen, the same hit shatters it (Brittle: 4).
     const state = position(9);
-    const sled = unitAtV7(state, at(5, 5));
+    const witch = unitAtV7(state, at(6, 3));
     const yeti = unitAtV7(state, at(4, 3));
     const fighter = unitAtV7(state, at(5, 3));
     const turn = policyTurn(state);
-    expect(duel(state, turn.commands).slice(0, 2)).toEqual([
-      { kind: "THROW_BOLAS", unitId: sled.id, targetUnitId: fighter.id },
+    // (The Witch may first step to a better tile: her Move goes before her
+    // Cold Snap, rule 2.)
+    const order = duel(state, turn.commands).filter(
+      (command) => command.kind !== "MOVE",
+    );
+    expect(order.slice(0, 2)).toEqual([
+      { kind: "COLD_SNAP", unitId: witch.id },
       { kind: "ATTACK", unitId: yeti.id, targetUnitId: fighter.id },
     ]);
     expect(turn.state.units.some((unit) => unit.id === fighter.id)).toBe(false);
-    // The Yeti's blow is no candidate while the Bolas is still to come.
-    const first = chooseNormalCommandV7(viewOf(state)).candidates.filter(
-      (candidate) =>
-        candidate.score.priority >= 0 &&
-        (candidate.command.kind === "ATTACK" ||
-          candidate.command.kind === "THROW_BOLAS"),
-    );
-    expect(first.map((candidate) => candidate.command)).toEqual([
-      { kind: "THROW_BOLAS", unitId: sled.id, targetUnitId: fighter.id },
-    ]);
-  });
-
-  it("does not wait for a Bolas that sets up no Shatter", () => {
-    // At 10 HP the Chilled Fighter is left at 5: the Yeti strikes as any
-    // unit does, and the Sled keeps its Bolas.
-    const state = position(10);
-    const turn = policyTurn(state);
-    expect(duel(state, turn.commands)).toEqual([
-      {
-        kind: "ATTACK",
-        unitId: unitAtV7(state, at(4, 3)).id,
-        targetUnitId: unitAtV7(state, at(5, 3)).id,
-      },
-    ]);
   });
 });
 

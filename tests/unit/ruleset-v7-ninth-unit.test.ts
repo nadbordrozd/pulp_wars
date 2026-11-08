@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(PRIOR_RULESET_7_IDS.at(-78)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(PRIOR_RULESET_7_IDS.at(-79)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-78)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-79)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -673,15 +673,15 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       demolishesFieldDefense: true,
       rallyExcluded: false,
     });
-    // The Mammoth: Sweep, Trample, Glide, Freeze, attacks after moving;
-    // Ice Folk Freeze (`pulp_wars-w49.37`) adds its Stampede.
+    // The Mammoth: Sweep, Trample, Glide, attacks after moving; Ice Folk
+    // Freeze (`pulp_wars-w49.37`) adds its Stampede (its `FREEZE` went with
+    // the one Freeze effect, `pulp_wars-xv0t`, 7r133).
     expect(effectiveRoleRuleV7("SWORDSMAN", "ICE_FOLK").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "SWEEP",
       "TRAMPLE",
       "STAMPEDE",
-      "FREEZE",
     ]);
     expect(roleMechanicsV7("SWORDSMAN", "ICE_FOLK")).toMatchObject({
       sweepDamage: 2,
@@ -689,12 +689,12 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       glides: true,
       buildsFieldDefense: false,
     });
-    // The Walrus has neither; it Glides and Freezes like every Ice Folk
-    // land unit but the Sabretooth and builds no Field Defense.
+    // The Walrus has neither; it Glides like every Ice Folk land unit but
+    // the Sabretooth and builds no Field Defense (its `FREEZE` went with the
+    // one Freeze effect, `pulp_wars-xv0t`, 7r133; it keeps Frostbite).
     expect(effectiveRoleRuleV7("GUARD", "ICE_FOLK").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
-      "FREEZE",
     ]);
     expect(roleMechanicsV7("GUARD", "ICE_FOLK")).toMatchObject({
       sweepDamage: 0,

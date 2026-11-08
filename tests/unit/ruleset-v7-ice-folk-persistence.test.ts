@@ -9,6 +9,7 @@ import {
   parseEventV7,
   parseGameStateV7,
   parseReplayJsonV7,
+  previewColdSnapV7,
   queryPlayerCommandsV7,
   runReplayV7,
   viewForV7,
@@ -107,35 +108,44 @@ describe("Ice Folk persistence (section 15)", () => {
       state = result.state;
       replay = appendReplayCommandV7(replay, command, state);
     };
-    // The Sled and the Witch walk toward the neighbouring strip and throw
-    // the Bolas and the Frost Bolt after their Move (the first Move after
-    // which the command is offered). Ice Folk Freeze (`pulp_wars-w49.37`):
-    // the Frost Bolt reaches 2 tiles, as Cold Snap did before.
-    for (const kind of ["THROW_BOLAS", "FROST_BOLT"] as const) {
-      const role = kind === "THROW_BOLAS" ? "RAIDER" : "CAPTAIN";
-      const unit = state.units.find(
-        (candidate) => candidate.ownerId === iceId && candidate.role === role,
+    // The Witch walks toward the nearest hostile unit, a Move a turn (the
+    // other seats only end their turns), until her Cold Snap Freezes one.
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Sled's Bolas and
+    // her Frost Bolt, which reached 2 tiles, are gone. No seat is played by
+    // the AI.
+    const witch = state.units.find(
+      (candidate) =>
+        candidate.ownerId === iceId && candidate.role === "CAPTAIN",
+    );
+    if (witch === undefined) throw new Error("no Witch");
+    const freezes = (at: GameStateV7): boolean =>
+      (previewColdSnapV7(viewForV7(at, iceId), witch.id)?.targets.length ?? 0) >
+      0;
+    const nearest = (at: GameStateV7, to: { x: number; y: number }): number =>
+      Math.min(
+        ...at.units
+          .filter((unit) => unit.ownerId !== iceId && unit.hp > 0)
+          .map((unit) =>
+            Math.max(Math.abs(unit.at.x - to.x), Math.abs(unit.at.y - to.y)),
+          ),
       );
-      if (unit === undefined) throw new Error(role);
+    for (let round = 0; round < 12 && !freezes(state); round += 1) {
       const moves = queryPlayerCommandsV7(viewForV7(state, iceId)).filter(
-        (command) => command.kind === "MOVE" && command.unitId === unit.id,
+        (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+          command.kind === "MOVE" && command.unitId === witch.id,
       );
-      const found = moves.find((candidate) => {
-        const moved = applyCommandV7(state, iceId, candidate);
-        return (
-          moved.accepted &&
-          queryPlayerCommandsV7(viewForV7(moved.state, iceId)).some(
-            (command) => command.kind === kind && command.unitId === unit.id,
-          )
-        );
-      });
-      if (found === undefined) throw new Error(`no Move enables ${kind}`);
-      play(found);
-      const cast = queryPlayerCommandsV7(viewForV7(state, iceId)).find(
-        (command) => command.kind === kind && command.unitId === unit.id,
-      );
-      play(cast as CommandV7);
+      const best = [...moves].sort(
+        (left, right) =>
+          nearest(state, left.path.at(-1) ?? witch.at) -
+          nearest(state, right.path.at(-1) ?? witch.at),
+      )[0];
+      if (best !== undefined) play(best);
+      if (freezes(state)) break;
+      do play({ kind: "END_TURN" });
+      while (state.turnOrder[state.activeSeatIndex] !== iceId);
     }
+    expect(freezes(state)).toBe(true);
+    play({ kind: "COLD_SNAP", unitId: witch.id });
     // Was four End Turns back to the Ice Folk with the list still non-empty
     // (the Chill timing): a freeze cast on the Ice Folk turn gives
     // `turnsLeft` 1 and thaws at the end of its owner's next turn

@@ -1427,15 +1427,23 @@ describe("I1: Glide from Snow onto Snow (section 6.1)", () => {
     expectOfferedAcceptedV7(state, "MOVE");
   });
 
-  it("the Blizzard ball moves one tile a turn; inside it units still shuffle two steps", () => {
-    // The Witch on (4, 3): her Blizzard is Snow on x 3-5, y 2-4.
-    const state = iceFieldV7([
+  it("a Snow patch moves nobody but the Ice Folk two steps inside it; the Blizzard lays none", () => {
+    // Stored Snow (a freeze's) on x 3-5, y 2-4, the Witch on (4, 3) (the
+    // one Freeze effect, `pulp_wars-xv0t`: her Blizzard is that Snow no
+    // more, so the patch is laid by hand).
+    const base = iceFieldV7([
       { seat: 0, role: "CAPTAIN", at: at(4, 3) },
       { seat: 0, role: "FIGHTER", at: at(3, 3) },
       { seat: 0, role: "FIGHTER", at: at(5, 3) },
       FAR,
     ]);
-    // The Witch: only her 3 x 3 was Snow before the Move.
+    // Without the patch the Witch's 3 x 3 is no Snow: one plain step.
+    expect(farthest(base, at(3, 3))).toBe(1);
+    const state = checkedV7({
+      ...base,
+      snow: [2, 3, 4].flatMap((y) => [3, 4, 5].map((x) => at(x, y))),
+    });
+    // The Witch: only the 3 x 3 is Snow.
     expect(farthest(state, at(4, 3))).toBe(1);
     expect(move(state, at(4, 3), [at(5, 2), at(6, 2)]).accepted).toBe(false);
     // The escort on the east edge steps out one tile...
@@ -1445,7 +1453,7 @@ describe("I1: Glide from Snow onto Snow (section 6.1)", () => {
       at(6, 4),
     ]);
     expect(move(state, at(5, 3), [at(6, 3), at(7, 3)]).accepted).toBe(false);
-    // ...and the one on the west edge crosses the Blizzard in two steps.
+    // ...and the one on the west edge crosses the patch in two steps.
     expect(destinations(state, at(3, 3))).toContainEqual(at(5, 2));
     expect(move(state, at(3, 3), [at(4, 2), at(5, 2)]).accepted).toBe(true);
     expectOfferedAcceptedV7(state, "MOVE");

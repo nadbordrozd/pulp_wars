@@ -3,6 +3,7 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   WRECK_COINS_V7,
+  applyCommandV7,
   effectiveRoleRuleV7,
   isEggLaidRoleV7,
   parseGameStateV7,
@@ -449,18 +450,22 @@ describe("Dwarf Assemble at ice (section 21.16)", () => {
 
 describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
   const brain = roleWith("MARTIAN", "MIND_CONTROL");
-  /** Seat 0 is Martian and controls the Yeti of seat 1 on the shore. */
+  /**
+   * Seat 0 is Martian and controls the Yeti (or `role`) of seat 1 on the
+   * shore.
+   */
   const controlled = (
     technologies: readonly TechnologyIdV7[],
     ice: readonly FrozenIceV7[],
     extra: readonly FrozenUnitV7[] = [],
+    role: "FIGHTER" | "CAPTAIN" = "FIGHTER",
   ): GameStateV7 => {
     const base = frozenArenaV7({
       factions: ["MARTIAN", "ICE_FOLK"],
       technologies: [technologies, ALL],
       units: [
         { seat: 0, role: brain, at: { x: 1, y: 1 } },
-        { seat: 1, role: "FIGHTER", at: SHORE },
+        { seat: 1, role, at: SHORE },
         ...extra,
       ],
       ice,
@@ -489,34 +494,31 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     });
   };
 
-  it("Freezes for its controller with the controller's Rime, and the ice is the controller's", () => {
-    const state = controlled(NAVAL_TECHS_V7, []);
-    const yeti = navalUnitAtV7(state, SHORE);
-    const freeze: CommandV7 = { kind: "FREEZE", unitId: yeti.id, at: ICE1 };
-    expect(offered(state, 0)).toContainEqual(freeze);
-    const frozen = acceptV7(state, 0, freeze);
+  it("a controlled Witch's Cold Snap freezes with the controller's Rime, and the ice is the controller's", () => {
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the line `FREEZE` a
+    // controlled Yeti had is gone; the Witch's Cold Snap freezes her ring.
+    const state = controlled(NAVAL_TECHS_V7, [], [], "CAPTAIN");
+    const witch = navalUnitAtV7(state, SHORE);
+    const snap: CommandV7 = { kind: "COLD_SNAP", unitId: witch.id };
+    expect(offered(state, 0)).toContainEqual(snap);
+    const frozen = acceptV7(state, 0, snap);
     // The frozen sea redesign: permanent, sound ice of the controller (its
     // thickness is the controller's own Glacier, which a Martian tree has
-    // not).
-    // The controller's Hoarfrost (`pulp_wars-s55m.1`): three tiles.
+    // not): the three Shallow Water tiles south of her.
+    const martian = seatV7(state, 0).id;
     expect(frozen.state.ice).toEqual([
-      { at: ICE1, ownerId: seatV7(state, 0).id, cracked: false },
-      { at: ICE2, ownerId: seatV7(state, 0).id, cracked: false },
-      { at: ICE3, ownerId: seatV7(state, 0).id, cracked: false },
+      { at: { x: 1, y: 3 }, ownerId: martian, cracked: false },
+      { at: ICE1, ownerId: martian, cracked: false },
+      { at: { x: 3, y: 3 }, ownerId: martian, cracked: false },
     ]);
-    // Without the controller's Rime the Yeti cannot, whatever its own
-    // seat researched.
-    const bare = controlled([], []);
-    expect(offered(bare, 0).some((command) => command.kind === "FREEZE")).toBe(
-      false,
-    );
-    expect(
-      rejectV7(bare, 0, {
-        kind: "FREEZE",
-        unitId: navalUnitAtV7(bare, SHORE).id,
-        at: ICE1,
-      }),
-    ).toEqual({ code: "TECH_REQUIRED", params: { tech: "SHORECRAFT" } });
+    // Without the controller's Rime she makes no ice, whatever her own seat
+    // researched (her open land still goes to Snow).
+    const bare = controlled([], [], [], "CAPTAIN");
+    const cast = applyCommandV7(bare, seatV7(bare, 0).id, {
+      kind: "COLD_SNAP",
+      unitId: navalUnitAtV7(bare, SHORE).id,
+    });
+    expect(cast.accepted ? cast.state.ice : []).toEqual([]);
   });
 
   it("skates like every Ice Folk body (Ice Folk movement, `pulp_wars-s55m.2`)", () => {

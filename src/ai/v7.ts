@@ -10,8 +10,6 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
-  BOLAS_MIN_RANGE_V7,
-  BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
   FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_RANGE_V7,
@@ -560,7 +558,6 @@ import {
   SHATTER_ESCAPE_PRIORITY_V7,
   SHATTER_KILL_VALUE_V7,
   SHATTER_SETUP_PRIORITY_V7,
-  BOLAS_SHATTER_PRIORITY_V7,
   SNOW_HUNTER_CHIP_OFFSET_V7,
   SNOW_OBJECTIVE_V7,
   TRAMPLE_VALUE_V7,
@@ -572,7 +569,6 @@ import {
   WITCH_FOCUS_RANGED_PRIORITY_V7,
   WITCH_KILL_PRIORITY_V7,
   WITCH_MOVE_PRIORITY_V7,
-  bolasScoreV7,
   frozenForPolicyV7,
   coldSnapScoreV7,
   compareKeysV7,
@@ -636,10 +632,10 @@ import {
   whirlPreviewForScoringV7,
 } from "./v7-ninth-unit";
 import {
-  iceColdSnapWaterScoreV7,
+  ICE_BUILDER_TRAINING_BIAS_V7,
+  iceColdSnapTilesScoreV7,
   iceCrackScoreV7,
   iceCrossingMoveV7,
-  iceFreezeScoreV7,
   iceLandingRejectedV7,
   iceMoveOntoHostileIceRejectedV7,
   iceSeaCrossingTechV7,
@@ -756,12 +752,11 @@ import {
   TOSS_ESCORT_VALUE_V7,
   TOSS_MINIMUM_NET_DAMAGE_V7,
   TOSS_VERIFIED_TILES_V7,
-  coldAuraTargetsV7,
+  coldWakeTargetsV7,
   crushColumnV7,
   crushDangerV7,
   crushOutcomeV7,
   giantFactsV7,
-  glacialShardsV7,
   glacialSmashLethalV7,
   hostileTossLandingsV7,
   stompCrowdV7,
@@ -11644,7 +11639,9 @@ function* publicThreatenedTilesWorkV7(
   withGlide = true,
   /**
    * The frozen sea (`pulp_wars-5ti.5`): filled with the tiles the unit can
-   * stand on and still act (its own tile first), for the Freeze reach.
+   * stand on and still act (its own tile first), for the Freeze reach; for
+   * a Frost Giant (the one Freeze effect, `pulp_wars-xv0t`)
+   * every tile its Move reaches, since its Cold Wake freezes on arrival.
    */
   standTilesOut?: CoordV7[],
 ): Generator<void, readonly CoordV7[]> {
@@ -11746,9 +11743,15 @@ function* publicThreatenedTilesWorkV7(
       (at) => (lookup.occupantsByKey.get(coordKey(at)) ?? []).length > 0,
     ))
       origins.set(coordKey(landing), landing);
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Cold Wake freezes
+  // round every tile the unit's Move ends on, whether or not it may act.
+  const wakes =
+    standTilesOut !== undefined &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("COLD_WAKE");
   if (
     unit.form !== "EMBARKED" &&
-    (unitMayActAfterMoveV7(view, unit) || kaboom)
+    (unitMayActAfterMoveV7(view, unit) || kaboom || wakes)
   ) {
     const queue = [{ at: unit.at, spent2: 0 }];
     const best = new Map([[coordKey(unit.at), 0]]);
@@ -12430,10 +12433,6 @@ function frozenSeaToolsV7(context: PolicyContextV7): FrozenSeaToolsV7 {
     },
     objective: (unitId) => context.tactical.objectiveByUnitId.get(unitId),
     commands: context.commands,
-    // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm's
-    // strike on a ship is made when the Vampire rule accepts it.
-    strikeAcceptable: (command) =>
-      vampireAttackAcceptableV7(context, view, command),
     // The frozen sea redesign (`pulp_wars-5ti.26`): the route a unit afloat
     // follows (`navalMovementObjectiveValueV7`): a ship the fleet's, a
     // transport the plan's.
@@ -12636,19 +12635,9 @@ function isPolicyCandidate(
   // attack since `pulp_wars-n5fa`, 7r130: the attack rules score its frog.)
   if (command.kind === "SWITCHEROO" || command.kind === "TENTACLE")
     return false;
-  // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section
-  // 13.2): a Freeze only with a reason (a ship to lock in, the next tile of
-  // the crossing, a crossing tile to keep, home ice): `iceFreezeScoreV7`.
-  // The command is offered only to a seat with an Ice Folk unit and Rime.
-  if (command.kind === "FREEZE")
-    return (
-      iceFreezeScoreV7(
-        context.view,
-        frozenSeaToolsV7(context),
-        icePlanV7(context),
-        command,
-      ) !== null
-    );
+  // (The frozen sea's `FREEZE`, a candidate only with a reason, went with
+  // the one Freeze effect, `pulp_wars-xv0t`, 7r133: a Witch's Cold Snap
+  // and a Frost Giant's Cold Wake freeze tiles now.)
   // The frozen sea redesign (`pulp_wars-5ti.26`, RULESET_7_ICE_REDESIGN.md
   // section 3.2): a Crack only with a reason (free an own or allied frozen
   // ship, break a bridge that threatens a center, open a ship's way):
@@ -12898,8 +12887,8 @@ function isPolicyCandidate(
   // then the dinosaurs, then the Cavemen.
   if (command.kind === "ATTACK" && dinosaurPackWaitsV7(context, command))
     return false;
-  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Bolas, then the
-  // shots from two tiles, then the blows that shatter.
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the shots from two
+  // tiles, then the blows that shatter.
   if (command.kind === "ATTACK" && iceFolkShatterWaitsV7(context, command))
     return false;
   if (command.kind === "ATTACK" && isLowValueAttackV7(context, command)) {
@@ -13997,8 +13986,14 @@ function* sharedCityContextWorkV7(
           repetition,
         );
   // The Ice Folk revision (`pulp_wars-7g3.4`): the Ice Folk role values.
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a crossing still to
+  // build with no builder asks for an Ice Witch (her Cold Snaps build it).
   const iceCounts =
     view.viewer.faction === "ICE_FOLK" ? iceFolkArmyCountsV7(view) : null;
+  const iceBuilderWanted = (): boolean => {
+    const plan = icePlanV7(context);
+    return plan !== null && plan.stand !== null && plan.builders.length === 0;
+  };
   const iceAdjustment = (
     role: UnitRoleIdV7,
     threatened: boolean,
@@ -14013,7 +14008,10 @@ function* sharedCityContextWorkV7(
           threatened,
           atWar,
           repetition,
-        );
+        ) +
+        (role === "CAPTAIN" && !threatened && iceBuilderWanted()
+          ? ICE_BUILDER_TRAINING_BIAS_V7
+          : 0);
   // The Dwarf revision (`pulp_wars-78i.4`): the Dwarf role values.
   const dwarfCounts = dwarfPlayV7(context) ? dwarfArmyCountsV7(view) : null;
   const dwarfAdjustment = (
@@ -15866,8 +15864,7 @@ function scoreCommandWithContext(
       }
       // The giants' signatures (`pulp_wars-w49.31`): the crush and the
       // collision of a Juggernaut's blow, its Push off a hostile center,
-      // the Walls and the Field Defense a Brass Titan's blow breaks, and
-      // the shards of a Frost Giant's.
+      // and the Walls and the Field Defense a Brass Titan's blow breaks.
       if (
         context.giants !== null &&
         actor !== undefined &&
@@ -15979,21 +15976,6 @@ function scoreCommandWithContext(
     }
   }
 
-  // The frozen sea (`pulp_wars-5ti.5`): a Freeze by its reason.
-  if (command.kind === "FREEZE") {
-    const freeze = iceFreezeScoreV7(
-      view,
-      frozenSeaToolsV7(context),
-      icePlanV7(context),
-      command,
-    );
-    if (freeze !== null) {
-      priority = freeze.priority;
-      strategicValue = freeze.strategic;
-      immediateValue = freeze.immediate;
-    }
-  }
-
   // The frozen sea redesign (`pulp_wars-5ti.26`): a Crack by its reason.
   if (command.kind === "CRACK_ICE") {
     const crack = iceCrackScoreV7(view, frozenSeaToolsV7(context), command);
@@ -16007,8 +15989,9 @@ function scoreCommandWithContext(
   if (command.kind === "COLD_SNAP" && context.iceFolk) {
     const snap = coldSnapScoreV7(iceFolkCacheV7(context).tools, command);
     // Ice Folk freeze rework (`pulp_wars-s55m.1`): the cast also freezes
-    // the water around the Witch, worth what a Freeze of it is worth.
-    const water = iceColdSnapWaterScoreV7(
+    // the water around the Witch (the one Freeze effect, `pulp_wars-xv0t`:
+    // the crossing's next tile, a tile to keep, home ice).
+    const water = iceColdSnapTilesScoreV7(
       view,
       frozenSeaToolsV7(context),
       icePlanV7(context),
@@ -16019,15 +16002,9 @@ function scoreCommandWithContext(
     immediateValue = Math.max(snap.immediate, 0) + (water?.immediate ?? 0);
   }
 
-  // Ice Folk Freeze (`pulp_wars-w49.37`): basic scoring of the two new
-  // actions, not tuned. A Frost Bolt is scored as a Bolas; a Stampede by its
-  // previewed hits, a kill at the kill tier and a chip at the chip tier.
-  if (command.kind === "FROST_BOLT" && context.iceFolk) {
-    const bolt = bolasScoreV7(iceFolkCacheV7(context).tools, command, false);
-    priority = bolt.priority;
-    strategicValue = bolt.strategic;
-    immediateValue = bolt.immediate;
-  }
+  // Ice Folk Freeze (`pulp_wars-w49.37`): basic scoring, not tuned. A
+  // Stampede by its previewed hits, a kill at the kill tier and a chip at
+  // the chip tier. (The Frost Bolt went with `pulp_wars-xv0t`.)
   if (command.kind === "STAMPEDE") {
     const stampede = previewStampedeV7(view, command.unitId, command.at);
     if (stampede !== null && stampede.hits.length > 0) {
@@ -16045,36 +16022,6 @@ function scoreCommandWithContext(
         0,
       );
     }
-  }
-
-  if (command.kind === "THROW_BOLAS" && context.iceFolk) {
-    const bolas = bolasScoreV7(
-      iceFolkCacheV7(context).tools,
-      command,
-      iceFolkSledKillsV7(context, command.unitId),
-    );
-    priority = bolas.priority;
-    strategicValue = bolas.strategic;
-    immediateValue = bolas.immediate;
-    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Bolas of a
-    // combined kill (`iceFolkShatterHuntV7`) is thrown at its target, before
-    // the hunters strike; the Sled of such a kill throws at no other unit,
-    // and a Sled that is one of its hunters keeps its action for its blow.
-    const thrown = iceFolkBolasPlanV7(context, command.unitId);
-    if (thrown !== undefined) {
-      if (thrown.target.id === command.targetUnitId) {
-        priority = BOLAS_SHATTER_PRIORITY_V7;
-        strategicValue = Math.max(
-          strategicValue,
-          targetStrategicValue(view, command.targetUnitId, context.lookup),
-        );
-      } else priority = -1;
-    } else if (
-      armyIceFolkSeatV7(context) &&
-      priority < BOLAS_SHATTER_PRIORITY_V7 &&
-      huntOfV7(context, command.unitId) !== undefined
-    )
-      priority = -1;
   }
 
   if (
@@ -16873,7 +16820,7 @@ function scoreCommandWithContext(
       strategicValue += curiosity.strategic;
     }
     // The giants' signatures (`pulp_wars-w49.31`): the own giant's Move
-    // (the trample, the Cold Aura, the walk to a walled city, the escort
+    // (the trample, the Cold Wake, the walk to a walled city, the escort
     // of a Troll), and every seat's Move around a hostile giant.
     if (context.giants !== null && resultAt !== null && !autoembark) {
       const giant = giantMoveValueV7(
@@ -17984,16 +17931,6 @@ interface HuntPlanV7 {
    * next to the Spider.
    */
   readonly tiles: ReadonlyMap<UnitId, string>;
-  /**
-   * Step two of the Ice Folk pass (`pulp_wars-w49.27`): the own Sled whose
-   * Bolas the plan counts on (the target is not Chilled yet and the kill
-   * is a Shatter), and the tile it throws from when it must move first
-   * (null: the throw is on offer where it stands).
-   */
-  readonly bolas?: {
-    readonly unitId: UnitId;
-    readonly tile: string | null;
-  };
 }
 
 function huntTargetV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
@@ -18266,13 +18203,14 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       left = 0;
     }
     // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk
-    // seat counts the Shatter of a Chilled target, with the Bolas that
-    // chills it first (`iceFolkShatterHuntV7`). Also for the garrison of a
+    // seat counts the Shatter of a Chilled target (`iceFolkShatterHuntV7`;
+    // the Bolas that chilled it first went with `pulp_wars-xv0t`). Also
+    // for the garrison of a
     // center the campaign marches on and the other named targets (never the
     // Monster): on a recorded position a Yeti struck such a garrison for 5
     // and took 5 before the Sled two tiles away had thrown.
     const shatter = armyIceFolkSeatV7(context)
-      ? iceFolkShatterHuntV7(context, target, candidates, armyHunters)
+      ? iceFolkShatterHuntV7(context, target, candidates)
       : null;
     if (shatter !== null) {
       for (const [id, stays] of shatter.hunters) hunters.set(id, stays);
@@ -18312,14 +18250,8 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
           capturerNearV7(context, unit, target.at, hunters),
         ))
     ) {
-      const bolas = shatter?.bolas;
-      plans.push(
-        bolas === undefined
-          ? { army, target, hunters, tiles }
-          : { army, target, hunters, tiles, bolas },
-      );
+      plans.push({ army, target, hunters, tiles });
       if (context.army) for (const id of hunters.keys()) armyHunters.add(id);
-      if (bolas !== undefined) armyHunters.add(bolas.unitId);
     }
   }
   // Round 2 (`pulp_wars-737.15`, section 33, "avoid unless strong"): the
@@ -18731,63 +18663,6 @@ function dinosaurPackWaitsV7(
 }
 
 /**
- * Step two of the Ice Folk pass (`pulp_wars-w49.27`,
- * docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): the own Sled that
- * can chill `target` this turn for a combined kill: one whose `THROW_BOLAS`
- * on it is on offer where it stands (the lowest unit ID), or else one that
- * has not moved, has a Move to a tile exactly the Bolas's range (2) from
- * the target that the visible enemies do not kill it on (the tile where
- * they deal it the least), and may throw after it.
- * Never a unit already told off for another combined kill (`taken`).
- */
-function iceFolkBolasSourceV7(
-  context: PolicyContextV7,
-  target: PublicUnitV7,
-  taken: ReadonlySet<UnitId>,
-): { readonly unitId: UnitId; readonly tile: string | null } | null {
-  const view = context.view;
-  let standing: UnitId | null = null;
-  for (const command of context.commands)
-    if (
-      command.kind === "THROW_BOLAS" &&
-      command.targetUnitId === target.id &&
-      !taken.has(command.unitId) &&
-      (standing === null || command.unitId < standing)
-    )
-      standing = command.unitId;
-  if (standing !== null) return { unitId: standing, tile: null };
-  let best: {
-    readonly unitId: UnitId;
-    readonly tile: string;
-    readonly key: readonly number[];
-  } | null = null;
-  for (const unit of view.units) {
-    if (
-      unit.ownerId !== view.viewer.id ||
-      unit.form !== "LAND" ||
-      unit.hp <= 0 ||
-      taken.has(unit.id) ||
-      unit.activation.moved ||
-      !primaryReadyForPolicyV7(unit) ||
-      !unitMayActAfterMoveV7(view, unit) ||
-      !hasAbilityForIceV7(view, unit, "BOLAS")
-    )
-      continue;
-    for (const to of context.lookup.moveDestinationsByUnit.get(unit.id) ?? []) {
-      const gap = distance(to, target.at);
-      // `pulp_wars-3u8d` (7r131): a Bolas flies exactly 2 tiles.
-      if (gap > BOLAS_RANGE_V7 || gap < BOLAS_MIN_RANGE_V7) continue;
-      const danger = visibleImmediateDamage(view, unit, to, context);
-      if (danger >= unit.hp) continue;
-      const key = [-danger, gap, -unit.id, -to.y, -to.x];
-      if (best === null || compareNumericTuple(key, best.key) > 0)
-        best = { unitId: unit.id, tile: coordKey(to), key };
-    }
-  }
-  return best === null ? null : { unitId: best.unitId, tile: best.tile };
-}
-
-/**
  * Step two of the Ice Folk pass: the combined kill of an Ice Folk seat,
  * with the Shatter. The hunt of tuning 5 projects every hunter's hit by
  * plain damage: a Sled and two Yetis beside a full Swordsman (15 HP: 5 and
@@ -18805,11 +18680,9 @@ function iceFolkBolasSourceV7(
  * the earlier ones leave; the projection counts Cold Blood and the Shatter
  * of a Chilled target (`iceFolkBlowV7`). A target that is Chilled now, or
  * that an own Witch's offered Cold Snap covers (it is cast before every
- * attack), is taken as it is. For one that is not, the group is also tried
- * with the Bolas of `iceFolkBolasSourceV7` thrown first (that Sled does not
- * strike), and the plan with the Bolas is taken when it kills with fewer
- * hunters than the plan without, or when only it kills. Null when no group
- * kills: the plan of tuning 5 is then tried as before.
+ * attack), is taken as it is. (A group with a Sled's Bolas thrown first was
+ * tried too until the Bolas went with `pulp_wars-xv0t`, 7r133.) Null when
+ * no group kills: the plan of tuning 5 is then tried as before.
  */
 function iceFolkShatterHuntV7(
   context: PolicyContextV7,
@@ -18821,11 +18694,9 @@ function iceFolkShatterHuntV7(
     readonly from: CoordV7;
     readonly places: readonly CoordV7[];
   }[],
-  taken: ReadonlySet<UnitId>,
 ): {
   readonly hunters: ReadonlyMap<UnitId, boolean>;
   readonly tiles: ReadonlyMap<UnitId, string>;
-  readonly bolas?: { readonly unitId: UnitId; readonly tile: string | null };
 } | null {
   const view = context.view;
   // (A giant and the Monster are never shattered; an Egg is never Chilled.)
@@ -18836,28 +18707,23 @@ function iceFolkShatterHuntV7(
   )
     return null;
   const facts = iceFolkFactsForViewV7(view);
-  const snapped = context.commands.some((command) => {
-    if (command.kind !== "COLD_SNAP") return false;
-    const witch = context.lookup.unitsById.get(command.unitId);
-    return (
-      witch !== undefined && distance(witch.at, target.at) <= COLD_SNAP_RANGE_V7
-    );
-  });
-  const source =
-    snapped || frozenForPolicyV7(facts, target.id)
-      ? null
-      : iceFolkBolasSourceV7(context, target, taken);
+  const snapped =
+    frozenForPolicyV7(facts, target.id) ||
+    context.commands.some((command) => {
+      if (command.kind !== "COLD_SNAP") return false;
+      const witch = context.lookup.unitsById.get(command.unitId);
+      return (
+        witch !== undefined &&
+        distance(witch.at, target.at) <= COLD_SNAP_RANGE_V7
+      );
+    });
   const kill = (
     chilled: boolean,
-    without: UnitId | null,
   ): {
     readonly hunters: ReadonlyMap<UnitId, boolean>;
     readonly tiles: ReadonlyMap<UnitId, string>;
   } | null => {
-    const pool =
-      without === null
-        ? candidates
-        : candidates.filter((candidate) => candidate.unit.id !== without);
+    const pool = candidates;
     const limit = Math.min(HUNT_MAXIMUM_HUNTERS_V7, pool.length);
     for (let size = 1; size <= limit; size += 1) {
       const group: {
@@ -18909,23 +18775,14 @@ function iceFolkShatterHuntV7(
     }
     return null;
   };
-  const plain = kill(snapped, null);
-  if (source === null) return plain;
-  const frozen = kill(true, source.unitId);
-  return frozen !== null &&
-    (plain === null || frozen.hunters.size < plain.hunters.size)
-    ? { ...frozen, bolas: source }
-    : plain;
+  return kill(snapped);
 }
 
 /**
  * Step two of the Ice Folk pass: the order of an Ice Folk seat's combined
  * kill. A hunter's hit that does not kill waits (it is no candidate) while
  *
- * - the Bolas its plan counts on is still to be thrown: the target is not
- *   Chilled, and the throw, or the Sled's Move to the tile it throws from,
- *   is on offer and passes the candidate filter;
- * - or it strikes from the next tile and a hunter of the same plan that
+ * - it strikes from the next tile and a hunter of the same plan that
  *   strikes from two tiles or more still has its blow to make (its attack
  *   is on offer, or it has not moved and its Move to the tile the plan
  *   counted is, and that command passes the candidate filter): the shots
@@ -18933,8 +18790,8 @@ function iceFolkShatterHuntV7(
  *   tile shatters.
  *
  * So the wait always ends. Its hit on another unit waits too: it has one
- * attack. (Hits ranked by their own value: a Yeti struck a full Fighter for
- * 5 and took 3 before the Sled beside it had thrown.)
+ * attack. (The wait for the Bolas its plan counted on went with the Bolas,
+ * `pulp_wars-xv0t`, 7r133.)
  */
 function iceFolkShatterWaitsV7(
   context: PolicyContextV7,
@@ -18953,32 +18810,6 @@ function iceFolkShatterWaitsV7(
   );
   if (preview === null || preview.defenderDies) return false;
   const target = plan.target;
-  const bolas = plan.bolas;
-  if (
-    bolas !== undefined &&
-    !frozenForPolicyV7(iceFolkFactsForViewV7(view), target.id)
-  )
-    for (const offered of context.commands) {
-      if (
-        offered.kind === "THROW_BOLAS" &&
-        offered.unitId === bolas.unitId &&
-        offered.targetUnitId === target.id
-      ) {
-        if (isPolicyCandidate(context, offered)) return true;
-      } else if (
-        bolas.tile !== null &&
-        offered.kind === "MOVE" &&
-        offered.unitId === bolas.unitId
-      ) {
-        const to = offered.path.at(-1);
-        if (
-          to !== undefined &&
-          coordKey(to) === bolas.tile &&
-          isPolicyCandidate(context, offered)
-        )
-          return true;
-      }
-    }
   if (distance(actor.at, target.at) !== 1) return false;
   for (const [id, stays] of plan.hunters) {
     if (id === actor.id) continue;
@@ -19014,18 +18845,6 @@ function iceFolkShatterWaitsV7(
     }
   }
   return false;
-}
-
-/**
- * Step two of the Ice Folk pass: the combined kill an own Sled throws its
- * Bolas for (`HuntPlanV7.bolas`), or undefined.
- */
-function iceFolkBolasPlanV7(
-  context: PolicyContextV7,
-  unitId: UnitId,
-): HuntPlanV7 | undefined {
-  if (!armyIceFolkSeatV7(context)) return undefined;
-  return huntPlansV7(context).find((plan) => plan.bolas?.unitId === unitId);
 }
 
 /**
@@ -19097,18 +18916,6 @@ function huntMoveValueV7(
     return null;
   const view = context.view;
   const facts = publicCombatFacts(view, actor, context.lookup);
-  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Sled of a
-  // combined kill moves to the tile it throws its Bolas from.
-  const thrown = iceFolkBolasPlanV7(context, actor.id);
-  if (thrown?.bolas !== undefined)
-    return thrown.bolas.tile === coordKey(to)
-      ? {
-          priority: Math.max(priority, ARMY_HUNT_MOVE_PRIORITY_V7),
-          strategic:
-            -visibleImmediateDamage(view, actor, to, context) +
-            ARMY_RANGED_FIRST_VALUE_V7,
-        }
-      : null;
   const plan = huntOfV7(context, actor.id);
   if (plan === undefined || plan.hunters.get(actor.id) !== false) return null;
   const range = distance(to, plan.target.at);
@@ -19567,8 +19374,7 @@ function cultAgainstValueV7(
     facts === null ||
     (command.kind !== "MOVE" &&
       command.kind !== "ATTACK" &&
-      command.kind !== "TEND_WOUNDED" &&
-      command.kind !== "THROW_BOLAS")
+      command.kind !== "TEND_WOUNDED")
   )
     return unchanged;
   const view = context.view;
@@ -19576,11 +19382,8 @@ function cultAgainstValueV7(
   if (actor === undefined || actor.ownerId !== view.viewer.id) return unchanged;
   // The Cult redesign's A-R4 (`pulp_wars-mch9.41`): a status on a hostile
   // Idol Bearer puts its idol down while it lasts. (A Ribbit is an
-  // `ATTACK` since `pulp_wars-n5fa`, 7r130: below.)
-  if (command.kind === "THROW_BOLAS") {
-    const value = cultAgainstStatusV7(facts, command.targetUnitId, priority);
-    return { ...value, forced: value.priority > priority };
-  }
+  // `ATTACK` since `pulp_wars-n5fa`, 7r130: below; the Sled's Bolas went
+  // with `pulp_wars-xv0t`, 7r133.)
   if (command.kind === "MOVE") {
     const to = resultAt ?? command.path.at(-1);
     if (to === undefined) return unchanged;
@@ -19618,7 +19421,7 @@ function cultAgainstValueV7(
       priority,
     );
     // `pulp_wars-n5fa` (7r130): a (mind-controlled) Hexer's shot that frogs
-    // a hostile Idol Bearer puts its idol down, as a Bolas does.
+    // a hostile Idol Bearer puts its idol down.
     const status = hit.ribbitApplied
       ? cultAgainstStatusV7(facts, target.id, struck.priority)
       : null;
@@ -24328,8 +24131,6 @@ interface IceFolkContextCacheV7 {
    * Cold Snap from that leaves her out of lethal reach.
    */
   readonly witchSnapMoves: Set<UnitId>;
-  /** Own Sleds with an offered killing attack. */
-  readonly sledKills: Map<UnitId, boolean>;
 }
 
 const iceFolkFactsByViewV7 = new WeakMap<PlayerViewV7, IceFolkFactsV7>();
@@ -24358,7 +24159,6 @@ function iceFolkCacheV7(context: PolicyContextV7): IceFolkContextCacheV7 {
     shatterSetups,
     witchDestination: new Map(),
     witchSnapMoves: new Set(),
-    sledKills: new Map(),
     tools: {
       view,
       facts,
@@ -24456,26 +24256,6 @@ function iceFolkWitchFocusV7(
     previews.length >= 2 &&
     sum(previews.map((preview) => preview.damageToDefender)) >= target.hp
   );
-}
-
-/** Whether an own Sled has an offered attack that kills. */
-function iceFolkSledKillsV7(context: PolicyContextV7, sledId: UnitId): boolean {
-  const cache = iceFolkCacheV7(context);
-  const cached = cache.sledKills.get(sledId);
-  if (cached !== undefined) return cached;
-  let kills = false;
-  for (const command of context.commands)
-    if (
-      command.kind === "ATTACK" &&
-      command.unitId === sledId &&
-      queryCombatPreviewV7(context.view, sledId, command.targetUnitId)
-        ?.defenderDies === true
-    ) {
-      kills = true;
-      break;
-    }
-  cache.sledKills.set(sledId, kills);
-  return kills;
 }
 
 /** An own wounded land unit within two tiles of an own city center. */
@@ -24687,7 +24467,7 @@ function iceFolkAttackAdjustmentV7(
           ? SNOW_HUNTER_CHIP_OFFSET_V7
           : abilities.includes("SWEEP")
             ? MAMMOTH_CHIP_OFFSET_V7
-            : abilities.includes("BOLAS")
+            : abilities.includes("CHARGE")
               ? 0
               : MELEE_CHIP_OFFSET_V7;
     const threshold = shatterThresholdForPolicyV7(facts, view.viewer.id);
@@ -25895,8 +25675,7 @@ function giantKillTierV7(context: PolicyContextV7, unitId: UnitId): number {
  *   Field Defense smashed, `SIEGE_HAMMER_WALLS_VALUE_V7` for razed Walls;
  *   the blow that breaks either goes first (1178).
  * - **Glacial Smash** (the Frost Giant): the shatter is the preview's kill
- *   already; each unit its shards newly freeze adds
- *   `GLACIAL_FREEZE_VALUE_V7`.
+ *   already (its shards froze more units until `pulp_wars-xv0t`, 7r133).
  */
 function giantAttackValueV7(
   context: PolicyContextV7,
@@ -25975,9 +25754,6 @@ function giantAttackValueV7(
     if (fieldDefense || preview.wallsDestroyed)
       next = Math.max(next, SIEGE_HAMMER_FIRST_PRIORITY_V7);
   }
-  if (preview.shatters && context.giants?.own.get(actor.id) === "GLACIAL_SMASH")
-    strategic +=
-      GLACIAL_FREEZE_VALUE_V7 * glacialShardsV7(view, actor, target).length;
   return { priority: next, strategic, immediate };
 }
 
@@ -26428,7 +26204,7 @@ function giantLethalAtV7(
  * it does) strides over a unit to a tile with a ranged, siege, or support
  * unit in its range, when none is in range now, at the army's breakthrough
  * tier. A Frost Giant that has not moved: `GLACIAL_FREEZE_VALUE_V7` for
- * each unit the Cold Aura of the tile newly freezes, at 1177 (before its
+ * each unit the Cold Wake of the tile newly freezes, at 1177 (before its
  * own blow: a Frozen unit does not strike back), and at a Shatter setup's
  * tier with the value of the unit when its Glacial Smash from there kills
  * one; never onto a tile where the visible enemies kill it. A Brass Titan:
@@ -26525,10 +26301,10 @@ function giantMoveValueV7(
     !actor.activation.moved &&
     primaryReadyForPolicyV7(actor) &&
     unitMayActAfterMoveV7(view, actor) &&
-    unitRoleRuleV7(view, actor).abilities.includes("COLD_AURA") &&
+    unitRoleRuleV7(view, actor).abilities.includes("COLD_WAKE") &&
     !armyGatedV7(context, actor)
   ) {
-    const aura = coldAuraTargetsV7(view, actor, to);
+    const aura = coldWakeTargetsV7(view, actor, to);
     if (
       aura.all.length > 0 &&
       visibleImmediateDamage(view, actor, to, context) < actor.hp
@@ -28139,7 +27915,7 @@ function computeVisibleImmediateDamage(
       total = actor.hp;
   }
   // The giants' signatures, against (`pulp_wars-w49.31`): a unit a visible
-  // hostile Frost Giant's Glacial Smash kills (its Cold Aura freezes the
+  // hostile Frost Giant's Glacial Smash kills (its Cold Wake freezes the
   // unit, and its blow leaves it at 8 HP or less), and one a visible
   // hostile Abomination swallows whole, is in lethal reach.
   if (

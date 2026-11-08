@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
-  previewFreezeV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -41,9 +40,6 @@ import {
   CRACK_ICE_BUILT_V7,
   CRACK_ICE_OCCUPIED_V7,
   crackIceUnavailableTextV7,
-  freezeOutcomeTextV7,
-  freezeOutcomeV7,
-  freezeTargetLabelV7,
   frozenSeaBoundaryNoticeV7,
   unitHasCrackIceV7,
 } from "../../src/render/frozen-sea-presentation-v7";
@@ -378,25 +374,10 @@ describe("building on the ice", () => {
   });
 });
 
-describe("the Freeze preview", () => {
-  it("names the tiles it takes and the cracks it mends", () => {
-    const view = viewOf(iceBuildUiFixtureV7());
-    const yeti = unitAt(view, at.yeti);
-    const taking = previewFreezeV7(view, yeti.id, at.foreign);
-    const mending = previewFreezeV7(view, yeti.id, at.west);
-    if (taking === null || mending === null) throw new Error("no preview");
-    // Hoarfrost (every Naval technology): a three-tile line.
-    expect(freezeTargetLabelV7(freezeOutcomeV7(taking))).toBe(
-      "Ice 3 · takes 1",
-    );
-    expect(freezeOutcomeTextV7(freezeOutcomeV7(taking))).toBe(
-      "Freeze: 3 tiles of ice. It stays until it is cracked. 1 tile of another player's ice becomes yours.",
-    );
-    expect(freezeTargetLabelV7(freezeOutcomeV7(mending))).toBe(
-      "Ice 2 · mends 1",
-    );
-  });
-});
+// (The Freeze line's preview, which named the tiles it took and the cracks
+// it mended, went with `FREEZE`: the one Freeze effect, `pulp_wars-xv0t`,
+// 7r133. The Cold Snap's and the Cold Wake's previews are tested in
+// `ruleset-v7-ice-folk-one-freeze.test.ts`.)
 
 // (The slip's "Black Ice freezes" legend is gone with `pulp_wars-y242`,
 // 7r132: no unit of another kind than the Ice Folk slips onto ice.)

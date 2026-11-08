@@ -1489,13 +1489,8 @@ const SCENES: readonly Scene[] = [
         "FROZEN_UI_V7.yeti",
         [],
       ],
-      [
-        "freeze-aim",
-        "v7-frozen-sea-ui",
-        "frozenFreezeUiFixtureV7()",
-        "FROZEN_UI_V7.yeti",
-        ["freeze"],
-      ],
+      // (A Yeti's aimed Freeze went with the one Freeze effect,
+      // `pulp_wars-xv0t`, 7r133.)
       [
         "dock-frozen-ship",
         "v7-frozen-sea-ui",

@@ -536,7 +536,7 @@ describe("Unbound: the failed check (section 6.4)", () => {
     // Frozen by the Ice Folk in their turn: it stays so through its own.
     const state = checkedV7({
       ...base,
-      frozen: [{ unitId: horror.id, turnsLeft: 2 }],
+      frozen: [{ unitId: horror.id, turnsLeft: 1 }],
     });
     const round = applyOkV7(state, seatIdV7(state, 1), { kind: "END_TURN" });
     expect(kindsV7(round.events)).toContain("DAEMON_UNBOUND");

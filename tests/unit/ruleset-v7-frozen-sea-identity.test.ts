@@ -5,9 +5,7 @@ import {
   FACTION_IDS_V7,
   FISHING_HOLE_COST_V7,
   FISHING_HOLE_POPULATION_V7,
-  FREEZE_LINE_V7,
   ICE_CRACKS_THICK_V7,
-  LONG_FREEZE_LINE_V7,
   ICE_SEA_DOG_UNITS_V7,
   NAVAL_ROLE_IDS_V7,
   PRIOR_RULESET_7_IDS,
@@ -15,7 +13,6 @@ import {
   SEA_DOG_SHIPS_V7,
   TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
   UNIT_ROLE_IDS_V7,
-  WITCH_FREEZE_RADIUS_V7,
   assertRuleset7Registry,
   createPlayableGameV7,
   createReplayV7,
@@ -72,17 +69,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(PRIOR_RULESET_7_IDS.slice(-89, -85)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(PRIOR_RULESET_7_IDS.slice(-90, -86)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(131);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(132);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-88, -85)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-89, -86)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +92,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r132");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r133");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -138,24 +135,27 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
 });
 
 describe("the frozen sea shapes", () => {
-  it("puts FREEZE and the three events where the spec puts them, with the constants", () => {
+  it("puts CRACK_ICE and the events where the spec puts them, with the constants", () => {
     const after = <T>(order: readonly T[], kind: T) =>
       order[order.indexOf(kind) + 1];
-    expect(after(COMMAND_KIND_ORDER_V7, "COLD_SNAP")).toBe("FREEZE");
-    // The frozen sea redesign (`pulp_wars-5ti.25`): Crack Ice right after
-    // Freeze, the Fishing Hole after the Lumber Camp, and `ICE_CRACKED`
-    // right after `WATER_FROZEN`.
-    expect(after(COMMAND_KIND_ORDER_V7, "FREEZE")).toBe("CRACK_ICE");
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): `FREEZE` (between
+    // COLD_SNAP and CRACK_ICE) is gone, and `TILES_FROZEN` took
+    // `WATER_FROZEN`'s place.
+    expect(COMMAND_KIND_ORDER_V7).not.toContain("FREEZE");
+    expect(after(COMMAND_KIND_ORDER_V7, "COLD_SNAP")).toBe("CRACK_ICE");
+    // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole after
+    // the Lumber Camp, and `ICE_CRACKED` right after the tiles' freeze.
     expect(after(COMMAND_KIND_ORDER_V7, "CRACK_ICE")).toBe("TUNNEL");
     expect(after(COMMAND_KIND_ORDER_V7, "BUILD_LUMBER_CAMP")).toBe(
       "BUILD_FISHING_HOLE",
     );
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_FROZEN")).toBe(
-      "WATER_FROZEN",
+      "TILES_FROZEN",
     );
-    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "WATER_FROZEN")).toBe(
+    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "TILES_FROZEN")).toBe(
       "ICE_CRACKED",
     );
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).not.toContain("WATER_FROZEN");
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): ICE_MELTED and
     // UNITS_CRUSHED went with Icebound.
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "ICE_CRACKED")).toBe(
@@ -167,19 +167,20 @@ describe("the frozen sea shapes", () => {
       ICE_CRACKS_THICK_V7,
       FISHING_HOLE_COST_V7,
       FISHING_HOLE_POPULATION_V7,
-      FREEZE_LINE_V7,
-      // `pulp_wars-s55m.1`: Hoarfrost's line (the crush is gone).
-      LONG_FREEZE_LINE_V7,
-      WITCH_FREEZE_RADIUS_V7,
+      // (The Freeze line's 2, Hoarfrost's 3 and the Witch's radius 1 went
+      // with `FREEZE`: `pulp_wars-xv0t`, 7r133.)
       ICE_SEA_DOG_UNITS_V7,
       // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 units on the ice (3).
-    ]).toEqual([2, 3, 1, 2, 3, 1, 5]);
+    ]).toEqual([2, 3, 1, 5]);
     expect(ICE_SEA_DOG_UNITS_V7).toBe(SEA_DOG_SHIPS_V7);
     expect(() => assertRuleset7Registry()).not.toThrow();
   });
 
-  it("parses FREEZE and CRACK_ICE with exactly a unit and a tile", () => {
-    for (const kind of ["FREEZE", "CRACK_ICE"] as const) {
+  it("parses CRACK_ICE with exactly a unit and a tile, and no FREEZE", () => {
+    expect(
+      parseCommandV7({ kind: "FREEZE", unitId: 3, at: { x: 2, y: 3 } }).ok,
+    ).toBe(false);
+    for (const kind of ["CRACK_ICE"] as const) {
       const command = { kind, unitId: 3, at: { x: 2, y: 3 } };
       expect(parseCommandV7(command)).toEqual({ ok: true, value: command });
       for (const broken of [
@@ -216,7 +217,8 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       { kind: "COMMAND", command: "GATHER_PEARLS" },
       { kind: "FREEZE", depth: "DEEP" },
     ]);
-    expect(unlocks("NAVAL_ENGINEERING")).toEqual([{ kind: "LONG_FREEZE" }]);
+    // Hoarfrost's long Freeze line went with `FREEZE` (`pulp_wars-xv0t`).
+    expect(unlocks("NAVAL_ENGINEERING")).toEqual([]);
     expect(unlocks("SEAMANSHIP")).toEqual([{ kind: "BLACK_ICE" }]);
     expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "GLACIER" }]);
     for (const tech of NAVAL_BRANCH) {
@@ -251,34 +253,25 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       const caps = of(techs);
       return [
         caps.freezeWater,
-        caps.longFreeze,
         caps.blackIce,
         caps.thickIce,
         caps.iceCover,
         caps.harbourPopulation,
       ];
     };
-    expect(facts([])).toEqual(["NONE", false, false, false, false, 0]);
-    expect(facts(["SHORECRAFT"])).toEqual([
-      "SHALLOW",
-      false,
-      false,
-      false,
-      false,
-      0,
-    ]);
+    expect(facts([])).toEqual(["NONE", false, false, false, 0]);
+    expect(facts(["SHORECRAFT"])).toEqual(["SHALLOW", false, false, false, 0]);
     expect(facts(["SHORECRAFT", "NAVIGATION"])).toEqual([
       "DEEP",
       false,
       false,
       false,
-      false,
       0,
     ]);
-    // Hoarfrost (`pulp_wars-s55m.1`, Icebound before): a longer Freeze line.
+    // Hoarfrost (`pulp_wars-s55m.1`, Icebound before) gave a longer Freeze
+    // line until the one Freeze effect (`pulp_wars-xv0t`, 7r133): nothing.
     expect(facts(["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"])).toEqual([
       "DEEP",
-      true,
       false,
       false,
       false,
@@ -286,7 +279,6 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     ]);
     expect(facts(["SHORECRAFT", "SEAMANSHIP"])).toEqual([
       "SHALLOW",
-      false,
       true,
       false,
       false,
@@ -296,7 +288,6 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     // `pulp_wars-s55m.2`).
     expect(facts(["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"])).toEqual([
       "SHALLOW",
-      false,
       true,
       true,
       true,
@@ -328,15 +319,9 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     for (const faction of SEAFARERS) {
       const caps = technologyCapabilitiesV7(NAVAL_BRANCH, faction);
       expect(
-        [
-          caps.freezeWater,
-          caps.longFreeze,
-          caps.blackIce,
-          caps.thickIce,
-          caps.iceCover,
-        ],
+        [caps.freezeWater, caps.blackIce, caps.thickIce, caps.iceCover],
         faction,
-      ).toEqual(["NONE", false, false, false, false]);
+      ).toEqual(["NONE", false, false, false]);
       // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
       // Goblin Seamanship is Powder Kegs, the Ram and Fire Rafts instead of
       // Board, and the Undead one Drowned Crews; the Martian one Hover Pods
@@ -362,18 +347,15 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     }
   });
 
-  it("gives FREEZE to every Ice Folk land role but the Witch, and to no other role", () => {
+  it("gives FREEZE to no role (the one Freeze effect, `pulp_wars-xv0t`)", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7)
         expect(
-          effectiveRoleRuleV7(role, faction).abilities.includes("FREEZE"),
+          (
+            effectiveRoleRuleV7(role, faction).abilities as readonly string[]
+          ).includes("FREEZE"),
           `${faction} ${role}`,
-        ).toBe(
-          // (The ninth unit, 7r55: the heavy role is the Mammoth.) The Ice
-          // Folk freeze rework (`pulp_wars-s55m.1`): the Witch's Cold Snap
-          // freezes her water.
-          faction === "ICE_FOLK" && !isNavalRoleV7(role) && role !== "CAPTAIN",
-        );
+        ).toBe(false);
   });
 
   it("shows the branch in the public technology tree and forbids it on Dry Land", () => {
@@ -400,7 +382,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
         viewForV7(created.state, created.state.humanPlayerId),
       ).some(
         (command) =>
-          command.kind === "FREEZE" ||
+          command.kind === "COLD_SNAP" ||
           (command.kind === "RESEARCH" &&
             (NAVAL_BRANCH as readonly string[]).includes(command.tech)),
       ),
@@ -566,7 +548,7 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
     curiosities: false,
   });
 
-  it("gives it no ship: the tiles of its three boats are its ice, and a Freeze and a slide are within a walk", () => {
+  it("gives it no ship: the tiles of its three boats are its ice, and a walk onto it is on offer", () => {
     const created = createPlayableGameV7(
       setup(["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"]),
     );
@@ -580,11 +562,11 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
     expect(own.every((unit) => unit.form === "LAND")).toBe(true);
     // The frozen sea redesign: permanent, sound ice (thick: Glacier). The
     // starting border freeze (`pulp_wars-s55m.6`, 7r126): every Showcase
-    // seat knows Rime, so the rest of the Coast city's water is ice too.
+    // seat knows Rime, so the rest of the Coast city's water is ice too, but
+    // its Port (cx - 1, 12) and Shipyard (cx + 1, 12): a dock never freezes
+    // (the one Freeze effect, `pulp_wars-xv0t`, 7r133).
     expect(state.ice).toEqual([
-      { at: { x: cx - 1, y: 12 }, ownerId: ice.id, cracked: false },
       { at: { x: cx, y: 12 }, ownerId: ice.id, cracked: false },
-      { at: { x: cx + 1, y: 12 }, ownerId: ice.id, cracked: false },
       { at: { x: cx, y: 13 }, ownerId: ice.id, cracked: false },
       { at: { x: cx + 1, y: 13 }, ownerId: ice.id, cracked: false },
     ]);
@@ -615,8 +597,8 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
         .map((unit) => unit.id),
     );
     // No ship can be trained on the first turn; with the Yeti on the Coast
-    // center (a walk of the first turns) a Freeze of the home ice and a Move
-    // onto it are on offer.
+    // center (a walk of the first turns) a Move onto the home ice is on
+    // offer (its Freeze went with the one Freeze effect, `pulp_wars-xv0t`).
     expect(
       queryPlayerCommandsV7(viewForV7(state, ice.id)).some(
         (command) => command.kind === "TRAIN_NAVAL",
@@ -628,7 +610,6 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
       at: { x: cx, y: 11 },
     });
     const commands = queryPlayerCommandsV7(viewForV7(ashore, ice.id));
-    expect(commands.some((command) => command.kind === "FREEZE")).toBe(true);
     expect(commands.some((command) => command.kind === "TRAIN_NAVAL")).toBe(
       false,
     );

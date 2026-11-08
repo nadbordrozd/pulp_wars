@@ -205,7 +205,7 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     const state = frozenArenaV7({
       technologies: [ICEBOUND, RIME],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } },
+        { seat: 0, role: "CAPTAIN", at: { x: 4, y: 2 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 3 } },
       ],
     });
@@ -219,19 +219,20 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     }).state;
     const mine = acceptV7(sailed, 1, { kind: "END_TURN" }).state;
     expect(cityPopulation(mine)).toBe(before - 1);
-    const yeti = navalUnitAtV7(mine, { x: 4, y: 2 });
+    // The one Freeze effect (`pulp_wars-xv0t`): the Witch's Cold Snap (a
+    // Yeti's Freeze before) Freezes the boat; the dock never freezes.
+    const witch = navalUnitAtV7(mine, { x: 4, y: 2 });
     const result = acceptV7(mine, 0, {
-      kind: "FREEZE",
-      unitId: yeti.id,
-      at: WEST,
+      kind: "COLD_SNAP",
+      unitId: witch.id,
     });
-    expect(result.events).toEqual([
+    expect(result.events).toContainEqual(
       expect.objectContaining({
         kind: "UNITS_FROZEN",
-        source: "FREEZE",
+        source: "COLD_SNAP",
         results: [{ unitId: boat.id, turnsLeft: 1 }],
       }),
-    ]);
+    );
     expect(iceEntryV7(result.state, WEST)).toBeUndefined();
     expect(cityPopulation(result.state)).toBe(before - 1);
     expect(parseGameStateV7(result.state)).not.toBeNull();
@@ -245,7 +246,7 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
       technologies: [ICEBOUND, RIME],
       coins: [20, 0],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } },
+        { seat: 0, role: "CAPTAIN", at: { x: 4, y: 2 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 3 } },
       ],
     });
@@ -256,11 +257,10 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
       path: [WEST],
     }).state;
     const mine = acceptV7(sailed, 1, { kind: "END_TURN" }).state;
-    const yeti = navalUnitAtV7(mine, { x: 4, y: 2 });
+    const witch = navalUnitAtV7(mine, { x: 4, y: 2 });
     const frozen = acceptV7(mine, 0, {
-      kind: "FREEZE",
-      unitId: yeti.id,
-      at: WEST,
+      kind: "COLD_SNAP",
+      unitId: witch.id,
     }).state;
     const shipyard = at("BUILD_SHIPYARD", WEST);
     expect(isOffered(frozen, shipyard)).toBe(false);

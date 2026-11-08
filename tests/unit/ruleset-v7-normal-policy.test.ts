@@ -464,7 +464,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 347cc0…1469).
-      "7a0da9288cdd3a8bb42cb2322bb194733103e8ea705c0e869373a2c34e43cf8f",
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes THROW_BOLAS,
+      // FREEZE and FROST_BOLT, moving the later command kinds back (was
+      // 7a0da9…cf8f: the same choice with the old kind ordinals); the
+      // revision-12-ordinal value is unchanged.
+      "52743749bf85271be95380a4ff17d1d68fd3a1a30649ba70141d575b628d7e36",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1334,7 +1338,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 689c05…da43).
-      "ab06392f188d80fe5f4882f0c4676a8b9bd071e022b1fb412419b48846ae9904",
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes THROW_BOLAS,
+      // FREEZE and FROST_BOLT, moving the later command kinds back (was
+      // ab0639…9904: the same candidates with the old kind ordinals); the
+      // revision-12-ordinal value is unchanged.
+      "a126a53b99edcf11c33e037a9b5782e114966d5e689162864bbca308ef2111d5",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1360,7 +1368,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r132");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r133");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

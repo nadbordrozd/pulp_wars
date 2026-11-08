@@ -372,15 +372,8 @@ const PATH_CASES: readonly PathCaseV7[] = [
       return { state, command: { kind: "END_TURN" } };
     },
   },
-  {
-    name: "a Frost Bolt",
-    proves: ["UNITS_FROZEN"],
-    cause: "STATUS",
-    build: () => {
-      const state = rig("ICE_FOLK", [{ role: "CAPTAIN", at: at(5, 8) }]);
-      return { state, command: targeted("FROST_BOLT", state, at(5, 8)) };
-    },
-  },
+  // (The Frost Bolt and the Sled's Bolas went with the one Freeze effect,
+  // `pulp_wars-xv0t`, 7r133: the Cold Snap is the Ice Folk's aimed freeze.)
   {
     name: "a Cold Snap",
     proves: ["UNITS_FROZEN"],
@@ -388,15 +381,6 @@ const PATH_CASES: readonly PathCaseV7[] = [
     build: () => {
       const state = rig("ICE_FOLK", [{ role: "CAPTAIN", at: at(5, 7) }]);
       return { state, command: unitCommand("COLD_SNAP", state, at(5, 7)) };
-    },
-  },
-  {
-    name: "a Sled's Bolas",
-    proves: ["UNITS_FROZEN"],
-    cause: "STATUS",
-    build: () => {
-      const state = rig("ICE_FOLK", [{ role: "RAIDER", at: at(5, 8) }]);
-      return { state, command: targeted("THROW_BOLAS", state, at(5, 8)) };
     },
   },
   {
@@ -978,11 +962,9 @@ describe("the disruption rule: Anchor (section 8.4)", () => {
   });
 
   it("counts one when only the Thing failed: a Frozen Thing's grip is gone", () => {
-    const state = gripped("ICE_FOLK", [{ role: "CAPTAIN", at: at(8, 6) }]);
-    const result = run(
-      state,
-      targeted("FROST_BOLT", state, at(8, 6), THING.at),
-    );
+    // A Cold Snap whose ring holds the Thing but not the channeller.
+    const state = gripped("ICE_FOLK", [{ role: "CAPTAIN", at: at(7, 7) }]);
+    const result = run(state, unitCommand("COLD_SNAP", state, at(7, 7)));
     expect(anchorBroken(result.events)).toEqual([
       {
         kind: "ANCHOR_BROKEN",

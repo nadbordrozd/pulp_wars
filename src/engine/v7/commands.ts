@@ -136,32 +136,13 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Ice Folk revision (section 7.3): a Sled freezes a hostile unit
-       * within 2 tiles (Ice Folk Freeze, `pulp_wars-w49.37`).
-       */
-      readonly kind: "THROW_BOLAS";
-      readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
-    }
-  | {
-      /**
-       * The Ice Folk revision (section 6.4): an Ice Witch freezes every
-       * hostile unit next to her (Ice Folk Freeze, `pulp_wars-w49.37`).
+       * The Ice Folk revision (section 6.4): an Ice Witch freezes every tile
+       * around her (the one Freeze effect, `pulp_wars-xv0t`, 7r133: water
+       * to ice, open neutral land to Snow, a hostile unit Frozen). The
+       * Sled's `THROW_BOLAS` and the frozen sea's `FREEZE` retired with it.
        */
       readonly kind: "COLD_SNAP";
       readonly unitId: UnitId;
-    }
-  | {
-      /**
-       * The naval branch, the frozen sea
-       * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): an Ice Folk
-       * land unit freezes the water next to it: two tiles out in a straight
-       * line from `at` (one of the eight tiles around it), or, for the Ice
-       * Witch, every tile around her (`at` is her own tile).
-       */
-      readonly kind: "FREEZE";
-      readonly unitId: UnitId;
-      readonly at: CoordV7;
     }
   | {
       /**
@@ -298,16 +279,6 @@ export type CommandV7 =
       readonly kind: "BREAK_OFF";
       readonly unitId: UnitId;
       readonly tiles: readonly [CoordV7, CoordV7];
-    }
-  | {
-      /**
-       * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section
-       * 21.6): an Ice Witch freezes one hostile unit within 2 tiles (the
-       * Frost Bolt; she uses it or Cold Snap, one a turn).
-       */
-      readonly kind: "FROST_BOLT";
-      readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
     }
   | {
       /**
@@ -644,8 +615,6 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "ATTACK" ||
     kind === "MIND_CONTROL" ||
     kind === "TRACTOR_BEAM" ||
-    kind === "THROW_BOLAS" ||
-    kind === "FROST_BOLT" ||
     kind === "SUGAR_TOSS" ||
     kind === "TOP_UP" ||
     // (`SWALLOW` and `BOARD` retired, `pulp_wars-3u8d`: an `ATTACK` does
@@ -842,7 +811,6 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target, to } };
   }
   if (
-    kind === "FREEZE" ||
     kind === "CRACK_ICE" ||
     kind === "STAMPEDE" ||
     kind === "TENTACLE" ||
@@ -1185,8 +1153,6 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "ATTACK" ||
     command.kind === "MIND_CONTROL" ||
     command.kind === "TRACTOR_BEAM" ||
-    command.kind === "THROW_BOLAS" ||
-    command.kind === "FROST_BOLT" ||
     command.kind === "SUGAR_TOSS" ||
     command.kind === "TOP_UP" ||
     // The Cultists: `SWITCHEROO` by unit, then target. (`TENTACLE` is

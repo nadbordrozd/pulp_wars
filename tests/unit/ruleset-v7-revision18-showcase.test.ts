@@ -228,6 +228,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         terrorThisTurn,
         feastedThisTurn,
         ice,
+        // `pulp_wars-xv0t` (7r133): and the empty stored `snow` list.
+        snow,
         // `pulp_wars-w49.17`: and the empty `ninthUnit` record.
         ninthUnit,
         // `pulp_wars-w49.33`: and the empty `barricades` list.
@@ -264,6 +266,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       expect(monsters).toEqual([]);
       // `pulp_wars-5ti.3`: and the empty ice list.
       expect(ice).toEqual([]);
+      expect(snow).toEqual([]);
       expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
       // `pulp_wars-jdb.3`: and the four empty Candy lists.
       expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([

@@ -6,12 +6,10 @@ import {
   unitIsFrozenV7,
   unitMayActAfterMoveV7,
   technologyCapabilitiesV7,
-  unitCapabilitiesV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CoordV7,
   type CrackIcePreviewV7,
-  type FreezePreviewV7,
   type PlayerEventV7,
   type PlayerViewV7,
   type PublicIceTileV7,
@@ -22,10 +20,11 @@ import { playerSubjectV7 } from "./player-names-v7";
 /**
  * The frozen sea interface (bead pulp_wars-5ti.7, second part;
  * docs/product/RULESET_7_NAVAL_BRANCH.md sections 8, 14.1 and 14.2): the
- * words of Freeze, the ice, skating, Runners, the Fishing Hole dive (the
- * forced slide before `pulp_wars-s55m.2`; the slip of every other unit
- * before `pulp_wars-y242`, 7r132), who walks on ice, Hoarfrost (Icebound
- * and the crush before `pulp_wars-s55m.1`), Black Ice and Glacier, shared by
+ * words of Freeze (the one Freeze effect, `pulp_wars-xv0t`, 7r133: the
+ * `FREEZE` command and Hoarfrost's line are gone), the ice, skating,
+ * Runners, the Fishing Hole dive (the forced slide before
+ * `pulp_wars-s55m.2`; the slip of every other unit before `pulp_wars-y242`,
+ * 7r132), who walks on ice, Black Ice and Glacier, shared by
  * the dock, the board plan, Help, the
  * technology cards and the Gallery. Every number is read from the engine's
  * constants, public previews, public unit stats and the view's ice list.
@@ -37,8 +36,6 @@ export const ICE_LABEL_V7 = "Ice";
 export const SKATE_LABEL_V7 = "Skate";
 export const RUNNERS_LABEL_V7 = "Runners";
 export const DIVE_LABEL_V7 = "Dive";
-/** Ice Folk freeze rework (`pulp_wars-s55m.1`): the node Icebound was. */
-export const HOARFROST_LABEL_V7 = "Hoarfrost";
 export const BLACK_ICE_LABEL_V7 = "Black Ice";
 export const GLACIER_LABEL_V7 = "Glacier";
 export const ICE_COVER_LABEL_V7 = "Ice cover";
@@ -47,8 +44,13 @@ export const ICE_COVER_LABEL_V7 = "Ice cover";
  * One short sentence each (RULESET_7_ICE_REDESIGN.md section 2.2, the
  * frozen sea redesign: the ice stays until it is cracked).
  */
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.1): the glossary's
+ * and Help's line.
+ */
 export const FREEZE_RULE_V7 =
-  "A unit turns the water next to it to ice, two tiles out in a straight line; a ship in the way is Frozen instead. The Ice Witch's Cold Snap freezes every tile around her.";
+  "Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn.";
 export const SKATE_RULE_V7 =
   "Ice Folk units skate: each step onto ice costs half a move.";
 export const RUNNERS_RULE_V7 =
@@ -72,10 +74,8 @@ export const ICE_STAYS_RULE_V7 =
 export const NO_SHIPS_RULE_V7 =
   "Ships cannot enter ice; the Ice Folk have no ships at all.";
 export const BLACK_ICE_RULE_V7 = "An enemy that steps onto your ice is Frozen.";
-export const HOARFROST_RULE_V7 =
-  "Your units' Freeze reaches three tiles in a line.";
 export const GLACIER_RULE_V7 =
-  "Your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack. Your units on it have cover.";
+  "Your ice is thick: other players must Crack Ice twice to break it, and your freezes mend a crack. Your units on it have cover.";
 /** The border freeze (`pulp_wars-5ti.31`). */
 export const BORDER_ICE_LABEL_V7 = "Border ice";
 export const BORDER_ICE_RULE_V7 =
@@ -100,7 +100,6 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   ["Build", ICE_BUILD_RULE_V7],
   ["No ships", NO_SHIPS_RULE_V7],
   [BLACK_ICE_LABEL_V7, BLACK_ICE_RULE_V7],
-  [HOARFROST_LABEL_V7, HOARFROST_RULE_V7],
   [GLACIER_LABEL_V7, GLACIER_RULE_V7],
 ];
 
@@ -110,13 +109,17 @@ export const ICE_FOR_SHIPS_HELP_V7: readonly [string, string] = [
   "The Ice Folk freeze the sea. Only their units and units that fly or stride go onto ice; ships and other land units cannot, and may crack it open from beside it.",
 ];
 
-/** The technology card's lines (no trailing full stop, as its other lines). */
-export const FREEZE_SHALLOW_UNLOCK_V7 = `${FREEZE_LABEL_V7}: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch's Cold Snap: all around her), and skate across it; a ship in the way is Frozen; the water inside your borders freezes now and whenever they grow`;
+/**
+ * The technology card's lines (no trailing full stop, as its other lines).
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): Rime and Pack Ice decide
+ * what water the seat's freezes (a Cold Snap, a Cold Wake, the border)
+ * make ice of.
+ */
+export const FREEZE_SHALLOW_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on shallow water, and the water inside your borders freezes now and whenever they grow`;
 /** The border freeze (`pulp_wars-5ti.31`): the Ice Folk Land Grant line. */
 export const ICE_LAND_GRANT_UNLOCK_V7 =
   "Land Grant: with Rime, the water inside the city's borders, old and new, freezes";
-export const FREEZE_DEEP_UNLOCK_V7 = `${FREEZE_LABEL_V7}: Deep Water freezes too`;
-export const HOARFROST_UNLOCK_V7 = `${HOARFROST_LABEL_V7}: a Freeze reaches three tiles in a line`;
+export const FREEZE_DEEP_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on deep water too`;
 export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: an enemy that steps onto your ice is Frozen`;
 /**
  * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Glacier
@@ -125,37 +128,33 @@ export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: an enemy that steps o
  * old melting ice.
  */
 export function glacierUnlockTextV7(): string {
-  return `${GLACIER_LABEL_V7}: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover`;
+  return `${GLACIER_LABEL_V7}: your ice is thick: other players must Crack Ice twice to break it, and your freezes mend a crack; your units on it have cover`;
 }
 export const ICE_NO_SHIPS_NOTE_V7 = "The Ice Folk build no ships";
 
-/** The dock's Freeze button and its aiming panel. */
-export const FREEZE_LINE_TOOLTIP_V7 =
-  "Turn the water next to this unit to ice, two tiles out in a line";
-export const FREEZE_PICK_V7 = "Choose a highlighted tile to freeze toward";
-export const FREEZE_NEEDS_RIME_V7 = "Needs Rime";
-export const FREEZE_NEEDS_PACK_ICE_V7 = "Deep Water needs Pack Ice";
+/**
+ * The reasons a unit cannot act (Crack Ice's; the `FREEZE` button and its
+ * aiming panel went with the command, `pulp_wars-xv0t`, 7r133).
+ */
 export const FREEZE_ALREADY_ACTED_V7 = "Already acted this turn";
 export const FREEZE_FROZEN_MOVED_V7 = "Frozen: it cannot act this turn";
-export const FREEZE_NO_TARGET_V7 = "No water here can freeze";
+
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): the board label of a
+ * ring freeze (a Cold Snap, a Cold Wake): "Ice 2 · Snow 3", or "" when it
+ * freezes no tile.
+ */
+export function freezeRingLabelV7(tiles: number, snow: number): string {
+  return [
+    ...(tiles > 0 ? [`${ICE_LABEL_V7} ${tiles}`] : []),
+    ...(snow > 0 ? [`Snow ${snow}`] : []),
+  ].join(" · ");
+}
 
 /** Whether the unit is the Ice Witch (the role with the Blizzard). */
 export function freezesRingV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
     "BLIZZARD",
-  );
-}
-
-/** Whether the unit's role has Freeze at all (a land role of the Ice Folk). */
-export function unitHasFreezeV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
-): boolean {
-  return (
-    unit.form === "LAND" &&
-    (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
-      "FREEZE",
-    )
   );
 }
 
@@ -165,125 +164,6 @@ export function iceOnTileV7(
   at: CoordV7,
 ): PublicIceTileV7 | undefined {
   return view.ice.find((entry) => entry.at.x === at.x && entry.at.y === at.y);
-}
-
-const chebyshev = (a: CoordV7, b: CoordV7): number =>
-  Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-
-/**
- * Why an own unit with Freeze that stands next to water has no Freeze to
- * use, from the engine's rejection rows of section 8.4 in order: no Rime
- * (row 3), already acted or Frozen and moved (row 4), nothing freezable
- * (row 6; Deep Water without Pack Ice is named). Null when Freeze is
- * offered, for a unit without Freeze, off the viewer's turn, and for a unit
- * with no explored water next to it (no button is shown then).
- */
-export function freezeUnavailableTextV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
-  offered: boolean,
-): string | null {
-  if (
-    offered ||
-    unit.ownerId !== view.viewer.id ||
-    !unitHasFreezeV7(view, unit) ||
-    view.turnOrder[view.activeSeatIndex] !== view.viewer.id
-  )
-    return null;
-  const water = view.board.tiles.filter(
-    (tile) =>
-      tile.explored &&
-      (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
-      chebyshev(tile.at, unit.at) === 1,
-  );
-  if (water.length === 0) return null;
-  const depth = unitCapabilitiesV7(
-    view,
-    unit,
-    view.viewer.researchedTechs,
-  ).freezeWater;
-  if (depth === "NONE") return FREEZE_NEEDS_RIME_V7;
-  if (unitIsFrozenV7(view, unit)) return FREEZE_FROZEN_MOVED_V7;
-  if (
-    unit.activation.handled ||
-    unit.activation.attacked ||
-    unit.activation.specialActed ||
-    unit.activation.recovered ||
-    unit.activation.captured
-  )
-    return FREEZE_ALREADY_ACTED_V7;
-  return depth === "SHALLOW" &&
-    water.every(
-      (tile) => tile.explored === true && tile.terrain === "DEEP_WATER",
-    )
-    ? FREEZE_NEEDS_PACK_ICE_V7
-    : FREEZE_NO_TARGET_V7;
-}
-
-/** What a Freeze does, tile by tile, for labels and assistive text. */
-export interface FreezeOutcomeV7 {
-  /** Every tile that becomes the unit owner's sound ice. */
-  readonly tiles: number;
-  /** The owner's cracked tiles of them, mended. */
-  readonly mended: number;
-  /** Another player's ice of them, taken for the unit's owner. */
-  readonly taken: number;
-  /** The ships (and embarked units) Frozen on open water. */
-  readonly frozenUnits: number;
-}
-
-/**
- * The exact outcome of an offered Freeze, counted from `previewFreezeV7`.
- * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.1): ice is
- * permanent, so there is no countdown to show.
- */
-export function freezeOutcomeV7(preview: FreezePreviewV7): FreezeOutcomeV7 {
-  return {
-    tiles: preview.tiles.length,
-    mended: preview.mended.length,
-    taken: preview.taken.length,
-    frozenUnits: preview.frozenUnits.length,
-  };
-}
-
-/**
- * The board label of a Freeze: "Ice 2", "Ice 1 · mends 1", "Ice 2 · takes
- * 1", "Ice 1 · Freezes ship", "Freezes ship".
- */
-export function freezeTargetLabelV7(outcome: FreezeOutcomeV7): string {
-  const extra = [
-    ...(outcome.taken > 0 ? [`takes ${outcome.taken}`] : []),
-    ...(outcome.mended > 0 ? [`mends ${outcome.mended}`] : []),
-    ...(outcome.frozenUnits > 0
-      ? [outcome.frozenUnits === 1 ? "Freezes ship" : "Freezes ships"]
-      : []),
-  ];
-  return [
-    ...(outcome.tiles > 0 ? [`${ICE_LABEL_V7} ${outcome.tiles}`] : []),
-    ...extra,
-  ].join(" · ");
-}
-
-/** The sentence of a Freeze for the cursor description and the button. */
-export function freezeOutcomeTextV7(outcome: FreezeOutcomeV7): string {
-  const tiles = `${outcome.tiles} ${outcome.tiles === 1 ? "tile" : "tiles"}`;
-  const mended =
-    outcome.mended === 0
-      ? ""
-      : ` ${outcome.mended} cracked ${outcome.mended === 1 ? "tile is" : "tiles are"} mended.`;
-  const taken =
-    outcome.taken === 0
-      ? ""
-      : ` ${outcome.taken} ${outcome.taken === 1 ? "tile" : "tiles"} of another player's ice ${outcome.taken === 1 ? "becomes" : "become"} yours.`;
-  const ships =
-    outcome.frozenUnits === 0
-      ? ""
-      : ` ${outcome.frozenUnits} ${outcome.frozenUnits === 1 ? "ship is" : "ships are"} Frozen through their next turn.`;
-  const ice =
-    outcome.tiles === 0
-      ? ""
-      : ` ${tiles} of ice. It stays until it is cracked.`;
-  return `${FREEZE_LABEL_V7}:${ice}${taken}${mended}${ships}`;
 }
 
 /**
@@ -316,6 +196,9 @@ export function unitHasCrackIceV7(
 ): boolean {
   return unitCracksIceV7(view, unit);
 }
+
+const chebyshev = (a: CoordV7, b: CoordV7): number =>
+  Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 
 /**
  * The ice tiles beside a unit it could crack but for what stands on them:
@@ -540,8 +423,11 @@ export function frozenSeaBoundaryNoticeV7(
     before.units.find((unit) => unit.id === id) ??
     after.units.find((unit) => unit.id === id);
   for (const event of events) {
-    if (event.kind === "WATER_FROZEN") {
-      const tiles = `${event.tiles.length} ${event.tiles.length === 1 ? "tile" : "tiles"}`;
+    if (event.kind === "TILES_FROZEN") {
+      // The one Freeze effect (`pulp_wars-xv0t`): the water iced and the
+      // land snowed (`WATER_FROZEN` before).
+      const count = event.tiles.length + event.snow.length;
+      const tiles = `${count} ${count === 1 ? "tile" : "tiles"}`;
       parts.push(`${subject(after, event.playerId)} froze ${tiles}`);
     } else if (event.kind === "ICE_CRACKED") {
       // The frozen sea redesign (section 4.1): a Crack broke or cracked a

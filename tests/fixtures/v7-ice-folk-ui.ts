@@ -241,7 +241,8 @@ export function iceFolkVictimFixtureV7(): GameStateV7 {
  *
  * - The Witch has an enemy Fighter next to her (Cold Snap), an enemy
  *   Marksman two tiles away and an enemy Raider two tiles away that is
- *   Frozen already (Frost Bolt).
+ *   Frozen already (the Frost Bolt's targets until the one Freeze effect,
+ *   `pulp_wars-xv0t`).
  * - The Frost Giant: a Move to `giantTo` puts it next to two enemies.
  * - The Mammoth charges west through a Fighter it shoves north and a
  *   wounded Raider it kills, or south into a Guard it cannot shove (an own

@@ -1,8 +1,6 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
-  BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
-  FROST_BOLT_RANGE_V7,
   SHATTER_HP_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
@@ -11,6 +9,7 @@ import {
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { previewColdSnapV7 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import { policyUnitFactionV7 } from "./v7-martian";
@@ -36,8 +35,9 @@ import { policyUnitFactionV7 } from "./v7-martian";
 
 /**
  * The Witch's Move (rule 2) comes first in the turn, then her Cold Snap
- * (rule 3), then the Bolas that sets up a Shatter: all above every kill
- * (1180 to 1280) and below captures and city-clearing kills (1340 and up).
+ * (rule 3): both above every kill (1180 to 1280) and below captures and
+ * city-clearing kills (1340 and up). (The Bolas went with the one Freeze
+ * effect, `pulp_wars-xv0t`, 7r133.)
  */
 export const WITCH_MOVE_PRIORITY_V7 = 1296;
 /**
@@ -49,9 +49,6 @@ export const WITCH_MOVE_PRIORITY_V7 = 1296;
 export const COLD_SNAP_SETUP_TARGET_VALUE_V7 = 1;
 export const COLD_SNAP_SETUP_STRIKE_VALUE_V7 = 1;
 export const COLD_SNAP_PRIORITY_V7 = 1295;
-export const BOLAS_SHATTER_PRIORITY_V7 = 1293;
-/** A Bolas on a hostile unit that can reach an own unit next turn. */
-export const BOLAS_SLOW_PRIORITY_V7 = 1186;
 /** A non-lethal hit that leaves a Frozen unit for another unit's Shatter. */
 export const SHATTER_SETUP_PRIORITY_V7 = 1179;
 /**
@@ -96,9 +93,8 @@ export const ICE_SIGNATURE_RESEARCH_CITIES_V7 = 2;
 
 // --- Values ---------------------------------------------------------------
 
-/** Cold Snap: per target newly Frozen, and per renewed target. */
+/** Cold Snap: per target newly Frozen. */
 export const COLD_SNAP_FREEZE_VALUE_V7 = 6;
-export const COLD_SNAP_REFRESH_VALUE_V7 = 3;
 /** A Shatter kill: no Grave, no death blast. */
 export const SHATTER_KILL_VALUE_V7 = 4;
 /** A Mammoth attack that tramples Field Defense. */
@@ -161,20 +157,25 @@ export const SURPLUS_COST_V7 = 20;
 export const WITCH_TARGET_BONUS_V7 = 12;
 export const WITCH_NEIGHBOUR_TARGET_BONUS_V7 = 4;
 export const WITCH_NEIGHBOUR_RADIUS_V7 = 2;
-/** Against the Ice Folk: a visible Sled, and a Mammoth. */
-export const SLED_TARGET_BONUS_V7 = 6;
+/**
+ * Against the Ice Folk: a visible Mammoth (and a Sled, for its Bolas, until
+ * the one Freeze effect, `pulp_wars-xv0t`, 7r133).
+ */
 export const MAMMOTH_TARGET_BONUS_V7 = 6;
 /** Against the Ice Folk: a fragile unit ending a Move on hostile Snow. */
 export const FRAGILE_SNOW_COST_V7 = 3;
 /**
- * Against the Ice Folk: a visible Witch reaches this far with Cold Snap or
- * a Frost Bolt next turn (her Glide inside her own Blizzard, then the
- * Frost Bolt's range 2; Ice Folk Freeze, `pulp_wars-w49.37`); a Sled with
- * Bolas after its Move.
+ * Against the Ice Folk: a visible Witch reaches this far with Cold Snap
+ * next turn (a Glide of two tiles over Snow, then her ring; the Frost Bolt's
+ * range 2 counted until `pulp_wars-xv0t`).
  */
-export const WITCH_CHILL_REACH_V7 =
-  Math.max(COLD_SNAP_RANGE_V7, FROST_BOLT_RANGE_V7) + 2;
-export const SLED_CHILL_REACH_V7 = BOLAS_RANGE_V7 + 2;
+export const WITCH_CHILL_REACH_V7 = COLD_SNAP_RANGE_V7 + 2;
+/**
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): a visible Frost Giant
+ * reaches this far with its Cold Wake next turn (one step, then
+ * its ring).
+ */
+export const WAKE_CHILL_REACH_V7 = COLD_SNAP_RANGE_V7 + 1;
 
 // --- Gate and facts -------------------------------------------------------
 
@@ -199,8 +200,11 @@ export interface IceFolkFactsV7 {
   readonly visibleWitches: readonly PublicUnitV7[];
   readonly ownWitches: readonly PublicUnitV7[];
   readonly hostileWitches: readonly PublicUnitV7[];
-  /** Visible hostile land-form Sleds. */
-  readonly hostileSleds: readonly PublicUnitV7[];
+  /**
+   * The one Freeze effect (`pulp_wars-xv0t`): visible hostile land-form
+   * Frost Giants (a Cold Wake).
+   */
+  readonly hostileWakers: readonly PublicUnitV7[];
   /** Visible hostile Ice Folk land units that attack at distance 1. */
   readonly hostileMelee: readonly PublicUnitV7[];
   /** The public Shatter threshold of each Ice Folk seat. */
@@ -221,7 +225,7 @@ export function iceFolkFactsV7(
   const visibleWitches: PublicUnitV7[] = [];
   const ownWitches: PublicUnitV7[] = [];
   const hostileWitches: PublicUnitV7[] = [];
-  const hostileSleds: PublicUnitV7[] = [];
+  const hostileWakers: PublicUnitV7[] = [];
   const hostileMelee: PublicUnitV7[] = [];
   const iceUnitIds = new Set<UnitId>();
   for (const unit of view.units) {
@@ -238,7 +242,7 @@ export function iceFolkFactsV7(
       else if (hostile) hostileWitches.push(unit);
     }
     if (!hostile) continue;
-    if (rule.abilities.includes("BOLAS")) hostileSleds.push(unit);
+    if (rule.abilities.includes("COLD_WAKE")) hostileWakers.push(unit);
     if (
       rule.abilities.includes("ATTACK") &&
       rule.attack2 > 0 &&
@@ -273,7 +277,7 @@ export function iceFolkFactsV7(
     visibleWitches,
     ownWitches,
     hostileWitches,
-    hostileSleds,
+    hostileWakers,
     hostileMelee,
     thresholdByOwner,
   };
@@ -319,10 +323,12 @@ export function frozenForPolicyV7(
 
 /**
  * Whether the viewer's unit can be shattered during the next enemy turn:
- * Frozen through its own End Turn (two turns left), or within the reach of
- * a visible hostile Witch's Cold Snap or Frost Bolt or Sled's Bolas next
- * turn (a Frozen Witch or Sled reaches nothing). Never a
- * `JUGGERNAUT`-role unit, and only in land form.
+ * Frozen through its own End Turn (two turns left: a Walrus's Frostbite),
+ * or within the reach of a visible hostile Witch's Cold Snap or a hostile
+ * Frost Giant's Cold Wake next turn (a Frozen one reaches nothing; the
+ * Frost Bolt and the Sled's Bolas went with the one Freeze effect,
+ * `pulp_wars-xv0t`, 7r133). Never a `JUGGERNAUT`-role unit, and only in
+ * land form.
  */
 export function shatterableNextTurnV7(
   view: PlayerViewV7,
@@ -332,19 +338,11 @@ export function shatterableNextTurnV7(
 ): boolean {
   if (unit.form !== "LAND" || unit.role === "JUGGERNAUT") return false;
   if ((facts.frozen.get(unit.id)?.turnsLeft ?? 0) >= 2) return true;
-  const reach = (source: PublicUnitV7, range: number, extra: number): boolean =>
-    !unitIsFrozenV7(view, source) && chebyshev(source.at, at) <= range + extra;
+  const reach = (source: PublicUnitV7, range: number): boolean =>
+    !unitIsFrozenV7(view, source) && chebyshev(source.at, at) <= range;
   return (
-    facts.hostileWitches.some((witch) =>
-      reach(
-        witch,
-        FROST_BOLT_RANGE_V7,
-        WITCH_CHILL_REACH_V7 - FROST_BOLT_RANGE_V7,
-      ),
-    ) ||
-    facts.hostileSleds.some((sled) =>
-      reach(sled, BOLAS_RANGE_V7, SLED_CHILL_REACH_V7 - BOLAS_RANGE_V7),
-    )
+    facts.hostileWitches.some((witch) => reach(witch, WITCH_CHILL_REACH_V7)) ||
+    facts.hostileWakers.some((waker) => reach(waker, WAKE_CHILL_REACH_V7))
   );
 }
 
@@ -611,10 +609,9 @@ export function iceFolkResearchV7(
       unit.form === "LAND" &&
       unitRoleRuleV7(view, unit).abilities.some(
         (ability) =>
-          ability === "BOLAS" ||
           ability === "COLD_SNAP" ||
-          ability === "FROST_BOLT" ||
-          ability === "COLD_AURA",
+          ability === "COLD_WAKE" ||
+          ability === "FROST_BREATH",
       ),
   );
   if (deepWinter && freezeSource) {
@@ -661,96 +658,34 @@ export interface IceFolkPolicyToolsV7 {
   threatens(hostile: PublicUnitV7, at: CoordV7): boolean;
   /**
    * Own units other than `throwerId` whose offered attack on `targetId`
-   * shatters it once Frozen (`previewBolasV7.shatterSetups`).
+   * shatters it once Frozen (the Cold Wake's setups).
    */
   shatterSetups(targetId: UnitId, throwerId: UnitId): readonly UnitId[];
 }
 
 /**
- * `COLD_SNAP` (rule 3): whenever it is offered, first in the turn; worth
- * each target, a new freeze more than a renewal. Ships and embarked units
- * count like land units since `pulp_wars-s55m.1`; the water the cast
- * freezes is scored by the frozen-sea rules (`iceColdSnapWaterScoreV7`).
+ * `COLD_SNAP` (rule 3): whenever it Freezes a unit, first in the turn;
+ * worth each unit it Freezes (the one Freeze effect, `pulp_wars-xv0t`,
+ * 7r133: a Frozen unit is no target, so nothing is renewed). Ships and
+ * embarked units count like land units since `pulp_wars-s55m.1`; the tiles
+ * the cast freezes are scored by the frozen-sea rules
+ * (`iceColdSnapTilesScoreV7`).
  */
 export function coldSnapScoreV7(
   tools: IceFolkPolicyToolsV7,
   command: Extract<CommandV7, { kind: "COLD_SNAP" }>,
 ): IceFolkScoreV7 {
-  const witch = tools.unit(command.unitId);
-  if (witch === undefined) return NOT_A_CANDIDATE_V7;
-  let strategic = 0;
-  let targets = 0;
-  for (const unit of tools.view.units) {
-    if (
-      unit.id === witch.id ||
-      unit.form === "EGG" ||
-      unit.hp <= 0 ||
-      !tools.isHostile(unit.ownerId) ||
-      chebyshev(unit.at, witch.at) > COLD_SNAP_RANGE_V7
-    )
-      continue;
-    targets += 1;
-    strategic += tools.facts.frozen.has(unit.id)
-      ? COLD_SNAP_REFRESH_VALUE_V7
-      : COLD_SNAP_FREEZE_VALUE_V7;
-  }
+  const preview = previewColdSnapV7(tools.view, command.unitId);
+  if (preview === null) return NOT_A_CANDIDATE_V7;
+  const targets = preview.targets.filter((target) => {
+    const unit = tools.unit(target.unitId);
+    return unit !== undefined && tools.isHostile(unit.ownerId);
+  }).length;
   if (targets === 0) return NOT_A_CANDIDATE_V7;
-  return { priority: COLD_SNAP_PRIORITY_V7, strategic, immediate: targets };
-}
-
-/**
- * `THROW_BOLAS` (section 12, the Bolas rule), and, with the same rule, Ice
- * Folk Freeze's `FROST_BOLT` (`pulp_wars-w49.37`; basic scoring, not tuned):
- * on the visible hostile unit that some own unit's offered attack would
- * shatter once Frozen, the most valuable first (1293); else on the hostile
- * unit not yet Frozen that can reach and attack an own unit next turn, the
- * highest projected damage first (1186), unless the thrower can kill
- * something itself; else none. Never on a unit that is Frozen already or
- * that an own Witch's offered Cold Snap covers this turn (a Frost Bolt is
- * never covered by its own Witch's Cold Snap: she uses one of the two).
- */
-export function bolasScoreV7(
-  tools: IceFolkPolicyToolsV7,
-  command: Extract<CommandV7, { kind: "THROW_BOLAS" | "FROST_BOLT" }>,
-  sledKills: boolean,
-): IceFolkScoreV7 {
-  const { view, facts } = tools;
-  const target = tools.unit(command.targetUnitId);
-  if (target === undefined || frozenForPolicyV7(facts, target.id))
-    return NOT_A_CANDIDATE_V7;
-  const covered = tools.commands.some((offered) => {
-    if (offered.kind !== "COLD_SNAP" || offered.unitId === command.unitId)
-      return false;
-    const witch = tools.unit(offered.unitId);
-    return (
-      witch !== undefined &&
-      chebyshev(witch.at, target.at) <= COLD_SNAP_RANGE_V7
-    );
-  });
-  if (covered) return NOT_A_CANDIDATE_V7;
-  const setups = tools.shatterSetups(target.id, command.unitId);
-  if (setups.length > 0)
-    return {
-      priority: BOLAS_SHATTER_PRIORITY_V7,
-      strategic: tools.targetValue(target) + 2 * setups.length,
-      immediate: 0,
-    };
-  if (sledKills) return NOT_A_CANDIDATE_V7;
-  let worst = 0;
-  for (const unit of view.units) {
-    if (
-      unit.ownerId !== view.viewer.id ||
-      unit.form !== "LAND" ||
-      !tools.threatens(target, unit.at)
-    )
-      continue;
-    worst = Math.max(worst, tools.projectedDamage(target, unit));
-  }
-  if (worst <= 0) return NOT_A_CANDIDATE_V7;
   return {
-    priority: BOLAS_SLOW_PRIORITY_V7,
-    strategic: worst,
-    immediate: 0,
+    priority: COLD_SNAP_PRIORITY_V7,
+    strategic: COLD_SNAP_FREEZE_VALUE_V7 * targets,
+    immediate: targets,
   };
 }
 
@@ -862,10 +797,6 @@ export function iceFolkTargetBonusV7(
     return (
       WITCH_TARGET_BONUS_V7 +
       WITCH_NEIGHBOUR_TARGET_BONUS_V7 * Math.min(4, near())
-    );
-  if (abilities.includes("BOLAS"))
-    return (
-      SLED_TARGET_BONUS_V7 + (near() > 0 ? WITCH_NEIGHBOUR_TARGET_BONUS_V7 : 0)
     );
   if (abilities.includes("SWEEP")) return MAMMOTH_TARGET_BONUS_V7;
   return 0;

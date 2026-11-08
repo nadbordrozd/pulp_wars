@@ -87,7 +87,9 @@ const GIANT_EFFECT_SOUNDS_V7: Readonly<
   TOSS: { start: "attack.siege", hit: "special.puff" },
   STOMP: { start: null, hit: "impact.explosion" },
   TRAMPLE: { start: null, hit: "impact.heavy" },
-  SHARDS: { start: "special.freeze", hit: "impact.ice" },
+  // The Glacial Smash's shards freeze nobody since the one Freeze effect
+  // (`pulp_wars-xv0t`, 7r133): the burst alone, no freeze sound.
+  SHARDS: { start: null, hit: "impact.ice" },
   HAMMER: { start: "attack.melee", hit: "impact.heavy" },
   BREAK_OFF: { start: "special.pop", hit: "special.sparkle" },
 };
@@ -476,17 +478,12 @@ export function soundCuesForStepV7(
             { id: "impact.ice", delayMs: step.durationMs * 0.5 },
           ];
         case "COLD_SNAP":
-        case "COLD_AURA":
         case "ICE_FREEZE":
         case "FROST":
           return [{ id: "special.freeze", delayMs: 0 }];
-        // Ice Folk Freeze (`pulp_wars-w49.38`): the Frost Bolt's whoosh and
-        // its freeze; the Stampede's thunder and a thud on each unit hit.
-        case "FROST_BOLT":
-          return [
-            { id: "attack.ranged", delayMs: 0 },
-            { id: "special.freeze", delayMs: step.durationMs * 0.45 },
-          ];
+        // Ice Folk Freeze (`pulp_wars-w49.38`): the Stampede's thunder and a
+        // thud on each unit hit. (The Frost Bolt's whoosh and the Bolas went
+        // with them, `pulp_wars-xv0t`.)
         case "STAMPEDE":
           return [
             { id: "impact.heavy", delayMs: 0 },
@@ -497,11 +494,6 @@ export function soundCuesForStepV7(
                 0.75 *
                 Math.min(1, (index + 1) / Math.max(1, step.cells.length)),
             })),
-          ];
-        case "BOLAS":
-          return [
-            { id: "attack.ranged", delayMs: 0 },
-            { id: "special.freeze", delayMs: step.durationMs * 0.5 },
           ];
         case "SWEEP":
           return [{ id: "attack.melee", delayMs: 0 }];

@@ -12,16 +12,14 @@ import {
   ICE_CROSS_MOVE_PRIORITY_V7,
   ICE_EXPOSED_TARGET_VALUE_V7,
   ICE_HOME_FREEZE_PRIORITY_V7,
-  ICE_FREEZE_SHIP_PRIORITY_V7,
   ICE_MEND_PRIORITY_V7,
   ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
   ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7,
   ICE_SEA_PLAN_RESEARCH_PRIORITY_V7,
   ICE_STAGE_MOVE_PRIORITY_V7,
-  iceColdSnapWaterScoreV7,
+  iceColdSnapTilesScoreV7,
   iceCrossingMoveV7,
   iceFreezeReachesV7,
-  iceFreezeScoreV7,
   iceHostileFreezersV7,
   iceLandingRejectedV7,
   iceMoveOntoHostileIceRejectedV7,
@@ -36,7 +34,8 @@ import {
 import { COLD_SNAP_PRIORITY_V7 } from "../../src/ai/v7-ice-folk";
 import {
   parseGameStateV7,
-  previewFreezeV7,
+  previewColdSnapV7,
+  previewColdWakeV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   queryThreatenedTilesV7,
@@ -182,10 +181,13 @@ const research = (tech: TechnologyIdV7): CommandV7 => ({
 });
 
 function frozenEvent(events: readonly DomainEventV7[]) {
-  const event = events.find((entry) => entry.kind === "WATER_FROZEN");
-  if (event?.kind !== "WATER_FROZEN") throw new Error("no Freeze");
+  const event = events.find((entry) => entry.kind === "TILES_FROZEN");
+  if (event?.kind !== "TILES_FROZEN") throw new Error("no freeze");
   return event;
 }
+
+/** The Witch's Cold Snap needs Administration on the tech card only. */
+const WITCH: readonly TechnologyIdV7[] = ["GATHERING", "ADMINISTRATION"];
 
 /** `view` with the given tiles unexplored (the viewer has not seen them). */
 function unexplored(
@@ -209,7 +211,7 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
   it("picks a straight crossing from its shore to the objective's shore", () => {
     const { state, view } = scene({
       technologies: [PACK_ICE, PACK_ICE],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
+      units: [{ seat: 0, role: "JUGGERNAUT", at: { x: 2, y: 2 } }],
     });
     const plan = requiredPlan(view);
     expect(plan).toMatchObject({
@@ -292,7 +294,7 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
     const { state, view } = scene({
       technologies: [PACK_ICE, PACK_ICE],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 4, y: 1 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 4, y: 1 } },
         { seat: 0, role: "FIGHTER", at: { x: 8, y: 1 } },
       ],
     });
@@ -368,40 +370,44 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
     expect(plan.crossing).toHaveLength(5);
   });
 
-  it("gives the Build job to a near Witch for a short crossing, to the cheapest line unit otherwise", () => {
+  it("gives the Build job to a near Witch, to a Frost Giant otherwise, and never to a line unit", () => {
     const short = scene({
       technologies: [PACK_ICE, PACK_ICE],
       units: [
         { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
-        { seat: 0, role: "FIGHTER", at: { x: 8, y: 1 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 8, y: 1 } },
       ],
       ice: column(3),
     });
-    // Two tiles left.
+    // Two tiles left: the Witch's Cold Snap from the tip freezes the next.
     expect(requiredPlan(short.view)).toMatchObject({
       unfrozen: 2,
       builders: [idAt(short.state, { x: 2, y: 1 })],
     });
-    const long = scene({
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): with no Witch near,
+    // the Frost Giant builds (its Cold Wake freezes the ring of every tile it
+    // walks to); a Yeti alone builds nothing (no `FREEZE` any more).
+    const giant = scene({
       technologies: [PACK_ICE, PACK_ICE],
       units: [
-        { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
-        { seat: 0, role: "FIGHTER", at: { x: 8, y: 1 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 8, y: 1 } },
+        { seat: 0, role: "FIGHTER", at: { x: 2, y: 1 } },
       ],
     });
-    // Five tiles left: the frozen sea redesign makes ice permanent, so no
-    // thaw outruns her and the near Witch builds any crossing (before: a
-    // Yeti, two tiles a turn, beat the thaw), alone.
-    expect(requiredPlan(long.view)).toMatchObject({
+    expect(requiredPlan(giant.view)).toMatchObject({
       unfrozen: 5,
-      builders: [idAt(long.state, { x: 2, y: 1 })],
+      builders: [idAt(giant.state, { x: 8, y: 1 })],
     });
-    expect(requiredPlan(long.view)).not.toHaveProperty("thawSafe");
+    const yetis = scene({
+      technologies: [PACK_ICE, PACK_ICE],
+      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 1 } }],
+    });
+    expect(requiredPlan(yetis.view).builders).toEqual([]);
     // Without Rime nobody is bound to the job.
     const none = scene({
       technologies: [NO_RIME, PACK_ICE],
       ports: [false, true],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 8, y: 1 } }],
+      units: [{ seat: 0, role: "JUGGERNAUT", at: { x: 8, y: 1 } }],
     });
     expect(requiredPlan(none.view).builders).toEqual([]);
   });
@@ -433,10 +439,13 @@ describe("the ice research of an Ice Folk seat", () => {
   // The Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost (the node
   // Icebound was) lengthens the Freeze line, so it is wanted while a
   // crossing is still to be frozen, after Black Ice and Glacier's evidence.
-  it("asks for Hoarfrost while a crossing is still to be frozen", () => {
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Hoarfrost lengthened
+  // the `FREEZE` line, which is gone; the node unlocks nothing until the
+  // naval branch is rebuilt, so the crossing never asks for it.
+  it("never asks for Hoarfrost, which unlocks nothing now", () => {
     const open = scene({
       technologies: [PACK_ICE, GLACIER],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
+      units: [{ seat: 0, role: "JUGGERNAUT", at: { x: 2, y: 2 } }],
     });
     expect(requiredPlan(open.view).complete).toBe(false);
     expect(
@@ -445,21 +454,10 @@ describe("the ice research of an Ice Folk seat", () => {
         toolsOf(open.view),
         planOf(open.view),
         () => true,
-      ),
-    ).toEqual({
-      tech: "NAVAL_ENGINEERING",
-      priority: ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
-      strategic: 30,
-    });
-    // A complete crossing asks for nothing more.
-    const done = scene({
-      technologies: [PACK_ICE, GLACIER],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
-      ice: column(5),
-    });
-    expect(requiredPlan(done.view).complete).toBe(true);
+      )?.tech,
+    ).not.toBe("NAVAL_ENGINEERING");
     expect(
-      scoreCommandV7(done.view, research("NAVAL_ENGINEERING")).priority,
+      scoreCommandV7(open.view, research("NAVAL_ENGINEERING")).priority,
     ).toBeLessThan(ICE_SEA_DUE_RESEARCH_PRIORITY_V7);
   });
 
@@ -516,8 +514,8 @@ describe("the ice research of an Ice Folk seat", () => {
       priority: ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7,
       strategic: 20,
     });
-    // Before Black Ice and Hoarfrost, Hoarfrost comes first (the crossing
-    // is still to be frozen), never Glacier.
+    // Before Black Ice, never Glacier (Hoarfrost is no step of it since
+    // `pulp_wars-xv0t`).
     const early = scene({
       technologies: [PACK_ICE, GLACIER],
       units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
@@ -529,7 +527,7 @@ describe("the ice research of an Ice Folk seat", () => {
         planOf(early.view),
         () => true,
       )?.tech,
-    ).toBe("NAVAL_ENGINEERING");
+    ).not.toBe("SUBMERSIBLES");
   });
 
   it("asks a seafaring seat for nothing", () => {
@@ -544,11 +542,11 @@ describe("the ice research of an Ice Folk seat", () => {
 });
 
 describe("the builders: a bridge frozen toward the far shore", () => {
-  it("walks the builder to the head, and Freezes the first two tiles from it", () => {
+  it("walks the Frost Giant to the head, where its Cold Wake freezes the first tile", () => {
     const { state, view } = scene({
       technologies: [PACK_ICE, PACK_ICE],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 2, y: 2 } },
         { seat: 0, role: "RAIDER", at: { x: 6, y: 1 } },
       ],
     });
@@ -560,43 +558,26 @@ describe("the builders: a bridge frozen toward the far shore", () => {
       path: [HEAD],
     });
     expect(first?.score.priority).toBe(ICE_BUILD_MOVE_PRIORITY_V7);
-    const moved = acceptV7(state, 0, first?.command as CommandV7).state;
-    const atHead = viewOf(moved);
-    const freeze = bestOf(atHead, builder);
-    expect(freeze?.command).toEqual({
-      kind: "FREEZE",
-      unitId: builder,
-      at: { x: 3, y: 3 },
-    });
-    expect(freeze?.score.priority).toBe(ICE_BRIDGE_FREEZE_PRIORITY_V7);
-    // What the policy read is the engine's preview, and the preview is the
-    // resolution.
-    const scored = iceFreezeScoreV7(
-      atHead,
-      toolsOf(atHead),
-      planOf(atHead),
-      freeze?.command as Extract<CommandV7, { kind: "FREEZE" }>,
-    );
-    expect(scored).toMatchObject({ reason: "BRIDGE", strategic: 20 });
-    expect(scored?.preview).toEqual(
-      previewFreezeV7(atHead, builder, { x: 3, y: 3 }),
-    );
-    const result = acceptV7(moved, 0, freeze?.command as CommandV7);
+    // What the policy read is the engine's wake preview, and the preview
+    // is the resolution.
+    const preview = previewColdWakeV7(view, builder, HEAD);
+    const result = acceptV7(state, 0, first?.command as CommandV7);
     const event = frozenEvent(result.events);
-    expect(event.tiles).toEqual(scored?.preview.tiles);
-    expect(event.tiles).toEqual(COLUMN.slice(0, 2));
+    expect(event.tiles).toEqual(preview?.tiles);
+    expect(event.snow).toEqual(preview?.snow);
+    expect(event.tiles).toContainEqual(COLUMN[0]);
     expect(requiredPlan(viewOf(result.state))).toMatchObject({
-      next: 2,
-      unfrozen: 3,
-      stand: { x: 3, y: 4 },
+      next: 1,
+      unfrozen: 4,
+      stand: COLUMN[0],
     });
   });
 
-  it("steps onto the newest ice, slides to its end, and Freezes the next two", () => {
+  it("steps onto the newest ice, and its Cold Wake freezes the next tile", () => {
     const { state, view } = scene({
       technologies: [PACK_ICE, PACK_ICE],
       units: [
-        { seat: 0, role: "FIGHTER", at: HEAD },
+        { seat: 0, role: "JUGGERNAUT", at: HEAD },
         { seat: 0, role: "FIGHTER", at: { x: 3, y: 1 } },
       ],
       ice: column(2),
@@ -605,64 +586,41 @@ describe("the builders: a bridge frozen toward the far shore", () => {
     expect(requiredPlan(view).builders).toEqual([builder]);
     const step = bestOf(view, builder);
     expect(step?.score.priority).toBe(ICE_BUILD_MOVE_PRIORITY_V7);
+    // The Frost Giant (Move 1) skates two ice tiles to the tip.
     expect(endOf(step?.command as CommandV7)).toEqual({ x: 3, y: 4 });
-    // The offered Move is the slide: the engine puts the unit on the tip.
-    const slid = acceptV7(state, 0, step?.command as CommandV7).state;
-    expect(navalUnitV7(slid, builder).at).toEqual({ x: 3, y: 4 });
-    const onTip = viewOf(slid);
-    const freeze = bestOf(onTip, builder);
-    expect(freeze?.command).toEqual({
-      kind: "FREEZE",
-      unitId: builder,
-      at: { x: 3, y: 5 },
-    });
-    const result = acceptV7(slid, 0, freeze?.command as CommandV7);
-    expect(frozenEvent(result.events).tiles).toEqual(COLUMN.slice(2, 4));
-    // One Freeze short of the far shore: the wave may go.
+    const result = acceptV7(state, 0, step?.command as CommandV7);
+    expect(navalUnitV7(result.state, builder).at).toEqual({ x: 3, y: 4 });
+    expect(frozenEvent(result.events).tiles).toContainEqual(COLUMN[2]);
+    // One tile short of the far shore: the wave may go.
     expect(requiredPlan(viewOf(result.state))).toMatchObject({
-      unfrozen: 1,
-      ready: true,
+      unfrozen: 2,
+      ready: false,
     });
   });
 
-  it("never Freezes without a reason", () => {
-    // A Yeti on the shore away from the crossing: every Freeze it is
-    // offered makes ice nobody needs (the seat has no Coins for a building
-    // on that ice: the frozen sea redesign's home ice for building).
+  it("never casts a Cold Snap without a reason", () => {
+    // A Witch far from the crossing (it is not hers to build) with no enemy
+    // beside her: her Cold Snap is offered (it snows the land and ices the
+    // water around her) but makes ice nobody needs (the seat has no Coins
+    // for a building on it).
     const idle = scene({
-      technologies: [PACK_ICE, PACK_ICE],
+      technologies: [[...PACK_ICE, ...WITCH], PACK_ICE],
       coins: [0, 60],
       units: [
-        { seat: 0, role: "FIGHTER", at: HEAD },
-        { seat: 0, role: "FIGHTER", at: { x: 9, y: 2 } },
+        { seat: 0, role: "JUGGERNAUT", at: HEAD },
+        { seat: 0, role: "CAPTAIN", at: { x: 10, y: 2 } },
       ],
     });
-    const far = idAt(idle.state, { x: 9, y: 2 });
-    const offered = queryPlayerCommandsV7(idle.view).filter(
-      (command) => command.kind === "FREEZE" && command.unitId === far,
-    );
-    expect(offered.length).toBeGreaterThan(0);
-    expect(
-      candidates(idle.view).filter(
-        (item) => item.command.kind === "FREEZE" && item.command.unitId === far,
-      ),
-    ).toEqual([]);
-    // A complete crossing with fresh ice and a unit beside it: a Freeze
-    // would only refresh it (and no Coins for a building on new ice).
-    const complete = scene({
-      technologies: [PACK_ICE, PACK_ICE],
-      coins: [0, 60],
-      units: [{ seat: 0, role: "FIGHTER", at: HEAD }],
-      ice: column(5),
+    const far = idAt(idle.state, { x: 10, y: 2 });
+    expect(requiredPlan(idle.view).builders).not.toContain(far);
+    expect(queryPlayerCommandsV7(idle.view)).toContainEqual({
+      kind: "COLD_SNAP",
+      unitId: far,
     });
     expect(
-      queryPlayerCommandsV7(complete.view).some(
-        (command) => command.kind === "FREEZE",
-      ),
-    ).toBe(true);
-    expect(
-      candidates(complete.view).filter(
-        (item) => item.command.kind === "FREEZE",
+      candidates(idle.view).filter(
+        (item) =>
+          item.command.kind === "COLD_SNAP" && item.command.unitId === far,
       ),
     ).toEqual([]);
   });
@@ -672,9 +630,9 @@ describe("the builders: a bridge frozen toward the far shore", () => {
   // mended, whoever still has to pass it (the crossing is the seat's road).
   it("mends cracked crossing tiles", () => {
     const options = (wave: boolean): FrozenArenaOptionsV7 => ({
-      technologies: [GLACIER, PACK_ICE],
+      technologies: [[...GLACIER, ...WITCH], PACK_ICE],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 3, y: 5 } },
+        { seat: 0, role: "CAPTAIN", at: { x: 3, y: 5 } },
         ...(wave
           ? [{ seat: 0 as const, role: "FIGHTER" as const, at: { x: 2, y: 1 } }]
           : []),
@@ -687,46 +645,50 @@ describe("the builders: a bridge frozen toward the far shore", () => {
     });
     const waiting = scene(options(true));
     const keeper = idAt(waiting.state, { x: 3, y: 5 });
-    const command: Extract<CommandV7, { kind: "FREEZE" }> = {
-      kind: "FREEZE",
+    const command: Extract<CommandV7, { kind: "COLD_SNAP" }> = {
+      kind: "COLD_SNAP",
       unitId: keeper,
-      at: { x: 3, y: 6 },
     };
-    const scored = iceFreezeScoreV7(
+    const scored = iceColdSnapTilesScoreV7(
       waiting.view,
       toolsOf(waiting.view),
       planOf(waiting.view),
       command,
     );
+    // Her ring reaches the crack beside her (the one Freeze effect: no
+    // line any more).
     expect(scored).toMatchObject({
       reason: "MEND",
       priority: ICE_MEND_PRIORITY_V7,
-      strategic: 12,
+      strategic: 6,
     });
-    expect(scored?.preview.mended).toEqual(COLUMN.slice(3, 5));
+    expect(scored?.preview.mended).toEqual([{ x: 3, y: 6 }]);
     expect(candidates(waiting.view).map((item) => item.command)).toContainEqual(
       command,
     );
     const result = acceptV7(waiting.state, 0, command);
     expect(frozenEvent(result.events).tiles).toEqual(scored?.preview.tiles);
     expect(iceEntryV7(result.state, { x: 3, y: 6 })?.cracked).toBe(false);
-    // The same ice with nobody left behind it is mended too (before the
-    // redesign it was let go to thaw).
+    // The same ice with nobody left behind it is mended too.
     const alone = scene(options(false));
     expect(
-      iceFreezeScoreV7(alone.view, toolsOf(alone.view), planOf(alone.view), {
-        ...command,
-        unitId: idAt(alone.state, { x: 3, y: 5 }),
-      }),
+      iceColdSnapTilesScoreV7(
+        alone.view,
+        toolsOf(alone.view),
+        planOf(alone.view),
+        { ...command, unitId: idAt(alone.state, { x: 3, y: 5 }) },
+      ),
     ).toMatchObject({ reason: "MEND", priority: ICE_MEND_PRIORITY_V7 });
   });
 });
 
 describe("the wave: it waits at the head and slides across", () => {
+  // The builder on the tip is a Witch (the one Freeze effect: her Cold
+  // Snap freezes the next tile from there).
   const wave = (ice: number): FrozenArenaOptionsV7 => ({
-    technologies: [PACK_ICE, PACK_ICE],
+    technologies: [[...PACK_ICE, ...WITCH], PACK_ICE],
     units: [
-      { seat: 0, role: "FIGHTER", at: COLUMN[ice - 1] ?? HEAD },
+      { seat: 0, role: "CAPTAIN", at: COLUMN[ice - 1] ?? HEAD },
       { seat: 0, role: "FIGHTER", at: HEAD },
       { seat: 0, role: "RAIDER", at: { x: 4, y: 2 } },
       { seat: 0, role: "FIGHTER", at: { x: 7, y: 1 } },
@@ -762,7 +724,7 @@ describe("the wave: it waits at the head and slides across", () => {
     expect(Math.abs(end.x - HEAD.x)).toBeLessThan(Math.abs(7 - HEAD.x));
   });
 
-  it("crosses by the offered skate once the crossing is one Freeze short", () => {
+  it("crosses by the offered skate once the crossing is one tile short", () => {
     const { state, view } = scene(wave(4));
     const waiting = idAt(state, HEAD);
     expect(requiredPlan(view)).toMatchObject({ unfrozen: 1, ready: true });
@@ -773,12 +735,11 @@ describe("the wave: it waits at the head and slides across", () => {
     expect(endOf(cross?.command as CommandV7)).toEqual({ x: 3, y: 4 });
     const result = acceptV7(state, 0, cross?.command as CommandV7);
     expect(navalUnitV7(result.state, waiting).at).toEqual({ x: 3, y: 4 });
-    // The builder's last Freeze comes before the wave's Moves.
+    // The builder's last Cold Snap comes before the wave's Moves.
     const builder = idAt(state, { x: 3, y: 6 });
     expect(bestOf(view, builder)?.command).toEqual({
-      kind: "FREEZE",
+      kind: "COLD_SNAP",
       unitId: builder,
-      at: { x: 3, y: 7 },
     });
     expect(bestOf(view, builder)?.score.priority).toBeGreaterThan(
       cross?.score.priority ?? 0,
@@ -820,39 +781,39 @@ describe("Freezing ships and home ice", () => {
   // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Freeze that reaches
   // a hostile ship Freezes it through its owner's next turn (Icebound is
   // gone), and the ship's tile stays open water.
-  it("Freezes a Battleship before anything else, and the blows on it are then unanswered", () => {
+  it("a Frost Giant's Move beside a Battleship Freezes it, and the blows on it are then unanswered", () => {
     const { state, view } = scene({
-      technologies: [HOARFROST, GLACIER],
+      technologies: [PACK_ICE, GLACIER],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 8, y: 2 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 8, y: 2 } },
         { seat: 0, role: "FIGHTER", at: { x: 9, y: 2 } },
         { seat: 1, role: "BATTLESHIP", at: { x: 8, y: 4 } },
+        // The crossing's builder, so that the Frost Giant is free.
+        { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
       ],
+      ice: [{ at: { x: 8, y: 3 } }],
     });
-    const yeti = idAt(state, { x: 8, y: 2 });
+    const giant = idAt(state, { x: 8, y: 2 });
     const ship = idAt(state, { x: 8, y: 4 });
-    const best = candidates(view)[0];
-    expect(best?.command).toEqual({
-      kind: "FREEZE",
-      unitId: yeti,
-      at: { x: 8, y: 3 },
-    });
-    expect(best?.score.priority).toBe(ICE_FREEZE_SHIP_PRIORITY_V7);
-    const scored = iceFreezeScoreV7(
-      view,
-      toolsOf(view),
-      planOf(view),
-      best?.command as Extract<CommandV7, { kind: "FREEZE" }>,
-    );
-    expect(scored?.reason).toBe("SHIP");
-    expect(scored?.preview.frozenUnits).toEqual([ship]);
-    const result = acceptV7(state, 0, best?.command as CommandV7);
+    // The one Freeze effect (`pulp_wars-xv0t`): its Cold Wake from (8, 3)
+    // (the Walrus walked there before the user gave the wake to the Giant
+    // alone; the Giant's Move is scored with its Glacial Smash, in the
+    // giants' tests).
+    const move: CommandV7 = {
+      kind: "MOVE",
+      unitId: giant,
+      path: [{ x: 8, y: 3 }],
+    };
+    expect(queryPlayerCommandsV7(view)).toContainEqual(move);
+    expect(previewColdWakeV7(view, giant, { x: 8, y: 3 })?.targets).toEqual([
+      ship,
+    ]);
+    const result = acceptV7(state, 0, move);
     expect(result.state.frozen).toEqual([{ unitId: ship, turnsLeft: 1 }]);
-    // A Yeti that walks onto the new ice beside it strikes with no reply.
-    const after = viewOf(result.state);
+    // A Yeti on the new ice beside it strikes with no reply.
     const other = idAt(state, { x: 9, y: 2 });
     const walked = patchNavalUnitV7(result.state, other, {
-      at: { x: 8, y: 3 },
+      at: { x: 9, y: 3 },
     });
     expect(queryCombatPreviewV7(viewOf(walked), other, ship)).toMatchObject({
       retaliation: false,
@@ -860,12 +821,12 @@ describe("Freezing ships and home ice", () => {
       damageToAttacker: 0,
     });
     // The ship's tile stays open water.
-    expect(after.ice.map((entry) => entry.at)).toEqual([{ x: 8, y: 3 }]);
+    expect(iceEntryV7(result.state, { x: 8, y: 4 })).toBeUndefined();
   });
 
-  it("casts a Witch's Cold Snap on the ships beside her, and values its water as a Freeze of it", () => {
+  it("casts a Witch's Cold Snap on the ships beside her, and values its water too", () => {
     const { state, view } = scene({
-      technologies: [[...HOARFROST, "GATHERING", "ADMINISTRATION"], GLACIER],
+      technologies: [[...PACK_ICE, ...WITCH], GLACIER],
       units: [
         { seat: 0, role: "CAPTAIN", at: { x: 8, y: 3 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 7, y: 4 } },
@@ -878,7 +839,7 @@ describe("Freezing ships and home ice", () => {
       unitId: witch,
     };
     const tools = toolsOf(view);
-    const water = iceColdSnapWaterScoreV7(view, tools, planOf(view), command);
+    const water = iceColdSnapTilesScoreV7(view, tools, planOf(view), command);
     const score = scoreCommandV7(view, command);
     expect(score.priority).toBe(
       Math.max(COLD_SNAP_PRIORITY_V7, water?.priority ?? -1),
@@ -889,12 +850,16 @@ describe("Freezing ships and home ice", () => {
           item.command.kind === "COLD_SNAP" && item.command.unitId === witch,
       ),
     ).toBe(true);
+    const preview = previewColdSnapV7(view, witch);
     const result = acceptV7(state, 0, command);
     expect(result.state.frozen.map((entry) => entry.unitId)).toEqual([
       idAt(state, { x: 7, y: 4 }),
       idAt(state, { x: 9, y: 4 }),
     ]);
-    // The open water around her that holds no ship is ice now.
+    expect(preview?.targets.map((target) => target.unitId)).toEqual(
+      result.state.frozen.map((entry) => entry.unitId),
+    );
+    // The tiles holding a ship stay open water.
     expect(
       result.state.ice.some(
         (entry) => (entry.at.x === 7 || entry.at.x === 9) && entry.at.y === 4,
@@ -903,7 +868,7 @@ describe("Freezing ships and home ice", () => {
     // With no unit beside her, the water alone is a reason: the Witch is the
     // crossing's builder, and her ring freezes its next tile.
     const bridge = scene({
-      technologies: [[...PACK_ICE, "GATHERING", "ADMINISTRATION"], GLACIER],
+      technologies: [[...PACK_ICE, ...WITCH], GLACIER],
       units: [{ seat: 0, role: "CAPTAIN", at: HEAD }],
     });
     const snap: Extract<CommandV7, { kind: "COLD_SNAP" }> = {
@@ -914,7 +879,7 @@ describe("Freezing ships and home ice", () => {
     expect(plan.builders).toEqual([snap.unitId]);
     expect(queryPlayerCommandsV7(bridge.view)).toContainEqual(snap);
     expect(
-      iceColdSnapWaterScoreV7(bridge.view, toolsOf(bridge.view), plan, snap),
+      iceColdSnapTilesScoreV7(bridge.view, toolsOf(bridge.view), plan, snap),
     ).toMatchObject({
       reason: "BRIDGE",
       priority: ICE_BRIDGE_FREEZE_PRIORITY_V7,
@@ -926,128 +891,113 @@ describe("Freezing ships and home ice", () => {
 
   it("sinks the ship instead when its own blow does it", () => {
     const base = frozenArenaV7({
-      technologies: [HOARFROST, GLACIER],
+      technologies: [PACK_ICE, GLACIER],
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 8, y: 2 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 8, y: 2 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 8, y: 3 } },
       ],
     });
-    const yeti = idAt(base, { x: 8, y: 2 });
+    const giant = idAt(base, { x: 8, y: 2 });
     const boat = idAt(base, { x: 8, y: 3 });
     const state = patchNavalUnitV7(base, boat, { hp: 1 });
     const view = viewOf(state);
-    expect(queryCombatPreviewV7(view, yeti, boat)?.defenderDies).toBe(true);
-    expect(
-      iceFreezeScoreV7(view, toolsOf(view), planOf(view), {
-        kind: "FREEZE",
-        unitId: yeti,
-        at: { x: 8, y: 3 },
-      })?.reason,
-    ).not.toBe("SHIP");
-    expect(bestOf(view, yeti)?.command).toEqual({
+    expect(queryCombatPreviewV7(view, giant, boat)?.defenderDies).toBe(true);
+    // A step along the shore would Freeze it (its Cold Wake), but the
+    // Frost Giant's own blow sinks it.
+    expect(previewColdWakeV7(view, giant, { x: 7, y: 2 })?.targets).toEqual([
+      boat,
+    ]);
+    expect(bestOf(view, giant)?.command).toEqual({
       kind: "ATTACK",
-      unitId: yeti,
+      unitId: giant,
       targetUnitId: boat,
     });
   });
 
-  it("Freezes its own waters beside a center a hostile ship has come near", () => {
+  it("ices its own waters beside a center a hostile ship has come near", () => {
     // No Coins for a building on the ice: the wall is the only reason. The
-    // Yeti beside the capital is the crossing's builder, so the garrison
-    // makes the home ice (the frozen sea redesign: never the builder).
-    const options = (
-      ports: readonly [boolean, boolean] = [true, true],
-    ): FrozenArenaOptionsV7 => ({
-      technologies: [RIME, GLACIER],
+    // Witch on the shore is the crossing's builder (never the home ice), so
+    // the second Witch beside the capital casts it.
+    const options = (): FrozenArenaOptionsV7 => ({
+      technologies: [[...RIME, ...WITCH], GLACIER],
       coins: [0, 60],
-      ports,
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 6, y: 1 } },
+        { seat: 0, role: "CAPTAIN", at: { x: 2, y: 1 } },
+        { seat: 0, role: "CAPTAIN", at: { x: 6, y: 1 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 5 } },
       ],
     });
     const { state, view } = scene(options());
-    const garrison = idAt(state, { x: 5, y: 2 });
-    expect(requiredPlan(view).builders).toEqual([idAt(state, { x: 6, y: 1 })]);
-    const best = candidates(view).find(
-      (item) =>
-        item.command.kind === "FREEZE" && item.command.unitId === garrison,
+    const keeper = idAt(state, { x: 6, y: 1 });
+    expect(requiredPlan(view).builders).toEqual([idAt(state, { x: 2, y: 1 })]);
+    // She steps to (6, 2), beside the water of the capital, and casts.
+    const stepped = patchNavalUnitV7(state, keeper, { at: { x: 6, y: 2 } });
+    const near = viewOf(stepped);
+    const command: Extract<CommandV7, { kind: "COLD_SNAP" }> = {
+      kind: "COLD_SNAP",
+      unitId: keeper,
+    };
+    const scored = iceColdSnapTilesScoreV7(
+      near,
+      toolsOf(near),
+      planOf(near),
+      command,
     );
-    expect(best?.score.priority).toBe(ICE_HOME_FREEZE_PRIORITY_V7);
-    const scored = iceFreezeScoreV7(
-      view,
-      toolsOf(view),
-      planOf(view),
-      best?.command as Extract<CommandV7, { kind: "FREEZE" }>,
+    expect(scored).toMatchObject({
+      reason: "HOME",
+      priority: ICE_HOME_FREEZE_PRIORITY_V7,
+    });
+    expect(scoreCommandV7(near, command).priority).toBe(
+      ICE_HOME_FREEZE_PRIORITY_V7,
     );
-    expect(scored?.reason).toBe("HOME");
-    const result = acceptV7(state, 0, best?.command as CommandV7);
+    const result = acceptV7(stepped, 0, command);
     const made = frozenEvent(result.events).tiles;
     expect(made).toEqual(scored?.preview.tiles);
-    // The seat's own sound ice (the redesign: all ice is permanent).
     const home = made.filter((at) => inTerritoryOfV7(result.state, 0, at));
     expect(home.length).toBeGreaterThan(0);
-    for (const at of home)
-      expect(
-        viewOf(result.state).ice.find(
-          (entry) => entry.at.x === at.x && entry.at.y === at.y,
-        )?.cracked,
-      ).toBe(false);
-    // The redesign: a city without a dock no longer keeps its Port sites
-    // clear (since `pulp_wars-s55m.2` the Ice Folk build no dock at all).
-    const dockless = scene(options([false, true]));
-    const wall = candidates(dockless.view).find(
-      (item) =>
-        item.command.kind === "FREEZE" &&
-        item.command.unitId === idAt(dockless.state, { x: 5, y: 2 }),
-    );
-    expect(wall?.score.priority).toBe(ICE_HOME_FREEZE_PRIORITY_V7);
-    const walled = acceptV7(dockless.state, 0, wall?.command as CommandV7);
+    // Her own Port is never iced over (the one Freeze effect).
+    expect(iceEntryV7(result.state, { x: 4, y: 3 })).toBeUndefined();
     // With the Coins for it, a Fishing Hole is offered on that ice, and
-    // never a Port (no Ice Harbour since `pulp_wars-s55m.2`).
+    // never a Port.
     const funded = parseGameStateV7({
-      ...walled.state,
-      players: walled.state.players.map((player) =>
-        player.id === seatV7(walled.state, 0).id
+      ...result.state,
+      players: result.state.players.map((player) =>
+        player.id === seatV7(result.state, 0).id
           ? { ...player, coins: 10 }
           : player,
       ),
     });
     if (funded === null) throw new Error("the funded state is invalid");
-    const hole = frozenEvent(walled.events).tiles.find((at) =>
+    const hole = home.find((at) =>
       queryPlayerCommandsV7(viewOf(funded)).some(
-        (command) =>
-          command.kind === "BUILD_FISHING_HOLE" &&
-          command.at.x === at.x &&
-          command.at.y === at.y,
+        (offered) =>
+          offered.kind === "BUILD_FISHING_HOLE" &&
+          offered.at.x === at.x &&
+          offered.at.y === at.y,
       ),
     );
     expect(hole).toBeDefined();
     expect(
       queryPlayerCommandsV7(viewOf(funded)).some(
-        (command) =>
-          command.kind === "BUILD_PORT" || command.kind === "BUILD_SHIPYARD",
+        (offered) =>
+          offered.kind === "BUILD_PORT" || offered.kind === "BUILD_SHIPYARD",
       ),
     ).toBe(false);
-    // With no ship near (and no Coins for a building), the same Freeze has
-    // no reason.
-    const calm = scene({
-      technologies: [RIME, GLACIER],
-      coins: [0, 60],
-      units: [],
-    });
+    // With no ship near (and no Coins for a building), the same cast has no
+    // reason.
+    const calm = patchNavalUnitV7(
+      frozenArenaV7({ ...options(), units: options().units.slice(0, 2) }),
+      keeper,
+      { at: { x: 6, y: 2 } },
+    );
     expect(
-      candidates(calm.view).filter(
-        (item) =>
-          item.command.kind === "FREEZE" &&
-          iceFreezeScoreV7(
-            calm.view,
-            toolsOf(calm.view),
-            planOf(calm.view),
-            item.command,
-          )?.reason === "HOME",
+      iceColdSnapTilesScoreV7(
+        viewOf(calm),
+        toolsOf(viewOf(calm)),
+        planOf(viewOf(calm)),
+        command,
       ),
-    ).toEqual([]);
+    ).toBeNull();
   });
 });
 
@@ -1135,29 +1085,26 @@ describe("every seat against the ice", () => {
     ).toEqual([{ x: 3, y: 6 }]);
   });
 
-  it("keeps a ship out of the Freeze reach of a seat that has been seen to Freeze", () => {
+  it("keeps a ship out of a hostile Frost Giant's Cold Wake reach", () => {
     const { state, view } = scene(
       against([
         { seat: 0, role: "PATROL_BOAT", at: { x: 6, y: 5 } },
-        { seat: 1, role: "FIGHTER", at: { x: 3, y: 8 } },
+        { seat: 1, role: "JUGGERNAUT", at: { x: 3, y: 8 } },
       ]),
     );
     const boat = idAt(state, { x: 6, y: 5 });
-    const yeti = idAt(state, { x: 3, y: 8 });
+    const giant = idAt(state, { x: 3, y: 8 });
     const tools = toolsOf(view);
-    // The Yeti on the shore and the one in the capital.
+    // The one Freeze effect (`pulp_wars-xv0t`): only a Witch, a Frost Giant or a
+    // Frost Giant freezes a ship (the Yeti in the capital does not).
     expect(iceHostileFreezersV7(view, tools).map((unit) => unit.id)).toEqual([
-      idAt(state, { x: 5, y: 8 }),
-      yeti,
+      giant,
     ]);
-    // Beside the farthest tile the Yeti skates to, (3, 6), and two tiles
-    // from it in a line (Ice Folk movement, `pulp_wars-s55m.2`).
+    // Beside the farthest tile the Frost Giant skates to, (3, 6).
     expect(iceFreezeReachesV7(view, tools, { x: 4, y: 5 })).toBe(true);
-    expect(iceFreezeReachesV7(view, tools, { x: 5, y: 4 })).toBe(true);
-    expect(iceFreezeReachesV7(view, tools, { x: 6, y: 4 })).toBe(false);
+    expect(iceFreezeReachesV7(view, tools, { x: 4, y: 4 })).toBe(false);
     const offered = endsOf(queryPlayerCommandsV7(view), boat);
-    expect(offered).toContain("4,4");
-    expect(offered).toContain("5,4");
+    expect(offered).toContain("4,5");
     const kept = candidateEnds(view, boat);
     expect(kept.length).toBeGreaterThan(0);
     for (const end of kept) {
@@ -1167,25 +1114,25 @@ describe("every seat against the ice", () => {
         iceShipMoveRejectedV7(view, tools, publicUnit(view, boat), { x, y }),
       ).toBe(false);
     }
-    expect(kept).not.toContain("4,4");
-    expect(kept).not.toContain("5,4");
-    // The projection is the engine's: with the boat on (5, 4) the Ice Folk
-    // seat skates its Yeti to (3, 6) and is offered the Freeze that reaches
-    // the boat and Freezes it, two tiles down the diagonal.
-    const sailed = patchNavalUnitV7(state, boat, { at: { x: 5, y: 4 } });
+    expect(kept).not.toContain("4,5");
+    // The projection is the engine's: with the boat on (4, 5) the Ice Folk
+    // seat skates its Frost Giant to (3, 6), and its Cold Wake Freezes the boat.
+    const sailed = patchNavalUnitV7(state, boat, { at: { x: 4, y: 5 } });
     const theirs = turnOf(sailed, 1);
     const skate = queryPlayerCommandsV7(viewOf(theirs, 1)).find(
       (command) =>
         command.kind === "MOVE" &&
-        command.unitId === yeti &&
+        command.unitId === giant &&
         endOf(command)?.x === 3 &&
         endOf(command)?.y === 6,
     );
     if (skate === undefined) throw new Error("the skate is not offered");
-    const skated = acceptV7(theirs, 1, skate).state;
     expect(
-      previewFreezeV7(viewOf(skated, 1), yeti, { x: 4, y: 5 })?.frozenUnits,
+      previewColdWakeV7(viewOf(theirs, 1), giant, { x: 3, y: 6 })?.targets,
     ).toEqual([boat]);
+    expect(acceptV7(theirs, 1, skate).state.frozen).toEqual([
+      { unitId: boat, turnsLeft: 1 },
+    ]);
     // A boat already in reach may go anywhere.
     const inReach = viewOf(sailed);
     expect(
@@ -1196,17 +1143,14 @@ describe("every seat against the ice", () => {
         { x: 4, y: 4 },
       ),
     ).toBe(false);
-    // A seat that has not been seen to Freeze is not assumed to.
-    const unseen = scene(
-      against(
-        [
-          { seat: 0, role: "PATROL_BOAT", at: { x: 6, y: 5 } },
-          { seat: 1, role: "FIGHTER", at: { x: 3, y: 8 } },
-        ],
-        [],
-      ),
+    // A Yeti freezes nothing, so a seat of Yetis is no freezer.
+    const yetis = scene(
+      against([
+        { seat: 0, role: "PATROL_BOAT", at: { x: 6, y: 5 } },
+        { seat: 1, role: "FIGHTER", at: { x: 3, y: 8 } },
+      ]),
     );
-    expect(iceHostileFreezersV7(unseen.view, toolsOf(unseen.view))).toEqual([]);
+    expect(iceHostileFreezersV7(yetis.view, toolsOf(yetis.view))).toEqual([]);
   });
 
   // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): of another

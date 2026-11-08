@@ -92,8 +92,8 @@ const dive = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
 describe("the identity", () => {
   // The Ice Folk roster rework (`pulp_wars-s55m.4`) took 7r125 after it.
   it("was 7r124 after 7r123, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r124");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r123");
@@ -143,15 +143,8 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
     });
     // It has moved: no second Move, no second dive.
     expect(ownMoves(result.state, SOUTH_EAST)).toEqual([]);
-    // The Yeti may act after moving: its Freeze of the water beside the
-    // hole is offered.
-    expect(
-      queryPlayerCommandsV7(
-        viewForV7(result.state, seatV7(result.state, 0).id),
-      ).some(
-        (command) => command.kind === "FREEZE" && command.unitId === yeti.id,
-      ),
-    ).toBe(true);
+    // (Its Freeze of the water beside the hole, offered after the dive
+    // before, went with the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
   });
 
   it("never reaches a hole a unit stands on, and needs an unmoved unit standing on a hole", () => {
@@ -247,9 +240,13 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
 });
 
 describe("no docks for the Ice Folk (pulp_wars-s55m.2)", () => {
-  it("their tree unlocks no Port, Shipyard, Harbours, or naval discount, and no node is empty", () => {
+  it("their tree unlocks no Port, Shipyard, Harbours, or naval discount, and only Hoarfrost is empty", () => {
     for (const node of ICE_FOLK_BASELINE_V1_NODES) {
-      expect(node.unlocks.length, node.id).toBeGreaterThan(0);
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Hoarfrost's long
+      // Freeze line went with `FREEZE`; the node is empty until the naval
+      // branch is rebuilt (docs/product/ICE_FOLK_REDESIGN_2026-11.md).
+      if (node.id !== "NAVAL_ENGINEERING")
+        expect(node.unlocks.length, node.id).toBeGreaterThan(0);
       for (const unlock of node.unlocks) {
         expect(unlock.kind, node.id).not.toBe("HARBOURS");
         expect(unlock.kind, node.id).not.toBe("NAVAL_TRAINING_DISCOUNT");
@@ -267,8 +264,8 @@ describe("no docks for the Ice Folk (pulp_wars-s55m.2)", () => {
         { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
       ]),
     );
-    // Hoarfrost keeps its long Freeze line, Glacier its thick ice.
-    expect(unlocks("NAVAL_ENGINEERING")).toEqual([{ kind: "LONG_FREEZE" }]);
+    // Glacier keeps its thick ice.
+    expect(unlocks("NAVAL_ENGINEERING")).toEqual([]);
     expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "GLACIER" }]);
   });
 

@@ -11,7 +11,7 @@ import type { CommandV7 } from "../engine/v7/commands";
 import type { DomainEventV7 } from "../engine/v7/events";
 import { deathCreatesGraveV7 } from "../engine/v7/graves";
 import {
-  coldSnapTargetsV7,
+  canBeFrozenV7,
   isIceFolkLandUnitV7,
   matchHasIceFolkV7,
   winterV7,
@@ -67,10 +67,14 @@ export interface IceFolkMetricsV7 {
   shatterRetaliationAvoided: number;
   shatterGravesDenied: number;
   shatterBlastsDenied: number;
-  /** Bolas throws, by target role, and those shattered by the thrower's seat within its next turn. */
-  bolasThrows: number;
-  readonly bolasTargetsByRole: Record<UnitRoleIdV7, number>;
-  bolasFollowedByShatter: number;
+  /**
+   * The one Freeze effect (`pulp_wars-xv0t`, 7r133): Cold Wake freezes (a
+   * Frost Giant's Move that Froze a unit), and the units
+   * shattered by the waking unit's seat within its next turn after one. (The
+   * Bolas metrics went with the Bolas.)
+   */
+  coldWakeFreezes: number;
+  coldWakeFollowedByShatter: number;
   /** Cold Snap casts and targets; Witch turns without a target or near allies. */
   coldSnapCasts: number;
   coldSnapTargets: number;
@@ -118,21 +122,11 @@ export interface IceFolkMetricsV7 {
   readonly frostWyrmKillsByRole: Record<UnitRoleIdV7, number>;
 }
 
-// The ninth unit (`pulp_wars-w49.17`, 7r55): a Walrus's Frostbite.
+// The one Freeze effect (`pulp_wars-xv0t`, 7r133): the `UNITS_FROZEN`
+// sources (the Bolas, the Frost Bolt, the Cold Aura, the shards, and the
+// water Freeze retired; the Walrus's Frostbite stays).
 export type ChillSourceV7 =
-  | "BOLAS"
-  | "COLD_SNAP"
-  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt.
-  | "FROST_BOLT"
-  | "COLD_AURA"
-  | "BLACK_ICE"
-  | "FROSTBITE"
-  // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's attack.
-  | "FROST_BREATH"
-  // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
-  | "SHARDS"
-  // Ice Folk freeze rework (`pulp_wars-s55m.1`): a water Freeze.
-  | "FREEZE";
+  "COLD_SNAP" | "COLD_WAKE" | "BLACK_ICE" | "FROSTBITE" | "FROST_BREATH";
 export type ShatterSetupV7 =
   | "CHARGE_AT_FULL_HP"
   | "SWEEP_FLANK"
@@ -143,20 +137,14 @@ export type ShatterSetupV7 =
   | "EARLIER_DAMAGE";
 
 const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
-  "BOLAS",
   "COLD_SNAP",
-  "FROST_BOLT",
-  "COLD_AURA",
+  "COLD_WAKE",
   // The frozen sea (naval branch section 8.8).
   "BLACK_ICE",
   // The ninth unit (7r55).
   "FROSTBITE",
   // The Ice Folk roster rework (`pulp_wars-s55m.4`).
   "FROST_BREATH",
-  // The giants' signatures: a Frost Giant's shards.
-  "SHARDS",
-  // Ice Folk freeze rework (`pulp_wars-s55m.1`).
-  "FREEZE",
 ];
 const SHATTER_SETUPS_V7: readonly ShatterSetupV7[] = [
   "CHARGE_AT_FULL_HP",
@@ -188,9 +176,8 @@ export function createIceFolkMetricsV7(): IceFolkMetricsV7 {
     shatterRetaliationAvoided: 0,
     shatterGravesDenied: 0,
     shatterBlastsDenied: 0,
-    bolasThrows: 0,
-    bolasTargetsByRole: zero(UNIT_ROLE_IDS_V7),
-    bolasFollowedByShatter: 0,
+    coldWakeFreezes: 0,
+    coldWakeFollowedByShatter: 0,
     coldSnapCasts: 0,
     coldSnapTargets: 0,
     witchTurnsWithoutTarget: 0,
@@ -232,8 +219,8 @@ export function createIceFolkMetricsV7(): IceFolkMetricsV7 {
 export interface IceFolkTelemetryStateV7 {
   /** The source that last chilled each unit. */
   readonly lastChillSource: Map<UnitId, ChillSourceV7>;
-  /** The last Bolas on each unit: the throwing seat and the round. */
-  readonly bolas: Map<
+  /** The last Cold Wake on each unit: the waking seat and the round. */
+  readonly coldWake: Map<
     UnitId,
     { readonly playerId: PlayerId; readonly round: number }
   >;
@@ -244,7 +231,7 @@ export interface IceFolkTelemetryStateV7 {
 export function createIceFolkTelemetryStateV7(): IceFolkTelemetryStateV7 {
   return {
     lastChillSource: new Map(),
-    bolas: new Map(),
+    coldWake: new Map(),
     hitThisTurn: new Map(),
   };
 }
@@ -320,7 +307,7 @@ export function recordIceFolkV7(
     if (event.kind === "UNITS_FROZEN") {
       metrics.chillEvents[event.source] += 1;
       metrics.chillApplications[event.source] += event.results.length;
-      if (event.source === "BOLAS") metrics.bolasThrows += 1;
+      if (event.source === "COLD_WAKE") metrics.coldWakeFreezes += 1;
       if (event.source === "COLD_SNAP") {
         metrics.coldSnapCasts += 1;
         metrics.coldSnapTargets += event.results.length;
@@ -335,9 +322,8 @@ export function recordIceFolkV7(
         if (target !== undefined) {
           metrics.chillTargetsByFaction[faction(before, target.ownerId)] += 1;
           metrics.chillTargetsByRole[target.role] += 1;
-          if (event.source === "BOLAS") {
-            metrics.bolasTargetsByRole[target.role] += 1;
-            telemetry.bolas.set(target.id, {
+          if (event.source === "COLD_WAKE") {
+            telemetry.coldWake.set(target.id, {
               playerId: event.playerId,
               round: before.round,
             });
@@ -373,7 +359,7 @@ export function recordIceFolkV7(
             : undefined;
         metrics.witchKillersByRole[killer?.role ?? "OTHER"] += 1;
       }
-      if (rule.abilities.includes("BOLAS")) metrics.sledDeaths += 1;
+      if (unit.role === "RAIDER") metrics.sledDeaths += 1;
     }
   }
 
@@ -414,13 +400,15 @@ export function recordIceFolkV7(
           continue;
         if (
           !witch.activation.specialActed &&
-          coldSnapTargetsV7(
-            before,
-            witch,
-            before.units.filter((unit) =>
+          !before.units.some(
+            (unit) =>
+              unit.id !== witch.id &&
+              unit.form !== "EGG" &&
+              unit.hp > 0 &&
+              chebyshev(unit.at, witch.at) === 1 &&
+              canBeFrozenV7(before, actorId, unit) &&
               isUnitVisibleToPlayerV7(before, actorId, unit),
-            ),
-          ).length === 0
+          )
         )
           metrics.witchTurnsWithoutTarget += 1;
         if (
@@ -494,13 +482,13 @@ function recordCombat(
     )
       metrics.shatterGravesDenied += 1;
     if (isExplodingUnitV7(before, defender)) metrics.shatterBlastsDenied += 1;
-    const throwBy = telemetry.bolas.get(defender.id);
+    const wokeBy = telemetry.coldWake.get(defender.id);
     if (
-      throwBy !== undefined &&
-      throwBy.playerId === actorId &&
-      before.round <= throwBy.round + 1
+      wokeBy !== undefined &&
+      wokeBy.playerId === actorId &&
+      before.round <= wokeBy.round + 1
     )
-      metrics.bolasFollowedByShatter += 1;
+      metrics.coldWakeFollowedByShatter += 1;
   }
   if (preview.sweep) {
     metrics.sweepAttacks += 1;

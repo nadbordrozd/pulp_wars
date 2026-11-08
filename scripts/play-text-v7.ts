@@ -89,15 +89,12 @@ import {
   previewBeamDownV7,
   previewMassBeamDownV7,
   previewBoardV7,
-  previewBolasV7,
   previewBombRunV7,
   previewBuildBarricadeV7,
   previewColdSnapV7,
-  previewFrostBoltV7,
   previewStampedeV7,
   previewDevourV7,
   previewEconomicV7,
-  previewFreezeV7,
   previewHatchV7,
   previewKaboomV7,
   previewLayEggV7,
@@ -1055,11 +1052,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.mind.u${command.targetUnitId}`;
     case "TRACTOR_BEAM":
       return `u${command.unitId}.tractor.u${command.targetUnitId}`;
-    case "THROW_BOLAS":
-      return `u${command.unitId}.bolas.u${command.targetUnitId}`;
-    // Ice Folk Freeze (`pulp_wars-w49.37`).
-    case "FROST_BOLT":
-      return `u${command.unitId}.frostbolt.u${command.targetUnitId}`;
     case "STAMPEDE":
       return `u${command.unitId}.stampede.${xyV7(command.at)}`;
     case "SUGAR_TOSS":
@@ -1126,8 +1118,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.bomb.u${command.targetUnitId}.${xyV7(command.to)}`;
     case "TUNNEL":
       return `u${command.unitId}.tunnel.${xyV7(command.to)}${command.rider === null ? "" : `.u${command.rider.unitId}.${xyV7(command.rider.to)}`}`;
-    case "FREEZE":
-      return `u${command.unitId}.freeze.${xyV7(command.at)}`;
     case "REBAKE":
       return `u${command.unitId}.rebake.${xyV7(command.from)}>${xyV7(command.at)}`;
     case "DISEMBARK":
@@ -2012,13 +2002,9 @@ function describeCommandV7(
       return `mind control ${context.memory.tag(command.targetUnitId)}${generic(previewMindControlV7(view, command.unitId, command.targetUnitId))}`;
     case "TRACTOR_BEAM":
       return `tractor beam ${context.memory.tag(command.targetUnitId)}${generic(previewTractorBeamV7(view, command.unitId, command.targetUnitId))}`;
-    case "THROW_BOLAS":
-      return `bolas ${context.memory.tag(command.targetUnitId)}${generic(previewBolasV7(view, command.unitId, command.targetUnitId))}`;
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133).
     case "COLD_SNAP":
-      return `cold snap: freeze every enemy next to her${generic(previewColdSnapV7(view, command.unitId))}`;
-    // Ice Folk Freeze (`pulp_wars-w49.37`).
-    case "FROST_BOLT":
-      return `frost bolt ${context.memory.tag(command.targetUnitId)}${generic(previewFrostBoltV7(view, command.unitId, command.targetUnitId))}`;
+      return `cold snap: freeze every tile around her${generic(previewColdSnapV7(view, command.unitId))}`;
     case "STAMPEDE": {
       const preview = previewStampedeV7(view, command.unitId, command.at);
       const hits =
@@ -2030,8 +2016,6 @@ function describeCommandV7(
             );
       return `stampede to ${xyV7(command.at)}: ${hits.length === 0 ? "hits no visible unit" : hits.join(", ")} | each survivor is shoved aside; a unit that cannot be shoved stops it | no retaliation; it does not attack this turn`;
     }
-    case "FREEZE":
-      return `freeze from ${xyV7(command.at)}${generic(previewFreezeV7(view, command.unitId, command.at))}`;
     case "TUNNEL":
       return `tunnel to ${xyV7(command.to)}${generic(previewTunnelV7(view, command))}`;
     case "BOMB_RUN":

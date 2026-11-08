@@ -30,7 +30,6 @@ import {
   attackCracksV7,
   canonicalRitualTileFactsV7,
   summoningMarkOutcomeV7,
-  attackIsFrostbittenV7,
   attackSplatAppliesV7,
   attacksLeftV7,
   calculateCombatPreviewV7,
@@ -258,13 +257,13 @@ describe("rituals: identity", () => {
   // took 7r89 after it, and its Imp (`pulp_wars-mch9.36`) 7r90, and its
   // Gibbering Mass (`pulp_wars-mch9.37`) 7r91.
   it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-45, -43)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-46, -44)).toEqual([
       "pulp-wars-poc-7r87",
       "pulp-wars-poc-7r88",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-45, -43)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-46, -44)).toEqual([
       "pulpWars.save.v7r87.current",
       "pulpWars.save.v7r88.current",
     ]);
@@ -1291,17 +1290,18 @@ describe("rituals: breaking the circle (section 7.1)", () => {
   });
 
   it("takes out a chanter that is frozen, and one that is shoved", () => {
-    // A status: an Ice Witch's Frost Bolt on the western chanter.
+    // A status: an Ice Witch's Cold Snap on the western chanter (her ring
+    // holds it and not the Gazer; the Frost Bolt went with the one Freeze
+    // effect, `pulp_wars-xv0t`, 7r133).
     const iced = cultFieldV7(
-      [...circle, { seat: 1, role: "CAPTAIN", at: at(2, 2) }],
+      [...circle, { seat: 1, role: "CAPTAIN", at: at(3, 2) }],
       { factions: ["CULT", "ICE_FOLK"] },
     );
     const begun = chantedStar(iced);
     const turn = applyOkV7(begun, cultId(begun), { kind: "END_TURN" }).state;
     const bolt = playV7(turn, {
-      kind: "FROST_BOLT",
-      unitId: idAt(turn, at(2, 2)),
-      targetUnitId: idAt(turn, CHANTER_WEST),
+      kind: "COLD_SNAP",
+      unitId: idAt(turn, at(3, 2)),
     });
     expect(eventsOf(bolt.events, "RITUAL_DISRUPTED")).toEqual([
       {
@@ -2421,44 +2421,30 @@ describe("the Herald: Unstoppable (section 4.2)", () => {
     expect(attackCracksV7(cracker.field, cracker.unit, herald, false)).toBe(
       false,
     );
-    // Frostbite: attacking a Walrus from the next tile.
-    const ox = stranger(
-      "ICE_FOLK",
-      roleOf(
-        "ICE_FOLK",
-        (role) => factionTreeV7("ICE_FOLK").roleMechanics[role].frostbite,
-      ),
-    );
-    expect(attackIsFrostbittenV7(ox.field, horror, ox.unit, 1, false)).toBe(
-      true,
-    );
-    expect(attackIsFrostbittenV7(ox.field, herald, ox.unit, 1, false)).toBe(
-      false,
-    );
+    // (Frostbite went with the one Freeze effect, `pulp_wars-xv0t`.)
     // Not living: no Plague, bite, Seizure, or Boo!; a daemon heals by no
     // source and leaves no Grave.
     expect(unitRoleMechanicsV7(state, herald).construct).toBe(true);
   });
 
-  it("is frozen by no Frost Bolt and pulled by no Tractor Beam", () => {
+  it("is frozen by no Cold Snap and pulled by no Tractor Beam", () => {
     const ice = heraldField(
-      [{ seat: 1, role: "CAPTAIN", at: at(5, 5) }],
+      [{ seat: 1, role: "CAPTAIN", at: at(5, 4) }],
       at(5, 3),
       { factions: ["CULT", "ICE_FOLK"], activeSeat: 1 },
     );
-    const witch = unitAtV7(ice, at(5, 5));
-    expect(unitRoleRuleV7(ice, witch).abilities).toContain("FROST_BOLT");
-    expect(
-      rejectedV7(ice, {
-        kind: "FROST_BOLT",
-        unitId: witch.id,
-        targetUnitId: idAt(ice, at(5, 3)),
-      }),
-    ).toEqual({
-      code: "FROST_BOLT_NOT_LEGAL",
-      params: { reason: "TARGET_IMMUNE" },
-    });
+    const witch = unitAtV7(ice, at(5, 4));
     const herald = unitAtV7(ice, at(5, 3));
+    expect(unitRoleRuleV7(ice, witch).abilities).toContain("COLD_SNAP");
+    // The one Freeze effect (`pulp_wars-xv0t`): the Herald stands in her
+    // ring but is never Frozen (the cast may still freeze tiles).
+    const snap = applyCommandV7(ice, witch.ownerId, {
+      kind: "COLD_SNAP",
+      unitId: witch.id,
+    });
+    expect(
+      (snap.accepted ? snap.state.frozen : []).map((entry) => entry.unitId),
+    ).not.toContain(herald.id);
     expect(
       tractorBeamTargetBlockV7(
         ice,

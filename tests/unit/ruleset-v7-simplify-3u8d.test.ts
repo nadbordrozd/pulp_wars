@@ -5,8 +5,6 @@ import {
   scoreCommandV7,
 } from "../../src/ai/v7";
 import {
-  BOLAS_MIN_RANGE_V7,
-  BOLAS_RANGE_V7,
   COMMAND_KIND_ORDER_V7,
   PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
@@ -158,11 +156,11 @@ function policyTurn(start: GameStateV7): {
 
 describe("the identity (pulp_wars-3u8d)", () => {
   it("was 7r131 after 7r130, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r130");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r130");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
       "pulpWars.save.v7r130.current",
     );
   });
@@ -181,7 +179,7 @@ describe("the identity (pulp_wars-3u8d)", () => {
   });
 });
 
-describe("the Sled: Bolas at exactly 2 tiles (pulp_wars-3u8d)", () => {
+describe("the Sled (pulp_wars-3u8d; its Bolas went with pulp_wars-xv0t)", () => {
   const SLED = at(4, 3);
   /** An Ice Folk Sled with a Fighter next to it and one 2 tiles away. */
   const sledField = (): GameStateV7 =>
@@ -191,32 +189,10 @@ describe("the Sled: Bolas at exactly 2 tiles (pulp_wars-3u8d)", () => {
       { seat: 1, role: "FIGHTER", at: at(6, 3) },
     ]);
 
-  it("throws no Bolas at a neighbour and throws one 2 tiles away", () => {
-    expect([BOLAS_MIN_RANGE_V7, BOLAS_RANGE_V7]).toEqual([2, 2]);
-    const state = sledField();
-    const targets = commandsOf(state, SLED).flatMap((command) =>
-      command.kind === "THROW_BOLAS" ? [command.targetUnitId] : [],
-    );
-    expect(targets).toEqual([unitAtV7(state, at(6, 3)).id]);
-    expect(
-      rejectedV7(state, {
-        kind: "THROW_BOLAS",
-        unitId: unitAtV7(state, SLED).id,
-        targetUnitId: unitAtV7(state, at(5, 3)).id,
-      }),
-    ).toEqual({ code: "BOLAS_NOT_LEGAL", params: { reason: "OUT_OF_RANGE" } });
-    const thrown = applyOkV7(state, activeIdV7(state), {
-      kind: "THROW_BOLAS",
-      unitId: unitAtV7(state, SLED).id,
-      targetUnitId: unitAtV7(state, at(6, 3)).id,
-    });
-    expect(kindsOf(thrown.events)).toContain("UNITS_FROZEN");
-  });
-
-  it("gives each tile one meaning: Attack on the neighbour, Bolas 2 tiles away", () => {
+  it("gives each tile one meaning: Attack on the neighbour, nothing 2 tiles away", () => {
     const tiles = meanings(sledField(), SLED);
     expect(tiles.get("5,3")).toEqual(["ATTACK"]);
-    expect(tiles.get("6,3")).toEqual(["THROW_BOLAS"]);
+    expect(tiles.has("6,3")).toBe(false);
   });
 });
 
@@ -561,21 +537,6 @@ describe("the Summoner's Tentacle replaces a Road Move (pulp_wars-3u8d)", () => 
 });
 
 describe("the Normal AI follows the new rules (pulp_wars-3u8d)", () => {
-  it("the Sled's Bolas candidates are all 2 tiles away", () => {
-    const state = iceFieldV7([
-      { seat: 0, role: "RAIDER", at: at(4, 3) },
-      { seat: 1, role: "FIGHTER", at: at(5, 3) },
-      { seat: 1, role: "FIGHTER", at: at(6, 3) },
-    ]);
-    const view = activeView(state);
-    const bolas = chooseNormalCommandV7(view).candidates.flatMap((candidate) =>
-      candidate.command.kind === "THROW_BOLAS"
-        ? [candidate.command.targetUnitId]
-        : [],
-    );
-    expect(bolas).toEqual([unitAtV7(state, at(6, 3)).id]);
-  });
-
   it("the Abomination swallows with its attack", () => {
     const state = fieldV7(
       [

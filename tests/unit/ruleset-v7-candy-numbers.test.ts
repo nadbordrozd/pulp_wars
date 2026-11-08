@@ -227,7 +227,9 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Raider", "6 / 2", "10 / 1"],
       ["Catapult", "7 / -", "10, kill"],
       ["Captain", "6 / 2", "10, kill"],
-      ["Sled", "6 / 2", "10, kill"],
+      // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Sled has 12 HP
+      // (10 before, killed by the boosted 10).
+      ["Sled", "6 / 2", "10 / 1"],
       ["Ray Gunner", "4 +2 sh / 2", "8 +2 sh, kill"],
     ];
     for (const [name, plain, boosted] of table) {

@@ -264,7 +264,7 @@ describe("Ice Folk Freeze (7r67)", () => {
     const state = candyFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 3) },
-        { seat: 1, role: "FIGHTER", at: at(5, 2), frozen: { turnsLeft: 2 } },
+        { seat: 1, role: "FIGHTER", at: at(5, 2), frozen: { turnsLeft: 1 } },
       ],
       { factions: ["CANDY", "ICE_FOLK"] },
     );

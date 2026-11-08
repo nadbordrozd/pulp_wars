@@ -1,10 +1,6 @@
 import {
   COLD_SNAP_RANGE_V7,
-  FROST_BOLT_MIN_RANGE_V7,
-  FROST_BOLT_RANGE_V7,
-  previewBolasV7,
   previewColdSnapV7,
-  previewFrostBoltV7,
   unitGlidesV7,
   unitMovementModeV7,
   unitOwnerIsIceFolkV7,
@@ -17,20 +13,13 @@ import {
 } from "../../engine/index";
 import { iceFolkSnowVariantV7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import {
-  BOLAS_LABEL_V7,
-  BOLAS_PICK_V7,
   COLD_SNAP_LABEL_V7,
-  FROST_BOLT_LABEL_V7,
-  FROST_BOLT_PICK_V7,
   SHATTERS_PREVIEW_V7,
   STAMPEDE_CONFIRM_HINT_V7,
   STAMPEDE_PICK_V7,
-  STAYS_FROZEN_V7,
   WILL_BE_FROZEN_V7,
-  bolasPreviewLinesV7,
-  coldAuraMoveLabelV7,
-  coldAuraMoveTargetsV7,
-  coldSnapChangedTargetsV7,
+  coldWakeMoveLabelV7,
+  coldWakeMovePreviewV7,
   freezeTargetLabelV7,
   frozenTurnsLeftV7,
   iceFolkCombatLinesV7,
@@ -49,9 +38,10 @@ import type {
  * The Ice Folk part of the board plan (bead pulp_wars-7g3.6; Ice Folk
  * Freeze, bead pulp_wars-w49.38): the derived Snow overlay and the Blizzard
  * of each terrain cell (from the view's tile flags), the Frozen marker of
- * each unit, the Bolas, Cold Snap, Frost Bolt and Stampede picking modes,
- * the Witch's Blizzard outline, a Frost Giant's Cold Aura on its Move
- * tiles, and the Ice Folk lines of an attack preview. Everything is read from the public view, the offered commands
+ * each unit, the Cold Snap and Stampede picking modes, the Witch's
+ * Blizzard outline, a Frost Giant's Cold Wake on its Move tiles
+ * (the one Freeze effect, `pulp_wars-xv0t`, 7r133: the Bolas and the Frost
+ * Bolt are gone), and the Ice Folk lines of an attack preview. Everything is read from the public view, the offered commands
  * and the public previews; nothing is recomputed.
  */
 
@@ -89,14 +79,14 @@ export interface IceFolkUnitMarkersV7 {
 }
 
 /**
- * A Bolas, a Cold Snap, a Frost Bolt or a Stampede being aimed on the
- * board. While one is active its targets are the only map targets of the
- * selected unit. A Stampede's `chosen` is the end tile picked once (its
- * preview stays drawn; picking it again charges).
+ * A Cold Snap or a Stampede being aimed on the board. While one is active
+ * its targets are the only map targets of the selected unit. A Stampede's
+ * `chosen` is the end tile picked once (its preview stays drawn; picking
+ * it again charges).
  */
 export type IceFolkPickV7 =
   | {
-      readonly kind: "THROW_BOLAS" | "COLD_SNAP" | "FROST_BOLT";
+      readonly kind: "COLD_SNAP";
       readonly unitId: UnitId;
     }
   | {
@@ -188,43 +178,13 @@ export function iceFolkUnitMarkersV7(
   };
 }
 
-/** The map targets of an active Bolas, Cold Snap, Frost Bolt or Stampede. */
+/** The map targets of an active Cold Snap or Stampede. */
 export function iceFolkPickTargetsV7(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   pick: IceFolkPickV7,
 ): MapCommandTargetV7[] {
   const unitById = (id: number) => view.units.find((unit) => unit.id === id);
-  if (pick.kind === "THROW_BOLAS" || pick.kind === "FROST_BOLT")
-    return commands.flatMap((command): MapCommandTargetV7[] => {
-      if (
-        (command.kind !== "THROW_BOLAS" && command.kind !== "FROST_BOLT") ||
-        command.kind !== pick.kind ||
-        command.unitId !== pick.unitId
-      )
-        return [];
-      const preview =
-        command.kind === "THROW_BOLAS"
-          ? previewBolasV7(view, command.unitId, command.targetUnitId)
-          : previewFrostBoltV7(view, command.unitId, command.targetUnitId);
-      const target = unitById(command.targetUnitId);
-      if (preview === null || target === undefined) return [];
-      const lines = bolasPreviewLinesV7(view, preview);
-      const name = unitRoleRuleV7(view, target).label;
-      const bolas = command.kind === "THROW_BOLAS";
-      return [
-        {
-          at: target.at,
-          command,
-          family: command.kind,
-          previewLabel: freezeTargetLabelV7(preview.alreadyFrozen),
-          ...(lines.length > 1
-            ? { previewNote: lines.slice(1).join(" · ") }
-            : {}),
-          semanticLabel: `${bolas ? BOLAS_LABEL_V7 : FROST_BOLT_LABEL_V7}: freezes this ${name}. ${lines.join(". ")}. ${bolas ? BOLAS_PICK_V7 : FROST_BOLT_PICK_V7}.`,
-        },
-      ];
-    });
   if (pick.kind === "STAMPEDE")
     return commands.flatMap((command): MapCommandTargetV7[] => {
       if (command.kind !== "STAMPEDE" || command.unitId !== pick.unitId)
@@ -266,38 +226,35 @@ export function iceFolkPickTargetsV7(
   if (command === undefined) return [];
   const preview = previewColdSnapV7(view, command.unitId);
   if (preview === null) return [];
-  // No pointless actions (`pulp_wars-zir6`): a unit Frozen already is not
-  // marked; the cast leaves it as it is.
-  return coldSnapChangedTargetsV7(preview).flatMap(
-    (entry): MapCommandTargetV7[] => {
-      const target = unitById(entry.unitId);
-      if (target === undefined) return [];
-      const name = unitRoleRuleV7(view, target).label;
-      return [
-        {
-          at: target.at,
-          command,
-          family: "COLD_SNAP",
-          previewLabel: freezeTargetLabelV7(entry.alreadyFrozen),
-          semanticLabel: `${COLD_SNAP_LABEL_V7}: freezes this ${name} with every other highlighted unit. ${entry.alreadyFrozen ? STAYS_FROZEN_V7 : WILL_BE_FROZEN_V7}. Choose any highlighted unit to cast.`,
-        },
-      ];
-    },
-  );
+  // No pointless actions (`pulp_wars-zir6`): a unit Frozen already is no
+  // target (the one Freeze effect, `pulp_wars-xv0t`: the cast leaves it as
+  // it is).
+  return preview.targets.flatMap((entry): MapCommandTargetV7[] => {
+    const target = unitById(entry.unitId);
+    if (target === undefined) return [];
+    const name = unitRoleRuleV7(view, target).label;
+    return [
+      {
+        at: target.at,
+        command,
+        family: "COLD_SNAP",
+        previewLabel: freezeTargetLabelV7(),
+        semanticLabel: `${COLD_SNAP_LABEL_V7}: freezes this ${name} with every other highlighted unit. ${WILL_BE_FROZEN_V7}. Choose any highlighted unit to cast.`,
+      },
+    ];
+  });
 }
 
 /**
  * Preview entries of an active pick that are not targets: the reach of a
- * Cold Snap (the eight tiles round the Witch) or a Frost Bolt (every
- * explored cell exactly 2 away: since `pulp_wars-ev6q`, 7r129, the ring
- * beyond her neighbours), outlined at its edges.
+ * Cold Snap (the eight tiles round the Witch), outlined at its edges.
  */
 export function addIceFolkPickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   pick: IceFolkPickV7,
 ): void {
-  if (pick.kind !== "COLD_SNAP" && pick.kind !== "FROST_BOLT") return;
+  if (pick.kind !== "COLD_SNAP") return;
   const witch = view.units.find((unit) => unit.id === pick.unitId);
   if (witch === undefined) return;
   const explored = new Set(
@@ -305,15 +262,13 @@ export function addIceFolkPickEntriesV7(
       .filter((tile) => tile.explored)
       .map((tile) => key(tile.at)),
   );
-  const reach =
-    pick.kind === "COLD_SNAP" ? COLD_SNAP_RANGE_V7 : FROST_BOLT_RANGE_V7;
-  const nearest = pick.kind === "COLD_SNAP" ? 0 : FROST_BOLT_MIN_RANGE_V7;
+  const reach = COLD_SNAP_RANGE_V7;
   const inArea = (at: CoordV7): boolean => {
     const distance = Math.max(
       Math.abs(at.x - witch.at.x),
       Math.abs(at.y - witch.at.y),
     );
-    return distance <= reach && distance >= nearest && explored.has(key(at));
+    return distance <= reach && explored.has(key(at));
   };
   for (let dy = -reach; dy <= reach; dy += 1)
     for (let dx = -reach; dx <= reach; dx += 1) {
@@ -337,25 +292,43 @@ export function addIceFolkPickEntriesV7(
 }
 
 /**
- * Section 21.12: the Cold Aura of an offered Move of an own Frost Giant: the
- * tiles of the units it would freeze there, a label, and the sentence.
- * Null for a Move that freezes nobody, and for every other unit's Move.
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Cold Wake of an
+ * offered Move of an own Frost Giant (`coldWakeMovePreviewV7`):
+ * the tiles of the units it would freeze there and the ring of tiles it
+ * would ice or snow (both drawn while the destination is hovered, the ring
+ * in the quiet Cold Snap tint: a preview, never a chooser), a short label
+ * when it freezes a unit, and the sentence. Null for a Move whose wake
+ * changes nothing, and for every other unit's Move.
  */
-export function coldAuraMoveExtrasV7(
+export function coldWakeMoveExtrasV7(
   view: PlayerViewV7,
   command: Extract<CommandV7, { kind: "MOVE" }>,
 ): {
-  readonly label: string;
+  readonly label: string | null;
   readonly semantic: string;
-  readonly tiles: readonly CoordV7[];
+  readonly units: readonly CoordV7[];
+  readonly ring: readonly CoordV7[];
 } | null {
-  const targets = coldAuraMoveTargetsV7(view, command);
-  if (targets.length === 0) return null;
+  const preview = coldWakeMovePreviewV7(view, command);
+  if (
+    preview === null ||
+    preview.targets.length + preview.tiles.length + preview.snow.length === 0
+  )
+    return null;
+  const targets = preview.targets.flatMap((unitId) => {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    return unit === undefined ? [] : [unit];
+  });
   return {
-    // The board's short label; the sentence names the units.
-    label: `Freezes ${targets.length}`,
-    semantic: `${coldAuraMoveLabelV7(targets.length)}: ${targets.map((unit) => unitRoleRuleV7(view, unit).label).join(", ")}`,
-    tiles: targets.map((unit) => unit.at),
+    // The board's short label only when a unit freezes; the sentence says
+    // all.
+    label: targets.length === 0 ? null : `Freezes ${targets.length}`,
+    semantic:
+      targets.length === 0
+        ? coldWakeMoveLabelV7(preview)
+        : `${coldWakeMoveLabelV7(preview)}: ${targets.map((unit) => unitRoleRuleV7(view, unit).label).join(", ")}`,
+    units: targets.map((unit) => unit.at),
+    ring: [...preview.tiles, ...preview.snow],
   };
 }
 
@@ -455,14 +428,9 @@ export function iceFolkAttackTargetExtrasV7(
   };
 }
 
-/** Whether `kind` is one of the four aimed Ice Folk ability commands. */
+/** Whether `kind` is one of the two aimed Ice Folk ability commands. */
 export function isIceFolkPickCommandV7(kind: CommandV7["kind"]): boolean {
-  return (
-    kind === "THROW_BOLAS" ||
-    kind === "COLD_SNAP" ||
-    kind === "FROST_BOLT" ||
-    kind === "STAMPEDE"
-  );
+  return kind === "COLD_SNAP" || kind === "STAMPEDE";
 }
 
 /**

@@ -57,8 +57,18 @@ const HUMAN: readonly TechnologyIdV7[] = [
   "SEAMANSHIP",
   "SUBMERSIBLES",
 ];
+/**
+ * The water tiles of row `y` from `x0` to `x1`, leaving out the two Ports,
+ * (4, 3) and (6, 7): a dock never freezes (the one Freeze effect,
+ * `pulp_wars-xv0t`, 7r133; an Ice Harbour before).
+ */
 const row = (y: number, x0: number, x1: number): CoordV7[] =>
-  Array.from({ length: x1 - x0 + 1 }, (_, index) => ({ x: x0 + index, y }));
+  Array.from({ length: x1 - x0 + 1 }, (_, index) => ({
+    x: x0 + index,
+    y,
+  })).filter(
+    (at) => !(at.x === 4 && at.y === 3) && !(at.x === 6 && at.y === 7),
+  );
 
 /** The arena with seat 0's capital at level 3 (a Land Grant needs it). */
 const scene = (
@@ -81,12 +91,12 @@ const capitalOf = (state: GameStateV7) => {
 const grant = (state: GameStateV7) =>
   acceptV7(state, 0, { kind: "LAND_GRANT", cityId: capitalOf(state).id });
 const frozenEvents = (events: readonly DomainEventV7[]) =>
-  events.filter((event) => event.kind === "WATER_FROZEN");
+  events.filter((event) => event.kind === "TILES_FROZEN");
 const iceTiles = (state: GameStateV7): CoordV7[] =>
   state.ice.map((entry) => entry.at);
 
 describe("the border freeze on a Land Grant", () => {
-  it("with Rime, every Shallow Water tile of the grown territory freezes, the old ones and the Port included; Deep Water waits for Pack Ice", () => {
+  it("with Rime, every Shallow Water tile of the grown territory freezes, the old ones too but never the Port; Deep Water waits for Pack Ice", () => {
     const state = scene(RIME);
     const owner = seatV7(state, 0).id;
     expect(state.ice).toEqual([]);
@@ -97,7 +107,8 @@ describe("the border freeze on a Land Grant", () => {
       expect(entry).toMatchObject({ ownerId: owner, cracked: false });
     // The old footprint's water (4, 3) to (6, 3) froze with the new.
     expect(iceEntryV7(result.state, { x: 5, y: 3 })).toBeDefined();
-    // The Port is an Ice Harbour now; its improvement stays.
+    // The Port is never iced over; its improvement stays.
+    expect(iceEntryV7(result.state, { x: 4, y: 3 })).toBeUndefined();
     expect(
       result.state.board.tiles.find(
         (tile) => tile.at.x === 4 && tile.at.y === 3,
@@ -114,16 +125,17 @@ describe("the border freeze on a Land Grant", () => {
     const events = frozenEvents(result.events);
     expect(events).toEqual([
       {
-        kind: "WATER_FROZEN",
+        kind: "TILES_FROZEN",
         playerId: owner,
         unitId: null,
         tiles: shallow,
+        snow: [],
       },
     ]);
     expect(parseEventV7(events[0]).ok).toBe(true);
     // Right after the grant (and its reveal, none here).
     const kinds = result.events.map((event) => event.kind);
-    expect(kinds.indexOf("WATER_FROZEN")).toBe(
+    expect(kinds.indexOf("TILES_FROZEN")).toBe(
       kinds.indexOf("LAND_GRANTED") + 1,
     );
   });
@@ -133,7 +145,7 @@ describe("the border freeze on a Land Grant", () => {
     expect(iceTiles(result.state)).toEqual([...row(3, 3, 7), ...row(4, 3, 7)]);
   });
 
-  it("without Rime nothing freezes and no WATER_FROZEN is emitted", () => {
+  it("without Rime nothing freezes and no TILES_FROZEN is emitted", () => {
     const result = grant(scene(PLANNING));
     expect(result.state.ice).toEqual([]);
     expect(frozenEvents(result.events)).toEqual([]);
@@ -167,7 +179,7 @@ describe("the border freeze on a Land Grant", () => {
     });
     const [event] = frozenEvents(left.events);
     expect(event).toMatchObject({ unitId: null });
-    if (event?.kind !== "WATER_FROZEN") throw new Error("no freeze");
+    if (event?.kind !== "TILES_FROZEN") throw new Error("no freeze");
     // Own sound ice is not in the set; another seat's taken ice is.
     expect(event.tiles).not.toContainEqual({ x: 5, y: 3 });
     expect(event.tiles).toContainEqual({ x: 3, y: 3 });
@@ -188,14 +200,15 @@ describe("the border freeze on a Land Grant", () => {
     const envelope = projectEventsV7(state, result.state, other, result.events);
     expect(parsePlayerEventEnvelopeV7(envelope).ok).toBe(true);
     const projected = envelope.events.filter(
-      (event) => event.kind === "WATER_FROZEN",
+      (event) => event.kind === "TILES_FROZEN",
     );
     expect(projected).toEqual([
       {
-        kind: "WATER_FROZEN",
+        kind: "TILES_FROZEN",
         playerId: seatV7(state, 0).id,
         unitId: null,
         tiles: row(3, 3, 7),
+        snow: [],
       },
     ]);
   });
@@ -208,10 +221,11 @@ describe("the border freeze on research", () => {
     expect(iceTiles(result.state)).toEqual(row(3, 4, 6));
     expect(frozenEvents(result.events)).toEqual([
       {
-        kind: "WATER_FROZEN",
+        kind: "TILES_FROZEN",
         playerId: seatV7(state, 0).id,
         unitId: null,
         tiles: row(3, 4, 6),
+        snow: [],
       },
     ]);
     // Pack Ice then freezes nothing more: the footprint has no Deep Water.
@@ -232,7 +246,7 @@ describe("the border freeze on research", () => {
 });
 
 describe("the border freeze on a capture", () => {
-  it("an Ice Folk seat with Rime that takes a city freezes the water of its territory, its Port included", () => {
+  it("an Ice Folk seat with Rime that takes a city freezes the water of its territory, never its Port", () => {
     const base = frozenArenaV7({
       factions: ["ICE_FOLK", "ORIGINAL"],
       technologies: [RIME, HUMAN],
@@ -258,10 +272,11 @@ describe("the border freeze on a capture", () => {
     expect(iceTiles(result.state)).toEqual(row(7, 4, 6));
     expect(frozenEvents(result.events)).toEqual([
       {
-        kind: "WATER_FROZEN",
+        kind: "TILES_FROZEN",
         playerId: owner,
         unitId: null,
         tiles: row(7, 4, 6),
+        snow: [],
       },
     ]);
     expect(parseGameStateV7(result.state)).not.toBeNull();
@@ -278,7 +293,7 @@ describe("the Normal AI values a grant's ice", () => {
         city.id,
         city.at,
       ),
-    ).toBe(5);
+    ).toBe(4);
     const deep = scene(PACK_ICE);
     expect(
       landGrantIceTilesV7(
@@ -286,7 +301,7 @@ describe("the Normal AI values a grant's ice", () => {
         city.id,
         city.at,
       ),
-    ).toBe(10);
+    ).toBe(9);
     const none = scene(PLANNING);
     expect(
       landGrantIceTilesV7(

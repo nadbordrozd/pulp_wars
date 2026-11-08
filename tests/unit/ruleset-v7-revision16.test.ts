@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-117, -77)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-118, -78)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -251,8 +251,10 @@ describe("ruleset-7 prior identities", () => {
     // only), and the Moon Gun fires only beyond the unit's Move
     // (`pulp_wars-3u8d`): 7r131. Only the Ice Folk walk on ice: a ground
     // unit of another kind never enters it, and a walker or flyer never
-    // cracks it (`pulp_wars-y242`): 7r132.
-    expect(revision).toBe(132);
+    // cracks it (`pulp_wars-y242`): 7r132. One Freeze effect: Cold Snap,
+    // the Frost Giant's Cold Wake, stored Snow, no FREEZE, Frost Bolt or
+    // Bolas (`pulp_wars-xv0t`): 7r133.
+    expect(revision).toBe(133);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -287,7 +289,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r133", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r134", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

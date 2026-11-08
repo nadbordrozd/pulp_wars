@@ -7,12 +7,9 @@ import {
   type TechnologyIdV7,
 } from "../../src/engine/index";
 import {
-  BOARD_PICK_PANEL_MAX_BUTTONS_V7,
-  targetHighlightStyleV7,
-} from "../../src/render/canvas/target-highlight-v7";
-import {
-  FREEZE_ALREADY_ACTED_V7,
-  FREEZE_NEEDS_RIME_V7,
+  FREEZE_DEEP_UNLOCK_V7,
+  FREEZE_SHALLOW_UNLOCK_V7,
+  glacierUnlockTextV7,
   ICE_COVER_TOOLTIP_V7,
   ICE_FOR_SHIPS_HELP_V7,
   ICE_MOVE_TEXT_V7,
@@ -28,18 +25,18 @@ import {
   rig,
   waitUntil,
 } from "../fixtures/v7-dom-rig";
-import { frozenArenaV7, patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
+import { frozenArenaV7 } from "../fixtures/v7-frozen-sea";
 import {
   FROZEN_UI_V7,
   frozenFreezeUiFixtureV7,
   frozenShipUiFixtureV7,
   frozenSlideUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
-import { navalUnitAtV7 } from "../fixtures/v7-naval-branch";
 
 // The frozen sea interface (bead pulp_wars-5ti.7, second part;
-// docs/ui/BOARD_TARGETING.md section 3.5): Freeze for a line role, the
-// Ice Witch's one-tap Cold Snap and its ring of water (`pulp_wars-s55m.1`),
+// docs/ui/BOARD_TARGETING.md section 3.5): no Freeze for a line role since
+// the one Freeze effect (`pulp_wars-xv0t`), the Ice Witch's one-tap Cold
+// Snap and its ring (`pulp_wars-s55m.1`),
 // the slide and the slip, a Frozen ship, the ice chip, and the Ice Folk
 // technology cards, Help and Gallery.
 
@@ -51,157 +48,19 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-describe("Freeze, a line role: armed and picked on the board", () => {
-  it("has one button, shows each line with its outcome, and freezes the picked one", async () => {
-    const { controller, host, app, unitAt } = rig(frozenFreezeUiFixtureV7());
+describe("Freeze is no action of its own (the one Freeze effect, `pulp_wars-xv0t`)", () => {
+  it("offers a unit beside the water no Freeze button and no freeze pick", () => {
+    const { host, app, unitAt } = rig(frozenFreezeUiFixtureV7());
     const yeti = unitAt(FROZEN_UI_V7.yeti);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: yeti.id });
-    const freeze = requiredButton("freeze");
-    expect(document.querySelectorAll('[data-action="freeze"]')).toHaveLength(1);
-    expect(freeze.dataset.freezeAbility).toBe("line");
-    expect(freeze.getAttribute("aria-pressed")).toBe("false");
-    expect(freeze.textContent).toBe("Freeze");
-    expect(
-      document.querySelector('[data-action^="command-freeze"]'),
-    ).toBeNull();
-    // Unarmed, no tile is a Freeze target.
-    expect(
-      boardPlan(host).targets.some((target) => target.family === "FREEZE"),
-    ).toBe(false);
-
-    freeze.click();
-    expect(host.lastModel?.interaction.freezePick).toEqual({
-      kind: "FREEZE",
-      unitId: yeti.id,
-    });
-    const panel = requiredElement<HTMLElement>("[data-v7-freeze-pick]");
-    expect(panel.classList.contains("v7-board-pick")).toBe(true);
-    expect(panel.dataset.boardTargets).toBe("3");
-    const controls = [...panel.querySelectorAll("button")].map(
-      (control) => control.dataset.action,
-    );
-    expect(controls).toEqual(["pick-info", "freeze-pick-cancel"]);
-    expect(controls.length).toBeLessThanOrEqual(
-      BOARD_PICK_PANEL_MAX_BUTTONS_V7,
-    );
-    const targets = boardPlan(host).targets;
-    expect(targets.map((target) => target.family)).toEqual([
-      "FREEZE",
-      "FREEZE",
-      "FREEZE",
-    ]);
-    for (const target of targets) {
-      expect(targetHighlightStyleV7(target.family)).toBe("PLACE");
-      // The frozen sea redesign (`pulp_wars-5ti.25`): no countdown.
-      expect(target.previewLabel).toMatch(/^(Ice [123]|Freezes ship)$/);
-      expect(target.semanticLabel).not.toMatch(COORDINATE);
-    }
-    for (const text of [panel.textContent ?? "", panel.title])
-      expect(text).not.toMatch(COORDINATE);
-
-    // Escape disarms; Cancel does too; nothing was sent.
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-    );
-    expect(host.lastModel?.interaction.freezePick ?? null).toBeNull();
-    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
-    requiredButton("freeze").click();
-    requiredButton("freeze-pick-cancel").click();
-    expect(host.lastModel?.interaction.freezePick ?? null).toBeNull();
-    expect(controller.accepted).toEqual([]);
-
-    // Pick the tile south of the Yeti on the board.
-    requiredButton("freeze").click();
-    const south = required(
-      boardPlan(host).targets.find(
-        (target) => at(target.at) === at(FROZEN_UI_V7.freezeAt),
-      ),
-    );
-    host.callbacks?.onCommand(south);
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "FREEZE",
-      unitId: yeti.id,
-      at: FROZEN_UI_V7.freezeAt,
-    });
-    const after = required(controller.snapshot().view);
-    // Hoarfrost (every Naval technology): a three-tile line.
-    expect(after.ice.map((entry) => at(entry.at))).toEqual([
-      at(FROZEN_UI_V7.freezeAt),
-      at(FROZEN_UI_V7.freezeBeyond),
-      "2,5",
-    ]);
-    expect(host.lastModel?.interaction.freezePick ?? null).toBeNull();
-    await waitUntil(
-      () =>
-        document
-          .querySelector("#v7-live")
-          ?.textContent?.includes("You froze 3 tiles") === true,
-    );
-    // The new ice is on the plan as sea ice, the Deep Water tile included
-    // (Pack Ice).
-    expect(
-      boardPlan(host)
-        .entries.filter((entry) => entry.seaIce !== undefined)
-        .map((entry) => [at(entry.at), entry.seaIce?.depth]),
-    ).toEqual([
-      [at(FROZEN_UI_V7.freezeAt), "SHALLOW"],
-      [at(FROZEN_UI_V7.freezeBeyond), "DEEP"],
-      ["2,5", "DEEP"],
-    ]);
-    app.destroy();
-  });
-
-  it("is disabled with the engine's reason, and absent away from water", () => {
-    // No Rime: a unit on the shore names the technology.
-    const noRime = rig(
-      frozenArenaV7({
-        technologies: [[], []],
-        units: [{ seat: 0, role: "FIGHTER", at: FROZEN_UI_V7.yeti }],
-      }),
-    );
-    noRime.host.callbacks?.onSelection({
-      kind: "UNIT",
-      unitId: noRime.unitAt(FROZEN_UI_V7.yeti).id,
-    });
-    const blocked = requiredButton("freeze");
-    expect(blocked.getAttribute("aria-disabled")).toBe("true");
-    expect(blocked.dataset.disabledReason).toBe(FREEZE_NEEDS_RIME_V7);
-    expect(blocked.getAttribute("aria-label")).toBe(
-      `Freeze unavailable. ${FREEZE_NEEDS_RIME_V7}`,
-    );
-    blocked.click();
-    expect(noRime.host.lastModel?.interaction.freezePick ?? null).toBeNull();
-    noRime.app.destroy();
-
-    // A unit that already acted.
-    document.body.innerHTML = '<div id="app"></div>';
-    const state = frozenFreezeUiFixtureV7();
-    const yeti = navalUnitAtV7(state, FROZEN_UI_V7.yeti);
-    const acted = rig(
-      patchFrozenUnitV7(state, yeti.id, {
-        activation: { ...yeti.activation, attacked: true, attacksUsed: 1 },
-      }),
-    );
-    acted.host.callbacks?.onSelection({ kind: "UNIT", unitId: yeti.id });
-    expect(requiredButton("freeze").dataset.disabledReason).toBe(
-      FREEZE_ALREADY_ACTED_V7,
-    );
-    acted.app.destroy();
-
-    // A unit with no water next to it has no Freeze button.
-    document.body.innerHTML = '<div id="app"></div>';
-    const inland = rig(
-      frozenArenaV7({
-        units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 0 } }],
-      }),
-    );
-    inland.host.callbacks?.onSelection({
-      kind: "UNIT",
-      unitId: inland.unitAt({ x: 2, y: 0 }).id,
-    });
     expect(document.querySelector('[data-action="freeze"]')).toBeNull();
-    inland.app.destroy();
+    expect(host.lastModel?.interaction.freezePick ?? null).toBeNull();
+    expect(
+      boardPlan(host).targets.some(
+        (target) => (target.family as string) === "FREEZE",
+      ),
+    ).toBe(false);
+    app.destroy();
   });
 });
 
@@ -224,7 +83,11 @@ describe("the Ice Witch's Cold Snap: one tap, units and water", () => {
       boardPlan(host).entries.filter((entry) =>
         entry.key.startsWith("ability-area:FREEZE:"),
       );
-    expect(ring()).toHaveLength(3);
+    // The one Freeze effect (`pulp_wars-xv0t`): her ring is every tile
+    // around her, the three of water to ice and the five of open land
+    // (outside every border) to Snow.
+    expect(snap.getAttribute("aria-label")).toContain("5 land tiles");
+    expect(ring()).toHaveLength(8);
     expect(new Set(ring().map((entry) => entry.abilityStyle))).toEqual(
       new Set(["FREEZE"]),
     );
@@ -238,7 +101,7 @@ describe("the Ice Witch's Cold Snap: one tap, units and water", () => {
       boardPlan(host).entries.find((entry) =>
         entry.key.startsWith("ability-target:FREEZE_RING:"),
       )?.label,
-    ).toBe("Ice 3");
+    ).toBe("Ice 3 · Snow 5");
     snap.dispatchEvent(new FocusEvent("blur"));
     expect(
       host.lastModel?.interaction.freezeRingFocusUnitId ?? null,
@@ -298,14 +161,16 @@ describe("the Ice Witch's Cold Snap: one tap, units and water", () => {
       kind: "UNIT",
       unitId: packIce.unitAt({ x: 2, y: 3 }).id,
     });
-    // Pack Ice: the three Deep Water tiles south of her too.
+    // Pack Ice: the three Deep Water tiles south of her too (and, since the
+    // one Freeze effect, `pulp_wars-xv0t`, the open shore north of her goes
+    // to Snow either way).
     expect(requiredButton("ice-folk-cold-snap").dataset.boardTiles).toBe("5");
     expect(
       boardPlan(packIce.host)
         .entries.filter((entry) => entry.key.startsWith("ability-area:FREEZE:"))
         .map((entry) => at(entry.at))
         .sort(),
-    ).toEqual(["1,3", "1,4", "2,4", "3,3", "3,4"]);
+    ).toEqual(["1,2", "1,3", "1,4", "2,2", "2,4", "3,2", "3,3", "3,4"]);
     packIce.app.destroy();
   });
 });
@@ -521,18 +386,20 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
       ].map(name),
     ).toEqual(["Rime", "Pack Ice", "Hoarfrost", "Black Ice", "Glacier"]);
     const rime = lines("shorecraft");
-    expect(rime).toContain(
-      "Freeze: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch's Cold Snap: all around her), and skate across it; a ship in the way is Frozen; the water inside your borders freezes now and whenever they grow",
+    // The one Freeze effect (`pulp_wars-xv0t`): the freezes are the Cold
+    // Snap and the Cold Wake; the technologies say what water they reach.
+    expect(rime).toContain(FREEZE_SHALLOW_UNLOCK_V7);
+    expect(FREEZE_SHALLOW_UNLOCK_V7).toBe(
+      "Ice: your freezes make ice on shallow water, and the water inside your borders freezes now and whenever they grow",
     );
     expect(rime).toContain("The Ice Folk build no ships");
     expect(rime.join(" ")).not.toMatch(/embark|Patrol Boat/i);
-    expect(lines("navigation")).toContain("Freeze: Deep Water freezes too");
+    expect(lines("navigation")).toContain(FREEZE_DEEP_UNLOCK_V7);
     expect(lines("navigation").join(" ")).not.toContain("Ships can sail");
+    // Hoarfrost's longer Freeze line went with the line Freeze; the node
+    // has nothing until the Ice Folk redesign's later beads.
     const hoarfrost = lines("naval_engineering");
-    expect(hoarfrost).toContain(
-      "Hoarfrost: a Freeze reaches three tiles in a line",
-    );
-    expect(hoarfrost.join(" ")).not.toContain("Battleship");
+    expect(hoarfrost.join(" ")).not.toMatch(/three tiles|Battleship/);
     expect(lines("seamanship")).toEqual([
       "Black Ice: an enemy that steps onto your ice is Frozen",
     ]);
@@ -541,9 +408,7 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
       "Land Grant: with Rime, the water inside the city's borders, old and new, freezes",
     );
     const glacier = lines("submersibles");
-    expect(glacier).toContain(
-      "Glacier: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover",
-    );
+    expect(glacier).toContain(glacierUnlockTextV7());
     expect(glacier.join(" ")).not.toContain("Submarine");
     expect(
       requiredElement<HTMLElement>(".v7-tech-detail").getAttribute(

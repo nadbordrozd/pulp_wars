@@ -671,6 +671,8 @@ export function buildMissionStateV7(
     // The frozen sea: an authored board starts without ice (until the
     // starting border freeze, below).
     ice: [],
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): no stored Snow.
+    snow: [],
     monsters,
     graves: sortedCoords(mission.graves ?? []),
     plagued: [],

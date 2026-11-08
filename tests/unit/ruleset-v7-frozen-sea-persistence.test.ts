@@ -14,7 +14,7 @@ import {
   queryPlayerCommandsV7,
   runReplayV7,
   showcaseStripCenterXV7,
-  previewFreezeV7,
+  previewColdSnapV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -109,21 +109,17 @@ describe("frozen sea persistence", () => {
     if (ice === undefined) throw new Error("no seat");
     // The boats' three tiles, and (the starting border freeze,
     // `pulp_wars-s55m.6`, 7r126: every Showcase seat knows Rime) the rest of
-    // the Coast city's water.
+    // the Coast city's water, but its Port (cx - 1, 12) and Shipyard
+    // (cx + 1, 12): a dock never freezes (the one Freeze effect,
+    // `pulp_wars-xv0t`, 7r133).
     expect(state.ice.map((entry) => [entry.at.x, entry.at.y])).toEqual([
-      [cx - 1, 12],
       [cx, 12],
-      [cx + 1, 12],
       [cx, 13],
       [cx + 1, 13],
     ]);
-    // Turn 1: the Sabretooth walks onto the home ice (it never slides), and
-    // the Snow Golem walks to the Coast city and freezes the water south
-    // west of it (the frozen sea redesign: the home ice south of it is its
-    // own sound ice, which a Freeze passes over).
+    // Turn 1: the Sabretooth walks onto the home ice (it never slides).
     const sabretooth = unitAt(cx + 1, 9);
-    const boulder = unitAt(cx, 9);
-    expect([sabretooth.role, boulder.role]).toEqual(["KNIGHT", "CATAPULT"]);
+    expect(sabretooth.role).toBe("KNIGHT");
     play(
       find(
         "MOVE",
@@ -132,35 +128,66 @@ describe("frozen sea persistence", () => {
       ),
     );
     expect(unitAt(cx, 12)).toMatchObject({ id: sabretooth.id, form: "LAND" });
-    play(
-      find(
-        "MOVE",
-        (command) =>
-          command.unitId === boulder.id && endsOn({ x: cx, y: 11 })(command),
-      ),
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Ice Witch's Cold
+    // Snap is the freeze that makes ice (the Snow Golem's and the
+    // Sabretooth's line `FREEZE` before). She walks toward open water, a
+    // Move a round (the other seats only end their turns), and casts where
+    // her ring makes new ice; her own sound ice is passed over.
+    const witch = state.units.find(
+      (unit) => unit.ownerId === ice.id && unit.role === "CAPTAIN",
     );
-    // With Hoarfrost (`pulp_wars-s55m.1`) the line goes on past the two
-    // tiles of its own sound ice to a third, so the Freeze toward them is
-    // offered, and it passes both over.
-    const south = offered().find(
-      (command) =>
-        command.kind === "FREEZE" &&
-        command.unitId === boulder.id &&
-        command.at.x === cx &&
-        command.at.y === 12,
-    );
-    if (south?.kind !== "FREEZE") throw new Error("no Freeze south");
-    const southTiles =
-      previewFreezeV7(viewForV7(state, ice.id), boulder.id, south.at)?.tiles ??
-      [];
-    expect(southTiles).not.toContainEqual({ x: cx, y: 12 });
-    expect(southTiles).not.toContainEqual({ x: cx, y: 13 });
-    play(find("FREEZE", (command) => command.unitId === boulder.id));
-    expect(events.at(-1)).toMatchObject({
-      kind: "WATER_FROZEN",
-      playerId: ice.id,
-      unitId: boulder.id,
-    });
+    if (witch === undefined) throw new Error("no Witch");
+    const newIce = (at: GameStateV7): readonly CoordV7[] =>
+      previewColdSnapV7(viewForV7(at, ice.id), witch.id)?.tiles ?? [];
+    const openWater = (at: GameStateV7, to: CoordV7): number =>
+      Math.min(
+        ...at.board.tiles
+          .filter(
+            (tile) =>
+              (tile.terrain === "SHALLOW_WATER" ||
+                tile.terrain === "DEEP_WATER") &&
+              tile.improvement === null &&
+              !at.units.some(
+                (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+              ) &&
+              !at.ice.some(
+                (entry) => entry.at.x === tile.at.x && entry.at.y === tile.at.y,
+              ),
+          )
+          .map((tile) =>
+            Math.max(Math.abs(tile.at.x - to.x), Math.abs(tile.at.y - to.y)),
+          ),
+      );
+    const castNewIce = () => {
+      for (let round = 0; round < 8 && newIce(state).length === 0; round += 1) {
+        if (active() !== ice.id) throw new Error("not the Ice Folk turn");
+        const moves = offered().filter(
+          (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+            command.kind === "MOVE" && command.unitId === witch.id,
+        );
+        const best = [...moves].sort(
+          (left, right) =>
+            openWater(state, left.path.at(-1) ?? witch.at) -
+            openWater(state, right.path.at(-1) ?? witch.at),
+        )[0];
+        if (best !== undefined) play(best);
+        if (newIce(state).length > 0) break;
+        endRound();
+      }
+      const tiles = newIce(state);
+      expect(tiles.length).toBeGreaterThan(0);
+      for (const entry of state.ice) expect(tiles).not.toContainEqual(entry.at);
+      play({ kind: "COLD_SNAP", unitId: witch.id });
+      expect(
+        [...events].reverse().find((event) => event.kind === "TILES_FROZEN"),
+      ).toMatchObject({
+        kind: "TILES_FROZEN",
+        playerId: ice.id,
+        unitId: witch.id,
+        tiles,
+      });
+    };
+    castNewIce();
     const midSave = createSaveEnvelopeV7(
       { state, replay },
       "2026-10-05T12:00:00.000Z",
@@ -173,13 +200,13 @@ describe("frozen sea persistence", () => {
     endRound();
     // No thaw: the ice is as it was.
     expect(state.ice).toEqual(afterFreeze);
-    // Turn 2: the Sabretooth, standing on the ice, freezes more water.
-    play(find("FREEZE", (command) => command.unitId === sabretooth.id));
+    // A later turn: the Witch freezes more water.
+    castNewIce();
     expect(state.ice.length).toBeGreaterThan(afterFreeze.length);
     endRound();
     endRound();
     expect(
-      events.filter((event) => event.kind === "WATER_FROZEN"),
+      events.filter((event) => event.kind === "TILES_FROZEN"),
     ).toHaveLength(2);
     // The state, its JSON round trip, the replay, and the save agree.
     expect(state.ice.length).toBeGreaterThan(0);

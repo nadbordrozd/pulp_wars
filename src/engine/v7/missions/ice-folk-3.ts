@@ -64,6 +64,14 @@ import type { MissionDefinitionV7 } from "./types";
  * cannot strike back, and a bolas, a Wyrm's 8 and a Yeti finished each
  * Hammerer that stepped onto the ice), so retune 3's second Steam Launch
  * is back on the strait at (9, 11), where the road must pass.
+ *
+ * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md): there is no Freeze line any
+ * more (nor Hoarfrost's longer one, nor the bolas): Mother Rime's Cold
+ * Snap ices the ring around her, one cast a turn, to lay the road out
+ * across the strait; the Walrus keeps its Frostbite; and Anvil Bay's Port
+ * is never iced over. The board and the seats are unchanged; the retune
+ * for the new kit is the campaign bead's.
  */
 export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_3",

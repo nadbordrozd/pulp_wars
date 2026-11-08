@@ -259,7 +259,7 @@ export function projectEventsV7(
       continue;
     }
     // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 12):
-    // WATER_FROZEN goes to every viewer with the tiles it has explored
+    // TILES_FROZEN (WATER_FROZEN before `pulp_wars-xv0t`) goes to every viewer with the tiles it has explored
     // (before or after the command), and is dropped when no tile is left; a
     // viewer that cannot see the freezing unit gets `unitId` null.
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9):
@@ -277,7 +277,7 @@ export function projectEventsV7(
       });
       continue;
     }
-    if (event.kind === "WATER_FROZEN") {
+    if (event.kind === "TILES_FROZEN") {
       const seen = (unitId: UnitId): boolean =>
         ownedBeforeOrAfter(unitId) ||
         beforeVisible.has(unitId) ||
@@ -285,12 +285,16 @@ export function projectEventsV7(
       const tiles = event.tiles.filter((at) =>
         coordVisible(beforeState, afterState, viewerId, at),
       );
-      if (tiles.length === 0) continue;
+      const snow = event.snow.filter((at) =>
+        coordVisible(beforeState, afterState, viewerId, at),
+      );
+      if (tiles.length === 0 && snow.length === 0) continue;
       projected.push({
         ...event,
         unitId:
           event.unitId !== null && seen(event.unitId) ? event.unitId : null,
         tiles,
+        snow,
       });
       continue;
     }
@@ -1043,7 +1047,7 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "SHIP_BOARDED":
       return [event.unitId, event.targetUnitId];
     // The frozen sea: projected before this switch; the freezing unit.
-    case "WATER_FROZEN":
+    case "TILES_FROZEN":
     case "ICE_CRACKED":
       return event.unitId === null ? [] : [event.unitId];
     case "UNIT_SPAWN_DISPLACED":

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r132" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r133" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -143,8 +143,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r129",
   "pulp-wars-poc-7r130",
   "pulp-wars-poc-7r131",
+  "pulp-wars-poc-7r132",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r132.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r133.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -379,12 +380,10 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BEAM_DOWN",
   "MIND_CONTROL",
   "TRACTOR_BEAM",
-  // The Ice Folk revision: the Sled's Bolas and the Ice Witch's Cold Snap.
-  "THROW_BOLAS",
+  // The Ice Folk revision: the Ice Witch's Cold Snap. (The Sled's
+  // `THROW_BOLAS` and the frozen sea's `FREEZE` retired with the one Freeze
+  // effect, `pulp_wars-xv0t`, 7r133: the later kinds' ordinals moved.)
   "COLD_SNAP",
-  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
-  // an Ice Folk land unit turns the water next to it to ice.
-  "FREEZE",
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): any
   // other faction's unit or ship breaks the ice next to it.
   "CRACK_ICE",
@@ -420,10 +419,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "TOSS",
   "STOMP",
   "BREAK_OFF",
-  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and the
-  // Mammoth's Stampede (after the giants' block, so no pinned neighbour of
-  // the earlier revisions moves).
-  "FROST_BOLT",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede (after the
+  // giants' block, so no pinned neighbour of the earlier revisions moves).
+  // The Ice Witch's `FROST_BOLT` retired with `pulp_wars-xv0t` (7r133).
   "STAMPEDE",
   // The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
   // sections 5.1 and 5.2): the Summoner's Sacrifice and Seize (after the
@@ -605,14 +603,15 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_REWARD_GRANTED",
   "UNIT_SPAWN_DISPLACED",
   "UNITS_RALLIED",
-  // Ice Folk Freeze (`pulp_wars-w49.37`): a Bolas, a Cold Snap, a Frost
-  // Bolt, a Frost Giant, Black Ice, Frostbite, or shards froze units (the
-  // Ice Folk revision's `UNITS_CHILLED`, in its place).
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Cold Snap, a Cold Wake, Frost
+  // Breath, or Black Ice froze units (the Ice Folk revision's
+  // `UNITS_CHILLED`, in its place).
   "UNITS_FROZEN",
-  // The naval branch (section 8.4): a Freeze or a Cold Snap made ice.
-  // (`ICE_MELTED` and `UNITS_CRUSHED` went with Icebound,
+  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Cold Snap, a Cold
+  // Wake, or a border freeze made ice or laid Snow (`WATER_FROZEN` before,
+  // in its place). (`ICE_MELTED` and `UNITS_CRUSHED` went with Icebound,
   // `pulp_wars-s55m.1`.)
-  "WATER_FROZEN",
+  "TILES_FROZEN",
   // The frozen sea redesign (section 2.9): a Crack Ice broke or cracked a
   // tile.
   "ICE_CRACKED",
@@ -1591,6 +1590,16 @@ export interface GameStateV7 {
    */
   readonly ice: readonly IceTileV7[];
   /**
+   * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
+   * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.2): the stored Snow,
+   * the land tiles a freeze turned to Snow, sorted by (y, x), at most one
+   * entry per tile. Every entry lies on a land tile (not a Rift) that is no
+   * player's territory: stored Snow melts the moment its tile becomes any
+   * player's territory. Always empty in a match whose setup has no ICE_FOLK
+   * seat.
+   */
+  readonly snow: readonly CoordV7[];
+  /**
    * Map curiosities (section 10.2; round 2, section 32.2): one entry per
    * neutral unit on the board (a unit owned by `NEUTRAL_OWNER_ID_V7`),
    * sorted by `unitId`. Always
@@ -2082,7 +2091,7 @@ export interface BurrowedEntryV7 {
  * the unit `unitId` is Frozen. `turnsLeft` is the number of its owner's End
  * Turns until it thaws: 1 for a unit frozen outside its owner's turn (it
  * stays Frozen through that owner's next turn), 2 for one frozen during its
- * owner's own turn (Frostbite), which becomes 1 at that End Turn.
+ * owner's own turn (Frostbite; Black Ice), which becomes 1 at that End Turn.
  */
 export interface FrozenStatusV7 {
   readonly unitId: UnitId;

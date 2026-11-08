@@ -92,7 +92,7 @@ describe("the warden: the idol stands (section 8.1)", () => {
     expect(idolStandsV7(withFrogsV7(state, [BEARER]), bearer)).toBe(false);
     const frozen: GameStateV7 = {
       ...state,
-      frozen: [{ unitId: bearer.id, turnsLeft: 2 }],
+      frozen: [{ unitId: bearer.id, turnsLeft: 1 }],
     };
     expect(idolStandsV7(frozen, bearer)).toBe(false);
     // A hurt bearer's idol still stands.

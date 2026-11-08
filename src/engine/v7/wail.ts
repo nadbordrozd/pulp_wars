@@ -18,11 +18,7 @@ import { fortificationPartsForUnitV7 } from "./combat";
 import { publicUnitIsDugInV7 } from "./dwarf";
 import { arePlayersHostileV7 } from "./economy";
 import type { CombatSplashEntryV7 } from "./events";
-import {
-  hiddenBlizzardPossibleV7,
-  isSnowV7,
-  unitOwnerIsIceFolkV7,
-} from "./ice-folk";
+import { isSnowV7, unitOwnerIsIceFolkV7 } from "./ice-folk";
 import { absorbHitV7, shieldOfV7 } from "./martian";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { tileAtV7 } from "./spatial-economy";
@@ -189,21 +185,12 @@ export function publicWailTargetsV7(
       shield: shieldOfV7(view.shields, unit.id),
     };
     const known = wailTargetV7(view, banshee, unit, facts);
-    // Section 10.10: a hidden Witch's Blizzard can only add Snow (never on
-    // water or a Rift); the target is flagged when that Snow changes it.
-    const withHiddenSnow =
-      !facts.snow &&
-      tile.biome !== null &&
-      tile.terrain !== "RIFT" &&
-      hiddenBlizzardPossibleV7(view, unit)
-        ? wailTargetV7(view, banshee, unit, { ...facts, snow: true })
-        : known;
-    targets.push({
-      ...known,
-      hiddenBlizzardPossible:
-        withHiddenSnow.damage !== known.damage ||
-        withHiddenSnow.shieldDamage !== known.shieldDamage,
-    });
+    // Section 10.10: a hidden Witch's Blizzard added Snow, so a target was
+    // flagged when that Snow changed it. The one Freeze effect
+    // (`pulp_wars-xv0t`, 7r133): the Blizzard lays no Snow, and it never
+    // halves a Wail, so no hidden Witch changes a Wail and no target is
+    // flagged (stored Snow is public).
+    targets.push({ ...known, hiddenBlizzardPossible: false });
   }
   return sortTargets(targets);
 }
