@@ -276,7 +276,9 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         "SUBMERSIBLES",
       ],
       // Retune 3: five hold the harbour (a concentrated strike is needed);
-      // the rest cross the ice for Coldharbour from the first round.
+      // the rest cross for Coldharbour from the first round (by sea since
+      // `pulp_wars-y242`, 7r132: no dwarf walks on the Ice Folk's ice, so
+      // the player's road is theirs alone).
       directive: {
         kind: "GUARD",
         zone: [{ x0: 10, y0: 10, x1: 12, y1: 12 }],

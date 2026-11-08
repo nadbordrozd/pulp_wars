@@ -192,6 +192,7 @@ export function rebakeTileLegalV7(
       // The frozen sea (naval branch section 8.3): nothing is re-baked on
       // ice (Crumbs never lie there).
       ice: false,
+      iceFolk: false,
     })
   )
     return false;

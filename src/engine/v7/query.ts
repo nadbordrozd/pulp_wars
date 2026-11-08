@@ -110,6 +110,8 @@ import {
   cityEconomicMiracleIncomeV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
   GATHER_PEARLS_V7,
+  unitKindWalksIceV7,
+  unitWalksOnIceV7,
 } from "../rules/ruleset-v7";
 import {
   attackGrantsEscapeV7,
@@ -1107,8 +1109,11 @@ function publicLandingTilesV7(
           ownerId: unit.ownerId,
           role: unit.role,
         }),
-        // The frozen sea: a transport may land on adjacent ice.
+        // The frozen sea: a transport may land on adjacent ice, only with
+        // a walker or a unit of the Ice Folk kind since `pulp_wars-y242`
+        // (7r132; no Ice Folk unit embarks, so a walker in practice).
         ice: isIceAtV7(view, tile.at),
+        iceFolk: unitKindWalksIceV7(view, unit),
       }) &&
       // Nor does a surfaced Dwarf rider (a Sabretooth was refused too until
       // any unit could capture).
@@ -2571,6 +2576,7 @@ function publicTunnelTileV7(
       navigation: false,
       mountainBorn: mobility.mountainBorn,
       ice: false,
+      iceFolk: false,
     }) &&
     !tileOccupiedV7(view, at) &&
     !view.treasureChests.some((chest) => same(chest, at)) &&
@@ -3765,6 +3771,7 @@ function publicRebakeFactsV7(
           navigation: player.researchedTechs.includes("NAVIGATION"),
           mountainBorn: mechanics.mountainBorn,
           ice: false,
+          iceFolk: false,
         }) ||
         (tile.territoryOwnerId !== null &&
           tile.territoryOwnerId !== player.id &&
@@ -6339,7 +6346,9 @@ function publicBooJumpV7(
   const tile = tileAtView(view, to);
   if (tile === undefined) return "STAYS";
   if (!tile.explored) return "UNKNOWN";
-  const ice = isIceAtV7(view, to);
+  // `pulp_wars-y242` (7r132): ice is ground only for a unit that walks on
+  // it.
+  const ice = isIceAtV7(view, to) && unitWalksOnIceV7(view, victim);
   if (
     tile.site !== null ||
     (tile.biome === null && !ice) ||
@@ -6358,6 +6367,7 @@ function publicBooJumpV7(
       navigation: false,
       mountainBorn: false,
       ice: false,
+      iceFolk: false,
     })
   )
     return "STAYS";
@@ -7397,6 +7407,7 @@ export function previewGateV7(
             navigation: ownTechs.includes("NAVIGATION"),
             mountainBorn,
             ice: isIceAtV7(view, at),
+            iceFolk: unitKindWalksIceV7(view, occupant),
           })
         );
       },
@@ -7475,6 +7486,7 @@ export function previewRewardArrivalV7(
         navigation: viewer.researchedTechs.includes("NAVIGATION"),
         mountainBorn: mechanics.mountainBorn,
         ice: false,
+        iceFolk: false,
       })
     )
       return false;
@@ -7512,6 +7524,7 @@ export function previewRewardArrivalV7(
           movementMode: unitMovementModeV7(view, occupant),
           afloat: isAfloatFormV7(occupant.form),
           ice: isIceAtV7(view, at),
+          iceFolk: unitKindWalksIceV7(view, occupant),
           engineering,
           navigation: own && viewer.researchedTechs.includes("NAVIGATION"),
           mountainBorn: unitIsMountainBornV7(view, occupant),
@@ -12814,6 +12827,9 @@ function publicCombatPreviewCore(
     !riftAtV7(view.board, target.at) &&
     // Flyers over water (`pulp_wars-7pi5`): nor onto open water.
     !openWaterAtV7(view, target.at) &&
+    // `pulp_wars-y242` (7r132): nor onto ice for a unit that cannot walk on
+    // it (the ice on an explored tile is public).
+    !(isIceAtV7(view, target.at) && !unitWalksOnIceV7(view, attacker)) &&
     publicAdvanceDestinationLegal(view, attacker, target.at) &&
     // The Ice Folk revision section 7.7: never onto a foreign center.
     advanceSiteAllowedV7(
@@ -13299,8 +13315,10 @@ function publicBounceStateV7(
       engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
       navigation: view.viewer.researchedTechs.includes("NAVIGATION"),
       mountainBorn: unitIsMountainBornV7(view, attacker),
-      // The frozen sea: a land-form attacker may be bounced onto ice.
+      // The frozen sea: a land-form attacker may be bounced onto ice (a
+      // ground one of another kind than the Ice Folk never, `pulp_wars-y242`).
       ice: isIceAtV7(view, destination),
+      iceFolk: unitKindWalksIceV7(view, attacker),
     }) &&
     !tileOccupiedV7(view, destination, attacker.id) &&
     !(
@@ -13817,6 +13835,7 @@ function publicAdvanceDestinationLegal(
         navigation: false,
         mountainBorn: unitIsMountainBornV7(view, attacker),
         ice: false,
+        iceFolk: false,
       }))
   );
 }
@@ -13852,10 +13871,13 @@ function publicPushState(
   // exact; the Juggernaut-role Push keeps its historical detection rule.
   if (!attackIsChargeV7(view, attacker) && !publicDetectionCovers(view, behind))
     return "UNKNOWN_BEHIND_FOG";
-  // The frozen sea (naval branch section 8.3): ice is ground for a
-  // land-form unit and closed to a unit afloat (the ice on an explored tile
-  // is public).
-  const ice = isIceAtV7(view, behind);
+  // The frozen sea (naval branch section 8.3): ice is closed to a unit
+  // afloat and, since `pulp_wars-y242` (7r132), ground only for a land-form
+  // unit that walks on ice; for every other land-form unit it is the water
+  // it is (the ice on an explored tile is public).
+  const ice =
+    isIceAtV7(view, behind) &&
+    (defender.form !== "LAND" || unitWalksOnIceV7(view, defender));
   const water = tile.biome === null && !ice;
   if (
     (defender.form === "LAND" && water) ||
@@ -13882,6 +13904,7 @@ function publicPushState(
       navigation: false,
       mountainBorn: false,
       ice: false,
+      iceFolk: false,
     })
   )
     return "BLOCKED";
@@ -13939,10 +13962,12 @@ function publicKnockbackState(
   const tile = tileAtView(view, behind);
   if (tile === undefined) return "BLOCKED";
   if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
-  // The frozen sea (naval branch section 8.3): ice is ground for a
-  // land-form unit and closed to a unit afloat (the ice on an explored tile
-  // is public).
-  const ice = isIceAtV7(view, behind);
+  // The frozen sea (naval branch section 8.3): ice is closed to a unit
+  // afloat and, since `pulp_wars-y242` (7r132), ground only for a land-form
+  // unit that walks on ice (the ice on an explored tile is public).
+  const ice =
+    isIceAtV7(view, behind) &&
+    (isAfloatFormV7(defender.form) || unitWalksOnIceV7(view, defender));
   const water = tile.biome === null && !ice;
   if (
     isAfloatFormV7(defender.form) !== water ||
@@ -13963,6 +13988,7 @@ function publicKnockbackState(
       navigation: false,
       mountainBorn: false,
       ice: false,
+      iceFolk: false,
     })
   )
     return "BLOCKED";

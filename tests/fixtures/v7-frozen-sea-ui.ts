@@ -84,7 +84,9 @@ export function frozenFreezeUiFixtureV7(
  * to step ashore) and a Snow Golem (it walks; the Sabretooth until the
  * Frost Wyrm, a flyer, took its slot) at its head. With
  * `slipper`, seat 0 is Human and seat 1 the Ice Folk whose ice it is: the
- * viewer's Fighter slips, its Move ending on the first ice tile.
+ * viewer's Fighter may not step onto the ice (only the Ice Folk walk on ice
+ * since `pulp_wars-y242`, 7r132; it slipped onto the first tile before), so
+ * the ice tile beside it is Crack Ice alone.
  */
 export function frozenSlideUiFixtureV7(
   options: { readonly slipper?: boolean; readonly sled?: boolean } = {},

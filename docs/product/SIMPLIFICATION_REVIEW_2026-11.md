@@ -23,8 +23,11 @@
 >   17 for the Moon Gun (it fires only to tiles the unit could not walk
 >   to); the Summoner's Tentacle also replaces a Move on a road tile both
 >   reach.
-> - **Queued** in `pulp_wars-y242`: Crack Ice (finding 4), as "only the Ice
->   Folk walk on ice".
+> - **Done in `7r132`** (`pulp_wars-y242`): finding 4 (Crack Ice), by
+>   "only the Ice Folk walk on ice" rather than the proposal below: a
+>   ground unit of another faction never enters ice, so a free ice tile
+>   beside it means Crack Ice alone, and a walker or flyer (which crosses
+>   ice) never cracks it, so its ice tile is a plain Move.
 > - **Kept by the user's choice:** Sugar Rush (finding 11: "it also boosts
 >   your attack").
 > - **Kept as legitimate choices:** the Engineer (finding 6), the summons,

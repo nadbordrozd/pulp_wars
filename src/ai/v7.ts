@@ -55,6 +55,7 @@ import {
   GATHER_PEARLS_V7,
   GATHER_PEARLS_GAIN_V7,
   SEIZE_BROKEN_HP_V7,
+  unitWalksOnIceV7,
 } from "../engine/rules/ruleset-v7";
 import {
   attack2AfterToothacheV7,
@@ -82,7 +83,6 @@ import {
   unitAvoidsForeignSitesV7,
   unitGlidesV7,
   unitIgnoresZocStopsV7,
-  unitOwnerIsIceFolkV7,
 } from "../engine/v7/ice-folk";
 import {
   publicDiveDestinationsForUnitV7,
@@ -11789,7 +11789,8 @@ function* publicThreatenedTilesWorkV7(
           continue;
         const passedOnly =
           occupants.length > 0 ||
-          (mode !== "GROUND" && !machineMayEndForThreatV7(tile, mode)) ||
+          (mode !== "GROUND" &&
+            !machineMayEndForThreatV7(tile, mode, isIceAtV7(view, tile.at))) ||
           (avoidsSites &&
             tile.explored &&
             tile.site !== null &&
@@ -11828,11 +11829,6 @@ function* publicThreatenedTilesWorkV7(
             mountainBorn: unitIsMountainBornV7(view, unit),
             ignoresForest: false,
             roadEdge,
-            // The frozen sea (`pulp_wars-5ti.3`): known ice is ground on
-            // which another faction's ground unit slips (an Ice Folk unit
-            // slides instead, above).
-            ice: isIceAtV7(view, tile.at),
-            iceFolk: unitOwnerIsIceFolkV7(view, unit),
           });
         const snowStop =
           deepSnow && !roadEdge && tile.explored && tile.snow === true;
@@ -11985,11 +11981,14 @@ function publicMovementTilePossible(
     publicPlayersAllied(view, unit.ownerId, tile.territoryOwnerId)
   )
     return false;
-  // The frozen sea (`pulp_wars-5ti.3`): known ice is ground for a land-form
-  // unit and closed to a unit afloat.
+  // The frozen sea (`pulp_wars-5ti.3`): known ice is closed to a unit
+  // afloat; only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): it is
+  // ground for a land-form unit of the Ice Folk kind and for a walker or
+  // flyer, and closed to a ground unit of every other kind (the slip
+  // before), so no route of such a unit crosses it.
   const ice = isIceAtV7(view, tile.at);
   if (unit.form === "LAND") {
-    if (ice) return true;
+    if (ice) return unitWalksOnIceV7(view, unit);
     // The Martian revision: a walker or flyer enters a Mountain without
     // Engineering and crosses Shallow Water (Deep Water needs its owner's
     // private Navigation, so the estimate leaves it out).
@@ -12024,16 +12023,18 @@ function publicMovementTilePossible(
 /**
  * The Martian revision: whether a walker or flyer can end a Move (and so
  * attack) on `tile`: a walker land only (a Move that ends on water embarks
- * it); a flyer also water, where it stays in the air (`pulp_wars-7pi5`,
- * `7r116`). A flyer may end on any settlement center since any unit can
- * capture (`pulp_wars-ke95`).
+ * it) and ice (`ice`: it stands there, the walkers being among the few
+ * that walk on ice since `pulp_wars-y242`, 7r132); a flyer also water,
+ * where it stays in the air (`pulp_wars-7pi5`, `7r116`). A flyer may end on
+ * any settlement center since any unit can capture (`pulp_wars-ke95`).
  */
 function machineMayEndForThreatV7(
   tile: PlayerViewV7["board"]["tiles"][number],
   mode: "GROUND" | "STRIDE" | "FLY",
+  ice: boolean,
 ): boolean {
   if (!tile.explored) return false;
-  if (tile.biome === null) return mode === "FLY";
+  if (tile.biome === null) return mode === "FLY" || ice;
   // The Rift (RULESET_7_RIFT.md section 4): only a flyer ends on a Rift.
   return tile.terrain !== "RIFT" || mode === "FLY";
 }

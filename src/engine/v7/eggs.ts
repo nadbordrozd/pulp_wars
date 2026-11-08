@@ -153,6 +153,7 @@ export function isNestTileV7(
       mountainBorn: false,
       // The frozen sea: an Egg never lies on ice (a nest is land).
       ice: false,
+      iceFolk: false,
     }) &&
     // The Dwarf revision section 5.3: the occupancy predicate.
     !tileOccupiedV7(state, at) &&
@@ -198,6 +199,7 @@ export function publicNestTilesV7(
         navigation: false,
         mountainBorn: false,
         ice: false,
+        iceFolk: false,
       }) &&
       // The Dwarf revision section 5.3: the occupancy predicate.
       !tileOccupiedV7(view, at) &&

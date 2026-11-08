@@ -19,7 +19,6 @@ import {
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
   SKATE_TRAIL_LABEL_V7,
-  SLIP_MOVE_LABEL_V7,
 } from "../../src/render/frozen-sea-presentation-v7";
 import {
   boardPlan,
@@ -376,7 +375,7 @@ describe("moving on ice", () => {
     app.destroy();
   });
 
-  it("the Snow Golem skates too: trails on the ice, never a slip", () => {
+  it("the Snow Golem skates too: trails on the ice", () => {
     const { host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     host.callbacks?.onSelection({
       kind: "UNIT",
@@ -387,14 +386,10 @@ describe("moving on ice", () => {
     );
     expect(onIce.length).toBeGreaterThan(1);
     expect(onIce.some((target) => target.slide !== undefined)).toBe(true);
-    for (const target of onIce) expect(target.slip).toBeUndefined();
-    expect(
-      document.querySelector('.v7-selection-dock [data-landing-marker="slip"]'),
-    ).toBeNull();
     app.destroy();
   });
 
-  it("another faction's unit is told that its Move ends on the ice", () => {
+  it("another faction's ground unit is offered no Move onto the ice (pulp_wars-y242; it slipped onto it before)", () => {
     const { host, app, unitAt } = rig(
       frozenSlideUiFixtureV7({ slipper: true }),
     );
@@ -403,16 +398,14 @@ describe("moving on ice", () => {
       unitId: unitAt(FROZEN_UI_V7.bridgeHead).id,
     });
     const first = required(FROZEN_UI_V7.bridge[0]);
-    const slip = required(
-      boardPlan(host).targets.find((target) => at(target.at) === at(first)),
-    );
-    expect(slip.slip).toBe(true);
-    expect(slip.semanticLabel).toBe(SLIP_MOVE_LABEL_V7);
     expect(
-      requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-landing-marker="slip"]',
-      ).textContent,
-    ).toBe(SLIP_MOVE_LABEL_V7);
+      boardPlan(host).targets.some(
+        (target) => target.family === "MOVE" && at(target.at) === at(first),
+      ),
+    ).toBe(false);
+    expect(
+      document.querySelector(".v7-selection-dock [data-landing-marker]"),
+    ).toBeNull();
     // Help stays the short "How to play" (bead pulp_wars-2yc.39): the
     // legend above is where the ice explains itself.
     requiredButton("compact-menu").click();

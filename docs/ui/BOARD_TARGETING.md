@@ -62,7 +62,11 @@ The dock never lists one button, portrait or chip per target.
   only to tiles the unit could not walk to, so a tile it can reach is a
   Move; and a Summoner's Tentacle replaces a Move on a tile both reach
   (a road tile 2 or 3 away), as a Tunnel does. Recover is no command any
-  more: an idle unit recovers at End Turn.
+  more: an idle unit recovers at End Turn. Since `7r132` (`pulp_wars-y242`)
+  only the Ice Folk walk on ice: a ground unit of another faction never
+  enters ice, so a free ice tile beside it means Crack Ice alone, and a
+  walker or flyer, which crosses ice, never cracks it, so its ice tile is a
+  plain Move.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is made with the armed button, or, unarmed,
@@ -517,8 +521,9 @@ faction may crack it.
   reads "Icebound" (the target's note counts them). A click, a tap or
   Enter freezes; Escape, Cancel or another selection disarms; Tab steps
   through the tiles. The aiming panel holds the "?" and Cancel only.
-- **Crack Ice** (every unit and ship of another faction; never the Ice
-  Folk) has **one button** with the ice-pick icon
+- **Crack Ice** (every ground unit and ship of another faction; never the
+  Ice Folk, and since `7r132` never a walker or flyer, which walk on ice)
+  has **one button** with the ice-pick icon
   (`ICON:ACTION:CRACK_ICE`) while ice it may break lies next to the unit.
   Armed, each tile the engine offers a `CRACK_ICE` on is a target in the
   **Attack** style (red: it harms the owner's work), labelled from
@@ -527,7 +532,9 @@ faction may crack it.
   crack). A tile that holds an own or allied frozen ship wears the
   **Help** style instead (lavender, the colour of what it does to the
   ship): **"Free the ship"**, or "Crack · 1 more frees it" on thick ice.
-  Unarmed, each such tile carries the Crack Ice badge (section 1.1). The
+  Unarmed, each such tile carries the Crack Ice badge (section 1.1), alone:
+  since `7r132` (`pulp_wars-y242`) no Move of the unit reaches ice, so the
+  tile never needs the chooser (a Move and a Crack shared it before). The
   panel holds the "?" (the rule in one sentence) and Cancel; Escape steps
   out. Disabled, the button gives the first failing rule: "Frozen: it
   cannot act this turn", "Already acted this turn", "It moved this turn"
@@ -578,13 +585,13 @@ faction may crack it.
   pixels, 10 at full weight); the dock's legend reads "Slide: it stops
   where the ice ends". The path is the command's own. A unit that does not
   slide (the Sabretooth, a walker, a flyer) has plain Moves.
-- **The slip.** A ground unit of another faction is offered the ice tile
-  next to it as an ordinary Move; it takes the same pale outline and the
-  legend "Ice: your Move ends here", or "Ice: your Move ends here (Black
-  Ice freezes)" once the ice's owner has been seen to freeze a unit with
-  Black Ice in this match (its research is private; the public freeze
-  shows it). A Move that stops on ice the unit did not know of is
-  announced ("Ice: the Move ended there").
+- **No slip** (since `7r132`, `pulp_wars-y242`: only the Ice Folk walk on
+  ice). A ground unit of another faction is offered no Move onto ice, so
+  it has no ice Move mark and no legend ("Ice: your Move ends here" and its
+  Black Ice variant are gone); its ice tiles carry the Crack Ice badge. A
+  Move that stops at the edge of ice the unit did not know of is announced
+  ("Ice: the Move stopped at its edge"). The ice chip's tooltip and Help
+  say who goes onto ice: Ice Folk units and units that fly or stride.
 - **An icebound ship** is no target of its owner's: the engine offers it
   no Move, Attack or Board. It wears the pack ice at its hull's foot and a
   pill with the crush it takes next ("−3", "Sinks"; never drawn smaller
@@ -970,7 +977,8 @@ for tools; it is never read out.
   command, Escape and Cancel disarm, Tab and Enter on the real board
   host, the reasons), the Witch's ring (quiet, prominent on focus, cast on
   press, Deep Water only with Pack Ice), the slide and its arrow, the
-  Sabretooth's plain Moves, the slip, an icebound ship's chips, reason and
+  Sabretooth's plain Moves, no Move onto ice for another faction's ground
+  unit (`7r132`; the slip before), an icebound ship's chips, reason and
   crush, the melting stages and permanent ice. The guard test sweeps five
   frozen-sea scenes. The naval browser smoke mounts the fixture app in
   the CHIBI look, arms Freeze and picks its tile on the board at desktop

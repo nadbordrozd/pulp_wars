@@ -104,6 +104,7 @@ import {
   GATHER_PEARLS_V7,
   GATHER_PEARLS_GAIN_V7,
   RICOCHET_DIVISOR_V7,
+  unitKindWalksIceV7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
 import { rewardArrivalV7, rewardUnitRoleV7 } from "./reward-arrival";
@@ -1038,6 +1039,7 @@ export function missionArrivalTileV7(
           navigation,
           mountainBorn: mechanics.mountainBorn,
           ice: false,
+          iceFolk: false,
         });
   };
   // Never beside a hostile unit (`pulp_wars-v642.5`): a wave written onto
@@ -1231,6 +1233,7 @@ function resolveGateTraversalV7(
           navigation: techs.includes("NAVIGATION"),
           mountainBorn,
           ice: isIceAtV7(state, at),
+          iceFolk: unitKindWalksIceV7(state, occupant),
         })
       );
     });
@@ -3936,8 +3939,11 @@ function applyDisembark(
         role: unit.role,
       }),
       // The frozen sea (naval branch section 8.3): a transport may land on
-      // adjacent ice.
+      // adjacent ice; since `pulp_wars-y242` (7r132) only a walker does (a
+      // ground unit of another kind than the Ice Folk never enters ice, and
+      // no Ice Folk unit embarks).
       ice: isIceAtV7(state, command.at),
+      iceFolk: unitKindWalksIceV7(state, unit),
     }) ||
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
@@ -6495,6 +6501,7 @@ function treasureKnightPlacement(
           mountainBorn: mechanics.mountainBorn,
           // The frozen sea: no treasure unit is placed on ice.
           ice: false,
+          iceFolk: false,
         }) ||
         // The Dwarf revision section 5.3: the occupancy predicate.
         tileOccupiedV7(state, candidate) ||
@@ -7083,6 +7090,7 @@ function resolveAttackExchangeV7(
             // Only a Mountain or a Rift reaches here (an advance onto ice
             // is an advance onto water terrain, admitted above).
             ice: false,
+            iceFolk: false,
           })));
   // The Candy revision section 8: the Bounce is read after the advance, so
   // an advance the resolution refuses is refused for the Bounce too.
@@ -10735,6 +10743,7 @@ function rewardCellLegalV7(
       mountainBorn: unitIsMountainBornV7(state, unit),
       // A reward cell is land (its biome is not null).
       ice: false,
+      iceFolk: false,
     })
   )
     return false;

@@ -176,6 +176,7 @@ export function tunnelTileLegalV7(
       mountainBorn: unitIsMountainBornV7(state, unit),
       // A tunnel tile is land (its biome is not null), never ice.
       ice: false,
+      iceFolk: false,
     }) ||
     tileOccupiedV7(state, at) ||
     state.treasureChests.some((chest) => same(chest, at)) ||

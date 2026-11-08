@@ -198,9 +198,9 @@ export function batEscapeTilesV7(
 
 /**
  * Bat Escape: whether the flight may end on a tile with these facts: an
- * explored land tile (ice included) the unit could enter on foot (a
- * Mountain needs its owner's Engineering; never water or a Rift), with no
- * curiosity. Units, mounds, and Barricades are refused by the ordinary
+ * explored land tile the unit could enter on foot (a Mountain needs its
+ * owner's Engineering; never water or a Rift, and since `pulp_wars-y242`,
+ * 7r132, never ice: a Vampire is no Ice Folk unit), with no curiosity. Units, mounds, and Barricades are refused by the ordinary
  * movement rules.
  */
 export function batEscapeLandingAllowedV7(facts: {
@@ -222,6 +222,7 @@ export function batEscapeLandingAllowedV7(facts: {
       navigation: false,
       mountainBorn: facts.mountainBorn,
       ice: facts.ice,
+      iceFolk: false,
     })
   );
 }

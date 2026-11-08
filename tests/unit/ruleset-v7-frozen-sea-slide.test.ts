@@ -34,7 +34,8 @@ const NO_GLACIER = NAVAL_TECHS_V7.filter((tech) => tech !== "SUBMERSIBLES");
 // The naval branch, engine step II (`pulp_wars-5ti.3`,
 // docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3 and 8.7): ice is
 // ground for land-form units and closed to ships; every other ground unit
-// slips (its Move ends on entering ice). Ice Folk movement
+// slipped (its Move ended on entering ice) until `pulp_wars-y242` (7r132):
+// since then only the Ice Folk, walkers, and flyers enter ice. Ice Folk movement
 // (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the forced slide before): an
 // Ice Folk unit skates (each step onto ice costs half a Move point), the
 // Sled and the Snow Hunter glide free straight on along the ice (Runners),
@@ -467,7 +468,7 @@ describe("Runners (Ice Folk movement, pulp_wars-s55m.2)", () => {
   });
 });
 
-describe("Slip (section 8.7)", () => {
+describe("Only the Ice Folk walk on ice (pulp_wars-y242, 7r132; the slip before)", () => {
   const GROUND: readonly FactionIdV7[] = [
     "ORIGINAL",
     "UNDEAD",
@@ -478,7 +479,7 @@ describe("Slip (section 8.7)", () => {
     "CANDY",
   ];
 
-  it("a ground unit of every other faction ends its Move on entering ice", () => {
+  it("a ground unit of every other faction never enters ice", () => {
     for (const faction of GROUND) {
       const state = frozenArenaV7({
         factions: [faction, "ICE_FOLK"],
@@ -488,45 +489,41 @@ describe("Slip (section 8.7)", () => {
       const from = { x: 2, y: 2 };
       const unit = navalUnitAtV7(state, from);
       if (unitMovementModeV7(state, unit) !== "GROUND") continue;
-      expect(
-        rejectV7(state, 0, move(state, from, lineV7(from, 0, 1, 2))),
-        faction,
-      ).toEqual({
-        code: "MOVEMENT_ILLEGAL",
-        params: { reason: "ICE_STOPS_MOVE" },
-      });
+      for (const path of [[{ x: 2, y: 3 }], lineV7(from, 0, 1, 2)])
+        expect(rejectV7(state, 0, move(state, from, path)), faction).toEqual({
+          code: "MOVEMENT_ILLEGAL",
+          params: { reason: "ICE_FORBIDDEN" },
+        });
       const offered = destinations(state, from);
-      expect(offered, faction).toContainEqual({ x: 2, y: 3 });
+      expect(offered, faction).not.toContainEqual({ x: 2, y: 3 });
       expect(offered, faction).not.toContainEqual({ x: 2, y: 4 });
-      const result = acceptV7(state, 0, move(state, from, [{ x: 2, y: 3 }]));
-      expect(navalUnitV7(result.state, unit.id), faction).toMatchObject({
-        at: { x: 2, y: 3 },
-        form: "LAND",
-      });
     }
   });
 
-  it("crossing a bridge takes one tile a turn; leaving ice costs a full point", () => {
+  it("a unit of another kind already on ice may step off it, never onto more ice", () => {
     const state = frozenArenaV7({
       factions: ["ORIGINAL", "ICE_FOLK"],
-      units: [{ seat: 0, role: "KNIGHT", at: { x: 2, y: 4 } }],
+      units: [{ seat: 0, role: "KNIGHT", at: { x: 2, y: 3 } }],
       ice: bridge(2).map((entry) => ({ ...entry, seat: 1 as const })),
     });
-    const from = { x: 2, y: 4 };
-    // On the bridge the only steps are onto the next ice tiles.
-    expect(destinations(state, from)).toEqual(
-      sorted([
-        { x: 2, y: 3 },
-        { x: 2, y: 5 },
+    const from = { x: 2, y: 3 };
+    // Ashore only: the bridge beyond it is closed.
+    const offered = destinations(state, from);
+    expect(offered).not.toContainEqual({ x: 2, y: 4 });
+    expect(offered).toEqual(
+      expect.arrayContaining([
+        { x: 1, y: 2 },
+        { x: 2, y: 2 },
+        { x: 3, y: 2 },
       ]),
     );
-    // From the last ice tile the unit steps ashore and may go on.
-    const edge = patchFrozenUnitV7(state, navalUnitAtV7(state, from).id, {
-      at: { x: 2, y: 3 },
+    const knight = navalUnitAtV7(state, from);
+    expect(validateMovementPathV7(state, knight, [{ x: 2, y: 4 }])).toEqual({
+      legal: false,
+      reason: "ICE_FORBIDDEN",
     });
-    const knight = navalUnitAtV7(edge, { x: 2, y: 3 });
     expect(
-      validateMovementPathV7(edge, knight, [
+      validateMovementPathV7(state, knight, [
         { x: 2, y: 2 },
         { x: 2, y: 1 },
       ]),

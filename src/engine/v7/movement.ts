@@ -15,6 +15,7 @@ import {
   terrainStopsMoveV7,
   unitFliesV7,
   unitIsMountainBornV7,
+  unitKindWalksIceV7,
   unitMovementModeV7,
   unitDeepWaterMoveV7,
   unitIsSummonedV7,
@@ -56,7 +57,6 @@ import {
   iceIndexSetV7,
   unitGlidesThroughZocV7,
   unitHasRunnersV7,
-  unitKindWalksIceV7,
   unitSkatesV7,
 } from "./ice";
 import { tileAtV7 } from "./spatial-economy";
@@ -121,10 +121,11 @@ export type MovementFailureReasonV7 =
   // only on an explored land tile the Vampire may stand on, with no
   // curiosity.
   | "BAT_ESCAPE_LANDING"
-  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.7): a
-  // path that continues past an ice tile a slipping unit entered. (The
-  // forced slide's `SLIDE_FORCED` is gone with `pulp_wars-s55m.2`.)
-  | "ICE_STOPS_MOVE"
+  // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): a step of a
+  // ground unit of another kind onto known ice. (The slip's
+  // `ICE_STOPS_MOVE` went with it; the forced slide's `SLIDE_FORCED` with
+  // `pulp_wars-s55m.2`.)
+  | "ICE_FORBIDDEN"
   // Map curiosities round 2 (section 28.2): a Dimensional Gate ends every
   // Move that enters it, so a path cannot continue past one.
   | "GATE_STOPS_MOVE"
@@ -173,7 +174,10 @@ export type MovementPathResultV7 =
           | "MOUND"
           // Dwarf crowd control: a Barricade the mover did not know of.
           | "BARRICADE"
-          // The frozen sea: ice a slipping unit had not known before.
+          // The frozen sea: ice a ground unit of another kind than the
+          // Ice Folk had not known before, which it may not enter
+          // (`pulp_wars-y242`, 7r132; it stood on that ice before, the
+          // slip).
           | "ICE";
       } | null;
     }
@@ -341,8 +345,9 @@ function validateMovementPathCoreV7(
   let currentSnow = snowAt(current);
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3
   // and 8.7): ice is read once, from the state before the command. It is
-  // ground for a land-form unit and closed to a unit afloat; another
-  // faction's ground unit slips (its Move ends there). Ice Folk movement
+  // ground for a land-form unit of the Ice Folk kind and for a walker or
+  // flyer, and closed to a unit afloat and (`pulp_wars-y242`, 7r132; the
+  // slip before) to a ground unit of any other kind. Ice Folk movement
   // (`pulp_wars-s55m.2`, 7r124; the forced slide before): an Ice Folk unit
   // skates (each step onto ice costs half), Runners glide straight on along
   // ice for free, and the Sled glides on through zones of control.
@@ -574,6 +579,7 @@ function validateMovementPathCoreV7(
               navigation,
               mountainBorn,
               ice: stepIce,
+              iceFolk: iceFolkKind,
             })
         : !canEnterTerrainV7({
             terrain: tile.terrain,
@@ -583,7 +589,14 @@ function validateMovementPathCoreV7(
             navigation,
             mountainBorn: false,
             ice: stepIce,
+            iceFolk: false,
           });
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): a ground
+    // unit of another kind never enters ice (the slip before). Known ice
+    // rejects the Move; ice on a tile it had not explored before the
+    // command interrupts it there (reason `ICE`).
+    const iceForbidden =
+      stepIce && unit.form === "LAND" && mode === "GROUND" && !iceFolkKind;
     // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape lands
     // only on a land tile it knew before the command, may stand on, and
     // that holds no curiosity.
@@ -641,7 +654,11 @@ function validateMovementPathCoreV7(
       if (occupantVisible || (engineeringRequired && wasKnownBeforeCommand))
         return {
           legal: false,
-          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
+          reason: occupied
+            ? "OCCUPIED"
+            : iceForbidden
+              ? "ICE_FORBIDDEN"
+              : "ENGINEERING_REQUIRED",
         };
       const entered = lastFreeEnteredPath(
         state,
@@ -659,7 +676,11 @@ function validateMovementPathCoreV7(
         revealed: unique(revealed),
         interruption: {
           at: step,
-          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
+          reason: occupied
+            ? "OCCUPIED"
+            : iceForbidden
+              ? "ICE"
+              : "ENGINEERING_REQUIRED",
         },
       };
     }
@@ -690,18 +711,12 @@ function validateMovementPathCoreV7(
     // unit by a Mountain.
     // A hop's landing is never a Road edge (the Candy redesign, 7.7).
     const roadEdge = currentRoadNode && stepRoadNode && jumped === null;
-    // The frozen sea section 8.7: slip (a ground unit of another kind ends
-    // its Move on entering ice).
-    const iceStops =
-      stepIce && unit.form === "LAND" && mode === "GROUND" && !iceFolkKind;
     const groundStops = terrainStopsMoveV7({
       terrain: tile.terrain,
       movementMode: mode,
       mountainBorn,
       ignoresForest,
       roadEdge,
-      ice: stepIce && unit.form === "LAND",
-      iceFolk: iceFolkKind,
     });
     // The Ice Folk revision section 6.2 (3): deep snow, waived by a Road edge.
     const snowStops = snowStopped && stepSnow && !roadEdge;
@@ -729,26 +744,6 @@ function validateMovementPathCoreV7(
     currentRoadNode = stepRoadNode;
     currentSnow = stepSnow;
     if (stops && index < path.length - 1) {
-      // The frozen sea: ice a slipping unit had not known before the
-      // command interrupts the Move there instead of rejecting it.
-      if (iceStops && wasExplored && !wasKnownBeforeCommand) {
-        const entered = lastFreeEnteredPath(
-          state,
-          unit,
-          traversedPath,
-          ownSitesOnly,
-        );
-        return {
-          legal: true,
-          destination: entered.at(-1) ?? unit.at,
-          traversedPath: entered,
-          spentPoints2,
-          stopped: true,
-          explored,
-          revealed: unique(revealed),
-          interruption: { at: step, reason: "ICE" },
-        };
-      }
       // Section 6.5: Snow the mover could not know about (a hidden Witch's
       // Blizzard) interrupts the Move there instead of rejecting it. Every
       // Blizzard tile is next to its Witch, so this Move usually meets her
@@ -800,19 +795,13 @@ function validateMovementPathCoreV7(
           ? "UNEXPLORED_INTERMEDIATE"
           : gateStops
             ? "GATE_STOPS_MOVE"
-            : iceStops
-              ? "ICE_STOPS_MOVE"
-              : mode === "GROUND" &&
-                  tile.terrain === "MOUNTAIN" &&
-                  !mountainBorn
-                ? "MOUNTAIN_STOPS_MOVE"
-                : mode === "GROUND" &&
-                    tile.terrain === "FOREST" &&
-                    !ignoresForest
-                  ? "FOREST_STOPS_MOVE"
-                  : snowStops
-                    ? "SNOW_STOPS_MOVE"
-                    : "ZOC_STOPS_MOVE",
+            : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
+              ? "MOUNTAIN_STOPS_MOVE"
+              : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
+                ? "FOREST_STOPS_MOVE"
+                : snowStops
+                  ? "SNOW_STOPS_MOVE"
+                  : "ZOC_STOPS_MOVE",
       };
     }
     if (stops)
@@ -1363,7 +1352,7 @@ function validatePlayerMovementPathCoreV7(
   };
   let currentSnow = publicSnowAt(current);
   // The frozen sea (naval branch sections 8.3 and 8.7): the ice on explored
-  // tiles is public, so skating, Runners, and slips are exact here (Ice
+  // tiles is public, so skating, Runners, and the ice refusal are exact here (Ice
   // Folk movement, `pulp_wars-s55m.2`). The same rules as the canonical
   // validation.
   const iceSet = context.ice;
@@ -1487,6 +1476,10 @@ function validatePlayerMovementPathCoreV7(
         (water && tile.terrain === "DEEP_WATER" && !navigation)
       )
         return { legal: false, reason: "ENGINEERING_REQUIRED" };
+      // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132), as the
+      // canonical validation: ice on an explored tile is public.
+      if (stepIce && unit.form === "LAND" && mode === "GROUND" && !iceFolkKind)
+        return { legal: false, reason: "ICE_FORBIDDEN" };
     }
     // `pulp_wars-1wy.3`: Glide is a step from Snow onto Snow, both ends from
     // the public Snow flags. Hidden Snow can only make the canonical step
@@ -1549,6 +1542,7 @@ function validatePlayerMovementPathCoreV7(
         mountainBorn,
         // A land tile (its biome is not null); ice is handled above.
         ice: false,
+        iceFolk: false,
       })
     )
       return { legal: false, reason: "ENGINEERING_REQUIRED" };
@@ -1579,9 +1573,6 @@ function validatePlayerMovementPathCoreV7(
     const stepRoadNode = roads && isUsablePublicRoadNodeV7(view, tile, context);
     const roadEdge = currentRoadNode && stepRoadNode && jumped === null;
     const snowStops = snowStopped && stepSnow && !roadEdge;
-    // The frozen sea section 8.7: slip.
-    const iceStops =
-      stepIce && unit.form === "LAND" && mode === "GROUND" && !iceFolkKind;
     const terrainStops =
       tile.explored &&
       (terrainStopsMoveV7({
@@ -1590,8 +1581,6 @@ function validatePlayerMovementPathCoreV7(
         mountainBorn,
         ignoresForest,
         roadEdge,
-        ice: stepIce && unit.form === "LAND",
-        iceFolk: iceFolkKind,
       }) ||
         snowStops);
     // Map curiosities round 2 (section 28.2): an explored gate stops every
@@ -1623,19 +1612,13 @@ function validatePlayerMovementPathCoreV7(
           ? "UNEXPLORED_INTERMEDIATE"
           : gateStops
             ? "GATE_STOPS_MOVE"
-            : iceStops
-              ? "ICE_STOPS_MOVE"
-              : mode === "GROUND" &&
-                  tile.terrain === "MOUNTAIN" &&
-                  !mountainBorn
-                ? "MOUNTAIN_STOPS_MOVE"
-                : mode === "GROUND" &&
-                    tile.terrain === "FOREST" &&
-                    !ignoresForest
-                  ? "FOREST_STOPS_MOVE"
-                  : snowStops
-                    ? "SNOW_STOPS_MOVE"
-                    : "ZOC_STOPS_MOVE",
+            : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
+              ? "MOUNTAIN_STOPS_MOVE"
+              : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
+                ? "FOREST_STOPS_MOVE"
+                : snowStops
+                  ? "SNOW_STOPS_MOVE"
+                  : "ZOC_STOPS_MOVE",
       };
     if (stops)
       return {

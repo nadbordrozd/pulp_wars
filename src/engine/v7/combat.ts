@@ -43,6 +43,8 @@ import {
   type SummonedUnitRefV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
   GANG_UP_ATTACK_PER_HELPER_V7,
+  unitKindWalksIceV7,
+  unitWalksOnIceV7,
 } from "../rules/ruleset-v7";
 import {
   afflictionCombatEffectsV7,
@@ -953,6 +955,9 @@ export function calculateCombatPreviewV7(
     // Flyers over water (`pulp_wars-7pi5`, `7r116`): nor onto open water
     // (only a flyer stands there in land form, in the air); ice is ground.
     !openWaterAtV7(state, defender.at) &&
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): a ground
+    // unit of another kind never advances or follows onto ice.
+    !(isIceAtV7(state, defender.at) && !unitWalksOnIceV7(state, attacker)) &&
     // A unit that avoids foreign sites (a surfaced Dwarf rider; a
     // Sabretooth until any unit could capture) never advances onto a
     // settlement center it does not own.
@@ -1876,6 +1881,9 @@ export function displacementDestinationLegalV7(
       movementMode: unitMovementModeV7(state, moved),
       afloat: isAfloatFormV7(moved.form),
       ice: isIceAtV7(state, destination),
+      // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): a ground
+      // unit of another kind is never moved onto ice.
+      iceFolk: unitKindWalksIceV7(state, moved),
       engineering:
         technology?.engineering ??
         owner.researchedTechs.includes("ENGINEERING"),

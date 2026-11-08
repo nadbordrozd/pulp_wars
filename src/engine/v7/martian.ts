@@ -23,6 +23,7 @@ import {
   type IceLookupV7,
   type MartianUnitFactsV7,
   type FrozenLookupV7,
+  unitKindWalksIceV7,
 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import { isAfloatFormV7, isNeutralOwnerV7 } from "./types";
@@ -978,6 +979,9 @@ export function beamDownLandingLegalV7(
       ...technology,
       mountainBorn: unitIsMountainBornV7(roster, passenger),
       ice: facts.ice,
+      // `pulp_wars-y242` (7r132): a ground passenger of another kind than
+      // the Ice Folk is never beamed down onto ice.
+      iceFolk: unitKindWalksIceV7(roster, passenger),
     }) &&
     !facts.occupied &&
     !facts.chest &&
@@ -1326,6 +1330,8 @@ export function tractorBeamStepLegalV7(
       ...technology,
       mountainBorn: unitIsMountainBornV7(roster, target),
       ice: facts.ice,
+      // `pulp_wars-y242` (7r132): nor pulled onto ice.
+      iceFolk: unitKindWalksIceV7(roster, target),
     }) &&
     !facts.occupied &&
     !facts.chest &&

@@ -438,6 +438,7 @@ export function summonTileLegalV7(
       navigation: false,
       mountainBorn: mechanics.mountainBorn,
       ice: false,
+      iceFolk: false,
     })
   )
     return false;

@@ -391,13 +391,16 @@ describe("the Ice Folk seat builds its economy on the ice", () => {
 
 describe("the Ice Folk seat plays its Black Ice", () => {
   it("strikes the enemy its Black Ice froze on entry", () => {
-    // The Ice Folk crossing (3, 3) to (3, 7); a Human Fighter steps onto
-    // its end from the shore on its own turn and is Frozen at once.
+    // The Ice Folk crossing (3, 3) to (3, 7); a Martian Tripod (a walker:
+    // only the Ice Folk, walkers, and flyers go onto ice since
+    // `pulp_wars-y242`; a Human Fighter before) steps onto its end from the
+    // shore on its own turn and is Frozen at once.
     const base = frozenArenaV7({
+      factions: ["ICE_FOLK", "MARTIAN"],
       technologies: [BLACK_ICE, PACK_ICE],
       units: [
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 8 } },
-        { seat: 1, role: "FIGHTER", at: { x: 2, y: 8 } },
+        { seat: 1, role: "CATAPULT", at: { x: 2, y: 8 } },
       ],
       ice: column(5),
     });
@@ -633,18 +636,21 @@ describe("every other seat cracks the ice where it gains", () => {
   });
 
   it("never cracks the ice under its own planned Move, nor instead of a kill", () => {
-    // An own Fighter already stands on the bridge at (3, 4): its Move to
-    // (3, 3) is one the policy plans.
-    const walker = scene(
-      against(
+    // An own Tripod already stands on the bridge at (3, 4): its Move to
+    // (3, 3) is one the policy plans. (A Martian walker: only the Ice Folk,
+    // walkers, and flyers go onto ice since `pulp_wars-y242`, 7r132; a Human
+    // Fighter before.)
+    const walker = scene({
+      ...against(
         [
           { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
-          { seat: 0, role: "FIGHTER", at: { x: 3, y: 4 } },
+          { seat: 0, role: "CATAPULT", at: { x: 3, y: 4 } },
           { seat: 1, role: "FIGHTER", at: { x: 3, y: 8 } },
         ],
         BRIDGE,
       ),
-    );
+      factions: ["MARTIAN", "ICE_FOLK"],
+    });
     const cracker = idAt(walker.state, { x: 2, y: 2 });
     const command = crack(cracker, { x: 3, y: 3 });
     expect(queryPlayerCommandsV7(walker.view)).toContainEqual(command);

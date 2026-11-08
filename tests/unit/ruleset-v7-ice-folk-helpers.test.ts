@@ -104,6 +104,7 @@ describe("Mountain entry and the terrain stop (section 7.1)", () => {
         navigation: false,
         mountainBorn,
         ice: false,
+        iceFolk: false,
       });
     expect(mountain("GROUND", false, false)).toBe(false);
     expect(mountain("GROUND", true, false)).toBe(true);
@@ -129,6 +130,7 @@ describe("Mountain entry and the terrain stop (section 7.1)", () => {
             navigation: true,
             mountainBorn: true,
             ice: false,
+            iceFolk: false,
           }),
         ).toBe(
           canEnterTerrainV7({
@@ -139,6 +141,7 @@ describe("Mountain entry and the terrain stop (section 7.1)", () => {
             navigation: true,
             mountainBorn: false,
             ice: false,
+            iceFolk: false,
           }),
         );
   });
@@ -154,8 +157,6 @@ describe("Mountain entry and the terrain stop (section 7.1)", () => {
         mountainBorn: false,
         ignoresForest: false,
         roadEdge: false,
-        ice: false,
-        iceFolk: false,
         ...input,
       });
     expect(stops("GRASS")).toBe(false);

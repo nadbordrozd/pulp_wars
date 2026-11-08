@@ -175,7 +175,6 @@ import {
   type GameKindV7,
   type GameModeV7,
   type MapTypeV7,
-  type PlayerEventV7,
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
   type PublicUnitStatsV7,
@@ -708,7 +707,6 @@ import {
   CRACK_ICE_PICK_V7,
   CRACK_ICE_RULE_V7,
   CRACK_ICE_TOOLTIP_V7,
-  SLIP_BLACK_ICE_MOVE_LABEL_V7,
   crackIceUnavailableTextV7,
   FREEZE_DEEP_UNLOCK_V7,
   FREEZE_LABEL_V7,
@@ -723,14 +721,12 @@ import {
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
   SKATE_TRAIL_LABEL_V7,
-  SLIP_MOVE_LABEL_V7,
   freezeUnavailableTextV7,
   FREEZE_FROZEN_MOVED_V7,
   frozenSeaBoundaryNoticeV7,
   glacierUnlockTextV7,
   iceChipLabelV7,
   iceChipTooltipV7,
-  iceOnTileV7,
   unitHasCrackIceV7,
   unitHasFreezeV7,
 } from "../frozen-sea-presentation-v7";
@@ -2078,13 +2074,6 @@ export class Ruleset7DomAppView {
    */
   #freezePick: FreezePickV7 | null = null;
   #freezeHoverUnitId: number | null = null;
-  /**
-   * The frozen sea redesign (bead pulp_wars-5ti.27): the seats whose Black
-   * Ice the viewer has seen freeze a unit in this match (research is
-   * private; the public `UNITS_FROZEN` of source `BLACK_ICE` shows it), by
-   * the match's seed.
-   */
-  #blackIceSeen: { seed: number; players: Set<number> } | null = null;
   /**
    * The Cultists (bead pulp_wars-mch9.17): the Sacrifice or the Seize the
    * selected Summoner is aiming on the board (Escape, Cancel or another
@@ -14214,7 +14203,6 @@ export class Ruleset7DomAppView {
       }
       this.#firstStepWatchUnitId = couldMove ? commandUnitId : null;
     }
-    this.#noteBlackIce(result.playerEvents.events, result.afterView);
     const notice = boundaryNoticeV7(
       result.playerEvents.events,
       result.beforeView,
@@ -14516,7 +14504,6 @@ export class Ruleset7DomAppView {
           playback: this.#snapshot.ai.fastForward ? null : boundary,
         });
       }
-    this.#noteBlackIce(boundary.playerEvents.events, boundary.afterView);
     const notice = boundaryNoticeV7(
       boundary.playerEvents.events,
       boundary.beforeView,
@@ -17407,71 +17394,29 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
-  /** The seats whose Black Ice the viewer has seen in this match. */
-  #blackIceSeenPlayers(view: PlayerViewV7): ReadonlySet<number> {
-    const seen = this.#blackIceSeen;
-    return seen === null || seen.seed !== view.setup.seed
-      ? new Set()
-      : seen.players;
-  }
-
-  /** Remembers the seats a boundary's events show to have Black Ice. */
-  #noteBlackIce(events: readonly PlayerEventV7[], view: PlayerViewV7): void {
-    for (const event of events) {
-      if (event.kind !== "UNITS_FROZEN" || event.source !== "BLACK_ICE")
-        continue;
-      if (this.#blackIceSeen?.seed !== view.setup.seed)
-        this.#blackIceSeen = { seed: view.setup.seed, players: new Set() };
-      this.#blackIceSeen.players.add(event.playerId);
-    }
-  }
-
   /**
    * The frozen sea: the legend of a unit's Moves on ice, shown while it has
-   * any: "Slide" for a unit that slides to where the ice ends, "Ice: your
-   * Move ends here" for a unit that slips (with "Black Ice freezes" when
-   * the ice's owner is known to have it).
+   * any: the skate trail of an Ice Folk unit. (The slip's "Ice: your Move
+   * ends here" is gone with `pulp_wars-y242`, 7r132: only the Ice Folk walk
+   * on ice, and a walker or flyer crosses it like land.)
    */
   #iceMoveLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     if (view.ice.length === 0) return null;
-    let slide = false;
-    let slip = false;
-    // The frozen sea redesign (section 4.1): a slip onto ice whose owner's
-    // Black Ice has been seen this match says that it freezes.
-    let blackIce = false;
-    const seen = this.#blackIceSeenPlayers(view);
-    for (const command of this.#snapshot.offeredCommands) {
-      if (command.kind !== "MOVE" || command.unitId !== unitId) continue;
-      const onIce = moveOnIceV7(view, command);
-      if (onIce === null) continue;
-      if (onIce.slip) {
-        slip = true;
-        const end = command.path.at(-1);
-        const owner =
-          end === undefined ? undefined : iceOnTileV7(view, end)?.ownerId;
-        if (owner !== undefined && owner !== view.viewer.id && seen.has(owner))
-          blackIce = true;
-      } else slide = true;
-    }
-    if (!slide && !slip) return null;
+    const slide = this.#snapshot.offeredCommands.some(
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === unitId &&
+        moveOnIceV7(view, command) !== null,
+    );
+    if (!slide) return null;
     const legend = el(this.#document, "ul", "v7-landing-legend");
     legend.setAttribute("aria-label", "Ice markers");
-    for (const [shown, marker, label] of [
-      [slide, "slide", SKATE_TRAIL_LABEL_V7],
-      [
-        slip,
-        "slip",
-        blackIce ? SLIP_BLACK_ICE_MOVE_LABEL_V7 : SLIP_MOVE_LABEL_V7,
-      ],
-    ] as const) {
-      if (!shown) continue;
-      const item = el(this.#document, "li", "v7-landing-legend-item");
-      item.dataset.landingMarker = marker;
-      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
-      swatch.setAttribute("aria-hidden", "true");
-      item.append(swatch, text(this.#document, "span", label));
-      legend.append(item);
-    }
+    const item = el(this.#document, "li", "v7-landing-legend-item");
+    item.dataset.landingMarker = "slide";
+    const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+    swatch.setAttribute("aria-hidden", "true");
+    item.append(swatch, text(this.#document, "span", SKATE_TRAIL_LABEL_V7));
+    legend.append(item);
     return legend;
   }
 
@@ -20133,7 +20078,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r131",
+    rulesetId: "pulp-wars-poc-7r132",
     seed,
     width,
     height: width,

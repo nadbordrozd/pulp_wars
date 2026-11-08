@@ -45,6 +45,7 @@ import {
   type UnitId,
   isNavalRoleV7,
   type UnitRoleIdV7,
+  unitKindWalksIceV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 import { playerPossessiveV7 } from "./player-names-v7";
@@ -1018,6 +1019,7 @@ export function stampedePlanV7(
           movementMode: unitMovementModeV7(view, victim),
           afloat: false,
           ice: isIceAtV7(view, side),
+          iceFolk: unitKindWalksIceV7(view, victim),
           engineering: techs.includes("ENGINEERING"),
           navigation: techs.includes("NAVIGATION"),
           mountainBorn: unitIsMountainBornV7(view, victim),

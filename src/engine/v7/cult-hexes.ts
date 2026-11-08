@@ -15,6 +15,7 @@ import {
   type FactionRosterV7,
   type FrozenLookupV7,
   type SummonedUnitRefV7,
+  unitKindWalksIceV7,
 } from "../rules/ruleset-v7";
 import type { CommandV7 } from "./commands";
 import { awestruckRefusingAttackV7, type WardenLookupV7 } from "./cult-warden";
@@ -209,6 +210,9 @@ export function swapStandLegalV7(
       ...technology,
       mountainBorn: unitIsMountainBornV7(roster, unit),
       ice: facts.ice(at),
+      // `pulp_wars-y242` (7r132): never a ground unit of another kind than
+      // the Ice Folk onto ice.
+      iceFolk: unitKindWalksIceV7(roster, unit),
     })
   )
     return false;

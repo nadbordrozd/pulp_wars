@@ -536,7 +536,7 @@ const ENTRIES = {
   FLY: ["Flies", "Flies over any terrain and any unit."],
   STRIDE: [
     "Strides",
-    "Walks through forest, mountain and shallow water without stopping. It never gets cover.",
+    "Walks through forest, mountain, shallow water and ice without stopping. It never gets cover.",
   ],
   HEAT_RAY: [
     "Heat ray",
@@ -653,7 +653,7 @@ const ENTRIES = {
   ],
   CRACK_ICE: [
     "Crack Ice",
-    "Any unit or ship that is not Ice Folk can break the ice next to it back into water, unless a unit stands on it or it is built on.",
+    "Breaks the ice next to it back into water, unless a unit stands on it or it is built on. Only Ice Folk and units that fly or stride go onto ice.",
   ],
 
   // ----------------------------------------------------------------- Dwarves

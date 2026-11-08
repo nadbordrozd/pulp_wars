@@ -13,6 +13,7 @@ import {
   unitRoleMechanicsV7,
   type FactionRosterV7,
   type IceLookupV7,
+  unitKindWalksIceV7,
 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
@@ -2592,6 +2593,7 @@ export function moonGunLandingRejectionV7(
       navigation: researched.includes("NAVIGATION"),
       mountainBorn: unitIsMountainBornV7(facts, { ...unit, form: "LAND" }),
       ice: isIceAtV7(facts, at),
+      iceFolk: unitKindWalksIceV7(facts, unit),
     }) ||
     tile.site !== null ||
     tileOccupiedV7(facts, at) ||

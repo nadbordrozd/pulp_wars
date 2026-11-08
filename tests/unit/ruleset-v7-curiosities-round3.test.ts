@@ -648,7 +648,25 @@ describe("the Moon Gun (section 5)", () => {
     ).toBe(true);
   });
 
-  it("lands on ice as ground and never sets off Black Ice", () => {
+  it("lands a walker on ice as ground and never sets off Black Ice", () => {
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): a Martian
+    // Tripod (a walker) lands there, beyond its own walk; a Human Fighter
+    // on (2, 8) before.
+    const state = gun({
+      factions: ["MARTIAN", "ICE_FOLK"],
+      pieces: [{ seat: 0, role: "CATAPULT", at: GUN_V7 }],
+      terrain: [{ at: at(4, 6), terrain: "SHALLOW_WATER" }],
+    });
+    const iced = checkedV7({
+      ...state,
+      ice: [{ at: at(4, 6), ownerId: P2, cracked: false }],
+    });
+    const result = applyAcceptedV7(iced, P1, fire(iced, at(4, 6)));
+    expect(eventKindsV7(result.events)).not.toContain("UNITS_FROZEN");
+    expect(result.state.frozen).toEqual([]);
+  });
+
+  it("never lands a ground unit of another kind than the Ice Folk on ice (pulp_wars-y242)", () => {
     const state = gun({
       factions: ["ORIGINAL", "ICE_FOLK"],
       pieces: [{ seat: 0, role: "FIGHTER", at: GUN_V7 }],
@@ -658,9 +676,10 @@ describe("the Moon Gun (section 5)", () => {
       ...state,
       ice: [{ at: at(2, 8), ownerId: P2, cracked: false }],
     });
-    const result = applyAcceptedV7(iced, P1, fire(iced, at(2, 8)));
-    expect(eventKindsV7(result.events)).not.toContain("UNITS_FROZEN");
-    expect(result.state.frozen).toEqual([]);
+    expect(rejectionV7(iced, P1, fire(iced, at(2, 8)))).toEqual({
+      code: "MOON_GUN_NOT_LEGAL",
+      params: { reason: "BLOCKED" },
+    });
   });
 
   it("is projected to every viewer that explored the Gun or the landing", () => {

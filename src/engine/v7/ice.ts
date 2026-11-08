@@ -6,9 +6,8 @@ import {
   iceEntryIndexV7,
   iceTileKeyV7,
   technologyCapabilitiesV7,
-  unitFactionV7,
+  unitKindWalksIceV7,
   unitRoleMechanicsV7,
-  factionRulesV7,
   type FactionRosterV7,
   type IceLookupV7,
 } from "../rules/ruleset-v7";
@@ -142,30 +141,24 @@ export function unitGlidesThroughZocV7(
 }
 
 /**
- * Section 8.7: whether the unit is of the Ice Folk kind for the slip rule
- * (the `snow` rule of its kind). A unit of any other kind in movement mode
- * `GROUND` ends its Move on entering ice (`terrainStopsMoveV7`).
- */
-export function unitKindWalksIceV7(
-  roster: FactionRosterV7,
-  unit: { readonly id: UnitId; readonly ownerId: PlayerId },
-): boolean {
-  return factionRulesV7(unitFactionV7(roster, unit)).snow;
-}
-
-/**
  * The frozen sea redesign (section 2.9 rows 2): whether the unit may Crack
  * Ice at all: a unit of any kind but the Ice Folk (a body rule of its kind,
  * so a mind-controlled Ice Folk unit never cracks), in land, naval, or
  * embarked form (never an Egg; a burrowed unit is off the board), and not a
- * neutral Monster. Every land and naval role of the other eight factions
- * has it; it is a kind rule, like the slip, not a role-table entry.
+ * neutral Monster. It is a kind rule, not a role-table entry.
+ *
+ * One tile, one meaning (`pulp_wars-y242`, 7r132): a unit cracks exactly
+ * the ice it may not walk on. So a role whose movement mode is `STRIDE` or
+ * `FLY` (the Martian walkers and flyers, the Dwarf Gyrocopter, the Cult's
+ * summons), which stands on ice in land form, never cracks it, in any form;
+ * every ground role and every ship of the eight other factions does.
  */
 export function unitCracksIceV7(
   roster: FactionRosterV7,
   unit: {
     readonly id: UnitId;
     readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
   },
 ): boolean {
@@ -174,7 +167,8 @@ export function unitCracksIceV7(
       unit.form === "NAVAL" ||
       unit.form === "EMBARKED") &&
     !isNeutralOwnerV7(unit.ownerId) &&
-    !unitKindWalksIceV7(roster, unit)
+    !unitKindWalksIceV7(roster, unit) &&
+    unitRoleMechanicsV7(roster, unit).movementMode === "GROUND"
   );
 }
 

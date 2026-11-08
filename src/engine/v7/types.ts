@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r131" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r132" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -142,8 +142,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r128",
   "pulp-wars-poc-7r129",
   "pulp-wars-poc-7r130",
+  "pulp-wars-poc-7r131",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r131.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r132.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`

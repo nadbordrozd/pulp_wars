@@ -56,7 +56,6 @@ import {
   ICE_SEA_DOG_GOAL_V7,
   SKATE_MOVE_LABEL_V7,
   SKATE_TRAIL_LABEL_V7,
-  SLIP_MOVE_LABEL_V7,
   freezeOutcomeTextV7,
   freezeOutcomeV7,
   freezeTargetLabelV7,
@@ -477,8 +476,9 @@ describe("ice on the board plan", () => {
     const theirs = victim.ice[0];
     if (theirs === undefined) throw new Error("ice missing");
     expect(iceChipTooltipV7(victim, theirs)).not.toContain("Black Ice");
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132).
     expect(iceChipTooltipV7(victim, theirs)).toContain(
-      "Ice Folk skate (half a move); others stop here.",
+      "only Ice Folk units and units that fly or stride go onto it; other units crack it.",
     );
     for (const entry of view.ice)
       expect(iceChipTooltipV7(view, entry)).not.toMatch(COORDINATE);
@@ -511,7 +511,6 @@ describe("moving on ice", () => {
     expect(skated?.slide).toEqual([
       { from: FROZEN_UI_V7.bridgeHead, tiles: [first, second] },
     ]);
-    expect(skated?.slip).toBeUndefined();
     // The skate reach (past the Yeti's Move) names the skate once.
     expect(skated?.skate).toBe(true);
     expect(skated?.semanticLabel).toBe(SKATE_MOVE_LABEL_V7);
@@ -543,7 +542,7 @@ describe("moving on ice", () => {
     expect(ashore.command.path).toHaveLength(FROZEN_UI_V7.bridge.length + 1);
   });
 
-  it("the Snow Golem skates the ice too (every Ice Folk ground unit), and never slips", () => {
+  it("the Snow Golem skates the ice too (every Ice Folk ground unit)", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
     const golem = unitAt(view, { x: 0, y: 2 });
     const built = plan(view, golem.id);
@@ -554,28 +553,18 @@ describe("moving on ice", () => {
     );
     expect(onIce.length).toBeGreaterThan(1);
     expect(onIce.some((target) => target.slide !== undefined)).toBe(true);
-    for (const target of onIce) {
-      expect(target.slip).toBeUndefined();
-      if (target.command.kind === "MOVE")
-        expect(moveOnIceV7(view, target.command)?.slip ?? false).toBe(false);
-    }
   });
 
-  it("another faction's unit slips: its Move ends on the first ice tile", () => {
+  it("another faction's ground unit is offered no Move onto the ice (pulp_wars-y242; it slipped onto it before)", () => {
     const view = viewOf(frozenSlideUiFixtureV7({ slipper: true }));
     const fighter = unitAt(view, FROZEN_UI_V7.bridgeHead);
     const built = plan(view, fighter.id);
-    const first = FROZEN_UI_V7.bridge[0];
-    if (first === undefined) throw new Error("bridge missing");
     const onIce = built.targets.filter(
       (target) =>
         target.family === "MOVE" &&
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
-    expect(onIce.map((target) => at(target.at))).toEqual([at(first)]);
-    expect(onIce[0]?.slip).toBe(true);
-    expect(onIce[0]?.slide).toBeUndefined();
-    expect(onIce[0]?.semanticLabel).toBe(SLIP_MOVE_LABEL_V7);
+    expect(onIce).toEqual([]);
   });
 });
 
@@ -878,6 +867,8 @@ describe("frozen-sea words", () => {
       "Dive",
       // Fishing Hole links (`pulp_wars-vg5l`, 7r127).
       "Hole links",
+      // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132).
+      "Who walks on ice",
       // The frozen sea redesign (bead pulp_wars-5ti.27): the ice stays,
       // other factions crack it, the Ice Folk build on it.
       "Ice stays",

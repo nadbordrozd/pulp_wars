@@ -127,6 +127,7 @@ describe("the shared terrain-entry rule", () => {
         navigation,
         mountainBorn: false,
         ice: false,
+        iceFolk: false,
       });
     for (const mode of ["GROUND", "STRIDE", "FLY"] as const) {
       expect(enter("GRASS", mode, false)).toBe(true);

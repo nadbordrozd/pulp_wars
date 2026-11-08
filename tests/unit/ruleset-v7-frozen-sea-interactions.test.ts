@@ -171,12 +171,14 @@ describe("the Sunken Wreck under ice (section 21.16)", () => {
     });
 
   it("is salvaged by a land unit that ends a Move on it, a slide's end included, and by no ship", () => {
-    // A slipping Human Fighter walks one tile of ice onto the Wreck.
+    // A Martian Tripod (a walker: only the Ice Folk, walkers, and flyers go
+    // onto ice since `pulp_wars-y242`; a slipping Human Fighter before)
+    // walks one tile of ice onto the Wreck.
     const slip = withWreck(
       scene(
-        "ORIGINAL",
+        "MARTIAN",
         [
-          { seat: 0, role: "FIGHTER", at: ICE2 },
+          { seat: 0, role: "CATAPULT", at: ICE2 },
           { seat: 0, role: "PATROL_BOAT", at: { x: 3, y: 5 } },
         ],
         [ICE1, ICE2, ICE3],
@@ -558,12 +560,14 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
       ],
       [
         { seat: 1, role: "RAIDER", at: { x: 6, y: 4 } },
-        { seat: 0, role: "FIGHTER", at: { x: 8, y: 6 } },
+        // A Tripod (a walker; a Grunt before `pulp_wars-y242`: no ground
+        // unit of another kind than the Ice Folk enters ice now).
+        { seat: 0, role: "CATAPULT", at: { x: 8, y: 6 } },
       ],
     );
     const grunt = navalUnitAtV7(state, { x: 8, y: 6 });
     const sled = navalUnitAtV7(state, { x: 6, y: 4 });
-    // The Grunt steps from its seat's ice onto the Ice Folk ice: Frozen.
+    // The Tripod steps from its seat's ice onto the Ice Folk ice: Frozen.
     const stepped = acceptV7(state, 0, {
       kind: "MOVE",
       unitId: grunt.id,

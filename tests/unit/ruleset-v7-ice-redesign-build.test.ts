@@ -20,7 +20,6 @@ import {
 import {
   acceptV7,
   navalUnitAtV7,
-  navalUnitV7,
   rejectV7,
   seatV7,
 } from "../fixtures/v7-naval-branch";
@@ -140,24 +139,29 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     expect(
       offered(state).some((command) => command.kind === "TRAIN_NAVAL"),
     ).toBe(false);
-    // A Fighter that steps onto the dock walks onto ice: it stays ashore.
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132; it walked
+    // onto the iced dock and stayed ashore before): the Fighter may not step
+    // onto it, even onto its own seat's ice, and it may Crack its own dock
+    // open instead.
     const fighter = navalUnitAtV7(state, { x: 4, y: 2 });
-    const stepped = acceptV7(state, 0, {
-      kind: "MOVE",
-      unitId: fighter.id,
-      path: [WEST],
+    expect(
+      rejectV7(state, 0, { kind: "MOVE", unitId: fighter.id, path: [WEST] }),
+    ).toEqual({
+      code: "MOVEMENT_ILLEGAL",
+      params: { reason: "ICE_FORBIDDEN" },
     });
-    expect(navalUnitV7(stepped.state, fighter.id)).toMatchObject({
-      at: WEST,
-      form: "LAND",
-    });
+    expect(
+      isOffered(state, { kind: "CRACK_ICE", unitId: fighter.id, at: WEST }),
+    ).toBe(true);
   });
 
   it("a hostile land unit on an Ice Harbour blockades it, and may Pillage it", () => {
+    // A Martian Tripod: a walker (only the Ice Folk, walkers, and flyers go
+    // onto ice since `pulp_wars-y242`; a Human Fighter before).
     const state = frozenArenaV7({
-      factions: ["ICE_FOLK", "ORIGINAL"],
+      factions: ["ICE_FOLK", "MARTIAN"],
       technologies: [RIME, ["SCOUTING", "RAIDING"]],
-      units: [{ seat: 1, role: "FIGHTER", at: { x: 3, y: 3 } }],
+      units: [{ seat: 1, role: "CATAPULT", at: { x: 3, y: 3 } }],
       ice: [WEST, { x: 3, y: 3 }].map((tile) => ({ at: tile })),
     });
     expect(tileOf(state, WEST)?.improvement).toBe("PORT");

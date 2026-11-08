@@ -33,8 +33,8 @@ import {
 describe("the identity", () => {
   // Dwarf oomph (`pulp_wars-o2g8`) took 7r122 after it.
   it("was 7r121 after 7r120, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r132");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r132.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r121");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r120");

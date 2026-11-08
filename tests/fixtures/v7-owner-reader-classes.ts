@@ -44,6 +44,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // Tuning 3 (`pulp_wars-w49.3`): the neutral owner keeps the Forest cover.
   "src/engine/rules/ruleset-v7.ts::ownerHasForestCoverV7": "NEUTRAL_AWARE",
   "src/engine/rules/ruleset-v7.ts::seatRoleMechanicsV7": "PLAYER_ONLY",
+  // Only the Ice Folk walk on ice (`pulp_wars-y242`): a placed unit's kind
+  // is its placing seat's faction (a Goblin Toss or a Break Off).
+  "src/engine/rules/ruleset-v7.ts::seatKindWalksIceV7": "PLAYER_ONLY",
   "src/engine/rules/ruleset-v7.ts::seatRoleRuleV7": "PLAYER_ONLY",
   "src/engine/rules/ruleset-v7.ts::unitFactionV7": "NEUTRAL_AWARE",
   "src/engine/v7/afflictions.ts::isLivingOwnerV7": "PLAYER_ONLY",

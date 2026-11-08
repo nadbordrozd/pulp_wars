@@ -1128,8 +1128,6 @@ export interface MapCommandTargetV7 {
    * destination and at full weight on the focused one.
    */
   readonly slide?: readonly MoveSlideV7[];
-  /** The frozen sea: this Move ends on ice because the unit slips there. */
-  readonly slip?: true;
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -6164,10 +6162,9 @@ function targetVariant(target: MapCommandTargetV7 | undefined): {
   if (target?.skate === true)
     return { stroke: GLIDE_TARGET_STROKE_V7, dash: [2, 4] };
   if (target?.dive === true) return { stroke: GLIDE_TARGET_STROKE_V7 };
-  // The frozen sea: the tile a slide stops on, and the tile a slip ends
-  // on, take the pale ice too (the arrow and the legend say which).
-  if (target?.slide !== undefined || target?.slip === true)
-    return { stroke: GLIDE_TARGET_STROKE_V7 };
+  // The frozen sea: the tile a skate trail stops on takes the pale ice
+  // too (the arrow and the legend say so).
+  if (target?.slide !== undefined) return { stroke: GLIDE_TARGET_STROKE_V7 };
   if (target?.family === "LANDING_AFTER_MOVE")
     return { stroke: LANDING_AFTER_MOVE_STROKE_V7, dash: [3, 6] };
   // The Vampire and Banshee rework: a Bat Escape landing is flying reach,
@@ -8005,9 +8002,10 @@ function withMoveHopV7(
 
 /**
  * The frozen sea: a Move across ice carries its skate trails (an Ice Folk
- * unit, `pulp_wars-s55m.2`; slides before) or says that it ends there (a
- * unit that slips), from the command's own
- * path and the view's ice list. Every other target is returned as it is.
+ * unit, `pulp_wars-s55m.2`; slides before), from the command's own path
+ * and the view's ice list (no other ground unit enters ice since
+ * `pulp_wars-y242`, 7r132, so nothing slips). Every other target is
+ * returned as it is.
  */
 function withMoveOnIceV7(
   view: PlayerViewV7,
@@ -8019,7 +8017,7 @@ function withMoveOnIceV7(
   if (onIce === null || label === null) return target;
   return {
     ...target,
-    ...(onIce.slip ? { slip: true as const } : { slide: onIce.slides }),
+    slide: onIce.slides,
     // Ice Folk movement (`pulp_wars-s55m.2`): a skate-reach tile already
     // names the skate; its trail adds no second sentence.
     semanticLabel:

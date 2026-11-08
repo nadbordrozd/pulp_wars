@@ -21,6 +21,7 @@ import {
   type FrozenLookupV7,
   type SummonedUnitRefV7,
   type UnitRoleAbilityV7,
+  seatKindWalksIceV7,
 } from "../rules/ruleset-v7";
 import {
   biteOfV7,
@@ -468,6 +469,8 @@ function placementTileLegalV7(
       navigation: researched.includes("NAVIGATION"),
       mountainBorn: mechanics.mountainBorn,
       ice,
+      // `pulp_wars-y242` (7r132): a unit the seat places is of its kind.
+      iceFolk: seatKindWalksIceV7(roster, actor),
     })
   )
     return false;
@@ -1523,6 +1526,7 @@ export function regurgitationTileV7(
         navigation: owner.researchedTechs.includes("NAVIGATION"),
         mountainBorn: mechanics.mountainBorn,
         ice: false,
+        iceFolk: false,
       })
     )
       continue;

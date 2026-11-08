@@ -7,6 +7,7 @@ import {
   seatRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
+  unitKindWalksIceV7,
 } from "../rules/ruleset-v7";
 import { biteOfV7 } from "./afflictions";
 import type { CommandV7 } from "./commands";
@@ -188,6 +189,7 @@ export function stampedePathLegalV7(
         navigation: researched.includes("NAVIGATION"),
         mountainBorn: mechanics.mountainBorn,
         ice: facts.ice(step),
+        iceFolk: unitKindWalksIceV7(roster, mammoth),
       })
     )
       return false;

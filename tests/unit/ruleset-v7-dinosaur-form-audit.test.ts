@@ -563,8 +563,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Egg never acts, and an embarked unit never stands on either).
     // The Mothership redesign (`pulp_wars-ewpj`): the public Mass Beam
     // Down preview is a land-form Mothership's (an embarked one beams
-    // nobody).
-    "src/engine/v7/query.ts": 7,
+    // nobody). Only the Ice Folk walk on ice (`pulp_wars-y242`): the public
+    // Push preview reads ice as ground only for a land-form unit that walks
+    // on it.
+    "src/engine/v7/query.ts": 8,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in

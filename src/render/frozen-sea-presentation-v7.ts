@@ -23,7 +23,8 @@ import { playerSubjectV7 } from "./player-names-v7";
  * The frozen sea interface (bead pulp_wars-5ti.7, second part;
  * docs/product/RULESET_7_NAVAL_BRANCH.md sections 8, 14.1 and 14.2): the
  * words of Freeze, the ice, skating, Runners, the Fishing Hole dive (the
- * forced slide before `pulp_wars-s55m.2`) and the slip, Hoarfrost (Icebound
+ * forced slide before `pulp_wars-s55m.2`; the slip of every other unit
+ * before `pulp_wars-y242`, 7r132), who walks on ice, Hoarfrost (Icebound
  * and the crush before `pulp_wars-s55m.1`), Black Ice and Glacier, shared by
  * the dock, the board plan, Help, the
  * technology cards and the Gallery. Every number is read from the engine's
@@ -36,7 +37,6 @@ export const ICE_LABEL_V7 = "Ice";
 export const SKATE_LABEL_V7 = "Skate";
 export const RUNNERS_LABEL_V7 = "Runners";
 export const DIVE_LABEL_V7 = "Dive";
-export const SLIP_LABEL_V7 = "Slip";
 /** Ice Folk freeze rework (`pulp_wars-s55m.1`): the node Icebound was. */
 export const HOARFROST_LABEL_V7 = "Hoarfrost";
 export const BLACK_ICE_LABEL_V7 = "Black Ice";
@@ -60,8 +60,13 @@ export const DIVE_RULE_V7 = `Fishing Hole: +${FISHING_HOLE_POPULATION_V7} popula
 export const HOLE_LINKS_LABEL_V7 = "Hole links";
 export const HOLE_LINKS_RULE_V7 =
   "With Rime, Fishing Holes of two of your cities up to five tiles of water or ice apart link them as Ports do: a city joined to your capital gets +1 population, the capital +1 for each. An enemy on a hole breaks its links.";
-export const SLIP_RULE_V7 =
-  "Any other unit may walk onto ice, but its Move ends there.";
+/**
+ * Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132; the slip, "Any
+ * other unit may walk onto ice, but its Move ends there", before).
+ */
+export const ICE_WALKERS_LABEL_V7 = "Who walks on ice";
+export const ICE_WALKERS_RULE_V7 =
+  "Only Ice Folk units and units that fly or stride go onto ice. Every other land unit stops at its edge and may crack it instead.";
 export const ICE_STAYS_RULE_V7 =
   "Ice never melts; it is gone only when someone cracks it.";
 export const NO_SHIPS_RULE_V7 =
@@ -77,7 +82,7 @@ export const BORDER_ICE_RULE_V7 =
   "With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.";
 export const CRACK_ICE_LABEL_V7 = "Crack Ice";
 export const CRACK_ICE_RULE_V7 =
-  "Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on (your own iced-over dock you may crack).";
+  "Any other land unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on (your own iced-over dock you may crack). Units that fly or stride cross ice instead.";
 export const ICE_BUILD_RULE_V7 =
   "The Ice Folk build Fishing Holes, mills, Workshop, Market and Monument on their own ice. They build no harbours.";
 
@@ -88,6 +93,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [RUNNERS_LABEL_V7, RUNNERS_RULE_V7],
   [DIVE_LABEL_V7, DIVE_RULE_V7],
   [HOLE_LINKS_LABEL_V7, HOLE_LINKS_RULE_V7],
+  [ICE_WALKERS_LABEL_V7, ICE_WALKERS_RULE_V7],
   ["Ice stays", ICE_STAYS_RULE_V7],
   [BORDER_ICE_LABEL_V7, BORDER_ICE_RULE_V7],
   [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],
@@ -101,7 +107,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
 /** Help "At sea", one line for every other faction in a match with ice. */
 export const ICE_FOR_SHIPS_HELP_V7: readonly [string, string] = [
   ICE_LABEL_V7,
-  "The Ice Folk freeze the sea. Ships cannot enter ice; land units may walk onto it, one tile a turn; any unit or ship beside it may crack it open.",
+  "The Ice Folk freeze the sea. Only their units and units that fly or stride go onto ice; ships and other land units cannot, and may crack it open from beside it.",
 ];
 
 /** The technology card's lines (no trailing full stop, as its other lines). */
@@ -300,7 +306,10 @@ export const CRACK_ICE_MOVED_V7 = "It moved this turn";
 export const CRACK_ICE_OCCUPIED_V7 = "A unit stands on that ice";
 export const CRACK_ICE_BUILT_V7 = "Built on: Pillage it instead";
 
-/** Whether the unit is of a kind that cracks ice (not an Ice Folk unit). */
+/**
+ * Whether the unit cracks ice: not an Ice Folk unit, and no walker or flyer
+ * (those cross the ice, `pulp_wars-y242`).
+ */
 export function unitHasCrackIceV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -457,7 +466,7 @@ export function iceChipTooltipV7(
     own && viewerHasBlackIceV7(view)
       ? ` ${BLACK_ICE_LABEL_V7}: an enemy that steps onto it is Frozen.`
       : "";
-  return `${ICE_LABEL_V7}: land units stand here; ships cannot enter. Ice Folk skate (half a move); others stop here.${thickness}${blackIce}`;
+  return `${ICE_LABEL_V7}: only Ice Folk units and units that fly or stride go onto it; other units crack it. Ice Folk skate (half a move).${thickness}${blackIce}`;
 }
 
 /**
@@ -488,12 +497,6 @@ export const SKATE_TRAIL_LABEL_V7 = "Skate: across the ice";
 export const SKATE_MOVE_LABEL_V7 = "Skate: ice costs half a move";
 export const DIVE_MOVE_LABEL_V7 =
   "Dive: through your Fishing Holes, as the whole move";
-export const SLIP_MOVE_LABEL_V7 = "Ice: your Move ends here";
-/**
- * The frozen sea redesign (section 4.1): the slip's legend when the ice's
- * owner is known to have Black Ice (its freeze has been seen this match).
- */
-export const SLIP_BLACK_ICE_MOVE_LABEL_V7 = `${SLIP_MOVE_LABEL_V7} (${BLACK_ICE_LABEL_V7} freezes)`;
 
 export const ICE_COVER_PREVIEW_V7 = ICE_COVER_LABEL_V7;
 export const ICE_COVER_TOOLTIP_V7 = `${ICE_COVER_LABEL_V7}: light cover on its own ice (${GLACIER_LABEL_V7})`;
@@ -503,7 +506,7 @@ export const ON_ICE_LABEL_V7 = "On ice";
  * chip (a unit card no longer says "On ice").
  */
 export const ICE_MOVE_TEXT_V7 =
-  "Ice Folk skate across ice at half a move a tile; every other unit stops when it steps onto it.";
+  "Ice Folk skate across ice at half a move a tile; units that fly or stride cross it like land; no other unit goes onto it.";
 
 /** The frozen-sea lines of an attack preview: cover on ice. */
 export function frozenSeaCombatNotesV7(
@@ -521,7 +524,8 @@ function subject(view: PlayerViewV7, playerId: number): string {
 
 /**
  * The notice of a boundary's frozen-sea events: a Freeze, a Crack, and a
- * Move that slipped to a stop on ice the unit did not know of. Null without
+ * Move stopped at the edge of ice the unit did not know of (it may not go
+ * onto it, `pulp_wars-y242`; it slipped onto it before). Null without
  * one (a ship a Freeze Froze is told by the `UNITS_FROZEN` notice). No
  * text names a tile.
  */
@@ -554,7 +558,7 @@ export function frozenSeaBoundaryNoticeV7(
     ) {
       const unit = unitById(event.unitId);
       if (unit?.ownerId === after.viewer.id) {
-        parts.push("Ice: the Move ended there");
+        parts.push("Ice: the Move stopped at its edge");
         toast = true;
       }
     }

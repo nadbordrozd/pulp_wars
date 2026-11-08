@@ -40,7 +40,6 @@ import {
   CRACK_ICE_ALREADY_ACTED_V7,
   CRACK_ICE_BUILT_V7,
   CRACK_ICE_OCCUPIED_V7,
-  SLIP_BLACK_ICE_MOVE_LABEL_V7,
   crackIceUnavailableTextV7,
   freezeOutcomeTextV7,
   freezeOutcomeV7,
@@ -399,10 +398,5 @@ describe("the Freeze preview", () => {
   });
 });
 
-describe("Black Ice", () => {
-  it("says on the slip that it freezes", () => {
-    expect(SLIP_BLACK_ICE_MOVE_LABEL_V7).toBe(
-      "Ice: your Move ends here (Black Ice freezes)",
-    );
-  });
-});
+// (The slip's "Black Ice freezes" legend is gone with `pulp_wars-y242`,
+// 7r132: no unit of another kind than the Ice Folk slips onto ice.)

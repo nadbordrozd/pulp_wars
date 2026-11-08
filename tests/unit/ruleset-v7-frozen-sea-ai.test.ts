@@ -1209,10 +1209,21 @@ describe("every seat against the ice", () => {
     expect(iceHostileFreezersV7(unseen.view, toolsOf(unseen.view))).toEqual([]);
   });
 
+  // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): of another
+  // seat's units only a walker or a flyer may step onto the ice, so the
+  // unit that would is a Martian Tripod (a Human Fighter before).
+  const againstWalker = (
+    units: FrozenArenaOptionsV7["units"],
+    ice?: readonly FrozenIceV7[],
+  ): FrozenArenaOptionsV7 => ({
+    ...against(units, ice),
+    factions: ["MARTIAN", "ICE_FOLK"],
+  });
+
   it("does not end a Move on the ice of a hostile Ice Folk seat (Black Ice)", () => {
     const { state, view } = scene(
-      against(
-        [{ seat: 0, role: "FIGHTER", at: { x: 3, y: 2 } }],
+      againstWalker(
+        [{ seat: 0, role: "CATAPULT", at: { x: 3, y: 2 } }],
         lineV7({ x: 3, y: 2 }, 0, 1, 5).map((at) => ({ at, seat: 1 as const })),
       ),
     );
@@ -1271,8 +1282,8 @@ describe("every seat against the ice", () => {
 
   it("lands beside the ice, not on it", () => {
     const base = frozenArenaV7(
-      against(
-        [{ seat: 0, role: "FIGHTER", at: { x: 1, y: 2 } }],
+      againstWalker(
+        [{ seat: 0, role: "CATAPULT", at: { x: 1, y: 2 } }],
         [{ at: { x: 3, y: 7 }, seat: 1 }],
       ),
     );

@@ -390,6 +390,7 @@ export function buildMissionStateV7(
             navigation,
             mountainBorn: mechanics.mountainBorn,
             ice: false,
+            iceFolk: false,
           });
       if (!standable)
         fail(`the ${written.role} at ${coordText(at)} cannot stand there`);

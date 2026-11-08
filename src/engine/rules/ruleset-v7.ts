@@ -7883,9 +7883,14 @@ export function halfPowerAttack2V7(attack2: number): number {
  *   section 7.4).
  *
  * - Ice (the frozen sea, docs/product/RULESET_7_NAVAL_BRANCH.md section
- *   8.3; `ice`: the tile is a water tile with an ice entry): ground for
- *   every unit that is not afloat, whatever the depth and without
- *   Navigation or Engineering, and never entered by an afloat unit. A
+ *   8.3; `ice`: the tile is a water tile with an ice entry): never entered
+ *   by an afloat unit. Since `pulp_wars-y242` (7r132, "only the Ice Folk
+ *   walk on ice") it is ground, whatever the depth and without Navigation
+ *   or Engineering, only for a unit of the Ice Folk kind (`iceFolk`, a
+ *   body rule of its kind, so a mind-controlled Ice Folk unit keeps it) and
+ *   for a walker or flyer of any kind (movement mode `STRIDE` or `FLY`,
+ *   never stopped by terrain); a ground unit of every other kind may not
+ *   enter it, so for it ice is the water it is (it Cracks it instead). A
  *   caller that places something that may not stand on ice (an Egg, a
  *   reward or treasure unit, a rising, a mound) passes `ice: false`, so the
  *   tile stays water for it.
@@ -7901,12 +7906,17 @@ export function canEnterTerrainV7(input: {
   readonly navigation: boolean;
   readonly mountainBorn: boolean;
   readonly ice: boolean;
+  /**
+   * Whether the unit is of the Ice Folk kind (`unitKindWalksIceV7`). Read
+   * only on ice; a caller that passes `ice: false` passes false.
+   */
+  readonly iceFolk: boolean;
 }): boolean {
   if (
     input.ice &&
     (input.terrain === "SHALLOW_WATER" || input.terrain === "DEEP_WATER")
   )
-    return !input.afloat;
+    return !input.afloat && (input.iceFolk || input.movementMode !== "GROUND");
   switch (input.terrain) {
     case "GRASS":
     case "FOREST":
@@ -7928,6 +7938,49 @@ export function canEnterTerrainV7(input: {
 }
 
 /**
+ * Section 8.7: whether the unit is of the Ice Folk kind (the `snow` rule of
+ * its kind; a body rule, so a mind-controlled Ice Folk unit keeps it). Since
+ * `pulp_wars-y242` (7r132, "only the Ice Folk walk on ice") a unit of any
+ * other kind in movement mode `GROUND` never enters ice
+ * (`canEnterTerrainV7`'s `iceFolk`; the slip before).
+ */
+export function unitKindWalksIceV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7,
+): boolean {
+  return factionRulesV7(unitFactionV7(roster, unit)).snow;
+}
+
+/**
+ * Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): whether the
+ * unit, in land form, may stand on an ice tile: a unit of the Ice Folk kind
+ * (any movement mode), or a walker or flyer of any kind. Every other unit
+ * (a ground unit of the eight other factions, every unit afloat) may not,
+ * and Cracks it instead ({@link unitCracksIceV7}).
+ */
+export function unitWalksOnIceV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
+): boolean {
+  return (
+    unitKindWalksIceV7(roster, unit) ||
+    unitRoleMechanicsV7(roster, unit).movementMode !== "GROUND"
+  );
+}
+
+/**
+ * Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): whether a unit
+ * the seat `ownerId` places now (a re-baked, tossed, broken-off, or reward
+ * unit not on the board yet) is of the Ice Folk kind: the seat's faction.
+ */
+export function seatKindWalksIceV7(
+  roster: Pick<FactionRosterV7, "players">,
+  ownerId: PlayerId,
+): boolean {
+  return factionRulesV7(playerFactionV7(roster, ownerId)).snow;
+}
+
+/**
  * THE shared "does entering this tile end the Move" terrain rule (the Martian
  * revision section 7.1; the Ice Folk revision section 7.1). A walker or
  * flyer is never stopped by terrain. For a ground unit a Mountain ends the
@@ -7935,10 +7988,9 @@ export function canEnterTerrainV7(input: {
  * Forest freedom (Fieldcraft); a step along a Road edge (both ends usable
  * Road nodes for the mover) waives both.
  *
- * Slip (the frozen sea, docs/product/RULESET_7_NAVAL_BRANCH.md section
- * 8.7): entering an ice tile (`ice`) ends the Move of a ground unit that is
- * not of the Ice Folk kind (`iceFolk`). No Road edge and no Fieldcraft
- * waives it.
+ * (The slip, a ground unit of another kind ending its Move on entering ice,
+ * is gone with `pulp_wars-y242`, 7r132: such a unit never enters ice,
+ * {@link canEnterTerrainV7}, so no ice tile stops a Move.)
  */
 export function terrainStopsMoveV7(input: {
   readonly terrain: TerrainIdV7;
@@ -7946,11 +7998,8 @@ export function terrainStopsMoveV7(input: {
   readonly mountainBorn: boolean;
   readonly ignoresForest: boolean;
   readonly roadEdge: boolean;
-  readonly ice: boolean;
-  readonly iceFolk: boolean;
 }): boolean {
   if (input.movementMode !== "GROUND") return false;
-  if (input.ice && !input.iceFolk) return true;
   return (
     !input.roadEdge &&
     ((input.terrain === "MOUNTAIN" && !input.mountainBorn) ||
@@ -8037,6 +8086,7 @@ export function unitMayEnterMountainV7(
     navigation: false,
     mountainBorn: unitRoleMechanicsV7(roster, unit).mountainBorn,
     ice: false,
+    iceFolk: false,
   });
 }
 

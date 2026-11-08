@@ -44,6 +44,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/rules/ruleset-v7.ts::unitRoleMechanicsV7": "KIND",
   "src/engine/rules/ruleset-v7.ts::seatRoleRuleV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::seatRoleMechanicsV7": "SEAT",
+  // `pulp_wars-y242`: a unit not yet on the board is of its placing seat's
+  // faction (a unit on it is read by `unitKindWalksIceV7`, its kind).
+  "src/engine/rules/ruleset-v7.ts::seatKindWalksIceV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::isEggLaidRoleV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::assertRuleset7Registry": "SEAT",
   "src/engine/v7/afflictions.ts::isLivingOwnerV7": "SEAT",

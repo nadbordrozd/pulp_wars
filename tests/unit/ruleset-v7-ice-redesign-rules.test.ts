@@ -82,11 +82,15 @@ const blackIceFreezes = (
     (event) => event.kind === "UNITS_FROZEN" && event.source === "BLACK_ICE",
   );
 
+// Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): the hostile unit
+// that steps onto the ice is a Martian Tripod (a walker), since no ground
+// unit of another kind than the Ice Folk enters ice any more (a Human
+// Fighter, a landing crew, and a beamed-down Grunt did before).
 describe("Black Ice freezes on entry, once (section 2.8)", () => {
   it("a hostile unit that ends its Move on the seat's ice is Frozen at once, through its next turn", () => {
     const state = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: SHORE }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: SHORE }],
       [ICE1],
     );
     const fighter = navalUnitAtV7(state, SHORE);
@@ -129,30 +133,30 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
       }).events;
     // Without Black Ice.
     const without = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: SHORE }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: SHORE }],
       [ICE1],
       ["SHORECRAFT"],
     );
     expect(blackIceFreezes(move(without, SHORE, ICE1))).toEqual([]);
     // Onto the mover's own ice.
     const own = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: SHORE }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: SHORE }],
       [{ at: ICE1, seat: 0 }],
     );
     expect(blackIceFreezes(move(own, SHORE, ICE1))).toEqual([]);
     // Along the seat's ice: a unit already on it walks on, unfrozen.
     const along = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: ICE1 }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: ICE1 }],
       [ICE1, ICE2],
     );
     expect(blackIceFreezes(move(along, ICE1, ICE2))).toEqual([]);
     // From another seat's ice onto the Ice Folk ice: frozen.
     const across = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: ICE1 }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: ICE1 }],
       [{ at: ICE1, seat: 0 }, ICE2],
     );
     expect(blackIceFreezes(move(across, ICE1, ICE2))).toHaveLength(1);
@@ -161,8 +165,8 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
   it("a landing and a Beam Down onto the ice freeze; a Start Turn, a push and an advance never do", () => {
     // A landing from a transport.
     const base = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: { x: 0, y: 1 } }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: { x: 0, y: 1 } }],
       [{ x: 2, y: 5 }],
     );
     const crew = navalUnitAtV7(base, { x: 0, y: 1 });
@@ -185,7 +189,7 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
       "MARTIAN",
       [
         { seat: 0, role: "RAIDER", at: SHORE },
-        { seat: 0, role: "FIGHTER", at: { x: 3, y: 1 } },
+        { seat: 0, role: "CATAPULT", at: { x: 3, y: 1 } },
       ],
       [ICE1],
     );
@@ -205,8 +209,8 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
         results: [{ unitId: grunt.id, turnsLeft: 2 }],
       }),
     ]);
-    // A Charge! that pushes along the ice and follows onto it freezes
-    // nobody: it is no Move of the unit.
+    // A Charge! that pushes along the ice freezes nobody: it is no Move of
+    // the unit (and the Triceratops does not follow onto the ice).
     const triceratops = roleWith("DINOSAUR", "LINEBREAKER");
     const charge = scene(
       "DINOSAUR",
@@ -227,8 +231,8 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
     expect(blackIceFreezes(charged.events)).toEqual([]);
     // A unit standing on the ice at the Ice Folk Start Turn is not frozen.
     const standing = scene(
-      "ORIGINAL",
-      [{ seat: 0, role: "FIGHTER", at: ICE1 }],
+      "MARTIAN",
+      [{ seat: 0, role: "CATAPULT", at: ICE1 }],
       [ICE1],
     );
     const started = acceptV7(

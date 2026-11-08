@@ -504,13 +504,15 @@ describe("the rework: Bat Escape", () => {
     expect(batEscapeLandingAllowedV7({ ...base, terrain: "DEEP_WATER" })).toBe(
       false,
     );
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): never ice
+    // either (a Vampire landed there before).
     expect(
       batEscapeLandingAllowedV7({
         ...base,
         terrain: "SHALLOW_WATER",
         ice: true,
       }),
-    ).toBe(true);
+    ).toBe(false);
     expect(batEscapeLandingAllowedV7({ ...base, terrain: "MOUNTAIN" })).toBe(
       false,
     );

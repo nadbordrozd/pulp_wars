@@ -647,7 +647,9 @@ describe("Hover Pods (section 6.3 M2)", () => {
       code: "MOVEMENT_ILLEGAL",
       params: { reason: "ENGINEERING_REQUIRED" },
     });
-    // Ice is ground: a Grunt walks onto it and slips (no launch).
+    // Ice is no launch: since `pulp_wars-y242` (7r132) a Grunt (a ground
+    // unit of another kind than the Ice Folk) never enters it (it slipped
+    // onto it before), and it never hovers onto it either.
     const iced = frozenStateV7(
       strait(
         ["MARTIAN", "ICE_FOLK"],
@@ -658,11 +660,11 @@ describe("Hover Pods (section 6.3 M2)", () => {
       [{ at: SHORE, seat: 1 }],
     );
     const walker = navalUnitAtV7(iced, BEACH);
-    const slipped = navalUnitV7(
-      acceptV7(iced, 0, move(walker.id, [SHORE])).state,
-      walker.id,
-    );
-    expect([slipped.at, slipped.form]).toEqual([SHORE, "LAND"]);
+    expect(rejectV7(iced, 0, move(walker.id, [SHORE]))).toEqual({
+      code: "MOVEMENT_ILLEGAL",
+      params: { reason: "ICE_FORBIDDEN" },
+    });
+    expect(offeredMoves(iced, walker.id)).not.toContainEqual(SHORE);
     // A hostile dock is closed (an own active Port embarks as ever).
     const docks = strait(
       ["MARTIAN", "ORIGINAL"],

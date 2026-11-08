@@ -2,7 +2,6 @@ import {
   previewColdSnapV7,
   previewCrackIceV7,
   previewFreezeV7,
-  unitMovementModeV7,
   type CommandV7,
   type CoordV7,
   type PlayerViewV7,
@@ -19,7 +18,6 @@ import {
   FREEZE_PICK_V7,
   ICE_LABEL_V7,
   SKATE_TRAIL_LABEL_V7,
-  SLIP_MOVE_LABEL_V7,
   crackIceOutcomeTextV7,
   crackIceOutcomeV7,
   crackIceTargetLabelV7,
@@ -320,20 +318,19 @@ export interface MoveSlideV7 {
  * What a Move does on ice, read from the command's own path (the path the
  * engine offers and will walk) and the view's ice list:
  *
- * - a unit that skates (`stats.iceFolk.skates`): every run of two or more
- *   ice tiles in one straight line is drawn as a skate trail (Ice Folk
- *   movement, `pulp_wars-s55m.2`; a forced slide before);
- * - every other ground unit: a Move that ends on ice ends there (section
- *   8.7, the slip).
+ * a unit that skates (`stats.iceFolk.skates`): every run of two or more
+ * ice tiles in one straight line is drawn as a skate trail (Ice Folk
+ * movement, `pulp_wars-s55m.2`; a forced slide before). (The slip of every
+ * other ground unit is gone with `pulp_wars-y242`, 7r132: such a unit never
+ * enters ice, and a walker or flyer crosses it like land.)
  *
- * Null for a Move that touches no ice.
+ * Null for a Move with no skate trail.
  */
 export function moveOnIceV7(
   view: PlayerViewV7,
   command: Extract<CommandV7, { kind: "MOVE" }>,
 ): {
   readonly slides: readonly MoveSlideV7[];
-  readonly slip: boolean;
 } | null {
   if (view.ice.length === 0) return null;
   const unit = view.units.find((candidate) => candidate.id === command.unitId);
@@ -343,15 +340,7 @@ export function moveOnIceV7(
   const ice = new Set(view.ice.map((entry) => key(entry.at)));
   if (!command.path.some((at) => ice.has(key(at)))) return null;
   const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
-  if (stats?.iceFolk?.skates !== true) {
-    // A walker or a flyer is never stopped by terrain; the Frost Wyrm is an
-    // Ice Folk flyer and does not slip.
-    const slips =
-      stats?.iceFolk === undefined &&
-      unitMovementModeV7(view, unit) === "GROUND" &&
-      ice.has(key(end));
-    return slips ? { slides: [], slip: true } : null;
-  }
+  if (stats?.iceFolk?.skates !== true) return null;
   const slides: MoveSlideV7[] = [];
   let from = unit.at;
   let run: CoordV7[] = [];
@@ -375,13 +364,12 @@ export function moveOnIceV7(
     from = to;
   }
   flush();
-  return slides.length === 0 ? null : { slides, slip: false };
+  return slides.length === 0 ? null : { slides };
 }
 
 /** The label a Move on ice adds to its cursor description, or null. */
 export function moveOnIceLabelV7(
   onIce: ReturnType<typeof moveOnIceV7>,
 ): string | null {
-  if (onIce === null) return null;
-  return onIce.slip ? SLIP_MOVE_LABEL_V7 : SKATE_TRAIL_LABEL_V7;
+  return onIce === null ? null : SKATE_TRAIL_LABEL_V7;
 }

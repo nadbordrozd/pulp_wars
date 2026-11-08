@@ -165,7 +165,7 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
     });
   });
 
-  it("a Charge! pushes its target along the ice and follows it onto ice", () => {
+  it("a Charge! pushes an Ice Folk target along the ice and does not follow it onto ice (pulp_wars-y242)", () => {
     const triceratops = roleWith("DINOSAUR", "LINEBREAKER");
     const state = scene(
       "DINOSAUR",
@@ -177,6 +177,13 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
     );
     const charger = navalUnitAtV7(state, SHORE);
     const mammoth = navalUnitAtV7(state, ICE1);
+    expect(
+      queryCombatPreviewV7(
+        viewForV7(state, seatV7(state, 0).id),
+        charger.id,
+        mammoth.id,
+      ),
+    ).toMatchObject({ push: "WILL_PUSH", advances: false });
     const result = acceptV7(state, 0, attack(state, SHORE, ICE1));
     expect(result.events).toContainEqual({
       kind: "UNIT_PUSHED",
@@ -186,13 +193,14 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
       to: ICE2,
     });
     expect(navalUnitV7(result.state, mammoth.id).at).toEqual(ICE2);
+    // Only the Ice Folk walk on ice: the Triceratops stays ashore.
     expect(navalUnitV7(result.state, charger.id)).toMatchObject({
-      at: ICE1,
+      at: SHORE,
       form: "LAND",
     });
   });
 
-  it("an attacker advances onto the ice its target died on", () => {
+  it("an attacker of another kind does not advance onto the ice its target died on (pulp_wars-y242)", () => {
     const base = scene(
       "ORIGINAL",
       [
@@ -212,10 +220,10 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
         attacker.id,
         victim.id,
       ),
-    ).toMatchObject({ defenderDies: true, advances: true });
+    ).toMatchObject({ defenderDies: true, advances: false });
     const result = acceptV7(state, 0, attack(state, SHORE, ICE1));
     expect(navalUnitV7(result.state, attacker.id)).toMatchObject({
-      at: ICE1,
+      at: SHORE,
       form: "LAND",
     });
     expect(parseGameStateV7(result.state)).not.toBeNull();
@@ -290,26 +298,32 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
     expect(parseGameStateV7(result.state)).not.toBeNull();
   });
 
-  it("a Beam Down sets a passenger down on ice", () => {
+  it("a Beam Down sets a walker down on ice, and a ground passenger never (pulp_wars-y242)", () => {
     const state = scene(
       "MARTIAN",
       [
         { seat: 0, role: "RAIDER", at: SHORE },
         { seat: 0, role: "FIGHTER", at: { x: 3, y: 1 } },
+        { seat: 0, role: "CATAPULT", at: { x: 1, y: 1 } },
       ],
       [ICE1],
     );
     const grunt = navalUnitAtV7(state, { x: 3, y: 1 });
-    const drop = commandsOf(state, SHORE).find(
-      (command) =>
-        command.kind === "BEAM_DOWN" &&
-        command.passengerUnitId === grunt.id &&
-        command.to.x === ICE1.x &&
-        command.to.y === ICE1.y,
-    );
+    const tripod = navalUnitAtV7(state, { x: 1, y: 1 });
+    const dropOf = (passengerUnitId: number) =>
+      commandsOf(state, SHORE).find(
+        (command) =>
+          command.kind === "BEAM_DOWN" &&
+          command.passengerUnitId === passengerUnitId &&
+          command.to.x === ICE1.x &&
+          command.to.y === ICE1.y,
+      );
+    // A ground unit of another kind than the Ice Folk never enters ice.
+    expect(dropOf(grunt.id)).toBeUndefined();
+    const drop = dropOf(tripod.id);
     if (drop === undefined) throw new Error("the Beam Down is not offered");
     const result = acceptV7(state, 0, drop);
-    expect(navalUnitV7(result.state, grunt.id)).toMatchObject({
+    expect(navalUnitV7(result.state, tripod.id)).toMatchObject({
       at: ICE1,
       form: "LAND",
     });
