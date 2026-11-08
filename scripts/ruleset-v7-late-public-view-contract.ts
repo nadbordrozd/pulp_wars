@@ -211,7 +211,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
     // after PROCLAIM, moving the later command kinds back by one (was
     // 67ba0a…4b1e); the revision-12-ordinal value is unchanged.
-    "829d22159cb1b97fdfbcccd1cfea701f7a6a949c78aee80a69cc2d821998e4b8",
+    // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+    // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone) (was
+    // 829d22…e4b8).
+    "01d2345f33acf211dbd8cdf04e028c38bf8aff332d41f7a66d69704ffe84acf5",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -307,10 +310,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r130",
+    rulesetId: "pulp-wars-poc-7r131",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r130",
+      rulesetId: "pulp-wars-poc-7r131",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

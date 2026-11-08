@@ -25,13 +25,13 @@ describe("the End Turn glow rule", () => {
     expect(nothingUsefulLeftV7([])).toBe(false);
   });
 
-  it("ignores Wait, Disband and Recover, which End Turn makes needless", () => {
+  it("ignores Wait and Disband, which End Turn makes needless", () => {
+    // (Recover was a third until `pulp_wars-3u8d`, 7r131, retired it.)
     expect(
       nothingUsefulLeftV7([
         END,
         { kind: "WAIT", unitId: unit },
         { kind: "DISBAND", unitId: unit },
-        { kind: "RECOVER", unitId: unit },
       ]),
     ).toBe(true);
   });

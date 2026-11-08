@@ -312,13 +312,15 @@ describe("Revision 13 Undead DOM", () => {
       document.querySelector('[data-tactical-state="restless"]')?.textContent,
     ).toBe("RestlessIt is outside your borders, so it will not heal here.");
     requiredButton("close-unit-help").click();
-    const recover = requiredButton("restless-recover");
-    expect(recover.getAttribute("aria-disabled")).toBe("true");
-    expect(recover.disabled).toBe(false);
-    expect(recover.getAttribute("aria-label")).toBe(
-      "Recover unavailable. Restless: Undead recover only inside your territory.",
-    );
-    recover.click();
+    // `pulp_wars-3u8d` (7r131): no Recover button, enabled or disabled
+    // (a unit recovers idle at End Turn); the Restless chip says why it
+    // does not here.
+    expect(
+      document.querySelector('[data-action="restless-recover"]'),
+    ).toBeNull();
+    expect(
+      document.querySelector('[data-action="command-recover"]'),
+    ).toBeNull();
     expect(controller.accepted).toEqual([]);
 
     selectUnitAt(controller, host, at.banshee);
@@ -691,33 +693,18 @@ describe("Idle recovery hints (pulp_wars-v3w)", () => {
       document.querySelector('[data-unit-status="idle-recovery"]'),
     ).toBeNull();
 
-    // An explicit Recover takes the unit out of both.
-    selectUnitAt(controller, host, AT.wounded);
-    requiredButton("command-recover").click();
-    await waitUntil(() => controller.accepted.length === 1);
-    await waitUntil(
-      () =>
-        requiredElement<HTMLElement>("[data-end-turn-recover]").dataset
-          .endTurnRecover === "1",
-    );
-    expect(requiredButton("end-turn").getAttribute("aria-label")).toBe(
-      "End turn. 1 unit will recover.",
-    );
+    // `pulp_wars-3u8d` (7r131): there is no Recover button; a Wait leaves
+    // the unit idle, so the End Turn count stays.
     selectUnitAt(controller, host, AT.wounded);
     expect(
-      document.querySelector('[data-unit-status="idle-recovery"]'),
+      document.querySelector('[data-action="command-recover"]'),
     ).toBeNull();
-
-    // Nothing left to recover: the plain End Turn button.
-    selectUnitAt(controller, host, AT.hurt);
-    await waitUntil(() => !requiredButton("command-recover").disabled);
-    requiredButton("command-recover").click();
-    await waitUntil(() => controller.accepted.length === 2);
-    await waitUntil(
-      () => document.querySelector("[data-end-turn-recover]") === null,
-    );
-    expect(requiredButton("end-turn").textContent).toBe("End turn");
-    expect(requiredButton("end-turn").hasAttribute("aria-label")).toBe(false);
+    requiredButton("command-wait").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(
+      requiredElement<HTMLElement>("[data-end-turn-recover]").dataset
+        .endTurnRecover,
+    ).toBe("2");
     app.destroy();
   });
 });

@@ -629,7 +629,7 @@ describe("the worked examples of section 3.4, as exact previews and results", ()
     const boat = navalUnitAtV7(state, { x: 3, y: 5 });
     const dreadnought = navalUnitAtV7(state, { x: 4, y: 5 });
     const board: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boat.id,
       targetUnitId: dreadnought.id,
     };
@@ -825,7 +825,7 @@ describe("a prize under its new flag (section 2 rule 5)", () => {
       );
       expect(preview?.hpAfter, `${factions[0]} ${role}`).toBe(expected[1]);
       const result = acceptV7(fixture.state, 0, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: fixture.boarder.id,
         targetUnitId: fixture.target.id,
       });
@@ -848,7 +848,7 @@ describe("a prize under its new flag (section 2 rule 5)", () => {
   it("keeps today's rule where both rosters are the Human one", () => {
     const fixture = scene(["ORIGINAL", "UNDEAD"], "BATTLESHIP", { hp: 8 });
     const result = acceptV7(fixture.state, 0, {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: fixture.boarder.id,
       targetUnitId: fixture.target.id,
     });

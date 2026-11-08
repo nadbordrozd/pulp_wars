@@ -112,23 +112,8 @@ export function restlessOutsideTerritoryV7(
   return tile?.explored !== true || tile.territoryOwnerId !== unit.ownerId;
 }
 
-/** The Recover action a Restless unit would otherwise have been offered. */
-export function restlessRecoverBlockedV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
-): boolean {
-  const activation = unit.activation;
-  return (
-    restlessOutsideTerritoryV7(view, unit) &&
-    unit.hp < unit.maxHp &&
-    !activation.handled &&
-    !activation.moved &&
-    !activation.attacked &&
-    !activation.recovered &&
-    !activation.captured &&
-    !activation.specialActed
-  );
-}
+// (`restlessRecoverBlockedV7`, the disabled Recover button's test, went with
+// the `RECOVER` command: `pulp_wars-3u8d`, 7r131.)
 
 export const RESTLESS_EXPLANATION_V7 =
   "Restless: Undead recover only inside your territory.";

@@ -30,9 +30,7 @@ import {
   targetIsSteppedV7,
 } from "../../src/render/canvas/target-highlight-v7";
 import {
-  BOARD_ALREADY_ACTED_V7,
-  BOARD_NEEDS_NAVIGATION_V7,
-  BOARD_NO_WEAK_SHIP_V7,
+  BOARD_ATTACK_PREVIEW_V7,
   NAVAL_HELP_RULES_V7,
   NAVAL_RAM_LABEL_V7,
   RAM_PREVIEW_V7,
@@ -40,8 +38,6 @@ import {
   RAM_SHOVE_V7,
   SUBMERGED_OUT_OF_REACH_V7,
   TORPEDO_PREVIEW_V7,
-  boardBlockTextV7,
-  boardUnavailableTextV7,
   navalBoundaryNoticeV7,
   navalCombatLinesV7,
   viewerHarbourPopulationV7,
@@ -51,7 +47,7 @@ import {
   recruitmentRolePresentationV7,
   roleAbilityNameV7,
 } from "../../src/render/role-presentation-v7";
-import { navalUnitAtV7, patchNavalUnitV7 } from "../fixtures/v7-naval-branch";
+import { patchNavalUnitV7 } from "../fixtures/v7-naval-branch";
 import {
   NAVAL_UI_V7,
   navalBoardingUiFixtureV7,
@@ -94,26 +90,48 @@ function plan(
 const at = (coord: CoordV7): string => `${coord.x},${coord.y}`;
 
 describe("Board on the board plan", () => {
-  it("is one family in the Attack style, stepped with Tab", () => {
-    expect(TARGET_HIGHLIGHT_FAMILIES_V7).toContain("BOARD");
-    expect(targetHighlightStyleV7("BOARD")).toBe("ATTACK");
-    expect(targetIsSteppedV7("BOARD")).toBe(true);
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): a Board is the ship's
+  // Attack on a prize; no `BOARD` family, button or aiming.
+  it("has no Board family: a prize is an Attack target", () => {
+    expect(TARGET_HIGHLIGHT_FAMILIES_V7).not.toContain("BOARD");
+    expect(targetHighlightStyleV7("ATTACK")).toBe("ATTACK");
+    expect(targetIsSteppedV7("ATTACK")).toBe(true);
   });
 
-  it("unarmed, a boarder's prizes are plain attack targets and wear the hook", () => {
+  it("marks a boarder's prizes as Attacks that capture, and wears the hook", () => {
     const view = viewOf(navalBoardingUiFixtureV7());
     const boarder = unitAt(view, NAVAL_UI_V7.boarder);
     const built = plan(view, boarder.id);
-    // The three enemy boats are attack targets; none is a Board target.
-    expect(
-      built.targets
-        .filter((target) => target.family === "ATTACK")
-        .map((target) => at(target.at))
-        .sort(),
-    ).toEqual([...NAVAL_UI_V7.prizes, NAVAL_UI_V7.healthy].map(at).sort());
-    expect(built.targets.some((target) => target.family === "BOARD")).toBe(
-      false,
+    // The three enemy boats are attack targets.
+    const attacks = built.targets.filter(
+      (target) => target.family === "ATTACK",
     );
+    expect(attacks.map((target) => at(target.at)).sort()).toEqual(
+      [...NAVAL_UI_V7.prizes, NAVAL_UI_V7.healthy].map(at).sort(),
+    );
+    // The two prizes say they are captured, with the engine's exact HP.
+    for (const target of attacks) {
+      if (target.command.kind !== "ATTACK") throw new Error("not an Attack");
+      const preview = previewBoardV7(
+        view,
+        boarder.id,
+        target.command.targetUnitId,
+      );
+      const prize = NAVAL_UI_V7.prizes.some(
+        (coord) => at(coord) === at(target.at),
+      );
+      expect(preview !== null, at(target.at)).toBe(prize);
+      if (!prize) {
+        expect(target.previewLabel).not.toBe(BOARD_ATTACK_PREVIEW_V7);
+        continue;
+      }
+      expect(target.previewLabel).toBe(BOARD_ATTACK_PREVIEW_V7);
+      expect(target.previewNote).toBe(
+        `It becomes yours with ${preview?.hpAfter ?? 0} HP`,
+      );
+      expect(target.semanticLabel).toContain("becomes yours with 4 HP");
+      expect(target.semanticLabel).not.toMatch(COORDINATE);
+    }
     // The hook marks the ships at or below their boarding line, for both
     // sides, and never a healthy ship.
     const marked = built.entries
@@ -129,119 +147,14 @@ describe("Board on the board plan", () => {
     expect(
       navalUnitMarkersV7(enemyView, unitAt(enemyView, NAVAL_UI_V7.prizes[0])),
     ).toEqual({ submerged: false, boardable: true });
-  });
-
-  it("armed, only the offered prizes are targets, each with the engine's exact HP", () => {
-    const view = viewOf(navalBoardingUiFixtureV7());
-    const boarder = unitAt(view, NAVAL_UI_V7.boarder);
-    const built = plan(view, boarder.id, {
-      navalPick: { kind: "BOARD", unitId: boarder.id },
-    });
-    expect(built.targets.map((target) => target.family)).toEqual([
-      "BOARD",
-      "BOARD",
-    ]);
-    for (const target of built.targets) {
-      if (target.command.kind !== "BOARD") throw new Error("not a Board");
-      const preview = previewBoardV7(
-        view,
-        boarder.id,
-        target.command.targetUnitId,
-      );
-      expect(preview).not.toBeNull();
-      expect(target.previewLabel).toBe(`Take · ${preview?.hpAfter ?? 0} HP`);
-      expect(target.semanticLabel).toContain("becomes yours with 4 HP");
-      expect(target.semanticLabel).not.toMatch(COORDINATE);
-    }
-    expect(built.targets.map((target) => at(target.at)).sort()).toEqual(
-      NAVAL_UI_V7.prizes.map(at).sort(),
-    );
-    // The healthy boat keeps a grey reason and is no target.
-    const blocked = built.entries.filter((entry) =>
-      entry.key.startsWith("ability-target:BOARD_BLOCKED:"),
-    );
-    expect(blocked.map((entry) => [at(entry.at), entry.label])).toEqual([
-      [at(NAVAL_UI_V7.healthy), "Above 3 HP"],
-    ]);
-  });
-
-  it("names the engine's rejection reasons", () => {
-    expect(boardBlockTextV7("TARGET_IMMUNE", null)).toBe("Not a ship");
-    expect(boardBlockTextV7("OUT_OF_RANGE", 3)).toBe("Too far");
-    expect(boardBlockTextV7("TARGET_HEALTHY", 8)).toBe("Above 8 HP");
-    // Row 10 (`pulp_wars-5ti.3`): a prize on Deep Water without Navigation.
-    expect(boardBlockTextV7("DEEP_WATER", 3)).toBe("Needs Navigation");
-  });
-
-  it("explains a Board that is not offered only where a ship could be boarded", () => {
-    const state = navalBoardingUiFixtureV7();
-    const view = viewOf(state);
-    const boarder = unitAt(view, NAVAL_UI_V7.boarder);
     expect(viewerMayBoardV7(view)).toBe(true);
-    expect(boardUnavailableTextV7(view, boarder, true)).toBeNull();
-    // The boarder already acted: the prizes are still there.
-    expect(boardUnavailableTextV7(view, boarder, false)).toBe(
-      BOARD_ALREADY_ACTED_V7,
-    );
-    // Only a healthy ship next to it.
-    let healthy = state;
-    for (const prize of NAVAL_UI_V7.prizes)
-      healthy = patchNavalUnitV7(healthy, navalUnitAtV7(healthy, prize).id, {
-        hp: 10,
-      });
-    const healthyView = viewOf(healthy);
-    expect(
-      queryPlayerCommandsV7(healthyView).some(
-        (command) => command.kind === "BOARD",
-      ),
-    ).toBe(false);
-    expect(
-      boardUnavailableTextV7(
-        healthyView,
-        unitAt(healthyView, NAVAL_UI_V7.boarder),
-        false,
-      ),
-    ).toBe(BOARD_NO_WEAK_SHIP_V7);
-    // The frozen sea (`pulp_wars-5ti.3`): the prizes stand on Deep Water
-    // and the viewer has no Navigation; an icebound boarder says so.
-    const deepView = {
-      ...view,
-      viewer: {
-        ...view.viewer,
-        researchedTechs: view.viewer.researchedTechs.filter(
-          (tech) => tech !== "NAVIGATION",
-        ),
-      },
-      board: {
-        ...view.board,
-        tiles: view.board.tiles.map((tile) =>
-          NAVAL_UI_V7.prizes.some(
-            (prize) => prize.x === tile.at.x && prize.y === tile.at.y,
-          )
-            ? { ...tile, terrain: "DEEP_WATER" as const }
-            : tile,
-        ),
-      },
-    };
-    expect(boardUnavailableTextV7(deepView, boarder, false)).toBe(
-      BOARD_NEEDS_NAVIGATION_V7,
-    );
-    // Nothing afloat next to a ship: no button at all.
-    const alone = viewOf(navalSubmarineUiFixtureV7());
-    expect(
-      boardUnavailableTextV7(
-        alone,
-        unitAt(alone, NAVAL_UI_V7.farBattleship),
-        false,
-      ),
-    ).toBeNull();
   });
 
   it("announces a boarding without coordinates", () => {
     const state = navalBoardingUiFixtureV7();
     const before = viewOf(state);
     const command: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: unitAt(before, NAVAL_UI_V7.boarder).id,
       targetUnitId: unitAt(before, NAVAL_UI_V7.prizes[0]).id,
     };

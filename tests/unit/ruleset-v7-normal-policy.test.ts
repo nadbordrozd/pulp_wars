@@ -461,7 +461,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
       // after PROCLAIM, moving the later command kinds back by one (was
       // 7a56d4…adbb); the revision-12-ordinal value is unchanged.
-      "347cc0b1d5df141788ed1fb06e6d0b2ea5ac606268f61a127ba20bcda81c1469",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 347cc0…1469).
+      "7a0da9288cdd3a8bb42cb2322bb194733103e8ea705c0e869373a2c34e43cf8f",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1214,7 +1217,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): the command is
       // unchanged; twelve Forges and Workshops on Fertile Ground are new and
       // two Forges on Forest are gone (was 564542…d382).
-      "37c050e1b05c4dbc53aba186b076c34d33276f98ba3ca13eb60f33bb7b7cdc3e",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 37c050…dc3e).
+      "d151d3d281cc8739ed1c67b7f1a31f18444687e5cf7e11b483f568a3a05724df",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1325,7 +1331,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
       // after PROCLAIM, moving the later command kinds back by one (was
       // 442a4c…253f); the revision-12-ordinal value is unchanged.
-      "689c05519453ad1533a1887d16bfa5baeee2c512affb564c4d5d83ff7b61da43",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 689c05…da43).
+      "ab06392f188d80fe5f4882f0c4676a8b9bd071e022b1fb412419b48846ae9904",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1334,7 +1343,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // new rules score this subset (was afe478…07ac).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building candidates
       // follow the new placement rules (was b8ab4b…15d7).
-      "e9e13ce2ac6cc113757122f201b3f18f58511042bf64d9d2a6cac0d5cfe18f43",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was e9e13c…8f43).
+      "103f88cdbcbec3ddf49b033c6595e6f486386f29e5ca94c305d8d839e330be3f",
     );
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
@@ -1348,7 +1360,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r130");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r131");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

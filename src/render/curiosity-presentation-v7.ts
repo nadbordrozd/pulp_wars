@@ -148,7 +148,7 @@ export const CURIOSITY_RULES_V7: Readonly<Record<CuriosityTileIdV7, string>> = {
   // Round 3 (RULESET_7_CURIOSITIES_ROUND_3.md section 1).
   // The chain lightning (`pulp_wars-737.22`).
   TESLA_TOWER: `A unit standing on the Tesla Tower may zap an enemy within ${TESLA_ZAP_RANGE_V7} of it for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking; the lightning then jumps from unit to neighbouring unit for ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}.`,
-  MOON_GUN: `A unit standing on the Moon Gun may be fired to any empty land tile within ${MOON_GUN_RANGE_V7} of it; the Gun fires once a turn.`,
+  MOON_GUN: `A unit standing on the Moon Gun may be fired to any empty land tile within ${MOON_GUN_RANGE_V7} of it that it could not walk to this turn; the Gun fires once a turn.`,
   GOLD_CLAIM: `A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner ${GOLD_CLAIM_COINS_V7} Coins each turn until its ${GOLD_CLAIM_TOTAL_V7} Coins run out.`,
   LOST_EXPEDITION:
     "The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.",
@@ -924,7 +924,8 @@ export const ZAP_OWN_RISK_WARNING_V7 = "May hit your own";
 export const ZAP_CHAIN_SENTENCE_V7 = `Then the lightning jumps to a random unit next to the last one hit, never the same one twice, for ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}. Any unit can be hit, the zapper too.`;
 /** Round 3 (section 12.1): the Moon Gun's command, its tooltip and pick. */
 export const FIRE_MOON_GUN_LABEL_V7 = "Fire";
-export const FIRE_MOON_GUN_TOOLTIP_V7 = `Fire this unit from the ${CURIOSITY_LABELS_V7.MOON_GUN} to an empty land tile within ${MOON_GUN_RANGE_V7}. It lands spent: no attack or capture until your next turn`;
+// `pulp_wars-3u8d` (7r131): only beyond the tiles it could walk to.
+export const FIRE_MOON_GUN_TOOLTIP_V7 = `Fire this unit from the ${CURIOSITY_LABELS_V7.MOON_GUN} to an empty land tile within ${MOON_GUN_RANGE_V7} that it could not walk to. It lands spent: no attack or capture until your next turn`;
 export const FIRE_MOON_GUN_PICK_V7 = "Pick where to land";
 /** Round 3 (section 12.1): a Move target that stakes or finds. */
 export const STAKE_LABEL_V7 = "Stake";

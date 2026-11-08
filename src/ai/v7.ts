@@ -10,6 +10,7 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  BOLAS_MIN_RANGE_V7,
   BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
   FORCE_FIELD_SHIELD_V7,
@@ -106,6 +107,9 @@ import {
   previewGateV7,
   previewStampedeV7,
   previewSwallowV7,
+  queryAttackBoardsV7,
+  queryAttackSwallowsV7,
+  queryIdleRecoveryV7,
   previewTossV7,
   previewStompV7,
   previewBreakOffV7,
@@ -11553,7 +11557,7 @@ function armyStormWaitsV7(
     !context.army ||
     (command.kind !== "MOVE" &&
       command.kind !== "ATTACK" &&
-      command.kind !== "RECOVER" &&
+      command.kind !== "WAIT" &&
       command.kind !== "PILLAGE" &&
       command.kind !== "KABOOM")
   )
@@ -12513,7 +12517,16 @@ function isPolicyCandidate(
   context: PolicyContextV7,
   command: CommandV7,
 ): boolean {
-  if (command.kind === "WAIT") return false;
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): `RECOVER` is gone, and
+  // a unit recovers by itself at End Turn when it has not moved or acted.
+  // The seat holds a wounded unit with a Wait where it used to Recover (the
+  // same predicate: `recoveryWaitV7`), and a unit it held makes no other
+  // command this turn, as a Recover's spent action made none.
+  if (command.kind === "WAIT") return recoveryWaitV7(context, command.unitId);
+  if (command.kind !== "END_TURN" && "unitId" in command) {
+    const holder = context.lookup.unitsById.get(command.unitId);
+    if (holder !== undefined && heldByWaitV7(holder)) return false;
+  }
   // The Cult seat (`pulp_wars-mch9.10`): a step of the plan is a candidate
   // whatever the general rules below say of its Move (a channeller's step
   // to its tile, a Seizure's holder, a daemon released toward the enemy):
@@ -12532,6 +12545,18 @@ function isPolicyCandidate(
       context.curiosities !== null &&
       curiosityRejectsV7(context, command)
     );
+  // `pulp_wars-3u8d` (7r131): a ship's attack on a ship it may board is the
+  // Board (`navalBoardScoreV7`: one that does not beat the ship's best
+  // attack is no candidate); it is no exchange, so the naval attack rules
+  // below do not judge it.
+  if (
+    command.kind === "ATTACK" &&
+    queryAttackBoardsV7(context.view, command.unitId, command.targetUnitId)
+  )
+    return (
+      navalBoardScoreV7(context.view, navalToolsV7(context), command)
+        .priority >= 0
+    );
   if (navalRejectsV7(context, command)) return false;
   if (frozenSeaRejectsV7(context, command)) return false;
   // Against the Cult (`pulp_wars-mch9.12`; `src/ai/v7-cult-against.ts`): a
@@ -12549,7 +12574,10 @@ function isPolicyCandidate(
   // Stomp is a candidate only when its plan prefers it to the attack.
   // (Crushing Shove, Overstride, Glacial Smash, and the Siege Hammer act
   // through the ordinary Move and Attack.)
-  if (command.kind === "SWALLOW")
+  // `pulp_wars-3u8d` (7r131): an Abomination's attack on a unit it may
+  // swallow is the Swallow (no exchange, so the attack rules below do not
+  // judge it).
+  if (command.kind === "ATTACK" && attackSwallowsForPolicyV7(context, command))
     return giantSwallowScoreV7(context, command) !== null;
   if (command.kind === "TOSS") {
     const troll = context.lookup.unitsById.get(command.unitId);
@@ -15467,15 +15495,6 @@ function scoreCommandWithContext(
     if (navalDockLethalV7(context, command)) priority = -1;
   }
 
-  // The naval branch (`pulp_wars-5ti.4`): a Board that beats the ship's
-  // best attack (`navalBoardScoreV7`); otherwise the ship attacks.
-  if (command.kind === "BOARD") {
-    const board = navalBoardScoreV7(view, navalToolsV7(context), command);
-    priority = board.priority;
-    strategicValue = board.strategic;
-    immediateValue = board.immediate;
-  }
-
   if (command.kind === "DISEMBARK" && actor !== undefined) {
     priority =
       context.naval.active &&
@@ -15934,14 +15953,6 @@ function scoreCommandWithContext(
     giantHoldsAttackV7(context, command, actor)
   )
     priority = -1;
-  if (command.kind === "SWALLOW") {
-    const swallow = giantSwallowScoreV7(context, command);
-    if (swallow !== null) {
-      priority = swallow.priority;
-      strategicValue = swallow.strategic;
-      immediateValue = swallow.immediate;
-    }
-  }
   if (command.kind === "TOSS" && actor !== undefined) {
     const toss = giantTossPlanV7(context, actor);
     if (toss !== null && toss.command === command) {
@@ -16393,7 +16404,9 @@ function scoreCommandWithContext(
     }
   }
 
-  if (command.kind === "RECOVER") {
+  // `pulp_wars-3u8d` (7r131): the Wait that holds a wounded unit for its
+  // idle recovery, scored as the retired Recover was.
+  if (command.kind === "WAIT" && recoveryWaitV7(context, command.unitId)) {
     priority = (actor?.hp ?? 0) * 2 < (actor?.maxHp ?? 0) ? 400 : 300;
     immediateValue =
       actor === undefined ? 0 : Math.min(2, actor.maxHp - actor.hp) * 8;
@@ -16984,6 +16997,32 @@ function scoreCommandWithContext(
   // attacked; and an own bound daemon plays before its channellers are
   // placed, and ends its Move (or its advance after a kill) only where
   // they can follow.
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): an attack that boards
+  // or swallows is no blow, so its score is the Board's or the Swallow's
+  // whatever the attack rules above made of it. The naval branch
+  // (`pulp_wars-5ti.4`): a Board that beats the ship's best attack
+  // (`navalBoardScoreV7`); otherwise the ship attacks another target. The
+  // giants' signatures: a Swallow by its preview (`giantSwallowScoreV7`).
+  if (command.kind === "ATTACK") {
+    const special = queryAttackBoardsV7(
+      view,
+      command.unitId,
+      command.targetUnitId,
+    )
+      ? navalBoardScoreV7(view, navalToolsV7(context), command)
+      : attackSwallowsForPolicyV7(context, command)
+        ? (giantSwallowScoreV7(context, command) ?? {
+            priority: -1,
+            strategic: 0,
+            immediate: 0,
+          })
+        : null;
+    if (special !== null) {
+      priority = special.priority;
+      strategicValue = special.strategic;
+      immediateValue = special.immediate;
+    }
+  }
   const cultPlan = cultPlanForV7(context);
   if (cultPlan !== null && command.kind !== "END_TURN") {
     const step = cultStepForV7(cultPlan, command);
@@ -18695,9 +18734,9 @@ function dinosaurPackWaitsV7(
  * docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): the own Sled that
  * can chill `target` this turn for a combined kill: one whose `THROW_BOLAS`
  * on it is on offer where it stands (the lowest unit ID), or else one that
- * has not moved, has a Move to a tile within the Bolas's range of the
- * target that the visible enemies do not kill it on (the tile where they
- * deal it the least, two tiles off before one), and may throw after it.
+ * has not moved, has a Move to a tile exactly the Bolas's range (2) from
+ * the target that the visible enemies do not kill it on (the tile where
+ * they deal it the least), and may throw after it.
  * Never a unit already told off for another combined kill (`taken`).
  */
 function iceFolkBolasSourceV7(
@@ -18735,7 +18774,8 @@ function iceFolkBolasSourceV7(
       continue;
     for (const to of context.lookup.moveDestinationsByUnit.get(unit.id) ?? []) {
       const gap = distance(to, target.at);
-      if (gap > BOLAS_RANGE_V7) continue;
+      // `pulp_wars-3u8d` (7r131): a Bolas flies exactly 2 tiles.
+      if (gap > BOLAS_RANGE_V7 || gap < BOLAS_MIN_RANGE_V7) continue;
       const danger = visibleImmediateDamage(view, unit, to, context);
       if (danger >= unit.hp) continue;
       const key = [-danger, gap, -unit.id, -to.y, -to.x];
@@ -25941,9 +25981,64 @@ function giantAttackValueV7(
 }
 
 /**
- * Swallow (section 9): an own Abomination gulps a unit its attack would
- * not kill this turn, never below `SWALLOW_MINIMUM_HP_V7` of its own HP (a
- * victim freed next to a dying Abomination is wasted). The victim is off
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether an offered
+ * `ATTACK` swallows (an own Abomination's on a unit it may swallow). Only a
+ * role with `SWALLOW` is asked.
+ */
+function attackSwallowsForPolicyV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  const actor = context.lookup.unitsById.get(command.unitId);
+  return (
+    actor !== undefined &&
+    unitRoleRuleV7(context.view, actor).abilities.includes("SWALLOW") &&
+    queryAttackSwallowsV7(context.view, command.unitId, command.targetUnitId)
+  );
+}
+
+/** The own units that would recover idle now, by view (the End Turn rule). */
+const IDLE_RECOVERY_UNITS_V7 = new WeakMap<PlayerViewV7, ReadonlySet<UnitId>>();
+
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether the seat may hold
+ * the own unit `unitId` with a Wait for its idle recovery: exactly the units
+ * a `RECOVER` was offered for (the End Turn predicate, `queryIdleRecoveryV7`,
+ * less a Crashed unit, which recovers idle but had no Recover).
+ */
+function recoveryWaitV7(context: PolicyContextV7, unitId: UnitId): boolean {
+  const view = context.view;
+  let units = IDLE_RECOVERY_UNITS_V7.get(view);
+  if (units === undefined) {
+    units = new Set(queryIdleRecoveryV7(view).map((entry) => entry.unitId));
+    IDLE_RECOVERY_UNITS_V7.set(view, units);
+  }
+  return units.has(unitId) && !crashedForPolicyV7(view, unitId);
+}
+
+/**
+ * Whether the own unit was held by a Wait this turn: handled, with no Move,
+ * attack, capture, recovery, or special action (and no Overrun).
+ */
+function heldByWaitV7(unit: PublicUnitV7): boolean {
+  const activation = unit.activation;
+  return (
+    activation.handled &&
+    !activation.moved &&
+    !activation.attacked &&
+    !activation.recovered &&
+    !activation.captured &&
+    !activation.specialActed &&
+    !activation.overrunActive
+  );
+}
+
+/**
+ * Swallow (section 9): an own Abomination gulps a unit, never below
+ * `SWALLOW_MINIMUM_HP_V7` of its own HP (a victim freed next to a dying
+ * Abomination is wasted). Since `pulp_wars-3u8d` (7r131) the Swallow is its
+ * `ATTACK` on a unit it may swallow, so it swallows a unit its blow would
+ * have killed too (it has no blow there). The victim is off
  * the board, so the Swallow has a kill's tier and the victim's whole value
  * (the dearest first), `SWALLOW_ZOMBIE_VALUE_V7` for the Zombie it is spat
  * out as, and the tiers of a cleared hostile center and of an enemy taken
@@ -25952,7 +26047,7 @@ function giantAttackValueV7(
  */
 function giantSwallowScoreV7(
   context: PolicyContextV7,
-  command: Extract<CommandV7, { kind: "SWALLOW" }>,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
 ): GiantCommandScoreV7 | null {
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
@@ -25965,17 +26060,6 @@ function giantSwallowScoreV7(
     return null;
   const preview = previewSwallowV7(view, command.unitId, command.targetUnitId);
   if (preview === null) return null;
-  if (
-    context.commands.some(
-      (offered) =>
-        offered.kind === "ATTACK" &&
-        offered.unitId === actor.id &&
-        offered.targetUnitId === target.id,
-    )
-  ) {
-    const blow = queryCombatPreviewV7(view, actor.id, target.id);
-    if (blow !== null && blow.defenderDies && !blow.attackerDies) return null;
-  }
   let priority = giantKillTierV7(context, target.id);
   let strategic =
     targetStrategicValue(view, target.id, context.lookup) +

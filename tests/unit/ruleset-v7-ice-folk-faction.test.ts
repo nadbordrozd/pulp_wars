@@ -206,7 +206,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // FIRE_MOON_GUN after JOIN_CHANT (87). The Mothership redesign
     // (`pulp_wars-ewpj`) adds MASS_BEAM_DOWN (88), and one tile, one meaning
     // (`pulp_wars-n5fa`, 7r130) removes RIBBIT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    // (84: one tile, one meaning, `pulp_wars-3u8d`, 7r131, removes BOARD,
+    // RECOVER and SWALLOW.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
     expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 17)).toEqual([
       "BREAK_OFF",
@@ -1117,12 +1119,12 @@ describe("Ice Folk technology (section 4)", () => {
             (unlock) =>
               !(unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) &&
               unlock.kind !== "RAM" &&
+              unlock.kind !== "BOARDING" &&
               unlock.kind !== "HARBOURS" &&
               unlock.kind !== "NAVAL_TRAINING_DISCOUNT" &&
               !(
                 unlock.kind === "COMMAND" &&
-                (unlock.command === "BOARD" ||
-                  unlock.command === "BUILD_PORT" ||
+                (unlock.command === "BUILD_PORT" ||
                   unlock.command === "BUILD_SHIPYARD")
               ),
           ),
@@ -1221,7 +1223,6 @@ describe("Ice Folk technology (section 4)", () => {
       human.commands.filter(
         (command) =>
           command !== "BUILD_FIELD_DEFENSE" &&
-          command !== "BOARD" &&
           command !== "BUILD_PORT" &&
           command !== "BUILD_SHIPYARD",
       ),

@@ -355,7 +355,7 @@ describe("ruleset-7 landing ends the activation", () => {
       );
       for (const kind of ["ATTACK", "DISBAND", "MOVE", "WAIT"])
         expect(kinds).toContain(kind);
-      if (faction !== "UNDEAD") expect(kinds).toContain("RECOVER");
+      // (A Recover was offered here too until `pulp_wars-3u8d`, 7r131.)
       if (faction === "GOBLIN") expect(kinds).toContain("KABOOM");
 
       const landed = applyOkV7(state, seat, {
@@ -381,7 +381,7 @@ describe("ruleset-7 landing ends the activation", () => {
         reject({ kind: "ATTACK", unitId: mover, targetUnitId: enemy }),
       ).toEqual(acted);
       expect(reject({ kind: "DISBAND", unitId: mover })).toEqual(acted);
-      expect(reject({ kind: "RECOVER", unitId: mover })).toEqual(acted);
+
       expect(reject({ kind: "MOVE", unitId: mover, path: [at(2, 2)] })).toEqual(
         acted,
       );

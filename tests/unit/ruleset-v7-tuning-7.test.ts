@@ -189,7 +189,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
   });
 });
 
@@ -766,7 +766,8 @@ describe("1c and 4. the slow units go as a block, the fast units with them", () 
     const quiet = policyTurn(calm);
     expect(
       quiet.commands.some(
-        (command) => command.kind === "RECOVER" && command.unitId === wounded,
+        // `pulp_wars-3u8d` (7r131): the recovery Wait.
+        (command) => command.kind === "WAIT" && command.unitId === wounded,
       ),
     ).toBe(true);
   });

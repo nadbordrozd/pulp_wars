@@ -259,7 +259,7 @@ describe("bolder abilities: the Brain takes any adjacent unit (7r99)", () => {
     );
     const ship = idAt(state, at(5, 3));
     const run = applyOkV7(state, seatIdV7(state, 2), {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: idAt(state, at(6, 3)),
       targetUnitId: ship,
     });
@@ -304,7 +304,7 @@ describe("bolder abilities: the Brain takes any adjacent unit (7r99)", () => {
     );
     const grunt = idAt(base, at(6, 3));
     const swallowed = applyOkV7(base, seatIdV7(base, 1), {
-      kind: "SWALLOW",
+      kind: "ATTACK",
       unitId: idAt(base, at(5, 3)),
       targetUnitId: grunt,
     }).state;

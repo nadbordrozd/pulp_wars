@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
+  queryIdleRecoveryV7,
   queryPlayerCommandsV7,
   validateMovementPathV7,
   validatePlayerMovementPathV7,
@@ -173,12 +174,10 @@ describe("ruleset-7 naval public commands", () => {
             : unit,
       ),
     } as typeof fixture.state;
-    const blockedCommands = queryPlayerCommandsV7(
-      viewForV7(blocked, blocked.humanPlayerId),
-    );
+    // `pulp_wars-3u8d` (7r131): no idle recovery there (no Recover command).
     expect(
-      blockedCommands.some(
-        (command) => command.kind === "RECOVER" && command.unitId === own.id,
+      queryIdleRecoveryV7(viewForV7(blocked, blocked.humanPlayerId)).some(
+        (entry) => entry.unitId === own.id,
       ),
     ).toBe(false);
   });

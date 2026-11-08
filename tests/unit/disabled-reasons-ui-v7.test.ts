@@ -30,10 +30,7 @@ import {
   MARTIAN_FROZEN_MOVED_V7,
   TRACTOR_USED_V7,
 } from "../../src/render/martian-presentation-v7";
-import {
-  BOARD_NEEDS_NAVIGATION_V7,
-  BOARD_SEA_BEAST_V7,
-} from "../../src/render/naval-presentation-v7";
+
 import {
   SACRIFICE_AFFLICTED_V7,
   SEIZE_IMMUNE_V7,
@@ -98,8 +95,10 @@ describe("disabled action reasons", () => {
       ASSEMBLE_NEEDS_TECH_V7,
       ASSEMBLE_NO_HOME_V7,
       BOMB_FROZEN_V7,
-      BOARD_NEEDS_NAVIGATION_V7,
-      BOARD_SEA_BEAST_V7,
+      // (The Board button's reasons went with the `BOARD` command:
+      // `pulp_wars-3u8d`, 7r131.)
+      "Taking a ship on Deep Water needs Navigation",
+      "A sea beast cannot be boarded",
       SACRIFICE_AFFLICTED_V7,
       SEIZE_IMMUNE_V7,
       SUMMONER_ALREADY_ACTED_V7,

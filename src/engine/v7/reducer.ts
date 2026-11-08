@@ -268,7 +268,12 @@ import {
   withFullShieldsV7,
   withShieldDamageV7,
 } from "./martian";
-import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
+import {
+  playerMoveReachesNowV7,
+  unitSightRadiusAtV7,
+  validateMovementPathV7,
+} from "./movement";
+import { viewForV7 } from "./view";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
@@ -329,6 +334,7 @@ import {
   applySwallowV7,
   applyTossV7,
   attackCrushDamageV7,
+  attackSwallowsV7,
   crushBehindTileV7,
   defenderCrushableV7,
   fixedSignatureHitV7,
@@ -401,7 +407,6 @@ import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
   recoveryGainV7,
-  restlessOutsideOwnTerritoryV7,
   type RecoveryFactsV7,
 } from "./recovery";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
@@ -498,7 +503,8 @@ export type RuleErrorCodeV7 =
   | "HEAL_TARGET_NOT_OWNED"
   | "HEAL_TARGET_NOT_ADJACENT"
   | "HEAL_TARGET_FULL"
-  | "RECOVER_NOT_LEGAL"
+  // (`RECOVER_NOT_LEGAL` retired with the `RECOVER` command:
+  // `pulp_wars-3u8d`, 7r131, a unit recovers idle at End Turn.)
   | "RAISE_DEAD_NOT_LEGAL"
   | "DEVOUR_NOT_LEGAL"
   | "PROMOTION_NOT_ELIGIBLE"
@@ -1574,6 +1580,11 @@ function applyFireMoonGun(
   if (!moonGunLoadedV7(gun, state.round, actor))
     return rejected(original, "MOON_GUN_NOT_LEGAL", { reason: "RELOADING" });
   const player = requirePlayer(state, actor);
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): never a tile the unit
+  // could reach by an offered Move now, read on the actor's view as the
+  // public query reads it.
+  const actorView = viewForV7(state, actor);
+  const shown = actorView.units.find((candidate) => candidate.id === unit.id);
   const reason = moonGunLandingRejectionV7(
     state,
     unit,
@@ -1584,6 +1595,9 @@ function applyFireMoonGun(
       isExplored(player, at)
         ? state.board.tiles[at.y * state.board.width + at.x]
         : undefined,
+    shown === undefined
+      ? () => false
+      : playerMoveReachesNowV7(actorView, shown),
   );
   if (reason !== null)
     return rejected(original, "MOON_GUN_NOT_LEGAL", { reason });
@@ -2054,8 +2068,8 @@ function navalFactsMayChangeV7(
   if (command.kind === "MIND_CONTROL" || command.kind === "TRACTOR_BEAM")
     return true;
   // The naval branch section 4.2: a prize standing on its former owner's
-  // dock now blockades it (and one taken off an own dock lifts a blockade).
-  if (command.kind === "BOARD") return true;
+  // dock now blockades it (and one taken off an own dock lifts a blockade);
+  // a Board is an `ATTACK` since `pulp_wars-3u8d` (7r131), listed below.
   // The Dwarf revision section 6.3: a bomb can kill an embarked blockader,
   // and a self-launch can start a blockade.
   if (command.kind === "BOMB_RUN") return true;
@@ -2245,8 +2259,6 @@ function applyCommandCoreV7(
       command,
       applyAttack(stateInput, state, actor, command),
     );
-  if (command.kind === "BOARD")
-    return applyBoard(stateInput, state, actor, command);
   if (command.kind === "RALLY")
     return applyRally(stateInput, state, actor, command.unitId);
   if (command.kind === "TEND_WOUNDED")
@@ -2255,8 +2267,6 @@ function applyCommandCoreV7(
     return applyRaiseDead(stateInput, state, actor, command.unitId);
   if (command.kind === "DEVOUR")
     return applyDevour(stateInput, state, actor, command.unitId);
-  if (command.kind === "RECOVER")
-    return applyRecover(stateInput, state, actor, command.unitId);
   if (command.kind === "PROMOTE")
     return applyPromote(stateInput, state, actor, command.unitId);
   if (command.kind === "WAIT")
@@ -2354,8 +2364,7 @@ function applyCommandCoreV7(
   if (command.kind === "TOP_UP")
     return applyTopUpV7(DWARF_KIT_V7, stateInput, state, actor, command);
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6).
-  if (command.kind === "SWALLOW")
-    return applySwallowV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // (The Swallow is an `ATTACK` since `pulp_wars-3u8d`, 7r131.)
   if (command.kind === "TOSS")
     return applyTossV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "STOMP")
@@ -6619,6 +6628,22 @@ function applyAttack(
     (distance > 1 && unitIsSubmergedV7(state, defender))
   )
     return rejected(original, "TARGET_OUT_OF_RANGE");
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): an Abomination's
+  // attack on a unit it may swallow swallows it (the `SWALLOW` command
+  // before), and a ship's attack on a ship it may board boards it (the
+  // `BOARD` command before). Neither is an exchange: nothing strikes back,
+  // and a retaliation never swallows or boards.
+  if (attackSwallowsV7(state, state.giants.swallowed, attacker, defender))
+    return applySwallowV7(
+      DWARF_KIT_V7,
+      original,
+      state,
+      actor,
+      attacker,
+      defender,
+    );
+  if (canonicalAttackBoardsV7(state, actor, attacker, defender))
+    return applyBoard(original, state, actor, attacker, defender);
   // `pulp_wars-befg`: a Whirligig's attack is a Whirl: it hits every unit
   // next to it, friend and foe, and nothing answers it.
   if (attackIsWhirlV7(state, attacker))
@@ -6866,9 +6891,49 @@ function resolveCandyAfterAttackV7(
 }
 
 /**
- * The naval branch `BOARD` (docs/product/RULESET_7_NAVAL_BRANCH.md section
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether the `ATTACK` of
+ * the actor's `boarder` on the visible `target` is a Board (the naval
+ * branch, docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2): the boarder
+ * is a ship whose owner has Seamanship (`boarding`), outside an Overrun,
+ * with its primary action unused and allowed after its Move, and the
+ * target is a hostile ship the shared `boardTargetBlockV7` admits (next to
+ * it, at a third of its maximum HP or less, not a sea beast, on Deep Water
+ * only with Navigation). The public query's `publicBoardTargetsV7` is the
+ * same rule on the view.
+ */
+function canonicalAttackBoardsV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  boarder: UnitStateV7,
+  target: UnitStateV7,
+): boolean {
+  return (
+    boarder.form === "NAVAL" &&
+    unitCapabilitiesV7(
+      state,
+      boarder,
+      ownerResearchedTechsV7(state, boarder.ownerId),
+    ).boarding &&
+    !boarder.activation.overrunActive &&
+    !primaryUsed(boarder) &&
+    !primaryActionBlockedAfterMoveV7(state, boarder) &&
+    arePlayersHostileV7(state, actor, target.ownerId) &&
+    boardTargetBlockV7(
+      boarder,
+      target,
+      tileAtV7(state.board, target.at)?.terrain,
+      ownerResearchedTechsV7(state, actor).includes("NAVIGATION"),
+      boardSeaBeastBlockedV7(state, actor, target),
+    ) === null
+  );
+}
+
+/**
+ * The naval branch Board (docs/product/RULESET_7_NAVAL_BRANCH.md section
  * 4.2): a ship next to a hostile ship at a third of its maximum HP or less
- * captures it. It is a primary action, not an Attack, and costs no Coins.
+ * captures it. Since `pulp_wars-3u8d` (7r131) it is the ship's `ATTACK` on
+ * such a ship (`canonicalAttackBoardsV7`; the `BOARD` command before); it
+ * is a primary action, not an exchange, and costs no Coins.
  * The prize keeps its ID, role, maximum HP, kills, `veteran`, tile, and
  * every status entry; it becomes the actor's (so its kind follows its new
  * owner), an orphan (`homeCityId` null), exhausted, and patched up to one
@@ -6879,48 +6944,11 @@ function applyBoard(
   original: GameStateV7,
   state: GameStateV7,
   actor: PlayerId,
-  command: Extract<CommandV7, { kind: "BOARD" }>,
+  boarder: UnitStateV7,
+  target: UnitStateV7,
 ): ApplyCommandResultV7 {
   if (state.commandIndex === Number.MAX_SAFE_INTEGER)
     return rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const boarder = actorCheck.unit;
-  if (boarder.form !== "NAVAL")
-    return rejected(original, "BOARD_NOT_LEGAL", { reason: "NOT_A_SHIP" });
-  if (
-    !unitCapabilitiesV7(
-      state,
-      boarder,
-      ownerResearchedTechsV7(state, boarder.ownerId),
-    ).boarding
-  )
-    return rejected(original, "TECH_REQUIRED", { tech: "SEAMANSHIP" });
-  if (
-    boarder.activation.overrunActive ||
-    primaryUsed(boarder) ||
-    primaryActionBlockedAfterMoveV7(state, boarder)
-  )
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: boarder.id });
-  const target = state.units.find(
-    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
-  );
-  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
-    return rejected(original, "TARGET_NOT_FOUND", {
-      targetUnitId: command.targetUnitId,
-    });
-  if (!arePlayersHostileV7(state, actor, target.ownerId))
-    return rejected(original, "TARGET_ALLIED");
-  const block = boardTargetBlockV7(
-    boarder,
-    target,
-    tileAtV7(state.board, target.at)?.terrain,
-    ownerResearchedTechsV7(state, actor).includes("NAVIGATION"),
-    boardSeaBeastBlockedV7(state, actor, target),
-  );
-  if (block !== null)
-    return rejected(original, "BOARD_NOT_LEGAL", { reason: block });
   try {
     // Themed naval branches (`pulp_wars-5ti.16`, section 2 rule 5): the
     // prize takes its new kind's maximum HP and is patched up to one above
@@ -8231,63 +8259,6 @@ function applyDevour(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
-}
-
-function applyRecover(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  unitId: UnitStateV7["id"],
-): ApplyCommandResultV7 {
-  const actorCheck = validateUnitActor(state, actor, unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const unit = actorCheck.unit;
-  // The Candy revision section 5.3: a Crashed unit has no primary action
-  // (it still recovers idle at End Turn).
-  if (unitIsCrashedV7(state, unit.id))
-    return rejected(original, "UNIT_CRASHED", { unitId });
-  if (primaryUsed(unit) || unit.activation.moved)
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
-  // The Dwarf revision section 7.2: clockwork never mends itself.
-  if (unitIsConstructV7(state, unit))
-    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "CONSTRUCT" });
-  if (unit.hp >= unit.maxHp)
-    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "FULL_HP" });
-  if (unit.form === "EMBARKED")
-    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "EMBARKED" });
-  if (restlessOutsideOwnTerritory(state, unit))
-    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "RESTLESS" });
-  if (
-    unit.form === "NAVAL" &&
-    ![unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
-      shipRecoversAtDockV7(state, unit, at),
-    )
-  )
-    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "NO_PORT" });
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
-    return rejected(original, "INTEGER_OVERFLOW");
-  const amount = recoveryGainV7(recoveryFacts(state, unit));
-  return accepted(
-    checked({
-      ...state,
-      commandIndex: nextSafe(state.commandIndex),
-      units: state.units.map((candidate) =>
-        candidate.id === unitId
-          ? {
-              ...candidate,
-              hp: candidate.hp + amount,
-              activation: {
-                ...candidate.activation,
-                recovered: true,
-                handled: true,
-              },
-            }
-          : candidate,
-      ),
-    }),
-    [{ kind: "UNIT_RECOVERED", unitId, amount, automatic: false }],
-  );
 }
 
 function applyPromote(
@@ -10512,8 +10483,10 @@ function recoverIdleUnits(
   state: GameStateV7,
   player: PlayerStateV7,
 ): { state: GameStateV7; events: readonly DomainEventV7[] } {
-  // Section 10: exactly the units a `RECOVER` is offered for now (the shared
-  // predicate `recoverEligibleV7`): an Egg, an embarked unit, a construct, a
+  // Section 10: exactly the units the shared predicate `recoverEligibleV7`
+  // admits (a `RECOVER` was offered for them until `pulp_wars-3u8d`, 7r131,
+  // retired the command; idle recovery is the one way to recover, with the
+  // same predicate and amount): an Egg, an embarked unit, a construct, a
   // Restless unit outside own territory, and a ship away from a Port are
   // skipped, with no HP change and no event.
   // `pulp_wars-mch9.61`: a cultist that chants has acted, although its join
@@ -10601,21 +10574,6 @@ function inOwnTerritory(state: GameStateV7, unit: UnitStateV7): boolean {
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
   return city?.ownerId === unit.ownerId;
-}
-
-/**
- * Revision 13 Restless: a land-form unit of a Restless kind (Undead)
- * recovers only in its owner's (its controller's) territory.
- */
-function restlessOutsideOwnTerritory(
-  state: GameStateV7,
-  unit: UnitStateV7,
-): boolean {
-  return restlessOutsideOwnTerritoryV7({
-    form: unit.form,
-    restless: factionRulesV7(unitFactionV7(state, unit)).restless,
-    inOwnTerritory: inOwnTerritory(state, unit),
-  });
 }
 
 function adjacentCoords(

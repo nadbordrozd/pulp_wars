@@ -723,7 +723,7 @@ describe("The giants' signature cues (bead pulp_wars-w49.32)", () => {
     expect(
       giantSteps(
         commandSteps(giantsSwallowFixtureV7(), (view) => ({
-          kind: "SWALLOW",
+          kind: "ATTACK",
           unitId: unitAt(view, swallow.abomination).id,
           targetUnitId: unitAt(view, swallow.knight).id,
         })),

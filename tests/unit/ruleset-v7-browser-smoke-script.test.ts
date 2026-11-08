@@ -38,21 +38,19 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
     expect(source).toContain("await captureNavalBranchEvidence(");
     expect(source).toContain("/tests/fixtures/v7-naval-ui.ts");
-    expect(source).toContain("Board must have exactly one dock button");
-    expect(source).toContain("Board must not be a per-target dock command");
+    // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no Board button;
+    // the attack on a prize boards it.
+    expect(source).toContain("Board must have no dock button");
     expect(source).toContain(
-      "document.querySelector('[data-v7-naval-pick].v7-board-pick')?.dataset.boardTargets === '2'",
-    );
-    expect(source).toContain(
-      "trace?.command?.kind !== 'BOARD' || !trace.eventKinds.includes('SHIP_BOARDED')",
+      "trace?.command?.kind !== 'ATTACK' || !trace.eventKinds.includes('SHIP_BOARDED')",
     );
     expect(source).toContain(
       "trace?.command?.kind !== 'ATTACK' || !trace.eventKinds.includes('UNIT_PUSHED')",
     );
     expect(source).toContain('[data-unit-status="submerged"]');
-    // The board pick comes before the Board is accepted.
-    expect(source.indexOf("naval-board-pick.png")).toBeLessThan(
-      source.indexOf("board pick did not accept BOARD with SHIP_BOARDED"),
+    // The boarder's Attack marks are captured before the Board is accepted.
+    expect(source.indexOf("naval-board-attack.png")).toBeLessThan(
+      source.indexOf("the attack did not board with SHIP_BOARDED"),
     );
   });
 
@@ -920,7 +918,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r130.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r131.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1203,7 +1201,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
     },
     persisted: {
       version: 7,
-      rulesetId: "pulp-wars-poc-7r130",
+      rulesetId: "pulp-wars-poc-7r131",
       commandIndex: 3,
     },
     ordinaryBoundary: {

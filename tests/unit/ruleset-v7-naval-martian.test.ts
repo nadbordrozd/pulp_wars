@@ -54,6 +54,7 @@ import {
   patchNavalUnitV7,
   rejectV7,
   seatV7,
+  boardingAttacksV7,
 } from "../fixtures/v7-naval-branch";
 import { frozenStateV7 } from "../fixtures/v7-frozen-sea";
 import {
@@ -516,7 +517,7 @@ describe("a prize under its new flag (section 2 rule 5)", () => {
     const skimmer = navalUnitAtV7(state, { x: 4, y: 5 });
     expect(shieldOfV7(state.shields, skimmer.id)).toBe(2);
     const boarded = acceptV7(state, 0, {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: navalUnitAtV7(state, { x: 3, y: 5 }).id,
       targetUnitId: skimmer.id,
     }).state;
@@ -536,13 +537,8 @@ describe("a prize under its new flag (section 2 rule 5)", () => {
         { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 }, hp: 2 },
       ],
     );
-    expect(
-      rejectV7(martian, 0, {
-        kind: "BOARD",
-        unitId: navalUnitAtV7(martian, { x: 3, y: 5 }).id,
-        targetUnitId: navalUnitAtV7(martian, { x: 4, y: 5 }).id,
-      }),
-    ).toEqual({ code: "TECH_REQUIRED", params: { tech: "SEAMANSHIP" } });
+    // (`pulp_wars-3u8d`, 7r131: its attack on the weak boat is an attack.)
+    expect(boardingAttacksV7(martian)).toEqual([]);
   });
 });
 

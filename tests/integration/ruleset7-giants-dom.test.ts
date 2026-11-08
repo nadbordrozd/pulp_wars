@@ -73,23 +73,18 @@ function panelButtons(): readonly string[] {
   ].map((button) => button.textContent ?? "");
 }
 
-describe("Swallow: one button, the victim picked on the board", () => {
-  it("aims, lists no victim in the dock, and swallows the picked one", async () => {
+describe("Swallow: the Abomination's attack on a victim", () => {
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no Swallow button and
+  // no aiming; the Attack mark on a victim says it is swallowed, and the
+  // attack swallows it.
+  it("has no button, marks the victims, and swallows the picked one", async () => {
     const scene = rig(giantsSwallowFixtureV7());
     const at = GIANTS_UI_V7.swallow;
     const abomination = select(scene, at.abomination);
-    expect(
-      document.querySelectorAll('[data-action="giant-swallow"]'),
-    ).toHaveLength(1);
-    // No generic command button per victim.
+    expect(document.querySelector('[data-action="giant-swallow"]')).toBeNull();
     expect(
       document.querySelector('[data-action^="command-swallow"]'),
     ).toBeNull();
-    const button = requiredButton("giant-swallow");
-    expect(button.getAttribute("aria-label")).toBe(
-      "Swallow. Swallow an enemy of 12 HP or less next to it",
-    );
-    expect(button.getAttribute("aria-pressed")).toBe("false");
     // The unit card's details state the signature in one line (bead
     // pulp_wars-2yc.86: not in the compact card).
     expect(
@@ -97,27 +92,23 @@ describe("Swallow: one button, the victim picked on the board", () => {
     ).toBeNull();
     expect(
       openUnitDetailsV7().querySelector(".v7-giant-signature")?.textContent,
-    ).toMatch(/^Swallow: Swallows an enemy of 12 HP or less next to it/);
+    ).toMatch(/^Swallow: Its attack swallows an enemy of 12 HP or less/);
     closeDetailsV7();
-    requiredButton("giant-swallow").click();
-    expect(scene.host.lastModel?.interaction.giantPick).toEqual({
-      kind: "SWALLOW",
-      unitId: abomination,
-    });
-    const panel = requiredElement<HTMLElement>("[data-v7-giant-pick]");
-    expect(panel.dataset.boardTargets).toBe("2");
-    expect(panelButtons()).toEqual(["?", "Cancel"]);
-    // The signature's line steps aside while it is aimed.
-    expect(document.querySelector(".v7-giant-signature")).toBeNull();
-    expect(panel.textContent ?? "").not.toMatch(COORDINATE);
+    const victims = boardPlan(scene.host).targets.filter(
+      (target) =>
+        target.family === "ATTACK" &&
+        (target.previewLabel ?? "").startsWith("Swallow"),
+    );
+    expect(victims).toHaveLength(2);
+    for (const victim of victims)
+      expect(victim.semanticLabel ?? "").not.toMatch(COORDINATE);
     pickOnBoard(scene, at.knight);
     await waitUntil(() => scene.controller.accepted.length === 1);
     expect(scene.controller.accepted[0]).toEqual({
-      kind: "SWALLOW",
+      kind: "ATTACK",
       unitId: abomination,
       targetUnitId: scene.unitAt(at.knight).id,
     });
-    expect(scene.host.lastModel?.interaction.giantPick).toBeUndefined();
     scene.app.destroy();
   });
 

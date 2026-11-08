@@ -736,7 +736,6 @@ describe("the Crash and Home Sweet Home (section 5.3)", () => {
     const id = (where: CoordV7) => unitAtV7(base, where).id;
     const refused: readonly CommandV7[] = [
       { kind: "ATTACK", unitId: id(at(5, 3)), targetUnitId: id(at(5, 2)) },
-      { kind: "RECOVER", unitId: id(at(5, 3)) },
       { kind: "SUGAR_RUSH", unitId: id(at(5, 3)) },
       { kind: "CAPTURE", unitId: id(at(5, 5)) },
       { kind: "PILLAGE", unitId: id(at(5, 3)) },
@@ -798,7 +797,6 @@ describe("the Crash and Home Sweet Home (section 5.3)", () => {
         targetUnitId: unitAtV7(state, at(5, 4)).id,
       },
       { kind: "CAPTURE", unitId: unit.id },
-      { kind: "RECOVER", unitId: unit.id },
     ] as const)
       expect(rejectedV7(state, command).code, command.kind).toBe(
         "UNIT_CRASHED",

@@ -135,7 +135,7 @@ describe("naval branch persistence", () => {
       save: midSave,
     });
     play({
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: submarine.id,
       targetUnitId: rivalBoat.id,
     });

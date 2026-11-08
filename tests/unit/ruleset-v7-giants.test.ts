@@ -162,14 +162,14 @@ describe("the giants' signatures: the identity", () => {
   // Monument skin rule (`pulp_wars-eu3r.3`) 7r69, and the Vampire and
   // Banshee rework (`pulp_wars-ty6i`) 7r70.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(PRIOR_RULESET_7_IDS.slice(-69, -67)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(PRIOR_RULESET_7_IDS.slice(-70, -68)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-69, -67)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-70, -68)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -542,7 +542,7 @@ describe("Crushing Shove (section 6.1)", () => {
   });
 });
 
-describe("Swallow (section 6.2)", () => {
+describe("Swallow (section 6.2): the Abomination's attack on a unit it may swallow", () => {
   /** The Undead seat 0's Abomination at (5, 3) and Human pieces. */
   const abomination = (
     pieces: readonly GoblinPieceV7[],
@@ -552,14 +552,25 @@ describe("Swallow (section 6.2)", () => {
       ["UNDEAD", opponent],
       [{ seat: 0, role: "JUGGERNAUT", at: at(5, 3) }, ...pieces],
     );
+  /**
+   * The Abomination's `ATTACK` on `target`: a Swallow where it may swallow
+   * it (one tile, one meaning, `pulp_wars-3u8d`, 7r131: the `SWALLOW`
+   * command retired).
+   */
   const swallow = (
     state: GameStateV7,
     target: { x: number; y: number },
   ): CommandV7 => ({
-    kind: "SWALLOW",
+    kind: "ATTACK",
     unitId: idAt(state, 5, 3),
     targetUnitId: idAt(state, target.x, target.y),
   });
+  /** The accepted attack was an exchange, not a Swallow. */
+  const plain = (state: GameStateV7, command: CommandV7): void => {
+    const kinds = apply(state, command).events.map((event) => event.kind);
+    expect(kinds).toContain("COMBAT_RESOLVED");
+    expect(kinds).not.toContain("UNIT_SWALLOWED");
+  };
   /** A state in which the Abomination holds the Knight on (6, 3). */
   const held = (
     pieces: readonly GoblinPieceV7[] = [],
@@ -668,19 +679,17 @@ describe("Swallow (section 6.2)", () => {
     );
   });
 
-  it("refuses every illegal Swallow in the order of its table", () => {
-    // Row 2: a role without SWALLOW.
+  it("attacks, without swallowing, every target its table refuses", () => {
+    // Row 2: a role without SWALLOW (a Zombie) only attacks.
     const zombie = abomination([
       { seat: 0, role: "GUARD", at: at(4, 4) },
       { seat: 1, role: "FIGHTER", at: at(4, 5), hp: 5 },
     ]);
-    expect(
-      reject(zombie, {
-        kind: "SWALLOW",
-        unitId: idAt(zombie, 4, 4),
-        targetUnitId: idAt(zombie, 4, 5),
-      }),
-    ).toMatchObject({ code: "UNIT_ROLE_INVALID" });
+    plain(zombie, {
+      kind: "ATTACK",
+      unitId: idAt(zombie, 4, 4),
+      targetUnitId: idAt(zombie, 4, 5),
+    });
     // Row 4: after a primary action.
     const acted = patchUnitV7(
       abomination([{ seat: 1, role: "FIGHTER", at: at(6, 3), hp: 5 }]),
@@ -707,55 +716,42 @@ describe("Swallow (section 6.2)", () => {
         at(5, 3),
       ).activation,
     });
-    expect(reject(fresh, swallow(fresh, at(4, 3)))).toMatchObject({
-      code: "SWALLOW_NOT_LEGAL",
-      params: { reason: "FULL" },
-    });
-    // Row 6: not adjacent; an own unit.
+    plain(fresh, swallow(fresh, at(4, 3)));
+    // Row 6: not adjacent (out of its reach); an own unit.
     const far = abomination([
       { seat: 1, role: "FIGHTER", at: at(7, 3), hp: 5 },
       { seat: 0, role: "FIGHTER", at: at(4, 3), hp: 5 },
     ]);
     expect(reject(far, swallow(far, at(7, 3)))).toMatchObject({
-      params: { reason: "TARGET" },
+      code: "TARGET_OUT_OF_RANGE",
     });
     expect(reject(far, swallow(far, at(4, 3)))).toMatchObject({
-      params: { reason: "TARGET" },
+      code: "TARGET_ALLIED",
     });
     // Row 7: a giant, a two-slot unit, a construct, Rock Hard.
     const giant = abomination([
       { seat: 1, role: "JUGGERNAUT", at: at(6, 3), hp: 5 },
     ]);
-    expect(reject(giant, swallow(giant, at(6, 3)))).toMatchObject({
-      params: { reason: "IMMUNE" },
-    });
+    plain(giant, swallow(giant, at(6, 3)));
     const rex = abomination(
       [{ seat: 1, role: "KNIGHT", at: at(6, 3), hp: 5 }],
       "DINOSAUR",
     );
-    expect(reject(rex, swallow(rex, at(6, 3)))).toMatchObject({
-      params: { reason: "IMMUNE" },
-    });
+    plain(rex, swallow(rex, at(6, 3)));
     const gunner = abomination(
       [{ seat: 1, role: "MARKSMAN", at: at(6, 3), hp: 5 }],
       "DWARF",
     );
-    expect(reject(gunner, swallow(gunner, at(6, 3)))).toMatchObject({
-      params: { reason: "IMMUNE" },
-    });
+    plain(gunner, swallow(gunner, at(6, 3)));
     const jawbreaker = abomination(
       [{ seat: 1, role: "SWORDSMAN", at: at(6, 3), hp: 5 }],
       "CANDY",
     );
-    expect(reject(jawbreaker, swallow(jawbreaker, at(6, 3)))).toMatchObject({
-      params: { reason: "IMMUNE" },
-    });
+    plain(jawbreaker, swallow(jawbreaker, at(6, 3)));
     // Row 8: more than 12 HP (a Shield does not count).
     const big = abomination([{ seat: 1, role: "KNIGHT", at: at(6, 3) }]);
     expect(unitAtV7(big, at(6, 3)).hp).toBeGreaterThan(SWALLOW_MAX_HP_V7);
-    expect(reject(big, swallow(big, at(6, 3)))).toMatchObject({
-      params: { reason: "TOO_BIG" },
-    });
+    plain(big, swallow(big, at(6, 3)));
   });
 
   it("empties a city center it swallows from", () => {
@@ -767,7 +763,7 @@ describe("Swallow (section 6.2)", () => {
       ],
     );
     const run = apply(state, {
-      kind: "SWALLOW",
+      kind: "ATTACK",
       unitId: idAt(state, 3, 8),
       targetUnitId: idAt(state, 2, 8),
     });
@@ -982,7 +978,7 @@ describe("Swallow (section 6.2)", () => {
       ],
     });
     const run = apply(controlled, {
-      kind: "SWALLOW",
+      kind: "ATTACK",
       unitId: idAt(controlled, 5, 3),
       targetUnitId: brain.id,
     });

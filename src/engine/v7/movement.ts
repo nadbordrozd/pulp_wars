@@ -977,6 +977,38 @@ function pathHasHopV7(start: CoordV7, path: readonly CoordV7[]): boolean {
   return false;
 }
 
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether the viewer's own
+ * unit `unit` could reach `at` by an offered `MOVE` right now: the public
+ * query's Move offer (an Escape, or a unit outside an Overrun that has
+ * neither moved nor used its primary action) and its reach
+ * (`reachablePlayerMovementPathsV7`). The Moon Gun fires a unit only beyond
+ * it, so a tile is a Move or a Fire, never both. The public query reads it
+ * on the view and the reducer on the actor's view, so the offer and the
+ * rule agree.
+ */
+export function playerMoveReachesNowV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): (at: CoordV7) => boolean {
+  const activation = unit.activation;
+  const moves =
+    activation.escapeAvailable ||
+    (!activation.overrunActive &&
+      !activation.moved &&
+      !activation.attacked &&
+      !activation.recovered &&
+      !activation.captured &&
+      !activation.specialActed);
+  if (!moves) return () => false;
+  const reached = new Set(
+    reachablePlayerMovementPathsV7(view, unit).map((path) =>
+      key(path.destination),
+    ),
+  );
+  return (at) => reached.has(key(at));
+}
+
 /** Observation-only movement enumeration used by presentation and Normal AI. */
 export function reachablePlayerMovementPathsV7(
   view: PlayerViewV7,

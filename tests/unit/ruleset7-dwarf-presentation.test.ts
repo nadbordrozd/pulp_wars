@@ -19,6 +19,7 @@ import {
   previewTunnelV7,
   projectEventsV7,
   queryCombatPreviewV7,
+  queryIdleRecoveryV7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
@@ -329,9 +330,7 @@ describe("Dwarf unit information (section 16.1)", () => {
     expect(clockworkRecoverBlockedV7(view, gunner)).toBe(true);
     expect(CLOCKWORK_RECOVER_V7).toBe("Clockwork never recovers by itself");
     expect(
-      queryPlayerCommandsV7(view).some(
-        (command) => command.kind === "RECOVER" && command.unitId === gunner.id,
-      ),
+      queryIdleRecoveryV7(view).some((entry) => entry.unitId === gunner.id),
     ).toBe(false);
     // A Hammerer where a Human Fighter would build Field Defense.
     expect(

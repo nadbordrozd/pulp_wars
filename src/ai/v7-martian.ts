@@ -1568,7 +1568,7 @@ export function pullCaptureMoveV7(
       tractorBeamTargetBlockV7(
         view,
         rule,
-        { at: to },
+        { at: to, ownerId: puller.ownerId },
         defender,
         // Step two of the Martian pass (`7r58`): City Walls hold the
         // defender against a Saucer's beam, so a Saucer flies up to no

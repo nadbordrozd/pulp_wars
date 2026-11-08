@@ -42,15 +42,15 @@ import {
 
 describe("ruleset-7 revision-12 identity", () => {
   it("keeps rejecting r11 after the r54 identity and cleans every obsolete Ruleset-7 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-76)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-77)).toBe(
       "pulpWars.save.v7r54.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
 
     const state = initialV7();
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r130");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r131");
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r11" }),
     ).toBeNull();
@@ -815,17 +815,8 @@ describe("ruleset-7 revision-12 Raider Escape", () => {
       handled: true,
     });
 
-    const wounded = checkedV7({
-      ...fixture.state,
-      units: fixture.state.units.map((item) =>
-        item.id === raider.id ? { ...item, hp: 5 } : item,
-      ),
-    });
-    const recovered = apply(wounded, { kind: "RECOVER", unitId: raider.id });
-    expect(unit(recovered.state, raider.id).activation.escapeAvailable).toBe(
-      false,
-    );
-    expect(raiderCommands(recovered.state, raider.id)).toEqual([]);
+    // (A Recover gave no Escape either, until `pulp_wars-3u8d`, 7r131,
+    // retired the command.)
   });
 
   it("lets the player decline with Wait and expires at End Turn", () => {

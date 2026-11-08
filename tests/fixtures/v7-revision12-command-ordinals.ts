@@ -103,9 +103,19 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   // (`pulp_wars-w49.4`) removed it again, so every kind after PROMOTE is
   // back where it was at tuning 3.
 ];
-const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(
-  (kind) => !LATER_COMMAND_KINDS.includes(kind),
-);
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131) retires RECOVER, a
+ * revision-12 kind between TEND_WOUNDED and CAPTURE (and BOARD and
+ * SWALLOW, later kinds): RECOVER keeps its revision-12 place, so every
+ * other kind keeps its revision-12 ordinal.
+ */
+const REVISION_12_COMMAND_KIND_ORDER: readonly string[] = (() => {
+  const order: string[] = COMMAND_KIND_ORDER_V7.filter(
+    (kind) => !LATER_COMMAND_KINDS.includes(kind),
+  );
+  order.splice(order.indexOf("TEND_WOUNDED") + 1, 0, "RECOVER");
+  return order;
+})();
 
 /** The tuple slot holding `-ordinal` of the command kind. */
 const KIND_SLOT = 6;

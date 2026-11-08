@@ -1,24 +1,18 @@
 import {
-  boardSeaBeastBlockedV7,
   cooperativeAlliesV7,
-  isAfloatFormV7,
   previewBoardV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
   type CoordV7,
   type PlayerViewV7,
-  type UnitId,
 } from "../../engine/index";
 import {
-  BOARD_LABEL_V7,
-  BOARD_PICK_V7,
+  BOARD_ATTACK_PREVIEW_V7,
   SUBMERGED_OUT_OF_REACH_V7,
   TORPEDO_PREVIEW_V7,
-  boardBlockTextV7,
-  boardTargetLabelV7,
+  boardAttackNoteV7,
   navalCombatLinesV7,
-  viewBoardTargetBlockV7,
 } from "../naval-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -27,19 +21,15 @@ import type {
 
 /**
  * The naval part of the board plan (bead pulp_wars-5ti.7, first part;
- * docs/ui/BOARD_TARGETING.md section 3.4): the Board picking mode, the
- * markers of a submerged Submarine and of a ship that can be boarded, the
- * naval lines of an attack preview (the Bow Ram bonus and its shove, a
- * torpedo's "No strike-back"), and the grey reason on a Submarine the
- * selected unit cannot attack from where it stands. Everything is read
- * from the public view, the offered commands and the public previews.
+ * docs/ui/BOARD_TARGETING.md section 3.4): the markers of a submerged
+ * Submarine and of a ship that can be boarded, the Attack mark of a ship
+ * an attack boards, the naval lines of an attack preview (the Bow Ram
+ * bonus and its shove, a torpedo's "No strike-back"), and the grey reason
+ * on a Submarine the selected unit cannot attack from where it stands.
+ * Everything is read from the public view, the offered commands and the
+ * public previews. (The Board picking mode retired with the `BOARD`
+ * command: `pulp_wars-3u8d`, 7r131.)
  */
-
-/** A Board being aimed on the board: its targets are the only map targets. */
-export interface NavalPickV7 {
-  readonly kind: "BOARD";
-  readonly unitId: UnitId;
-}
 
 /** UNIT only: the naval markers of a visible unit (any owner). */
 export interface NavalUnitMarkersV7 {
@@ -70,70 +60,29 @@ export function navalUnitMarkersV7(
   return submerged || boardable ? { submerged, boardable } : undefined;
 }
 
-/** The map targets of an active Board pick: one per offered `BOARD`. */
-export function navalPickTargetsV7(
-  view: PlayerViewV7,
-  commands: readonly CommandV7[],
-  pick: NavalPickV7,
-): MapCommandTargetV7[] {
-  return commands.flatMap((command): MapCommandTargetV7[] => {
-    if (command.kind !== "BOARD" || command.unitId !== pick.unitId) return [];
-    const preview = previewBoardV7(view, command.unitId, command.targetUnitId);
-    const target = view.units.find((unit) => unit.id === command.targetUnitId);
-    if (preview === null || target === undefined) return [];
-    const name = unitRoleRuleV7(view, target).label;
-    return [
-      {
-        at: target.at,
-        command,
-        family: "BOARD",
-        previewLabel: boardTargetLabelV7(preview),
-        semanticLabel: `${BOARD_LABEL_V7}: capture this ${name}. It becomes yours with ${preview.hpAfter} HP. ${BOARD_PICK_V7}.`,
-      },
-    ];
-  });
-}
-
 /**
- * Preview entries of an active Board pick that are not targets: each
- * hostile unit afloat within two tiles that cannot be boarded wears the
- * engine's reason in grey ("Above 3 HP", "Not a ship", "Too far").
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): the Attack mark of an
+ * offered `ATTACK` of the selected ship that boards (`previewBoardV7`): the
+ * tile says "Board: captures the ship" in place of the damage, and the
+ * prize's HP afterwards. Null for every other attack.
  */
-export function addNavalPickEntriesV7(
-  entries: BoardRenderPlanEntryV7[],
+export function navalBoardAttackTargetV7(
   view: PlayerViewV7,
-  targets: readonly MapCommandTargetV7[],
-  pick: NavalPickV7,
-): void {
-  const boarder = view.units.find((unit) => unit.id === pick.unitId);
-  if (boarder === undefined) return;
-  for (const unit of view.units) {
-    if (
-      !isAfloatFormV7(unit.form) ||
-      !hostile(view, boarder.ownerId, unit.ownerId) ||
-      chebyshev(unit.at, boarder.at) > 2 ||
-      targets.some(
-        (target) => target.at.x === unit.at.x && target.at.y === unit.at.y,
-      )
-    )
-      continue;
-    const reason = viewBoardTargetBlockV7(view, boarder, unit);
-    if (reason === null) continue;
-    entries.push({
-      key: `ability-target:BOARD_BLOCKED:${unit.id}`,
-      kind: "ABILITY_TARGET",
-      layer: 7.5,
-      at: unit.at,
-      abilityStyle: "MARTIAN_BLOCKED",
-      label: boardBlockTextV7(
-        reason,
-        view.unitStats.find((entry) => entry.unitId === unit.id)?.boardableAt ??
-          null,
-        // Themed naval branches (`pulp_wars-5ti.18`): a Plesiosaur.
-        boardSeaBeastBlockedV7(view, boarder.ownerId, unit),
-      ),
-    });
-  }
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): MapCommandTargetV7 | null {
+  const preview = previewBoardV7(view, command.unitId, command.targetUnitId);
+  const target = view.units.find((unit) => unit.id === command.targetUnitId);
+  if (preview === null || target === undefined) return null;
+  const name = unitRoleRuleV7(view, target).label;
+  const note = boardAttackNoteV7(preview);
+  return {
+    at: target.at,
+    command,
+    family: "ATTACK",
+    previewLabel: BOARD_ATTACK_PREVIEW_V7,
+    previewNote: note,
+    semanticLabel: `Attack preview. ${BOARD_ATTACK_PREVIEW_V7}: this ${name} is captured, not hit, and nothing strikes back. ${note}.`,
+  };
 }
 
 /**

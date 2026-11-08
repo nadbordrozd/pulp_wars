@@ -24,14 +24,15 @@ import {
   navalRamUiFixtureV7,
 } from "../fixtures/v7-naval-ui";
 
-// The naval branch interface (bead pulp_wars-5ti.7, first part): the
-// keyboard path to an aimed Board on the real board host, and the plan it
-// hands the renderer.
+// The naval branch interface (bead pulp_wars-5ti.7, first part): a Board on
+// the real board host, and the plan it hands the renderer. One tile, one
+// meaning (`pulp_wars-3u8d`, 7r131): the Board is the selected ship's
+// Attack mark on a prize, so nothing is armed.
 
 afterEach(() => vi.restoreAllMocks());
 
 describe("Board on the board host", () => {
-  it("steps through the prizes with Tab, names each without coordinates, and Enter boards", () => {
+  it("marks each prize as an Attack that boards, named without coordinates", () => {
     const state = navalBoardingUiFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const boarder = unitAt(view, NAVAL_UI_V7.boarder);
@@ -52,51 +53,28 @@ describe("Board on the board host", () => {
       selectedUnitId: boarder.id,
       selectedAchievement: null,
     };
-    const tab = (shiftKey = false): boolean => {
-      const event = new KeyboardEvent("keydown", {
-        key: "Tab",
-        shiftKey,
-        bubbles: true,
-        cancelable: true,
-      });
-      rig.canvas.dispatchEvent(event);
-      return event.defaultPrevented;
-    };
-    const description = (): string =>
-      document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? "";
-    rig.host.update({
-      ...base,
-      interaction: {
-        ...selected,
-        navalPick: { kind: "BOARD", unitId: boarder.id },
-      },
-    });
-    // The armed Board's two prizes are the only targets of the plan.
-    expect(rig.plan().targets.map((target) => target.family)).toEqual([
-      "BOARD",
-      "BOARD",
-    ]);
+    rig.host.update({ ...base, interaction: selected });
+    // Each prize is an Attack target whose preview is the capture.
     for (const prize of NAVAL_UI_V7.prizes) {
-      expect(tab(), `${prize.x}/${prize.y}`).toBe(true);
-      expect(description()).toMatch(/^Board: capture this /);
-      expect(description()).toContain("becomes yours with 4 HP");
-      expect(description()).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
+      const target = rig
+        .plan()
+        .targets.find(
+          (candidate) =>
+            candidate.at.x === prize.x && candidate.at.y === prize.y,
+        );
+      expect(target, `${prize.x}/${prize.y}`).toMatchObject({
+        family: "ATTACK",
+        previewLabel: "Board: captures the ship",
+        command: {
+          kind: "ATTACK",
+          unitId: boarder.id,
+          targetUnitId: unitAt(view, prize).id,
+        },
+      });
+      expect(target?.semanticLabel).toContain("becomes yours with 4 HP");
+      expect(target?.semanticLabel).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
     }
-    // Past the last prize Tab leaves the board; Shift+Tab steps back.
-    expect(tab()).toBe(false);
-    expect(tab(true)).toBe(true);
-    rig.canvas.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
-    );
-    expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
-    expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
-      family: "BOARD",
-      command: {
-        kind: "BOARD",
-        unitId: boarder.id,
-        targetUnitId: unitAt(view, NAVAL_UI_V7.prizes[0]).id,
-      },
-    });
+    expect(callbacks.onCommand).not.toHaveBeenCalled();
     rig.host.destroy();
   });
 

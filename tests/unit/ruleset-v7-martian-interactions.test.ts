@@ -6,7 +6,7 @@ import {
   type CoordV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, idleRecoveryOfV7 } from "../fixtures/v7-builders";
 import {
   applyOkV7,
   endTurnUntilV7,
@@ -98,18 +98,15 @@ describe("Undead rules (section 10.1)", () => {
       { seat: 0, role: "FIGHTER", at: at(4, 3), hp: 3, shield: 0 },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
     ]);
-    const home = playV7(state, {
-      kind: "RECOVER",
-      unitId: unitAtV7(state, at(8, 7)).id,
-    });
-    expect(unitAtV7(home.state, at(8, 7)).hp).toBe(7);
-    const away = playV7(state, {
-      kind: "RECOVER",
-      unitId: unitAtV7(state, at(4, 3)).id,
-    });
-    expect(unitAtV7(away.state, at(4, 3)).hp).toBe(5);
+    // (`pulp_wars-3u8d`, 7r131: idle recovery, the same amounts.)
+    expect(idleRecoveryOfV7(state, unitAtV7(state, at(8, 7)).id)?.amount).toBe(
+      4,
+    );
+    expect(idleRecoveryOfV7(state, unitAtV7(state, at(4, 3)).id)?.amount).toBe(
+      2,
+    );
     // Recovery is HP only: the Shield stays spent until a recharge.
-    expect(shieldAtV7(home.state, at(8, 7))).toBe(0);
+    expect(shieldAtV7(state, at(8, 7))).toBe(0);
   });
 });
 

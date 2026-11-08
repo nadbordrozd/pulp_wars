@@ -10,7 +10,6 @@ import {
   stompEffectRejectionV7,
   stompRejectionV7,
   stompResultsV7,
-  swallowRejectionV7,
   tossActorRejectionV7,
   tossPassengerLegalV7,
   unitRoleMechanicsV7,
@@ -97,7 +96,7 @@ export function giantSignatureRuleV7(
     case "CRUSH":
       return `a target it hits but cannot push back is crushed for ${mechanics.crushDamage} more, and an enemy behind it takes ${mechanics.crushDamage}`;
     case "SWALLOW":
-      return `swallows an enemy of ${mechanics.swallowMaxHp} HP or less next to it, digests ${DIGEST_DAMAGE_V7} HP of it each turn to heal, and spits it out as a ${label("GUARD", "UNDEAD")}; the victim is freed if it dies first`;
+      return `its attack swallows an enemy of ${mechanics.swallowMaxHp} HP or less next to it whole, digests ${DIGEST_DAMAGE_V7} HP of it each turn to heal, and spits it out as a ${label("GUARD", "UNDEAD")}; the victim is freed if it dies first`;
     case "TOSS":
       return `throws a ${label("FIGHTER", "GOBLIN")} next to it ${TOSS_MINIMUM_RANGE_V7} to ${mechanics.tossRange} tiles, over anything in between; it may still attack or Kaboom after landing`;
     case "STOMP":
@@ -199,7 +198,12 @@ export const BREAK_OFF_LABEL_V7 = GIANT_SIGNATURE_NAMES_V7.BREAK_OFF;
 /** The Thunder Stomp's one confirmation in its aiming panel. */
 export const STOMP_CAST_V7 = "Stomp";
 
-export const SWALLOW_PICK_V7 = "Choose an enemy to swallow";
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): the Abomination's attack
+ * on a unit it may swallow swallows it; its Attack mark says so. (The
+ * Swallow's own button and aiming retired with the `SWALLOW` command.)
+ */
+export const SWALLOW_ATTACK_NOTE_V7 = "Will be swallowed whole";
 export const TOSS_PICK_PASSENGER_V7 = "Choose the Goblin to throw";
 export const TOSS_PICK_TILE_V7 = "Choose where the Goblin lands";
 export const BREAK_OFF_PICK_FIRST_V7 =
@@ -207,15 +211,13 @@ export const BREAK_OFF_PICK_FIRST_V7 =
 export const BREAK_OFF_PICK_SECOND_V7 =
   "Choose a tile for the second Gingerbread Man";
 
-/** The tooltip of each of the four buttons, from the role mechanics. */
+/** The tooltip of each of the three buttons, from the role mechanics. */
 export function giantCommandTooltipV7(
-  kind: "SWALLOW" | "TOSS" | "STOMP" | "BREAK_OFF",
+  kind: "TOSS" | "STOMP" | "BREAK_OFF",
   faction: FactionIdV7,
 ): string {
   const mechanics = roleMechanicsV7("JUGGERNAUT", faction);
   switch (kind) {
-    case "SWALLOW":
-      return `Swallow an enemy of ${mechanics.swallowMaxHp} HP or less next to it`;
     case "TOSS":
       return `Throw a ${label("FIGHTER", "GOBLIN")} next to it ${TOSS_MINIMUM_RANGE_V7} to ${mechanics.tossRange} tiles away`;
     case "STOMP":
@@ -237,27 +239,13 @@ export const STOMP_NO_TARGET_V7 = "No enemy or Field Defense next to it";
 export function giantCommandUnavailableTextV7(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
-  kind: "SWALLOW" | "TOSS" | "STOMP" | "BREAK_OFF",
+  kind: "TOSS" | "STOMP" | "BREAK_OFF",
   offered: boolean,
 ): string | null {
   if (offered || unit.ownerId !== view.viewer.id || unit.activation.handled)
     return null;
   const already = "Already acted this turn";
   switch (kind) {
-    case "SWALLOW": {
-      const rejection = swallowRejectionV7(
-        view,
-        view.giants.swallowed,
-        unit,
-        undefined,
-      );
-      if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
-        return null;
-      if (rejection.code === "UNIT_ALREADY_ACTED") return already;
-      if (rejection.reason === "EMBARKED") return "Not at sea";
-      if (rejection.reason === "FULL") return "Its belly is full";
-      return `No enemy of ${unitRoleMechanicsV7(view, unit).swallowMaxHp} HP or less next to it`;
-    }
     case "TOSS": {
       const rejection = tossActorRejectionV7(view, unit);
       if (rejection?.code === "UNIT_ROLE_INVALID") return null;

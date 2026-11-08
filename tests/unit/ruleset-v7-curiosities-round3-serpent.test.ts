@@ -38,6 +38,7 @@ import {
   type NeutralBoardFactsV7,
   type PlayerId,
   type UnitStateV7,
+  previewBoardV7,
 } from "../../src/engine/index";
 import { applyAcceptedV7, rejectionV7 } from "../fixtures/v7-round3-arena";
 import { round2UnitAtV7 } from "../fixtures/v7-round2-arena";
@@ -407,21 +408,10 @@ describe("what affects it (section 8.6)", () => {
       });
       const boat = unitAt(state, at(6, 9));
       const serpent = serpentOfV7(state);
+      // `pulp_wars-3u8d` (7r131): the boat's attack on it is an attack.
       expect(
-        rejectionV7(state, P1, {
-          kind: "BOARD",
-          unitId: boat.id,
-          targetUnitId: serpent.id,
-        }),
-      ).toEqual({
-        code: "BOARD_NOT_LEGAL",
-        params: { reason: "TARGET_IMMUNE" },
-      });
-      expect(
-        queryPlayerCommandsV7(viewForV7(state, P1)).some(
-          (command) => command.kind === "BOARD",
-        ),
-      ).toBe(false);
+        previewBoardV7(viewForV7(state, P1), boat.id, serpent.id),
+      ).toBeNull();
     }
   });
 

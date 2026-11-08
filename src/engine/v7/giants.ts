@@ -875,7 +875,6 @@ export function breakOffTrooperHpV7(
 
 // ----------------------------------------------------- Reducer steps ---
 
-type SwallowCommandV7 = Extract<CommandV7, { kind: "SWALLOW" }>;
 type TossCommandV7 = Extract<CommandV7, { kind: "TOSS" }>;
 type StompCommandV7 = Extract<CommandV7, { kind: "STOMP" }>;
 type BreakOffCommandV7 = Extract<CommandV7, { kind: "BREAK_OFF" }>;
@@ -888,25 +887,41 @@ function withPrimaryUsed(unit: UnitStateV7): UnitStateV7 {
   };
 }
 
-/** Section 6.2: `SWALLOW`, a primary action of the Abomination. */
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether an `ATTACK` by
+ * `holder` on `target` is a Swallow: exactly when the Abomination could
+ * swallow it ({@link swallowRejectionV7} is null: its stomach is empty, it
+ * has not acted, and the target is a hostile one-slot land unit beside it
+ * with 12 HP or less that a Swallow takes). Shared by the reducer, the
+ * public query's preview and the Normal AI. A retaliation is no attack of
+ * the Abomination's and never swallows.
+ */
+export function attackSwallowsV7(
+  lookup: Parameters<typeof swallowRejectionV7>[0],
+  swallowed: readonly { readonly holderUnitId: UnitId }[],
+  holder: GiantUnitFactsV7 & { readonly activation: UnitActivationV7 },
+  target: GiantUnitFactsV7,
+): boolean {
+  return swallowRejectionV7(lookup, swallowed, holder, target) === null;
+}
+
+/**
+ * Section 6.2: the Swallow, a primary action of the Abomination: since
+ * `pulp_wars-3u8d` (7r131) the resolution of its `ATTACK` on a unit it may
+ * swallow (`attackSwallowsV7`; the `SWALLOW` command before). The reducer's
+ * `ATTACK` validation ran first and found `holder` and the visible
+ * `target`.
+ */
 export function applySwallowV7(
   kit: GiantsReducerKitV7,
   original: GameStateV7,
   state: GameStateV7,
   actor: PlayerId,
-  command: SwallowCommandV7,
+  holder: UnitStateV7,
+  target: UnitStateV7,
 ): ApplyCommandResultV7 {
   if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
     return kit.rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return kit.rejected(original, actorCheck.code, actorCheck.params);
-  const holder = actorCheck.unit;
-  const named = state.units.find(
-    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
-  );
-  const target =
-    named !== undefined && visibleTo(state, actor, named) ? named : undefined;
   const rejection = swallowRejectionV7(
     state,
     state.giants.swallowed,
@@ -914,7 +929,6 @@ export function applySwallowV7(
     target,
   );
   if (rejection !== null) return rejectWith(kit, original, holder, rejection);
-  if (target === undefined) return kit.rejected(original, "INVALID_STATE");
   try {
     const victim: UnitStateV7 = {
       ...target,
@@ -1891,15 +1905,6 @@ function rejectWith(
         reason: rejection.reason,
       });
   }
-}
-
-function visibleTo(state: GameStateV7, viewerId: PlayerId, unit: UnitStateV7) {
-  if (unit.ownerId === viewerId) return true;
-  return (
-    state.players
-      .find((player) => player.id === viewerId)
-      ?.explored.some((at) => same(at, unit.at)) === true
-  );
 }
 
 function shieldsOf(

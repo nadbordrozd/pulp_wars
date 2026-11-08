@@ -31,6 +31,7 @@ import {
   rejectV7,
   seatV7,
 } from "../fixtures/v7-naval-branch";
+import { idleRecoveryOfV7 } from "../fixtures/v7-builders";
 
 // The naval branch, engine step I (`pulp_wars-5ti.2`,
 // docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.1 to 5.3 and 5.5): the
@@ -239,12 +240,9 @@ describe("training a Submarine", () => {
     });
     // Naval recovery: 4 on or next to an own active dock ((5, 3) is next to
     // the Port on (4, 3)).
+    // (Idle at End Turn since `pulp_wars-3u8d`, 7r131.)
     const wounded = patchNavalUnitV7(state, submarine.id, { hp: 5 });
-    const recovered = acceptV7(wounded, 0, {
-      kind: "RECOVER",
-      unitId: submarine.id,
-    });
-    expect(navalUnitV7(recovered.state, submarine.id).hp).toBe(9);
+    expect(idleRecoveryOfV7(wounded, submarine.id)?.amount).toBe(4);
   });
 
   it("publishes submerged and boardableAt in the unit stats", () => {

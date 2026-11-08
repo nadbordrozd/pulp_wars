@@ -6,6 +6,7 @@ import {
   previewWailV7,
   projectEventsV7,
   queryCombatPreviewV7,
+  queryIdleRecoveryV7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
@@ -29,7 +30,7 @@ import {
 import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
 import {
   combatPreviewNoteV7,
-  restlessRecoverBlockedV7,
+  restlessOutsideTerritoryV7,
   undeadBoundaryNoticeV7,
   undeadCommandLabelV7,
 } from "../../src/render/undead-presentation-v7";
@@ -501,26 +502,19 @@ describe("Revision 13 Undead presentation", () => {
   });
 
   it("explains Restless only for a damaged own Undead land unit outside its territory", () => {
-    const { view, commands } = showcase();
+    const { view } = showcase();
     const skeleton = unitAt(view, UNDEAD_SHOWCASE_V7.restlessSkeleton);
     expect(skeleton.hp).toBeLessThan(skeleton.maxHp);
+    // `pulp_wars-3u8d` (7r131): it does not recover idle out there (the
+    // Recover command, and its disabled button, are gone).
     expect(
-      commands.some(
-        (command) =>
-          command.kind === "RECOVER" && command.unitId === skeleton.id,
-      ),
+      queryIdleRecoveryV7(view).some((entry) => entry.unitId === skeleton.id),
     ).toBe(false);
-    expect(restlessRecoverBlockedV7(view, skeleton)).toBe(true);
-    expect(
-      restlessRecoverBlockedV7(
-        view,
-        unitAt(view, UNDEAD_SHOWCASE_V7.banshee), // full HP
-      ),
-    ).toBe(false);
+    expect(restlessOutsideTerritoryV7(view, skeleton)).toBe(true);
     const human = allTechsV7(exploredAllV7(initialV7(71)));
     const humanView = viewForV7(human, human.humanPlayerId);
     for (const unit of humanView.units)
-      expect(restlessRecoverBlockedV7(humanView, { ...unit, hp: 1 })).toBe(
+      expect(restlessOutsideTerritoryV7(humanView, { ...unit, hp: 1 })).toBe(
         false,
       );
   });

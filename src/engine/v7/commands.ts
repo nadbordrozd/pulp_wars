@@ -63,16 +63,6 @@ export type CommandV7 =
       readonly targetUnitId: UnitId;
     }
   | {
-      /**
-       * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section
-       * 4.2): the ship `unitId` captures the adjacent, badly damaged
-       * hostile ship `targetUnitId`.
-       */
-      readonly kind: "BOARD";
-      readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
-    }
-  | {
       readonly kind: "RALLY" | "TEND_WOUNDED";
       readonly unitId: UnitId;
     }
@@ -83,7 +73,6 @@ export type CommandV7 =
     }
   | {
       readonly kind:
-        | "RECOVER"
         | "CAPTURE"
         | "PROMOTE"
         | "PILLAGE"
@@ -279,16 +268,6 @@ export type CommandV7 =
        * adjacent unit (ends its Crash, heals 2, and cures it).
        */
       readonly kind: "TOP_UP";
-      readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
-    }
-  | {
-      /**
-       * The giants' signatures (docs/product/RULESET_7_GIANTS.md section
-       * 6.2): an Abomination swallows an adjacent hostile unit of 12 HP or
-       * less.
-       */
-      readonly kind: "SWALLOW";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId;
     }
@@ -569,7 +548,6 @@ const TILE_KINDS = new Set<CommandKindV7>([
 const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "RAISE_DEAD",
   "DEVOUR",
-  "RECOVER",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -664,15 +642,15 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
   }
   if (
     kind === "ATTACK" ||
-    kind === "BOARD" ||
     kind === "MIND_CONTROL" ||
     kind === "TRACTOR_BEAM" ||
     kind === "THROW_BOLAS" ||
     kind === "FROST_BOLT" ||
     kind === "SUGAR_TOSS" ||
     kind === "TOP_UP" ||
-    kind === "SWALLOW" ||
-    // The Cultists (`pulp_wars-mch9.8`; `RIBBIT` retired, `pulp_wars-n5fa`).
+    // (`SWALLOW` and `BOARD` retired, `pulp_wars-3u8d`: an `ATTACK` does
+    // them.) The Cultists (`pulp_wars-mch9.8`; `RIBBIT` retired,
+    // `pulp_wars-n5fa`).
     kind === "SWITCHEROO" ||
     // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap.
     kind === "ZAP"
@@ -1205,14 +1183,12 @@ function referencedOrdinal(command: CommandV7): number {
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
   if (
     command.kind === "ATTACK" ||
-    command.kind === "BOARD" ||
     command.kind === "MIND_CONTROL" ||
     command.kind === "TRACTOR_BEAM" ||
     command.kind === "THROW_BOLAS" ||
     command.kind === "FROST_BOLT" ||
     command.kind === "SUGAR_TOSS" ||
     command.kind === "TOP_UP" ||
-    command.kind === "SWALLOW" ||
     // The Cultists: `SWITCHEROO` by unit, then target. (`TENTACLE` is
     // ordered by its tile.)
     command.kind === "SWITCHEROO"

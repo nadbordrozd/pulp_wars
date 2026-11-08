@@ -166,8 +166,9 @@ describe("boarding a Plague Galleon ends the Plagues it carries", () => {
   it("is offered and accepted, and the Plagues are cleared", () => {
     const { state, galleon, boarder, victim } = scene();
     const actor = seatV7(state, 0).id;
+    // `pulp_wars-3u8d` (7r131): the attack that boards it.
     const command: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder.id,
       targetUnitId: galleon.id,
     };

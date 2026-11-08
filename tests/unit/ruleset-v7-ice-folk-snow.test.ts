@@ -11,7 +11,7 @@ import {
   type GameStateV7,
   TECHNOLOGY_IDS_V7,
 } from "../../src/engine/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, idleRecoveryOfV7 } from "../fixtures/v7-builders";
 import { applyOkV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { iceFieldV7, viewSnowV7 } from "../fixtures/v7-ice-folk";
 import { offeredV7, playV7, rejectedV7 } from "../fixtures/v7-martian";
@@ -680,16 +680,13 @@ describe("Deep Winter (section 6.6)", () => {
         ],
         { techs: { 0: techs } },
       );
-      const home = playV7(state, {
-        kind: "RECOVER",
-        unitId: unitAtV7(state, at(7, 7)).id,
-      });
-      expect(unitAtV7(home.state, at(7, 7)).hp).toBe(2 + expected);
-      const away = playV7(state, {
-        kind: "RECOVER",
-        unitId: unitAtV7(state, at(4, 3)).id,
-      });
-      expect(unitAtV7(away.state, at(4, 3)).hp).toBe(4);
+      // (`pulp_wars-3u8d`, 7r131: idle recovery only.)
+      expect(
+        idleRecoveryOfV7(state, unitAtV7(state, at(7, 7)).id)?.amount,
+      ).toBe(expected);
+      expect(
+        idleRecoveryOfV7(state, unitAtV7(state, at(4, 3)).id)?.amount,
+      ).toBe(2);
       // Idle recovery at End Turn.
       const ended = applyOkV7(state, activeIdV7(state), { kind: "END_TURN" });
       expect(

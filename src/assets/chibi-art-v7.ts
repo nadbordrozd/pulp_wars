@@ -715,6 +715,13 @@ export type UiArtSubjectV7 =
   // Revision 20: the Stampede command is gone; its icon is the Charge!
   // ability's, under its existing subject key.
   | "ICON:ACTION:STAMPEDE"
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the `RECOVER`,
+  // `SWALLOW` and `BOARD` commands are gone (idle recovery at End Turn, and
+  // an `ATTACK` that swallows or boards); their icons stay registered under
+  // their existing subject keys.
+  | "ICON:ACTION:RECOVER"
+  | "ICON:ACTION:SWALLOW"
+  | "ICON:ACTION:BOARD"
   | "ICON:ACTION:UNDEAD:RALLY"
   | "ICON:ACTION:GOBLIN:RALLY"
   | "ICON:ACTION:DINOSAUR:RALLY"

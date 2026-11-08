@@ -248,14 +248,14 @@ describe("another order takes the joiner out of the chant (pulp_wars-mch9.61)", 
       ).toEqual([]);
     expect(
       chantsLeftByCommandV7(rituals, cultId(joined), {
-        kind: "RECOVER",
+        kind: "CAPTURE",
         unitId: joiner,
       }),
     ).toEqual([{ unitId: joiner, leaderUnitId: idAt(joined, GAZER) }]);
     // Another seat's order never touches the Cult's chant.
     expect(
       chantsLeftByCommandV7(rituals, seatIdV7(joined, 1), {
-        kind: "RECOVER",
+        kind: "CAPTURE",
         unitId: joiner,
       }),
     ).toEqual([]);

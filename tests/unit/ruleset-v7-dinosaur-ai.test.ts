@@ -432,9 +432,10 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Grow", () => {
       9,
     );
     const small = dino([own("RAIDER", 9, 9, 7), foe("FIGHTER", 1, 1)]);
+    // `pulp_wars-3u8d` (7r131): the Wait that holds it for idle recovery.
     const recover = (state: GameStateV7): number =>
       scoreV7(state, {
-        kind: "RECOVER",
+        kind: "WAIT",
         unitId: unitIdAtV7(state, { x: 9, y: 9 }),
       }).priority;
     expect(recover(big)).toBe(930);
@@ -475,10 +476,10 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Grow", () => {
     const fighter = { x: 5, y: 4 };
     expect(moveCandidateV7(hurt(0, back, fighter), back, into)).toBeDefined();
     expect(moveCandidateV7(hurt(1, back, fighter), back, into)).toBeUndefined();
-    // It heals instead.
+    // It heals instead (a Wait, and idle recovery at End Turn).
     expect(
       unitCandidatesV7(hurt(1, back, fighter), back)[0]?.command.kind,
-    ).toBe("RECOVER");
+    ).toBe("WAIT");
   });
 
   it("does not trade a grown unit cheaply", () => {

@@ -1,6 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   BLIZZARD_RADIUS_V7,
+  BOLAS_MIN_RANGE_V7,
   BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
@@ -350,10 +351,14 @@ export function coldSnapTargetsV7<
     .sort((left, right) => left.id - right.id);
 }
 
-/** Section 21.9: the Bolas reach check (Chebyshev 1 or 2). */
+/**
+ * Section 21.9: the Bolas reach check: Chebyshev exactly 2
+ * (`BOLAS_MIN_RANGE_V7` to `BOLAS_RANGE_V7`; `pulp_wars-3u8d`, 7r131: never
+ * an adjacent unit, which is the Sled's Attack; 1 or 2 before).
+ */
 export function withinBolasRangeV7(from: CoordV7, to: CoordV7): boolean {
   const distance = chebyshev(from, to);
-  return distance >= 1 && distance <= BOLAS_RANGE_V7;
+  return distance >= BOLAS_MIN_RANGE_V7 && distance <= BOLAS_RANGE_V7;
 }
 
 /**

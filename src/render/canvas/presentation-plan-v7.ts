@@ -392,9 +392,10 @@ export type SupportEffectV7 =
   | "REGENERATE"
   /**
    * Section 10 Recover (bead pulp_wars-v3w): the same heal ring and rising
-   * "+N" on each unit that recovered, by an explicit Recover or by itself at
-   * its owner's End Turn. Consecutive recoveries share one step, so an End
-   * Turn plays every idle recovery at once.
+   * "+N" on each unit that recovered by itself at its owner's End Turn (an
+   * explicit Recover played it too until the `RECOVER` command retired:
+   * `pulp_wars-3u8d`, 7r131). Consecutive recoveries share one step, so an
+   * End Turn plays every idle recovery at once.
    */
   | "RECOVER"
   /**

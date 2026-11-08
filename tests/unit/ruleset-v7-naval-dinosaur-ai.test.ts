@@ -36,6 +36,7 @@ import {
   type UnitId,
   type UnitRoleIdV7,
   type UnitStateV7,
+  previewBoardV7,
 } from "../../src/engine/index";
 import {
   NAVAL_ARENA_PORTS_V7,
@@ -443,13 +444,9 @@ describe("the sea beast and the Horned Prow from the other side (section 5.6)", 
     );
     const boat = navalUnitAtV7(state, { x: 3, y: 6 });
     const beast = navalUnitAtV7(state, { x: 3, y: 7 });
-    expect(
-      queryPlayerCommandsV7(viewOf(state)).some(
-        (command) => command.kind === "BOARD",
-      ),
-    ).toBe(false);
+    // (`pulp_wars-3u8d`, 7r131: its attack there is no Board.)
+    expect(previewBoardV7(viewOf(state), boat.id, beast.id)).toBeNull();
     const played = playUnit(state, boat.id);
-    expect(played.some((command) => command.kind === "BOARD")).toBe(false);
     expect(played.at(-1)).toEqual(attack(boat.id, beast.id));
   });
 
@@ -463,13 +460,8 @@ describe("the sea beast and the Horned Prow from the other side (section 5.6)", 
     );
     const dugout = navalUnitAtV7(submarine, { x: 3, y: 6 });
     const sub = navalUnitAtV7(submarine, { x: 3, y: 7 });
-    expect(
-      queryPlayerCommandsV7(viewOf(submarine)).some(
-        (command) => command.kind === "BOARD",
-      ),
-    ).toBe(false);
+    expect(previewBoardV7(viewOf(submarine), dugout.id, sub.id)).toBeNull();
     const played = playUnit(submarine, dugout.id);
-    expect(played.some((command) => command.kind === "BOARD")).toBe(false);
     expect(played.at(-1)).toEqual(attack(dugout.id, sub.id));
     const capital = strait(
       ["DINOSAUR", "ORIGINAL"],
@@ -480,11 +472,15 @@ describe("the sea beast and the Horned Prow from the other side (section 5.6)", 
     );
     const boarder = navalUnitAtV7(capital, { x: 3, y: 6 });
     const battleship = navalUnitAtV7(capital, { x: 3, y: 7 });
+    // Its attack on the weak Battleship boards it.
     expect(bestOf(viewOf(capital), boarder.id)).toEqual({
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder.id,
       targetUnitId: battleship.id,
     });
+    expect(
+      previewBoardV7(viewOf(capital), boarder.id, battleship.id),
+    ).not.toBeNull();
   });
 
   it("the threat estimate assumes a hostile Dugout's two-tile run: a Patrol Boat three tiles away is in lethal reach", () => {

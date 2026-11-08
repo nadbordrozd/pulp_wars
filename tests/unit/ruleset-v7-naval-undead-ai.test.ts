@@ -37,6 +37,7 @@ import {
   type UnitId,
   type UnitRoleIdV7,
   type UnitStateV7,
+  previewBoardV7,
 } from "../../src/engine/index";
 import {
   NAVAL_ARENA_PORTS_V7,
@@ -47,6 +48,7 @@ import {
   navalUnitAtV7,
   patchNavalUnitV7,
   seatV7,
+  boardingAttacksV7,
 } from "../fixtures/v7-naval-branch";
 
 // Themed naval branches, the Undead Drowned Fleet's Normal AI
@@ -449,12 +451,17 @@ describe("no Board, and the other seats respect the Drowned Crews", () => {
       ],
     );
     const view = viewOf(state);
-    expect(
-      queryPlayerCommandsV7(view).some((command) => command.kind === "BOARD"),
-    ).toBe(false);
+    // (`pulp_wars-3u8d`, 7r131: a Board is an attack that boards.)
+    expect(boardingAttacksV7(state)).toEqual([]);
     expect(
       chooseNormalCommandV7(view).candidates.some(
-        (item) => item.command.kind === "BOARD",
+        (item) =>
+          item.command.kind === "ATTACK" &&
+          previewBoardV7(
+            view,
+            item.command.unitId,
+            item.command.targetUnitId,
+          ) !== null,
       ),
     ).toBe(false);
   });

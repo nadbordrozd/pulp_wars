@@ -14,7 +14,7 @@ import {
   type CoordV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, idleRecoveryOfV7 } from "../fixtures/v7-builders";
 import { cityOfV7 } from "../fixtures/v7-dinosaur-arena";
 import {
   dwarfFieldV7,
@@ -164,11 +164,9 @@ describe("clockwork (section 7)", () => {
     ]);
     const gunner = unitAtV7(state, at(5, 3));
     const hammerer = unitAtV7(state, at(6, 3));
-    expect(offeredOfV7(state, at(5, 3), "RECOVER")).toEqual([]);
-    expect(refusalV7(state, { kind: "RECOVER", unitId: gunner.id })).toEqual({
-      code: "RECOVER_NOT_LEGAL",
-      params: { reason: "CONSTRUCT" },
-    });
+    // (`pulp_wars-3u8d`, 7r131: no Recover command; clockwork does not
+    // recover idle either.)
+    expect(idleRecoveryOfV7(state, gunner.id)).toBeNull();
     const ended = applyCommandV7(state, activeIdV7(state), {
       kind: "END_TURN",
     });

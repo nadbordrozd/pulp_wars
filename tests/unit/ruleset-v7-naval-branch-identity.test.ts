@@ -254,9 +254,12 @@ describe("the naval branch shapes", () => {
     expect(UNIT_ROLE_IDS_V7.filter((role) => isNavalRoleV7(role))).toEqual(
       NAVAL_ROLE_IDS_V7,
     );
+    // `pulp_wars-3u8d` (7r131): BOARD (after ATTACK) retired; a ship's
+    // attack boards.
     expect(
       COMMAND_KIND_ORDER_V7[COMMAND_KIND_ORDER_V7.indexOf("ATTACK") + 1],
-    ).toBe("BOARD");
+    ).toBe("RALLY");
+    expect(COMMAND_KIND_ORDER_V7).not.toContain("BOARD");
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_MIND_CONTROLLED") + 1
@@ -270,10 +273,9 @@ describe("the naval branch shapes", () => {
   it("parses BOARD strictly and TRAIN_NAVAL for the three ship roles only", () => {
     expect(
       parseCommandV7({ kind: "BOARD", unitId: 4, targetUnitId: 9 }),
-    ).toEqual({
-      ok: true,
-      value: { kind: "BOARD", unitId: 4, targetUnitId: 9 },
-    });
+      // `pulp_wars-3u8d` (7r131): `BOARD` is no command any more (a ship's
+      // `ATTACK` boards).
+    ).toMatchObject({ ok: false });
     for (const bad of [
       { kind: "BOARD", unitId: 4 },
       { kind: "BOARD", unitId: 4, targetUnitId: 9, at: { x: 1, y: 1 } },
@@ -327,7 +329,7 @@ describe("the five-node Naval branch in every tree", () => {
       // Human unlocks.
       expect(node("SEAMANSHIP")?.unlocks, faction).toEqual([
         { kind: "RAM" },
-        SEAMANSHIP_TRICK[faction] ?? { kind: "COMMAND", command: "BOARD" },
+        SEAMANSHIP_TRICK[faction] ?? { kind: "BOARDING" },
       ]);
       expect(node("SUBMERSIBLES")?.unlocks, faction).toEqual([
         { kind: "UNIT_ROLE", role: "SUBMARINE" },
@@ -424,8 +426,8 @@ describe("the five-node Naval branch in every tree", () => {
         seamanship.boarding,
         seamanship.harbourPopulation,
       ]).toEqual([true, boards, 0]);
-      if (boards) expect(seamanship.commands).toContain("BOARD");
-      else expect(seamanship.commands).not.toContain("BOARD");
+      // (Boarding is no command since `pulp_wars-3u8d`, 7r131.)
+      expect(seamanship.commands).not.toContain("BOARD");
       expect(seamanship.fireRafts, faction).toBe(faction === "GOBLIN");
       expect(none.fireRafts, faction).toBe(false);
       expect(seamanship.drownedCrews, faction).toBe(faction === "UNDEAD");

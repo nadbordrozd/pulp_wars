@@ -4,6 +4,9 @@ import {
   buildMissionStateV7,
   createPlayableGameFromMapStateV7,
   parseGameStateV7,
+  previewBoardV7,
+  queryPlayerCommandsV7,
+  viewForV7,
   type ApplyCommandResultV7,
   type CommandV7,
   type CoordV7,
@@ -340,4 +343,21 @@ export function rejectV7(
   if (JSON.stringify(result.state) !== before)
     throw new Error("a rejection changed the state");
   return { code: result.error.code, params: result.error.params };
+}
+
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): the `BOARD` command is
+ * gone; a ship's `ATTACK` on a ship it may board boards it. The offered
+ * attacks of the active seat that board (their `previewBoardV7` is a
+ * Board), in offer order.
+ */
+export function boardingAttacksV7(state: GameStateV7): readonly CommandV7[] {
+  const actor = state.turnOrder[state.activeSeatIndex];
+  if (actor === undefined) return [];
+  const view = viewForV7(state, actor);
+  return queryPlayerCommandsV7(view).filter(
+    (command) =>
+      command.kind === "ATTACK" &&
+      previewBoardV7(view, command.unitId, command.targetUnitId) !== null,
+  );
 }

@@ -212,10 +212,9 @@ async function crush(connection: Connection, size: Size): Promise<void> {
 async function swallow(connection: Connection, size: Size): Promise<void> {
   const at = (await scene(connection, "giantsSwallowFixtureV7")).swallow;
   if (at === undefined) return;
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no Swallow button;
+  // the Abomination's Attack mark on the Knight says it swallows.
   await activate(connection, at.abomination as Coord);
-  await record(connection, `${size}SwallowButton`);
-  await capture(connection, `swallow-button-${size}.png`);
-  await click(connection, "giant-swallow");
   await cursorTo(connection, at.abomination as Coord, at.knight as Coord);
   await record(connection, `${size}SwallowAim`);
   await capture(connection, `swallow-aim-${size}.png`);

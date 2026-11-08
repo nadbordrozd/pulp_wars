@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  BOARD_SEA_BEAST_V7,
   HORNED_PROW_LABEL_V7,
-  SEA_BEAST_BLOCK_V7,
   battleshipUnlockNoteV7,
-  boardBlockTextV7,
-  boardUnavailableTextV7,
   hornedProwRuleV7,
   navalAbilityNameV7,
   navalCombatLinesV7,
@@ -65,6 +61,7 @@ import {
   patchNavalUnitV7,
   rejectV7,
   seatV7,
+  boardingAttacksV7,
 } from "../fixtures/v7-naval-branch";
 import {
   DINOSAUR_FLEET_UI_V7,
@@ -148,11 +145,16 @@ const move = (unitId: number, path: readonly CoordV7[]): CommandV7 => ({
   unitId: unitId as UnitId,
   path: [...path],
 });
+// `pulp_wars-3u8d` (7r131): a Board is a ship's attack on a ship it may
+// board.
 const board = (unitId: number, targetUnitId: number): CommandV7 => ({
-  kind: "BOARD",
+  kind: "ATTACK",
   unitId: unitId as UnitId,
   targetUnitId: targetUnitId as UnitId,
 });
+/** The accepted attack's event kinds (a Board's has `SHIP_BOARDED`). */
+const attackKinds = (state: GameStateV7, command: CommandV7) =>
+  acceptV7(state, 0, command).events.map((event) => event.kind);
 const combatOf = (events: readonly DomainEventV7[]): CombatPreviewV7 => {
   const resolved = events.find((event) => event.kind === "COMBAT_RESOLVED");
   if (resolved?.kind !== "COMBAT_RESOLVED") throw new Error("no combat");
@@ -293,7 +295,7 @@ describe("the Dinosaur fleet registry (sections 5.1 and 5.2)", () => {
     );
     expect(seamanship?.unlocks).toEqual([
       { kind: "RAM" },
-      { kind: "COMMAND", command: "BOARD" },
+      { kind: "BOARDING" },
     ]);
     const caps = technologyCapabilitiesV7(NAVAL_TECHS_V7, "DINOSAUR");
     expect([caps.ram, caps.boarding]).toEqual([true, true]);
@@ -677,7 +679,9 @@ describe("D2: the Plesiosaur (section 5.3)", () => {
       ["DINOSAUR", "ORIGINAL"],
       [
         { seat: 0, role: "SUBMARINE", at: { x: 3, y: 5 }, hp: 7 },
-        { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 }, hp: 3 },
+        // (4 HP: above its boarding line, so the torpedo is an exchange;
+        // `pulp_wars-3u8d`, 7r131, an attack on a boardable ship boards.)
+        { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 }, hp: 4 },
       ],
     );
     const plesiosaur = navalUnitAtV7(state, { x: 3, y: 5 });
@@ -854,7 +858,7 @@ describe("D2: the Plesiosaur (section 5.3)", () => {
 });
 
 describe("D2: nobody boards a Plesiosaur, and a Dinosaur ship boards no Submarine (section 2 rule 6)", () => {
-  it("refuses a Human ship's Board of a weak Plesiosaur as TARGET_IMMUNE and never offers it", () => {
+  it("never boards a weak Plesiosaur: a Human ship's attack on it is an attack", () => {
     const state = strait(
       ["ORIGINAL", "DINOSAUR"],
       [
@@ -864,21 +868,13 @@ describe("D2: nobody boards a Plesiosaur, and a Dinosaur ship boards no Submarin
     );
     const boarder = navalUnitAtV7(state, { x: 3, y: 5 });
     const beast = navalUnitAtV7(state, { x: 4, y: 5 });
-    expect(
-      queryPlayerCommandsV7(viewOf(state)).some(
-        (command) => command.kind === "BOARD",
-      ),
-    ).toBe(false);
-    expect(rejectV7(state, 0, board(boarder.id, beast.id))).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: expect.objectContaining({ reason: "TARGET_IMMUNE" }),
-    });
-    expect(boardUnavailableTextV7(viewOf(state), boarder, false)).toBe(
-      BOARD_SEA_BEAST_V7,
+    expect(boardingAttacksV7(state)).toEqual([]);
+    expect(attackKinds(state, board(boarder.id, beast.id))).not.toContain(
+      "SHIP_BOARDED",
     );
   });
 
-  it("refuses a Dinosaur ship's Board of a weak Submarine, and boards a Patrol Boat or a Battleship as the Humans do", () => {
+  it("never boards a weak Submarine from a Dinosaur ship, and boards a Patrol Boat or a Battleship as the Humans do", () => {
     const state = strait(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -894,24 +890,21 @@ describe("D2: nobody boards a Plesiosaur, and a Dinosaur ship boards no Submarin
     const boat = navalUnitAtV7(state, { x: 3, y: 4 });
     const raft = navalUnitAtV7(state, { x: 7, y: 5 });
     const battleship = navalUnitAtV7(state, { x: 8, y: 5 });
-    const boards = queryPlayerCommandsV7(viewOf(state)).filter(
-      (command) => command.kind === "BOARD",
-    );
+    const boards = boardingAttacksV7(state);
     expect(
       boards.map((command) =>
-        command.kind === "BOARD" ? command.targetUnitId : null,
+        command.kind === "ATTACK" ? command.targetUnitId : null,
       ),
     ).toEqual(expect.arrayContaining([boat.id, battleship.id]));
     expect(
       boards.some(
         (command) =>
-          command.kind === "BOARD" && command.targetUnitId === submarine.id,
+          command.kind === "ATTACK" && command.targetUnitId === submarine.id,
       ),
     ).toBe(false);
-    expect(rejectV7(state, 0, board(dugout.id, submarine.id))).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: expect.objectContaining({ reason: "TARGET_IMMUNE" }),
-    });
+    expect(attackKinds(state, board(dugout.id, submarine.id))).not.toContain(
+      "SHIP_BOARDED",
+    );
     const taken = acceptV7(state, 0, board(dugout.id, boat.id)).state;
     expect(navalUnitV7(taken, boat.id)).toMatchObject({
       ownerId: seatV7(state, 0).id,
@@ -972,8 +965,6 @@ describe("the Dinosaur fleet's words (sections 5.3 and 12)", () => {
     expect(submarineUnlockNoteV7("DINOSAUR")).toBe(
       "Plesiosaur: hit only from the next tile; torpedo with no strike-back; grows; never boarded",
     );
-    expect(boardBlockTextV7("TARGET_IMMUNE", 4, true)).toBe(SEA_BEAST_BLOCK_V7);
-    expect(boardBlockTextV7("TARGET_IMMUNE", null)).toBe("Not a ship");
   });
 
   it("captures the fleet: the review fixture's Dugout previews a Horned Prow kill and its Alpha Plesiosaur a 14-damage torpedo", () => {

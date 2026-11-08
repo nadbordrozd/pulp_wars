@@ -484,7 +484,6 @@ import {
   matchHasUndeadV7,
   raiseDeadPreviewDescriptionV7,
   restlessOutsideTerritoryV7,
-  restlessRecoverBlockedV7,
   tendPreviewPresentationV7,
   cureCaptainPhraseV7,
   PESTILENCE_UNLOCK_TEXT_V7,
@@ -679,9 +678,6 @@ import {
 } from "../canvas/ice-folk-board-plan-v7";
 import {
   BOARDABLE_LABEL_V7,
-  BOARD_LABEL_V7,
-  BOARD_PICK_V7,
-  BOARD_TOOLTIP_V7,
   BOARD_UNLOCK_V7,
   HARBOURS_LABEL_V7,
   navalRamUnlockTextV7,
@@ -697,13 +693,11 @@ import {
   submarineUnlockNoteV7,
   SUBMERGED_LABEL_V7,
   SUBMERGED_TOOLTIP_V7,
-  boardUnavailableTextV7,
   boardableTooltipV7,
   harboursUnlockTextV7,
   navalBoundaryNoticeV7,
   viewerHarbourPopulationV7,
 } from "../naval-presentation-v7";
-import type { NavalPickV7 } from "../canvas/naval-board-plan-v7";
 import {
   curiosityPickPromptV7,
   type CuriosityPickV7,
@@ -1014,8 +1008,6 @@ import {
   BREAK_OFF_PICK_SECOND_V7,
   STOMP_CAST_V7,
   STOMP_LABEL_V7,
-  SWALLOW_LABEL_V7,
-  SWALLOW_PICK_V7,
   TOSS_LABEL_V7,
   TOSS_PICK_PASSENGER_V7,
   TOSS_PICK_TILE_V7,
@@ -1282,17 +1274,13 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // picked on the board.
   "TOP_UP",
   // The giants' signatures (`pulp_wars-w49.32`): one button per giant aims
-  // its signature; the victim, the Goblin and its landing (up to dozens of
-  // commands), the Stomp and the two Break Off tiles (up to 28 pairs) are
-  // picked on the board (docs/ui/BOARD_TARGETING.md section 3.2).
-  "SWALLOW",
+  // its signature; the Goblin and its landing (up to dozens of commands),
+  // the Stomp and the two Break Off tiles (up to 28 pairs) are picked on
+  // the board (docs/ui/BOARD_TARGETING.md section 3.2). (The Swallow and
+  // the naval Board are Attacks since `pulp_wars-3u8d`, 7r131.)
   "TOSS",
   "STOMP",
   "BREAK_OFF",
-  // The naval branch interface (bead pulp_wars-5ti.7): Board has one
-  // button per ship that arms it; the ship to capture is picked on the
-  // board (docs/ui/BOARD_TARGETING.md section 3.4).
-  "BOARD",
   // The frozen sea (bead pulp_wars-5ti.7): likewise Freeze: one button per
   // unit; a line role's arms it and the tile is picked on the board, the
   // Ice Witch's casts her ring (BOARD_TARGETING.md section 3.5).
@@ -1452,7 +1440,6 @@ const GIANT_PICK_ENTRIES_V7: readonly {
   readonly label: string;
   readonly icon: UiIconIdV7;
 }[] = [
-  { kind: "SWALLOW", label: SWALLOW_LABEL_V7, icon: "devour" },
   { kind: "TOSS", label: TOSS_LABEL_V7, icon: "goblin" },
   { kind: "STOMP", label: STOMP_LABEL_V7, icon: "stampede" },
   { kind: "BREAK_OFF", label: BREAK_OFF_LABEL_V7, icon: "units" },
@@ -1517,8 +1504,6 @@ function iceFolkAbilityActionV7(kind: IceFolkAbilityKindV7): string {
 /** The instruction of a giant's aiming stage. */
 function giantPickPromptV7(pick: GiantPickV7): string {
   switch (pick.kind) {
-    case "SWALLOW":
-      return SWALLOW_PICK_V7;
     case "TOSS":
       return pick.passengerUnitId === null
         ? TOSS_PICK_PASSENGER_V7
@@ -2073,18 +2058,12 @@ export class Ruleset7DomAppView {
    */
   #candyPick: CandyPickV7 | null = null;
   /**
-   * The giants' signatures (`pulp_wars-w49.32`): the Swallow, Goblin Toss,
+   * The giants' signatures (`pulp_wars-w49.32`): the Goblin Toss,
    * Thunder Stomp or Break Off the selected giant is aiming on the board
    * (Escape and Back step back from a Toss's landing or a Break Off's
    * second tile; Cancel or another selection leaves it and sends nothing).
    */
   #giantPick: GiantPickV7 | null = null;
-  /**
-   * The naval branch interface: the Board the selected ship is aiming on
-   * the board (Escape, Cancel or another selection leaves it and sends
-   * nothing).
-   */
-  #navalPick: NavalPickV7 | null = null;
   /**
    * Map curiosities round 3 (bead pulp_wars-737.20): the Zap or the Moon
    * Gun shot the selected unit is aiming on the board (Escape, Cancel or
@@ -2906,10 +2885,6 @@ export class Ruleset7DomAppView {
       } else if (this.#giantPick !== null) {
         // The giants' signatures: Escape first steps back out of the aiming.
         this.#cancelGiantPick(true);
-        return;
-      } else if (this.#navalPick !== null) {
-        // The naval branch interface: Escape first disarms Board.
-        this.#cancelNavalPick();
         return;
       } else if (this.#curiosityPick !== null) {
         // Map curiosities round 3: Escape first disarms the Zap or Fire.
@@ -7831,7 +7806,6 @@ export class Ruleset7DomAppView {
       this.#dwarfPick !== null ||
       this.#candyPick !== null ||
       this.#giantPick !== null ||
-      this.#navalPick !== null ||
       this.#curiosityPick !== null ||
       this.#freezePick !== null ||
       this.#cultPick !== null
@@ -7954,11 +7928,7 @@ export class Ruleset7DomAppView {
         this.#giantPick.unitId === selectedUnitId
           ? { giantPick: this.#giantPick }
           : {}),
-        // The naval branch interface: the Board being aimed.
-        ...(this.#navalPick !== null &&
-        this.#navalPick.unitId === selectedUnitId
-          ? { navalPick: this.#navalPick }
-          : {}),
+
         // Map curiosities round 3: the Zap or Moon Gun shot being aimed.
         ...(this.#curiosityPick !== null &&
         this.#curiosityPick.unitId === selectedUnitId
@@ -8001,7 +7971,6 @@ export class Ruleset7DomAppView {
       this.#dwarfPick = null;
       this.#candyPick = null;
       this.#giantPick = null;
-      this.#navalPick = null;
       this.#curiosityPick = null;
       this.#freezePick = null;
       this.#freezeHoverUnitId = null;
@@ -8909,11 +8878,10 @@ export class Ruleset7DomAppView {
         ...this.#dwarfActionButtons(view, unit.id),
         // The Candy revision: Sugar Rush, Re-bake and Sugar Toss likewise.
         ...this.#candyActionButtons(view, unit.id),
-        // The giants' signatures: Swallow, Goblin Toss, Thunder Stomp and
-        // Break Off likewise.
+        // The giants' signatures: Goblin Toss, Thunder Stomp and Break Off
+        // likewise (the Swallow is the Abomination's Attack, and the naval
+        // Board a ship's, since `pulp_wars-3u8d`, 7r131).
         ...this.#giantActionButtons(view, unit.id),
-        // The naval branch interface: Board likewise.
-        ...this.#navalActionButtons(view, unit.id),
         // Map curiosities round 3: the Tesla Tower's Zap and the Moon
         // Gun's Fire likewise.
         ...this.#curiosityActionButtons(unit.id),
@@ -8930,28 +8898,9 @@ export class Ruleset7DomAppView {
         ...this.#cultTrickActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
-      if (restlessRecoverBlockedV7(view, unit)) {
-        const recover = button(
-          this.#document,
-          "",
-          "restless-recover",
-          "v7-context-action",
-        );
-        recover.append(
-          this.#chibiArt("ICON:ACTION:RECOVER", CHIBI_DOM_BOXES_V7.action)
-            ?.element ?? art(this.#document, "ui-action-recover", ""),
-          text(this.#document, "span", "Recover", "v7-action-label"),
-        );
-        // aria-disabled keeps the explanation reachable by keyboard.
-        recover.setAttribute("aria-disabled", "true");
-        recover.dataset.disabledReason = "restless";
-        recover.title = RESTLESS_EXPLANATION_V7;
-        recover.setAttribute(
-          "aria-label",
-          `Recover unavailable. ${RESTLESS_EXPLANATION_V7}`,
-        );
-        actions.append(recover);
-      }
+      // (The disabled Recover button of a Restless unit outside its
+      // territory went with the `RECOVER` command: `pulp_wars-3u8d`, 7r131.
+      // Its Restless chip still says why it does not recover there.)
       const disbandBlocked = disbandBlockedByAfflictionV7(view, unit.id);
       if (disbandBlocked !== null) {
         const explanation = DISBAND_BLOCKED_EXPLANATION_V7[disbandBlocked];
@@ -8988,7 +8937,6 @@ export class Ruleset7DomAppView {
         this.#dwarfPickPanel(view, unit.id) ??
         this.#candyPickPanel(unit.id) ??
         this.#giantPickPanel(view, unit.id) ??
-        this.#navalPickPanel(unit.id) ??
         this.#curiosityPickPanel(unit.id) ??
         this.#freezePickPanel(unit.id) ??
         this.#cultPickPanel(unit.id);
@@ -10927,7 +10875,6 @@ export class Ruleset7DomAppView {
     this.#dwarfPick = null;
     this.#candyPick = null;
     this.#giantPick = null;
-    this.#navalPick = null;
     this.#curiosityPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
@@ -11097,13 +11044,9 @@ export class Ruleset7DomAppView {
       case "REBAKE":
         this.#startCandyPick(id, unitId);
         return;
-      case "SWALLOW":
       case "TOSS":
       case "BREAK_OFF":
         this.#startGiantPick(id, unitId);
-        return;
-      case "BOARD":
-        this.#startNavalPick(unitId);
         return;
       case "ZAP":
       case "FIRE_MOON_GUN":
@@ -14206,7 +14149,6 @@ export class Ruleset7DomAppView {
     this.#dwarfPick = null;
     this.#candyPick = null;
     this.#giantPick = null;
-    this.#navalPick = null;
     this.#curiosityPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
@@ -17534,137 +17476,6 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The naval branch interface (bead pulp_wars-5ti.7; BOARD_TARGETING.md
-   * section 3.4): the one Board button of an own ship. A ship it may
-   * capture is also a ship it may attack, so the button arms Board (pressed
-   * while aiming) and the prizes are picked on the board. Without an
-   * offered Board, a ship next to an enemy afloat shows the button
-   * disabled with the engine's reason; every other ship shows none.
-   */
-  #navalActionButtons(
-    view: PlayerViewV7,
-    unitId: UnitId,
-  ): readonly HTMLButtonElement[] {
-    const unit = view.units.find((candidate) => candidate.id === unitId);
-    if (
-      unit === undefined ||
-      unit.ownerId !== view.viewer.id ||
-      unit.form !== "NAVAL" ||
-      this.#snapshot.offeredCommands.length === 0
-    )
-      return [];
-    const offered = this.#snapshot.offeredCommands.some(
-      (command) => command.kind === "BOARD" && command.unitId === unit.id,
-    );
-    const reason = boardUnavailableTextV7(view, unit, offered);
-    if (!offered && reason === null) return [];
-    const action = button(
-      this.#document,
-      "",
-      "naval-board",
-      "v7-context-action",
-    );
-    action.append(
-      this.#chibiArt("ICON:ACTION:BOARD", CHIBI_DOM_BOXES_V7.action)?.element ??
-        uiIconV7(this.#document, "grapple", "v7-ui-icon v7-command-icon"),
-      text(this.#document, "span", BOARD_LABEL_V7, "v7-action-label"),
-    );
-    action.dataset.navalAbility = "board";
-    if (reason === null) {
-      const aiming = this.#navalPick !== null;
-      action.title = BOARD_TOOLTIP_V7;
-      action.setAttribute(
-        "aria-label",
-        `${BOARD_LABEL_V7}. ${BOARD_TOOLTIP_V7}`,
-      );
-      action.setAttribute("aria-pressed", String(aiming));
-      action.disabled = this.#localBusy();
-      action.onclick = () =>
-        aiming ? this.#cancelNavalPick() : this.#startNavalPick(unit.id);
-    } else {
-      // aria-disabled keeps the reason reachable by keyboard and touch.
-      action.setAttribute("aria-disabled", "true");
-      action.dataset.disabledReason = reason;
-      action.title = reason;
-      action.setAttribute(
-        "aria-label",
-        `${BOARD_LABEL_V7} unavailable. ${reason}`,
-      );
-      action.onclick = () => {
-        this.#notice = `${reason}.`;
-        this.#showToast(`${reason}.`);
-        this.#pendingFocusAction = "naval-board";
-        this.#render();
-      };
-    }
-    return [action];
-  }
-
-  /** Starts aiming the selected ship's Board. */
-  #startNavalPick(unitId: UnitId): void {
-    if (this.#localBusy()) return;
-    this.#navalPick = { kind: "BOARD", unitId };
-    this.#notice = `${BOARD_PICK_V7}.`;
-    this.#pendingFocusAction = null;
-    this.#render();
-    // The board takes the keyboard, so Tab and Enter pick.
-    this.#queueBoardFocus();
-  }
-
-  /** Leaves the aiming, and returns focus to the Board button. */
-  #cancelNavalPick(): void {
-    const pick = this.#navalPick;
-    this.#navalPick = null;
-    this.#pendingFocusAction = pick === null ? null : "naval-board";
-    this.#render();
-  }
-
-  /**
-   * The Board aiming panel in the dock: the action's icon and name, its
-   * "?" and Cancel. The prizes are highlighted and picked on the board,
-   * each with its HP after the capture; the dock lists none. Null (and the
-   * aiming ends) when nothing is offered any more.
-   */
-  #navalPickPanel(unitId: UnitId): HTMLElement | null {
-    const pick = this.#navalPick;
-    if (pick === null || pick.unitId !== unitId) return null;
-    const commands = this.#snapshot.offeredCommands.filter(
-      (command) => command.kind === "BOARD" && command.unitId === unitId,
-    );
-    if (commands.length === 0) {
-      this.#navalPick = null;
-      return null;
-    }
-    const panel = el(
-      this.#document,
-      "section",
-      "v7-kaboom-preview v7-martian-pick v7-naval-pick v7-board-pick",
-    );
-    panel.dataset.v7NavalPick = "board";
-    panel.dataset.boardTargets = String(commands.length);
-    panel.setAttribute("aria-label", BOARD_PICK_V7);
-    panel.append(
-      this.#pickHead(
-        "ICON:ACTION:BOARD",
-        "grapple",
-        BOARD_LABEL_V7,
-        `${BOARD_PICK_V7}. ${BOARD_TOOLTIP_V7}`,
-      ),
-    );
-    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
-    const cancel = button(
-      this.#document,
-      "Cancel",
-      "naval-pick-cancel",
-      "v7-kaboom-cancel",
-    );
-    cancel.onclick = () => this.#cancelNavalPick();
-    buttons.append(cancel);
-    panel.append(buttons);
-    return panel;
-  }
-
-  /**
    * Map curiosities round 3 (bead pulp_wars-737.20; BOARD_TARGETING.md
    * section 3.10): the one Zap button of a unit on the Tesla Tower and the
    * one Fire button of a unit on the Moon Gun, while the engine offers the
@@ -18978,7 +18789,8 @@ export class Ruleset7DomAppView {
   /**
    * The giants' signatures (`pulp_wars-w49.32`, docs/product/
    * RULESET_7_GIANTS.md section 10): the one button of an own giant's
-   * signature command (Swallow, Goblin Toss, Thunder Stomp, Break Off).
+   * signature command (Goblin Toss, Thunder Stomp, Break Off; the Swallow
+   * is the Abomination's Attack since `pulp_wars-3u8d`, 7r131).
    * With a legal choice it aims the signature on the board (pressed while
    * aiming); without one it is disabled and names the reason ("It moved
    * this turn", "No Goblin next to it", "Needs more than 10 HP", ...). The
@@ -20321,7 +20133,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r130",
+    rulesetId: "pulp-wars-poc-7r131",
     seed,
     width,
     height: width,
@@ -20468,45 +20280,45 @@ function effectDescription(
         ? "Clear for farming: removes Forest and creates Fertile Ground"
         : // The naval branch (`pulp_wars-5ti.2`; the help sentence of
           // RULESET_7_NAVAL_BRANCH.md section 14.2).
-          effect.command === "BOARD"
-          ? BOARD_UNLOCK_V7
-          : // Tuning 1 (7r46): the two commands whose rule changed say so.
-            effect.command === "BLAST_MOUNTAIN"
-            ? BLAST_MOUNTAIN_UNLOCK_TEXT_V7
-            : // `pulp_wars-5ti.14`: free, +10 Coins.
-              effect.command === "GATHER_PEARLS"
-              ? GATHER_PEARLS_UNLOCK_TEXT_V7
-              : effect.command === "BUILD_FIELD_DEFENSE"
-                ? FIELD_DEFENSE_UNLOCK_TEXT_V7
-                : effect.command === "HIRE"
-                  ? hireUnlockTextV7(
-                      faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
-                    )
-                  : effect.command === "PILLAGE"
-                    ? pillageUnlockTextV7(
-                        effectiveRoleRuleV7(
-                          "RAIDER",
-                          faction,
-                        ).abilities.includes("ESCAPE")
-                          ? label("RAIDER")
-                          : null,
+          // Tuning 1 (7r46): the two commands whose rule changed say so.
+          effect.command === "BLAST_MOUNTAIN"
+          ? BLAST_MOUNTAIN_UNLOCK_TEXT_V7
+          : // `pulp_wars-5ti.14`: free, +10 Coins.
+            effect.command === "GATHER_PEARLS"
+            ? GATHER_PEARLS_UNLOCK_TEXT_V7
+            : effect.command === "BUILD_FIELD_DEFENSE"
+              ? FIELD_DEFENSE_UNLOCK_TEXT_V7
+              : effect.command === "HIRE"
+                ? hireUnlockTextV7(
+                    faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
+                  )
+                : effect.command === "PILLAGE"
+                  ? pillageUnlockTextV7(
+                      effectiveRoleRuleV7("RAIDER", faction).abilities.includes(
+                        "ESCAPE",
                       )
-                    : // The frozen sea redesign (bead pulp_wars-5ti.27).
-                      effect.command === "BUILD_FISHING_HOLE"
-                      ? "Build Fishing Hole"
-                      : // The border freeze (`pulp_wars-5ti.31`).
-                        effect.command === "LAND_GRANT" &&
-                          faction === "ICE_FOLK"
-                        ? ICE_LAND_GRANT_UNLOCK_V7
-                        : // The Dinosaur pass, correction: a faction's own
-                          // building under its own name ("Build Chopping Block").
-                          factionBuildCommandV7(effect.command, faction) ===
-                            null
-                          ? title(effect.command)
-                          : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
+                        ? label("RAIDER")
+                        : null,
+                    )
+                  : // The frozen sea redesign (bead pulp_wars-5ti.27).
+                    effect.command === "BUILD_FISHING_HOLE"
+                    ? "Build Fishing Hole"
+                    : // The border freeze (`pulp_wars-5ti.31`).
+                      effect.command === "LAND_GRANT" && faction === "ICE_FOLK"
+                      ? ICE_LAND_GRANT_UNLOCK_V7
+                      : // The Dinosaur pass, correction: a faction's own
+                        // building under its own name ("Build Chopping Block").
+                        factionBuildCommandV7(effect.command, faction) === null
+                        ? title(effect.command)
+                        : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
       // Themed naval branches (`pulp_wars-5ti.16`): the faction's own boats.
       return navalRamUnlockTextV7(faction);
+    // The naval branch (`pulp_wars-5ti.2`; the help sentence of
+    // RULESET_7_NAVAL_BRANCH.md section 14.2): a ship's attack boards since
+    // `pulp_wars-3u8d` (7r131; a `BOARD` command unlock before).
+    case "BOARDING":
+      return BOARD_UNLOCK_V7;
     case "FIRE_RAFTS":
       return fireRaftsUnlockTextV7();
     // Themed naval branches (`pulp_wars-5ti.17`): the Undead Drowned Crews.
@@ -20853,6 +20665,7 @@ function technologyEffectGroupIdV7(
     case "SWITCHEROO":
     case "TENTACLES":
     case "SUMMON_MASS":
+    case "BOARDING":
       return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&

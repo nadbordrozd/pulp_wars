@@ -31,7 +31,7 @@ The dock never lists one button, portrait or chip per target.
   free tile, an Attack is on a hostile unit, a heal or a Hatch is on an own
   unit), so a click on each does what its mark says.
 - **Arming where two actions could claim one target.** A Mind Control, a
-  Tractor Beam, a Bolas, a Frost Bolt, a Bomb Run or a Board aims at units
+  Tractor Beam, a Bolas, a Frost Bolt or a Bomb Run aims at units
   the unit could also attack; a Tunnel, an Assemble, a Beam Down, a
   Re-bake, a Sugar Rush or a Freeze aims at tiles it could also move to.
   Each has one button that arms it. A Stampede (Mammoth) has a button too,
@@ -52,7 +52,17 @@ The dock never lists one button, portrait or chip per target.
   command, because its Attack frogs a target it leaves alive (its preview
   says "Ribbit: target becomes a frog"); and the Familiar's Switcheroo
   reaches 2 to 4 tiles, so a neighbour means Attack (or Select, for an
-  own unit).
+  own unit). Since `7r131` (`pulp_wars-3u8d`) the last ones do: the Sled's
+  Bolas flies exactly 2 tiles, so an enemy beside it means Attack; the
+  Abomination's Attack swallows a unit it may swallow (its mark says
+  "Swallow · N turns", "Will be swallowed whole") and a ship's Attack
+  boards a ship it may board ("Board: captures the ship"), so neither has
+  a button or a badge of its own; the Saucer's Tractor Beam pulls only
+  enemies, so an own unit 2 tiles away is Select alone; the Moon Gun fires
+  only to tiles the unit could not walk to, so a tile it can reach is a
+  Move; and a Summoner's Tentacle replaces a Move on a tile both reach
+  (a road tile 2 or 3 away), as a Tunnel does. Recover is no command any
+  more: an idle unit recovers at End Turn.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is made with the armed button, or, unarmed,
@@ -116,18 +126,19 @@ arming).
   offered: Mind Control, Tractor Beam, Beam Down, Bolas, Frost Bolt,
   Stampede, a line role's Freeze, Tunnel, Bomb Run, Assemble, Barricade,
   Sugar Rush (only on tiles the unit could not reach or hit without it),
-  Re-bake, Swallow, Goblin Toss, Break Off, Board, Sacrifice, Seize,
+  Re-bake, Goblin Toss, Break Off, Sacrifice, Seize,
   Summon Imp, Summon Horror and Summon Mass (each its own badge), Channel
   (the summons a cultist can help bind), Anchor,
   Star-fall, the Great Summoning, Proclaim, Switcheroo and Tentacle (a
-  Hexer's Ribbit is its Attack since `7r130`, `pulp_wars-n5fa`: no badge
-  of its own). The list is derived from the offered commands: an ability's
+  Hexer's Ribbit is its Attack since `7r130`, `pulp_wars-n5fa`, and the
+  Swallow and Board are Attacks since `7r131`, `pulp_wars-3u8d`: no badge
+  of their own). The list is derived from the offered commands: an ability's
   tiles are exactly the targets its armed pick shows (the first step of a
   two-step pick: a Beam Down's passenger, a Summon's helper, a Toss's
   Goblin, a Re-bake's Crumbs, a Break Off's first tile, a Bomb Run's
   target, a Tunnel's destination).
 - **What stays in the dock only.** An action on the unit itself, its own
-  tile or an area fixed by the rules: Recover, Wait, Capture, Promote,
+  tile or an area fixed by the rules: Wait, Capture, Promote,
   Pillage, Disband, Fortify, Wail, Raise Dead, Devour, the Wishing Well,
   Kaboom!, Cold Snap, Whirl, Thunder Stomp, Boo!, the Ice Witch's ring,
   Rally and Tend Wounded; and every command of a city,
@@ -255,7 +266,7 @@ The legend of every other kind of target, each a variant of a style:
 | A Bat Escape landing                                                                                                                                                         | Move   | Dashed brackets on a dark casing, with its bat      | Undead violet `#c9a6ff`   |
 | A chosen Tunnel destination                                                                                                                                                  | Move   | Solid brackets inside a thin solid frame            | teal `#64e6cf`            |
 | Another landing of a seated Hammerer                                                                                                                                         | Move   | A small dot                                         | teal `#64e6cf`            |
-| Attack, Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Board (capture a ship), Seize, Swallow, Stomp, Proclaim, Crack Ice, a Tesla Tower Zap                       | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
+| Attack (a Swallow and a Board are Attacks), Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Seize, Stomp, Proclaim, Crack Ice, a Tesla Tower Zap                    | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
 | Hatch, Sugar Toss, Top-Up, a passenger to beam or tunnel, a Goblin to toss, an own unit to pull, Sacrifice, Channel, Anchor, joining a chant, free a frozen ship (Crack Ice) | Help   | Brackets with a plus                                | lavender `#c49bff`        |
 | Lay Egg, Beam Down tile, Assemble, Barricade, Re-bake, Freeze, a Toss landing, Break Off, a Summon, Star-fall, the Great Summoning, Tentacle                                 | Place  | Brackets with corner pips                           | cream `#ffe7a3`           |
 | An area support's recipient (not a target, section 2.1)                                                                                                                      | Help   | A broken ring with a plus                           | lavender `#c49bff`        |
@@ -356,15 +367,15 @@ area fixed by the rules, or it opens a screen).
 
 ### 3.1 Every unit
 
-| Action                                                        | Class | How it is chosen now                                                 | Style                   |
-| ------------------------------------------------------------- | ----- | -------------------------------------------------------------------- | ----------------------- |
-| Move (also Embark: a Move onto a Port; Escape; Launch; Glide) | (a)   | Unarmed: a highlighted tile                                          | Move                    |
-| Attack (melee, ranged, ray, bombs, a Spider)                  | (a)   | Unarmed: a highlighted hostile unit, with its preview                | Attack                  |
-| Disembark, and the two-step landing                           | (a)   | Unarmed: a highlighted shore tile ("Land now", "Move 1, then land")  | Move                    |
-| Recover, Wait, Capture, Promote, Pillage, Disband             | (c)   | One button; acts on the unit or its own tile                         | none                    |
-| Build Field Defense (Fortify)                                 | (c)   | One button; the unit's own tile                                      | none                    |
-| Rally (Frenzy, Berserk, War Drums, Psychic Command)           | (c)   | One button; its recipients are marked while it is hovered or focused | Help, broken ring (2.1) |
-| Tend Wounded (Repair, Frosting)                               | (c)   | One button; every recipient is marked with its heal or cure          | Help, broken ring (2.1) |
+| Action                                                              | Class | How it is chosen now                                                 | Style                   |
+| ------------------------------------------------------------------- | ----- | -------------------------------------------------------------------- | ----------------------- |
+| Move (also Embark: a Move onto a Port; Escape; Launch; Glide)       | (a)   | Unarmed: a highlighted tile                                          | Move                    |
+| Attack (melee, ranged, ray, bombs, a Spider)                        | (a)   | Unarmed: a highlighted hostile unit, with its preview                | Attack                  |
+| Disembark, and the two-step landing                                 | (a)   | Unarmed: a highlighted shore tile ("Land now", "Move 1, then land")  | Move                    |
+| Wait, Capture, Promote, Pillage, Disband (no Recover since `7r131`) | (c)   | One button; acts on the unit or its own tile                         | none                    |
+| Build Field Defense (Fortify)                                       | (c)   | One button; the unit's own tile                                      | none                    |
+| Rally (Frenzy, Berserk, War Drums, Psychic Command)                 | (c)   | One button; its recipients are marked while it is hovered or focused | Help, broken ring (2.1) |
+| Tend Wounded (Repair, Frosting)                                     | (c)   | One button; every recipient is marked with its heal or cure          | Help, broken ring (2.1) |
 
 ### 3.2 Faction abilities
 
@@ -420,8 +431,8 @@ area fixed by the rules, or it opens a screen).
 | Harvest, Hunt, Fish, Gather Pearls; every Build; Clear, Replant, Cultivate, Blast, Road, Redevelop | (a)   | The tile is selected on the board first; its dock offers what that tile can do                         |
 | Build a Monument                                                                                   | (a)   | The tile is selected on the board first; one button per earned achievement (which Monument, not where) |
 | Research prompt                                                                                    | (c)   | Opens the technology screen                                                                            |
-| Ships: Move, Attack, Disembark, Recover                                                            | (a)   | As for every unit                                                                                      |
-| Ships: Board (Seamanship)                                                                          | (a)   | One Board button arms it; the enemy ship to capture is picked on the board (section 3.4)               |
+| Ships: Move, Attack, Disembark                                                                     | (a)   | As for every unit                                                                                      |
+| Ships: Board (Seamanship)                                                                          | (a)   | The ship's Attack on a ship it may board captures it; its mark says so (section 3.4, `7r131`)          |
 | Fountain of Youth, Shrine, Sunken Wreck, Spider's lair                                             | (c)   | No action: a unit moves onto or next to it                                                             |
 | Gold Claim, Lost Expedition                                                                        | (c)   | No action: a unit's Move onto it, labelled "Stake" or "Find" (section 3.10)                            |
 | Tesla Tower Zap, Moon Gun Fire                                                                     | (b)   | One button arms it; the target or landing is picked on the board (section 3.10)                        |
@@ -436,39 +447,26 @@ Monument stands on the selected tile, which is not a target on the map.
 
 The naval branch
 ([rules](../product/RULESET_7_CURRENT.md#14-naval-rules))
-adds one targeted action and three previews. Code:
+adds one capture and three previews. Code:
 `src/render/naval-presentation-v7.ts` (the words),
 `src/render/canvas/naval-board-plan-v7.ts` (the plan) and
 `src/render/canvas/naval-canvas-v7.ts` (the two ship markers).
 
-- **Board is armed.** A ship that may capture an enemy ship may usually
-  attack it too, so the two actions claim one target and Board follows the
-  arming rule: the dock has **one Board button** (a grappling hook)
-  whatever the number of boardable ships. Unarmed, the selected ship shows
-  its Moves and Attacks as always. Armed (the button is pressed), only the
-  ships the engine offers a `BOARD` on are highlighted, in the **Attack**
-  style, each labelled with the exact result of `previewBoardV7`:
-  **"Take · 4 HP"** (the prize and its HP after the patch, the wording of
-  a Mind Control's "Take · 5 HP"). A click, a tap or Enter on one sends
-  the `BOARD`; Escape, Cancel or another selection disarms and sends
-  nothing; Tab steps through the prizes. The aiming panel holds the "?"
-  and Cancel only.
-- **What tells a capture from an attack.** Three things, none of them a
-  fifth style: the armed button (while it is pressed every mark on the
-  board is a capture), the label ("Take · N HP" where an attack reads
-  "Deal N · take N"), and the **grappling-hook badge** every ship at or
-  below its boarding line wears on the board, for both sides and at all
-  times (`stats.boardableAt`), so a prize is seen before anything is
-  armed. Its dock shows the chip "Boardable".
-- **Reasons.** While Board is armed, an enemy afloat within two tiles that
-  cannot be taken keeps a grey mark with the engine's rejection reason
-  (`boardTargetBlockV7`): "Above 3 HP" (`TARGET_HEALTHY`, with the ship's
-  boarding line), "Not a ship" (`TARGET_IMMUNE`, a transport) or "Too far"
-  (`OUT_OF_RANGE`), as a Mind Control target that cannot be taken does.
-  When no `BOARD` is offered, a ship of a seat with Seamanship that stands
-  next to an enemy afloat shows the Board button disabled with one reason
-  ("No enemy ship here is weak enough", "Only ships can be boarded", "This
-  ship cannot board now"); every other ship has no Board button.
+- **Board is the Attack** (since `7r131`, `pulp_wars-3u8d`; a Board button
+  armed a separate pick before). A ship with Seamanship next to an enemy
+  ship at or below its boarding line captures it by attacking it, so the
+  tile has one meaning and needs no button. Unarmed, the selected ship
+  shows its Moves and Attacks as always; an Attack that boards
+  (`queryAttackBoardsV7`) is labelled **"Board: captures the ship"** with
+  the note "It becomes yours with N HP" (the exact `hpAfter` of
+  `previewBoardV7`) instead of the exchange preview. A click, a tap or
+  Enter sends the `ATTACK`.
+- **What tells a capture from an attack.** The label ("Board: captures the
+  ship" where an attack reads "Deal N · take N") and the
+  **grappling-hook badge** every ship at or below its boarding line wears
+  on the board, for both sides and at all times (`stats.boardableAt`), so
+  a prize is seen before the ship is selected. Its dock shows the chip
+  "Boardable".
 - **The Bow Ram** is part of an Attack's preview, like a Charge!, a
   Knockback or a Bounce: the note "Bow Ram +1" and "Shoves back" or "Shove
   blocked" (the public preview's `ram` and `push`), and, on the focused or
@@ -608,7 +606,7 @@ they have no button and appear in that target's preview. Code:
 | Faction  | Signature      | Class | How it is chosen                                                                                                                                                                                                                                                 | Style                       |
 | -------- | -------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
 | Human    | Crushing Shove | (c)   | Part of the Juggernaut's Attack: the preview reads "Crush 3" or "Crush 3 · 3 behind", or "Push or crush 3" when the tile behind is in fog; the unit behind takes a "−3" mark                                                                                     | Attack (the attack)         |
-| Undead   | Swallow        | (b)   | One Swallow button; each enemy it can swallow is a target labelled "Swallow · N turns"; the cursor names it, its HP and when it is digested                                                                                                                      | Attack                      |
+| Undead   | Swallow        | (a)   | The Abomination's Attack (`7r131`; one Swallow button before): each enemy it can swallow is an Attack target labelled "Swallow · N turns" with the note "Will be swallowed whole"; the cursor names it, its HP and when it is digested                           | Attack                      |
 | Goblin   | Goblin Toss    | (b)   | One Toss button; the Goblins next to the Troll are targets badged "Throw" (one Goblin: skipped), then the landing tiles, the focused one with the Goblin's Kaboom! area previewed                                                                                | Help, then Place            |
 | Dinosaur | Thunder Stomp  | (c)   | One Stomp button opens a panel with its confirmation ("Stomp"); the 3 x 3 area is drawn, each enemy hit is a target with its "−4" (any of them, or the confirmation, stomps) and each Field Defense reads "Smash"; the panel's summary counts the hits and kills | Attack, and an area preview |
 | Martian  | Overstride     | (c)   | Part of the Colossus's Move: a Move through enemies reads "Trample −3" and marks each trampled unit                                                                                                                                                              | Move                        |

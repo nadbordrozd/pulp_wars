@@ -249,13 +249,12 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
       },
       FAR,
     ]);
-    expect(
-      offeredFor(state, CAPITAL, "RECOVER", "MOVE").map((c) => c.kind),
-    ).toContain("RECOVER");
+    // (`pulp_wars-3u8d`, 7r131: a unit recovers idle; no Recover command.)
+    expect(offeredFor(state, CAPITAL, "MOVE").map((c) => c.kind)).toContain(
+      "MOVE",
+    );
     const run = playV7(state, beam(state, at(4, 3), CAPITAL, at(5, 3)));
-    expect(
-      offeredFor(run.state, at(5, 3), "RECOVER", "MOVE", "CAPTURE"),
-    ).toEqual([]);
+    expect(offeredFor(run.state, at(5, 3), "MOVE", "CAPTURE")).toEqual([]);
     expect(unitAtV7(run.state, at(5, 3))).toMatchObject({
       hp: 4,
       captureEligible: false,

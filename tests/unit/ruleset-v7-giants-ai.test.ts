@@ -527,8 +527,10 @@ describe("Swallow: the Abomination's own seat", () => {
       ["UNDEAD", "ORIGINAL"],
       [own(GIANT, 4, 3, { hp }), foe("GUARD", 5, 3, { hp: 12 }), ...extra],
     );
+  // `pulp_wars-3u8d` (7r131): its attack on a unit it may swallow is the
+  // Swallow.
   const swallow = (state: GameStateV7, x: number, y: number): CommandV7 => ({
-    kind: "SWALLOW",
+    kind: "ATTACK",
     unitId: unitIdAtV7(state, at(4, 3)),
     targetUnitId: unitIdAtV7(state, at(x, y)),
   });
@@ -576,25 +578,32 @@ describe("Swallow: the Abomination's own seat", () => {
 
   it("never swallows below 16 HP of its own", () => {
     const weak = scene(SWALLOW_MINIMUM_HP_V7 - 1);
+    expect(queryPlayerCommandsV7(viewerViewV7(weak))).toContainEqual(
+      swallow(weak, 5, 3),
+    );
+    expect(unitCandidatesV7(weak, at(4, 3), "ATTACK")).toEqual([]);
     expect(
-      queryPlayerCommandsV7(viewerViewV7(weak)).some(
-        (command) => command.kind === "SWALLOW",
-      ),
-    ).toBe(true);
-    expect(unitCandidatesV7(weak, at(4, 3), "SWALLOW")).toEqual([]);
-    expect(
-      unitCandidatesV7(scene(SWALLOW_MINIMUM_HP_V7), at(4, 3), "SWALLOW"),
+      unitCandidatesV7(scene(SWALLOW_MINIMUM_HP_V7), at(4, 3), "ATTACK"),
     ).toHaveLength(1);
   });
 
-  it("kills with its attack what its attack kills (the unit rises as a Zombie at once)", () => {
+  it("swallows what its blow would kill: its attack there is the Swallow", () => {
+    // `pulp_wars-3u8d` (7r131): the attack on a unit it may swallow always
+    // swallows (it killed it with a blow before, the unit rising at once).
     const state = scene(40, [foe("FIGHTER", 4, 4, { hp: 5 })]);
     expect(previewOf(state, at(4, 3), at(4, 4)).defenderDies).toBe(true);
     expect(
-      unitCandidatesV7(state, at(4, 3), "SWALLOW").map(
+      previewSwallowV7(
+        viewerViewV7(state),
+        unitIdAtV7(state, at(4, 3)),
+        unitIdAtV7(state, at(4, 4)),
+      ),
+    ).not.toBeNull();
+    expect(
+      unitCandidatesV7(state, at(4, 3), "ATTACK").map(
         (candidate) => candidate.command,
       ),
-    ).not.toContainEqual(swallow(state, 4, 4));
+    ).toContainEqual(swallow(state, 4, 4));
   });
 });
 
@@ -633,13 +642,13 @@ describe("Swallow: against an Abomination", () => {
     expect(
       scoreV7(healthy, step(healthy, at(7, 3), at(6, 3))).safetyValue,
     ).toBe(-blowOn(besideHealthy));
-    // The engine offers the Abomination exactly that Swallow.
+    // The engine's attack of the Abomination there is exactly that Swallow.
     const offered = (state: GameStateV7): boolean =>
-      queryPlayerCommandsV7(foeView(asFoe(state))).some(
-        (command) =>
-          command.kind === "SWALLOW" &&
-          command.targetUnitId === unitIdAtV7(state, at(6, 3)),
-      );
+      previewSwallowV7(
+        foeView(asFoe(state)),
+        unitIdAtV7(state, at(5, 3)),
+        unitIdAtV7(state, at(6, 3)),
+      ) !== null;
     expect([offered(besideWounded), offered(besideHealthy)]).toEqual([
       true,
       false,
@@ -691,7 +700,7 @@ describe("Swallow: against an Abomination", () => {
       ),
     );
     const fed = applyOkV7(before, seatIdV7(before, 1), {
-      kind: "SWALLOW",
+      kind: "ATTACK",
       unitId: unitIdAtV7(before, at(4, 3)),
       targetUnitId: unitIdAtV7(before, at(3, 3)),
     }).state;

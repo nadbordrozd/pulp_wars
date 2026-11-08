@@ -23,7 +23,6 @@ import {
   factionTreeV7,
   parseGameStateV7,
   queryCombatPreviewV7,
-  queryPlayerCommandsV7,
   roleMechanicsV7,
   technologyCapabilitiesV7,
   technologyDisplayNameV7,
@@ -48,6 +47,7 @@ import {
   navalUnitV7,
   patchNavalUnitV7,
   seatV7,
+  boardingAttacksV7,
 } from "../fixtures/v7-naval-branch";
 
 // Themed naval branches, the Undead Drowned Fleet (`pulp_wars-5ti.17`,
@@ -718,11 +718,8 @@ describe("no Board for the Undead (section 4.3)", () => {
         { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 7 }, hp: 2 },
       ],
     );
-    expect(
-      queryPlayerCommandsV7(viewOf(undead)).some(
-        (command) => command.kind === "BOARD",
-      ),
-    ).toBe(false);
+    // (`pulp_wars-3u8d`, 7r131: no attack of it boards.)
+    expect(boardingAttacksV7(undead)).toEqual([]);
     const human = strait(
       ["ORIGINAL", "UNDEAD"],
       [
@@ -733,11 +730,11 @@ describe("no Board for the Undead (section 4.3)", () => {
     const boarder = navalUnitAtV7(human, { x: 3, y: 6 });
     const ghost = navalUnitAtV7(human, { x: 3, y: 7 });
     const board: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder.id,
       targetUnitId: ghost.id,
     };
-    expect(queryPlayerCommandsV7(viewOf(human))).toContainEqual(board);
+    expect(boardingAttacksV7(human)).toContainEqual(board);
     const result = acceptV7(human, 0, board);
     expect(navalUnitV7(result.state, ghost.id)).toMatchObject({
       ownerId: seatV7(human, 0).id,

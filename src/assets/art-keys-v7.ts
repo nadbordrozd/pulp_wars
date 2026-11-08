@@ -203,7 +203,6 @@ const STATIC_COMMAND_ART_KEYS: Readonly<
 > = {
   RALLY: ACTION_ART_KEYS_V7.RALLY,
   TEND_WOUNDED: "ui-action-heal",
-  RECOVER: "ui-action-recover",
   CAPTURE: "building-village",
   PROMOTE: "ui-action-promote",
   PILLAGE: ACTION_ART_KEYS_V7.PILLAGE,

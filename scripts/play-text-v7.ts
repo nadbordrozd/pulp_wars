@@ -117,7 +117,6 @@ import {
   whirlAttackPreviewV7,
   projectEventsV7,
   queryCombatPreviewV7,
-  queryIdleRecoveryV7,
   queryLandGrantPreviewV7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
@@ -397,7 +396,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
 
 Command ids (case-insensitive, valid while offered; see docs/validation/TEXT_PLAY.md):
   u12.m.4,5        move unit 12 to x=4,y=5      u12.a.u31     attack unit 31
-  u12.capture | .recover | .promote | .fortify | .pillage | .disband | .wait | .rally | .tend
+  u12.capture | .promote | .fortify | .pillage | .disband | .wait | .rally | .tend
   c1.t.FIGHTER     train in city 1               c1.grant      Land Grant
   c1.reward.WALLS  choose a pending city reward  r.FARMING     research
   t.4,5.build_farm tile action at 4,5            t.4,5.monument.EXPLORER
@@ -1052,8 +1051,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     }
     case "ATTACK":
       return `u${command.unitId}.a.u${command.targetUnitId}`;
-    case "BOARD":
-      return `u${command.unitId}.board.u${command.targetUnitId}`;
     case "MIND_CONTROL":
       return `u${command.unitId}.mind.u${command.targetUnitId}`;
     case "TRACTOR_BEAM":
@@ -1070,9 +1067,8 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     // The Candy redesign (`pulp_wars-jdb.12`).
     case "TOP_UP":
       return `u${command.unitId}.topup.u${command.targetUnitId}`;
-    // The giants' signatures (`pulp_wars-w49.30`).
-    case "SWALLOW":
-      return `u${command.unitId}.swallow.u${command.targetUnitId}`;
+    // The giants' signatures (`pulp_wars-w49.30`; the Swallow is an Attack
+    // since `pulp_wars-3u8d`, 7r131).
     case "TOSS":
       return `u${command.unitId}.throw.u${command.passengerUnitId}.${xyV7(command.at)}`;
     case "STOMP":
@@ -1157,7 +1153,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.coldsnap`;
     case "SUGAR_RUSH":
       return `u${command.unitId}.rush`;
-    case "RECOVER":
     case "CAPTURE":
     case "PROMOTE":
     case "PILLAGE":
@@ -1890,6 +1885,19 @@ function describeCommandV7(
       const target = view.units.find(
         (candidate) => candidate.id === command.targetUnitId,
       );
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): an Abomination's
+      // attack that swallows and a ship's attack that boards are no
+      // exchange.
+      const swallow = previewSwallowV7(
+        view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      if (swallow !== null)
+        return `attack = SWALLOW ${context.memory.tag(command.targetUnitId)} (hp ${swallow.hp}): it leaves the board; it loses ${DIGEST_DAMAGE_V7} hp at each of your turn starts (you heal what it loses) and comes out as your Zombie in ${swallow.digestedAfterTurns} ${swallow.digestedAfterTurns === 1 ? "turn" : "turns"}; if the giant dies first it comes back out where the giant stood | no retaliation`;
+      const board = previewBoardV7(view, command.unitId, command.targetUnitId);
+      if (board !== null)
+        return `attack = BOARD ${context.memory.tag(command.targetUnitId)}: captures the ship, which becomes yours with ${board.hpAfter} hp (not a kill) | no retaliation`;
       const preview = queryCombatPreviewV7(
         view,
         command.unitId,
@@ -1948,12 +1956,6 @@ function describeCommandV7(
       return city === undefined
         ? `capture the settlement${where}${unit === undefined ? "" : villageNameSuffixV7(view, unit.at)} (a neutral village becomes your level-1 city)`
         : `capture city ${cityTagV7(view, city.id)}${where} from ${seatNameV7(view, city.ownerId)} (L${city.level}${city.isCapital ? ", its capital" : ""})`;
-    }
-    case "RECOVER": {
-      const amount = queryIdleRecoveryV7(view).find(
-        (entry) => entry.unitId === command.unitId,
-      )?.amount;
-      return `recover${amount === undefined ? "" : ` +${amount} hp`} (ending the turn idle heals the same amount)`;
     }
     case "PROMOTE":
       return `promote to veteran: max hp +${PROMOTION_HP_V7} and a full heal`;
@@ -2030,8 +2032,6 @@ function describeCommandV7(
     }
     case "FREEZE":
       return `freeze from ${xyV7(command.at)}${generic(previewFreezeV7(view, command.unitId, command.at))}`;
-    case "BOARD":
-      return `board ${context.memory.tag(command.targetUnitId)}${generic(previewBoardV7(view, command.unitId, command.targetUnitId))}`;
     case "TUNNEL":
       return `tunnel to ${xyV7(command.to)}${generic(previewTunnelV7(view, command))}`;
     case "BOMB_RUN":
@@ -2206,14 +2206,6 @@ function describeCommandV7(
       return `PROCLAIM at ${cityTagV7(view, command.cityId)}: the city is COWED until its owner's next turn ends (no income at that turn start, no city action) | it touches no unit${preview === null ? "" : ` | takes the place of one of its two attacks (${preview.attacksLeftAfter} left after it)`}`;
     }
     // The giants' signatures (`pulp_wars-w49.30`).
-    case "SWALLOW": {
-      const preview = previewSwallowV7(
-        view,
-        command.unitId,
-        command.targetUnitId,
-      );
-      return `swallow ${context.memory.tag(command.targetUnitId)}${preview === null ? "" : ` (hp ${preview.hp}): it leaves the board; it loses ${DIGEST_DAMAGE_V7} hp at each of your turn starts (you heal what it loses) and comes out as your Zombie in ${preview.digestedAfterTurns} ${preview.digestedAfterTurns === 1 ? "turn" : "turns"}; if the giant dies first it comes back out where the giant stood`}`;
-    }
     case "TOSS": {
       const preview = previewTossV7(
         view,

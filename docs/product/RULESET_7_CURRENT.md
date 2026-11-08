@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r130`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r131`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,60 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r131` (`pulp_wars-3u8d`, **one tile, one meaning: the
+Sled, the Abomination, Board, the Saucer, Recover, the Moon Gun, and the
+Tentacle**; the user, 2026-11-08: "Implement all the recommendations 1 to
+11 except number 9", findings 7 (the Sled), 9, 10, 12, 15, and 17 (the
+Moon Gun) of [the simplification review](SIMPLIFICATION_REVIEW_2026-11.md))
+removes the remaining tiles that offered two commands, by rule rather than
+by a chooser. (1) The **Sled's Bolas flies exactly 2 tiles**
+([section 21.9](#219-bolas-and-cold-blood)): a `THROW_BOLAS` at a
+neighbour is `BOLAS_NOT_LEGAL { reason: "OUT_OF_RANGE" }`
+(`BOLAS_MIN_RANGE_V7` 2) and never offered, so a neighbouring enemy means
+Attack alone, as for the Ice Witch's Frost Bolt since `7r129`. (2) The
+**Abomination's attack swallows**
+([section 11.1](#111-the-giants-signatures)): the `SWALLOW` command is
+retired; an `ATTACK` of an Abomination on a unit it could have swallowed
+(the old Swallow legality, unchanged: a hostile land-form unit next to it
+of 12 HP or less that is no giant, two-slot unit, construct, Rock Hard,
+icebound, neutral, or mind-controlled unit, while it holds nobody) is the
+Swallow, with its events, digestion, and release unchanged; any other
+target is an ordinary exchange, and a retaliation never swallows. The
+combat preview is replaced by the Swallow's: the board marks the target
+"Swallow · N turns", "Will be swallowed whole". (3) A **ship's attack
+boards** ([section 14.2](#142-board)): the `BOARD` command,
+`BOARD_NOT_LEGAL`, and the unlock `COMMAND BOARD` are retired (Seamanship
+unlocks `BOARDING`, capability `boarding`, and the other factions'
+Seamanship replaces it as it replaced `COMMAND BOARD`); an `ATTACK` of a
+ship with Seamanship on a hostile ship it could have boarded (the old
+Board legality, unchanged) captures it instead of fighting, and any other
+attack is an ordinary one. The board marks it "Board: captures the ship".
+(4) The **Saucer's Tractor Beam pulls only enemies**
+([section 20.10](#2010-tractor-beam)): an own unit is
+`TRACTOR_BEAM_NOT_LEGAL { reason: "OWN_UNIT" }` and never offered, so a
+selected Saucer's own unit 2 tiles away is no target. The Mothership's
+free Heavy Tractor Beam still pulls own units: it does not do what Mass
+Beam Down does (it keeps the Mothership's turn and the pulled unit's, and
+pulls 2 or 3 tiles toward it rather than landing a group around a far
+tile), so it stays. (5) **Recover is retired**
+([section 10](#10-recovery-and-support)): `RECOVER` and
+`RECOVER_NOT_LEGAL` are no command and no error, and a unit heals by
+**idle recovery** alone, with the same predicate (`recoverEligibleV7`)
+and the same amount at its owner's End Turn
+(`UNIT_RECOVERED { automatic: true }`); the dock's Recover button and the
+text harness's `.recover` are gone. (6) The **Moon Gun fires only beyond
+a walk** ([section 2.7, round 3](#round-3-the-tesla-tower-the-moon-gun-the-gold-claim-and-the-lost-expedition)): a `FIRE_MOON_GUN` to a
+tile the unit could reach by `MOVE` this turn is
+`MOON_GUN_NOT_LEGAL { reason: "WALKABLE" }` and never offered, so a tile
+the unit can walk to means Move. (7) The Summoner's **Tentacle replaces
+Move** in the board's tile plan (an interface rule, no engine change): a
+road tile 2 or 3 away that both a Move and a Tentacle reach means the
+Tentacle, as a Tunnel does. The Normal AI plays the offered commands: it
+swallows and boards by `ATTACK`, holds a wounded unit for its idle
+recovery with a Wait (scored as its Recover was), throws the Bolas only
+at 2, and never pulls its own unit with a Saucer. A save, replay, or setup
+of `7r130` is rejected, and the browser autosave has a new key.
 
 `pulp-wars-poc-7r130` (`pulp_wars-n5fa`, **one tile, one meaning for the
 Cult: the Summoner, the Hexer, and the Familiar**; the user, 2026-11-08:
@@ -2118,10 +2172,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r130`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r131`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r130.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r131.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4478,7 +4532,7 @@ and the browser draws and explains them (below). The Sea Serpent is bead B
 | Curiosity           | Where                             | Rule                                                                                                                                                       |
 | ------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Tesla Tower**     | Grass or Forest, boards 16 and up | A unit standing on the Tesla Tower may zap an enemy within 2 of it for 16 damage instead of attacking; the lightning then jumps on for 8, 4, 2, 1 (7r105). |
-| **Moon Gun**        | Grass, boards 16 and up           | A unit standing on the Moon Gun may be fired to any empty land tile within 5 of it; the Gun fires once a turn.                                             |
+| **Moon Gun**        | Grass, boards 16 and up           | A unit standing on the Moon Gun may be fired to an empty land tile within 5 of it that it could not walk to; the Gun fires once a turn.                    |
 | **Gold Claim**      | Grass or Forest, boards 14 and up | A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner 2 Coins each turn until its 30 Coins run out.                  |
 | **Lost Expedition** | Grass or Forest, any board        | The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.                                         |
 
@@ -4543,7 +4597,10 @@ in this player's current turn (`RELOADING`); `at` is within Chebyshev 5
 and not the Gun's tile (`OUT_OF_RANGE`), explored by the actor
 (`UNEXPLORED`), enterable by the unit in land form with its owner's
 research, and free of units, mounds, Barricades, chests, settlement
-centres, and curiosity tile markers (`BLOCKED`). Zones of control,
+centres, and curiosity tile markers (`BLOCKED`), and not a tile the unit
+could reach by `MOVE` this turn (`WALKABLE`, since `7r131`,
+`pulp_wars-3u8d`: a tile it can walk to means Move; a unit that has moved
+or cannot Move may be fired anywhere in range). Zones of control,
 territory, and enemy cities do not matter. The unit is **placed** on `at`
 (no zone of control, capture, chest, claim, Crumbs, gate, or Black Ice)
 with its activation fully spent; the Gun's `lastFired` becomes
@@ -4676,7 +4733,7 @@ beyond its reach is never bitten.
 
 **What affects it.** Every damage applies; no status sticks; nothing moves
 it; no healing. A **Ram** deals its damage and its shove is `BLOCKED`;
-**Board** is refused (`BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`); it
+**Board** never takes it (a ship's attack on it is an ordinary attack); it
 never rises as a **Ghost Ship** (killed, or killed by an Undead ship's
 answer to its bite) and is never plagued; the **Kraken's Drag** never
 applies (it never makes a Move); a **Cult** ship's kill pays Offerings to
@@ -5945,7 +6002,7 @@ Naval branch of its own. **Administration** grants
 instead of Captain support. **Chivalry** grants no Overrun (the Undead
 precedent). **Fortification**, displayed as **Deep Winter**, grants
 `DEEP_WINTER` instead of the Field Defense command: neutral land within two
-tiles of each own city center is Snow, and Recover heals 6 in own territory
+tiles of each own city center is Snow, and idle recovery heals 6 in own territory
 ([section 21.7](#217-deep-winter-and-brittle)). **Explosives**, displayed as
 **Brittle**, keeps Blast Mountain and Breach and
 adds `BRITTLE`: the player's Shatter threshold is 4 instead of 3
@@ -5983,7 +6040,7 @@ differently from the Human table are:
 | Chivalry          | Frost Wyrms   | Frost Wyrm (flies, Frost Breath; `7r125`; no Overrun); Cultivate Forest                                                                                                                                                         |
 | Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                                                                                    |
 | Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                                                                                               |
-| Fortification     | Deep Winter   | Walrus (Frostbite; `7r56`); Snow spreads two tiles from your city centers; Recover heals 6 in your territory                                                                                                                    |
+| Fortification     | Deep Winter   | Walrus (Frostbite; `7r56`); Snow spreads two tiles from your city centers; an idle unit recovers 6 in your territory                                                                                                            |
 | Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                                                                                 |
 | Shorecraft        | Rime          | Harvest Fish; Freeze Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole (and its dive); your units skate on ice; no Port, no Patrol Boat, and no embarking (`pulp_wars-s55m.2`: no Ice Harbour) |
 | Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea links may cross Deep Water                                                                                                                                                                |
@@ -6713,18 +6770,18 @@ benefit of a Port connection.)
 
 ## 10. Recovery and support
 
-| Healing source                                    | Amount                                                                                                                                                       | When                                                                         |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Recover or idle recovery, land                    | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below); never a Dwarf construct                             | explicit terminal `RECOVER`, or End Turn for a unit that did not move or act |
-| Recover or idle recovery, naval                   | 4 on or adjacent to an own active Port/Shipyard; otherwise illegal / 0                                                                                       | same                                                                         |
-| Embarked unit                                     | none                                                                                                                                                         | —                                                                            |
-| Windmill (Milling)                                | up to 6, every own unit (a Dwarf construct too, since `7r118`); never an Egg or a daemon                                                                     | Start Turn, once per unit                                                    |
-| Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                                                    | Start Turn, after Windmill healing                                           |
-| Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine; the Shaman: 4 on a hatched dinosaur), and cures Plague, Bitten, and Frozen                                      | Captain, Shaman, or Engineer action, once per unit per owner turn            |
-| Sugar Toss (Gumball Gunner)                       | up to 2 on one own land-form unit within 2 tiles; cures nothing ([section 23.7](#237-the-redesign-abilities))                                                | Gunner action, once per target per owner turn                                |
-| Top-Up (Confectioner)                             | up to 2 on one adjacent own land-form unit; ends its Crash; cures Plague, Bitten, Frozen, Stuck, and Toothache ([section 23.7](#237-the-redesign-abilities)) | Confectioner action                                                          |
-| Promotion, growth stage                           | full heal to the new maximum HP; cures nothing (a Dwarf construct's only full heal)                                                                          | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
-| Egg                                               | none: no healing source ever heals an Egg                                                                                                                    | —                                                                            |
+| Healing source                                    | Amount                                                                                                                                                       | When                                                                        |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| Idle recovery, land                               | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below); never a Dwarf construct                             | End Turn, for a unit that did not move or act (no `RECOVER` since `7r131`)  |
+| Idle recovery, naval                              | 4 on or adjacent to an own active Port/Shipyard; otherwise 0                                                                                                 | same                                                                        |
+| Embarked unit                                     | none                                                                                                                                                         | —                                                                           |
+| Windmill (Milling)                                | up to 6, every own unit (a Dwarf construct too, since `7r118`); never an Egg or a daemon                                                                     | Start Turn, once per unit                                                   |
+| Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                                                    | Start Turn, after Windmill healing                                          |
+| Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine; the Shaman: 4 on a hatched dinosaur), and cures Plague, Bitten, and Frozen                                      | Captain, Shaman, or Engineer action, once per unit per owner turn           |
+| Sugar Toss (Gumball Gunner)                       | up to 2 on one own land-form unit within 2 tiles; cures nothing ([section 23.7](#237-the-redesign-abilities))                                                | Gunner action, once per target per owner turn                               |
+| Top-Up (Confectioner)                             | up to 2 on one adjacent own land-form unit; ends its Crash; cures Plague, Bitten, Frozen, Stuck, and Toothache ([section 23.7](#237-the-redesign-abilities)) | Confectioner action                                                         |
+| Promotion, growth stage                           | full heal to the new maximum HP; cures nothing (a Dwarf construct's only full heal)                                                                          | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs) |
+| Egg                                               | none: no healing source ever heals an Egg                                                                                                                    | —                                                                           |
 
 - **Windmill healing:** at the owner's Start Turn, each Windmill in the
   owner's territory heals damaged own units (any form) on its eight
@@ -6742,17 +6799,25 @@ benefit of a Port connection.)
   predicate, `windmillHealsUnitV7`, decides it for the engine and the Normal
   AI's staging next to an own Windmill.
 - **Restless (Undead):** a land-form unit of an Undead seat recovers only in
-  its owner's territory. An explicit `RECOVER` elsewhere is rejected
-  atomically with `RECOVER_NOT_LEGAL { reason: "RESTLESS" }` and is never
-  offered; End Turn idle recovery skips it (no HP change, no event). Undead
+  its owner's territory: End Turn idle recovery skips it elsewhere (no HP
+  change, no event), and its unit card's Restless chip says why. Undead
   naval units keep the naval rule; Windmill healing is unchanged.
-- **Idle recovery is the automatic form of Recover:** at its owner's End
-  Turn, every own unit for which a `RECOVER` would be offered and accepted
-  at that moment recovers by itself, by the same amount, with
-  `UNIT_RECOVERED { automatic: true }` (an explicit Recover has
-  `automatic: false`). One predicate, `recoverEligibleV7`, decides the
-  offered `RECOVER`, End Turn, and the public preview `queryIdleRecoveryV7`
-  (the viewer's units End Turn would heal now, with the amounts).
+- **Idle recovery is the only Recover** (one tile, one meaning,
+  `pulp_wars-3u8d`, `7r131`; finding 10 of
+  [the simplification review](SIMPLIFICATION_REVIEW_2026-11.md)): at its
+  owner's End Turn, every own unit that did not move or act (and is
+  eligible) recovers by itself, with `UNIT_RECOVERED { automatic: true }`.
+  The `RECOVER` command (a primary action that gave the same heal) is
+  retired with `RECOVER_NOT_LEGAL`, its dock button, the disabled Recover
+  button of a Restless unit outside its land, and the text harness's
+  `.recover`; a `RECOVER` is no command (`INVALID_COMMAND`). The predicate
+  and the amount are unchanged: one predicate, `recoverEligibleV7`, decides
+  End Turn and the public preview `queryIdleRecoveryV7` (the viewer's units
+  End Turn would heal now, with the amounts; the dock's "+N at End Turn if
+  idle" chip and the End Turn button's count). The Normal AI holds a
+  wounded unit for its idle recovery with a **Wait**, scored as its Recover
+  was (930 below half HP, else 300 to 400), and gives that unit no other
+  command that turn.
 - **Wait** does not prevent idle recovery; moving or any primary action does.
 - **Goblin recovery** is the Human rule: Goblins are not Restless. A Goblin
   seat has no healer and no cure for Plague or Bitten
@@ -6773,15 +6838,14 @@ benefit of a Port connection.)
   healed, it recharges ([section 20.2](#202-shields)), and the recharge is
   not healing.
 - **Ice Folk recovery** is the Human rule (the Ice Folk are not Restless),
-  except that with Deep Winter Recover and idle recovery heal a land-form
+  except that with Deep Winter idle recovery heals a land-form
   Ice Folk unit 6 in its owner's territory (`DEEP_WINTER_RECOVER_V7`);
   elsewhere 2, Snow or not. An Ice Folk seat has no healer and no cure for
   Plague, Bitten, or Frozen (the Ice Witch has no Tend Wounded).
 - **Dwarf recovery** is the Human rule (the Dwarves are not Restless), except
   that the two **constructs**, the Clockwork Gunner and the Brass Titan,
-  never mend themselves: an explicit `RECOVER` is rejected with
-  `RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }` and never offered, and idle
-  recovery skips them. They heal by an Engineer's Repair, by a Windmill (a
+  never mend themselves: idle recovery skips them. They heal by an
+  Engineer's Repair, by a Windmill (a
   Steam Pump; since `7r118`), and by a Promotion
   ([section 22.6](#226-clockwork)). A burrowed
   unit is off the board and has moved, so it never recovers idle.
@@ -7461,7 +7525,8 @@ Golem the Snow Golem, with the same numbers.
 - **Sled** (a dog sled and its driver) has Raider parity for Sight 2,
   capture, Pillage, the advance, Fieldcraft Forest freedom, and Charge with
   Raiding; it has no Escape. Its primary actions are Attack and Bolas
-  ([section 21.9](#219-bolas-and-cold-blood)), whose target is Frozen.
+  ([section 21.9](#219-bolas-and-cold-blood)), whose target is Frozen and
+  exactly 2 tiles away (`7r131`), so a neighbouring enemy means Attack.
 - **Snow Hunter** has Marksman parity (range 1–2, minimum range 1, capture,
   Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
   tuning 2, `7r47`) and Cold Blood
@@ -7972,7 +8037,9 @@ above. Like them it needs land form, and the Thing has no Push.
   ([section 20.8](#208-mind-control)); a controlled Abomination has no
   Swallow and a controlled Gingerbread Giant no Break Off. The neutral
   Giant Spider stays immune.
-- **New primary actions** `SWALLOW`, `TOSS`, `STOMP`, and `BREAK_OFF` join
+- **New primary actions** `TOSS`, `STOMP`, and `BREAK_OFF` (and the
+  Swallow, an Abomination's `ATTACK` since `7r131`; the `SWALLOW` command
+  before) join
   every list of primary actions: refused (`UNIT_ALREADY_ACTED`) after a primary action, a landing, or a waiting Ram
   continuation, and never available to a Frozen giant
   ([section 21.3](#213-what-a-frozen-unit-cannot-do));
@@ -8007,14 +8074,22 @@ exactly when the Push preview is), `crushDamage`, and `collisionDamage`
 a blocker the observer cannot see; an observer who sees neither unit gets
 its own units' damage as `COMBAT_SPLASH_DAMAGE`.
 
-**Swallow (Abomination).** `SWALLOW { kind, unitId, targetUnitId }`, a
-primary action. Legality in order: the ordinary unit errors;
-`UNIT_ROLE_INVALID` without `SWALLOW`; `SWALLOW_NOT_LEGAL { reason:
-"EMBARKED" }`; `UNIT_ALREADY_ACTED`; `"FULL"` when it holds a victim;
-`"TARGET"` unless the target is a visible hostile land-form unit at
-distance 1; `"IMMUNE"` for a neutral unit, a giant, a two-slot unit, a
-construct, a Rock Hard or icebound unit, or a mind-controlled unit;
-`"TOO_BIG"` above 12 HP (a Shield does not count). The victim leaves the
+**Swallow (Abomination).** Since `7r131` (`pulp_wars-3u8d`) the Swallow is
+the Abomination's **attack**: there is no `SWALLOW` command
+(`SWALLOW_NOT_LEGAL` and the Swallow button are retired). An offered
+`ATTACK` of the Abomination is a Swallow when its target may be swallowed
+(`attackSwallowsV7`, the old legality, in order): its role has `SWALLOW`
+in land form; it holds no victim; the target is a visible hostile
+land-form unit at distance 1; it is not a neutral unit, a giant, a
+two-slot unit, a construct, a Rock Hard or icebound unit, or a
+mind-controlled unit; and it has at most 12 HP (a Shield does not count).
+Any other `ATTACK` of the Abomination is an ordinary exchange, and its
+retaliation never swallows. The Swallow is no exchange: no damage, no
+retaliation, no kill credit; the Abomination has used its primary
+action. `queryAttackSwallowsV7(view, unitId, targetUnitId)` and
+`previewSwallowV7` (null unless that `ATTACK` is offered and swallows)
+tell the interface, which marks the target "Swallow · N turns" with the
+note "Will be swallowed whole" instead of a combat preview. The victim leaves the
 board into the state block `giants.swallowed` (`{ holderUnitId, unit }`,
 sorted by holder): it keeps its ID, owner, HP, and home city (its slot
 still counts), stands on its holder's tile, has the exhausted activation,
@@ -8461,7 +8536,7 @@ Candy, and Cult campaigns. No match was played.
   `TUNNEL` is its Move made underground, and a Gyrocopter's `BOMB_RUN` is
   its Move and its primary action at once
   ([section 22](#22-dwarf-faction-rules)).
-- Primary actions are Attack, Recover, Capture, and specials
+- Primary actions are Attack, Capture, and specials
   (Rally/Frenzy/Berserk/War Drums/Psychic Command, Tend and Repair, Field
   Defense, Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind
   Control, Tractor Beam, Bolas, Cold Snap, Frost Bolt, Stampede, Freeze,
@@ -8469,7 +8544,7 @@ Candy, and Cult campaigns. No match was played.
   Zombie, Orc Brute, Ankylosaurus, Shield Projector, Catapult, Lich, Rocket
   Cart, Steam Cannon, and Battleship cannot attack after moving; the
   Triceratops (revision 20), the Tripod, the Mammoth, the Snow Golem, and
-  the Steam Mole can. `BOARD`, `FREEZE`, and `CRACK_ICE` (the frozen sea
+  the Steam Mole can. Board (an `ATTACK` since `7r131`), `FREEZE`, and `CRACK_ICE` (the frozen sea
   redesign, `7r100`: every land unit and ship of the eight other factions,
   [section 21.16](#2116-the-frozen-sea)) follow the same flag, so a
   Battleship that moved cannot board or crack. Every read of this role flag for a unit
@@ -8483,8 +8558,8 @@ Candy, and Cult campaigns. No match was played.
   rider. It does not retaliate.
 - **Icebound units** ([section 21.16](#2116-the-frozen-sea)): an afloat
   unit standing on ice cannot Move, Attack, Board, or Crack Ice; it may
-  Recover (a ship next to its own active dock; never on a dock on ice),
-  Wait, and Promote, and an icebound embarked unit may still `DISEMBARK`.
+  Wait and Promote and recovers when idle (a ship next to its own active
+  dock; never on a dock on ice), and an icebound embarked unit may still `DISEMBARK`.
 - **Burrowed units** have no activation on the board: every command naming
   one is rejected with `UNIT_ALREADY_HANDLED` and never offered
   ([section 22.2](#222-the-tunnel-and-burrowed-units)).
@@ -8620,32 +8695,32 @@ offered commands, never picks it.
 
 The audit of every command (`7r107`):
 
-| Ability (command)                                                                                                                                                                                                        | Where it would change nothing                                                                                                                        | Decision                                                                                                                                                                         |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frost Bolt (`FROST_BOLT`, the Ice Witch) and the Sled's Frost Bolt (`THROW_BOLAS`)                                                                                                                                       | the target is Frozen already for as long as a freeze gives (every Frozen enemy: a freeze in your turn gives it 1)                                    | **new**: `FROST_BOLT_NOT_LEGAL` / `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }`, not offered                                                                                    |
-| Cold Snap (`COLD_SNAP`, area)                                                                                                                                                                                            | every target around the Witch is Frozen already                                                                                                      | **new**: `COLD_SNAP_NOT_LEGAL { reason: "ALREADY_FROZEN" }` (`NO_TARGET` with nobody at all); legal with one unfrozen target                                                     |
-| Thunder Stomp (`STOMP`, area)                                                                                                                                                                                            | no hostile ground unit or Egg and no Field Defense around the Brontosaurus                                                                           | **new**: `STOMP_NOT_LEGAL { reason: "NO_TARGET" }` (it was legal); a Field Defense alone keeps it legal (it is smashed)                                                          |
-| Freeze (`FREEZE`, the frozen sea)                                                                                                                                                                                        | only the actor's own sound ice in the freeze set                                                                                                     | already refused (`FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`, `7r100`)                                                                                                            |
-| Crack Ice (`CRACK_ICE`)                                                                                                                                                                                                  | no ice on the tile                                                                                                                                   | already refused (`NO_ICE`)                                                                                                                                                       |
-| Tend Wounded and Repair (`TEND_WOUNDED`)                                                                                                                                                                                 | a full-HP unit with no Plague, Bitten, Frozen, or frog; a Barricade at full HP                                                                       | already no target (`HEAL_TARGET_NOT_FOUND` with none); a full-HP afflicted unit stays a target: it is cured                                                                      |
-| Rally: Inspire, Frenzy, War Drums, Psychic Command (`RALLY`, area)                                                                                                                                                       | the unit is Inspired already (it does not stack or refresh)                                                                                          | already no target; with none, `HEAL_TARGET_NOT_FOUND`. A unit that has attacked stays a target (an Overrun, a twin shot, a Feast, or a thaw by Tend Wounded may still use it)    |
-| Berserk (`RALLY` of the Orc Warboss, area)                                                                                                                                                                               | the unit has moved or is Berserk already                                                                                                             | already no target ([section 18.10](#1810-berserk-ram-and-troll-regeneration))                                                                                                    |
-| Sugar Toss (`SUGAR_TOSS`) and Top-Up (`TOP_UP`)                                                                                                                                                                          | a full-HP target (Toss); a full-HP target with nothing to cure and no Crash (Top-Up)                                                                 | already refused (`HEAL_TARGET_FULL`, `ALREADY_TOSSED`; `NOTHING_TO_DO`)                                                                                                          |
-| Recover (`RECOVER`)                                                                                                                                                                                                      | full HP, or no healing (Restless, a construct, a ship away from a dock)                                                                              | already refused (`RECOVER_NOT_LEGAL`)                                                                                                                                            |
-| Sugar Rush (`SUGAR_RUSH`)                                                                                                                                                                                                | the unit is Rushed already                                                                                                                           | already refused (`RUSHED`)                                                                                                                                                       |
-| Mind Control (`MIND_CONTROL`)                                                                                                                                                                                            | the target is mind-controlled already (by any Brain)                                                                                                 | already refused (`TARGET_IMMUNE`)                                                                                                                                                |
-| Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                                            | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |
-| Proclaim (`PROCLAIM`)                                                                                                                                                                                                    | the city is Cowed already                                                                                                                            | already refused (`COWED`)                                                                                                                                                        |
-| Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                                         | the cultist chants that star already; the Thing grips already or the cultist is gripped                                                              | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
-| Channel and Bind again (`CHANNEL`)                                                                                                                                                                                       | an own daemon that has enough strands (or is on its Doorstep)                                                                                        | kept: the strand is a change (it guards against a disruption and pays the trickle, [section 26.5](#265-the-channel-strands-and-the-check)); Bind again only on an Unbound daemon |
-| Seize (`SEIZE`), Tentacle (`TENTACLE`), Bomb Run (`BOMB_RUN`)                                                                                                                                                            | a healthy victim; a Tentacle that stands already; a target bombed already this turn                                                                  | already refused (`HEALTHY`; `EXISTS`; `ALREADY_BOMBED`)                                                                                                                          |
-| Wail (`WAIL`, area)                                                                                                                                                                                                      | every target would take 0                                                                                                                            | kept: a 0 hit counts ([section 17.9](#179-wail)) and a hidden Blizzard can make the public preview higher than the hit, so the offer could not match the rule; rare              |
-| Whirl, Boo!, Raise Dead, Devour, Hatch, Zap, Swallow, Goblin Toss, Break Off, Stampede, Board, Sacrifice, Summon, Assemble, Barricade, Re-bake, Tunnel, Beam Down, Mass Beam Down, Moon Gun, rituals, Switcheroo, Attack | none: each deals damage, moves, makes, removes, or spends something, and each needs its target where it has one (`NO_TARGET`, `NOBODY`, `TILE`, ...) | unchanged                                                                                                                                                                        |
-| Kaboom (`KABOOM`)                                                                                                                                                                                                        | none: with nobody around the unit still destroys itself                                                                                              | unchanged (legal by design, [section 18.4](#184-kaboom))                                                                                                                         |
-| Promote, Capture, Pillage, Disband, Wait, Toss a Coin                                                                                                                                                                    | none: each changes the unit, tile, or Coins; Wait is not offered to a handled unit, a Coin is tossed once per seat                                   | unchanged                                                                                                                                                                        |
-| Building and terrain actions (`BUILD_*`, Field Defense, Road, Redevelop, Clear, Replant, Cultivate, Blast Mountain, harvests)                                                                                            | a building or Field Defense where one stands, a Road on a road, Redevelop of an empty tile, a harvest without its resource                           | already refused (`INVALID_TILE`, `PLACEMENT_REQUIREMENT_UNMET`, `CITY_BUILDING_LIMIT`, ...) and never offered                                                                    |
-| City actions (Train, Hire, Lay Egg, Offering, Land Grant, a reward)                                                                                                                                                      | none: each makes or spends something                                                                                                                 | unchanged                                                                                                                                                                        |
-| Shields, Force Fields, the Shield Canopy, the Cold Aura, Black Ice, Frostbite                                                                                                                                            | not commands (passive): nothing is offered                                                                                                           | unchanged                                                                                                                                                                        |
+| Ability (command)                                                                                                                                                                                                                                | Where it would change nothing                                                                                                                        | Decision                                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frost Bolt (`FROST_BOLT`, the Ice Witch) and the Sled's Frost Bolt (`THROW_BOLAS`)                                                                                                                                                               | the target is Frozen already for as long as a freeze gives (every Frozen enemy: a freeze in your turn gives it 1)                                    | **new**: `FROST_BOLT_NOT_LEGAL` / `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }`, not offered                                                                                    |
+| Cold Snap (`COLD_SNAP`, area)                                                                                                                                                                                                                    | every target around the Witch is Frozen already                                                                                                      | **new**: `COLD_SNAP_NOT_LEGAL { reason: "ALREADY_FROZEN" }` (`NO_TARGET` with nobody at all); legal with one unfrozen target                                                     |
+| Thunder Stomp (`STOMP`, area)                                                                                                                                                                                                                    | no hostile ground unit or Egg and no Field Defense around the Brontosaurus                                                                           | **new**: `STOMP_NOT_LEGAL { reason: "NO_TARGET" }` (it was legal); a Field Defense alone keeps it legal (it is smashed)                                                          |
+| Freeze (`FREEZE`, the frozen sea)                                                                                                                                                                                                                | only the actor's own sound ice in the freeze set                                                                                                     | already refused (`FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`, `7r100`)                                                                                                            |
+| Crack Ice (`CRACK_ICE`)                                                                                                                                                                                                                          | no ice on the tile                                                                                                                                   | already refused (`NO_ICE`)                                                                                                                                                       |
+| Tend Wounded and Repair (`TEND_WOUNDED`)                                                                                                                                                                                                         | a full-HP unit with no Plague, Bitten, Frozen, or frog; a Barricade at full HP                                                                       | already no target (`HEAL_TARGET_NOT_FOUND` with none); a full-HP afflicted unit stays a target: it is cured                                                                      |
+| Rally: Inspire, Frenzy, War Drums, Psychic Command (`RALLY`, area)                                                                                                                                                                               | the unit is Inspired already (it does not stack or refresh)                                                                                          | already no target; with none, `HEAL_TARGET_NOT_FOUND`. A unit that has attacked stays a target (an Overrun, a twin shot, a Feast, or a thaw by Tend Wounded may still use it)    |
+| Berserk (`RALLY` of the Orc Warboss, area)                                                                                                                                                                                                       | the unit has moved or is Berserk already                                                                                                             | already no target ([section 18.10](#1810-berserk-ram-and-troll-regeneration))                                                                                                    |
+| Sugar Toss (`SUGAR_TOSS`) and Top-Up (`TOP_UP`)                                                                                                                                                                                                  | a full-HP target (Toss); a full-HP target with nothing to cure and no Crash (Top-Up)                                                                 | already refused (`HEAL_TARGET_FULL`, `ALREADY_TOSSED`; `NOTHING_TO_DO`)                                                                                                          |
+| Recover (`RECOVER`, retired at `7r131`: idle recovery only)                                                                                                                                                                                      | full HP, or no healing (Restless, a construct, a ship away from a dock)                                                                              | already refused (`RECOVER_NOT_LEGAL`)                                                                                                                                            |
+| Sugar Rush (`SUGAR_RUSH`)                                                                                                                                                                                                                        | the unit is Rushed already                                                                                                                           | already refused (`RUSHED`)                                                                                                                                                       |
+| Mind Control (`MIND_CONTROL`)                                                                                                                                                                                                                    | the target is mind-controlled already (by any Brain)                                                                                                 | already refused (`TARGET_IMMUNE`)                                                                                                                                                |
+| Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                                                                    | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |
+| Proclaim (`PROCLAIM`)                                                                                                                                                                                                                            | the city is Cowed already                                                                                                                            | already refused (`COWED`)                                                                                                                                                        |
+| Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                                                                 | the cultist chants that star already; the Thing grips already or the cultist is gripped                                                              | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
+| Channel and Bind again (`CHANNEL`)                                                                                                                                                                                                               | an own daemon that has enough strands (or is on its Doorstep)                                                                                        | kept: the strand is a change (it guards against a disruption and pays the trickle, [section 26.5](#265-the-channel-strands-and-the-check)); Bind again only on an Unbound daemon |
+| Seize (`SEIZE`), Tentacle (`TENTACLE`), Bomb Run (`BOMB_RUN`)                                                                                                                                                                                    | a healthy victim; a Tentacle that stands already; a target bombed already this turn                                                                  | already refused (`HEALTHY`; `EXISTS`; `ALREADY_BOMBED`)                                                                                                                          |
+| Wail (`WAIL`, area)                                                                                                                                                                                                                              | every target would take 0                                                                                                                            | kept: a 0 hit counts ([section 17.9](#179-wail)) and a hidden Blizzard can make the public preview higher than the hit, so the offer could not match the rule; rare              |
+| Whirl, Boo!, Raise Dead, Devour, Hatch, Zap, Swallow (an attack), Goblin Toss, Break Off, Stampede, Board (an attack), Sacrifice, Summon, Assemble, Barricade, Re-bake, Tunnel, Beam Down, Mass Beam Down, Moon Gun, rituals, Switcheroo, Attack | none: each deals damage, moves, makes, removes, or spends something, and each needs its target where it has one (`NO_TARGET`, `NOBODY`, `TILE`, ...) | unchanged                                                                                                                                                                        |
+| Kaboom (`KABOOM`)                                                                                                                                                                                                                                | none: with nobody around the unit still destroys itself                                                                                              | unchanged (legal by design, [section 18.4](#184-kaboom))                                                                                                                         |
+| Promote, Capture, Pillage, Disband, Wait, Toss a Coin                                                                                                                                                                                            | none: each changes the unit, tile, or Coins; Wait is not offered to a handled unit, a Coin is tossed once per seat                                   | unchanged                                                                                                                                                                        |
+| Building and terrain actions (`BUILD_*`, Field Defense, Road, Redevelop, Clear, Replant, Cultivate, Blast Mountain, harvests)                                                                                                                    | a building or Field Defense where one stands, a Road on a road, Redevelop of an empty tile, a harvest without its resource                           | already refused (`INVALID_TILE`, `PLACEMENT_REQUIREMENT_UNMET`, `CITY_BUILDING_LIMIT`, ...) and never offered                                                                    |
+| City actions (Train, Hire, Lay Egg, Offering, Land Grant, a reward)                                                                                                                                                                              | none: each makes or spends something                                                                                                                 | unchanged                                                                                                                                                                        |
+| Shields, Force Fields, the Shield Canopy, the Cold Aura, Black Ice, Frostbite                                                                                                                                                                    | not commands (passive): nothing is offered                                                                                                           | unchanged                                                                                                                                                                        |
 
 ## 13. Combat and fortification
 
@@ -9151,11 +9226,11 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   cannot land that turn. ZOC does not block landing, and a Move interrupted
   after one cell may still land. Landing ends the unit's activation for every
   faction: for the rest of that turn the landed unit cannot Move, Attack,
-  Kaboom, Recover, Capture, Pillage, Fortify, use any special action, Wait, or
+  Kaboom, Capture, Pillage, Fortify, use any special action, Wait, or
   Disband (Promote, which never depends on the activation, stays available).
   The public command query offers none of these, and the engine rejects them
   atomically with the existing codes for a unit that already acted (Attack,
-  Kaboom, Move, Recover, Disband: `UNIT_ALREADY_ACTED`; Wait:
+  Kaboom, Move, Disband: `UNIT_ALREADY_ACTED`; Wait:
   `UNIT_ALREADY_HANDLED`; Capture: `CAPTURE_NOT_ELIGIBLE`). It may capture
   from a later turn. The browser marks direct landing cells ("Land
   now") and cells reachable by one water step then landing ("Move 1, then
@@ -9463,22 +9538,25 @@ Overrun, shown as Overrun since `pulp_wars-2yc.63`.)
 **One sentence:** a ship next to a badly damaged enemy ship (a third of its
 HP or less) captures it; the prize is patched up just above that line.
 
-`BOARD { kind, unitId, targetUnitId }` is a primary action. It is not an
-Attack and costs no Coins. Legality, in this order (all rejections atomic):
+Since `7r131` (`pulp_wars-3u8d`) Board is the ship's **attack**: there is
+no `BOARD` command (`BOARD_NOT_LEGAL`, the Board button, and its pick
+panel are retired). An offered `ATTACK` (so the ordinary attack legality
+has passed) **boards** its target when all of these hold
+(`canonicalAttackBoardsV7`; the old Board legality, unchanged); any other
+`ATTACK` is an ordinary one, and a retaliation never boards. Boarding is a
+primary action, not an exchange, and costs no Coins.
 
-| #   | Requirement                                                                                                                       | Rejection                                      |
-| --- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                    | the ordinary unit errors                       |
-| 2   | It is in `NAVAL` form (any ship role).                                                                                            | `BOARD_NOT_LEGAL { reason: "NOT_A_SHIP" }`     |
-| 3   | Its kind's capabilities under its owner have `boarding` (Seamanship).                                                             | `TECH_REQUIRED { tech: "SEAMANSHIP" }`         |
-| 4   | It has not used a primary action, and `unitMayActAfterMoveV7` allows it if it moved (so a Battleship that moved cannot board).    | `UNIT_ALREADY_ACTED`                           |
-| 5   | It is not icebound.                                                                                                               | `BOARD_NOT_LEGAL { reason: "ICEBOUND" }`       |
-| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                          | `TARGET_NOT_FOUND`                             |
-| 7   | It is hostile to the actor (not the actor's own or an ally's).                                                                    | `TARGET_ALLIED`                                |
-| 8   | It is in `NAVAL` form (a transport, a self-launched machine, or a land unit is never boarded).                                    | `BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
-| 9   | It is within Chebyshev distance 1.                                                                                                | `BOARD_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 10  | Its HP is at most `floor(maxHp / 3)` (`BOARDING_HP_DIVISOR_V7` 3): Patrol Boat 3, Submarine 4, Battleship 8 (promoted: 5, 5, 10). | `BOARD_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
-| 11  | The boarder's owner could sail the prize where it stands: a target on Deep Water needs the actor's Navigation.                    | `BOARD_NOT_LEGAL { reason: "DEEP_WATER" }`     |
+| #   | Condition                                                                                                                         |
+| --- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | The attacker is in `NAVAL` form (any ship role).                                                                                  |
+| 2   | Its kind's capabilities under its owner have `boarding` (Seamanship, unlock `BOARDING`).                                          |
+| 3   | It has not used a primary action, and `unitMayActAfterMoveV7` allows it if it moved (so a Battleship that moved cannot board).    |
+| 4   | It is not icebound.                                                                                                               |
+| 5   | The target is hostile to the actor.                                                                                               |
+| 6   | It is in `NAVAL` form (a transport, a self-launched machine, or a land unit is never boarded) and no sea beast.                   |
+| 7   | It is within Chebyshev distance 1.                                                                                                |
+| 8   | Its HP is at most `floor(maxHp / 3)` (`BOARDING_HP_DIVISOR_V7` 3): Patrol Boat 3, Submarine 4, Battleship 8 (promoted: 5, 5, 10). |
+| 9   | The boarder's owner could sail the prize where it stands: a target on Deep Water needs the actor's Navigation.                    |
 
 - **Result.** The target's `ownerId` becomes the actor, `homeCityId` null
   (an orphan: it uses no slot anywhere and is never re-homed),
@@ -9497,9 +9575,12 @@ Attack and costs no Coins. Legality, in this order (all rejections atomic):
 - **Events:** `SHIP_BOARDED { playerId, unitId, targetUnitId, fromPlayerId, at, hp }`,
   `TILES_REVEALED` (the prize's sight for its new owner), the tail, and the
   blockade and sea-network events.
-- **Preview.** `previewBoardV7(view, unitId, targetUnitId)` returns null
-  unless the command is offered, otherwise
-  `{ unitId, targetUnitId, fromPlayerId, hpAfter }`. It is exact. A ship's
+- **Preview.** `queryAttackBoardsV7(view, unitId, targetUnitId)` says
+  whether an offered `ATTACK` boards; `previewBoardV7(view, unitId,
+targetUnitId)` returns null unless it does, otherwise
+  `{ unitId, targetUnitId, fromPlayerId, hpAfter }`. It is exact. The
+  board marks such a target "Board: captures the ship", "It becomes yours
+  with N HP", instead of a combat preview. A ship's
   public stats carry `boardableAt`, the HP at or below which it can be
   boarded (null for every other form).
 - A prize of a player who is later eliminated stays with its captor.
@@ -9577,25 +9658,24 @@ Harbours from it.
 
 ### 14.5 Commands, events, errors, and queries
 
-- **Command:** `BOARD { kind, unitId, targetUnitId }`, right after `ATTACK`
-  in `COMMAND_KIND_ORDER_V7`. `ATTACK` applies Submerged, Torpedo, and the
-  Ram. A pending city reward blocks `BOARD` like every command.
+- **Command:** `ATTACK` boards (above; the `BOARD` command, right after
+  `ATTACK` in `COMMAND_KIND_ORDER_V7`, until `7r131`) and applies
+  Submerged, Torpedo, and the Ram.
 - **Event:** `SHIP_BOARDED`, right after `UNIT_MIND_CONTROLLED` in
   `DOMAIN_EVENT_KIND_ORDER_V7`, projected to the actor, the former owner,
   and every viewer that has explored the prize's tile before or after the
   command. `UNIT_PUSHED` reports a ram's shove.
-- **Errors:** `BOARD_NOT_LEGAL` (`NOT_A_SHIP`, `ICEBOUND`, `TARGET_IMMUNE`,
-  `OUT_OF_RANGE`, `TARGET_HEALTHY`, `DEEP_WATER`); `ATTACK_NOT_LEGAL` gains
+- **Errors:** `ATTACK_NOT_LEGAL` gains
   `NOT_AFLOAT` (a torpedo at a land unit); a Submarine targeted from 2 or
   more is the existing `TARGET_OUT_OF_RANGE`.
 - **Combat preview** (so also `COMBAT_RESOLVED`): `ram` and `torpedo`,
   false where they do not apply; `push` also reports a ram's shove.
 - **Registration:** role `SUBMARINE` in every faction (tactical label
   `NAVAL_HUNTER`); ability literals `RAM`, `SUBMERGED`, `TORPEDO`; unlock
-  kinds `RAM` and `HARBOURS` (and `COMMAND BOARD`); capabilities `ram`,
+  kinds `RAM`, `HARBOURS`, and `BOARDING` (`COMMAND BOARD` until `7r131`); capabilities `ram`,
   `boarding`, and `harbourPopulation`; constants `RAM_BONUS2_V7` 2,
   `BOARDING_HP_DIVISOR_V7` 3, and `HARBOUR_POPULATION_V7` 1.
-- **`queryPlayerCommandsV7`** offers `BOARD` for every legal pair and never
+- **`queryPlayerCommandsV7`** offers an `ATTACK` for every boardable pair and never
   an `ATTACK` on a submerged Submarine from 2 or more or a torpedo at a
   land-form unit. Every offered command is accepted, and every preview
   equals the resolution.
@@ -11294,7 +11374,8 @@ of the Abomination's kills in combat only.
   (`curedFrozen`) and a cured frog count as cures for this projection
   (`pulp_wars-s55m.8` and `pulp_wars-mch9.8`).
 - Errors `RAISE_DEAD_NOT_LEGAL`, `DEVOUR_NOT_LEGAL`, `WAIL_NOT_LEGAL`, and
-  `DISBAND_NOT_LEGAL`; `RECOVER_NOT_LEGAL` has the reason `RESTLESS`.
+  `DISBAND_NOT_LEGAL` (`RECOVER_NOT_LEGAL`, with the reason `RESTLESS`,
+  retired with `RECOVER` at `7r131`).
 - The public command query offers each Undead command, Tend Wounded, and
   Disband exactly when legal. Public previews (`previewRaiseDeadV7`,
   `previewDevourV7`, `previewWailV7`, `previewTendWoundedV7`,
@@ -13286,8 +13367,10 @@ cost.
   embarked, or was trained this turn) and has not used its Tractor Beam
   this turn; it may have moved and may have used its primary action. A Frozen puller cannot use it
   ([section 21.3](#213-what-a-frozen-unit-cannot-do)).
-- **Target.** A unit on the board the actor can see, **own or hostile**
-  (never allied), within the puller's reach, in any form, that is not an
+- **Target.** A unit on the board the actor can see, **hostile** for the
+  Saucer's beam and **own or hostile** for the Mothership's Heavy Tractor
+  Beam (since `7r131`, `pulp_wars-3u8d`; the Saucer pulled own units too
+  before), never allied, within the puller's reach, in any form, that is not an
   Egg, whose role is not `JUGGERNAUT`, that is not the Giant Spider, and
   that uses one slot. A construct is a legal target.
 - **City Walls hold** (step two of the Martian pass, `7r58`;
@@ -13337,7 +13420,8 @@ cost.
   `TRACTOR_BEAM` → `UNIT_ROLE_INVALID { role }`; an actor that may not use
   it (above) → `UNIT_ALREADY_ACTED`; embarked →
   `TRACTOR_BEAM_NOT_LEGAL { reason: "EMBARKED" }`; unknown, dead, or unseen
-  target → `TARGET_NOT_FOUND`; allied target → `TARGET_ALLIED`; an Egg, a
+  target → `TARGET_NOT_FOUND`; allied target → `TARGET_ALLIED`; an own
+  unit for a Saucer → `TRACTOR_BEAM_NOT_LEGAL { reason: "OWN_UNIT" }`; an Egg, a
   `JUGGERNAUT`-role unit, the Giant Spider, a two-slot unit, or (for a
   Saucer) a unit City Walls hold →
   `TRACTOR_BEAM_NOT_LEGAL { reason: "TARGET_IMMUNE" }`; a distance outside
@@ -13591,7 +13675,7 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   Rally).
 - **No Field Defense, no healer:** no Ice Folk unit builds Field Defense,
   and the Witch has no Tend Wounded, so an Ice Folk seat cures neither
-  Plague, Bitten, nor Frozen; it heals by Recover, Windmills, and Promotion
+  Plague, Bitten, nor Frozen; it heals by idle recovery, Windmills, and Promotion
   only. City Walls are unchanged: an Ice Folk city may choose the Walls
   reward, and Walls fortify an Ice Folk unit on its own center, which then
   has no Snow cover.
@@ -13699,11 +13783,11 @@ except `PROMOTE`, `DISBAND`, and `WAIT`; so are a Goblin Toss whose
 passenger is Frozen and a Tunnel whose rider is Frozen. The gate runs for
 every command before its own legality (`frozenUnitNamedV7`).
 
-| Action                                                                                       | Frozen        |
-| -------------------------------------------------------------------------------------------- | ------------- |
-| `MOVE`, `DISEMBARK`, `ATTACK`, `CAPTURE`, `RECOVER`, every special action and primary action | `UNIT_FROZEN` |
-| a Goblin Toss of a Frozen passenger, a Tunnel with a Frozen rider                            | `UNIT_FROZEN` |
-| `PROMOTE`, `DISBAND`, `WAIT` (not actions on the board)                                      | legal         |
+| Action                                                                            | Frozen        |
+| --------------------------------------------------------------------------------- | ------------- |
+| `MOVE`, `DISEMBARK`, `ATTACK`, `CAPTURE`, every special action and primary action | `UNIT_FROZEN` |
+| a Goblin Toss of a Frozen passenger, a Tunnel with a Frozen rider                 | `UNIT_FROZEN` |
+| `PROMOTE`, `DISBAND`, `WAIT` (not actions on the board)                           | legal         |
 
 - **No retaliation.** A Frozen defender does not retaliate
   (`noRetaliationReason: "FROZEN"`).
@@ -13967,7 +14051,7 @@ uses **one of the two per turn** (and neither after an Attack).
   Frost Bolt at a unit next to her is `OUT_OF_RANGE` and never offered: a
   neighbouring enemy is an Attack, and her Cold Snap freezes every
   neighbour, so no tile next to a selected Witch carries two commands. The
-  Sled's Bolas keeps its reach of 1 or 2. Its legality is the Bolas table of
+  Sled's Bolas flies exactly 2 too since `7r131` (`pulp_wars-3u8d`). Its legality is the Bolas table of
   [section 21.9](#219-bolas-and-cold-blood) with the ability `FROST_BOLT`
   and the error `FROST_BOLT_NOT_LEGAL` (reasons `EMBARKED`,
   `TARGET_IMMUNE`, `OUT_OF_RANGE`, `ALREADY_FROZEN`); its result is the Bolas result with the
@@ -13983,7 +14067,7 @@ uses **one of the two per turn** (and neither after an Attack).
   Drill, ordinary tier-2 cost; capability `deepWinter`). While its owner has
   it, every land tile **without territory** within Chebyshev 2 of the center
   of one of its cities is Snow (another player's territory never is), and
-  Recover and idle recovery heal a land-form Ice Folk unit **6** in its
+  idle recovery heals a land-form Ice Folk unit **6** in its
   owner's territory (`DEEP_WINTER_RECOVER_V7`) instead of 4; elsewhere 2, as
   for everyone, Snow or not. It stores nothing: the ring follows the cities
   the seat owns.
@@ -14024,17 +14108,17 @@ Sled (it needs no technology beyond Scouting, which unlocks the Sled). It is
 not an Attack and costs no Coins. Legality, in this order (all rejections
 atomic):
 
-| #   | Requirement                                                                            | Rejection                                      |
-| --- | -------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                         | the ordinary unit errors                       |
-| 2   | Its role has `BOLAS`.                                                                  | `UNIT_ROLE_INVALID { role }`                   |
-| 3   | It is not Frozen; it has not used a primary action and has not landed this turn.       | `UNIT_FROZEN`; `UNIT_ALREADY_ACTED`            |
-| 4   | It is in land form.                                                                    | `BOLAS_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | `targetUnitId` is a unit on the board the actor can see.                               | `TARGET_NOT_FOUND`                             |
-| 6   | It is hostile to the actor.                                                            | `TARGET_ALLIED`                                |
-| 7   | It can be Frozen: land form (not embarked, naval, an Egg, or the Monster).             | `BOLAS_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
-| 8   | It is within Chebyshev distance `BOLAS_RANGE_V7` (2) of the Sled; distance 1 is legal. | `BOLAS_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 9   | The freeze changes it: it is not Frozen for as long already (`7r107`, section 12.4).   | `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }` |
+| #   | Requirement                                                                                                                                                                  | Rejection                                      |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                               | the ordinary unit errors                       |
+| 2   | Its role has `BOLAS`.                                                                                                                                                        | `UNIT_ROLE_INVALID { role }`                   |
+| 3   | It is not Frozen; it has not used a primary action and has not landed this turn.                                                                                             | `UNIT_FROZEN`; `UNIT_ALREADY_ACTED`            |
+| 4   | It is in land form.                                                                                                                                                          | `BOLAS_NOT_LEGAL { reason: "EMBARKED" }`       |
+| 5   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                     | `TARGET_NOT_FOUND`                             |
+| 6   | It is hostile to the actor.                                                                                                                                                  | `TARGET_ALLIED`                                |
+| 7   | It can be Frozen: land form (not embarked, naval, an Egg, or the Monster).                                                                                                   | `BOLAS_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
+| 8   | It is exactly Chebyshev distance 2 from the Sled (`BOLAS_MIN_RANGE_V7` to `BOLAS_RANGE_V7`, both 2; since `7r131`, `pulp_wars-3u8d`: within 2, distance 1 included, before). | `BOLAS_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 9   | The freeze changes it: it is not Frozen for as long already (`7r107`, section 12.4).                                                                                         | `BOLAS_NOT_LEGAL { reason: "ALREADY_FROZEN" }` |
 
 - **Result.** The target is Frozen ([section 21.2](#212-frozen)). An
   already Frozen enemy is no target since `7r107` (row 9: the freeze would
@@ -15333,9 +15417,8 @@ a Dive; 2 and 1 before).
 - **What still applies:** Frozen (the Titan too) and Shatter (never the
   Titan), Push, the Tractor Beam, Knockback, Kaboom and blasts, splash,
   Pierce, Sweep, Acid, and Lifesteal.
-- **Never mends itself:** no explicit Recover
-  (`RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }`, never offered) and no idle
-  recovery. It heals by an Engineer's Repair (+4, it is a machine), by its
+- **Never mends itself:** no idle recovery (and, until `7r131`, no
+  explicit Recover: `RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }`). It heals by an Engineer's Repair (+4, it is a machine), by its
   owner's Windmill (a Steam Pump; up to 6 at Start Turn, since `7r118`;
   before, Windmill healing skipped it), and by a Promotion (a full heal to
   the new maximum). A
@@ -15683,7 +15766,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `ATTACK_BARRICADE { kind, unitId, at }`. `MOVE` refuses mound tiles, the rider's foreign
   centers on its surfacing turn, and a Gunner after a shot; `ATTACK` allows
   the Gunner's second shot and is refused for a Gyrocopter; `TEND_WOUNDED`
-  heals machines 4 for an Engineer; `RECOVER` is refused for constructs. A
+  heals machines 4 for an Engineer; idle recovery skips constructs. A
   pending city reward blocks the three commands like every command.
 - **State:** `burrowed`, `surfacedThisTurn`, `bombedThisTurn`, and
   (`pulp_wars-w49.33`) `barricades`, hashed, saved, and replayed like `frozen`; `PlayerViewV7` carries the same four, filtered by visibility
@@ -15729,8 +15812,8 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `ASSEMBLE_NOT_LEGAL` (`EMBARKED`, `NO_HOME`), and (`pulp_wars-w49.33`)
   `WHIRL_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`; no longer produced since
   `pulp_wars-befg`) and `BARRICADE_NOT_LEGAL`
-  (`EMBARKED`, `CAP`); `RECOVER_NOT_LEGAL` gains
-  `CONSTRUCT`. A command naming a burrowed unit is `UNIT_ALREADY_HANDLED`;
+  (`EMBARKED`, `CAP`); `RECOVER_NOT_LEGAL` gained
+  `CONSTRUCT` (retired with `RECOVER` at `7r131`). A command naming a burrowed unit is `UNIT_ALREADY_HANDLED`;
   the rider's forbidden center is `MOVEMENT_ILLEGAL` reason
   `SETTLEMENT_FORBIDDEN`.
 - **Registration:** faction `DWARF`, tree `DWARF_BASELINE_V1`, display name
@@ -15767,7 +15850,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   legal `(Engineer, to)`, `ATTACK_BARRICADE` for every unit that could
   attack now and every hostile Barricade in its range on an explored tile,
   the Gunner's second shot, and Repair (also of a Barricade alone). It never offers `ATTACK` for a
-  Gyrocopter, `RECOVER` for a construct, `MOVE` for a Gunner that fired, a
+  Gyrocopter, `MOVE` for a Gunner that fired, a
   Move onto a mound, a rider's foreign center on its surfacing turn, any
   command for a burrowed unit, or Field Defense or Rally to a Dwarf seat.
   Every offered command is accepted.

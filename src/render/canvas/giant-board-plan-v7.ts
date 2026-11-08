@@ -15,6 +15,7 @@ import {
   BREAK_OFF_PICK_FIRST_V7,
   BREAK_OFF_TILE_LABEL_V7,
   STOMP_LABEL_V7,
+  SWALLOW_ATTACK_NOTE_V7,
   TOSS_PASSENGER_BADGE_V7,
   TOSS_PICK_TILE_V7,
   giantHitLabelV7,
@@ -31,17 +32,17 @@ import type {
 /**
  * The giants' part of the board plan (`pulp_wars-w49.32`,
  * docs/product/RULESET_7_GIANTS.md section 10, docs/ui/BOARD_TARGETING.md
- * section 3.2): the four signature commands aimed on the board, one button
- * each in the dock. Swallow picks its victim (an Attack mark), Goblin Toss
- * its Goblin (a Help ring) and then the landing tile (a Place mark, the
- * focused tile showing the Goblin's Kaboom from there), Thunder Stomp shows
- * its 3 x 3 with each enemy's damage (any marked enemy, or the panel's one
- * confirmation, stomps), and Break Off picks one tile for each Gingerbread
- * Man (Place marks). Every target is an offered command; every number a
- * public preview.
+ * section 3.2): the three signature commands aimed on the board, one
+ * button each in the dock. Goblin Toss picks its Goblin (a Help ring) and
+ * then the landing tile (a Place mark, the focused tile showing the
+ * Goblin's Kaboom from there), Thunder Stomp shows its 3 x 3 with each
+ * enemy's damage (any marked enemy, or the panel's one confirmation,
+ * stomps), and Break Off picks one tile for each Gingerbread Man (Place
+ * marks). The Swallow is the Abomination's Attack mark since
+ * `pulp_wars-3u8d` (7r131): `giantSwallowAttackTargetV7`. Every target is
+ * an offered command; every number a public preview.
  */
 export type GiantPickV7 =
-  | { readonly kind: "SWALLOW"; readonly unitId: UnitId }
   | {
       readonly kind: "TOSS";
       readonly unitId: UnitId;
@@ -56,14 +57,32 @@ export type GiantPickV7 =
       readonly first: CoordV7 | null;
     };
 
-/** Whether `kind` is one of the four aimed giant commands. */
+/** Whether `kind` is one of the three aimed giant commands. */
 export function isGiantPickCommandV7(kind: CommandV7["kind"]): boolean {
-  return (
-    kind === "SWALLOW" ||
-    kind === "TOSS" ||
-    kind === "STOMP" ||
-    kind === "BREAK_OFF"
-  );
+  return kind === "TOSS" || kind === "STOMP" || kind === "BREAK_OFF";
+}
+
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): the Attack mark of an
+ * offered `ATTACK` of the selected Abomination that swallows
+ * (`previewSwallowV7`): the tile says "Swallow" and how many turns digest
+ * the victim, in place of the damage. Null for every other attack.
+ */
+export function giantSwallowAttackTargetV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): MapCommandTargetV7 | null {
+  const preview = previewSwallowV7(view, command.unitId, command.targetUnitId);
+  const target = view.units.find((unit) => unit.id === command.targetUnitId);
+  if (preview === null || target === undefined) return null;
+  return {
+    at: target.at,
+    command,
+    family: "ATTACK",
+    previewLabel: swallowTargetLabelV7(preview),
+    previewNote: SWALLOW_ATTACK_NOTE_V7,
+    semanticLabel: `Attack preview. ${SWALLOW_ATTACK_NOTE_V7}. ${swallowTargetNameV7(view, preview)}.`,
+  };
 }
 
 const same = (left: CoordV7, right: CoordV7): boolean =>
@@ -157,27 +176,6 @@ export function giantPickTargetsV7(
   cursor: CoordV7 | null,
 ): MapCommandTargetV7[] {
   const unitById = (id: number) => view.units.find((unit) => unit.id === id);
-  if (pick.kind === "SWALLOW")
-    return commands.flatMap((command): MapCommandTargetV7[] => {
-      if (command.kind !== "SWALLOW" || command.unitId !== pick.unitId)
-        return [];
-      const preview = previewSwallowV7(
-        view,
-        command.unitId,
-        command.targetUnitId,
-      );
-      const target = unitById(command.targetUnitId);
-      if (preview === null || target === undefined) return [];
-      return [
-        {
-          at: target.at,
-          command,
-          family: "SWALLOW",
-          previewLabel: swallowTargetLabelV7(preview),
-          semanticLabel: swallowTargetNameV7(view, preview),
-        },
-      ];
-    });
   if (pick.kind === "TOSS") {
     const tosses = tossCommandsV7(commands, pick.unitId);
     if (pick.passengerUnitId === null)

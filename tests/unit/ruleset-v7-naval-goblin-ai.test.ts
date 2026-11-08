@@ -35,6 +35,7 @@ import {
   type UnitId,
   type UnitRoleIdV7,
   type UnitStateV7,
+  previewBoardV7,
 } from "../../src/engine/index";
 import {
   NAVAL_ARENA_PORTS_V7,
@@ -287,11 +288,13 @@ describe("the Scrap Dreadnought, from both sides (section 3.6)", () => {
     const view = viewOf(state);
     const boat = navalUnitAtV7(state, { x: 3, y: 5 });
     const dreadnought = navalUnitAtV7(state, { x: 4, y: 5 });
+    // `pulp_wars-3u8d` (7r131): its attack on the Dreadnought boards it.
     expect(chooseNormalCommandV7(view).command).toEqual({
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boat.id,
       targetUnitId: dreadnought.id,
     });
+    expect(previewBoardV7(view, boat.id, dreadnought.id)).not.toBeNull();
   });
 
   it("counts the blast of a Dreadnought a torpedo sinks: no free shot for a Submarine the blast would sink", () => {

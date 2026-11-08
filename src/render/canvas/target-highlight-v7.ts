@@ -156,8 +156,8 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   BOMB_TARGET: "ATTACK",
   // Dwarf crowd control: an enemy an aimed Whirl hits.
   WHIRL: "ATTACK",
-  // The naval branch interface: a ship to capture, while Board is aimed.
-  BOARD: "ATTACK",
+  // (The naval branch interface's ship to capture is an Attack target since
+  // `pulp_wars-3u8d`, 7r131.)
   HATCH: "SUPPORT",
   SUGAR_TOSS: "SUPPORT",
   BEAM_DOWN_PASSENGER: "SUPPORT",
@@ -180,10 +180,10 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   // breaks harms its owner's work (Attack); over an own or allied frozen
   // ship the target says its own Help style.
   CRACK_ICE: "ATTACK",
-  // The giants' signatures (`pulp_wars-w49.32`): a victim to swallow and an
-  // enemy a Stomp hits are harmed; a Goblin to throw is helped; a landing
-  // tile and a Gingerbread Man's tile are places.
-  SWALLOW: "ATTACK",
+  // The giants' signatures (`pulp_wars-w49.32`): an enemy a Stomp hits is
+  // harmed (a victim to swallow is an Attack target since `pulp_wars-3u8d`,
+  // 7r131); a Goblin to throw is helped; a landing tile and a Gingerbread
+  // Man's tile are places.
   STOMP: "ATTACK",
   TOSS_PASSENGER: "SUPPORT",
   TOSS: "PLACE",

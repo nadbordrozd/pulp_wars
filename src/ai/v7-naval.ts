@@ -20,6 +20,7 @@ import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   previewAttackExplosionsV7,
   previewBoardV7,
+  queryAttackBoardsV7,
   previewDeepOfferingsV7,
   queryCombatPreviewV7,
 } from "../engine/v7/query";
@@ -448,19 +449,20 @@ export interface NavalBoardFactsV7 {
 }
 
 /**
- * Section 13.1, "Board": the facts of an offered `BOARD`, or null when it
- * is not offered. The prize is worth its role's cost, or three tenths of it
+ * Section 13.1, "Board": the facts of an offered `ATTACK` that boards (a
+ * Board, since `pulp_wars-3u8d`, 7r131), or null when it does not. The
+ * prize is worth its role's cost, or three tenths of it
  * when a visible hostile unit can sink it next turn (the threat estimate on
  * the prize as the viewer's ship at its patched HP). The ship boards when
  * that is at least its best offered attack (valued by the same Coins:
  * the share of the target's cost the attack takes, less the share of the
- * ship's own cost the reply takes), and always boards a Battleship or a
- * Submarine that is not in lethal reach.
+ * ship's own cost the reply takes; an attack that boards is no blow), and
+ * always boards a Battleship or a Submarine that is not in lethal reach.
  */
 export function navalBoardFactsV7(
   view: PlayerViewV7,
   tools: NavalToolsV7,
-  command: Extract<CommandV7, { kind: "BOARD" }>,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
 ): NavalBoardFactsV7 | null {
   const preview = previewBoardV7(view, command.unitId, command.targetUnitId);
   const boarder = view.units.find((unit) => unit.id === command.unitId);
@@ -477,7 +479,12 @@ export function navalBoardFactsV7(
   const prizeTenths = cost * (safe ? 10 : NAVAL_BOARD_DOOMED_TENTHS_V7);
   let bestAttackTenths: number | null = null;
   for (const offered of tools.commands) {
-    if (offered.kind !== "ATTACK" || offered.unitId !== boarder.id) continue;
+    if (
+      offered.kind !== "ATTACK" ||
+      offered.unitId !== boarder.id ||
+      queryAttackBoardsV7(view, boarder.id, offered.targetUnitId)
+    )
+      continue;
     const victim = view.units.find((unit) => unit.id === offered.targetUnitId);
     const plain = queryCombatPreviewV7(view, boarder.id, offered.targetUnitId);
     if (victim === undefined || plain === null) continue;
@@ -505,11 +512,14 @@ export function navalBoardFactsV7(
   };
 }
 
-/** The score of an offered `BOARD` (priority -1: the ship attacks instead). */
+/**
+ * The score of an offered `ATTACK` that boards (priority -1: the ship
+ * attacks another target instead).
+ */
 export function navalBoardScoreV7(
   view: PlayerViewV7,
   tools: NavalToolsV7,
-  command: Extract<CommandV7, { kind: "BOARD" }>,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
 ): {
   readonly priority: number;
   readonly strategic: number;

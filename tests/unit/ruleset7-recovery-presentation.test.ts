@@ -64,30 +64,26 @@ describe("Ruleset 7 Recover cue (pulp_wars-v3w)", () => {
     ]);
   });
 
-  it("plays an explicit Recover at its command, and not again at End Turn", () => {
+  it("plays no cue for a Wait, and the unit still recovers at End Turn", () => {
+    // `pulp_wars-3u8d` (7r131): the `RECOVER` command is gone; a Wait
+    // leaves the unit idle, so End Turn heals it with the others.
     const state = fixture();
     const human = state.humanPlayerId;
     const [first, second] = queryIdleRecoveryV7(state, human);
     if (first === undefined || second === undefined)
       throw new Error("recovering units missing");
-    const command: CommandV7 = { kind: "RECOVER", unitId: first.unitId };
-    expect(plan(state, command)).toEqual([
+    const command: CommandV7 = { kind: "WAIT", unitId: first.unitId };
+    expect(plan(state, command)).toEqual([]);
+    const waited = applyCommandV7(state, human, command);
+    if (!waited.accepted) throw new Error(waited.error.code);
+    expect(plan(waited.state, { kind: "END_TURN" })).toEqual([
       {
         kind: "SUPPORT",
         effect: "RECOVER",
         actor: { unitId: first.unitId, at: AT.first, amount: first.amount },
-        recipients: [],
-        durationMs: 320,
-      },
-    ]);
-    const recovered = applyCommandV7(state, human, command);
-    if (!recovered.accepted) throw new Error(recovered.error.code);
-    expect(plan(recovered.state, { kind: "END_TURN" })).toEqual([
-      {
-        kind: "SUPPORT",
-        effect: "RECOVER",
-        actor: { unitId: second.unitId, at: AT.second, amount: second.amount },
-        recipients: [],
+        recipients: [
+          { unitId: second.unitId, at: AT.second, amount: second.amount },
+        ],
         durationMs: 480,
       },
     ]);

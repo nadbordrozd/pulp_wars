@@ -742,9 +742,11 @@ async function captureMountedUiEvidence(
 
 /**
  * The naval branch interface (bead pulp_wars-5ti.7): on the mounted fixture
- * app, Board is armed with its one button and the prize picked on the
- * board; a Bow Ram shoves its target; a Submarine shows Submerged. Each
- * scene is a fixture of tests/fixtures/v7-naval-ui.ts.
+ * app, a ship's attack on a crippled enemy ship boards it (one tile, one
+ * meaning, `pulp_wars-3u8d`, 7r131: no Board button, the prize's Attack
+ * mark says "Board: captures the ship"); a Bow Ram shoves its target; a
+ * Submarine shows Submerged. Each scene is a fixture of
+ * tests/fixtures/v7-naval-ui.ts.
  */
 async function captureNavalBranchEvidence(
   connection: Connection,
@@ -755,58 +757,22 @@ async function captureNavalBranchEvidence(
   const scene = (name: string): Promise<Record<string, unknown>> =>
     tools.scene("/tests/fixtures/v7-naval-ui.ts", "NAVAL_UI_V7", name);
 
-  // Board: one button arms it, the two prizes are picked on the board.
+  // Board: no button; the boarder's attack on a prize boards it.
   const boarding = await scene("navalBoardingUiFixtureV7");
   await activate(boarding.boarder);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock [data-action="naval-board"]') instanceof HTMLButtonElement`,
+    `document.querySelector('.v7-selection-dock[data-selection-kind="unit"]') !== null`,
   );
   await evaluate(
     connection,
     `(() => {
-      const buttons = document.querySelectorAll('.v7-selection-dock [data-naval-ability="board"]');
-      if (buttons.length !== 1) throw new Error('Board must have exactly one dock button');
-      if (document.querySelector('[data-action^="command-board"]') !== null)
-        throw new Error('Board must not be a per-target dock command');
-      buttons[0].click();
+      if (document.querySelector('.v7-selection-dock [data-action="naval-board"]') !== null)
+        throw new Error('Board must have no dock button');
     })()`,
-  );
-  await waitForExpression(
-    connection,
-    `document.querySelector('[data-v7-naval-pick].v7-board-pick')?.dataset.boardTargets === '2'`,
   );
   await delay(200);
-  await capture(connection, "naval-board-pick.png", directory);
-  // The same aiming on a phone: the panel leaves the board in view.
-  await connection.send("Emulation.setDeviceMetricsOverride", {
-    width: 390,
-    height: 844,
-    deviceScaleFactor: 2,
-    mobile: true,
-  });
-  await delay(400);
-  const phonePick = await evaluate<Record<string, unknown>>(
-    connection,
-    `(() => {
-      const panel = document.querySelector('[data-v7-naval-pick].v7-board-pick');
-      const dock = document.querySelector('.v7-selection-dock');
-      if (!(panel instanceof HTMLElement) || !(dock instanceof HTMLElement))
-        throw new Error('the Board aiming panel is missing on a phone');
-      const bounds = dock.getBoundingClientRect();
-      if (bounds.right > innerWidth + 1 || bounds.height > innerHeight * 0.5)
-        throw new Error('the Board aiming dock does not fit a phone');
-      return { dockHeight: Math.round(bounds.height), viewport: innerHeight };
-    })()`,
-  );
-  await capture(connection, "naval-board-pick-phone.png", directory);
-  await connection.send("Emulation.setDeviceMetricsOverride", {
-    width: 1440,
-    height: 1000,
-    deviceScaleFactor: 1,
-    mobile: false,
-  });
-  await delay(300);
+  await capture(connection, "naval-board-attack.png", directory);
   const prizes = boarding.prizes as readonly unknown[];
   await activate(prizes[1]);
   await waitForExpression(
@@ -817,8 +783,8 @@ async function captureNavalBranchEvidence(
     connection,
     `(() => {
       const trace = globalThis.__NAVAL_DOM__.traces[0];
-      if (trace?.command?.kind !== 'BOARD' || !trace.eventKinds.includes('SHIP_BOARDED'))
-        throw new Error('board pick did not accept BOARD with SHIP_BOARDED');
+      if (trace?.command?.kind !== 'ATTACK' || !trace.eventKinds.includes('SHIP_BOARDED'))
+        throw new Error('the attack did not board with SHIP_BOARDED');
       const view = globalThis.__NAVAL_DOM__.snapshot().view;
       const prize = view.units.find((unit) => unit.id === trace.command.targetUnitId);
       if (prize?.ownerId !== view.viewer.id) throw new Error('the prize did not change owner');
@@ -893,7 +859,7 @@ async function captureNavalBranchEvidence(
     `document.querySelector('[data-action="close-overlay"]').click()`,
   );
   await delay(100);
-  return { boarded, phonePick, rammed, submerged, cards };
+  return { boarded, rammed, submerged, cards };
 }
 
 /**
@@ -1332,7 +1298,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r130', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r131', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only

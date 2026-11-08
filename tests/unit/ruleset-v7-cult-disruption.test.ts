@@ -476,7 +476,8 @@ const PATH_CASES: readonly PathCaseV7[] = [
       const state = rig("UNDEAD", [{ role: "JUGGERNAUT", at: at(5, 7) }], {
         role: "FIGHTER",
       });
-      return { state, command: targeted("SWALLOW", state, at(5, 7)) };
+      // (`pulp_wars-3u8d`, 7r131: the Abomination's attack swallows.)
+      return { state, command: targeted("ATTACK", state, at(5, 7)) };
     },
   },
   {

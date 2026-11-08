@@ -788,9 +788,7 @@ describe("Candy technology (section 4)", () => {
     expect(candy.trainableRoles).toEqual(human.trainableRoles);
     // Themed naval branches (`pulp_wars-5ti.21`): no Board (Sugar Sails).
     expect(candy.commands).toEqual(
-      human.commands.filter(
-        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
-      ),
+      human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
     );
     expect(candy.commands).toContain("BLAST_MOUNTAIN");
   });

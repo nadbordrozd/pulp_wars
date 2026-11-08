@@ -65,8 +65,8 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "CULTIVATE_FOREST"
   | "BLAST_MOUNTAIN"
   | "LAND_GRANT"
-  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2).
-  | "BOARD"
+  // (The naval branch's `BOARD`, section 4.2, is no command since
+  // `pulp_wars-3u8d`, 7r131: the `BOARDING` unlock below.)
   // Tuning 3 (`pulp_wars-w49.3`): Commerce, hiring at a Market.
   | "HIRE"
 >;
@@ -284,6 +284,12 @@ export type TechnologyUnlockV7 =
    * Seamanship, the owner's Patrol Boats ram.
    */
   | { readonly kind: "RAM" }
+  /**
+   * The naval branch (section 4.2): Seamanship, the owner's ships board a
+   * crippled enemy ship by attacking it (`pulp_wars-3u8d`, 7r131; the
+   * `COMMAND` unlock of a `BOARD` command before).
+   */
+  | { readonly kind: "BOARDING" }
   /**
    * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
    * 3.3 G1, `pulp_wars-5ti.16`): Powder Kegs, the Goblin `SEAMANSHIP` in
@@ -1652,7 +1658,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     "NAVAL",
     2,
     ["SHORECRAFT"],
-    [{ kind: "RAM" }, { kind: "COMMAND", command: "BOARD" }],
+    [{ kind: "RAM" }, { kind: "BOARDING" }],
   ),
   node(
     "SUBMERSIBLES",
@@ -3419,11 +3425,11 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
                     (unlock.kind === "UNIT_ROLE" &&
                         isNavalRoleV7(unlock.role)) ||
                       unlock.kind === "RAM" ||
+                      unlock.kind === "BOARDING" ||
                       unlock.kind === "HARBOURS" ||
                       unlock.kind === "NAVAL_TRAINING_DISCOUNT" ||
                       (unlock.kind === "COMMAND" &&
-                        (unlock.command === "BOARD" ||
-                          unlock.command === "BUILD_PORT" ||
+                        (unlock.command === "BUILD_PORT" ||
                           unlock.command === "BUILD_SHIPYARD"))
                     ? []
                     : [unlock],
@@ -7266,6 +7272,12 @@ export const BRITTLE_SHATTER_HP_V7 = 4;
 /** The Ice Folk revision (section 7.3): the Bolas reach (Chebyshev). */
 export const BOLAS_RANGE_V7 = 2;
 /**
+ * The nearest unit a Sled's Bolas may aim at (`pulp_wars-3u8d`, 7r131): an
+ * adjacent enemy is only ever an Attack, so a Bolas flies exactly 2 tiles
+ * (Chebyshev), as the Ice Witch's Frost Bolt (`pulp_wars-ev6q`, 7r129).
+ */
+export const BOLAS_MIN_RANGE_V7 = 2;
+/**
  * Ice Folk Freeze (`pulp_wars-w49.37`): the Cold Snap reach (Chebyshev):
  * every adjacent unit (2 before).
  */
@@ -8340,7 +8352,11 @@ export interface TechnologyCapabilitiesV7 {
    * Seamanship, the player's Patrol Boats ram.
    */
   readonly ram: boolean;
-  /** The naval branch (section 4.2): Seamanship, the player's ships board. */
+  /**
+   * The naval branch (section 4.2): Seamanship, the player's ships board
+   * (an `ATTACK` on a crippled enemy ship captures it since
+   * `pulp_wars-3u8d`, 7r131).
+   */
   readonly boarding: boolean;
   /**
    * The naval branch (section 5.4): Harbours, the live population every
@@ -8506,6 +8522,7 @@ export function technologyCapabilitiesV7(
   let homeSweetHome = false;
   let crumbsBite = 0;
   let ram = false;
+  let boarding = false;
   let harbourPopulation: 0 | 1 = 0;
   let freezeShallow = false;
   let freezeDeep = false;
@@ -8637,6 +8654,9 @@ export function technologyCapabilitiesV7(
       case "RAM":
         ram = true;
         break;
+      case "BOARDING":
+        boarding = true;
+        break;
       case "HARBOURS":
         harbourPopulation = unlock.population;
         break;
@@ -8762,7 +8782,7 @@ export function technologyCapabilitiesV7(
     homeSweetHome,
     crumbsBite,
     ram,
-    boarding: commands.has("BOARD"),
+    boarding,
     harbourPopulation,
     // Pack Ice requires Rime, so `DEEP` implies the shallows.
     freezeWater: freezeDeep ? "DEEP" : freezeShallow ? "SHALLOW" : "NONE",

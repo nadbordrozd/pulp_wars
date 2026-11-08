@@ -150,13 +150,7 @@ describe("Beam Down (section 8.1)", () => {
     });
     // Neither moves, and the Saucer does nothing more.
     expect(
-      offeredV7(
-        run.state,
-        "MOVE",
-        "BEAM_DOWN",
-        "TRACTOR_BEAM",
-        "RECOVER",
-      ).filter(
+      offeredV7(run.state, "MOVE", "BEAM_DOWN", "TRACTOR_BEAM").filter(
         (command) =>
           "unitId" in command &&
           (command.unitId === saucer.id || command.unitId === grunt.id),

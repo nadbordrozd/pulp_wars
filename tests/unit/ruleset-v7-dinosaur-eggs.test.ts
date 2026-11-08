@@ -985,7 +985,6 @@ describe("ruleset-7 revision-19 Egg unit", () => {
       { kind: "RALLY", unitId: egg.id },
       { kind: "TEND_WOUNDED", unitId: egg.id },
       { kind: "HATCH", unitId: egg.id, eggUnitId: egg.id },
-      { kind: "RECOVER", unitId: egg.id },
       { kind: "CAPTURE", unitId: egg.id },
       { kind: "PROMOTE", unitId: egg.id },
       { kind: "PILLAGE", unitId: egg.id },

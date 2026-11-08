@@ -781,8 +781,10 @@ describe("ruleset-7 revision-17 Normal AI: WAAAGH!, Troll, Plunder", () => {
         { seat: 1, role: "FIGHTER", at: at(9, 0) },
       ],
     );
+    // `pulp_wars-3u8d` (7r131): the Wait that holds a unit for its idle
+    // recovery, scored as the retired Recover was.
     const recover = (state: GameStateV7): CommandV7 => ({
-      kind: "RECOVER",
+      kind: "WAIT",
       unitId: unitAtV7(state, at(4, 2)).id,
     });
     expect(scoreCommandV7(troll.view, recover(troll.state)).priority).toBe(300);

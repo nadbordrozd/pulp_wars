@@ -47,15 +47,15 @@ describe("the identity", () => {
   // Gibbering Mass (`mch9.37`) 7r91, so all of them are retired with their
   // keys.
   it("was 7r86 after 7r85 and 7r84, all their save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-46, -42)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-47, -43)).toEqual([
       "pulp-wars-poc-7r84",
       "pulp-wars-poc-7r85",
       "pulp-wars-poc-7r86",
       "pulp-wars-poc-7r87",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-46, -42)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-47, -43)).toEqual([
       "pulpWars.save.v7r84.current",
       "pulpWars.save.v7r85.current",
       "pulpWars.save.v7r86.current",

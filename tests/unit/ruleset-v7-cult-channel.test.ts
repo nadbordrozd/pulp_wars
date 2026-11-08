@@ -42,6 +42,7 @@ import {
   type DomainEventV7,
   type GameStateV7,
   type UnitRoleIdV7,
+  previewSwallowV7,
 } from "../../src/engine/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import {
@@ -857,7 +858,7 @@ describe("the Cult's channel: the Horror is a unit of its own (section 4.2)", ()
 
 describe("the Cult's channel: a bound Horror and the other factions (sections 4.2 and 13.1)", () => {
   const targeted = (
-    kind: "MIND_CONTROL" | "TRACTOR_BEAM" | "SWALLOW" | "FROST_BOLT" | "ATTACK",
+    kind: "MIND_CONTROL" | "TRACTOR_BEAM" | "FROST_BOLT" | "ATTACK",
     state: GameStateV7,
     from: CoordV7,
   ): CommandV7 =>
@@ -891,9 +892,14 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
       { factions: ["CULT", "UNDEAD"], activeSeat: 1 },
       { hp: 3 },
     );
-    expect(rejectedV7(undead, targeted("SWALLOW", undead, at(5, 5))).code).toBe(
-      "SWALLOW_NOT_LEGAL",
-    );
+    // `pulp_wars-3u8d` (7r131): the Abomination's attack on it is a blow.
+    expect(
+      previewSwallowV7(
+        viewForV7(undead, seatIdV7(undead, 1)),
+        unitAtV7(undead, at(5, 5)).id,
+        unitAtV7(undead, at(5, 4)).id,
+      ),
+    ).toBeNull();
   });
 
   it("takes no Plague and no bite, hears no Wail, and leaves no Grave", () => {

@@ -595,9 +595,7 @@ describe("a Frozen ship (the Ice Folk freeze rework, `pulp_wars-s55m.1`)", () =>
         expect(
           queryPlayerCommandsV7(view).filter(
             (command) =>
-              (command.kind === "MOVE" ||
-                command.kind === "ATTACK" ||
-                command.kind === "BOARD") &&
+              (command.kind === "MOVE" || command.kind === "ATTACK") &&
               command.unitId === ship.id,
           ),
         ).toEqual([]);

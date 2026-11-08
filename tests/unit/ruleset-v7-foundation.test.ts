@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -151,7 +151,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // FIRE_MOON_GUN after JOIN_CHANT (87). The Mothership redesign
     // (`pulp_wars-ewpj`) adds MASS_BEAM_DOWN last (88). One tile, one
     // meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    // (84: one tile, one meaning, `pulp_wars-3u8d`, 7r131, removes BOARD,
+    // RECOVER and SWALLOW.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(

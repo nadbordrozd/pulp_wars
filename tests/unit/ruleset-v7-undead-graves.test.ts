@@ -12,7 +12,7 @@ import {
   parseGameStateV7,
   parsePlayerEventEnvelopeV7,
   projectEventsV7,
-  queryPlayerCommandsV7,
+  queryIdleRecoveryV7,
   resolveCityGrowthV7,
   unitId,
   viewForV7,
@@ -30,6 +30,7 @@ import {
 import {
   PRE_NAVAL_BRANCH_TECHS_V7,
   checkedV7,
+  idleRecoveryOfV7,
   mirrorOptionV7,
 } from "../fixtures/v7-builders";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
@@ -730,30 +731,26 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
     });
   });
 
-  it("allows explicit Recover only in own territory and offers nothing elsewhere", () => {
+  it("recovers only in own territory (idle; the Recover command is gone)", () => {
+    // `pulp_wars-3u8d` (7r131): idle recovery at End Turn is the only
+    // recovery, by the predicate and amount the retired Recover had.
     const state = wounded(["UNDEAD", "ORIGINAL"]);
     const own = unitAt(state, OWN);
-    const recovered = apply(state, state.humanPlayerId, {
-      kind: "RECOVER",
+    expect(idleRecoveryOfV7(state, own.id)).toEqual({
+      kind: "UNIT_RECOVERED",
       unitId: own.id,
+      amount: 4,
+      automatic: true,
     });
-    expect(recovered.events).toEqual([
-      { kind: "UNIT_RECOVERED", unitId: own.id, amount: 4, automatic: false },
-    ]);
-    for (const at of [NEUTRAL, HOSTILE]) {
-      const unit = unitAt(state, at);
-      const rejected = applyCommandV7(state, state.humanPlayerId, {
-        kind: "RECOVER",
-        unitId: unit.id,
-      });
-      expect(rejected).toMatchObject({
-        accepted: false,
-        state,
-        events: [],
-        error: { code: "RECOVER_NOT_LEGAL", params: { reason: "RESTLESS" } },
-      });
-    }
+    for (const at of [NEUTRAL, HOSTILE])
+      expect(idleRecoveryOfV7(state, unitAt(state, at).id)).toBeNull();
     expect(recoverOffers(state)).toEqual([own.id]);
+    expect(
+      applyCommandV7(state, state.humanPlayerId, {
+        kind: "RECOVER",
+        unitId: own.id,
+      } as unknown as CommandV7).accepted,
+    ).toBe(false);
   });
 
   it("skips idle recovery outside own territory with no event", () => {
@@ -774,21 +771,13 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
     const state = wounded(["ORIGINAL", "UNDEAD"]);
     const ids = [OWN, NEUTRAL, HOSTILE].map((at) => unitAt(state, at).id);
     expect(recoverOffers(state)).toEqual(ids);
-    expect(
-      ids.map(
-        (id) =>
-          apply(state, state.humanPlayerId, { kind: "RECOVER", unitId: id })
-            .events,
-      ),
-    ).toEqual(
-      ids.map((id, index) => [
-        {
-          kind: "UNIT_RECOVERED",
-          unitId: id,
-          amount: index === 0 ? 4 : 2,
-          automatic: false,
-        },
-      ]),
+    expect(ids.map((id) => idleRecoveryOfV7(state, id))).toEqual(
+      ids.map((id, index) => ({
+        kind: "UNIT_RECOVERED",
+        unitId: id,
+        amount: index === 0 ? 4 : 2,
+        automatic: true,
+      })),
     );
     const ended = apply(state, state.humanPlayerId, { kind: "END_TURN" });
     expect(
@@ -945,11 +934,12 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
     });
     expect(recoverOffers(state)).toEqual([own.id, boatId]);
     for (const id of [own.id, boatId])
-      expect(
-        apply(state, human, { kind: "RECOVER", unitId: id }).events,
-      ).toEqual([
-        { kind: "UNIT_RECOVERED", unitId: id, amount: 4, automatic: false },
-      ]);
+      expect(idleRecoveryOfV7(state, id)).toEqual({
+        kind: "UNIT_RECOVERED",
+        unitId: id,
+        amount: 4,
+        automatic: true,
+      });
 
     const embarked = withUnit(state, boatId, {
       role: "FIGHTER",
@@ -957,12 +947,7 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
       hp: 5,
     });
     expect(recoverOffers(embarked)).toEqual([own.id]);
-    expect(
-      applyCommandV7(embarked, human, { kind: "RECOVER", unitId: boatId }),
-    ).toMatchObject({
-      accepted: false,
-      error: { code: "RECOVER_NOT_LEGAL", params: { reason: "EMBARKED" } },
-    });
+    expect(idleRecoveryOfV7(embarked, boatId)).toBeNull();
     const ended = apply(embarked, human, { kind: "END_TURN" });
     expect(
       ended.events.filter((event) => event.kind === "UNIT_RECOVERED"),
@@ -1224,10 +1209,13 @@ function attack(
   });
 }
 
+/**
+ * The units that recover idle at End Turn now (`pulp_wars-3u8d`, 7r131: the
+ * `RECOVER` offers were exactly these until the command retired).
+ */
 function recoverOffers(state: GameStateV7): UnitStateV7["id"][] {
-  return queryPlayerCommandsV7(state, state.humanPlayerId)
-    .filter((command) => command.kind === "RECOVER")
-    .map((command) => ("unitId" in command ? command.unitId : unitId(0)))
+  return queryIdleRecoveryV7(state, state.humanPlayerId)
+    .map((entry) => entry.unitId)
     .sort((left, right) => left - right);
 }
 

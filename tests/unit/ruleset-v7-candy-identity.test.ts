@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 130;
+const REVISION = 131;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -210,7 +210,8 @@ describe("the Candy revision identity (section 2.2)", () => {
       // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN here.
       "TOSS_COIN",
       "TOP_UP",
-      "RECOVER",
+      // (RECOVER followed until `pulp_wars-3u8d`, 7r131, retired it.)
+      "TOSS",
     ]);
     const events: readonly string[] = DOMAIN_EVENT_KIND_ORDER_V7;
     const after = (kind: string): string | undefined =>

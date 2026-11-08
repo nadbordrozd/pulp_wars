@@ -345,7 +345,7 @@ it first. Ids are case-insensitive.
 | `u12.m.4,5`                               | unit 12 moves to `4,5`                                                                                  |
 | `u12.a.u31`                               | unit 12 attacks unit 31                                                                                 |
 | `u12.capture`                             | unit 12 captures the settlement it stands on                                                            |
-| `u12.recover`, `u12.promote`, `u12.wait`  | recover HP, take a Promotion, mark the unit as done                                                     |
+| `u12.promote`, `u12.wait`                 | take a Promotion, mark the unit as done (an idle unit recovers at `end`)                                |
 | `u12.fortify`, `u12.pillage`              | build a Field Defense, pillage the improvement                                                          |
 | `u12.rally`, `u12.tend`, `u12.disband`    | Captain's Rally and Tend Wounded, disband (on a mind-controlled unit: Release, it returns to its owner) |
 | `c1.t.FIGHTER`                            | city 1 trains the role                                                                                  |
@@ -360,12 +360,20 @@ it first. Ids are case-insensitive.
 Other factions add `.raise`, `.devour`, `.wail`, `.kaboom`, `.coldsnap`,
 `.rush`, `.hatch.u7`, `.bolas.u31`, `.mind.u31`, `.tractor.u31`, `.toss.u9`,
 `.beam.u7.4,5`, `.bomb.u31.4,5`, `.tunnel.4,5`, `.assemble.4,5`,
-`.rebake.4,5`, `.freeze.4,5`, `.board.u31`, `.land.4,5` (disembark),
+`.rebake.4,5`, `.freeze.4,5`, `.land.4,5` (disembark),
 `.barricade.4,5` (Dwarf crowd control, `pulp_wars-w49.33`; a
 Whirligig's attack whirls since `pulp_wars-befg`, and its line lists every
 unit hit, `YOURS` for own ones),
 `.a.4,5` (an attack on the Barricade on `4,5`), and `c1.egg.ROLE.4,5`;
-`options` prints them when they are offered. The view lists the
+`options` prints them when they are offered. Since `pulp-wars-poc-7r131`
+(`pulp_wars-3u8d`) there is no `.recover`, `.swallow.uN`, or `.board.uN`:
+an idle unit recovers at `end`, and an Abomination's or a Seamanship
+ship's `.a.uN` on a unit it may swallow or board is the Swallow or the
+Board, its option line reading `attack = SWALLOW ...` or
+`attack = BOARD ...` instead of the exchange. The Sled's `.bolas.uN` is
+offered only 2 tiles away, the Saucer's `.tractor.uN` only at an enemy,
+and a Moon Gun `.moongun.x,y` only to a tile the unit could not walk to.
+The view lists the
 Barricades on explored tiles (owner and HP) and marks their cells `B`.
 The Cultists (`pulp_wars-mch9.4`) add `.sacrifice.u9` and `.seize.u31`
 (the Summoner offers that unit) and `c1.offering`; a Cult seat's header and
@@ -590,7 +598,8 @@ slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
   choice: choose it and send the rest again. End the turn with `--end` on
   the last `do` rather than with a second shell command.
 - Ending the turn with idle units is allowed. A wounded idle unit in the
-  right place recovers by itself (the `recover` preview says how much).
+  right place recovers by itself (the `recover` preview says how much);
+  this is the only Recover since `7r131`.
 - A unit captures a settlement it stands on with `.capture`; `can-capture-now`
   in its unit line says when. Move onto the center first.
 - Research costs its tier's base (5 / 6 / 7 Coins) plus 1 / 2 / 3 Coins

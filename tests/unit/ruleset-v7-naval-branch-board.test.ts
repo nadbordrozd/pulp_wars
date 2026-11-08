@@ -31,7 +31,10 @@ import {
 // The naval branch, engine step I (`pulp_wars-5ti.2`,
 // docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2): Board. A ship with
 // Seamanship next to a hostile ship at a third of its maximum HP or less
-// captures it; the prize is patched up to one HP above that line.
+// captures it; the prize is patched up to one HP above that line. One tile,
+// one meaning (`pulp_wars-3u8d`, 7r131): the Board is the ship's `ATTACK`
+// on such a ship (the `BOARD` command retired); on any other target the
+// attack is an ordinary exchange.
 
 const BOARDER: CoordV7 = { x: 5, y: 4 };
 const TARGET: CoordV7 = { x: 5, y: 5 };
@@ -81,55 +84,56 @@ function scene(options: SceneOptions = {}) {
   return { state, boarderId, targetId };
 }
 
+/** The boarder's `ATTACK` on the target: a Board when it may board it. */
 function board(fixture: {
   readonly boarderId: number;
   readonly targetId: number;
 }): CommandV7 {
   return {
-    kind: "BOARD",
+    kind: "ATTACK",
     unitId: fixture.boarderId as never,
     targetUnitId: fixture.targetId as never,
   };
 }
 
+/** The offered attacks of the seat that board (their preview is a Board). */
 function offeredBoards(state: GameStateV7, seat: 0 | 1) {
-  return queryPlayerCommandsV7(viewForV7(state, seatV7(state, seat).id)).filter(
-    (command) => command.kind === "BOARD",
+  const view = viewForV7(state, seatV7(state, seat).id);
+  return queryPlayerCommandsV7(view).filter(
+    (command) =>
+      command.kind === "ATTACK" &&
+      previewBoardV7(view, command.unitId, command.targetUnitId) !== null,
   );
 }
 
-describe("BOARD legality, in the spec's order", () => {
+/** The accepted attack was an ordinary exchange, not a Board. */
+function plainAttack(state: GameStateV7, seat: 0 | 1, command: CommandV7) {
+  const kinds = acceptV7(state, seat, command).events.map(
+    (event) => event.kind,
+  );
+  expect(kinds).toContain("COMBAT_RESOLVED");
+  expect(kinds).not.toContain("SHIP_BOARDED");
+}
+
+describe("Board legality (an attack that boards), in the spec's order", () => {
   it("rows 1 to 3: the actor's unit, a ship, and Seamanship", () => {
     const fixture = scene({ targetHp: 3 });
     // Row 1: the ordinary unit errors.
     expect(
       rejectV7(fixture.state, 0, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: 999 as never,
         targetUnitId: fixture.targetId as never,
       }).code,
     ).toBe("UNIT_NOT_FOUND");
     expect(
       rejectV7(fixture.state, 0, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: fixture.targetId as never,
         targetUnitId: fixture.boarderId as never,
       }).code,
     ).toBe("UNIT_NOT_OWNED");
-    // Row 2 comes before row 3: a land unit of a seat without Seamanship.
-    const landlubber = scene({
-      technologies: [NO_SEAMANSHIP, NAVAL_TECHS_V7],
-      targetHp: 3,
-    });
-    const fighter = navalUnitAtV7(landlubber.state, { x: 5, y: 2 });
-    expect(
-      rejectV7(landlubber.state, 0, {
-        kind: "BOARD",
-        unitId: fighter.id,
-        targetUnitId: landlubber.targetId as never,
-      }),
-    ).toEqual({ code: "BOARD_NOT_LEGAL", params: { reason: "NOT_A_SHIP" } });
-    // An embarked land unit is not a ship either.
+    // Row 2: an embarked land unit is no ship, and attacks nothing.
     const transport = scene({
       targetHp: 3,
       extra: [{ seat: 0, role: "RAIDER", at: { x: 2, y: 1 } }],
@@ -141,21 +145,18 @@ describe("BOARD legality, in the spec's order", () => {
     });
     expect(
       rejectV7(afloat, 0, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: raider.id,
         targetUnitId: transport.targetId as never,
       }),
-    ).toEqual({ code: "BOARD_NOT_LEGAL", params: { reason: "NOT_A_SHIP" } });
-    // Row 3: a ship of a seat without Seamanship (before every target row:
-    // the target named here does not even exist).
-    expect(
-      rejectV7(landlubber.state, 0, {
-        kind: "BOARD",
-        unitId: landlubber.boarderId as never,
-        targetUnitId: 999 as never,
-      }),
-    ).toEqual({ code: "TECH_REQUIRED", params: { tech: "SEAMANSHIP" } });
+    ).toEqual({ code: "ATTACK_NOT_LEGAL", params: { reason: "EMBARKED" } });
+    // Row 3: a ship of a seat without Seamanship attacks the crippled ship.
+    const landlubber = scene({
+      technologies: [NO_SEAMANSHIP, NAVAL_TECHS_V7],
+      targetHp: 3,
+    });
     expect(offeredBoards(landlubber.state, 0)).toEqual([]);
+    plainAttack(landlubber.state, 0, board(landlubber));
   });
 
   it("row 4: a ship that attacked cannot board, a Patrol Boat that moved can, a Battleship that moved cannot", () => {
@@ -213,7 +214,7 @@ describe("BOARD legality, in the spec's order", () => {
     });
     expect(
       rejectV7(fixture.state, 0, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: fixture.boarderId as never,
         targetUnitId: 999 as never,
       }),
@@ -251,41 +252,31 @@ describe("BOARD legality, in the spec's order", () => {
     const ownWounded = patchNavalUnitV7(fixture.state, own.id, { hp: 1 });
     expect(
       rejectV7(ownWounded, 0, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: fixture.boarderId as never,
         targetUnitId: own.id,
       }).code,
     ).toBe("TARGET_ALLIED");
   });
 
-  it("rows 7 to 9: a ship, in reach, at a third of its maximum HP or less, in that order", () => {
-    // Row 7: a transport, however damaged and wherever it is.
+  it("rows 7 to 9: a ship, in reach, at a third of its maximum HP or less: otherwise the attack is an exchange", () => {
+    // Row 7: a transport, however damaged, is attacked, not boarded.
     const transport = scene({
       targetHp: 3,
       extra: [{ seat: 1, role: "RAIDER", at: { x: 2, y: 9 } }],
     });
     const raider = navalUnitAtV7(transport.state, { x: 2, y: 9 });
-    for (const at of [
-      { x: 4, y: 5 },
-      { x: 8, y: 6 },
-    ]) {
-      const afloat = patchNavalUnitV7(transport.state, raider.id, {
-        form: "EMBARKED",
-        at,
-        hp: 1,
-      });
-      expect(
-        rejectV7(afloat, 0, {
-          kind: "BOARD",
-          unitId: transport.boarderId as never,
-          targetUnitId: raider.id,
-        }),
-      ).toEqual({
-        code: "BOARD_NOT_LEGAL",
-        params: { reason: "TARGET_IMMUNE" },
-      });
-    }
-    // A land unit on the shore is immune too.
+    const afloat = patchNavalUnitV7(transport.state, raider.id, {
+      form: "EMBARKED",
+      at: { x: 4, y: 5 },
+      hp: 1,
+    });
+    plainAttack(afloat, 0, {
+      kind: "ATTACK",
+      unitId: transport.boarderId as never,
+      targetUnitId: raider.id,
+    });
+    // A land unit on the shore is attacked too.
     const shore = navalArenaV7({
       units: [
         { seat: 0, role: "PATROL_BOAT", at: { x: 2, y: 7 } },
@@ -293,24 +284,17 @@ describe("BOARD legality, in the spec's order", () => {
       ],
     });
     const landed = navalUnitAtV7(shore, { x: 2, y: 8 });
-    expect(
-      rejectV7(patchNavalUnitV7(shore, landed.id, { hp: 1 }), 0, {
-        kind: "BOARD",
-        unitId: navalUnitAtV7(shore, { x: 2, y: 7 }).id,
-        targetUnitId: landed.id,
-      }),
-    ).toEqual({ code: "BOARD_NOT_LEGAL", params: { reason: "TARGET_IMMUNE" } });
-    // Row 8 before row 9: a healthy ship two tiles away is out of range.
-    const far = scene({ targetAt: { x: 5, y: 6 } });
-    expect(rejectV7(far.state, 0, board(far))).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: { reason: "OUT_OF_RANGE" },
+    plainAttack(patchNavalUnitV7(shore, landed.id, { hp: 1 }), 0, {
+      kind: "ATTACK",
+      unitId: navalUnitAtV7(shore, { x: 2, y: 7 }).id,
+      targetUnitId: landed.id,
     });
+    // Row 8: a crippled ship two tiles away is out of the Patrol Boat's
+    // reach.
     const farWounded = scene({ targetAt: { x: 5, y: 6 }, targetHp: 1 });
-    expect(rejectV7(farWounded.state, 0, board(farWounded))).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: { reason: "OUT_OF_RANGE" },
-    });
+    expect(rejectV7(farWounded.state, 0, board(farWounded)).code).toBe(
+      "TARGET_OUT_OF_RANGE",
+    );
     expect(offeredBoards(farWounded.state, 0)).toEqual([]);
     // Row 9: the thresholds floor(maxHp / 3): Patrol Boat 3, Submarine 4,
     // Battleship 8; a promoted ship (+5 maximum HP) 5, 5, 10.
@@ -320,11 +304,8 @@ describe("BOARD legality, in the spec's order", () => {
       ["BATTLESHIP", 8],
     ] as const) {
       const healthy = scene({ targetRole: role, targetHp: line + 1 });
-      expect(rejectV7(healthy.state, 0, board(healthy)), role).toEqual({
-        code: "BOARD_NOT_LEGAL",
-        params: { reason: "TARGET_HEALTHY" },
-      });
-      expect(offeredBoards(healthy.state, 0)).toEqual([]);
+      expect(offeredBoards(healthy.state, 0), role).toEqual([]);
+      plainAttack(healthy.state, 0, board(healthy));
       const crippled = scene({ targetRole: role, targetHp: line });
       expect(offeredBoards(crippled.state, 0)).toEqual([board(crippled)]);
       expect(acceptV7(crippled.state, 0, board(crippled)).events[0]).toEqual(
@@ -340,9 +321,7 @@ describe("BOARD legality, in the spec's order", () => {
           hp,
         });
       expect(promotedLine, role).toBe(role === "BATTLESHIP" ? 10 : 5);
-      expect(
-        rejectV7(promoted(promotedLine + 1), 0, board(healthy)).params,
-      ).toEqual({ reason: "TARGET_HEALTHY" });
+      plainAttack(promoted(promotedLine + 1), 0, board(healthy));
       expect(
         acceptV7(promoted(promotedLine), 0, board(healthy)).events[0],
       ).toEqual(
@@ -355,7 +334,7 @@ describe("BOARD legality, in the spec's order", () => {
     const fixture = scene({ targetHp: 3 });
     expect(
       rejectV7(fixture.state, 1, {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: fixture.targetId as never,
         targetUnitId: fixture.boarderId as never,
       }).code,
@@ -364,8 +343,7 @@ describe("BOARD legality, in the spec's order", () => {
 
   it("row 10: a prize on Deep Water needs the actor's Navigation (it keeps its tile)", () => {
     // `pulp_wars-5ti.3`: no seat owns a ship on Deep Water without
-    // Navigation, so this Board was offered and then refused as an invalid
-    // state. A boarder on Shallow Water next to a target on Deep Water.
+    // Navigation. A boarder on Shallow Water next to a target on Deep Water.
     const build = (technologies: readonly TechnologyIdV7[]) => {
       const base = navalArenaV7({
         technologies: [technologies, NAVAL_TECHS_V7],
@@ -378,30 +356,26 @@ describe("BOARD legality, in the spec's order", () => {
       return {
         state: patchNavalUnitV7(base, target.id, { hp: 1 }),
         command: {
-          kind: "BOARD",
+          kind: "ATTACK",
           unitId: navalUnitAtV7(base, { x: 2, y: 3 }).id,
           targetUnitId: target.id,
         } satisfies CommandV7,
       };
     };
-    const offered = (state: GameStateV7) =>
-      queryPlayerCommandsV7(viewForV7(state, seatV7(state, 0).id)).filter(
-        (command) => command.kind === "BOARD",
-      );
     const without = build(["SHORECRAFT", "SEAMANSHIP"]);
-    expect(rejectV7(without.state, 0, without.command)).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: { reason: "DEEP_WATER" },
-    });
-    expect(offered(without.state)).toEqual([]);
+    expect(offeredBoards(without.state, 0)).toEqual([]);
+    plainAttack(without.state, 0, without.command);
     const withNavigation = build(["SHORECRAFT", "NAVIGATION", "SEAMANSHIP"]);
-    expect(offered(withNavigation.state)).toEqual([withNavigation.command]);
+    expect(offeredBoards(withNavigation.state, 0)).toEqual([
+      withNavigation.command,
+    ]);
     const result = acceptV7(withNavigation.state, 0, withNavigation.command);
+    expect(result.events[0]).toMatchObject({ kind: "SHIP_BOARDED" });
     expect(parseGameStateV7(result.state)).not.toBeNull();
   });
 });
 
-describe("BOARD result", () => {
+describe("Board result", () => {
   it("hands the prize over: owner, orphan, exhausted, patched HP, the rest kept; its kind follows its new owner", () => {
     // Themed naval branches (`pulp_wars-5ti.16`): the Goblins trade Board
     // for Powder Kegs, so a Dinosaur seat (which keeps Board) takes it; the
@@ -492,8 +466,8 @@ describe("BOARD result", () => {
   it("is no Goblin command: Powder Kegs takes its place, so a Goblin ship never boards", () => {
     // Themed naval branches (`pulp_wars-5ti.16`,
     // docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.1): the Goblin
-    // Seamanship is the Ram and Fire Rafts, so Board is never offered and a
-    // Goblin `BOARD` needs a technology no Goblin tree has.
+    // Seamanship is the Ram and Fire Rafts, so a Goblin ship's attack never
+    // boards.
     const fixture = scene({
       factions: ["GOBLIN", "ORIGINAL"],
       technologies: [
@@ -503,10 +477,8 @@ describe("BOARD result", () => {
       targetHp: 3,
     });
     expect(offeredBoards(fixture.state, 0)).toEqual([]);
-    expect(rejectV7(fixture.state, 0, board(fixture))).toEqual({
-      code: "TECH_REQUIRED",
-      params: { tech: "SEAMANSHIP" },
-    });
+    // Its attack on the crippled ship is an ordinary exchange.
+    plainAttack(fixture.state, 0, board(fixture));
   });
 
   it("cannot be boarded back without a new hit, and then can", () => {
@@ -522,15 +494,13 @@ describe("BOARD result", () => {
     const captured = acceptV7(retake.state, 0, board(retake));
     const theirs = acceptV7(captured.state, 0, { kind: "END_TURN" });
     const again: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: avenger.id,
       targetUnitId: retake.targetId as never,
     };
-    expect(rejectV7(theirs.state, 1, again)).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: { reason: "TARGET_HEALTHY" },
-    });
+    // The prize is patched above its line: an attack on it is an exchange.
     expect(offeredBoards(theirs.state, 1)).toEqual([]);
+    plainAttack(theirs.state, 1, again);
     // After a hit that leaves it at or below its line, it can.
     const hit = patchNavalUnitV7(theirs.state, retake.targetId, { hp: 3 });
     expect(offeredBoards(hit, 1)).toEqual([again]);
@@ -594,7 +564,7 @@ describe("BOARD result", () => {
     const city = state.cities.find((entry) => entry.ownerId === former.id);
     if (city === undefined) throw new Error("no city");
     const result = acceptV7(state, 0, {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder.id,
       targetUnitId: docked.id,
     });
@@ -647,8 +617,8 @@ describe("BOARD result", () => {
   });
 });
 
-describe("BOARD offers, preview, and projection", () => {
-  it("offers BOARD for every legal pair and previews exactly those", () => {
+describe("Board offers, preview, and projection", () => {
+  it("offers an attack that boards for every legal pair and previews exactly those", () => {
     const fixture = scene({
       targetHp: 3,
       extra: [
@@ -664,23 +634,23 @@ describe("BOARD offers, preview, and projection", () => {
     // (4, 6) reaches both the boat and the Submarine (5, 6).
     const expected: CommandV7[] = [
       {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: fixture.boarderId as never,
         targetUnitId: fixture.targetId as never,
       },
       {
-        kind: "BOARD",
+        kind: "ATTACK",
         unitId: battleship.id,
         targetUnitId: fixture.targetId as never,
       },
-      { kind: "BOARD", unitId: battleship.id, targetUnitId: submarine.id },
+      { kind: "ATTACK", unitId: battleship.id, targetUnitId: submarine.id },
     ];
     const offered = offeredBoards(state, 0);
     expect(offered).toHaveLength(3);
     expect(offered).toEqual(expect.arrayContaining(expected));
     const view = viewForV7(state, seatV7(state, 0).id);
     for (const command of offered) {
-      if (command.kind !== "BOARD") continue;
+      if (command.kind !== "ATTACK") continue;
       const preview = previewBoardV7(
         view,
         command.unitId,
@@ -700,6 +670,12 @@ describe("BOARD offers, preview, and projection", () => {
     ).toBeNull();
     // The other seat is offered nothing on this turn.
     expect(offeredBoards(state, 1)).toEqual([]);
+    // No `BOARD` command exists any more.
+    expect(
+      queryPlayerCommandsV7(view).some(
+        (command) => (command.kind as string) === "BOARD",
+      ),
+    ).toBe(false);
   });
 
   it("projects SHIP_BOARDED to the actor, the former owner, and viewers that see the tile, and to nobody else", () => {

@@ -149,8 +149,9 @@ export function giantsSwallowFixtureV7(): GameStateV7 {
 export function giantsSwallowedFixtureV7(): GameStateV7 {
   const state = giantsSwallowFixtureV7();
   const at = GIANTS_UI_V7.swallow;
+  // `pulp_wars-3u8d` (7r131): its attack on the Knight swallows it.
   return applyHumanV7(state, {
-    kind: "SWALLOW",
+    kind: "ATTACK",
     unitId: idAt(state, at.abomination),
     targetUnitId: idAt(state, at.knight),
   });

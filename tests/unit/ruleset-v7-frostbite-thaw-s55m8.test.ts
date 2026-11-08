@@ -229,12 +229,13 @@ describe("the I3 replay: a Tend or an Engineer's Repair thaws the Frostbitten at
 });
 
 describe("Bolas, Frost Breath, and a water Freeze: landed, embarked, and on a Port (section 21.2)", () => {
-  // Seat 0, the Ice Folk, is active: a Sled on (4, 3), a Frost Wyrm on
-  // (4, 4), the Ice Witch on (6, 4); seat 1's Dwarves: a Hammerer landed on (5, 3)
-  // and one embarked on the Shallow Water of (5, 2).
+  // Seat 0, the Ice Folk, is active: a Sled on (3, 3) (2 tiles from both
+  // Hammerers: the Bolas flies exactly 2 since `pulp_wars-3u8d`, 7r131), a
+  // Frost Wyrm on (4, 4), the Ice Witch on (6, 4); seat 1's Dwarves: a
+  // Hammerer landed on (5, 3) and one embarked on the Shallow Water of (5, 2).
   const LANDED = at(5, 3);
   const AFLOAT = at(5, 2);
-  const SLED = at(4, 3);
+  const SLED = at(3, 3);
   const WYRM = at(4, 4);
   const WITCH_EAST = at(6, 4);
   const scene = () =>

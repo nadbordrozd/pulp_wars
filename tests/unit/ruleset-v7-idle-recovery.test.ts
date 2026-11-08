@@ -7,6 +7,7 @@ import {
   recoveryGainV7,
   recoveryHealV7,
   viewForV7,
+  type CommandV7,
   type GameStateV7,
   type RecoveryFactsV7,
   type UnitStateV7,
@@ -27,8 +28,10 @@ import {
 
 /**
  * Bead pulp_wars-v3w: section 10 idle recovery is the automatic form of
- * Recover. The offered `RECOVER`, the End Turn hint (`queryIdleRecoveryV7`),
- * and End Turn itself share `recoverEligibleV7` and `recoveryGainV7`.
+ * Recover. The End Turn hint (`queryIdleRecoveryV7`) and End Turn itself
+ * share `recoverEligibleV7` and `recoveryGainV7`. One tile, one meaning
+ * (`pulp_wars-3u8d`, 7r131): the `RECOVER` command is gone, so idle
+ * recovery is the only recovery, with the same predicate and amount.
  */
 
 const FIXTURES: readonly (readonly [string, () => GameStateV7])[] = [
@@ -54,7 +57,11 @@ function wounded(state: GameStateV7): GameStateV7 {
 
 function offeredRecoverIds(state: GameStateV7): number[] {
   return queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
-    .flatMap((command) => (command.kind === "RECOVER" ? [command.unitId] : []))
+    .flatMap((command) =>
+      (command.kind as string) === "RECOVER" && "unitId" in command
+        ? [command.unitId]
+        : [],
+    )
     .sort((left, right) => left - right);
 }
 
@@ -80,44 +87,28 @@ function endTurnRecoveries(state: GameStateV7) {
 
 function expectAgreement(state: GameStateV7): number {
   const hint = queryIdleRecoveryV7(state, state.humanPlayerId);
-  const offered = offeredRecoverIds(state);
-  // Offered equals idle: the same units, in unit-ID order.
-  expect(hint.map((entry) => entry.unitId)).toEqual(offered);
-  // End Turn heals exactly those units by exactly the hinted amounts.
+  // `pulp_wars-3u8d` (7r131): no `RECOVER` is offered.
+  expect(offeredRecoverIds(state)).toEqual([]);
+  // End Turn heals exactly the hinted units by exactly the hinted amounts.
   expect(endTurnRecoveries(state)).toEqual(
     hint.map((entry) => ({ ...entry, automatic: true })),
   );
-  // And an explicit Recover is accepted for each, with the same amount.
-  for (const entry of hint) {
-    const explicit = applyCommandV7(state, state.humanPlayerId, {
-      kind: "RECOVER",
-      unitId: entry.unitId,
-    });
-    if (!explicit.accepted) throw new Error(explicit.error.code);
-    expect(explicit.events).toContainEqual({
-      kind: "UNIT_RECOVERED",
-      unitId: entry.unitId,
-      amount: entry.amount,
-      automatic: false,
-    });
-  }
-  // No other own unit accepts a Recover.
+  // And no own unit accepts a `RECOVER`: the command is gone.
   for (const unit of state.units)
     if (
       unit.ownerId === state.humanPlayerId &&
-      !offered.includes(unit.id) &&
       applyCommandV7(state, state.humanPlayerId, {
         kind: "RECOVER",
         unitId: unit.id,
-      }).accepted
+      } as unknown as CommandV7).accepted
     )
-      throw new Error(`Unit ${unit.id} accepts an unoffered Recover`);
+      throw new Error(`Unit ${unit.id} accepts a retired Recover`);
   return hint.length;
 }
 
-describe("Ruleset 7 idle recovery is the automatic Recover (pulp_wars-v3w)", () => {
+describe("Ruleset 7 idle recovery is the only Recover (pulp_wars-v3w, pulp_wars-3u8d)", () => {
   it.each(FIXTURES)(
-    "%s: offered Recover, the End Turn hint and End Turn agree",
+    "%s: no Recover is offered, and the End Turn hint and End Turn agree",
     (_name, fixture) => {
       expectAgreement(fixture());
       expectAgreement(wounded(fixture()));
@@ -178,7 +169,7 @@ describe("Ruleset 7 idle recovery is the automatic Recover (pulp_wars-v3w)", () 
     ]);
     expectAgreement(state);
 
-    // Wait changes nothing; a Recover taken early is not repeated.
+    // Wait changes nothing.
     const waited = applyCommandV7(state, human, {
       kind: "WAIT",
       unitId: ids[0] as UnitStateV7["id"],
@@ -186,16 +177,6 @@ describe("Ruleset 7 idle recovery is the automatic Recover (pulp_wars-v3w)", () 
     if (!waited.accepted) throw new Error(waited.error.code);
     expect(queryIdleRecoveryV7(waited.state, human)).toHaveLength(3);
     expectAgreement(waited.state);
-    const recovered = applyCommandV7(waited.state, human, {
-      kind: "RECOVER",
-      unitId: ids[3] as UnitStateV7["id"],
-    });
-    if (!recovered.accepted) throw new Error(recovered.error.code);
-    expect(queryIdleRecoveryV7(recovered.state, human)).toEqual([
-      { unitId: ids[0], amount: 4 },
-      { unitId: ids[1], amount: 1 },
-    ]);
-    expectAgreement(recovered.state);
 
     // A unit that moved does not recover.
     const moves = queryPlayerCommandsV7(viewForV7(state, human)).filter(

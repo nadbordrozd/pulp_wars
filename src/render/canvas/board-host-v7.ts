@@ -1218,8 +1218,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const giantPick = model.interaction.giantPick ?? null;
     // The naval branch interface: an aimed Board likewise, (the frozen
     // sea) an aimed Freeze, and (the Cultists) an aimed Sacrifice or Seize.
+    // (A Board was aimed here too until `pulp_wars-3u8d`, 7r131, made it an
+    // Attack; the name stays for the picks framed alike.)
     const navalPick =
-      model.interaction.navalPick ??
       model.interaction.freezePick ??
       model.interaction.cultPick ??
       // Map curiosities round 3: an aimed Zap or Moon Gun shot likewise.
@@ -3929,7 +3930,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         (interaction.giantPick ?? null) !== null ||
         (interaction.martianPick ?? null) !== null ||
         (interaction.iceFolkPick ?? null) !== null ||
-        (interaction.navalPick ?? null) !== null ||
         (interaction.curiosityPick ?? null) !== null ||
         (interaction.freezePick ?? null) !== null ||
         (interaction.cultPick ?? null) !== null ||
@@ -4212,7 +4212,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       (interaction.giantPick ?? null) !== null ||
       (interaction.martianPick ?? null) !== null ||
       (interaction.iceFolkPick ?? null) !== null ||
-      (interaction.navalPick ?? null) !== null ||
       (interaction.curiosityPick ?? null) !== null ||
       (interaction.freezePick ?? null) !== null ||
       (interaction.cultPick ?? null) !== null ||

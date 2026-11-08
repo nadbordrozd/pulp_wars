@@ -1,5 +1,4 @@
 import {
-  cooperativeAlliesV7,
   effectiveRoleRuleV7,
   roleMechanicsV7,
   HARBOUR_POPULATION_V7,
@@ -8,25 +7,20 @@ import {
   SUGAR_RUSH_ATTACK2_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   DEEP_OFFERING_DIVISOR_V7,
-  boardSeaBeastBlockedV7,
   previewDeepOfferingsV7,
   ramBonus2V7,
   roleRamBonus2MaximumV7,
-  boardTargetBlockV7,
-  isAfloatFormV7,
   knockbackDestinationV7,
   seatRoleRuleV7,
   technologyCapabilitiesV7,
   technologyDisplayNameV7,
   unitRoleMechanicsV7,
   type BoardPreviewV7,
-  type BoardTargetBlockV7,
   type CombatPreviewV7,
   type CoordV7,
   type FactionIdV7,
   type PlayerEventV7,
   type PlayerViewV7,
-  type PublicUnitV7,
 } from "../engine/index";
 import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
 import { factionBuildingV7 } from "./faction-buildings-v7";
@@ -53,8 +47,9 @@ export const HARBOURS_LABEL_V7 = "Harbours";
 /** Section 14.2, one short sentence each. */
 export const NAVAL_RAM_RULE_V7 =
   "A Patrol Boat that moved this turn hits boats and transports with +1 Attack and shoves them one tile back.";
+// `pulp_wars-3u8d` (7r131): the Board is the ship's attack on such a ship.
 export const BOARD_RULE_V7 =
-  "A ship captures an adjacent enemy ship that has a third of its HP or less.";
+  "A ship that attacks an adjacent enemy ship with a third of its HP or less captures it instead.";
 export const SUBMERGED_RULE_V7 = "Can only be attacked from an adjacent tile.";
 export const TORPEDO_RULE_V7 =
   "Attacks only boats and transports, which cannot strike back.";
@@ -73,7 +68,7 @@ export const NAVAL_HELP_RULES_V7: readonly (readonly [string, string])[] = [
 
 /** The technology card's lines (no trailing full stop, as its other lines). */
 export const NAVAL_RAM_UNLOCK_V7 = `${NAVAL_RAM_LABEL_V7}: Patrol Boats that moved hit ships with +1 Attack and shove them back`;
-export const BOARD_UNLOCK_V7 = `${BOARD_LABEL_V7}: capture an adjacent enemy ship at a third of its HP or less`;
+export const BOARD_UNLOCK_V7 = `${BOARD_LABEL_V7}: attacking an adjacent enemy ship at a third of its HP or less captures it`;
 export const SUBMARINE_UNLOCK_NOTE_V7 =
   "Submarine: attacked only from the next tile; its torpedo hits ships with no strike-back";
 export const SHORECRAFT_EMBARK_NOTE_V7 = "Units embark at active Ports";
@@ -374,12 +369,16 @@ export function harboursUnlockTextV7(
   return `${HARBOURS_LABEL_V7}: +${population} population from every active ${port} and ${shipyard}`;
 }
 
-/** The dock's Board button and its aiming panel. */
-export const BOARD_TOOLTIP_V7 = BOARD_RULE_V7.replace(/\.$/, "");
-export const BOARD_PICK_V7 = "Choose a highlighted ship to capture";
-export const BOARD_ALREADY_ACTED_V7 = "This ship cannot board now";
-export const BOARD_NO_WEAK_SHIP_V7 = "No enemy ship here is weak enough";
-export const BOARD_NOT_A_SHIP_V7 = "Only ships can be boarded";
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): the Attack mark of a
+ * ship the selected ship's attack boards, in place of its damage, and the
+ * prize's HP afterwards. (The dock's Board button and aiming panel retired
+ * with the `BOARD` command.)
+ */
+export const BOARD_ATTACK_PREVIEW_V7 = `${BOARD_LABEL_V7}: captures the ship`;
+export function boardAttackNoteV7(preview: BoardPreviewV7): string {
+  return `It becomes yours with ${preview.hpAfter} HP`;
+}
 
 /** The chip of a ship that can be boarded now, and its tooltip. */
 export const BOARDABLE_LABEL_V7 = "Boardable";
@@ -412,70 +411,6 @@ export function navalAbilityNameV7(
   return faction === undefined ? NAVAL_RAM_LABEL_V7 : navalRamLabelV7(faction);
 }
 
-/** The board label of a Board target: the prize and its HP after the patch. */
-export function boardTargetLabelV7(preview: BoardPreviewV7): string {
-  return `Take · ${preview.hpAfter} HP`;
-}
-
-/** The grey reason on a ship that cannot be boarded while Board is aimed. */
-export function boardBlockTextV7(
-  reason: BoardTargetBlockV7,
-  boardableAt: number | null,
-  /**
-   * Themed naval branches (`pulp_wars-5ti.18`): the immune target is a sea
-   * beast (a Plesiosaur), or the boarder's seat sails one.
-   */
-  seaBeast = false,
-): string {
-  if (reason === "TARGET_IMMUNE")
-    return seaBeast ? SEA_BEAST_BLOCK_V7 : "Not a ship";
-  if (reason === "OUT_OF_RANGE") return "Too far";
-  // Row 10 (`pulp_wars-5ti.3`): a prize on Deep Water needs Navigation.
-  if (reason === "DEEP_WATER") return BOARD_BLOCK_DEEP_WATER_V7;
-  return boardableAt === null ? "Too healthy" : `Above ${boardableAt} HP`;
-}
-
-/** The grey reason on a ship no Board can take because of a sea beast. */
-export const SEA_BEAST_BLOCK_V7 = "Sea beast";
-/** Why an own ship beside weak sea beasts only has no Board to aim. */
-export const BOARD_SEA_BEAST_V7 = "A sea beast cannot be boarded";
-
-/** The grey reason on a weak ship that stands on Deep Water. */
-export const BOARD_BLOCK_DEEP_WATER_V7 = "Needs Navigation";
-/** Why a ship next to a weak ship on Deep Water has no Board to aim. */
-export const BOARD_NEEDS_NAVIGATION_V7 =
-  "Taking a ship on Deep Water needs Navigation";
-/**
- * The engine's Board target rule (`boardTargetBlockV7`) read from the view,
- * with the facts of the public command query: the target's explored tile
- * and the viewer's Navigation.
- */
-export function viewBoardTargetBlockV7(
-  view: PlayerViewV7,
-  boarder: Pick<PublicUnitV7, "at">,
-  target: PublicUnitV7,
-): BoardTargetBlockV7 | null {
-  const tile = view.board.tiles.find(
-    (candidate) =>
-      candidate.at.x === target.at.x && candidate.at.y === target.at.y,
-  );
-  return boardTargetBlockV7(
-    boarder,
-    target,
-    tile?.explored === true ? tile.terrain : undefined,
-    view.viewer.researchedTechs.includes("NAVIGATION"),
-    boardSeaBeastBlockedV7(view, view.viewer.id, target),
-  );
-}
-
-const chebyshev = (a: CoordV7, b: CoordV7): number =>
-  Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-
-function hostile(view: PlayerViewV7, left: number, right: number): boolean {
-  if (left === right) return false;
-  return !cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
-}
-
 /** Whether the viewer's ships may Board at all (its Seamanship). */
 export function viewerMayBoardV7(view: PlayerViewV7): boolean {
   return technologyCapabilitiesV7(
@@ -490,52 +425,6 @@ export function viewerHarbourPopulationV7(view: PlayerViewV7): number {
     view.viewer.researchedTechs,
     view.viewer.faction,
   ).harbourPopulation;
-}
-
-/**
- * Why an own ship with an enemy afloat next to it has no Board to aim: the
- * engine's own rejection reason of each adjacent candidate
- * (`boardTargetBlockV7`). Null when Board is offered, when the viewer's
- * ships cannot board, or when nothing afloat and hostile is adjacent (no
- * button is shown then).
- */
-export function boardUnavailableTextV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
-  offered: boolean,
-): string | null {
-  if (
-    offered ||
-    unit.form !== "NAVAL" ||
-    unit.ownerId !== view.viewer.id ||
-    !viewerMayBoardV7(view)
-  )
-    return null;
-  const adjacent = view.units.filter(
-    (candidate) =>
-      isAfloatFormV7(candidate.form) &&
-      hostile(view, unit.ownerId, candidate.ownerId) &&
-      chebyshev(candidate.at, unit.at) === 1,
-  );
-  if (adjacent.length === 0) return null;
-  const blocks = adjacent.map((candidate) =>
-    viewBoardTargetBlockV7(view, unit, candidate),
-  );
-  // A ship that could be taken stands there: the boarder itself cannot act.
-  if (blocks.includes(null)) return BOARD_ALREADY_ACTED_V7;
-  if (blocks.includes("DEEP_WATER")) return BOARD_NEEDS_NAVIGATION_V7;
-  // Themed naval branches (`pulp_wars-5ti.18`): only sea beasts are weak
-  // enough there.
-  if (
-    !blocks.includes("TARGET_HEALTHY") &&
-    adjacent.some((candidate) =>
-      boardSeaBeastBlockedV7(view, view.viewer.id, candidate),
-    )
-  )
-    return BOARD_SEA_BEAST_V7;
-  return blocks.includes("TARGET_HEALTHY")
-    ? BOARD_NO_WEAK_SHIP_V7
-    : BOARD_NOT_A_SHIP_V7;
 }
 
 /** The naval lines of an attack preview. */

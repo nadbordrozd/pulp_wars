@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 130;
+const REVISION = 131;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -292,7 +292,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
     // FIRE_MOON_GUN after JOIN_CHANT (87).
     // (87: one tile, one meaning, `pulp_wars-n5fa`, 7r130, removes RIBBIT.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
+    // (84: one tile, one meaning, `pulp_wars-3u8d`, 7r131, removes BOARD,
+    // RECOVER and SWALLOW.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -1262,9 +1264,7 @@ describe("Martian technology (section 4)", () => {
     expect(martian.trainableRoles).toEqual(human.trainableRoles);
     expect(martian.roleSightRadius).toEqual(human.roleSightRadius);
     expect(martian.commands).toEqual(
-      human.commands.filter(
-        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
-      ),
+      human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
     );
     expect([martian.hoverPods, human.hoverPods]).toEqual([true, false]);
     expect(martian.mountainMovement).toBe(true);

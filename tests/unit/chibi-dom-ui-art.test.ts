@@ -169,7 +169,6 @@ describe("CHIBI interface subjects", () => {
       { kind: "RAISE_DEAD", unitId: 1 as never },
       { kind: "DEVOUR", unitId: 1 as never },
       { kind: "WAIL", unitId: 1 as never },
-      { kind: "RECOVER", unitId: 1 as never },
       { kind: "PILLAGE", unitId: 1 as never },
       { kind: "CAPTURE", unitId: 1 as never },
       { kind: "BUILD_MINE", at: { x: 0, y: 0 } },
@@ -194,7 +193,6 @@ describe("CHIBI interface subjects", () => {
       "ICON:ACTION:RAISE_DEAD",
       "ICON:ACTION:DEVOUR",
       "ICON:ACTION:WAIL",
-      "ICON:ACTION:RECOVER",
       "ICON:ACTION:PILLAGE",
       "SITE:VILLAGE",
       "TERRAIN:MINED_MOUNTAIN",
@@ -237,7 +235,7 @@ describe("CHIBI interface subjects", () => {
         "DINOSAUR",
       ),
     ).toBe("ICON:ACTION:HATCH");
-    expect(commandSubjectV7(commands[13] as CommandV7, "DINOSAUR")).toBe(
+    expect(commandSubjectV7(commands[12] as CommandV7, "DINOSAUR")).toBe(
       "PORTRAIT:DINOSAUR:GUARD",
     );
     // (The root's card is the Workshop since the Industry reshuffle.)
@@ -250,11 +248,11 @@ describe("CHIBI interface subjects", () => {
     expect(technologySubjectV7("SCOUTING", "DINOSAUR")).toBe(
       "PORTRAIT:DINOSAUR:RAIDER",
     );
-    expect(commandSubjectV7(commands[13] as CommandV7, "UNDEAD")).toBe(
+    expect(commandSubjectV7(commands[12] as CommandV7, "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:GUARD",
     );
     // Since bead pulp_wars-w5j.3 the faction's own ship portrait.
-    expect(commandSubjectV7(commands[14] as CommandV7, "UNDEAD")).toBe(
+    expect(commandSubjectV7(commands[13] as CommandV7, "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:BATTLESHIP",
     );
     expect(

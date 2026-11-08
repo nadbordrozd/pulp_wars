@@ -1201,8 +1201,13 @@ export function tractorBeamActorReadyV7(
     : !primaryActionUsedV7(puller.activation);
 }
 
-/** Why a living, visible, non-allied unit is not a legal pull target. */
-export type TractorBeamTargetBlockV7 = "TARGET_IMMUNE" | "OUT_OF_RANGE";
+/**
+ * Why a living, visible, non-allied unit is not a legal pull target.
+ * `OWN_UNIT` (`pulp_wars-3u8d`, 7r131): the ordinary beam (the Saucer's)
+ * pulls hostile units only; an own unit comes by Beam Down.
+ */
+export type TractorBeamTargetBlockV7 =
+  "OWN_UNIT" | "TARGET_IMMUNE" | "OUT_OF_RANGE";
 
 /**
  * Step two of the Martian pass (`pulp_wars-w49.25`, `7r58`): City Walls
@@ -1244,6 +1249,10 @@ export function unitHeldByCityWallsV7(
 
 /**
  * The per-target Tractor Beam conditions, in the reducer's rejection order:
+ * `OWN_UNIT` for a unit of the puller's own owner under the ordinary beam
+ * (`pulp_wars-3u8d`, 7r131: the Saucer pulls hostile units only, so an own
+ * unit two tiles away is only ever a Beam Down passenger; the Heavy Tractor
+ * Beam, the Mothership's free pull, still takes own units);
  * `TARGET_IMMUNE` for an Egg, a `JUGGERNAUT`-role unit, the neutral Monster,
  * or a two-slot unit, and (`7r58`) for a unit City Walls hold
  * (`unitHeldByCityWallsV7`, passed as `heldByWalls`) against a beam that is
@@ -1252,7 +1261,7 @@ export function unitHeldByCityWallsV7(
 export function tractorBeamTargetBlockV7(
   roster: FactionRosterV7 & IceLookupV7,
   rule: TractorBeamRuleV7,
-  puller: { readonly at: CoordV7 },
+  puller: { readonly at: CoordV7; readonly ownerId: PlayerId },
   target: {
     readonly id: UnitId;
     readonly ownerId: PlayerId;
@@ -1263,6 +1272,7 @@ export function tractorBeamTargetBlockV7(
   },
   heldByWalls: boolean,
 ): TractorBeamTargetBlockV7 | null {
+  if (!rule.free && target.ownerId === puller.ownerId) return "OWN_UNIT";
   if (
     // The Cultists (RULESET_7_CULTISTS.md section 4.2): no Tractor Beam
     // pulls a summoned unit.

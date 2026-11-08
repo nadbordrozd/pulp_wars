@@ -321,7 +321,7 @@ import {
   stompEffectRejectionV7,
   stompRejectionV7,
   stompResultsV7,
-  swallowRejectionV7,
+  attackSwallowsV7,
   swallowedByV7,
   tossActorRejectionV7,
   tossCandidateTilesV7,
@@ -416,6 +416,7 @@ import type {
 } from "./events";
 import {
   publicUnitLaunchesV7,
+  playerMoveReachesNowV7,
   reachablePlayerMovementPathsV7,
   unitOverstridesV7,
 } from "./movement";
@@ -1360,13 +1361,8 @@ function appendPublicUnitCommandsV7(
         targetUnitId: target.id,
       });
   }
-  // The naval branch section 4.2: Board, for every legal pair.
-  for (const target of publicBoardTargetsV7(view, unit))
-    candidates.push({
-      kind: "BOARD",
-      unitId: unit.id,
-      targetUnitId: target.id,
-    });
+  // (The naval branch section 4.2: a Board is the ship's `ATTACK` on a ship
+  // it may board since `pulp_wars-3u8d`, 7r131; `previewBoardV7`.)
   // The Martian revision: Beam Down (a carrier, after its Move too), Mind
   // Control, and the Tractor Beam, each offered exactly for its legal
   // targets. `pulp_wars-1wy.3`: the carrier and puller readiness are the
@@ -1635,13 +1631,13 @@ function appendPublicUnitCommandsV7(
         view.viewer.researchedTechs,
         gun.at,
         (tile) => publicKnownTileV7(view, tile),
+        // `pulp_wars-3u8d` (7r131): never a tile its Move reaches now.
+        playerMoveReachesNowV7(view, unit),
       ))
         candidates.push({ kind: "FIRE_MOON_GUN", unitId: unit.id, at });
   }
-  // Section 10: the predicate End Turn idle recovery uses. The Candy
-  // revision: a Crashed unit recovers idle at End Turn but cannot `RECOVER`.
-  if (!crashed && recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
-    candidates.push({ kind: "RECOVER", unitId: unit.id });
+  // (Section 10: `RECOVER` retired with `pulp_wars-3u8d`, 7r131. A unit
+  // recovers idle at End Turn, by the same predicate and amount.)
   // The Cultists (`pulp_wars-mch9.8`, section 8.7): Pamphlets, an Initiate
   // captures a neutral village in the turn it walked onto it.
   if (
@@ -2076,9 +2072,10 @@ function publicGiantTileFactsV7(view: PlayerViewV7): GiantTileFactsV7 {
 }
 
 /**
- * The giants' signatures (section 6): Swallow, Goblin Toss, Thunder Stomp,
- * and Break Off, each offered exactly when the reducer accepts it (the
- * shared legality predicates of src/engine/v7/giants.ts).
+ * The giants' signatures (section 6): Goblin Toss, Thunder Stomp, and
+ * Break Off, each offered exactly when the reducer accepts it (the shared
+ * legality predicates of src/engine/v7/giants.ts). The Swallow is the
+ * Abomination's `ATTACK` since `pulp_wars-3u8d` (7r131): no command here.
  */
 function appendPublicGiantCommandsV7(
   view: PlayerViewV7,
@@ -2087,18 +2084,7 @@ function appendPublicGiantCommandsV7(
 ): void {
   const signature = giantSignatureV7(view, unit);
   if (signature === null || unit.ownerId !== view.viewer.id) return;
-  if (signature === "SWALLOW") {
-    for (const target of view.units)
-      if (
-        swallowRejectionV7(view, view.giants.swallowed, unit, target) === null
-      )
-        candidates.push({
-          kind: "SWALLOW",
-          unitId: unit.id,
-          targetUnitId: target.id,
-        });
-    return;
-  }
+  if (signature === "SWALLOW") return;
   if (signature === "TOSS") {
     if (tossActorRejectionV7(view, unit) !== null) return;
     const facts = publicGiantTileFactsV7(view);
@@ -2170,8 +2156,9 @@ function appendPublicGiantCommandsV7(
 /** A unit's movement mode and Mountain-born, through its kind. */
 /**
  * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2): the
- * visible hostile ships an own ship may `BOARD` now, in view order: exactly
- * the targets the reducer accepts (the actor rows 2 to 4, then the shared
+ * visible hostile ships an own ship boards now by attacking them
+ * (`pulp_wars-3u8d`, 7r131), in view order: exactly the targets the
+ * reducer's `canonicalAttackBoardsV7` admits (the actor rows 2 to 4, then the shared
  * `boardTargetBlockV7`). Every unit on an explored tile is visible, and HP
  * and maximum HP are public, so the offer is exact.
  */
@@ -2456,9 +2443,10 @@ export function previewCrackIceV7(
 }
 
 /**
- * The naval branch (section 4.2): the exact result of an offered `BOARD`.
- * The prize keeps its ID, role, maximum HP, kills, and tile, belongs to the
- * viewer afterwards, and has `hpAfter` HP.
+ * The naval branch (section 4.2): the exact result of a Board (an offered
+ * `ATTACK` that boards since `pulp_wars-3u8d`, 7r131). The prize keeps its
+ * ID, role, maximum HP, kills, and tile, belongs to the viewer afterwards,
+ * and has `hpAfter` HP.
  */
 export interface BoardPreviewV7 {
   readonly unitId: UnitId;
@@ -2468,25 +2456,70 @@ export interface BoardPreviewV7 {
 }
 
 /**
- * The naval branch (section 4.2): the preview of `BOARD` by the viewer's
- * ship `unitId` on `targetUnitId`, or null unless that command is offered.
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether an `ATTACK` of
+ * the viewer's unit `unitId` on `targetUnitId` would board that ship
+ * (`publicBoardTargetsV7`, the reducer's own rule on the view). It does not
+ * ask whether the attack is offered; `previewBoardV7` does.
+ */
+export function queryAttackBoardsV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): boolean {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  return (
+    unit !== undefined &&
+    unit.form === "NAVAL" &&
+    publicBoardTargetsV7(view, unit).some(
+      (candidate) => candidate.id === targetUnitId,
+    )
+  );
+}
+
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether an `ATTACK` of
+ * the viewer's unit `unitId` on `targetUnitId` would swallow it
+ * (`attackSwallowsV7`, the reducer's own rule on the view). It does not ask
+ * whether the attack is offered; `previewSwallowV7` does.
+ */
+export function queryAttackSwallowsV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): boolean {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  const target = view.units.find((candidate) => candidate.id === targetUnitId);
+  return (
+    unit !== undefined &&
+    target !== undefined &&
+    unit.ownerId === view.viewer.id &&
+    attackSwallowsV7(view, view.giants.swallowed, unit, target)
+  );
+}
+
+/**
+ * The naval branch (section 4.2): the preview of the Board of the viewer's
+ * ship `unitId` on `targetUnitId`, or null unless its `ATTACK` on that ship
+ * is offered and boards it (`publicBoardTargetsV7`, the reducer's own rule
+ * on the view).
  */
 export function previewBoardV7(
   view: PlayerViewV7,
   unitId: UnitId,
   targetUnitId: UnitId,
 ): BoardPreviewV7 | null {
+  const target = view.units.find((candidate) => candidate.id === targetUnitId);
   if (
+    target === undefined ||
+    !queryAttackBoardsV7(view, unitId, targetUnitId) ||
     !queryPlayerCommandsV7(view).some(
       (command) =>
-        command.kind === "BOARD" &&
+        command.kind === "ATTACK" &&
         command.unitId === unitId &&
         command.targetUnitId === targetUnitId,
     )
   )
     return null;
-  const target = view.units.find((unit) => unit.id === targetUnitId);
-  if (target === undefined) return null;
   return {
     unitId,
     targetUnitId,
@@ -3109,7 +3142,9 @@ export function previewMoonGunV7(
  * Map curiosities round 3 (sections 5.1 and 11): the tiles the Moon Gun on
  * `gunAt` could fire the viewer's unit `unitId` to once it stands there
  * (rows 5 to 8 of section 5.1, as the board stands; whether the Gun is
- * loaded and the unit may act are not asked), in (y, x) order. Empty when
+ * loaded and the unit may act are not asked, and nor are the tiles it
+ * could walk to once there, which it cannot, having moved), in (y, x)
+ * order. Empty when
  * there is no explored Gun on `gunAt` or the unit is not the viewer's land
  * unit. The Normal AI's Moon Gun errand reads it.
  */
@@ -3132,6 +3167,7 @@ export function queryMoonGunLandingsV7(
     view.viewer.researchedTechs,
     gunAt,
     (tile) => publicKnownTileV7(view, tile),
+    () => false,
   ).filter((tile) => !same(tile, unit.at));
 }
 
@@ -5059,8 +5095,9 @@ export function previewStampedeV7(
 
 /**
  * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8): the
- * preview of an offered Swallow: the victim and how many of the
- * Abomination's Start Turns digest it (`DIGEST_DAMAGE_V7` each).
+ * preview of a Swallow (an offered `ATTACK` that swallows since
+ * `pulp_wars-3u8d`, 7r131): the victim and how many of the Abomination's
+ * Start Turns digest it (`DIGEST_DAMAGE_V7` each).
  */
 export interface SwallowPreviewV7 {
   readonly unitId: UnitId;
@@ -5072,23 +5109,29 @@ export interface SwallowPreviewV7 {
   readonly digestedAfterTurns: number;
 }
 
-/** Section 6.2: null unless that `SWALLOW` is offered; equals the result. */
+/**
+ * Section 6.2: null unless the `ATTACK` of `unitId` on `targetUnitId` is
+ * offered and swallows (`attackSwallowsV7`, the reducer's own rule on the
+ * view: the Abomination's own stomach is always known, and the target is a
+ * visible unit beside it); equals the result.
+ */
 export function previewSwallowV7(
   view: PlayerViewV7,
   unitId: UnitId,
   targetUnitId: UnitId,
 ): SwallowPreviewV7 | null {
+  const target = view.units.find((candidate) => candidate.id === targetUnitId);
   if (
+    target === undefined ||
+    !queryAttackSwallowsV7(view, unitId, targetUnitId) ||
     !queryPlayerCommandsV7(view).some(
       (command) =>
-        command.kind === "SWALLOW" &&
+        command.kind === "ATTACK" &&
         command.unitId === unitId &&
         command.targetUnitId === targetUnitId,
     )
   )
     return null;
-  const target = view.units.find((unit) => unit.id === targetUnitId);
-  if (target === undefined) return null;
   return {
     unitId,
     targetUnitId,

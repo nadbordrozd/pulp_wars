@@ -1,5 +1,32 @@
 # Greedy Normal AI
 
+## One tile, one meaning (`pulp_wars-3u8d`, `7r131`)
+
+The policy plays the commands the engine offers, so the `7r131` rules
+([current rules, the `7r131` paragraph](../product/RULESET_7_CURRENT.md#pulp-wars-ruleset-7-current-rules))
+change what it can pick, not how it scores:
+
+- **Recover.** No `RECOVER` is offered. A wounded unit that idle recovery
+  would heal (`queryIdleRecoveryV7`, minus a Crashed unit) is held with a
+  **Wait** scored as its Recover was (930 at half HP or less, else 300 to
+  400), and that unit gets no other candidate that turn
+  (`recoveryWaitV7`, `heldByWaitV7`), so End Turn heals it. Every rule
+  that compared a priority with "Recover (930)" compares it with this
+  Wait.
+- **Swallow.** The Abomination's `ATTACK` on a unit it may swallow
+  (`queryAttackSwallowsV7`) is the Swallow: it is a candidate only when
+  `giantSwallowScoreV7` scores it (never below `SWALLOW_MINIMUM_HP_V7` of
+  the Abomination's own HP) and is scored as the Swallow, not as an
+  exchange. An Abomination can no longer choose to kill such a unit with a
+  blow instead.
+- **Board.** A ship's `ATTACK` that boards (`queryAttackBoardsV7`) is
+  scored by `navalBoardScoreV7` and is a candidate only when that score is
+  not negative; the naval best-attack loop skips such attacks.
+- **Bolas, Tractor Beam, Moon Gun.** The Sled's Bolas source needs a gap
+  of exactly 2; the Saucer never pulls an own unit (the Mothership's Heavy
+  Tractor Beam still may); a Moon Gun shot is only offered to a tile the
+  unit could not walk to.
+
 ## Barricades in skirmish (`pulp_wars-ovqq`)
 
 The user asked for the AI to treat Barricades sensibly in skirmish games.
@@ -339,7 +366,7 @@ read the numbers as first values.
 | Signature                     | What the seat does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Where                                    |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | Crushing Shove (Juggernaut)   | The crush on the target and the collision on the hostile unit behind it are in the blow's value (10 a point and 20 a kill, and their share of each unit's value), so of two targets it strikes the one with a unit behind it. A crush that kills has a kill's tier (1180, 1280, and 1350 with 50 on a hostile center). A Push that moves a garrison off a hostile center is worth what a Charge!'s is, and goes at 1345 with an own capturer within two tiles.                                                                                                                                                                               | `giantAttackValueV7`, `crushOutcomeV7`   |
-| Swallow (Abomination)         | It swallows a unit its attack would not kill this turn, never below `SWALLOW_MINIMUM_HP_V7` (16) of its own HP. The victim leaves the board, so the Swallow has a kill's tier and the victim's whole value (the dearest unit first), `SWALLOW_ZOMBIE_VALUE_V7` (12) for the Zombie, and the tiers of a cleared hostile center and of an enemy taken off an own one.                                                                                                                                                                                                                                                                          | `giantSwallowScoreV7`                    |
+| Swallow (Abomination)         | Its `ATTACK` on a unit it may swallow is the Swallow (`7r131`); before, it swallowed only a unit its attack would not kill this turn. Never below `SWALLOW_MINIMUM_HP_V7` (16) of its own HP. The victim leaves the board, so the Swallow has a kill's tier and the victim's whole value (the dearest unit first), `SWALLOW_ZOMBIE_VALUE_V7` (12) for the Zombie, and the tiers of a cleared hostile center and of an enemy taken off an own one.                                                                                                                                                                                            | `giantSwallowScoreV7`                    |
 | Goblin Toss (Troll)           | One throw for each Troll, of the forty or so the engine offers: the landing tiles are ranked by a one-wave blast, and for the best two the Kaboom is previewed exactly on the view with the Goblin on the tile. The throw is made when that blast kills or deals `TOSS_MINIMUM_NET_DAMAGE_V7` (8) to hostile units net of own, and the policy would set it off there. The thrown Goblin's Kaboom then has a kill's tier at least (1178). A Troll with a throw keeps a blow that does not kill for it. A Goblin's routine Move beside a Troll with fewer than two Goblins and an enemy within five tiles is worth `TOSS_ESCORT_VALUE_V7` (6). | `giantTossPlanV7`, `tossedGoblinV7`      |
 | Thunder Stomp (Brontosaurus)  | It Stomps when the Stomp's hits (10 a point, 20 a kill) are worth at least its best attack's immediate value (the damage less the retaliation). An attack that kills, and grows it, is preferred unless the Stomp kills two units. A Brontosaurus with a Stomp neither attacks nor walks away (the Stomp needs it unmoved). A Field Defense it smashes is worth 8 on hostile land and costs 8 on own.                                                                                                                                                                                                                                        | `giantStompPlanV7`                       |
 | Overstride (Colossus)         | The trample of an offered Move is in its value, and a trample that kills has a kill's tier. A Cooling Colossus (its ray is at half power whatever it does) strides over a unit to a tile with a ranged, siege, or support unit in its range, when none is in range now, at the breakthrough tier (1177). Not Cooling, it stands and fires its full ray as before.                                                                                                                                                                                                                                                                            | `giantMoveValueV7`                       |
@@ -382,8 +409,9 @@ against (the Gingerbread Men are Toffee Troopers).
   tile, so a collision in the preview proves the crush, and without one the
   tile is read as the Push conditions read it (`pushBlockedForPolicyV7`).
 - A Swallow's HP is `previewSwallowV7` and equals `UNIT_SWALLOWED`; the
-  danger of a Swallow is true exactly when the engine offers the
-  Abomination that `SWALLOW` from a tile beside the unit.
+  danger of a Swallow is true exactly when the engine's
+  `swallowRejectionV7` lets the Abomination swallow the unit from a tile
+  beside it (its `ATTACK` there is the Swallow since `7r131`).
 - A throw's score is the Kaboom's score on the view with the Goblin on the
   landing tile, and equals the Kaboom's score and `previewKaboomV7` after
   the real `TOSS`.
@@ -4782,8 +4810,8 @@ As Undead:
   (a 10-HP Zombie) to the killer's side.
 - **Restless**: a unit at half HP or less outside own territory scores 935 for a
   move into own territory, otherwise 720 plus progress toward its nearest own
-  city. Recover is never planned outside own territory (the engine does not
-  offer it).
+  city. Its recovery Wait is never planned outside own territory (idle
+  recovery skips it there).
 - **Training**: Banshee +8 while a living hostile seat is active, −30
   otherwise (and no research toward it); Necromancer +4 per visible Grave (at
   most 3); Lich +4. The opening research keeps the revision-12 scorer and the

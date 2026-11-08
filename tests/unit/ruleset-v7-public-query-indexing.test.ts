@@ -75,7 +75,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was d2cb99…564a).
-      "1e5e41b13e8dcd58b3334476065291d3bc32ce7accc67350606b293971230fff",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the three RECOVER
+      // commands are no longer offered; the rest is unchanged (was
+      // 1e5e41…0fff).
+      "5d1d070ce572804d44945109068c23867d23b72f6f2a857bd0809ed7252a03e0",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -110,8 +113,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // the price per city (was 66 236). The Industry reshuffle
       // (`pulp_wars-w49.21`): three Guard offers fewer (was 66 238).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
-      // moved (was 65 491).
-      64_397 + publicPlanningFactScanOperations(measured.view),
+      // moved (was 65 491). One tile, one meaning (`pulp_wars-3u8d`,
+      // 7r131): the view's three RECOVER commands are gone (was 64 397).
+      64_394 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
@@ -122,7 +126,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // neutral Roads under enemy units (was d5416e…9615).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
       // (was ec3cf9…fb1e).
-      "e950d33ed2fd74d46e61d58a5dadd0474fb29c827c66bdac86f4a99b310fabd6",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the view's three
+      // RECOVER scores (units 2, 9, and 12, score 0) are gone; every other
+      // score and potential is unchanged (was e950d3…abd6).
+      "f00f37081d25681a37a8fe922a5bc5ba17ffbdc7af5813adc9ad88ac6777a5ec",
     );
   });
 
@@ -175,7 +182,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // six RESEARCH commands are offered again).
       // 7 117 since building placement (`pulp_wars-h0xx`, 7r106: ten
       // building offers more).
-      7_117 + publicPlanningFactScanOperations(rightView),
+      // 7 115 since one tile, one meaning (`pulp_wars-3u8d`, 7r131: the
+      // view's two RECOVER commands are gone).
+      7_115 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -192,7 +201,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was a763fd…f270).
-      "ec361d2e83f57f5da1e481a72a08e6077217484c332c735d48e34f26f4ff3db5",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no RECOVER, so the
+      // view's two RECOVER scores (units 19 and 20, score 0) are gone; every
+      // other score and potential is unchanged (was ec361d…3db5).
+      "6192c9c9597b4579e337208006a7f1e665c0c4d3d811ba0d263c4e697ad29167",
     );
     expect(rightResult).toEqual(leftResult);
   });

@@ -12,6 +12,7 @@ import {
   type CommandV7,
   type GameStateV7,
   type PlayerViewV7,
+  previewBoardV7,
 } from "../../src/engine/index";
 import {
   bootstrapRuleset7App,
@@ -232,13 +233,9 @@ const FIXTURES: readonly (readonly [
   // Fountain, the Shrine and the Wreck; the provoke warning on Moves.
   ["Curiosities", () => curiositiesUiFixtureV7(), []],
   // The naval branch interface (bead pulp_wars-5ti.7): two boardable ships
-  // beside one boarder. One Board button arms it; the ship to capture is
-  // picked on the board, so the dock lists neither ship.
-  [
-    "Naval boarding",
-    navalBoardingFixtureV7,
-    ["naval-board aimed", "naval-board performed"],
-  ],
+  // beside one boarder. A Board is the ship's Attack on a prize since
+  // `pulp_wars-3u8d` (7r131): no button, and the dock lists neither ship.
+  ["Naval boarding", navalBoardingFixtureV7, []],
   // The frozen sea (bead pulp_wars-5ti.7, second part): a Yeti's Freeze is
   // armed and its tile picked on the board, the Ice Witch's casts her
   // ring; the ice chips, the slide, the slip and an icebound ship.
@@ -250,11 +247,12 @@ const FIXTURES: readonly (readonly [
   ["Frozen sea: slide", frozenSlideUiFixtureV7, []],
   ["Frozen sea: slip", () => frozenSlideUiFixtureV7({ slipper: true }), []],
   ["Frozen sea: icebound", frozenShipUiFixtureV7, []],
-  // The giants' signatures (`pulp_wars-w49.32`): each of the four commands
+  // The giants' signatures (`pulp_wars-w49.32`): each of the commands
   // aimed and picked on the board, the attack and Move previews, the held
-  // victim, the Gingerbread Men and razed Walls.
+  // victim, the Gingerbread Men and razed Walls. The Swallow is the
+  // Abomination's Attack since `pulp_wars-3u8d` (7r131): nothing to aim.
   ["Giants: Crushing Shove", giantsCrushFixtureV7, []],
-  ["Giants: Swallow", giantsSwallowFixtureV7, ["giant-swallow aimed"]],
+  ["Giants: Swallow", giantsSwallowFixtureV7, []],
   ["Giants: held victim", giantsSwallowedFixtureV7, []],
   [
     "Giants: Goblin Toss",
@@ -445,9 +443,13 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
           unit.at.x === NAVAL_BOARDER.x && unit.at.y === NAVAL_BOARDER.y,
       ),
     );
+    // (`pulp_wars-3u8d`, 7r131: a Board is the ship's attack that boards.)
     expect(
       queryPlayerCommandsV7(view).filter(
-        (command) => command.kind === "BOARD" && command.unitId === boarder.id,
+        (command) =>
+          command.kind === "ATTACK" &&
+          command.unitId === boarder.id &&
+          previewBoardV7(view, command.unitId, command.targetUnitId) !== null,
       ),
     ).toHaveLength(2);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: boarder.id });
@@ -456,26 +458,20 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       document.querySelectorAll('[data-action^="command-board"]'),
     ).toHaveLength(0);
     expect(targetListOffences(controller, host)).toEqual([]);
-    // Unarmed, the two ships are attack targets; armed, they are the two
-    // Board targets, and the dock holds the aiming panel's fixed controls.
+    // The two ships are Attack targets that say they are captured; there
+    // is no Board button to arm.
     expect(
-      boardPlan(host).targets.some((target) => target.family === "BOARD"),
-    ).toBe(false);
-    const board = document.querySelectorAll<HTMLButtonElement>(
-      '.v7-selection-dock [data-naval-ability="board"]',
-    );
-    expect(board).toHaveLength(1);
-    required(board[0]).click();
-    const panel = required(
-      document.querySelector<HTMLElement>("[data-v7-naval-pick]"),
-    );
-    expect(panel.classList.contains("v7-board-pick")).toBe(true);
-    expect(panel.dataset.boardTargets).toBe("2");
+      boardPlan(host).targets.filter(
+        (target) =>
+          target.family === "ATTACK" &&
+          target.previewLabel === "Board: captures the ship",
+      ),
+    ).toHaveLength(2);
     expect(
-      boardPlan(host)
-        .targets.map((target) => target.family)
-        .sort(),
-    ).toEqual(["BOARD", "BOARD"]);
+      document.querySelectorAll(
+        '.v7-selection-dock [data-naval-ability="board"]',
+      ),
+    ).toHaveLength(0);
     expect(targetListOffences(controller, host)).toEqual([]);
     app.destroy();
   });

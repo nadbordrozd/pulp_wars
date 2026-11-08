@@ -47,7 +47,10 @@ describe("ruleset-7 exact public planning reuse", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was a763fd…f270).
-      "ec361d2e83f57f5da1e481a72a08e6077217484c332c735d48e34f26f4ff3db5",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no RECOVER, so the
+      // view's two RECOVER scores (units 19 and 20, score 0) are gone; every
+      // other score and potential is unchanged (was ec361d…3db5).
+      "6192c9c9597b4579e337208006a7f1e665c0c4d3d811ba0d263c4e697ad29167",
     );
   });
 

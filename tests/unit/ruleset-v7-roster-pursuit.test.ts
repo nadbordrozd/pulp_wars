@@ -21,6 +21,7 @@ import {
   allTechsV7,
   checkedV7,
   exploredAllV7,
+  idleRecoveryOfV7,
   initialV7,
   richV7,
 } from "../fixtures/v7-builders";
@@ -186,9 +187,9 @@ describe("ruleset-7 Knight Overrun activation", () => {
     ).filter((command) => "unitId" in command && command.unitId === archer.id);
     expect(ownCommands.some((command) => command.kind === "ATTACK")).toBe(true);
     expect(ownCommands.some((command) => command.kind === "MOVE")).toBe(false);
-    expect(ownCommands.some((command) => command.kind === "RECOVER")).toBe(
-      false,
-    );
+    expect(
+      ownCommands.some((command) => (command.kind as string) === "RECOVER"),
+    ).toBe(false);
     expect(ownCommands.some((command) => command.kind === "PILLAGE")).toBe(
       false,
     );
@@ -1064,20 +1065,7 @@ describe("ruleset-7 Knight Overrun activation", () => {
       [zeroOutputWindmill, 4],
       [neutral, 2],
     ] as const) {
-      const explicit = applyCommandV7(source, actor, {
-        kind: "RECOVER",
-        unitId: recovering.id,
-      });
-      if (!explicit.accepted) throw new Error(explicit.error.code);
-      expect(
-        explicit.state.units.find((unit) => unit.id === recovering.id)?.hp,
-      ).toBe(1 + amount);
-      expect(explicit.events).toContainEqual({
-        kind: "UNIT_RECOVERED",
-        unitId: recovering.id,
-        amount,
-        automatic: false,
-      });
+      // (`pulp_wars-3u8d`, 7r131: no explicit Recover; idle recovery only.)
       const idle = applyCommandV7(source, actor, { kind: "END_TURN" });
       if (!idle.accepted) throw new Error(idle.error.code);
       expect(
@@ -1186,17 +1174,12 @@ describe("ruleset-7 Knight Overrun activation", () => {
         queryUnitStatsV7(promoted.state, target.id)?.stats[0]?.modifiers[0]
           ?.source,
       ).toBe("PROMOTION");
-    const recovered = applyCommandV7(
-      tended.accepted ? tended.state : state,
-      state.humanPlayerId,
-      {
-        kind: "RECOVER",
-        unitId: target.id,
-      },
-    );
+    // `pulp_wars-3u8d` (7r131): it recovers idle at End Turn by the amount
+    // the retired Recover gave.
+    const recoverFrom = tended.accepted ? tended.state : state;
     expect(
-      recovered.accepted &&
-        recovered.state.units.find((unit) => unit.id === target.id)?.hp,
+      (recoverFrom.units.find((unit) => unit.id === target.id)?.hp ?? 0) +
+        (idleRecoveryOfV7(recoverFrom, target.id)?.amount ?? 0),
     ).toBe(7);
     const idleBase = allTechsV7(initialV7());
     const idleUnit = required(

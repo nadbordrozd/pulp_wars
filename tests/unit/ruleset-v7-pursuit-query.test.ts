@@ -62,7 +62,9 @@ describe("ruleset-7 Knight Overrun public queries", () => {
     );
     expect(own.filter((command) => command.kind === "ATTACK")).toHaveLength(1);
     expect(own.some((command) => command.kind === "MOVE")).toBe(false);
-    expect(own.some((command) => command.kind === "RECOVER")).toBe(false);
+    expect(own.some((command) => (command.kind as string) === "RECOVER")).toBe(
+      false,
+    );
     expect(own.some((command) => command.kind === "BUILD_FIELD_DEFENSE")).toBe(
       false,
     );

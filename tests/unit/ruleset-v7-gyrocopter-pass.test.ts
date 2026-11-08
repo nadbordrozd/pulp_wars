@@ -64,9 +64,9 @@ describe("the Gyrocopter pass: identity", () => {
   // Map curiosities round 3 A (`pulp_wars-737.20`) took 7r103 after it, and
   // round 3 B (`pulp_wars-737.21`) 7r104.
   it("was pulp-wars-poc-7r102, after 7r101 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-29, -27)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-30, -28)).toEqual([
       "pulp-wars-poc-7r101",
       "pulp-wars-poc-7r102",
     ]);

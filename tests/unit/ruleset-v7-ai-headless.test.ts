@@ -231,7 +231,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     ).toBe(events.reduce((total, event) => total + earnedCoins(event), 0));
   });
 
-  it("counts explicit and automatic recovery between Catapult volleys", () => {
+  it("counts automatic recovery between Catapult volleys", () => {
     const initial = catapultVolleyState();
     const transitions: AcceptedTelemetryTransitionV7[] = [];
     const catapults = initial.units.filter(
@@ -269,7 +269,8 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     state = accept(
       state,
       recoveryPlayerId,
-      { kind: "RECOVER", unitId: recoveringUnitId },
+      // `pulp_wars-3u8d` (7r131): a Wait; the unit recovers idle.
+      { kind: "WAIT", unitId: recoveringUnitId },
       transitions,
     );
     state = accept(state, recoveryPlayerId, { kind: "END_TURN" }, transitions);
@@ -293,7 +294,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
           targets.some((target) => target.id === event.unitId),
       );
     expect(recoveries.map((event) => event.automatic).sort()).toEqual([
-      false,
+      true,
       true,
     ]);
     expect(

@@ -445,8 +445,9 @@ describe("Tractor Beam aiming", () => {
     const mothership = effectiveRoleRuleV7("KNIGHT", "MARTIAN").label;
     expect(help.get("Tractor Beam")).toBe(
       // (Step two of the Martian pass, 7r58: City Walls hold a unit
-      // against the Saucer's beam.)
-      `a ${saucer} pulls a unit two tiles away one tile closer, but not a unit on its own city center with City Walls; a ${mothership} pulls a unit two or three tiles away up to two tiles closer, also off City Walls, once a turn, and can still act.`,
+      // against the Saucer's beam. `pulp_wars-3u8d`, 7r131: the Saucer's
+      // beam pulls enemies only.)
+      `a ${saucer} pulls an enemy two tiles away one tile closer (your own units come by Beam Down), but not a unit on its own city center with City Walls; a ${mothership} pulls a unit two or three tiles away up to two tiles closer, also off City Walls, once a turn, and can still act.`,
     );
     // The Mothership redesign (`pulp_wars-ewpj`): the Beam Down is the
     // Saucer's; the Mothership's is Mass Beam Down.
@@ -721,7 +722,7 @@ describe("Gallery: the balance round's cues and details", () => {
       )?.description;
     };
     expect(abilityOf("RAIDER")).toBe(
-      "Pulls a unit 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",
+      "Pulls an enemy 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",
     );
     expect(abilityOf("KNIGHT")).toBe(
       "Pulls a distant unit closer once a turn, even off City Walls. It can still move and attack afterwards.",

@@ -39,11 +39,14 @@ import { activeIdV7, at, kindsV7, moveV7 } from "../fixtures/v7-revision20";
 const endTurn = (state: GameStateV7): GameStateV7 =>
   applyOkV7(state, activeIdV7(state), { kind: "END_TURN" }).state;
 
-/** A Sled of seat 0 on (4, 3) and a Human Fighter of seat 1 on (5, 3). */
+/**
+ * A Sled of seat 0 on (4, 3) and a Human Fighter of seat 1 on (6, 3), 2
+ * tiles away (`pulp_wars-3u8d`, 7r131: a Bolas flies exactly 2 tiles).
+ */
 const sledAndFighter = (more: readonly IcePieceV7[] = []): GameStateV7 =>
   iceFieldV7([
     { seat: 0, role: "RAIDER", at: at(4, 3) },
-    { seat: 1, role: "FIGHTER", at: at(5, 3) },
+    { seat: 1, role: "FIGHTER", at: at(6, 3) },
     ...more,
   ]);
 
@@ -98,8 +101,8 @@ const unexplored = (
 describe("Frozen: duration (section 21.2)", () => {
   it("a Bolas freezes a unit through its owner's next turn; it thaws at that End Turn and may be frozen again at once", () => {
     let state = sledAndFighter();
-    const thrown = playV7(state, bolas(state, at(4, 3), at(5, 3)));
-    const fighter = unitAtV7(state, at(5, 3));
+    const thrown = playV7(state, bolas(state, at(4, 3), at(6, 3)));
+    const fighter = unitAtV7(state, at(6, 3));
     expect(thrown.events).toEqual([
       {
         kind: "UNITS_FROZEN",
@@ -121,12 +124,12 @@ describe("Frozen: duration (section 21.2)", () => {
       unitId: fighter.id,
       turnsLeft: 1,
     });
-    expect(offeredKindsFor(state, at(5, 3))).toEqual(["DISBAND", "WAIT"]);
+    expect(offeredKindsFor(state, at(6, 3))).toEqual(["DISBAND", "WAIT"]);
     // It thaws at the end of that turn.
     state = endTurn(state);
     expect(frozenOfUnitV7(state, fighter)).toBeUndefined();
     // No thaw immunity: the Sled freezes it again at once.
-    const again = playV7(state, bolas(state, at(4, 3), at(5, 3)));
+    const again = playV7(state, bolas(state, at(4, 3), at(6, 3)));
     expect(frozenOfUnitV7(again.state, fighter)).toEqual({
       unitId: fighter.id,
       turnsLeft: 1,
@@ -135,12 +138,12 @@ describe("Frozen: duration (section 21.2)", () => {
     let locked = again.state;
     for (let round = 0; round < 3; round += 1) {
       locked = endTurn(locked);
-      expect(offeredKindsFor(locked, at(5, 3)), `round ${round}`).toEqual([
+      expect(offeredKindsFor(locked, at(6, 3)), `round ${round}`).toEqual([
         "DISBAND",
         "WAIT",
       ]);
       locked = endTurn(locked);
-      locked = playV7(locked, bolas(locked, at(4, 3), at(5, 3))).state;
+      locked = playV7(locked, bolas(locked, at(4, 3), at(6, 3))).state;
     }
   });
 
@@ -377,13 +380,14 @@ describe("Who can be Frozen, and the Bolas (sections 21.2 and 21.9)", () => {
       [
         { seat: 0, role: "RAIDER", at: at(4, 3) },
         { seat: 0, role: "FIGHTER", at: at(4, 4) },
-        { seat: 1, role: "FIGHTER", at: at(5, 2), form: "EMBARKED" },
+        { seat: 1, role: "FIGHTER", at: at(6, 1), form: "EMBARKED" },
         { seat: 1, role: "PATROL_BOAT", at: at(6, 2), form: "NAVAL" },
         { seat: 1, role: "FIGHTER", at: at(7, 3) },
+        { seat: 1, role: "FIGHTER", at: at(5, 3) },
       ],
-      { water: [at(5, 2), at(6, 2)] },
+      { water: [at(6, 1), at(6, 2)] },
     );
-    for (const target of [at(5, 2), at(6, 2)]) {
+    for (const target of [at(6, 1), at(6, 2)]) {
       const thrown = playV7(state, bolas(state, at(4, 3), target));
       expect(frozenAtV7(thrown.state, target)).toEqual({
         unitId: unitAtV7(state, target).id,
@@ -396,7 +400,11 @@ describe("Who can be Frozen, and the Bolas (sections 21.2 and 21.9)", () => {
     expect(rejectedV7(state, bolas(state, at(4, 3), at(7, 3))).params).toEqual({
       reason: "OUT_OF_RANGE",
     });
-    expect(rejectedV7(state, bolas(state, at(4, 4), at(5, 2))).code).toBe(
+    // `pulp_wars-3u8d` (7r131): never a neighbour (that is an Attack).
+    expect(rejectedV7(state, bolas(state, at(4, 3), at(5, 3))).params).toEqual({
+      reason: "OUT_OF_RANGE",
+    });
+    expect(rejectedV7(state, bolas(state, at(4, 4), at(6, 2))).code).toBe(
       "UNIT_ROLE_INVALID",
     );
     const hidden = unexplored(state, 0, at(7, 3));
@@ -415,28 +423,28 @@ describe("Who can be Frozen, and the Bolas (sections 21.2 and 21.9)", () => {
       const state = iceFieldV7(
         [
           { seat: 0, role: "RAIDER", at: at(4, 3) },
-          { seat: 1, role, at: at(5, 3) },
+          { seat: 1, role, at: at(6, 3) },
         ],
         { factions: ["ICE_FOLK", faction] },
       );
-      const result = playV7(state, bolas(state, at(4, 3), at(5, 3)));
-      expect(frozenAtV7(result.state, at(5, 3)), `${faction} ${role}`).toEqual({
-        unitId: unitAtV7(state, at(5, 3)).id,
+      const result = playV7(state, bolas(state, at(4, 3), at(6, 3)));
+      expect(frozenAtV7(result.state, at(6, 3)), `${faction} ${role}`).toEqual({
+        unitId: unitAtV7(state, at(6, 3)).id,
         turnsLeft: 1,
       });
     }
     const shielded = iceFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(4, 3) },
-        { seat: 1, role: "GUARD", at: at(5, 3), shield: 4 },
+        { seat: 1, role: "GUARD", at: at(6, 3), shield: 4 },
       ],
       { factions: ["ICE_FOLK", "MARTIAN"] },
     );
-    const result = playV7(shielded, bolas(shielded, at(4, 3), at(5, 3)));
-    expect(frozenAtV7(result.state, at(5, 3))).toBeDefined();
+    const result = playV7(shielded, bolas(shielded, at(4, 3), at(6, 3)));
+    expect(frozenAtV7(result.state, at(6, 3))).toBeDefined();
     expect(
       result.state.shields.find(
-        (entry) => entry.unitId === unitAtV7(shielded, at(5, 3)).id,
+        (entry) => entry.unitId === unitAtV7(shielded, at(6, 3)).id,
       )?.shield,
     ).toBe(4);
   });
@@ -740,7 +748,7 @@ describe("Frozen state, view, and events (sections 21.2 and 21.15)", () => {
     const result = applyOkV7(
       state,
       activeIdV7(state),
-      bolas(state, at(4, 3), at(5, 3)),
+      bolas(state, at(4, 3), at(6, 3)),
     );
     const humanId = seatIdV7(state, 1);
     expect(

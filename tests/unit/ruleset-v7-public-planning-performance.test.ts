@@ -78,7 +78,10 @@ describe("ruleset-7 exact public-planning performance", () => {
         // and Game no longer block a building, a Forest needs Forestry and a
         // Mountain takes only the Mine, so the building offers moved (was
         // 5d18df…04ef).
-        "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was e2898b…f2dc).
+        "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
       resultHash:
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
@@ -95,7 +98,10 @@ describe("ruleset-7 exact public-planning performance", () => {
         // and Game no longer block a building, a Forest needs Forestry and a
         // Mountain takes only the Mine, so the building offers moved (was
         // a763fd…f270).
-        "ec361d2e83f57f5da1e481a72a08e6077217484c332c735d48e34f26f4ff3db5",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was ec361d…3db5).
+        "6192c9c9597b4579e337208006a7f1e665c0c4d3d811ba0d263c4e697ad29167",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
       // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again);
@@ -110,7 +116,8 @@ describe("ruleset-7 exact public-planning performance", () => {
       // RESEARCH commands are offered again).
       // 7 117 since building placement (`pulp_wars-h0xx`, 7r106: ten
       // building offers more, on Fertile Ground no longer blocked).
-      operations: 7_117,
+      // (`pulp_wars-3u8d`, 7r131: two RECOVER offers fewer; was 7 117.)
+      operations: 7_115,
     },
     {
       id: "captured-command-300",
@@ -125,7 +132,10 @@ describe("ruleset-7 exact public-planning performance", () => {
         // and Game no longer block a building, a Forest needs Forestry and a
         // Mountain takes only the Mine, so the building offers moved (was
         // d2cb99…564a).
-        "1e5e41b13e8dcd58b3334476065291d3bc32ce7accc67350606b293971230fff",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was 1e5e41…0fff).
+        "5d1d070ce572804d44945109068c23867d23b72f6f2a857bd0809ed7252a03e0",
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
@@ -138,7 +148,10 @@ describe("ruleset-7 exact public-planning performance", () => {
         // neutral Roads under enemy units (was d5416e…9615).
         // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
         // moved (was ec3cf9…fb1e).
-        "e950d33ed2fd74d46e61d58a5dadd0474fb29c827c66bdac86f4a99b310fabd6",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was e950d3…abd6).
+        "f00f37081d25681a37a8fe922a5bc5ba17ffbdc7af5813adc9ad88ac6777a5ec",
       // Tuning 5: the Swordsman offers (was 66 233). The economy rejig
       // (`pulp_wars-w49.16`): research offers by the price per city, and a
       // mill counts every contributor of its owner (was 66 236). The
@@ -148,7 +161,8 @@ describe("ruleset-7 exact public-planning performance", () => {
       // enemy units are no longer candidates (was 66 235).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
       // moved (was 65 491).
-      operations: 64_397,
+      // (`pulp_wars-3u8d`, 7r131: three RECOVER offers fewer; was 64 397.)
+      operations: 64_394,
     },
     {
       id: "captured-command-425",
@@ -161,7 +175,10 @@ describe("ruleset-7 exact public-planning performance", () => {
         // and Game no longer block a building, a Forest needs Forestry and a
         // Mountain takes only the Mine, so the building offers moved (was
         // 3ea570…f928).
-        "21c2d6d74fbed596c045b3200fa4860fe0b4410544eeb8ffc946e3cca566ba75",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was 21c2d6…ba75).
+        "3b49fe0b29bdcede0ae1d3a7e595695c83b57431ab70f82cdbaede3574ad7fdc",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
       // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
@@ -172,14 +189,18 @@ describe("ruleset-7 exact public-planning performance", () => {
         // neutral Roads under enemy units (was 3b0102…0a9c).
         // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
         // moved (was 2a6b14…c475).
-        "e1fe7960acbd5f253cf5ffe06b3f4cf3114657094a12df36a411f3856808b298",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was e1fe79…b298).
+        "f136c079292822d20e57f04fdd3b7ecd527d94cd03001b4f061b11d39d1e76d2",
       // Tuning 5: the Swordsman offer (was 94 438).
       // The economy rejig (`pulp_wars-w49.16`), as above (was 94 439).
       // The siege rules (`pulp_wars-0pgd`, 7r80): one neutral Road under an
       // enemy unit is no longer a candidate (was 94 445).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
       // moved (was 94 026).
-      operations: 96_631,
+      // (`pulp_wars-3u8d`, 7r131: one RECOVER offer fewer; was 96 631.)
+      operations: 96_630,
     },
   ] as const;
 

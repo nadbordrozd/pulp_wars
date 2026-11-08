@@ -57,6 +57,7 @@ import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import {
   addGiantPickEntriesV7,
   giantPickTargetsV7,
+  giantSwallowAttackTargetV7,
   type GiantPickV7,
 } from "./giant-board-plan-v7";
 import {
@@ -217,12 +218,10 @@ import {
 } from "./ice-folk-board-plan-v7";
 import { shatterBoardCueV7 } from "./ice-folk-effects-v7";
 import {
-  addNavalPickEntriesV7,
   addSubmergedReasonEntriesV7,
   navalAttackTargetExtrasV7,
-  navalPickTargetsV7,
+  navalBoardAttackTargetV7,
   navalUnitMarkersV7,
-  type NavalPickV7,
   type NavalUnitMarkersV7,
 } from "./naval-board-plan-v7";
 import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
@@ -656,12 +655,9 @@ export interface BoardRenderInteractionV7 {
    * targets become the only map targets; null or omitted aims none.
    */
   readonly giantPick?: GiantPickV7 | null;
-  /**
-   * The naval branch interface (bead pulp_wars-5ti.7): the Board being
-   * aimed by the selected ship. The ships it may capture become the only
-   * map targets; null or omitted aims none.
-   */
-  readonly navalPick?: NavalPickV7 | null;
+  // (The naval branch interface's `navalPick`, the Board being aimed,
+  // retired with the `BOARD` command: `pulp_wars-3u8d`, 7r131. A ship's
+  // Attack mark on a ship it boards says so.)
   /**
    * Map curiosities round 3 (bead pulp_wars-737.20): the Zap or the Moon
    * Gun shot being aimed by the selected unit. Its targets become the only
@@ -782,24 +778,19 @@ export interface MapCommandTargetV7 {
     | "REBAKE_CRUMBS"
     | "TOP_UP"
     /**
-     * The giants' signatures (`pulp_wars-w49.32`): a unit an Abomination
-     * may swallow, a Goblin a Troll may throw (choosing it moves on to the
-     * landing tiles; nothing is dispatched) and a landing tile, an enemy a
-     * Brontosaurus's Stomp would hit (every one carries the same command),
-     * and the first and second tiles of a Break Off (choosing the first
-     * moves on to the second).
+     * The giants' signatures (`pulp_wars-w49.32`): a Goblin a Troll may
+     * throw (choosing it moves on to the landing tiles; nothing is
+     * dispatched) and a landing tile, an enemy a Brontosaurus's Stomp would
+     * hit (every one carries the same command), and the first and second
+     * tiles of a Break Off (choosing the first moves on to the second). (A
+     * unit an Abomination may swallow is an `ATTACK` target since
+     * `pulp_wars-3u8d`, 7r131.)
      */
-    | "SWALLOW"
     | "TOSS_PASSENGER"
     | "TOSS"
     | "STOMP"
     | "BREAK_OFF_FIRST"
     | "BREAK_OFF"
-    /**
-     * The naval branch interface: an enemy ship the selected ship may
-     * capture, while its Board is aimed.
-     */
-    | "BOARD"
     /**
      * The frozen sea: the tile next to the unit that an aimed Freeze starts
      * on (its line runs on from there).
@@ -2162,7 +2153,6 @@ export function buildBoardRenderPlanV7(
     dwarfPick,
     candyPick,
     giantPick,
-    navalPick,
     freezePick,
     cultPick,
     curiosityPick,
@@ -2204,7 +2194,6 @@ export function buildBoardRenderPlanV7(
     dwarfPick === null &&
     candyPick === null &&
     giantPick === null &&
-    navalPick === null &&
     cultPick === null &&
     curiosityPick === null
   ) {
@@ -2217,9 +2206,7 @@ export function buildBoardRenderPlanV7(
         : "QUIET";
     addFreezeRingEntriesV7(entries, view, commands, selectedUnitId, weight);
   }
-  if (navalPick !== null)
-    addNavalPickEntriesV7(entries, view, targets, navalPick);
-  else if (
+  if (
     selectedUnitId !== null &&
     !kaboomPreview &&
     layEgg === null &&
@@ -2387,13 +2374,7 @@ function activeBoardPicksV7(
     interaction.giantPick.unitId === interaction.selectedUnitId
       ? interaction.giantPick
       : null;
-  // The naval branch interface: likewise while a Board is aimed.
-  const navalPick =
-    interaction.navalPick !== undefined &&
-    interaction.navalPick !== null &&
-    interaction.navalPick.unitId === interaction.selectedUnitId
-      ? interaction.navalPick
-      : null;
+
   // The frozen sea: likewise while a line role's Freeze is aimed.
   const freezePick =
     interaction.freezePick !== undefined &&
@@ -2424,7 +2405,6 @@ function activeBoardPicksV7(
     dwarfPick,
     candyPick,
     giantPick,
-    navalPick,
     freezePick,
     cultPick,
     curiosityPick,
@@ -2451,7 +2431,6 @@ export function boardMapTargetsV7(
     dwarfPick,
     candyPick,
     giantPick,
-    navalPick,
     freezePick,
     cultPick,
     curiosityPick,
@@ -2493,79 +2472,77 @@ export function boardMapTargetsV7(
           ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
           : dwarfPick !== null
             ? dwarfPickTargetsV7(view, commands, dwarfPick)
-            : navalPick !== null
-              ? navalPickTargetsV7(view, commands, navalPick)
-              : curiosityPick !== null
-                ? curiosityPickTargetsV7(view, commands, curiosityPick)
-                : cultPick !== null
-                  ? isCultOfferingPickV7(cultPick)
-                    ? cultPickTargetsV7(view, commands, cultPick)
-                    : isCultTrickPickV7(cultPick)
-                      ? cultTrickPickTargetsV7(view, commands, cultPick)
-                      : cultChannelPickTargetsV7(view, commands, cultPick)
-                  : freezePick !== null
-                    ? freezePick.kind === "CRACK_ICE"
-                      ? crackIcePickTargetsV7(view, commands, freezePick)
-                      : freezePickTargetsV7(view, commands, freezePick)
-                    : giantPick !== null
-                      ? giantPickTargetsV7(
+            : curiosityPick !== null
+              ? curiosityPickTargetsV7(view, commands, curiosityPick)
+              : cultPick !== null
+                ? isCultOfferingPickV7(cultPick)
+                  ? cultPickTargetsV7(view, commands, cultPick)
+                  : isCultTrickPickV7(cultPick)
+                    ? cultTrickPickTargetsV7(view, commands, cultPick)
+                    : cultChannelPickTargetsV7(view, commands, cultPick)
+                : freezePick !== null
+                  ? freezePick.kind === "CRACK_ICE"
+                    ? crackIcePickTargetsV7(view, commands, freezePick)
+                    : freezePickTargetsV7(view, commands, freezePick)
+                  : giantPick !== null
+                    ? giantPickTargetsV7(
+                        view,
+                        commands,
+                        giantPick,
+                        interaction.cursor ?? null,
+                      )
+                    : candyPick !== null
+                      ? candyPickTargetsV7(
                           view,
                           commands,
-                          giantPick,
-                          interaction.cursor ?? null,
+                          candyPick,
+                          // An armed Rush shows the unit's attacks with the bonus.
+                          candyPick.kind === "SUGAR_RUSH"
+                            ? commandMapTargets(
+                                view,
+                                commands.filter(
+                                  (command) => command.kind === "ATTACK",
+                                ),
+                                candyPick.unitId,
+                                { assumeSugarRush: true },
+                              )
+                            : [],
+                          candyGhost,
                         )
-                      : candyPick !== null
-                        ? candyPickTargetsV7(
+                      : dedupeMapTargets([
+                          ...mapTargets(
                             view,
                             commands,
-                            candyPick,
-                            // An armed Rush shows the unit's attacks with the bonus.
-                            candyPick.kind === "SUGAR_RUSH"
-                              ? commandMapTargets(
-                                  view,
-                                  commands.filter(
-                                    (command) => command.kind === "ATTACK",
-                                  ),
-                                  candyPick.unitId,
-                                  { assumeSugarRush: true },
-                                )
-                              : [],
-                            candyGhost,
-                          )
-                        : dedupeMapTargets([
-                            ...mapTargets(
-                              view,
-                              commands,
-                              interaction.selectedUnitId,
-                            ),
-                            // Bead pulp_wars-9im: a selected Gunner shows the units
-                            // it may heal beside its Moves and Attacks, unarmed: an
-                            // own unit is never a Move or an Attack target.
-                            ...(unarmedToss === undefined
-                              ? []
-                              : candyPickTargetsV7(
-                                  view,
-                                  commands,
-                                  {
-                                    kind: "SUGAR_TOSS",
-                                    unitId: unarmedToss.unitId,
-                                  },
-                                  [],
-                                  candyGhost,
-                                )),
-                            ...(unarmedTopUp === undefined
-                              ? []
-                              : candyPickTargetsV7(
-                                  view,
-                                  commands,
-                                  {
-                                    kind: "TOP_UP",
-                                    unitId: unarmedTopUp.unitId,
-                                  },
-                                  [],
-                                  candyGhost,
-                                )),
-                          ]);
+                            interaction.selectedUnitId,
+                          ),
+                          // Bead pulp_wars-9im: a selected Gunner shows the units
+                          // it may heal beside its Moves and Attacks, unarmed: an
+                          // own unit is never a Move or an Attack target.
+                          ...(unarmedToss === undefined
+                            ? []
+                            : candyPickTargetsV7(
+                                view,
+                                commands,
+                                {
+                                  kind: "SUGAR_TOSS",
+                                  unitId: unarmedToss.unitId,
+                                },
+                                [],
+                                candyGhost,
+                              )),
+                          ...(unarmedTopUp === undefined
+                            ? []
+                            : candyPickTargetsV7(
+                                view,
+                                commands,
+                                {
+                                  kind: "TOP_UP",
+                                  unitId: unarmedTopUp.unitId,
+                                },
+                                [],
+                                candyGhost,
+                              )),
+                        ]);
 }
 
 /** The Ice Folk revision: the `snow` member of a terrain entry, if any. */
@@ -8327,6 +8304,13 @@ function commandMapTargets(
         (unit) => unit.id === command.targetUnitId,
       );
       if (target === undefined) return [];
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): an Abomination's
+      // attack that swallows and a ship's attack that boards say so in
+      // place of the damage (neither is an exchange).
+      const special =
+        giantSwallowAttackTargetV7(view, command) ??
+        navalBoardAttackTargetV7(view, command);
+      if (special !== null) return [special];
       const preview =
         options.assumeSugarRush === true
           ? queryCombatPreviewV7(view, command.unitId, command.targetUnitId, {

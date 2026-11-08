@@ -13,6 +13,7 @@ import {
   createPlayableGameV7,
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
+  queryIdleRecoveryV7,
   queryPlayerCommandsV7,
   unitId,
   viewForV7,
@@ -371,10 +372,11 @@ describe("ruleset-7 revision-13 Normal AI playing Undead", () => {
     );
     const skeleton = unitAt(state, { x: 6, y: 6 });
     const view = viewFor(state);
-    expect(queryPlayerCommandsV7(view)).not.toContainEqual({
-      kind: "RECOVER",
-      unitId: skeleton.id,
-    });
+    // Restless: it does not recover outside its territory (no idle
+    // recovery; the Recover command is gone since `pulp_wars-3u8d`).
+    expect(
+      queryIdleRecoveryV7(view).some((entry) => entry.unitId === skeleton.id),
+    ).toBe(false);
     const decision = chooseNormalCommandV7(view);
     // Tuning 6 (`pulp_wars-w49.6`): the free village next to it comes first
     // (1170, no enemy in sight); the retreat is its best Move otherwise.

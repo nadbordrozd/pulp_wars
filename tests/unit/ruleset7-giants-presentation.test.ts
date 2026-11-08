@@ -19,7 +19,6 @@ import { GINGERBREAD_MAN_SPRITE_SCALE_V7 } from "../../src/render/canvas/giant-c
 import {
   breakOffSecondTilesV7,
   tossPassengersV7,
-  type GiantPickV7,
 } from "../../src/render/canvas/giant-board-plan-v7";
 import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
@@ -327,35 +326,25 @@ describe("the attack and Move previews", () => {
   });
 });
 
-describe("the four commands aimed on the board", () => {
-  it("Swallow: the victims of 12 HP or less, each with its digest", () => {
+describe("the giants' commands on the board", () => {
+  it("Swallow: an Attack mark that says so on each victim of 12 HP or less", () => {
+    // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the Abomination's
+    // attack on a unit it may swallow is the Swallow; nothing is aimed.
     const { unitAt, plan } = sceneOf(giantsSwallowFixtureV7());
     const at = GIANTS_UI_V7.swallow;
-    const pick: GiantPickV7 = {
-      kind: "SWALLOW",
-      unitId: unitAt(at.abomination).id,
-    };
-    const targets = plan(at.abomination, { giantPick: pick }).targets;
-    expect(
-      targets
-        .map((target) => [target.family, key(target.at), target.previewLabel])
-        .sort(),
-    ).toEqual(
-      [
-        ["SWALLOW", key(at.fighter), "Swallow · 2 turns"],
-        ["SWALLOW", key(at.knight), "Swallow · 3 turns"],
-      ].sort(),
+    const targets = plan(at.abomination).targets.filter(
+      (target) => target.family === "ATTACK",
     );
-    expect(targetHighlightStyleV7("SWALLOW")).toBe("ATTACK");
-    // The full Guard is not a victim; unarmed, it is an attack target.
-    const unarmed = plan(at.abomination).targets;
+    const label = (where: CoordV7) =>
+      targets.find((target) => key(target.at) === key(where))?.previewLabel;
+    expect(label(at.fighter)).toBe("Swallow · 2 turns");
+    expect(label(at.knight)).toBe("Swallow · 3 turns");
     expect(
-      unarmed.some(
-        (target) =>
-          target.family === "ATTACK" && key(target.at) === key(at.guard),
-      ),
-    ).toBe(true);
-    expect(unarmed.some((target) => target.family === "SWALLOW")).toBe(false);
+      targets.find((target) => key(target.at) === key(at.knight))?.previewNote,
+    ).toBe("Will be swallowed whole");
+    // The full Guard is no victim: an ordinary attack target.
+    expect(label(at.guard)).not.toMatch(/^Swallow/);
+    expect(unitAt(at.abomination).role).toBe("JUGGERNAUT");
   });
 
   it("Goblin Toss: the Goblin first, then the landings with the Kaboom from the focused one", () => {
@@ -482,8 +471,9 @@ describe("the four commands aimed on the board", () => {
     const { view, unitAt } = sceneOf(giantsSwallowedFixtureV7());
     const holder = unitAt(GIANTS_UI_V7.swallow.abomination);
     // The Abomination acted (it swallowed): nothing to say on a done unit.
+    // (Its Swallow has no button since `pulp_wars-3u8d`, 7r131.)
     expect(
-      giantCommandUnavailableTextV7(view, holder, "SWALLOW", false),
+      giantCommandUnavailableTextV7(view, holder, "STOMP", false),
     ).toBeNull();
     const weak = giantsBreakOffFixtureV7();
     const giantAt = GIANTS_UI_V7.breakOff.giant;

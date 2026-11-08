@@ -380,11 +380,15 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
   // (`pulp_wars-n5fa`, 7r130) removes RIBBIT from the command kinds, so the
   // tie-break ordinal of every kind after PROCLAIM moves by one and the
   // fingerprints were retaken (was 758cd317, 6e190739, f03f54c9, c737b285,
-  // and cfd7a51e); the decisions are unchanged.
+  // and cfd7a51e); the decisions are unchanged. `pulp_wars-3u8d` (7r131)
+  // removes BOARD, RECOVER, and SWALLOW, so those ordinals move by three and
+  // the fingerprints were retaken again (was 99ccc2ff, d527d65b, 4543d7f5,
+  // fa46e1b5, and d5bc23f5): the same commands and candidates, the scores
+  // differing only in the kind ordinal of the tie-break.
   const cases: Record<string, readonly [() => PlayerViewV7, string]> = {
     "the walled city": [
       () => viewOf(skirmish({ pieces: FIGHTERS, mountains: RING })),
-      "99ccc2ff",
+      "d489301f",
     ],
     "the fog": [
       () =>
@@ -398,12 +402,12 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             fog: WEST,
           }),
         ),
-      "d527d65b",
+      "b461f449",
     ],
     "the endgame": [
       () =>
         endgameView(viewOf(skirmish({ pieces: FIGHTERS, mountains: RING }))),
-      "4543d7f5",
+      "210f59c1",
     ],
     "the gap in the wall": [
       () =>
@@ -414,7 +418,7 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             fog: WEST,
           }),
         ),
-      "fa46e1b5",
+      "94ca1ea5",
     ],
     "the Dwarf seat": [
       () =>
@@ -429,7 +433,7 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             activeSeat: 1,
           }),
         ),
-      "d5bc23f5",
+      "93a900ca",
     ],
   };
   for (const [name, [make, expected]] of Object.entries(cases))

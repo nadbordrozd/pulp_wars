@@ -565,7 +565,7 @@ const ENTRIES = {
   ],
   TRACTOR_BEAM: [
     "Tractor Beam",
-    "Pulls a unit 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",
+    "Pulls an enemy 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",
   ],
   TRACTOR_BEAM_HEAVY: [
     "Tractor Beam",
@@ -602,10 +602,11 @@ const ENTRIES = {
   ],
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Witch's Frost Bolt and the
   // Mammoth's Stampede. Bead pulp_wars-2yc.63: the Sled's Bolas is the same
-  // freeze, so it is a Frost Bolt too.
+  // freeze, so it is a Frost Bolt too. `pulp_wars-3u8d` (7r131): both fly
+  // exactly 2 tiles, never at a neighbour.
   FROST_BOLT: [
     "Frost Bolt",
-    "Freezes one enemy up to 2 tiles away, without damage. An Ice Witch's flies exactly that far, never at a neighbour.",
+    "Freezes one enemy exactly 2 tiles away, never at a neighbour, without damage.",
   ],
   STAMPEDE: [
     "Stampede",

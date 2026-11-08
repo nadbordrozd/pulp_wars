@@ -80,7 +80,6 @@ const EVERY_FAMILY: Readonly<
   STAMPEDE: "ATTACK",
   BOMB_TARGET: "ATTACK",
   WHIRL: "ATTACK",
-  BOARD: "ATTACK",
   HATCH: "SUPPORT",
   SUGAR_TOSS: "SUPPORT",
   BEAM_DOWN_PASSENGER: "SUPPORT",
@@ -99,7 +98,6 @@ const EVERY_FAMILY: Readonly<
   FREEZE: "PLACE",
   CRACK_ICE: "ATTACK",
   // The giants' signatures (`pulp_wars-w49.32`).
-  SWALLOW: "ATTACK",
   STOMP: "ATTACK",
   TOSS_PASSENGER: "SUPPORT",
   TOSS: "PLACE",

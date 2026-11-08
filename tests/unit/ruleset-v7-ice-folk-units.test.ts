@@ -575,9 +575,12 @@ describe("previews and offers (section 11)", () => {
       at(3, 3),
     );
     const offered = offeredV7(state, "THROW_BOLAS", "COLD_SNAP", "ATTACK");
+    // `pulp_wars-3u8d` (7r131): the Sled's Bolas flies exactly 2 tiles, so
+    // only the Marksman (5, 5) is a target (the two Fighters are its
+    // neighbours: Attacks).
     expect(
       offered.filter((command) => command.kind === "THROW_BOLAS"),
-    ).toHaveLength(3);
+    ).toHaveLength(1);
     expect(
       offered.filter((command) => command.kind === "COLD_SNAP"),
     ).toHaveLength(1);

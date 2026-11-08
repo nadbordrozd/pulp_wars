@@ -647,8 +647,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     expect(COMMAND_KIND_ORDER_V7.indexOf("WAIL")).toBeGreaterThan(
       COMMAND_KIND_ORDER_V7.indexOf("TEND_WOUNDED"),
     );
+    // (Before RECOVER until `pulp_wars-3u8d`, 7r131, retired it.)
     expect(COMMAND_KIND_ORDER_V7.indexOf("WAIL")).toBeLessThan(
-      COMMAND_KIND_ORDER_V7.indexOf("RECOVER"),
+      COMMAND_KIND_ORDER_V7.indexOf("TOP_UP"),
     );
     // The Dwarf revision (`pulp_wars-78i.3`) inserts UNIT_BOMBED
     // immediately after COMBAT_RESOLVED, before WAIL_RESOLVED. Was 86

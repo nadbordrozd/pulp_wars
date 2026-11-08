@@ -27,7 +27,7 @@ import type { MissionDefinitionV7 } from "./types";
  * the capital, one in the northern level-3 city; the other cities are full)
  * and 20 Coins before the income of the first turn (35 in hand on it). They
  * own Deep Winter (the Snow reaches two tiles beyond a city's land, and
- * Recover heals 6 in their land) and neither Brittle (the Shatter threshold
+ * idle recovery heals 6 in their land) and neither Brittle (the Shatter threshold
  * of 4) nor Fieldcraft, Farming, or Roads. The Humans own twelve
  * technologies (Champion, Marksman, Catapult, Knight, Guard, Raider with
  * Charge; Forestry for Forest cover) and hold 17 units worth 80 Coins with
@@ -145,7 +145,7 @@ export const LAB_ICE_FOLK_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
-        // Deep Winter: the Walrus, the wider Snow, Recover 6.
+        // Deep Winter: the Walrus, the wider Snow, idle recovery 6.
         "FORTIFICATION",
         "ENGINEERING",
         "METALLURGY",

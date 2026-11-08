@@ -509,14 +509,16 @@ describe("Board", () => {
     };
   }
 
-  it("boards a Battleship at 5 HP rather than torpedo it", () => {
+  it("boards a Battleship at 5 HP (its attack there is the Board)", () => {
     const { state, view, boarder, prize } = boarding();
+    // `pulp_wars-3u8d` (7r131): the Submarine's attack on the crippled
+    // Battleship boards it.
     const board: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder,
       targetUnitId: prize,
     };
-    // The torpedo would sink it; the Board takes it.
+    // A torpedo would sink it; the Board takes it.
     expect(queryCombatPreviewV7(view, boarder, prize)?.defenderDies).toBe(true);
     expect(bestOf(view, boarder)).toEqual(board);
     expect(scoreCommandV7(view, board).priority).toBe(NAVAL_BOARD_PRIORITY_V7);
@@ -530,29 +532,27 @@ describe("Board", () => {
     });
   });
 
-  it("sinks a prize it could not keep", () => {
+  it("boards a prize it could not keep when no other attack is better", () => {
     // A second Battleship three tiles from the prize would sink it at 9 HP.
+    // `pulp_wars-3u8d` (7r131): its attack on the prize can only board it
+    // (it sank it with a torpedo before), and it has no other target.
     const { view, boarder, prize } = boarding([
       { seat: 1, role: "BATTLESHIP", at: { x: 6, y: 5 } },
     ]);
     const board: CommandV7 = {
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder,
       targetUnitId: prize,
     };
     expect(queryPlayerCommandsV7(view)).toContainEqual(board);
     expect(navalBoardFactsV7(view, toolsOf(view), board)).toMatchObject({
       safe: false,
-      boards: false,
+      boards: true,
       prizeTenths: 48,
-      bestAttackTenths: 160,
+      bestAttackTenths: null,
     });
-    expect(scoreCommandV7(view, board).priority).toBe(-1);
-    expect(bestOf(view, boarder)).toEqual({
-      kind: "ATTACK",
-      unitId: boarder,
-      targetUnitId: prize,
-    });
+    expect(scoreCommandV7(view, board).priority).toBe(NAVAL_BOARD_PRIORITY_V7);
+    expect(bestOf(view, boarder)).toEqual(board);
   });
 });
 

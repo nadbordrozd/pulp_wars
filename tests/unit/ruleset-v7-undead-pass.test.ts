@@ -69,7 +69,7 @@ import {
   strikesBackTextV7,
 } from "../../src/render/technology-unlock-text-v7";
 import { PESTILENCE_UNLOCK_TEXT_V7 } from "../../src/render/undead-presentation-v7";
-import { PRE_NAVAL_BRANCH_TECHS_V7 } from "../fixtures/v7-builders";
+import { PRE_NAVAL_BRANCH_TECHS_V7, checkedV7 } from "../fixtures/v7-builders";
 import {
   applyOkV7,
   endTurnUntilV7,
@@ -191,13 +191,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-80, -78)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-81, -79)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -78)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -79)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -552,6 +552,8 @@ describe("the Undead pass: the Abomination's Infect", () => {
         { seat: 0, role: "JUGGERNAUT", at: at(5, 3) },
         { seat: 1, role: "FIGHTER", at: at(5, 2) },
         { seat: 1, role: "GUARD", at: at(6, 2) },
+        // (The Abomination's first victim: `fullStomach`.)
+        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 3 },
       ],
     );
     const actor = seatIdV7(state, 0);
@@ -562,7 +564,10 @@ describe("the Undead pass: the Abomination's Infect", () => {
       defenderInfected: true,
       advances: false,
     });
-    const result = applyOkV7(state, actor, {
+    // `pulp_wars-3u8d` (7r131): its attack on the Fighter (12 HP) is a
+    // Swallow while its stomach is empty; with a victim held it is the
+    // blow above.
+    const result = applyOkV7(fullStomach(state, at(5, 3)), actor, {
       kind: "ATTACK",
       unitId: unitAtV7(state, at(5, 3)).id,
       targetUnitId: unitAtV7(state, at(5, 2)).id,
@@ -1383,6 +1388,34 @@ function policyTurn(
 const gap = (left: CoordV7, right: CoordV7): number =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
 
+/**
+ * `pulp_wars-3u8d` (7r131): the state with the Abomination on `holder`
+ * already holding a victim (the hostile unit on `victim`, swallowed by its
+ * attack), its turn fresh again, so its next attack is an ordinary blow (an
+ * attack on a unit it may swallow swallows it).
+ */
+function fullStomach(
+  state: GameStateV7,
+  holder: CoordV7,
+  victim: CoordV7 = at(4, 3),
+): GameStateV7 {
+  const abomination = unitAtV7(state, holder);
+  const fed = applyOkV7(state, seatIdV7(state, 0), {
+    kind: "ATTACK",
+    unitId: abomination.id,
+    targetUnitId: unitAtV7(state, victim).id,
+  }).state;
+  expect(fed.giants.swallowed).toHaveLength(1);
+  return checkedV7({
+    ...fed,
+    units: fed.units.map((unit) =>
+      unit.id === abomination.id
+        ? { ...unit, activation: abomination.activation }
+        : unit,
+    ),
+  });
+}
+
 describe("the correction: a risen unit fills no unit slot", () => {
   it("gives a Zombie's kill, an Abomination's kill, and a bitten death a rising with no home city", () => {
     for (const killer of ["GUARD", "JUGGERNAUT"] as const) {
@@ -1391,13 +1424,20 @@ describe("the correction: a risen unit fills no unit slot", () => {
         [
           { seat: 0, role: killer, at: at(5, 3) },
           { seat: 1, role: "FIGHTER", at: at(5, 2), hp: 1 },
+          // (The Abomination's first victim: `fullStomach`.)
+          { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 3 },
         ],
       );
       const capital = capitalOf(state);
       // The killer is homed to the capital and fills one of its slots.
       expect(unitAtV7(state, at(5, 3)).homeCityId).toBe(capital.id);
       const before = assignedUnitCountV7(state, capital.id);
-      const result = attackAt(state, at(5, 3), at(5, 2));
+      // (An Abomination with a victim held strikes: `fullStomach`.)
+      const result = attackAt(
+        killer === "JUGGERNAUT" ? fullStomach(state, at(5, 3)) : state,
+        at(5, 3),
+        at(5, 2),
+      );
       const rising = unitAtV7(result.state, at(5, 2));
       expect(
         [rising.role, rising.ownerId, rising.hp, rising.homeCityId],

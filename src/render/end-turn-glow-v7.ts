@@ -13,7 +13,8 @@ import type { CommandV7 } from "../engine/index";
  *
  * - any command of an own unit (one that names a unit: a move, an attack,
  *   a capture, every ability, Board, Disembark), except Wait, Disband and
- *   Recover (End Turn recovers an idle unit by itself);
+ *   (a Recover until `pulp_wars-3u8d`, 7r131: End Turn recovers an idle
+ *   unit by itself);
  * - any command of an own city (one that names a city: train, naval
  *   training, Land Grant, Hire, Lay Egg, an Offering, a city reward);
  * - Research;
@@ -30,7 +31,7 @@ import type { CommandV7 } from "../engine/index";
 /** Unit commands that are never needed before ending the turn. */
 const IDLE_UNIT_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set<
   CommandV7["kind"]
->(["WAIT", "DISBAND", "RECOVER"]);
+>(["WAIT", "DISBAND"]);
 
 /** The tile commands that count, as the coach's hint counts them. */
 const USEFUL_TILE_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set<

@@ -1175,8 +1175,9 @@ export function dwarfAbilityUnavailableTextV7(
 }
 
 /**
- * Section 16.1 "clockwork status": an own construct that could Recover now
- * but never does (damaged, unmoved, nothing used, its owner's turn).
+ * Section 16.1 "clockwork status": an own construct that idle recovery
+ * would heal now if it were not one (damaged, unmoved, nothing used, its
+ * owner's turn).
  */
 export function clockworkRecoverBlockedV7(
   view: PlayerViewV7,

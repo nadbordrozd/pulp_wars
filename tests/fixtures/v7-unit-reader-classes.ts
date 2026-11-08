@@ -643,6 +643,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The naval branch (`pulp_wars-5ti.2`): Board reads ships on the board
     // (a burrowed unit is never afloat).
     "src/engine/v7/query.ts::previewBoardV7": "BOARD",
+    // `pulp_wars-3u8d` (7r131): whether an attack boards or swallows (the
+    // viewer's units on the board; a burrowed unit is neither attacker nor
+    // target of either).
+    "src/engine/v7/query.ts::queryAttackBoardsV7": "BOARD",
+    "src/engine/v7/query.ts::queryAttackSwallowsV7": "BOARD",
     "src/engine/v7/query.ts::publicBoardTargetsV7": "BOARD",
     "src/engine/v7/reducer.ts::applyBoard": "BOARD",
     // Bolder abilities (`pulp_wars-w49.42`): an Abomination a Brain just
@@ -714,7 +719,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyPromote": "BOARD",
     "src/engine/v7/reducer.ts::applyRaiseDead": "BOARD",
     "src/engine/v7/reducer.ts::applyRally": "BOARD",
-    "src/engine/v7/reducer.ts::applyRecover": "BOARD",
+
     "src/engine/v7/reducer.ts::applyReward": "BOARD",
     "src/engine/v7/reducer.ts::applyTendWounded": "BOARD",
     "src/engine/v7/reducer.ts::applySingleFreeze": "BOARD",
@@ -821,11 +826,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The naval branch interface (`pulp_wars-5ti.7`): Board's prizes and
     // reasons, the Submarine's reason, the ram's shove and the boarding
     // notice read the ships on the board (a ship never burrows).
-    "src/render/canvas/naval-board-plan-v7.ts::navalPickTargetsV7": "BOARD",
-    "src/render/canvas/naval-board-plan-v7.ts::addNavalPickEntriesV7": "BOARD",
+    // `pulp_wars-3u8d` (7r131): the Attack mark of a ship's attack that
+    // boards (the Board pick retired).
+    "src/render/canvas/naval-board-plan-v7.ts::navalBoardAttackTargetV7":
+      "BOARD",
     "src/render/canvas/naval-board-plan-v7.ts::addSubmergedReasonEntriesV7":
       "BOARD",
-    "src/render/naval-presentation-v7.ts::boardUnavailableTextV7": "BOARD",
+
     "src/render/naval-presentation-v7.ts::navalCombatLinesV7": "BOARD",
     "src/render/naval-presentation-v7.ts::navalBoundaryNoticeV7": "BOARD",
     // The frozen sea interface (`pulp_wars-5ti.7`): Freeze's unit and the
@@ -949,6 +956,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/giant-presentation-v7.ts::swallowTargetNameV7": "BOARD",
     "src/render/canvas/giant-board-plan-v7.ts::thrownViewV7": "BOARD",
     "src/render/canvas/giant-board-plan-v7.ts::giantPickTargetsV7": "BOARD",
+    // `pulp_wars-3u8d` (7r131): the Attack mark of an Abomination's attack
+    // that swallows.
+    "src/render/canvas/giant-board-plan-v7.ts::giantSwallowAttackTargetV7":
+      "BOARD",
     "src/render/canvas/giant-board-plan-v7.ts::addGiantPickEntriesV7": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::crushBlockerHitV7": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::overstrideTrampleV7": "BOARD",

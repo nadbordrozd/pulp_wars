@@ -629,7 +629,8 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       const view = viewForV7(state, state.humanPlayerId);
       const decision = chooseNormalCommandV7(view);
       expect(
-        decision.candidates.some(({ command }) => command.kind === "RECOVER"),
+        // `pulp_wars-3u8d` (7r131): the recovery is a Wait that holds it.
+        decision.candidates.some(({ command }) => command.kind === "WAIT"),
       ).toBe(true);
       expect(
         decision.candidates.some(({ command }) => command.kind === "ATTACK"),
@@ -689,7 +690,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       expect(
         chooseNormalCommandV7(viewForV7(counter, counter.humanPlayerId)).command
           ?.kind,
-      ).toBe("RECOVER");
+      ).toBe("WAIT");
     },
   );
 
@@ -1066,7 +1067,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
           // after PROCLAIM, moving the later command kinds back by one (was
           // f122ff…1f00); the revision-12-ordinal value is unchanged.
-          "e160e8008cf19d1255a18a9c5b27d2df50c872ac7291e9262364d626d2a13801",
+          // One tile, one meaning (`pulp_wars-3u8d`, 7r131) removes BOARD,
+          // RECOVER, and SWALLOW, moving the later command kinds back (was
+          // e160e8…3801: the same decision with the old kind ordinals).
+          "67e33d530e838dab6821a56afcb2da20eaf071a05e8acfbfa35cfaedd36d64e3",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1207,7 +1211,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
           // after PROCLAIM, moving the later command kinds back by one (was
           // 4633b3…d578); the revision-12-ordinal value is unchanged.
-          "9f97e80fd6abee2a3b45e3a40beba2fb8fe943eb6311ce13edde0c0d5bc75367",
+          // One tile, one meaning (`pulp_wars-3u8d`, 7r131) removes BOARD,
+          // RECOVER, and SWALLOW, moving the later command kinds back (was
+          // 9f97e8…5367: the same decision with the old kind ordinals).
+          "741724ad13f34248346778225736538ea91538182ec33b5c7b284c46eacdb9de",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

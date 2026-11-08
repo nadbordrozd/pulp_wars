@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(PRIOR_RULESET_7_IDS.at(-84)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(129);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(PRIOR_RULESET_7_IDS.at(-85)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(130);
   });
 });
 
@@ -126,6 +126,21 @@ describe("1: who moves after a kill", () => {
           ],
           { factions: [faction, foeOf(faction)] },
         );
+        // `pulp_wars-3u8d` (7r131): an Abomination's attack on the
+        // 1-HP Fighter swallows it (no exchange, and it stays put).
+        if (rule.abilities.includes("SWALLOW")) {
+          const swallowed = applyOkV7(state, seatIdV7(state, 0), {
+            kind: "ATTACK",
+            unitId: unitAtV7(state, at(5, 2)).id,
+            targetUnitId: unitAtV7(state, at(5, 3)).id,
+          });
+          expect(
+            swallowed.events.map((event) => event.kind),
+            name,
+          ).toContain("UNIT_SWALLOWED");
+          expect(unitAtV7(swallowed.state, at(5, 2)).role, name).toBe(role);
+          continue;
+        }
         // `pulp_wars-befg`: a Whirligig's attack is a Whirl (no exchange):
         // it kills from where it stands.
         if (roleMechanicsV7(role, faction).whirl) {

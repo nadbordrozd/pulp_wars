@@ -36,12 +36,14 @@ import {
   type PlayerViewV7,
   type TechnologyIdV7,
   type UnitId,
+  previewBoardV7,
 } from "../../src/engine/index";
 import {
   NAVAL_TECHS_V7,
   acceptV7,
   navalUnitAtV7,
   seatV7,
+  boardingAttacksV7,
 } from "../fixtures/v7-naval-branch";
 import {
   CULT_WITHOUT_OFFERINGS_V7,
@@ -570,13 +572,18 @@ describe("against a Kraken (section 9.6)", () => {
       { factions: ["ORIGINAL", "CULT"] },
     );
     const view = viewOf(state);
+    // (`pulp_wars-3u8d`, 7r131: a Board is an attack that boards.)
+    expect(boardingAttacksV7(state)).toEqual([]);
     expect(
       chooseNormalCommandV7(view).candidates.some(
-        (item) => item.command.kind === "BOARD",
+        (item) =>
+          item.command.kind === "ATTACK" &&
+          previewBoardV7(
+            view,
+            item.command.unitId,
+            item.command.targetUnitId,
+          ) !== null,
       ),
-    ).toBe(false);
-    expect(
-      queryPlayerCommandsV7(view).some((command) => command.kind === "BOARD"),
     ).toBe(false);
   });
 

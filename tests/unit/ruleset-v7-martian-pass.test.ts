@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-79, -77)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r131");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r131.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-80, -78)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-79, -77)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -78)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -390,8 +390,16 @@ describe("the Martian pass: a pulled unit explores", () => {
   });
 
   it("still reveals for the puller's owner when it pulls its own unit", () => {
+    // `pulp_wars-3u8d` (7r131): the Saucer pulls hostile units only; the
+    // Mothership's Heavy Tractor Beam still pulls an own unit.
+    const saucer = asMartian([own("RAIDER", 4, 3), own("FIGHTER", 4, 1)]);
+    expect(
+      queryPlayerCommandsV7(viewForV7(saucer, seatIdV7(saucer, 0))).some(
+        (command) => command.kind === "TRACTOR_BEAM",
+      ),
+    ).toBe(false);
     const state = unexploreV7(
-      asMartian([own("RAIDER", 4, 3), own("FIGHTER", 4, 1)]),
+      asMartian([own("KNIGHT", 4, 3), own("FIGHTER", 4, 1)]),
       0,
       [at(3, 3), at(5, 3)],
     );

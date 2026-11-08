@@ -1569,7 +1569,7 @@ describe("score and modes: kills of the giants and the Dwarves (section 3.2)", (
     const value = valueAt(start, 6, 3);
     const undead = seatIdV7(start, 0);
     let state = applyOkV7(start, undead, {
-      kind: "SWALLOW",
+      kind: "ATTACK",
       unitId: unitAtV7(start, at(5, 3)).id,
       targetUnitId: unitAtV7(start, at(6, 3)).id,
     }).state;

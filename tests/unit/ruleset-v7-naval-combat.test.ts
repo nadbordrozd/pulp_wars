@@ -8,6 +8,8 @@ import {
   viewForV7,
 } from "../../src/engine/index";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
+// `pulp_wars-3u8d` (7r131): no `RECOVER` command; a ship recovers idle.
+import { idleRecoveryOfV7 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 naval combat", () => {
   it("freezes exact Patrol Boat and Battleship statistics", () => {
@@ -218,13 +220,9 @@ describe("ruleset-7 naval combat", () => {
           : candidate,
       ),
     } as typeof fixture.state;
-    const four = applyCommandV7(shipState, shipState.humanPlayerId, {
-      kind: "RECOVER",
-      unitId: unit.id,
-    });
-    expect(four).toMatchObject({
-      accepted: true,
-      events: [{ kind: "UNIT_RECOVERED", amount: 4 }],
+    expect(idleRecoveryOfV7(shipState, unit.id)).toMatchObject({
+      kind: "UNIT_RECOVERED",
+      amount: 4,
     });
 
     const neutralAt = shipState.board.tiles.find(
@@ -265,14 +263,9 @@ describe("ruleset-7 naval combat", () => {
         candidate.id === unit.id ? { ...candidate, at: neutralAt } : candidate,
       ),
     } as typeof shipState;
-    expect(
-      applyCommandV7(neutral, neutral.humanPlayerId, {
-        kind: "RECOVER",
-        unitId: unit.id,
-      }),
-    ).toMatchObject({
-      accepted: true,
-      events: [{ kind: "UNIT_RECOVERED", amount: 4 }],
+    expect(idleRecoveryOfV7(neutral, unit.id)).toMatchObject({
+      kind: "UNIT_RECOVERED",
+      amount: 4,
     });
     const ended = applyCommandV7(neutral, neutral.humanPlayerId, {
       kind: "END_TURN",
@@ -293,13 +286,9 @@ describe("ruleset-7 naval combat", () => {
       ...shipState,
       players: fixture.state.players,
     } as typeof fixture.state;
-    const six = applyCommandV7(recoveryState, recoveryState.humanPlayerId, {
-      kind: "RECOVER",
-      unitId: unit.id,
-    });
-    expect(six).toMatchObject({
-      accepted: true,
-      events: [{ kind: "UNIT_RECOVERED", amount: 4 }],
+    expect(idleRecoveryOfV7(recoveryState, unit.id)).toMatchObject({
+      kind: "UNIT_RECOVERED",
+      amount: 4,
     });
 
     const farWater = fixture.state.board.tiles.find(
@@ -333,12 +322,7 @@ describe("ruleset-7 naval combat", () => {
           : candidate,
       ),
     } as typeof fixture.state;
-    expect(
-      applyCommandV7(noPort, noPort.humanPlayerId, {
-        kind: "RECOVER",
-        unitId: unit.id,
-      }),
-    ).toMatchObject({ accepted: false, error: { code: "RECOVER_NOT_LEGAL" } });
+    expect(idleRecoveryOfV7(noPort, unit.id)).toBeNull();
     const second = fixture.state.units.find(
       (candidate) => candidate.ownerId !== fixture.state.humanPlayerId,
     );

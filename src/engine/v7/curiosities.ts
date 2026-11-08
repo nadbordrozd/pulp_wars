@@ -2557,7 +2557,9 @@ export type MoonGunKnownTileV7 = (at: CoordV7) =>
  * the Gun's own tile), `UNEXPLORED` (not explored by the actor), `BLOCKED`
  * (a tile the unit may not stand on in land form under the actor's
  * research, or one holding a unit, mound, Barricade, treasure chest,
- * settlement centre, or curiosity tile marker).
+ * settlement centre, or curiosity tile marker), `WALKABLE` (one tile, one
+ * meaning, `pulp_wars-3u8d`, 7r131: a tile the unit could reach by an
+ * offered Move now, `walkable`, which is a Move and never a Fire).
  */
 export function moonGunLandingRejectionV7(
   facts: MoonGunFactsV7,
@@ -2566,7 +2568,8 @@ export function moonGunLandingRejectionV7(
   gun: CoordV7,
   at: CoordV7,
   knownTile: MoonGunKnownTileV7,
-): "OUT_OF_RANGE" | "UNEXPLORED" | "BLOCKED" | null {
+  walkable: (at: CoordV7) => boolean,
+): "OUT_OF_RANGE" | "UNEXPLORED" | "BLOCKED" | "WALKABLE" | null {
   const distance = chebyshevV7(gun, at);
   const { board } = facts;
   if (
@@ -2596,12 +2599,14 @@ export function moonGunLandingRejectionV7(
     facts.curiosities.some((curiosity) => sameCoordV7(curiosity.at, at))
   )
     return "BLOCKED";
+  if (walkable(at)) return "WALKABLE";
   return null;
 }
 
 /**
  * Section 5.1: every tile the unit on the Gun on `gun` may be fired to, in
- * (y, x) order.
+ * (y, x) order (beyond the tiles it could walk to now, `walkable`, since
+ * `pulp_wars-3u8d`, 7r131).
  */
 export function moonGunTargetsV7(
   facts: MoonGunFactsV7,
@@ -2609,6 +2614,7 @@ export function moonGunTargetsV7(
   researched: readonly TechnologyIdV7[],
   gun: CoordV7,
   knownTile: MoonGunKnownTileV7,
+  walkable: (at: CoordV7) => boolean,
 ): readonly CoordV7[] {
   const targets: CoordV7[] = [];
   for (
@@ -2630,6 +2636,7 @@ export function moonGunTargetsV7(
           gun,
           at,
           knownTile,
+          walkable,
         ) === null
       )
         targets.push(at);

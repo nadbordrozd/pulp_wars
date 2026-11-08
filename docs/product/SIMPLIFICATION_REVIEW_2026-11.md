@@ -13,9 +13,18 @@
 >   away), finding 3 (no Ribbit command: the Hexer's attack frogs a target
 >   it leaves alive, at Attack 1), and finding 13 (Switcheroo reaches 2 to
 >   4 tiles).
-> - **Queued** in `pulp_wars-3u8d`: findings 7 (the Sled), 10 (Recover),
->   12, 15, 9, and 17 (the Moon Gun only); and in `pulp_wars-y242`: Crack
->   Ice (finding 4), as "only the Ice Folk walk on ice".
+> - **Done in `7r131`** (`pulp_wars-3u8d`): finding 7 for the Sled (its
+>   Bolas flies exactly 2 tiles), finding 9 (the Saucer's Tractor Beam
+>   pulls only enemies; the Mothership's Heavy Tractor Beam keeps own
+>   units, since it does not do what Mass Beam Down does), finding 10 (no
+>   Recover command: an idle unit recovers at End Turn, as before),
+>   finding 12 (the Abomination's attack swallows a unit it may swallow),
+>   finding 15 (a ship's attack boards a ship it may board), and finding
+>   17 for the Moon Gun (it fires only to tiles the unit could not walk
+>   to); the Summoner's Tentacle also replaces a Move on a road tile both
+>   reach.
+> - **Queued** in `pulp_wars-y242`: Crack Ice (finding 4), as "only the Ice
+>   Folk walk on ice".
 > - **Kept by the user's choice:** Sugar Rush (finding 11: "it also boosts
 >   your attack").
 > - **Kept as legitimate choices:** the Engineer (finding 6), the summons,

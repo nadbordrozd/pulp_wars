@@ -497,7 +497,6 @@ describe("the mound (section 5.3)", () => {
     const commands: readonly CommandV7[] = [
       { kind: "MOVE", unitId: mole.id, path: [at(5, 4)] },
       { kind: "DISBAND", unitId: mole.id },
-      { kind: "RECOVER", unitId: mole.id },
       { kind: "WAIT", unitId: mole.id },
       { kind: "TUNNEL", unitId: mole.id, to: at(6, 5), rider: null },
     ];

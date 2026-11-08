@@ -414,7 +414,8 @@ function runPairedGame(
     actorMetrics.supportActions += Number(
       command.kind === "RALLY" || command.kind === "TEND_WOUNDED",
     );
-    actorMetrics.recoveries += Number(command.kind === "RECOVER");
+    // `pulp_wars-3u8d` (7r131): a recovery is the Wait that holds a unit.
+    actorMetrics.recoveries += Number(command.kind === "WAIT");
     if (command.kind === "BUILD_ROAD") {
       const afterRoadNetwork = metricSnapshot(state, actor).view.naval
         .networkCityIds;
@@ -771,7 +772,7 @@ function runNaturalGame(
     metrics.supportActions += Number(
       command.kind === "RALLY" || command.kind === "TEND_WOUNDED",
     );
-    metrics.recoveries += Number(command.kind === "RECOVER");
+    metrics.recoveries += Number(command.kind === "WAIT");
     metrics.roadsBuilt += Number(command.kind === "BUILD_ROAD");
     if (["TRAIN", "TRAIN_NAVAL", "LAND_GRANT"].includes(command.kind))
       metrics.cityActions[command.kind] =

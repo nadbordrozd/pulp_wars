@@ -31,7 +31,7 @@ import {
   type GameStateV7,
   type TechnologyIdV7,
 } from "../../src/engine/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, idleRecoveryOfV7 } from "../fixtures/v7-builders";
 import { patchTileV7 } from "../fixtures/v7-revision20";
 import {
   cityOfV7,
@@ -875,19 +875,17 @@ describe("ruleset-7 Dinosaur Grow", () => {
     // Recover: 4 in own territory, capped at the grown maximum of 16.
     const wounded = withKillsV7(base, { x: 7, y: 7 }, 1, 9);
     const raptor = unitAtV7(wounded, { x: 7, y: 7 });
-    expect(
-      applyOkV7(wounded, wounded.humanPlayerId, {
-        kind: "RECOVER",
-        unitId: raptor.id,
-      }).events[0],
-    ).toMatchObject({ kind: "UNIT_RECOVERED", amount: 4 });
-    const nearFull = withKillsV7(base, { x: 7, y: 7 }, 1, 14);
-    const recovered = applyOkV7(nearFull, nearFull.humanPlayerId, {
-      kind: "RECOVER",
-      unitId: raptor.id,
+    // (Idle, at End Turn: the Recover command is gone, `pulp_wars-3u8d`.)
+    expect(idleRecoveryOfV7(wounded, raptor.id)).toMatchObject({
+      kind: "UNIT_RECOVERED",
+      amount: 4,
     });
-    expect(recovered.events[0]).toMatchObject({ amount: 2 });
-    expect(unitAtV7(recovered.state, { x: 7, y: 7 }).hp).toBe(16);
+    const nearFull = withKillsV7(base, { x: 7, y: 7 }, 1, 14);
+    expect(idleRecoveryOfV7(nearFull, raptor.id)).toMatchObject({ amount: 2 });
+    expect(
+      unitAtV7(nearFull, { x: 7, y: 7 }).hp +
+        (idleRecoveryOfV7(nearFull, raptor.id)?.amount ?? 0),
+    ).toBe(16);
     // Tend Wounded heals above the role's base maximum (12) as well.
     const tended = applyOkV7(wounded, wounded.humanPlayerId, {
       kind: "TEND_WOUNDED",

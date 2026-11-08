@@ -50,6 +50,7 @@ import {
   navalUnitV7,
   rejectV7,
   seatV7,
+  boardingAttacksV7,
 } from "../fixtures/v7-naval-branch";
 import {
   CULT_NAVAL_TECHS_V7,
@@ -83,8 +84,10 @@ const move = (unitId: number, path: readonly CoordV7[]): CommandV7 => ({
   unitId: unitId as UnitId,
   path: [...path],
 });
+// `pulp_wars-3u8d` (7r131): a Board is a ship's attack on a ship it may
+// board.
 const board = (unitId: number, targetUnitId: number): CommandV7 => ({
-  kind: "BOARD",
+  kind: "ATTACK",
   unitId: unitId as UnitId,
   targetUnitId: targetUnitId as UnitId,
 });
@@ -720,22 +723,22 @@ describe("K2: the Kraken's Drag afloat (section 9.3)", () => {
 });
 
 describe("no Board for the Cult, and none on a Kraken (sections 2 and 9.3)", () => {
-  it("offers no BOARD to a Cult ship", () => {
+  it("a Cult ship's attack never boards", () => {
     const state = sea([
       { seat: 0, role: "PATROL_BOAT", at: { x: 3, y: 6 } },
       { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 7 }, hp: 2 },
     ]);
     const gondola = navalUnitAtV7(state, { x: 3, y: 6 });
     const boat = navalUnitAtV7(state, { x: 3, y: 7 });
+    expect(boardingAttacksV7(state)).toEqual([]);
     expect(
-      queryPlayerCommandsV7(viewOf(state)).some(
-        (command) => command.kind === "BOARD",
+      acceptV7(state, 0, board(gondola.id, boat.id)).events.map(
+        (event) => event.kind,
       ),
-    ).toBe(false);
-    expect(rejectV7(state, 0, board(gondola.id, boat.id)).code).not.toBe("");
+    ).not.toContain("SHIP_BOARDED");
   });
 
-  it("refuses a Human ship's Board of a weak Kraken as TARGET_IMMUNE and never offers it", () => {
+  it("a Human ship's attack on a weak Kraken never boards it", () => {
     const state = sea(
       [
         { seat: 0, role: "PATROL_BOAT", at: { x: 3, y: 5 } },
@@ -745,15 +748,12 @@ describe("no Board for the Cult, and none on a Kraken (sections 2 and 9.3)", () 
     );
     const boarder = navalUnitAtV7(state, { x: 3, y: 5 });
     const beast = navalUnitAtV7(state, { x: 4, y: 5 });
+    expect(boardingAttacksV7(state)).toEqual([]);
     expect(
-      queryPlayerCommandsV7(viewOf(state)).some(
-        (command) => command.kind === "BOARD",
+      acceptV7(state, 0, board(boarder.id, beast.id)).events.map(
+        (event) => event.kind,
       ),
-    ).toBe(false);
-    expect(rejectV7(state, 0, board(boarder.id, beast.id))).toEqual({
-      code: "BOARD_NOT_LEGAL",
-      params: expect.objectContaining({ reason: "TARGET_IMMUNE" }),
-    });
+    ).not.toContain("SHIP_BOARDED");
   });
 });
 

@@ -54,20 +54,20 @@ const idAt = (state: GameStateV7, where: CoordV7) => unitAtV7(state, where).id;
 
 describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () => {
   /**
-   * An Ice Folk Sled on (4, 3) and Ice Witch on (5, 5) of seat 0; a Human
-   * Fighter Frozen on (5, 3) and a free one on (6, 4), both within 2 of
-   * either.
+   * An Ice Folk Sled on (4, 5) and Ice Witch on (5, 5) of seat 0; a Human
+   * Fighter Frozen on (5, 3) and a free one on (6, 3), both exactly 2 from
+   * either (the Sled's Bolas flies exactly 2 since `pulp_wars-3u8d`, 7r131).
    */
   const field = (): GameStateV7 =>
     iceFieldV7([
-      { seat: 0, role: "RAIDER", at: at(4, 3) },
+      { seat: 0, role: "RAIDER", at: at(4, 5) },
       { seat: 0, role: "CAPTAIN", at: at(5, 5) },
       { seat: 1, role: "FIGHTER", at: at(5, 3), frozen: { turnsLeft: 1 } },
       { seat: 1, role: "FIGHTER", at: at(6, 3) },
     ]);
 
   for (const [kind, error, from] of [
-    ["THROW_BOLAS", "BOLAS_NOT_LEGAL", at(4, 3)],
+    ["THROW_BOLAS", "BOLAS_NOT_LEGAL", at(4, 5)],
     ["FROST_BOLT", "FROST_BOLT_NOT_LEGAL", at(5, 5)],
   ] as const)
     it(`${kind}: refused with ALREADY_FROZEN, never offered, never scored by the AI`, () => {
@@ -97,7 +97,7 @@ describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () 
 
   it("leaves the Sled without a Frost Bolt when every enemy in reach is Frozen, and says why", () => {
     const state = iceFieldV7([
-      { seat: 0, role: "RAIDER", at: at(4, 3) },
+      { seat: 0, role: "RAIDER", at: at(3, 4) },
       { seat: 0, role: "CAPTAIN", at: at(5, 5) },
       { seat: 1, role: "FIGHTER", at: at(5, 4), frozen: { turnsLeft: 1 } },
     ]);
@@ -105,7 +105,7 @@ describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () 
       [],
     );
     const view = activeView(state);
-    const sled = view.units.find((unit) => unit.id === idAt(state, at(4, 3)));
+    const sled = view.units.find((unit) => unit.id === idAt(state, at(3, 4)));
     const witch = view.units.find((unit) => unit.id === idAt(state, at(5, 5)));
     if (sled === undefined || witch === undefined) throw new Error("no unit");
     expect(
@@ -117,7 +117,7 @@ describe("a freeze of a unit Frozen already (Frost Bolt, the Sled's Bolas)", () 
     expect(
       iceFolkAbilityUnavailableTextV7(view, witch, "COLD_SNAP", false),
     ).toBe(COLD_SNAP_NO_TARGET_V7);
-    expect(BOLAS_NO_TARGET_V7).toBe("No unfrozen enemy within 2 tiles");
+    expect(BOLAS_NO_TARGET_V7).toBe("No unfrozen enemy 2 tiles away");
   });
 
   it("is pointless only while the entry is as long as a freeze gives now (a refresh that extends stays legal)", () => {

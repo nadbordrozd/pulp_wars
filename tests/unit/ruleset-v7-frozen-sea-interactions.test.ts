@@ -35,6 +35,7 @@ import {
   rejectV7,
   seatV7,
 } from "../fixtures/v7-naval-branch";
+import { idleRecoveryOfV7 } from "../fixtures/v7-builders";
 
 // `pulp_wars-5ti.11` (`7r45`): one focused test per interaction row of the
 // frozen sea that the fold (`pulp_wars-5ti.9`) could only state from the
@@ -593,7 +594,7 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
 // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is ever in the
 // ice; a Frozen ship is refused what a Frozen land unit is refused.
 describe("a Frozen ship's Recover and Promote (section 21.3)", () => {
-  it("is promoted but does not recover while Frozen", () => {
+  it("is promoted while Frozen, and recovers idle as usual", () => {
     // (3, 3) is next to seat 0's Port on (4, 3).
     const at: CoordV7 = { x: 3, y: 3 };
     const base = scene("ORIGINAL", [{ seat: 0, role: "BATTLESHIP", at }], []);
@@ -608,16 +609,12 @@ describe("a Frozen ship's Recover and Promote (section 21.3)", () => {
       queryUnitStatsV7(viewForV7(frozen, seatV7(frozen, 0).id), ship.id)
         ?.frozen,
     ).toEqual({ turnsLeft: 1 });
-    expect(
-      offered(hurt, 0).some(
-        (command) => command.kind === "RECOVER" && command.unitId === ship.id,
-      ),
-    ).toBe(true);
-    expect(
-      offered(frozen, 0).some(
-        (command) => command.kind === "RECOVER" && command.unitId === ship.id,
-      ),
-    ).toBe(false);
+    // `pulp_wars-3u8d` (7r131): no Recover command (it was refused while
+    // Frozen); idle recovery heals it as usual (section 21.3).
+    expect(idleRecoveryOfV7(hurt, ship.id)).not.toBeNull();
+    expect(idleRecoveryOfV7(frozen, ship.id)).toEqual(
+      idleRecoveryOfV7(hurt, ship.id),
+    );
     const promoted = acceptV7(frozen, 0, { kind: "PROMOTE", unitId: ship.id });
     expect(navalUnitV7(promoted.state, ship.id)).toMatchObject({
       veteran: true,

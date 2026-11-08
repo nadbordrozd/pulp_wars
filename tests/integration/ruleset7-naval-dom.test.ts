@@ -28,18 +28,13 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
-import {
-  BOARD_PICK_PANEL_MAX_BUTTONS_V7,
-  targetHighlightStyleV7,
-} from "../../src/render/canvas/target-highlight-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { GATHER_PEARLS_UNLOCK_TEXT_V7 } from "../../src/render/technology-unlock-text-v7";
 import {
-  BOARD_ALREADY_ACTED_V7,
-  BOARD_NO_WEAK_SHIP_V7,
   NAVAL_HELP_RULES_V7,
   SUBMERGED_OUT_OF_REACH_V7,
 } from "../../src/render/naval-presentation-v7";
@@ -60,7 +55,7 @@ import {
 import { openDockDetailsV7 } from "../fixtures/v7-unit-card-dom";
 
 // The naval branch interface (bead pulp_wars-5ti.7, first part;
-// docs/ui/BOARD_TARGETING.md section 3.4): Board picked on the board, the
+// docs/ui/BOARD_TARGETING.md section 3.4): Board as an Attack mark, the
 // Bow Ram and torpedo previews, the Submarine's marker and reason, the
 // Harbours numbers, and the technology cards and Help.
 
@@ -71,46 +66,30 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-describe("Board is picked on the board", () => {
-  it("arms with one button, shows both prizes with the exact HP, and captures the picked one", async () => {
+describe("Board is the ship's attack on a prize", () => {
+  // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no Board button and no
+  // aiming; each prize's Attack mark says it is captured.
+  it("has no button, marks both prizes with the exact HP, and captures the picked one", async () => {
     const { controller, host, app, unitAt } = rig(navalBoardingUiFixtureV7());
     const boarder = unitAt(NAVAL_UI_V7.boarder);
     const prizes = NAVAL_UI_V7.prizes.map((at) => unitAt(at));
     host.callbacks?.onSelection({ kind: "UNIT", unitId: boarder.id });
-    // One Board button, whatever the number of prizes; no per-target one.
-    const board = requiredButton("naval-board");
-    expect(
-      document.querySelectorAll('[data-action="naval-board"]').length,
-    ).toBe(1);
-    expect(board.dataset.navalAbility).toBe("board");
-    expect(board.getAttribute("aria-pressed")).toBe("false");
-    expect(board.textContent).toBe("Board");
-    expect(board.title).not.toMatch(COORDINATE);
+    expect(document.querySelector('[data-action="naval-board"]')).toBeNull();
     expect(document.querySelector('[data-action^="command-board"]')).toBeNull();
-    // Unarmed, the prizes are plain attack targets.
-    expect(
-      boardPlan(host).targets.filter((target) => target.family === "BOARD"),
-    ).toEqual([]);
-    expect(
-      boardPlan(host).targets.filter((target) => target.family === "ATTACK")
-        .length,
-    ).toBe(3);
-
-    board.click();
-    expect(host.lastModel?.interaction.navalPick).toEqual({
-      kind: "BOARD",
-      unitId: boarder.id,
-    });
-    const panel = requiredElement<HTMLElement>("[data-v7-naval-pick]");
-    expect(panel.classList.contains("v7-board-pick")).toBe(true);
-    expect(panel.dataset.boardTargets).toBe("2");
-    const controls = [...panel.querySelectorAll("button")].map(
-      (control) => control.dataset.action,
+    // The three boats are attack targets; the two prizes say "Board".
+    const attacks = boardPlan(host).targets.filter(
+      (target) => target.family === "ATTACK",
     );
-    expect(controls).toEqual(["pick-info", "naval-pick-cancel"]);
-    expect(controls.length).toBeLessThanOrEqual(
-      BOARD_PICK_PANEL_MAX_BUTTONS_V7,
+    expect(attacks).toHaveLength(3);
+    const boards = attacks.filter(
+      (target) => target.previewLabel === "Board: captures the ship",
     );
+    expect(boards).toHaveLength(2);
+    for (const target of boards) {
+      expect(targetHighlightStyleV7(target.family)).toBe("ATTACK");
+      expect(target.previewNote).toBe("It becomes yours with 4 HP");
+      expect(target.semanticLabel).not.toMatch(COORDINATE);
+    }
     // No button of the dock is named after a prize.
     for (const control of document.querySelectorAll<HTMLButtonElement>(
       ".v7-selection-dock button",
@@ -119,29 +98,10 @@ describe("Board is picked on the board", () => {
         expect(control.dataset.action ?? "").not.toMatch(
           new RegExp(`-${prize.id}$`),
         );
-    const targets = boardPlan(host).targets;
-    expect(targets.map((target) => target.family)).toEqual(["BOARD", "BOARD"]);
-    for (const target of targets) {
-      expect(targetHighlightStyleV7(target.family)).toBe("ATTACK");
-      expect(target.previewLabel).toBe("Take · 4 HP");
-    }
-
-    // Escape disarms and returns to the button; nothing was sent.
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-    );
-    expect(host.lastModel?.interaction.navalPick ?? null).toBeNull();
-    expect(document.querySelector("[data-v7-naval-pick]")).toBeNull();
-    expect(controller.accepted).toEqual([]);
-    // Cancel does the same.
-    requiredButton("naval-board").click();
-    requiredButton("naval-pick-cancel").click();
-    expect(host.lastModel?.interaction.navalPick ?? null).toBeNull();
 
     // Pick the second prize on the board.
-    requiredButton("naval-board").click();
     const second = required(
-      boardPlan(host).targets.find(
+      boards.find(
         (target) =>
           target.at.x === NAVAL_UI_V7.prizes[1].x &&
           target.at.y === NAVAL_UI_V7.prizes[1].y,
@@ -150,7 +110,7 @@ describe("Board is picked on the board", () => {
     host.callbacks?.onCommand(second);
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
-      kind: "BOARD",
+      kind: "ATTACK",
       unitId: boarder.id,
       targetUnitId: required(prizes[1]).id,
     });
@@ -167,11 +127,10 @@ describe("Board is picked on the board", () => {
           ?.textContent?.includes("You boarded the Undead's Ghost Ship") ===
         true,
     );
-    expect(host.lastModel?.interaction.navalPick ?? null).toBeNull();
     app.destroy();
   });
 
-  it("is disabled with the engine's reason beside a ship it cannot take, and absent elsewhere", () => {
+  it("is a plain attack beside a ship it cannot take, with no disabled button", () => {
     let state = navalBoardingUiFixtureV7();
     for (const at of NAVAL_UI_V7.prizes)
       state = patchNavalUnitV7(state, navalUnitAtV7(state, at).id, { hp: 10 });
@@ -180,54 +139,13 @@ describe("Board is picked on the board", () => {
       kind: "UNIT",
       unitId: unitAt(NAVAL_UI_V7.boarder).id,
     });
-    const board = requiredButton("naval-board");
-    expect(board.getAttribute("aria-disabled")).toBe("true");
-    expect(board.dataset.disabledReason).toBe(BOARD_NO_WEAK_SHIP_V7);
-    expect(board.getAttribute("aria-label")).toBe(
-      `Board unavailable. ${BOARD_NO_WEAK_SHIP_V7}`,
-    );
-    board.click();
-    expect(host.lastModel?.interaction.navalPick ?? null).toBeNull();
-    expect(document.querySelector("#v7-live")?.textContent).toContain(
-      BOARD_NO_WEAK_SHIP_V7,
-    );
-    app.destroy();
-
-    // A boarder that already acted beside a prize.
-    document.body.innerHTML = '<div id="app"></div>';
-    let acted = navalBoardingUiFixtureV7();
-    const boarderState = navalUnitAtV7(acted, NAVAL_UI_V7.boarder);
-    acted = patchNavalUnitV7(acted, boarderState.id, {
-      activation: {
-        ...boarderState.activation,
-        attacked: true,
-        attacksUsed: 1,
-      },
-    });
-    const second = rig(acted);
-    second.host.callbacks?.onSelection({
-      kind: "UNIT",
-      unitId: second.unitAt(NAVAL_UI_V7.boarder).id,
-    });
+    expect(document.querySelector('[data-action="naval-board"]')).toBeNull();
     expect(
-      queryPlayerCommandsV7(required(second.controller.snapshot().view)).some(
-        (command) => command.kind === "BOARD",
+      boardPlan(host).targets.some(
+        (target) => target.previewLabel === "Board: captures the ship",
       ),
     ).toBe(false);
-    expect(requiredButton("naval-board").dataset.disabledReason).toBe(
-      BOARD_ALREADY_ACTED_V7,
-    );
-    second.app.destroy();
-
-    // A ship with nothing afloat next to it has no Board button.
-    document.body.innerHTML = '<div id="app"></div>';
-    const third = rig(navalSubmarineUiFixtureV7());
-    third.host.callbacks?.onSelection({
-      kind: "UNIT",
-      unitId: third.unitAt(NAVAL_UI_V7.farBattleship).id,
-    });
-    expect(document.querySelector('[data-action="naval-board"]')).toBeNull();
-    third.app.destroy();
+    app.destroy();
   });
 });
 
@@ -584,7 +502,7 @@ describe("technology cards and Help", () => {
               ]
             : dinosaur
               ? [
-                  "Board: capture an adjacent enemy ship at a third of its HP or less",
+                  "Board: attacking an adjacent enemy ship at a third of its HP or less captures it",
                   "Horned Prow: Dugouts that moved hit ships with +1 Attack (+1.5 after 2 tiles) and shove them back",
                 ]
               : martian
@@ -608,7 +526,7 @@ describe("technology cards and Help", () => {
                           "Offerings to the Deep: What your ships sink feeds the Ancient Ones: half its value in Favour",
                         ]
                       : [
-                          "Board: capture an adjacent enemy ship at a third of its HP or less",
+                          "Board: attacking an adjacent enemy ship at a third of its HP or less captures it",
                           "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
                         ],
       );

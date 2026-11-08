@@ -65,12 +65,7 @@ import {
   SUGAR_TOSS_LABEL_V7,
   TOP_UP_LABEL_V7,
 } from "../candy-presentation-v7";
-import {
-  BREAK_OFF_LABEL_V7,
-  SWALLOW_LABEL_V7,
-  TOSS_LABEL_V7,
-} from "../giant-presentation-v7";
-import { BOARD_LABEL_V7 } from "../naval-presentation-v7";
+import { BREAK_OFF_LABEL_V7, TOSS_LABEL_V7 } from "../giant-presentation-v7";
 import {
   FIRE_MOON_GUN_LABEL_V7,
   ZAP_LABEL_V7,
@@ -114,7 +109,6 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   HATCH: "BOARD",
   SUGAR_TOSS: "BOARD",
   TOP_UP: "BOARD",
-  BOARD: "AIMED",
   BEAM_DOWN: "AIMED",
   MASS_BEAM_DOWN: "AIMED",
   MIND_CONTROL: "AIMED",
@@ -134,7 +128,6 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   BUILD_BARRICADE: "AIMED",
   SUGAR_RUSH: "AIMED",
   REBAKE: "AIMED",
-  SWALLOW: "AIMED",
   TOSS: "AIMED",
   BREAK_OFF: "AIMED",
   SACRIFICE: "AIMED",
@@ -155,7 +148,6 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   TEND_WOUNDED: "BAR_ONLY",
   RAISE_DEAD: "BAR_ONLY",
   DEVOUR: "BAR_ONLY",
-  RECOVER: "BAR_ONLY",
   CAPTURE: "BAR_ONLY",
   PROMOTE: "BAR_ONLY",
   PILLAGE: "BAR_ONLY",
@@ -266,7 +258,8 @@ export interface TileAbilityV7 extends TileActionLookV7 {
    * Mammoth's Stampede is its 2- or 3-tile straight charge, so a tile it
    * charges to carries the Stampede alone even where a Road would let the
    * Mammoth walk there; every tile has one meaning and opens no chooser.
-   * The Steam Mole's Tunnel too (`pulp_wars-ev6q`, 7r129: 2 or 3 tiles).
+   * The Steam Mole's Tunnel too (`pulp_wars-ev6q`, 7r129: 2 or 3 tiles),
+   * and the Summoner's Tentacle (`pulp_wars-3u8d`, 7r131: 2 or 3 tiles).
    */
   readonly replacesMove?: true;
 }
@@ -501,16 +494,8 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     offered: kind("REBAKE"),
     pick: (unitId) => ({ candyPick: { kind: "REBAKE", unitId, from: null } }),
   },
-  // The giants' signatures.
-  {
-    id: "SWALLOW",
-    label: SWALLOW_LABEL_V7,
-    icon: "devour",
-    dockAction: "giant-swallow",
-    families: ["SWALLOW"],
-    offered: kind("SWALLOW"),
-    pick: (unitId) => ({ giantPick: { kind: "SWALLOW", unitId } }),
-  },
+  // The giants' signatures. (The Swallow is the Abomination's Attack since
+  // `pulp_wars-3u8d`, 7r131.)
   {
     id: "TOSS",
     label: TOSS_LABEL_V7,
@@ -541,16 +526,8 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
       giantPick: { kind: "BREAK_OFF", unitId, first: null },
     }),
   },
-  // The naval branch.
-  {
-    id: "BOARD",
-    label: BOARD_LABEL_V7,
-    icon: "grapple",
-    dockAction: "naval-board",
-    families: ["BOARD"],
-    offered: kind("BOARD"),
-    pick: (unitId) => ({ navalPick: { kind: "BOARD", unitId } }),
-  },
+  // (The naval branch's Board is a ship's Attack since `pulp_wars-3u8d`,
+  // 7r131.)
   // Map curiosities round 3 (bead pulp_wars-737.20): the Tesla Tower's Zap
   // and the Moon Gun's shot.
   {
@@ -666,6 +643,10 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     families: ["TENTACLE"],
     offered: kind("TENTACLE"),
     pick: (unitId) => ({ cultPick: { kind: "TENTACLE", unitId } }),
+    // `pulp_wars-3u8d` (7r131): a Tentacle rises 2 or 3 tiles away, and a
+    // Road can let the Summoner walk to such a free tile too; the tile
+    // means the Tentacle alone, as a Stampede's and a Tunnel's.
+    replacesMove: true,
   },
   // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
   // sections 8.2 and 13): a cultist beside a Stargazer whose Star-fall is

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r130" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r131" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -141,8 +141,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r127",
   "pulp-wars-poc-7r128",
   "pulp-wars-poc-7r129",
+  "pulp-wars-poc-7r130",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r130.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r131.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -363,8 +364,9 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
 export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "MOVE",
   "ATTACK",
-  // The naval branch (section 4.2): a ship captures a crippled enemy ship.
-  "BOARD",
+  // (The naval branch's `BOARD`, section 4.2, retired with
+  // `pulp_wars-3u8d`, 7r131: a ship's `ATTACK` on a ship it may board
+  // boards it.)
   "RALLY",
   "TEND_WOUNDED",
   "RAISE_DEAD",
@@ -406,12 +408,14 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
   // 8.2): the Confectioner's Top-Up, with the other Candy commands.
   "TOP_UP",
-  "RECOVER",
-  // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
-  // 6.3, 6.4, and 6.8): the Abomination's Swallow, the Troll's Goblin Toss,
-  // the Brontosaurus's Thunder Stomp, and the Gingerbread Giant's Break Off
-  // (after RECOVER, so no pinned neighbour of the earlier revisions moves).
-  "SWALLOW",
+  // (`RECOVER` retired with `pulp_wars-3u8d`, 7r131: a unit recovers idle
+  // at End Turn.) The giants' signatures (docs/product/RULESET_7_GIANTS.md
+  // sections 6.2, 6.3, 6.4, and 6.8): the Troll's Goblin Toss, the
+  // Brontosaurus's Thunder Stomp, and the Gingerbread Giant's Break Off
+  // (after RECOVER's old place, so no pinned neighbour of the earlier
+  // revisions moved). The Abomination's `SWALLOW` retired with
+  // `pulp_wars-3u8d` (7r131): its `ATTACK` on a unit it may swallow
+  // swallows it.
   "TOSS",
   "STOMP",
   "BREAK_OFF",

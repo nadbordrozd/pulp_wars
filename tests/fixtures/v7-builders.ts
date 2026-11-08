@@ -3,6 +3,7 @@ import {
   TECHNOLOGY_IDS_V7,
   distinctFactionsV7,
   parseGameStateV7,
+  queryIdleRecoveryV7,
   type CoordV7,
   type FactionIdV7,
   type GameStateV7,
@@ -178,4 +179,35 @@ export function exploredAllV7(state: GameStateV7): GameStateV7 {
         : player,
     ),
   });
+}
+
+/**
+ * One tile, one meaning (`pulp_wars-3u8d`, 7r131): the `RECOVER` command is
+ * gone, and a unit recovers only idle at its owner's End Turn, by the same
+ * predicate and amount (`queryIdleRecoveryV7`). The `UNIT_RECOVERED` event
+ * End Turn would emit for `unitId` now, or null when it would not recover.
+ * The tests that probed the explicit Recover read it.
+ */
+export function idleRecoveryOfV7(
+  state: GameStateV7,
+  unitId: number,
+): {
+  readonly kind: "UNIT_RECOVERED";
+  readonly unitId: number;
+  readonly amount: number;
+  readonly automatic: true;
+} | null {
+  const unit = state.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined) return null;
+  const entry = queryIdleRecoveryV7(state, unit.ownerId).find(
+    (candidate) => candidate.unitId === unitId,
+  );
+  return entry === undefined
+    ? null
+    : {
+        kind: "UNIT_RECOVERED",
+        unitId: entry.unitId,
+        amount: entry.amount,
+        automatic: true,
+      };
 }

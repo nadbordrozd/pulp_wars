@@ -214,7 +214,7 @@ export const TRACTOR_BEAM_LABEL_V7 = "Tractor Beam";
 // `tractorBeamTooltipV7`).
 // Step two of the Martian pass (`pulp_wars-w49.25`, `7r58`): City Walls
 // hold a unit against a Saucer's beam, not against a Mothership's.
-export const TRACTOR_BEAM_TOOLTIP_V7 = `A Saucer pulls a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer, but not a unit behind its City Walls. A Mothership pulls a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, once a turn, also off City Walls, and can still act.`;
+export const TRACTOR_BEAM_TOOLTIP_V7 = `A Saucer pulls an enemy ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer, but not a unit behind its City Walls. A Mothership pulls a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, once a turn, also off City Walls, and can still act.`;
 export const TRACTOR_BEAM_NO_TARGET_V7 = "No unit in reach can be pulled";
 
 /**
@@ -224,7 +224,8 @@ export const TRACTOR_BEAM_NO_TARGET_V7 = "No unit in reach can be pulled";
 export function tractorBeamTooltipV7(heavy: boolean): string {
   return heavy
     ? `Pull a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, also off City Walls. Free once a turn: it can still move and act.`
-    : `Pull a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer, but not a unit behind its City Walls. Uses this unit's action.`;
+    : // `pulp_wars-3u8d` (7r131): the Saucer pulls hostile units only.
+      `Pull an enemy ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer, but not a unit behind its City Walls. Uses this unit's action.`;
 }
 
 /** Whether a role's Tractor Beam is the heavy, free one (the Mothership's). */
@@ -528,7 +529,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       TRACTOR_BEAM_LABEL_V7,
-      `a ${joinOr(lightPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile closer, but not a unit on its own city center with City Walls; a ${joinOr(heavyPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} or ${numberWord(HEAVY_TRACTOR_RANGE_V7)} tiles away up to ${numberWord(HEAVY_TRACTOR_PULL_V7)} tiles closer, also off City Walls, once a turn, and can still act.`,
+      `a ${joinOr(lightPullers)} pulls an enemy ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile closer (your own units come by Beam Down), but not a unit on its own city center with City Walls; a ${joinOr(heavyPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} or ${numberWord(HEAVY_TRACTOR_RANGE_V7)} tiles away up to ${numberWord(HEAVY_TRACTOR_PULL_V7)} tiles closer, also off City Walls, once a turn, and can still act.`,
     ],
     [
       // Bead pulp_wars-2yc.63: the Saucer's bonus is Charge (Strafe before).

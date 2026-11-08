@@ -51,7 +51,9 @@ describe("ruleset-7 late public query performance", () => {
     // five more technologies (six RESEARCH commands instead of one).
     // Building placement (`pulp_wars-h0xx`, 7r106): 79, with ten building
     // offers more on Fertile Ground that no longer blocks them.
-    expect(commands).toHaveLength(79);
+    // One tile, one meaning (`pulp_wars-3u8d`, 7r131): 77, without the
+    // RECOVER offers of units 19 and 20 (idle recovery only).
+    expect(commands).toHaveLength(77);
     expect(canonicalHash(commands)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
@@ -67,7 +69,10 @@ describe("ruleset-7 late public query performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was 5d18df…04ef).
-      "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was e2898b…f2dc).
+      "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
     );
     expect(
       commands.flatMap((command) =>
@@ -115,7 +120,10 @@ describe("ruleset-7 late public query performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was 5d18df…04ef).
-      "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was e2898b…f2dc).
+      "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -204,7 +212,10 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
       // after PROCLAIM, moving the later command kinds back by one (was
       // 68c51b…53c7); the revision-12-ordinal value is unchanged.
-      "0399f8c9b0ea4066e34f6bacb5b6b4323d14e609e0abddea6fd5acd6c9204feb",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 0399f8…4feb).
+      "352e13325f7a0202804b3a96c507e6a22e688b4fa783804b9c8220daa1facec7",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -221,7 +232,10 @@ describe("ruleset-7 late public query performance", () => {
       // 724d39…5de0).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
       // (was 414a64…0796).
-      "4b48eabb31cf27abb21bd8936711abb2fc8076fbf7b56cfd183e90a97658bf2f",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 4b48ea…bf2f).
+      "50b4c05f77454f5de2afcf11a382fea536409cabf41f79922f9abf2dc4f63e33",
     );
     expect(
       canonicalHash(
@@ -241,7 +255,9 @@ describe("ruleset-7 late public query performance", () => {
       // 9aa14d…a856).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
       // (was 8109fe…b852).
-    ).toBe("73fd0a544695256622a6f312aa589cd6f806be09310c2ef4d148a4bf87597637");
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): without the two
+      // RECOVER offers (was 73fd0a…7637).
+    ).toBe("a7428154a24f7ebee7ea3a01740cc745013cf82e06ca346369a846f3ab146bb5");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -260,7 +276,9 @@ describe("ruleset-7 late public query performance", () => {
       // 9aa14d…a856).
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
       // (was 8109fe…b852).
-    ).toBe("73fd0a544695256622a6f312aa589cd6f806be09310c2ef4d148a4bf87597637");
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): without the two
+      // RECOVER offers (was 73fd0a…7637).
+    ).toBe("a7428154a24f7ebee7ea3a01740cc745013cf82e06ca346369a846f3ab146bb5");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -381,7 +399,10 @@ describe("ruleset-7 late public query performance", () => {
         // and Game no longer block a building, a Forest needs Forestry and a
         // Mountain takes only the Mine, so the building offers moved (was
         // b219a1…9cd9).
-        "df2a7f6648c556c4f4a81f4280daaf1448137bbd9d540e2961af40ac5f7922fa",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was df2a7f…22fa).
+        "0a3eacdb54814ffc4374b5fc195f445f1c6ebda2e635ee615b21f3f3a33d731b",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -411,7 +432,10 @@ describe("ruleset-7 late public query performance", () => {
         // and Game no longer block a building, a Forest needs Forestry and a
         // Mountain takes only the Mine, so the building offers moved (was
         // b219a1…9cd9).
-        "df2a7f6648c556c4f4a81f4280daaf1448137bbd9d540e2961af40ac5f7922fa",
+        // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+        // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+        // (was df2a7f…22fa).
+        "0a3eacdb54814ffc4374b5fc195f445f1c6ebda2e635ee615b21f3f3a33d731b",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -486,7 +510,10 @@ describe("ruleset-7 late public query performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was 5d18df…04ef).
-      "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was e2898b…f2dc).
+      "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -524,7 +551,10 @@ describe("ruleset-7 late public query performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was 60641e…5ff7).
-      "5c3fa3ced1628fa0f0349228023149e993ab6fd7edf54094dad0d81d679615c1",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 5c3fa3…15c1).
+      "dfc1cc4f4d3a43f70c6e6691fe6fc766bb3fec1567fde4958f4f44a1a9b41a29",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -541,7 +571,10 @@ describe("ruleset-7 late public query performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
       // Game no longer block a building, a Forest needs Forestry and a Mountain
       // takes only the Mine, so the building offers moved (was 60641e…5ff7).
-      "5c3fa3ced1628fa0f0349228023149e993ab6fd7edf54094dad0d81d679615c1",
+      // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
+      // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
+      // (was 5c3fa3…15c1).
+      "dfc1cc4f4d3a43f70c6e6691fe6fc766bb3fec1567fde4958f4f44a1a9b41a29",
     );
   });
 

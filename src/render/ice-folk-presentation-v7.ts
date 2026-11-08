@@ -174,7 +174,9 @@ export const BLIZZARD_TOOLTIP_V7 =
  * the engine's IDs).
  */
 export const BOLAS_LABEL_V7 = "Frost Bolt";
-export const BOLAS_TOOLTIP_V7 = `Freeze one hostile unit within ${BOLAS_RANGE_V7} tiles. No damage.`;
+// `pulp_wars-3u8d` (7r131): exactly 2 tiles; a neighbour is the Sled's
+// Attack.
+export const BOLAS_TOOLTIP_V7 = `Freeze one hostile unit ${BOLAS_RANGE_V7} tiles away, not next to it. No damage.`;
 export const BOLAS_PICK_V7 = "Choose a unit to freeze";
 export const WILL_BE_FROZEN_V7 = "Will be Frozen";
 /** A target that is Frozen already: the freeze renews it. */
@@ -187,7 +189,7 @@ export function canThenShatterTextV7(units: readonly string[]): string {
  * No pointless actions (`pulp_wars-zir6`): an enemy Frozen already is no
  * target, so the reason names the unfrozen ones.
  */
-export const BOLAS_NO_TARGET_V7 = `No unfrozen enemy within ${BOLAS_RANGE_V7} tiles`;
+export const BOLAS_NO_TARGET_V7 = `No unfrozen enemy ${BOLAS_RANGE_V7} tiles away`;
 export const COLD_SNAP_LABEL_V7 = "Cold Snap";
 /**
  * Ice Folk freeze rework (`pulp_wars-s55m.1`): one tap casts it, and with
@@ -433,7 +435,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       FROST_BOLT_LABEL_V7,
-      `a ${joinOr(sledders)} freezes one hostile unit up to ${numberWord(BOLAS_RANGE_V7)} tiles away, an ${joinOr(witches)} one exactly ${numberWord(FROST_BOLT_RANGE_V7)} tiles away (never next to her), without damage; an ${joinOr(witches)} casts it or a ${COLD_SNAP_LABEL_V7}, one of the two a turn.`,
+      `a ${joinOr([...sledders, ...witches])} freezes one hostile unit exactly ${numberWord(FROST_BOLT_RANGE_V7)} tiles away (never a neighbour), without damage; an ${joinOr(witches)} casts it or a ${COLD_SNAP_LABEL_V7}, one of the two a turn.`,
     ],
     [
       "Cold Blood",
@@ -618,7 +620,8 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
 
 /** The Ice Folk technology unlock texts of section 4. */
 export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7} on adjacent enemies, or a ${FROST_BOLT_LABEL_V7} ${numberWord(FROST_BOLT_RANGE_V7)} tiles away`;
-export const DEEP_WINTER_UNLOCK_TEXT_V7 = `Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from your city centers; Recover heals ${DEEP_WINTER_RECOVER_V7} in your territory`;
+// (`pulp_wars-3u8d`, 7r131: no Recover command; an idle unit recovers.)
+export const DEEP_WINTER_UNLOCK_TEXT_V7 = `Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from your city centers; an idle unit recovers ${DEEP_WINTER_RECOVER_V7} in your territory`;
 export const BRITTLE_UNLOCK_TEXT_V7 = `Shatter at ${BRITTLE_SHATTER_HP_V7} HP or less`;
 
 /** Recruit-help notes of an Ice Folk role, from its registration. */
