@@ -76,7 +76,7 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * redesign, section 12.1): the Summoner (Leadership: the faction's heart
  * and its summons, one technology behind the Gathering most seats open
  * with), the Idol Bearer (Crafting and Warding Circles: the warden whose
- * idol shields the casters), the Hexer (Hunting and Hexers: Ribbit), the
+ * idol shields the casters), the Hexer (Hunting and Hexers: a shot that frogs), the
  * Familiar (one comes free with Scouts), and the Stargazer (Forestry and
  * Stargazers). The Caller's and the Chosen's slots are vacant
  * (`pulp_wars-mch9.31`).
@@ -250,6 +250,19 @@ export const CULT_FEED_FRONT_V7 = 6;
 export const CULT_FEED_INITIATE_VALUE_V7 = 150;
 /** A seat wants this many robed cultists beyond its daemons' strands. */
 export const CULT_SPARE_ROBED_V7 = 2;
+/**
+ * One tile, one meaning (`pulp_wars-n5fa`, 7r130): what a Hexer's shot that
+ * frogs a hostile unit adds to the attack's strategic value (the Ribbit
+ * step of the Cult plan, retired with its command, ranked the same three
+ * cases). A frog does not attack or strike back on its owner's next turn
+ * and defends at 0.5 (`CULT_FROG_VALUE_V7`); more when its reach covers an
+ * own unit (`CULT_FROG_THREAT_VALUE_V7`: the old guard case), and when the
+ * hit leaves it at half its Hit Points or less beside an own Summoner, so
+ * a Seizure can follow (`CULT_FROG_SEIZE_VALUE_V7`).
+ */
+export const CULT_FROG_VALUE_V7 = 6;
+export const CULT_FROG_THREAT_VALUE_V7 = 4;
+export const CULT_FROG_SEIZE_VALUE_V7 = 4;
 
 /**
  * A robed cultist (section 4): a unit whose role, under its kind, is robed,
@@ -335,7 +348,8 @@ export function cultBackRowV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
  * Hexers first (section 15.1, the pattern of the Goblin seat's Orc Brute
  * rule, `WANTED`): a hostile land unit of the `RAIDER` or `KNIGHT` role is
  * among `hostiles` (the visible hostile land units). The Hexer is the
- * Cult's answer to a fast unit: the shot from two tiles, and Ribbit.
+ * Cult's answer to a fast unit: the shot from two tiles that frogs (Ribbit
+ * is its attack since `pulp_wars-n5fa`, 7r130).
  */
 export function cultHexersWantedV7(hostiles: readonly PublicUnitV7[]): boolean {
   return hostiles.some(

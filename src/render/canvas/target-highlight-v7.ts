@@ -202,14 +202,14 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   CHANNEL: "SUPPORT",
   ANCHOR: "SUPPORT",
   // Rituals, hexes and tricks (`pulp_wars-mch9.19`): a rite's mark, and a
-  // Tentacle, are put on a tile (Place); a Proclaim and a Ribbit harm what
-  // they pick (Attack). A Switcheroo says its own style for each target: an
-  // own unit is helped, an enemy harmed.
+  // Tentacle, are put on a tile (Place); a Proclaim harms what it picks
+  // (Attack; a Ribbit is the Hexer's Attack since `pulp_wars-n5fa`, 7r130).
+  // A Switcheroo says its own style for each target: an own unit is
+  // helped, an enemy harmed.
   STARFALL: "PLACE",
   GREAT_SUMMONING: "PLACE",
   TENTACLE: "PLACE",
   PROCLAIM: "ATTACK",
-  RIBBIT: "ATTACK",
   SWITCHEROO: "ATTACK",
   // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer a cultist joins
   // in its chant is the Cult's own unit (the Help ring).

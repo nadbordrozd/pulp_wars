@@ -458,7 +458,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // same Move to (7, 9); Workshops, Markets, Sawmills, and Monuments on
       // the Fruit at (7, 7) and (7, 8) and a Market, a Sawmill, and a Lumber
       // Camp on the Game at (9, 8) are new candidates (was bb0395…e575).
-      "7a56d4fdc35c4f1484ebb6335f640210a886305f87d578ee3581a28373e4adbb",
+      // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
+      // after PROCLAIM, moving the later command kinds back by one (was
+      // 7a56d4…adbb); the revision-12-ordinal value is unchanged.
+      "347cc0b1d5df141788ed1fb06e6d0b2ea5ac606268f61a127ba20bcda81c1469",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1319,7 +1322,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // unchanged.
       // Building placement (`pulp_wars-h0xx`, 7r106): the building candidates
       // follow the new placement rules (was f12214…9c33).
-      "442a4c90c8e6fde56287a62d23972f75cf808af80e351ed934c69bf2fea2253f",
+      // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
+      // after PROCLAIM, moving the later command kinds back by one (was
+      // 442a4c…253f); the revision-12-ordinal value is unchanged.
+      "689c05519453ad1533a1887d16bfa5baeee2c512affb564c4d5d83ff7b61da43",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1342,7 +1348,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r129");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r130");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

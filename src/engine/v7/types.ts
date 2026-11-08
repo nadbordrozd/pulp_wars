@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r129" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r130" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -140,8 +140,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r126",
   "pulp-wars-poc-7r127",
   "pulp-wars-poc-7r128",
+  "pulp-wars-poc-7r129",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r129.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r130.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -435,10 +436,10 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // (Star-fall, the Great Summoning) and the Herald's Proclaim.
   "BEGIN_RITUAL",
   "PROCLAIM",
-  // The Cultists (`pulp_wars-mch9.8`, section 9): the Hexer's Ribbit, the
-  // Familiar's Switcheroo, and the Summoner's Tentacle (the Caller's, and
-  // the Chosen's Pick Me!, before the Cult redesign, `pulp_wars-mch9.31`).
-  "RIBBIT",
+  // The Cultists (`pulp_wars-mch9.8`, section 9): the Familiar's
+  // Switcheroo and the Summoner's Tentacle (the Caller's, and the Chosen's
+  // Pick Me!, before the Cult redesign, `pulp_wars-mch9.31`). The Hexer's
+  // `RIBBIT` retired with `pulp_wars-n5fa` (7r130): its attack frogs.
   "SWITCHEROO",
   "TENTACLE",
   // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
@@ -1870,15 +1871,16 @@ export interface CultStateV7 {
    */
   readonly cowed: readonly CowedCityV7[];
   /**
-   * Ribbit (`pulp_wars-mch9.8`, section 9.1): the units that are frogs,
+   * Ribbit (`pulp_wars-mch9.8`, section 9.1; a Hexer's attack since 7r130): the units that are frogs,
    * sorted. A unit is frogged in another seat's turn and is a frog until
    * its owner's next turn ends, or until it is cured (Tend Wounded, Repair,
    * Top-Up) or leaves the board.
    */
   readonly frogs: readonly UnitId[];
   /**
-   * Sections 9.1 and 9.2: the Hexers and Familiars that cast their trick,
-   * sorted by `unitId`. A unit with an entry cannot Ribbit or Switcheroo;
+   * Section 9.2: the Familiars that swapped, sorted by `unitId` (a Hexer's
+   * Ribbit started one too until `pulp_wars-n5fa`, 7r130, when Ribbit
+   * became its attack). A unit with an entry cannot Switcheroo;
    * `turnsRemaining` (2 when cast, then 1) counts its owner's Start Turns
    * before the entry is removed, so the trick is back on the second turn
    * after the cast.

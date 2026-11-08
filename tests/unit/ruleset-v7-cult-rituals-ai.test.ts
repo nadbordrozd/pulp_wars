@@ -12,7 +12,6 @@ import {
   CULT_HERALD_PRIORITY_V7,
   CULT_JOIN_CHANT_PRIORITY_V7,
   CULT_PROCLAIM_LAST_PRIORITY_V7,
-  CULT_RIBBIT_PRIORITY_V7,
   CULT_SAVE_FAVOUR_V7,
   CULT_STARFALL_PRIORITY_V7,
   CULT_SUMMONING_PRIORITY_V7,
@@ -52,7 +51,8 @@ import type { FieldOptionsV7 } from "../fixtures/v7-revision20";
 // docs/product/RULESET_7_CULTISTS.md sections 15.3 and 15.4, as built in
 // section 15.8; `src/ai/v7-cult-rituals.ts`): the Great Summoning and the
 // Favour kept for it, Star-fall, the Herald's two attacks and Proclaim,
-// Boo!, Ribbit, Switcheroo, the Tentacle, and Pick Me!.
+// Boo!, Switcheroo, the Tentacle, and Pick Me! (Ribbit is the Hexer's
+// attack since `pulp_wars-n5fa`, 7r130).
 // A baseline designed from judgement: no match was played for this bead.
 // Every rule is shown on a small hand-built state, as a decision or as the
 // one turn the seat plays from it.
@@ -692,11 +692,13 @@ describe("the Cult seat: Boo! (section 15.4)", () => {
   });
 });
 
-describe("the Cult seat: Ribbit (section 15.4)", () => {
-  it("frogs first the enemy that can hit an own channeller next turn", () => {
+describe("the Cult seat: the Hexer's shot frogs (Ribbit, section 15.4)", () => {
+  // `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's attack (a shot that
+  // leaves its target alive frogs it), so the ordinary attack rules pick
+  // the shot and score its frog; the plan has no Ribbit step any more.
+  it("shoots an enemy in reach and frogs it, beside channellers or not", () => {
     // Two Initiates hold a Horror. A Fighter can step up to one of them; a
-    // Champion (the stronger unit) is in the Hexer's reach too, four tiles
-    // from the channellers.
+    // Champion is in the Hexer's reach too.
     const build = (channels: boolean): GameStateV7 => {
       const base = scene([
         own("FIGHTER", 6, 4, { activation: CHANNELLED }),
@@ -713,22 +715,24 @@ describe("the Cult seat: Ribbit (section 15.4)", () => {
           )
         : base;
     };
-    const start = build(true);
-    const decision = first(start);
-    expect(decision.priority).toBe(CULT_RIBBIT_PRIORITY_V7);
-    expect(decision.command).toMatchObject({
-      kind: "RIBBIT",
-      targetUnitId: idAt(start, at(4, 3)),
-    });
-    const turn = policyTurn(start);
-    expect(turn.state.cult.frogs).toEqual([idAt(start, at(4, 3))]);
-    // Sanity (the mutation): with no daemon to hold, the Champion is the
-    // strongest melee unit in reach, and a frog it is.
-    const idle = build(false);
-    expect(policyTurn(idle).state.cult.frogs).toEqual([idAt(idle, at(4, 0))]);
+    for (const channels of [true, false]) {
+      const start = build(channels);
+      const hexer = idAt(start, at(5, 2));
+      const turn = policyTurn(start);
+      expect(kindsOf(turn.commands), String(channels)).not.toContain("RIBBIT");
+      const shots = ofKind(turn.commands, "ATTACK").filter(
+        (command) => command.unitId === hexer,
+      );
+      expect(shots, String(channels)).toHaveLength(1);
+      const target = shots[0]?.targetUnitId;
+      if (target === undefined) throw new Error("no shot");
+      expect(turn.state.cult.frogs, String(channels)).toEqual(
+        alive(turn.state, target) ? [target] : [],
+      );
+    }
   });
 
-  it("frogs the strongest melee unit in reach otherwise, and shoots instead when the shot kills", () => {
+  it("shoots the Fighter its shot kills", () => {
     const build = (hp: number): GameStateV7 =>
       scene([
         own("MARKSMAN", 6, 2),
@@ -737,42 +741,10 @@ describe("the Cult seat: Ribbit (section 15.4)", () => {
         foe("SWORDSMAN", 4, 3),
         foe("MARKSMAN", 4, 1),
       ]);
-    const start = build(10);
-    expect(first(start).command).toMatchObject({
-      kind: "RIBBIT",
-      targetUnitId: idAt(start, at(4, 3)),
-    });
-    // Sanity (the mutation): the Fighter at 1 HP is shot.
     const kill = build(1);
     const turn = policyTurn(kill);
     expect(kindsOf(turn.commands)).not.toContain("RIBBIT");
     expect(alive(turn.state, idAt(kill, at(4, 2)))).toBe(false);
-  });
-
-  it("frogs an enemy at half its Hit Points beside a Summoner and a holder: the Seizure follows", () => {
-    // A Knight at 6 of 12... not broken (above 5), a frog is at half.
-    const build = (summoner: boolean): GameStateV7 =>
-      scene([
-        own("MARKSMAN", 7, 2),
-        ...(summoner ? [own("CAPTAIN", 6, 3)] : [own("FIGHTER", 6, 3)]),
-        own("FIGHTER", 6, 1),
-        foe("SWORDSMAN", 5, 2, { hp: 7 }),
-        foe("JUGGERNAUT", 5, 0),
-      ]);
-    const start = build(true);
-    const victim = idAt(start, at(5, 2));
-    expect(first(start).command).toMatchObject({
-      kind: "RIBBIT",
-      targetUnitId: victim,
-    });
-    const turn = policyTurn(start);
-    expect(kindsOf(turn.commands.slice(0, 2))).toEqual(["RIBBIT", "SEIZE"]);
-    expect(alive(turn.state, victim)).toBe(false);
-    expect(favourOf(turn.state)).toBeGreaterThan(0);
-    // Sanity (the mutation): without a Summoner no Seizure follows, and
-    // nothing is Seized.
-    const none = policyTurn(build(false));
-    expect(kindsOf(none.commands)).not.toContain("SEIZE");
   });
 });
 
@@ -1159,33 +1131,31 @@ describe("the Cult seat (A-R2): the Summoner's Tentacle and the Seizure", () => 
   });
 });
 
-describe("the Cult seat (A-R2): Ribbit's beating", () => {
-  it("frogs an enemy a caster's blow on the frog brings to half, and the Seizure follows", () => {
+describe("the Cult seat (A-R2): a frog's beating", () => {
+  // `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's shot, so the frog comes
+  // with its hit, and the Seizure may follow in the same turn.
+  it("shoots an enemy beside a Summoner and a caster, frogs it, and the Seizure follows", () => {
     // A Swordsman above half its Hit Points beside a Summoner, an Initiate
     // with its attack (the blow on the frog, and the holder), and a Hexer;
-    // a Knight, the dearer melee unit, in the Hexer's reach too. Every
-    // caster may strike a frog (A-R1), so the Initiate's blow counts.
-    const build = (strikes: boolean): GameStateV7 =>
-      scene([
-        own("MARKSMAN", 7, 2),
-        own("CAPTAIN", 6, 3),
-        own("FIGHTER", 6, 1, strikes ? {} : { activation: SPENT }),
-        foe("SWORDSMAN", 5, 2, { hp: 10 }),
-        foe("KNIGHT", 9, 0),
-      ]);
-    const start = build(true);
+    // a Knight out of everyone's reach.
+    const start = scene([
+      own("MARKSMAN", 7, 2),
+      own("CAPTAIN", 6, 3),
+      own("FIGHTER", 6, 1),
+      foe("SWORDSMAN", 5, 2, { hp: 10 }),
+      foe("KNIGHT", 9, 0),
+    ]);
     const victim = idAt(start, at(5, 2));
-    expect(first(start).command).toMatchObject({
-      kind: "RIBBIT",
-      targetUnitId: victim,
-    });
     const turn = policyTurn(start);
     const kinds = kindsOf(turn.commands);
-    expect(kinds.slice(0, 1)).toEqual(["RIBBIT"]);
+    expect(kinds).not.toContain("RIBBIT");
+    expect(turn.commands).toContainEqual({
+      kind: "ATTACK",
+      unitId: idAt(start, at(7, 2)),
+      targetUnitId: victim,
+    });
     expect(kinds).toContain("SEIZE");
     expect(alive(turn.state, victim)).toBe(false);
-    // Sanity (the mutation): with no blow to give, no Seizure follows.
-    expect(kindsOf(policyTurn(build(false)).commands)).not.toContain("SEIZE");
   });
 });
 
@@ -1319,7 +1289,6 @@ describe("the Cult seat: legal, deterministic turns on what A3 covers", () => {
     "BOO",
     "BEGIN_RITUAL",
     "PROCLAIM",
-    "RIBBIT",
     "SWITCHEROO",
     "TENTACLE",
   ];
@@ -1362,7 +1331,6 @@ describe("the Cult seat: legal, deterministic turns on what A3 covers", () => {
       CULT_HERALD_PRIORITY_V7,
       CULT_BOO_PRIORITY_V7,
       CULT_SUMMONING_PRIORITY_V7,
-      CULT_RIBBIT_PRIORITY_V7,
       CULT_SWITCHEROO_PRIORITY_V7,
       CULT_TENTACLE_PRIORITY_V7,
       CULT_STARFALL_PRIORITY_V7,

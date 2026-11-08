@@ -649,13 +649,15 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // its chanters are land-form robed cultists (`isRobedCultistV7`), and a
     // star hits every form in its area by design.
     "src/engine/v7/cult-rituals.ts": 1,
-    // The Cult's tricks (`pulp_wars-mch9.8`): Ribbit, Switcheroo, and the
-    // Tentacle need their unit in land form (an embarked one is refused
-    // `EMBARKED`; an Egg never reaches them). A hex and a swap take only a
-    // land-form target (`trickTakesV7`: an Egg, an embarked unit, and a
-    // boat are immune), and a Tentacle slaps every form by design. (Pick
-    // Me!'s test retired with the Chosen, `pulp_wars-mch9.31`.)
-    "src/engine/v7/cult-hexes.ts": 3,
+    // The Cult's tricks (`pulp_wars-mch9.8`): Switcheroo and the Tentacle
+    // need their unit in land form (an embarked one is refused `EMBARKED`;
+    // an Egg never reaches them). A hex and a swap take only a land-form
+    // target (`trickTakesV7`: an Egg, an embarked unit, and a boat are
+    // immune), and a Tentacle slaps every form by design. (Pick Me!'s test
+    // retired with the Chosen, `pulp_wars-mch9.31`; Ribbit's with its
+    // command, `pulp_wars-n5fa`, 7r130: the Hexer's frogging attack asks
+    // `form === "LAND"`.)
+    "src/engine/v7/cult-hexes.ts": 2,
     // The Cult redesign (`pulp_wars-mch9.37`): the Gibbering Mass's
     // Doorstep holds only a land-form Mass, and its Drag stops only a
     // land-form mover (an embarked unit, an Egg, and a boat are not

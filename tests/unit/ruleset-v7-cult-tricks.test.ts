@@ -13,12 +13,13 @@ import {
   NEUTRAL_ROLE_MECHANICS_V7,
   NEUTRAL_ROLE_RULES_V7,
   PRIOR_RULESET_7_IDS,
-  RIBBIT_RANGE_V7,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
+  SWITCHEROO_MIN_RANGE_V7,
   SWITCHEROO_RANGE_V7,
   TECHNOLOGY_IDS_V7,
   TENTACLE_LIFETIME_V7,
+  TENTACLE_MIN_RANGE_V7,
   TENTACLE_RANGE_V7,
   UNIT_ROLE_IDS_V7,
   applyCommandV7,
@@ -36,10 +37,10 @@ import {
   parseEventV7,
   parseGameStateV7,
   previewMonsterV7,
-  previewRibbitV7,
   previewSwitcherooV7,
   previewTentacleV7,
   projectEventsV7,
+  queryCombatPreviewV7,
   queryPlayerCommandsV7,
   technologyCapabilitiesV7,
   tentacleSlapTargetV7,
@@ -138,12 +139,22 @@ const techsWithout = (without: TechnologyIdV7): readonly TechnologyIdV7[] =>
   withoutTechsV7("CULT", without);
 
 const targeted = (
-  kind: "RIBBIT" | "SWITCHEROO",
+  kind: "SWITCHEROO",
   state: GameStateV7,
   from: CoordV7,
   to: CoordV7,
 ): CommandV7 => ({
   kind,
+  unitId: idAt(state, from),
+  targetUnitId: idAt(state, to),
+});
+
+/**
+ * The Hexer's shot (`pulp_wars-n5fa`, 7r130: Ribbit is its attack, so a
+ * shot that leaves its target alive frogs it).
+ */
+const shot = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
+  kind: "ATTACK",
   unitId: idAt(state, from),
   targetUnitId: idAt(state, to),
 });
@@ -157,14 +168,14 @@ describe("tricks: identity and registration", () => {
   // The spread villages (`pulp_wars-9s0.12`) took 7r79, so 7r78 is a prior
   // identity.
   it("was 7r78 after 7r77, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
-    expect(PRIOR_RULESET_7_IDS.slice(-52, -50)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(PRIOR_RULESET_7_IDS.slice(-53, -51)).toEqual([
       "pulp-wars-poc-7r77",
       "pulp-wars-poc-7r78",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-52, -50)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-53, -51)).toEqual([
       "pulpWars.save.v7r77.current",
       "pulpWars.save.v7r78.current",
     ]);
@@ -178,9 +189,10 @@ describe("tricks: identity and registration", () => {
   it("orders the three commands and the five events after the rituals'", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
     const from = commands.indexOf("PROCLAIM");
-    expect(commands.slice(from, from + 8)).toEqual([
+    expect(commands.slice(from, from + 7)).toEqual([
       "PROCLAIM",
-      "RIBBIT",
+      // `pulp_wars-n5fa` (7r130): `RIBBIT` retired (the Hexer's attack
+      // frogs).
       "SWITCHEROO",
       "TENTACLE",
       // The Cult redesign (`pulp_wars-mch9.34`): joining a star's chant.
@@ -203,11 +215,16 @@ describe("tricks: identity and registration", () => {
     ]);
     // Pick Me! retired with the Chosen (`pulp_wars-mch9.31`).
     expect(commands).not.toContain("PICK_ME");
+    expect(commands).not.toContain("RIBBIT");
     expect(events).not.toContain("PICK_ME_SHOUTED");
   });
 
   it("parses the three commands and nothing near them", () => {
-    for (const kind of ["RIBBIT", "SWITCHEROO"] as const) {
+    // `pulp_wars-n5fa` (7r130): Ribbit is no command any more.
+    expect(
+      parseCommandV7({ kind: "RIBBIT", unitId: 3, targetUnitId: 4 }).ok,
+    ).toBe(false);
+    for (const kind of ["SWITCHEROO"] as const) {
       expect(parseCommandV7({ kind, unitId: 3, targetUnitId: 4 })).toEqual({
         ok: true,
         value: { kind, unitId: 3, targetUnitId: 4 },
@@ -230,15 +247,18 @@ describe("tricks: identity and registration", () => {
 
   it("holds the spec's numbers", () => {
     expect([
-      RIBBIT_RANGE_V7,
       FROG_DEFENSE2_V7 / 2,
       FROG_MOVE_V7,
       HEX_COOLDOWN_TURNS_V7,
+      SWITCHEROO_MIN_RANGE_V7,
       SWITCHEROO_RANGE_V7,
+      TENTACLE_MIN_RANGE_V7,
       TENTACLE_RANGE_V7,
       TENTACLE_LIFETIME_V7,
-      // Switcheroo reaches 4 since the Cult redesign (`pulp_wars-mch9.34`).
-    ]).toEqual([2, 0.5, 1, 2, 4, 3, 3]);
+      // Switcheroo reaches 4 since the Cult redesign (`pulp_wars-mch9.34`);
+      // since `pulp_wars-n5fa` (7r130) Switcheroo and the Tentacle never
+      // take the tile next door, and Ribbit (2 before) is the Hexer's shot.
+    ]).toEqual([0.5, 1, 2, 2, 4, 2, 3, 3]);
   });
 
   it("gives each trick to its unit and to no other role of any faction", () => {
@@ -339,25 +359,31 @@ describe("Ribbit and the frog (section 9.1)", () => {
   ) =>
     cultFieldV7([{ seat: 0, role: "MARKSMAN", at: HEXER }, ...pieces], options);
 
-  it("turns a hostile unit within 2 into a frog and spends the Hexer's action and its next turn's Ribbit", () => {
+  // `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's attack. A shot that
+  // leaves its target alive frogs it, with no command, range, or cooldown
+  // of its own, so the target's tile means Attack alone.
+  it("frogs the surviving target of the Hexer's shot, with no cooldown", () => {
     const state = field([{ seat: 1, role: "KNIGHT", at: at(5, 4) }]);
-    const command = targeted("RIBBIT", state, HEXER, at(5, 4));
     const hexer = idAt(state, HEXER);
     const knight = idAt(state, at(5, 4));
-    const view = viewForV7(state, cultId(state));
-    expect(previewRibbitV7(view, hexer, knight)).toEqual({
-      unitId: hexer,
-      targetUnitId: knight,
-      targetOwnerId: otherId(state),
-      at: at(5, 4),
-      defense2After: 1,
-      moveAfter: 1,
-      holdsStrand: false,
-      inRitual: false,
-      cooldownTurns: 2,
+    expect(effectiveRoleRuleV7("MARKSMAN", "CULT")).toMatchObject({
+      attack2: 2,
+      range: 2,
     });
-    const cast = playV7(state, command);
-    expect(cast.events).toEqual([
+    expect(offeredV7(state).map((command) => command.kind)).not.toContain(
+      "RIBBIT",
+    );
+    const cast = attackV7(state, HEXER, at(5, 4));
+    expect(cast.preview.ribbitApplied).toBe(true);
+    expect(cast.combat).toMatchObject({
+      defenderDies: false,
+      ribbitApplied: true,
+    });
+    expect(cast.events.map((event) => event.kind)).toEqual([
+      "COMBAT_RESOLVED",
+      "UNIT_FROGGED",
+    ]);
+    expect(eventsOf(cast.events, "UNIT_FROGGED")).toEqual([
       {
         kind: "UNIT_FROGGED",
         playerId: cultId(state),
@@ -368,41 +394,33 @@ describe("Ribbit and the frog (section 9.1)", () => {
       },
     ]);
     expect(cast.state.cult.frogs).toEqual([knight]);
-    expect(cast.state.cult.hexCooldowns).toEqual([
-      { unitId: hexer, turnsRemaining: 2 },
-    ]);
+    expect(cast.state.cult.hexCooldowns).toEqual([]);
     expect(unitIsFrogV7(cast.state, { id: knight })).toBe(true);
+    expect(cast.target?.hp).toBeLessThan(unitAtV7(state, at(5, 4)).hp);
     expect(unitOf(cast.state, hexer)?.activation).toMatchObject({
-      specialActed: true,
-      handled: true,
-      attacked: false,
+      attacked: true,
     });
-    // It is public: both seats see the frog and the spent Hexer.
+    // It is public: both seats see the frog.
     for (const viewer of [cultId(state), otherId(state)]) {
-      const seen = viewForV7(cast.state, viewer);
-      expect(seen.cult.frogs).toEqual([knight]);
-      expect(seen.cult.hexCooldowns).toEqual([
-        { unitId: hexer, turnsRemaining: 2 },
-      ]);
+      expect(viewForV7(cast.state, viewer).cult.frogs).toEqual([knight]);
       expect(
         projectEventsV7(state, cast.state, viewer, cast.events).events.map(
           (event) => event.kind,
         ),
-      ).toEqual(["UNIT_FROGGED"]);
+      ).toContain("UNIT_FROGGED");
     }
-    // The Hexer has used its action.
-    expect(rejectedV7(cast.state, command).code).toBe("UNIT_ALREADY_ACTED");
   });
 
-  it("may follow the Hexer's Move, and takes the place of its attack", () => {
+  it("may follow the Hexer's Move", () => {
     const state = field([{ seat: 1, role: "FIGHTER", at: at(5, 5 - 1) }]);
     const moved = applyOkV7(state, cultId(state), {
       kind: "MOVE",
       unitId: idAt(state, HEXER),
       path: [at(4, 2)],
     }).state;
-    const cast = playV7(moved, targeted("RIBBIT", moved, at(4, 2), at(5, 4)));
-    expect(offeredV7(cast.state, "ATTACK")).toEqual([]);
+    const cast = attackV7(moved, at(4, 2), at(5, 4));
+    expect(cast.combat.ribbitApplied).toBe(true);
+    expect(cast.state.cult.frogs).toEqual([idAt(state, at(5, 4))]);
   });
 
   it("leaves a frog one hop and nothing else until its owner's turn ends", () => {
@@ -412,7 +430,7 @@ describe("Ribbit and the frog (section 9.1)", () => {
       { seat: 1, role: "KNIGHT", at: at(5, 4) },
     ]);
     const knight = idAt(state, at(5, 4));
-    const cast = playV7(state, targeted("RIBBIT", state, HEXER, at(5, 4)));
+    const cast = playV7(state, shot(state, HEXER, at(5, 4)));
     const turn = toOtherTurn(cast.state).state;
     // Still a frog in its own turn.
     expect(turn.cult.frogs).toEqual([knight]);
@@ -511,46 +529,38 @@ describe("Ribbit and the frog (section 9.1)", () => {
     expect(soft.combat.retaliation).toBe(false);
   });
 
-  it("is back on the second turn after the cast, not the first", () => {
+  it("frogs on every shot: no turn to wait", () => {
     const state = field([
       { seat: 1, role: "FIGHTER", at: at(5, 4) },
       { seat: 1, role: "FIGHTER", at: at(6, 4) },
     ]);
-    const hexer = idAt(state, HEXER);
-    const cast = playV7(state, targeted("RIBBIT", state, HEXER, at(5, 4)));
+    const cast = playV7(state, shot(state, HEXER, at(5, 4)));
+    expect(cast.state.cult.hexCooldowns).toEqual([]);
     const next = toCultTurn(cast.state).state;
-    expect(next.cult.hexCooldowns).toEqual([
-      { unitId: hexer, turnsRemaining: 1 },
-    ]);
-    expect(offeredV7(next, "RIBBIT")).toEqual([]);
-    expect(rejectedV7(next, targeted("RIBBIT", next, HEXER, at(6, 4)))).toEqual(
-      { code: "RIBBIT_NOT_LEGAL", params: { reason: "COOLDOWN" } },
-    );
-    // It may still shoot.
-    expect(offeredV7(next, "ATTACK").length).toBeGreaterThan(0);
-    const after = toCultTurn(next).state;
-    expect(after.cult.hexCooldowns).toEqual([]);
-    expect(offeredV7(after, "RIBBIT")).toHaveLength(2);
+    // The first frog ended with its owner's turn; the next shot frogs the
+    // other Fighter.
+    expect(next.cult.frogs).toEqual([]);
+    const again = attackV7(next, HEXER, at(6, 4));
+    expect(again.combat.ribbitApplied).toBe(true);
+    expect(again.state.cult.frogs).toEqual([idAt(state, at(6, 4))]);
   });
 
-  it("refuses its own side, giants, two-slot units, Eggs, neutral units, daemons, frogs, and anything beyond 2", () => {
-    const reason = (state: GameStateV7, target: CoordV7) =>
-      rejectedV7(state, targeted("RIBBIT", state, HEXER, target));
-    // Its own unit.
-    const own = field([{ seat: 0, role: "FIGHTER", at: at(5, 3) }]);
-    expect(reason(own, at(5, 3))).toEqual({
-      code: "RIBBIT_NOT_LEGAL",
-      params: { reason: "TARGET" },
-    });
-    // A reward giant.
+  it("does not frog a giant, a two-slot unit, a daemon, a Tentacle, a frog, a unit it kills, or anyone by a strike back", () => {
+    // A reward giant just takes the damage.
     const giant = field([{ seat: 1, role: "JUGGERNAUT", at: at(5, 4) }]);
-    expect(reason(giant, at(5, 4)).params).toEqual({ reason: "IMMUNE" });
-    // A two-slot dinosaur; an Egg and an embarked unit are not in land
-    // form.
+    const big = attackV7(giant, HEXER, at(5, 4));
+    expect(big.combat.ribbitApplied).toBe(false);
+    expect(big.target?.hp).toBeLessThan(unitAtV7(giant, at(5, 4)).hp);
+    expect(big.state.cult.frogs).toEqual([]);
+    expect(eventsOf(big.events, "UNIT_FROGGED")).toEqual([]);
+    // A two-slot dinosaur.
     const dinosaurs = field([{ seat: 1, role: "KNIGHT", at: at(5, 4) }], {
       factions: ["CULT", "DINOSAUR"],
     });
-    expect(reason(dinosaurs, at(5, 4)).params).toEqual({ reason: "IMMUNE" });
+    expect(attackV7(dinosaurs, HEXER, at(5, 4)).combat.ribbitApplied).toBe(
+      false,
+    );
+    // An Egg and an embarked unit are not in land form.
     const fighter = unitAtV7(giant, at(5, 4));
     for (const form of ["EGG", "EMBARKED", "NAVAL"] as const)
       expect(trickTakesV7(giant, { ...fighter, role: "FIGHTER", form })).toBe(
@@ -569,26 +579,51 @@ describe("Ribbit and the frog (section 9.1)", () => {
       at(8, 2),
       at(6, 3),
     );
-    expect(reason(lodges, at(5, 4)).params).toEqual({ reason: "IMMUNE" });
-    expect(reason(lodges, at(6, 3)).params).toEqual({ reason: "IMMUNE" });
-    // A frog already, and a unit 3 tiles away.
-    const far = field([
-      { seat: 1, role: "FIGHTER", at: at(5, 4) },
-      { seat: 1, role: "FIGHTER", at: at(8, 2) },
-    ]);
-    expect(reason(withFrogsV7(far, [at(5, 4)]), at(5, 4)).params).toEqual({
-      reason: "FROG",
+    expect(attackV7(lodges, HEXER, at(5, 4)).combat.ribbitApplied).toBe(false);
+    expect(
+      queryCombatPreviewV7(
+        viewForV7(lodges, cultId(lodges)),
+        idAt(lodges, HEXER),
+        idAt(lodges, at(6, 3)),
+      )?.ribbitApplied,
+    ).toBe(false);
+    // A frog already stays a frog: the shot adds nothing.
+    const frog = withFrogsV7(
+      field([{ seat: 1, role: "FIGHTER", at: at(5, 4) }]),
+      [at(5, 4)],
+    );
+    const again = attackV7(frog, HEXER, at(5, 4));
+    expect(again.combat.ribbitApplied).toBe(false);
+    expect(eventsOf(again.events, "UNIT_FROGGED")).toEqual([]);
+    expect(again.state.cult.frogs).toEqual([idAt(frog, at(5, 4))]);
+    // A shot that kills frogs nobody.
+    const dying = field([{ seat: 1, role: "FIGHTER", at: at(5, 4), hp: 1 }]);
+    const killed = attackV7(dying, HEXER, at(5, 4));
+    expect(killed.combat).toMatchObject({
+      defenderDies: true,
+      ribbitApplied: false,
     });
-    expect(reason(far, at(8, 2)).params).toEqual({ reason: "RANGE" });
-    // A unit it cannot see is no target.
-    const hidden = unexploreV7(far, 0, [at(5, 4)]);
-    expect(reason(hidden, at(5, 4)).params).toEqual({ reason: "TARGET" });
-    // Nobody else Ribbits.
+    expect(killed.state.cult.frogs).toEqual([]);
+    // A strike back never frogs: an enemy Fighter hits the Hexer beside
+    // it, and the Hexer's answer leaves it as it was.
+    const struck = attackV7(
+      field([{ seat: 1, role: "FIGHTER", at: at(5, 3) }], { activeSeat: 1 }),
+      at(5, 3),
+      HEXER,
+    );
+    expect(struck.combat).toMatchObject({
+      retaliation: true,
+      ribbitApplied: false,
+    });
+    expect(struck.state.cult.frogs).toEqual([]);
+    // Nobody else frogs: an Initiate's blow is a blow.
     const initiate = cultFieldV7([
-      { seat: 0, role: "FIGHTER", at: HEXER },
+      { seat: 0, role: "FIGHTER", at: at(5, 3) },
       { seat: 1, role: "FIGHTER", at: at(5, 4) },
     ]);
-    expect(reason(initiate, at(5, 4)).code).toBe("UNIT_ROLE_INVALID");
+    expect(attackV7(initiate, at(5, 3), at(5, 4)).combat.ribbitApplied).toBe(
+      false,
+    );
   });
 
   it("is cured by Tend Wounded, also at full Hit Points", () => {
@@ -685,12 +720,13 @@ describe("Ribbit and the frog (section 9.1)", () => {
       at(5, 4),
       [at(5, 6)],
     );
-    const cast = playV7(state, targeted("RIBBIT", state, at(5, 7), at(5, 6)));
-    expect(cast.events.map((event) => event.kind)).toEqual([
-      "UNIT_FROGGED",
-      "STRAND_BROKEN",
-    ]);
-    expect(eventsOf(cast.events, "STRAND_BROKEN")[0]?.cause).toBe("STATUS");
+    const cast = playV7(state, shot(state, at(5, 7), at(5, 6)));
+    expect(
+      cast.events
+        .map((event) => event.kind)
+        .filter((kind) => kind !== "COMBAT_RESOLVED"),
+    ).toEqual(["UNIT_FROGGED", "STRAND_BROKEN"]);
+    expect(cast.state.cult.frogs).toEqual([idAt(state, at(5, 6))]);
     expect(cast.state.cult.strands).toEqual([]);
     // A frogged chanter leaves its circle, and a frog joins none.
     const circle = withRitualV7(
@@ -707,16 +743,14 @@ describe("Ribbit and the frog (section 9.1)", () => {
       [at(5, 4)],
       at(2, 3),
     );
-    const broken = playV7(
-      circle,
-      targeted("RIBBIT", circle, at(5, 6), at(5, 4)),
-    );
+    const broken = playV7(circle, shot(circle, at(5, 6), at(5, 4)));
     // (A star never fizzles for want of chanters since the Cult redesign,
     // `pulp_wars-mch9.34`: it goes on alone.)
-    expect(broken.events.map((event) => event.kind)).toEqual([
-      "UNIT_FROGGED",
-      "RITUAL_DISRUPTED",
-    ]);
+    expect(
+      broken.events
+        .map((event) => event.kind)
+        .filter((kind) => kind !== "COMBAT_RESOLVED"),
+    ).toEqual(["UNIT_FROGGED", "RITUAL_DISRUPTED"]);
     expect(broken.state.cult.rituals).toMatchObject([{ chanterUnitIds: [] }]);
     // A frog is offered no join of a star beside it.
     const frogged = withFrogsV7(
@@ -823,21 +857,22 @@ describe("Switcheroo (section 9.2)", () => {
   });
 
   it("never touches a settlement center", () => {
-    // The target stands on a village; then the Familiar does.
+    // The target stands on a village; then the Familiar does (2 tiles
+    // apart: a neighbour is no Switcheroo since `pulp_wars-n5fa`, 7r130).
     const onVillage = field([{ seat: 1, role: "FIGHTER", at: at(5, 5 - 1) }]);
     const target = cultFieldV7([
-      { seat: 0, role: "RAIDER", at: at(5, 4) },
+      { seat: 0, role: "RAIDER", at: at(5, 3) },
       { seat: 1, role: "FIGHTER", at: at(5, 5) },
     ]);
     expect(
-      rejectedV7(target, targeted("SWITCHEROO", target, at(5, 4), at(5, 5))),
+      rejectedV7(target, targeted("SWITCHEROO", target, at(5, 3), at(5, 5))),
     ).toEqual({ code: "SWITCHEROO_NOT_LEGAL", params: { reason: "CENTER" } });
     const familiar = cultFieldV7([
       { seat: 0, role: "RAIDER", at: at(5, 5) },
-      { seat: 1, role: "FIGHTER", at: at(5, 4) },
+      { seat: 1, role: "FIGHTER", at: at(5, 3) },
     ]);
     expect(
-      rejectedV7(familiar, targeted("SWITCHEROO", familiar, at(5, 5), at(5, 4)))
+      rejectedV7(familiar, targeted("SWITCHEROO", familiar, at(5, 5), at(5, 3)))
         .params,
     ).toEqual({ reason: "CENTER" });
     expect(offeredV7(onVillage, "SWITCHEROO")).toHaveLength(1);
@@ -871,6 +906,15 @@ describe("Switcheroo (section 9.2)", () => {
     ).toMatchObject([{ kind: "UNITS_SWAPPED", from: FAMILIAR, to: at(9, 2) }]);
     const far = field([{ seat: 1, role: "FIGHTER", at: at(10, 2) }]);
     expect(reason(far, at(10, 2)).params).toEqual({ reason: "RANGE" });
+    // `pulp_wars-n5fa` (7r130): never a neighbour (an Attack, or Select for
+    // an own unit), and never offered there.
+    const near = field([
+      { seat: 1, role: "FIGHTER", at: at(6, 3) },
+      { seat: 0, role: "FIGHTER", at: at(4, 2) },
+    ]);
+    expect(reason(near, at(6, 3)).params).toEqual({ reason: "RANGE" });
+    expect(reason(near, at(4, 2)).params).toEqual({ reason: "RANGE" });
+    expect(offeredV7(near, "SWITCHEROO")).toEqual([]);
     // Itself is no target.
     expect(reason(far, FAMILIAR).params).toEqual({ reason: "TARGET" });
   });
@@ -906,7 +950,8 @@ describe("Switcheroo (section 9.2)", () => {
             [
               { seat: 0, role: "FIGHTER", at: at(5, 6) },
               { seat: 0, role: "CAPTAIN", at: at(8, 2) },
-              { seat: 1, role: "RAIDER", at: at(4, 7) },
+              // Two tiles from the channeller (`pulp_wars-n5fa`, 7r130).
+              { seat: 1, role: "RAIDER", at: at(3, 6) },
             ],
             { factions: ["CULT", "CULT"], activeSeat: 1 },
           ),
@@ -922,14 +967,14 @@ describe("Switcheroo (section 9.2)", () => {
     );
     const view = viewForV7(state, otherId(state));
     expect(
-      previewSwitcherooV7(view, idAt(state, at(4, 7)), idAt(state, at(5, 6))),
+      previewSwitcherooV7(view, idAt(state, at(3, 6)), idAt(state, at(5, 6))),
     ).toMatchObject({
       targetHoldsStrand: true,
       targetGrabbed: true,
     });
     const swapped = playV7(
       state,
-      targeted("SWITCHEROO", state, at(4, 7), at(5, 6)),
+      targeted("SWITCHEROO", state, at(3, 6), at(5, 6)),
     );
     expect(swapped.events.map((event) => event.kind)).toEqual([
       "UNITS_SWAPPED",
@@ -1131,15 +1176,16 @@ describe("Tentacle and Grab (section 9.3)", () => {
     expect(effectiveRoleRuleV7("KNIGHT", "CULT").abilities).toEqual([]);
   });
 
-  it("rises only on a free tile within 3 that is no settlement center, one per Summoner", () => {
+  it("rises only on a free tile 2 or 3 away that is no settlement center, one per Summoner", () => {
     const state = field([
       { seat: 0, role: "CAPTAIN", at: at(8, 2) },
       { seat: 1, role: "FIGHTER", at: at(5, 4) },
     ]);
     const reason = (target: GameStateV7, where: CoordV7) =>
       rejectedV7(target, tentacleAt(target, where));
-    // An occupied tile, its own tile, a village center, a tile 4 away.
-    for (const where of [at(5, 4), CALLER, at(5, 5), at(5, 6)])
+    // An occupied tile, its own tile, a village center, a tile 4 away, and
+    // (`pulp_wars-n5fa`, 7r130) a free tile next to it.
+    for (const where of [at(5, 4), CALLER, at(5, 5), at(5, 6), at(4, 3)])
       expect(
         reason(state, where),
         `${String(where.x)},${String(where.y)}`,
@@ -1151,14 +1197,25 @@ describe("Tentacle and Grab (section 9.3)", () => {
     expect(reason(unexploreV7(state, 0, [at(3, 3)]), at(3, 3)).params).toEqual({
       reason: "TILE",
     });
-    // Every tile within 3 on the board is offered but its own, the two
-    // units' (the Fighter, the other Summoner), and the two village centers
-    // ((5, 5) and (8, 5)): 7 columns by 6 rows (y 0 to 5), less five.
+    // Every tile 2 or 3 away on the board is offered but the two units'
+    // (the Fighter, the other Summoner) and the two village centers ((5, 5)
+    // and (8, 5)): 7 columns by 6 rows (y 0 to 5), less its own tile and
+    // the eight beside it (`pulp_wars-n5fa`, 7r130), less four.
     const offered = offeredV7(state, "TENTACLE").filter(
       (command) =>
         command.kind === "TENTACLE" && command.unitId === idAt(state, CALLER),
     );
-    expect(offered).toHaveLength(7 * 6 - 5);
+    expect(offered).toHaveLength(7 * 6 - 9 - 4);
+    expect(
+      offered.every(
+        (command) =>
+          command.kind === "TENTACLE" &&
+          Math.max(
+            Math.abs(command.at.x - CALLER.x),
+            Math.abs(command.at.y - CALLER.y),
+          ) >= 2,
+      ),
+    ).toBe(true);
     // One Tentacle per Summoner: the other Summoner may still call one.
     const one = playV7(state, tentacleAt(state, at(4, 4))).state;
     const next = toCultTurn(one).state;
@@ -1669,13 +1726,7 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
     ] as const)
       expect(kinds.has(kind), kind).toBe(true);
     // No enemy is within a Hexer's reach yet, and there is no daemon.
-    for (const kind of [
-      "RIBBIT",
-      "CHANNEL",
-      "BOO",
-      "PROCLAIM",
-      "SEIZE",
-    ] as const)
+    for (const kind of ["CHANNEL", "BOO", "PROCLAIM", "SEIZE"] as const)
       expect(kinds.has(kind), kind).toBe(false);
     // 12 Favour does not pay for the Great Summoning: only Star-fall.
     expect(

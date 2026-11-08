@@ -16,7 +16,6 @@ import {
   previewJoinChantV7,
   previewBooV7,
   previewProclaimV7,
-  previewRibbitV7,
   previewSeizeV7,
   previewSwitcherooV7,
   previewTentacleV7,
@@ -30,8 +29,10 @@ import { CULT_SUMMONING_FAVOUR_V7, cultCasterV7, cultRobedV7 } from "./v7-cult";
  * The Cult seat's rituals and tricks (`pulp_wars-mch9.11`, bead A3 of
  * docs/product/RULESET_7_CULTISTS.md sections 15.3 and 15.4; as built in
  * section 15.8): the Great Summoning and the Favour saved for it, Star-fall,
- * the Herald's two attacks and Proclaim, Boo!, Ribbit, Switcheroo, the
- * Tentacle, and Pamphlets. (Pick Me! retired with the Chosen: the Cult
+ * the Herald's two attacks and Proclaim, Boo!, Switcheroo, the Tentacle,
+ * and Pamphlets. (Ribbit is the Hexer's attack since `pulp_wars-n5fa`,
+ * 7r130: the general attack rules score its frog, `src/ai/v7.ts`; Pick Me!
+ * retired with the Chosen: the Cult
  * redesign, `pulp_wars-mch9.31`; the Tentacle step reads every offered
  * `TENTACLE`, the Summoner's since then.) Revised by the Cult redesign's
  * A-R2 (`pulp_wars-mch9.39`, RULESET_7_CULT_REDESIGN.md sections 12.3 and
@@ -106,8 +107,10 @@ export const CULT_BOO_PRIORITY_V7 = 3950;
  * Cult redesign retired it, `pulp_wars-mch9.33`).
  */
 export const CULT_SUMMONING_PRIORITY_V7 = 1915;
-/** Below the Offering (1890), above every ordinary command. */
-export const CULT_RIBBIT_PRIORITY_V7 = 1880;
+/**
+ * Below the Offering (1890), above every ordinary command. (Ribbit's 1880
+ * went with its command: `pulp_wars-n5fa`, 7r130.)
+ */
 export const CULT_SWITCHEROO_PRIORITY_V7 = 1875;
 export const CULT_TENTACLE_PRIORITY_V7 = 1870;
 export const CULT_STARFALL_PRIORITY_V7 = 1860;
@@ -142,9 +145,6 @@ export type CultRitualReasonV7 =
   | "HERALD_ATTACK"
   | "PROCLAIM"
   | "BOO"
-  | "RIBBIT_GUARD"
-  | "RIBBIT_SEIZE"
-  | "RIBBIT"
   | "SWITCHEROO_SEIZE"
   | "SWITCHEROO"
   | "TENTACLE"
@@ -317,8 +317,7 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   const joins: JoinV7[] = [];
   const proclaims: Extract<CommandV7, { kind: "PROCLAIM" }>[] = [];
   const boos: Extract<CommandV7, { kind: "BOO" }>[] = [];
-  const ribbits: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
-  const swaps: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
+  const swaps: Extract<CommandV7, { kind: "SWITCHEROO" }>[] = [];
   const tentacles: Extract<CommandV7, { kind: "TENTACLE" }>[] = [];
   for (const command of commands) {
     if (command.kind === "ATTACK") {
@@ -329,7 +328,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
     else if (command.kind === "JOIN_CHANT") joins.push(command);
     else if (command.kind === "PROCLAIM") proclaims.push(command);
     else if (command.kind === "BOO") boos.push(command);
-    else if (command.kind === "RIBBIT") ribbits.push(command);
     else if (command.kind === "SWITCHEROO") swaps.push(command);
     else if (command.kind === "TENTACLE") tentacles.push(command);
   }
@@ -931,7 +929,7 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   }
 
   // ------------------------------------------------- a Seizure's company
-  const { companyAt, beatingOn, seizing } = cultSeizureToolsV7({
+  const { companyAt, seizing } = cultSeizureToolsV7({
     view,
     commands,
     own,
@@ -941,120 +939,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
     landTile: facts.landTile,
     onOwnCenter: facts.onOwnCenter,
   });
-
-  // --------------------------------------------------------------- Ribbit
-  // Section 15.4: first the enemy that can hit an own channeller or chanter
-  // next turn (any hit breaks a strand), then the one a Seizure can follow
-  // this turn, then the strongest melee unit in reach. Not in place of a
-  // shot that kills.
-  {
-    const circle = own.filter(
-      (unit) =>
-        facts.channellers.has(unit.id) ||
-        cult.rituals.some(
-          (ritual) =>
-            ritual.playerId === me &&
-            (ritual.leaderUnitId === unit.id ||
-              ritual.chanterUnitIds.includes(unit.id)),
-        ),
-    );
-    const blocked = new Map<UnitId, boolean>();
-    let best: (typeof ribbits)[number] | undefined;
-    let bestKey: readonly number[] = [];
-    let bestReason: CultRitualReasonV7 = "RIBBIT";
-    for (const command of ribbits) {
-      const hexer = unitsById.get(command.unitId);
-      const target = unitsById.get(command.targetUnitId);
-      if (
-        hexer === undefined ||
-        target === undefined ||
-        hexer.ownerId !== me ||
-        held.has(hexer.id) ||
-        !facts.hostile(target.ownerId)
-      )
-        continue;
-      let kills = blocked.get(hexer.id);
-      if (kills === undefined) {
-        kills = killOnOffer(hexer.id);
-        blocked.set(hexer.id, kills);
-      }
-      if (kills) continue;
-      let rank = 0;
-      let detail = 0;
-      let reason: CultRitualReasonV7 = "RIBBIT";
-      const guarded = circle.filter((unit) =>
-        facts.reach(target.id, unit.at),
-      ).length;
-      if (guarded > 0 && hasAbility(target, "ATTACK")) {
-        rank = 3;
-        detail = guarded;
-        reason = "RIBBIT_GUARD";
-      } else {
-        const half = target.hp * 2 <= target.maxHp;
-        const company =
-          target.form === "LAND" && target.hp > 5
-            ? companyAt(target.at, [hexer.id])
-            : undefined;
-        if (company !== undefined) {
-          // The beating that brings it to half its Hit Points: the attacks
-          // offered on it now (a frog is softer, so this is the least). A-R2
-          // (`pulp_wars-mch9.39`): the blows the seat makes, read as A-R1's
-          // casters strike (`beatingOn`; it will be a frog, so every
-          // caster's blow), and no Summoner's.
-          const beating = half
-            ? 0
-            : beatingOn(target, true, [hexer.id, company.summoner.id]);
-          if (half || (target.hp - beating) * 2 <= target.maxHp) {
-            const projected = facts.moved([
-              { unit: company.summoner, at: company.stand },
-              { unit: company.holder, at: company.hold },
-            ]);
-            const seizure = half
-              ? previewSeizeV7(
-                  {
-                    ...projected,
-                    cult: {
-                      ...projected.cult,
-                      frogs: [...projected.cult.frogs, target.id].sort(
-                        (left, right) => left - right,
-                      ),
-                    },
-                  },
-                  company.summoner.id,
-                  target.id,
-                )
-              : null;
-            if (!half || seizure !== null) {
-              rank = 2;
-              detail = valueOf(target);
-              reason = "RIBBIT_SEIZE";
-            }
-          }
-        }
-        if (rank === 0 && melee(target)) {
-          rank = 1;
-          detail = valueOf(target);
-        }
-      }
-      if (rank === 0) continue;
-      const key = [rank, detail, target.hp, -target.id, -hexer.id];
-      if (best === undefined || better(key, bestKey)) {
-        best = command;
-        bestKey = key;
-        bestReason = reason;
-      }
-    }
-    if (
-      best !== undefined &&
-      previewRibbitV7(view, best.unitId, best.targetUnitId) !== null
-    )
-      steps.push({
-        command: best,
-        priority: CULT_RIBBIT_PRIORITY_V7,
-        value: bestKey[0] ?? 0,
-        reason: bestReason,
-      });
-  }
 
   // ----------------------------------------------------------- Switcheroo
   // Section 15.4: pull a broken enemy next to a Summoner and a holder; else

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r129`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r130`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,48 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r130` (`pulp_wars-n5fa`, **one tile, one meaning for the
+Cult: the Summoner, the Hexer, and the Familiar**; the user, 2026-11-08:
+"Implement all the recommendations 1 to 11 except number 9", findings 1,
+3, and 13 of
+[the simplification review](SIMPLIFICATION_REVIEW_2026-11.md)) removes the
+Cult's tiles that offered two commands, by rule rather than by a chooser.
+(1) The **Summoner has no attack**
+([section 26.3](#263-sacrifice-seize-and-the-offering)): its role drops
+`ATTACK` and has Attack 0 and Range 0 (Attack 1 at range 1 before), so it
+never attacks and never strikes back, and an attack on it draws no
+retaliation; **Seize is its attack**, so a broken enemy beside a selected
+Summoner means Seize alone. Its HP, Defense, and price are unchanged. Its
+**Tentacle rises 2 or 3 tiles away**
+([section 26.12](#2612-hexes-and-tricks)): a `TENTACLE` on a tile next to
+it is rejected (`TENTACLE_NOT_LEGAL { reason: "TILE" }`,
+`TENTACLE_MIN_RANGE_V7` 2) and never offered, so a free tile beside it is
+a Move or a summon's. Its summons, the Great Summoning, and Sacrifice are
+unchanged: those are choices the player keeps. (2) The **Hexer's attack
+frogs** ([section 26.12](#2612-hexes-and-tricks)): Ribbit is no command
+any more (`RIBBIT`, `RIBBIT_NOT_LEGAL`, `previewRibbitV7`,
+`RIBBIT_RANGE_V7`, the Ribbit button and badge, and the text harness's
+`.ribbit.u<id>` are retired). An `ATTACK` of a Hexer that leaves its
+target alive turns it into a frog, with the frog's rules and duration
+unchanged, when Ribbit could have frogged it (a player's land-form unit
+that is no reward giant, two-slot unit, Egg, summoned unit, or frog
+already); any other target just takes the damage, and a retaliation never
+frogs. The combat preview has `ribbitApplied` (true only with
+`defenderDies` false), shown as "Ribbit: target becomes a frog", and a
+`UNIT_FROGGED` follows the `COMBAT_RESOLVED`. The Hexer has no Ribbit
+cooldown (only a Familiar's Switcheroo writes `cult.hexCooldowns`), and its
+Attack is **1** (1.5 before) to pay for a hex on every shot. (3) The
+**Familiar's Switcheroo reaches 2 to 4 tiles**
+([section 26.12](#2612-hexes-and-tricks)): a `SWITCHEROO` on a unit next
+to it is rejected (`SWITCHEROO_NOT_LEGAL { reason: "RANGE" }`,
+`SWITCHEROO_MIN_RANGE_V7` 2) and never offered, so a neighbour means
+Attack (or Select, for an own unit). The Normal AI plays the offered
+commands: the Summoner Seizes and never attacks, its Tentacle rises 2 or
+3 away, the Familiar swaps only 2 to 4 away, and the Hexer's shots are
+scored with their frog (the Cult plan's Ribbit step is gone). A save,
+replay, or setup of `7r129` is rejected, and the browser autosave has a
+new key.
 
 `pulp-wars-poc-7r129` (`pulp_wars-ev6q`, **one tile, one meaning for the
 Brain, the Steam Mole, and the Ice Witch**; the user, 2026-11-07: "I mean
@@ -2076,10 +2118,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r129`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r130`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r129.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r130.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6048,7 +6090,7 @@ Circles**, grants no Field Defense command. **Explosives**, displayed as
 the Charge bonus (the Familiar's Charge). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
 holds the Cult's eight names (the table above). Arms Industry lowers
 training costs and never a price in Favour or a unit's value. Summon,
-Channel, Star-fall, Behold! (the warden's aura), Ribbit, Pamphlets, and Anchor need no
+Channel, Star-fall, Behold! (the warden's aura), Ribbit (the Hexer's frogging shot), Pamphlets, and Anchor need no
 technology beyond the unit that uses them (the Tentacle needs Tentacles,
 and a Gibbering Mass's summoning Gibbering Masses),
 and every technology has a live unlock for a Cult seat. The Cult unlocks
@@ -6059,7 +6101,7 @@ that read differently from the Human table are:
 | Farming        | Harvest Rites       | Farm; Offering (a city gives 2 population for 6 Favour)                 |
 | Administration | same                | Summoner (Sacrifice, Seize, Summon an Imp or a Horror); Market; Disband |
 | Sawmilling     | Stargazers          | Sawmill; Stargazer (Star-fall)                                          |
-| Marksmanship   | Hexers              | Hexer (Ribbit)                                                          |
+| Marksmanship   | Hexers              | Hexer (its shot frogs: Ribbit)                                          |
 | Fieldcraft     | same                | Replant Forest; Forest march; Hexer Sight 2                             |
 | Scouting       | Familiars           | Familiar (Switcheroo); Familiar Sight 2                                 |
 | Raiding        | same                | Pillage; Familiar Charge                                                |
@@ -7701,20 +7743,20 @@ Gibbering Mass), checked against `CULT_ROLE_RULES_V7`,
 (`pulp_wars-mch9.47`). Every role uses one slot, every trained Cult unit
 is living, and every trained Cult land unit is a ground unit:
 
-| Unit                 | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                            |
-| -------------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ---------------------------------------------------- |
-| Initiate             | `FIGHTER`     | start             |    2 |   7 | 1.5 (3) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Pamphlets; Channel; no Field Defense                 |
-| Familiar             | `RAIDER`      | Scouting          |    3 |   8 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Switcheroo; Charge (Raiding); no Escape              |
-| Hexer                | `MARKSMAN`    | Marksmanship      |    3 |   7 | 1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁴ | yes               | yes     | Ribbit; Channel; never advances                      |
-| Idol Bearer          | `GUARD`       | Fortification     |    3 |  16 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Behold!; Channel; no Field Defense                   |
-| Summoner             | `CAPTAIN`     | Administration    |    5 |   7 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sacrifice; Seize; Summon; Tentacle; Channel          |
-| Stargazer            | `CATAPULT`    | Sawmilling        |    7 |   7 |       — | 0.5 (1) |    1 |     — |     1 | no                | yes     | Star-fall; Channel; no attack and no strike back     |
-| (vacant)             | `KNIGHT`      | nothing           |    — |     |         |         |      |       |       |                   |         | the Caller retired (`7r85`)                          |
-| (vacant)             | `SWORDSMAN`   | nothing           |    — |     |         |         |      |       |       |                   |         | the Chosen retired (`7r85`)                          |
-| Thing in the Cellar  | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Anchor; no Push                                      |
-| Black Gondola¹⁶      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram and Offering (Offerings to the Deep)      |
-| Galleon of the Eye¹⁶ | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Offering                              |
-| Kraken¹⁶             | `SUBMARINE`   | Submersibles      |   10 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Drag; sea beast; Offering |
+| Unit                 | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                              |
+| -------------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | -------------------------------------------------------------------------------------- |
+| Initiate             | `FIGHTER`     | start             |    2 |   7 | 1.5 (3) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Pamphlets; Channel; no Field Defense                                                   |
+| Familiar             | `RAIDER`      | Scouting          |    3 |   8 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Switcheroo; Charge (Raiding); no Escape                                                |
+| Hexer                | `MARKSMAN`    | Marksmanship      |    3 |   7 |   1 (2) |   1 (2) |    1 |   1–2 |   1¹⁴ | yes               | yes     | Ribbit (its attack frogs); Channel; never advances                                     |
+| Idol Bearer          | `GUARD`       | Fortification     |    3 |  16 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Behold!; Channel; no Field Defense                                                     |
+| Summoner             | `CAPTAIN`     | Administration    |    5 |   7 |       — |   1 (2) |    1 |     — |     1 | yes               | yes     | Seize (its attack); Sacrifice; Summon; Tentacle; Channel; no attack and no strike back |
+| Stargazer            | `CATAPULT`    | Sawmilling        |    7 |   7 |       — | 0.5 (1) |    1 |     — |     1 | no                | yes     | Star-fall; Channel; no attack and no strike back                                       |
+| (vacant)             | `KNIGHT`      | nothing           |    — |     |         |         |      |       |       |                   |         | the Caller retired (`7r85`)                                                            |
+| (vacant)             | `SWORDSMAN`   | nothing           |    — |     |         |         |      |       |       |                   |         | the Chosen retired (`7r85`)                                                            |
+| Thing in the Cellar  | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Anchor; no Push                                                                        |
+| Black Gondola¹⁶      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram and Offering (Offerings to the Deep)                                        |
+| Galleon of the Eye¹⁶ | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Offering                                                                |
+| Kraken¹⁶             | `SUBMARINE`   | Submersibles      |   10 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Drag; sea beast; Offering                                   |
 
 ¹⁴ Hexer Sight becomes 2 with Fieldcraft.
 
@@ -7756,18 +7798,23 @@ came with `pulp_wars-mch9.36` (`7r90`) and the Mass with
   stop it. It is not a robed cultist: it never channels or chants. It has
   **Switcheroo**. It is the Scouts unit and the treasure unit.
 - **Hexer** has the Marksman's reach (range 1–2, never advances, Sight 2
-  with Fieldcraft) with 7 HP and Attack 1.5 for 3 Coins (9 HP, Attack 2,
-  and 4 Coins before `7r85`), and **Ribbit**.
+  with Fieldcraft) with 7 HP and Attack 1 for 3 Coins (9 HP, Attack 2,
+  and 4 Coins before `7r85`; Attack 1.5 from `7r85` to `7r129`), and
+  **Ribbit**: since `7r130` (`pulp_wars-n5fa`) its attack frogs a target
+  it leaves alive, with no command or cooldown of its own.
 - **Idol Bearer** has the Guard's "cannot attack after moving" (Channel
   may follow its Move), with 16 HP and Defense 2.5 at every distance. It
   cannot build Field Defense. It has **Behold!**, the warden's lasting
   aura (the Cult redesign, `pulp_wars-mch9.33`; a command before:
   [section 26.11](#2611-behold-anchor-and-boo)).
-- **Summoner** has the Captain's Attack and Defense with 7 HP (10 before
-  `7r85`). It has no Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED`
-  are never offered and are rejected with `UNIT_ROLE_INVALID`); it has
-  **Sacrifice**, **Seize**, and **Summon**, leads the Great Summoning, and
-  calls the **Tentacle** with Tentacles (the Caller's until `7r85`).
+- **Summoner** has the Captain's Defense with 7 HP (10 before `7r85`) and
+  **no attack** since `7r130` (`pulp_wars-n5fa`; the Captain's Attack 1
+  before): no `ATTACK` ability, Attack 0, and no reach, so it never strikes
+  back, and **Seize** is its attack. It has no Rally and no Tend Wounded
+  (`RALLY` and `TEND_WOUNDED` are never offered and are rejected with
+  `UNIT_ROLE_INVALID`); it has **Sacrifice**, **Seize**, and **Summon**,
+  leads the Great Summoning, and calls the **Tentacle** with Tentacles
+  (the Caller's until `7r85`), 2 or 3 tiles away.
 - **Stargazer** costs 7 and has 7 HP (8 and 10 before `7r85`) and **no
   attack**: no `ATTACK` ability, Attack 0, and no
   reach, so it never strikes back and destroys no Field Defense by an
@@ -7797,8 +7844,9 @@ came with `pulp_wars-mch9.36` (`7r90`) and the Mass with
   `CAPTURE`, `CHANNEL`, `PAMPHLETS`, `JOIN_CHANT`; Familiar `ATTACK`,
   `CAPTURE`, `CHARGE`, `SWITCHEROO`; Hexer `ATTACK`, `CAPTURE`, `CHANNEL`,
   `RIBBIT`, `JOIN_CHANT`; Idol Bearer `ATTACK`, `CAPTURE`, `CHANNEL`,
-  `BEHOLD`, `JOIN_CHANT`; Summoner `ATTACK`, `CAPTURE`, `SACRIFICE`,
-  `SEIZE`, `SUMMON`, `CHANNEL`, `TENTACLE`, `JOIN_CHANT`; Stargazer
+  `BEHOLD`, `JOIN_CHANT`; Summoner `CAPTURE`, `SACRIFICE`,
+  `SEIZE`, `SUMMON`, `CHANNEL`, `TENTACLE`, `JOIN_CHANT` (no `ATTACK`
+  since `7r130`); Stargazer
   `CAPTURE`, `CHANNEL`, `STARFALL`, `JOIN_CHANT`; the vacant `KNIGHT` and
   `SWORDSMAN` none; Thing in the Cellar `ATTACK`, `CAPTURE`, `ANCHOR`; Imp
   `ATTACK`, `BROOD`, `SWARM`, `STRIDE`; Horror `ATTACK`, `CAPTURE`, `BOO`,
@@ -8587,7 +8635,6 @@ The audit of every command (`7r107`):
 | Sugar Rush (`SUGAR_RUSH`)                                                                                                                                                                                                | the unit is Rushed already                                                                                                                           | already refused (`RUSHED`)                                                                                                                                                       |
 | Mind Control (`MIND_CONTROL`)                                                                                                                                                                                            | the target is mind-controlled already (by any Brain)                                                                                                 | already refused (`TARGET_IMMUNE`)                                                                                                                                                |
 | Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                                            | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |
-| Ribbit (`RIBBIT`)                                                                                                                                                                                                        | the target is a frog already                                                                                                                         | already refused (`FROG`)                                                                                                                                                         |
 | Proclaim (`PROCLAIM`)                                                                                                                                                                                                    | the city is Cowed already                                                                                                                            | already refused (`COWED`)                                                                                                                                                        |
 | Join the chant (`JOIN_CHANT`), Anchor (`ANCHOR`)                                                                                                                                                                         | the cultist chants that star already; the Thing grips already or the cultist is gripped                                                              | already refused (`CHANTING`; `GRIPPING`, `CULTIST`)                                                                                                                              |
 | Channel and Bind again (`CHANNEL`)                                                                                                                                                                                       | an own daemon that has enough strands (or is on its Doorstep)                                                                                        | kept: the strand is a change (it guards against a disruption and pays the trickle, [section 26.5](#265-the-channel-strands-and-the-check)); Bind again only on an Unbound daemon |
@@ -17709,20 +17756,20 @@ change a number only to restore counterplay that was shown to be missing.
 
 ### 26.1 Roles, robed cultists, and labels
 
-| Mechanical role | Cult unit           | Its own thing                                                           |
-| --------------- | ------------------- | ----------------------------------------------------------------------- |
-| `FIGHTER`       | Initiate            | Pamphlets; channels; the start unit and the Militia (two of them)       |
-| `GUARD`         | Idol Bearer         | Behold! (the warden's aura); channels                                   |
-| `RAIDER`        | Familiar            | Switcheroo; Charge; the Scouts unit and the treasure unit               |
-| `MARKSMAN`      | Hexer               | Ribbit; channels                                                        |
-| `CAPTAIN`       | Summoner            | Sacrifice, Seize, Summon, Tentacle; leads the Great Summoning; channels |
-| `CATAPULT`      | Stargazer           | no attack of its own; leads Star-fall; channels                         |
-| `KNIGHT`        | (vacant)            | the Caller retired (`7r85`); nothing fields the role                    |
-| `SWORDSMAN`     | (vacant)            | the Chosen retired (`7r85`); nothing fields the role                    |
-| `JUGGERNAUT`    | Thing in the Cellar | Anchor; the giant reward                                                |
-| `PATROL_BOAT`   | Patrol Boat         | the Human boat                                                          |
-| `BATTLESHIP`    | Battleship          | the Human boat                                                          |
-| `SUBMARINE`     | Submarine           | the Human boat                                                          |
+| Mechanical role | Cult unit           | Its own thing                                                                                     |
+| --------------- | ------------------- | ------------------------------------------------------------------------------------------------- |
+| `FIGHTER`       | Initiate            | Pamphlets; channels; the start unit and the Militia (two of them)                                 |
+| `GUARD`         | Idol Bearer         | Behold! (the warden's aura); channels                                                             |
+| `RAIDER`        | Familiar            | Switcheroo; Charge; the Scouts unit and the treasure unit                                         |
+| `MARKSMAN`      | Hexer               | Ribbit (its attack frogs); channels                                                               |
+| `CAPTAIN`       | Summoner            | no attack (Seize is its attack); Sacrifice, Summon, Tentacle; leads the Great Summoning; channels |
+| `CATAPULT`      | Stargazer           | no attack of its own; leads Star-fall; channels                                                   |
+| `KNIGHT`        | (vacant)            | the Caller retired (`7r85`); nothing fields the role                                              |
+| `SWORDSMAN`     | (vacant)            | the Chosen retired (`7r85`); nothing fields the role                                              |
+| `JUGGERNAUT`    | Thing in the Cellar | Anchor; the giant reward                                                                          |
+| `PATROL_BOAT`   | Patrol Boat         | the Human boat                                                                                    |
+| `BATTLESHIP`    | Battleship          | the Human boat                                                                                    |
+| `SUBMARINE`     | Submarine           | the Human boat                                                                                    |
 
 Summoned, never trained, hired, found, or rewarded:
 
@@ -17847,7 +17894,10 @@ of the eight tiles around the Summoner that the actor sees, and it must be:
 
 The victim dies as a kill of the Summoner (its kill count, Promotion,
 Slayer, the Score's Kills; a Loss for the victim's seat), and leaves no
-Grave, rising, death blast, Crumbs, or Plunder. A Seized Brain releases the
+Grave, rising, death blast, Crumbs, or Plunder. Seize is the Summoner's
+attack: since `7r130` (`pulp_wars-n5fa`) it has no other (no `ATTACK`,
+Attack 0, no reach), so it never strikes back, and a broken enemy beside
+it means Seize alone. A Seized Brain releases the
 unit it controls. The seat gains twice the victim's value: a Fighter 4, a
 Guard 6, a Raider 8, a Champion 12, a Knight 18.
 
@@ -18416,12 +18466,19 @@ Horror never Boos beside its own channellers).
 Each is a primary action of its unit, in land form, that may follow its
 Move.
 
-**Ribbit (the Hexer).** "Turns an enemy within 2 into a frog until the end
-of its next turn." In place of its attack, the Hexer turns a hostile unit
-in land form that it sees, within 2 tiles, into a **frog**. Not a reward
-giant, a two-slot unit, an Egg, a neutral unit, a summoned unit, or a unit
-that is a frog already. The Hexer cannot Ribbit on its owner's next turn
-(every second turn at most).
+**Ribbit (the Hexer).** "Its attack turns an enemy it leaves alive into a
+frog until the end of that unit's next turn." Since `7r130`
+(`pulp_wars-n5fa`) Ribbit is the Hexer's attack, not a command: an
+`ATTACK` of the Hexer (Attack 1, range 1–2) that leaves its target alive
+turns it into a **frog** (`ribbitApplied` in the combat preview,
+`UNIT_FROGGED` after the `COMBAT_RESOLVED`). The target must be one a hex
+takes: a player's unit in land form that is not a reward giant, a
+two-slot unit, an Egg, a neutral unit, a summoned unit, or a frog
+already; any other target just takes the damage. A strike back is no
+attack of the Hexer's and never frogs. There is no cooldown: the Hexer
+may frog on every turn. (Until `7r129` Ribbit was a `RIBBIT` command in
+place of the attack, within 2 tiles, every second turn, and the Hexer had
+Attack 1.5.)
 
 **A frog** lasts until the end of its owner's next turn:
 
@@ -18444,12 +18501,13 @@ An Initiate deals a frogged Fighter 5 (7 left) and a frogged Knight 5 (8
 left) and takes nothing back (7 each before the Initiate's Attack 1.5 of
 `7r85`).
 
-**Switcheroo (the Familiar).** "The toad-cat and a unit within 4 swap
-places. Never on a settlement center." With **Familiars** (the Cult's
+**Switcheroo (the Familiar).** "The toad-cat and a unit 2 to 4 tiles away
+swap places. Never on a settlement center." With **Familiars** (the Cult's
 Scouting; a Familiar from the Scouts reward or a chest swaps only once its
 owner has it), the Familiar and one land-form unit of any player that it
-sees, within **4** tiles (2 until the Cult redesign, `pulp_wars-mch9.34`;
-nothing else changed), swap tiles. Not a reward giant, a two-slot unit, an
+sees, **2 to 4** tiles away (within 2 until the Cult redesign,
+`pulp_wars-mch9.34`, then within 4; never a neighbour since `7r130`,
+`pulp_wars-n5fa`: a unit next to it is `RANGE`), swap tiles. Not a reward giant, a two-slot unit, an
 Egg, a neutral unit, a summoned unit, or a unit nothing moves (a
 Jawbreaker). **Neither tile may be a settlement center**, each unit must be
 able to stand where the other stood by the Push conditions, and neither is
@@ -18459,11 +18517,12 @@ it lands this turn, and nothing on either tile is picked up. A swapped
 channeller or chanter, of either side, is disrupted. The Familiar cannot
 swap on its owner's next turn.
 
-**The Tentacle (the Summoner).** "Up comes a Tentacle within 3. It slaps
-and grabs whoever is weakest beside it." With **Tentacles** (the Cult's
-Chivalry, the capability `tentacles`; refused `TECHNOLOGY` without it) the
-Summoner calls a Tentacle up on a
-free tile its seat has explored, 1 to 3 tiles away: land, water, or ice,
+**The Tentacle (the Summoner).** "Up comes a Tentacle 2 or 3 tiles away.
+It slaps and grabs whoever is weakest beside it." With **Tentacles** (the
+Cult's Chivalry, the capability `tentacles`; refused `TECHNOLOGY` without
+it) the Summoner calls a Tentacle up on a
+free tile its seat has explored, 2 or 3 tiles away (1 to 3 before `7r130`,
+`pulp_wars-n5fa`; a tile next to it is `TILE`): land, water, or ice,
 never a settlement center or a Rift, with no unit, mound, Barricade,
 treasure chest, or curiosity. One Tentacle per Summoner at a time; it
 outlives its Summoner. (It was the retired Caller's until `7r85`; the
@@ -18503,7 +18562,7 @@ frog does not preach.
 [section 3](#3-players-turns-and-victory):
 
 1. With the Mind Control cooldowns, before the Shield recharge: the seat's
-   Ribbit and Switcheroo cooldowns count down.
+   Switcheroo cooldowns count down (Ribbit has none since `7r130`).
 2. After Plague and its chains, the watched units are judged (a channeller
    Plague hurt is disrupted), and then **the channel check** runs for each
    bound daemon in unit-ID order (an Imp held by its own strands or by a
@@ -18584,10 +18643,12 @@ and tricks). In summary:
   (`unitId`, `cultistUnitId`), `BOO` (`unitId`),
   `BEGIN_RITUAL` (`ritual` `STARFALL` or `GREAT_SUMMONING`, `unitId`,
   `at`), `JOIN_CHANT` (`unitId`, `leaderUnitId`; `pulp_wars-mch9.34`),
-  `PROCLAIM` (`unitId`, `cityId`), `RIBBIT` and `SWITCHEROO`
+  `PROCLAIM` (`unitId`, `cityId`), `SWITCHEROO`
   (`unitId`, `targetUnitId`), and `TENTACLE` (`unitId`, `at`; the
-  Summoner's). (`PICK_ME` was removed with the Chosen, `7r85`.) Pamphlets is the ordinary `CAPTURE`, and the Herald's two
-  attacks the ordinary `ATTACK`.
+  Summoner's). (`PICK_ME` was removed with the Chosen, `7r85`, and
+  `RIBBIT` at `7r130`, `pulp_wars-n5fa`: the Hexer's `ATTACK` frogs, with
+  the combat preview's `ribbitApplied`.) Pamphlets is the ordinary
+  `CAPTURE`, and the Herald's two attacks the ordinary `ATTACK`.
 - **State.** The `cult` block: `favour`, `strands`, `grips`, `rituals`,
   `cowed`, `frogs`, `hexCooldowns`, and `tentacles` (`taunts` was removed
   with Pick Me!, `7r85`, and `idols` with Behold!'s command,
@@ -18636,8 +18697,8 @@ and tricks). In summary:
   (`NOBODY`); `RITUAL_NOT_LEGAL` (`EMBARKED`, `MOVED`, `CHANTERS` (the
   Great Summoning's only), `TILE`); `JOIN_CHANT_NOT_LEGAL` (`EMBARKED`,
   `CHANTING`, `ACTED`, `STATUS`, `RITUAL`, `ADJACENT`);
-  `PROCLAIM_NOT_LEGAL` (`CITY`, `RANGE`, `COWED`); `RIBBIT_NOT_LEGAL`
-  (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`);
+  `PROCLAIM_NOT_LEGAL` (`CITY`, `RANGE`, `COWED`; `RIBBIT_NOT_LEGAL` was
+  removed at `7r130`);
   `SWITCHEROO_NOT_LEGAL` (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`,
   `IMMUNE`, `RANGE`, `CENTER`, `TILE`); `TENTACLE_NOT_LEGAL` (`EMBARKED`,
   `TECHNOLOGY`, `EXISTS`, `TILE`); `UNIT_FROGGED` (a frog's refused
@@ -18661,8 +18722,9 @@ and tricks). In summary:
   it newly kills), `previewRitualV7` (a star's damage and hits, with its
   joiners; whether the Herald
   `ARRIVES`, `CONSUMES`, or is `BLOCKED`), `previewProclaimV7`,
-  `previewRibbitV7`, `previewSwitcherooV7`, and `previewTentacleV7`
-  describe an offered command and are null otherwise.
+  `previewSwitcherooV7`, and `previewTentacleV7`
+  describe an offered command and are null otherwise (`previewRibbitV7`
+  was removed at `7r130`: a Hexer's combat preview has `ribbitApplied`).
   `previewRampageV7` gives the unit a visible daemon goes for, the `step`
   of the target rule that chose it (1 to 4, `pulp_wars-mch9.35`), and its
   walk (`exact` is false when an unexplored tile could hold a nearer unit);
@@ -18691,8 +18753,10 @@ and tricks). In summary:
   helper, `pulp_wars-mch9.37`), `.channel.u<id>`, `.anchor.u<id>`,
   `.boo`, `.starfall.<x>,<y>`, `.join.u<stargazer>`,
   `.summoning.<x>,<y>`, `.proclaim.c<id>`,
-  `.ribbit.u<id>`, `.switch.u<id>`, and `.tentacle.<x>,<y>` (`.pickme`
-  was removed at `7r85` and `.behold` with `pulp_wars-mch9.33`),
+  `.switch.u<id>`, and `.tentacle.<x>,<y>` (`.pickme`
+  was removed at `7r85`, `.behold` with `pulp_wars-mch9.33`, and
+  `.ribbit.u<id>` at `7r130`: a Hexer's attack line says "RIBBIT: the
+  target becomes a FROG"),
   and lines for Favour (`favour 12/30`, with the Hunger due at the next
   check, and what a gain lost above the cap), strands and Control (an Imp
   `held by the Brood of u<id>`, and the Imps a strand's Brood holds; a Mass
@@ -18721,7 +18785,10 @@ and tricks). In summary:
   gives a Mass on its Doorstep no channeller, plays Swarm, feeds or
   releases a hungry Herald, places its Idol Bearers to shield its casters,
   casts Star-fall alone and joins the chant, and scores the Herald's
-  advance ([the redesign, sections 12.5 to 12.7](RULESET_7_CULT_REDESIGN.md#125-as-built-a-r1-the-army-rules-and-favour-pulp_wars-mch938)).
+  advance; since `7r130` (`pulp_wars-n5fa`) its Summoner Seizes and never
+  attacks, and the general attack rules add a Hexer shot's frog
+  (`CULT_FROG_VALUE_V7`, more when the frog's reach covers an own unit or
+  a Seizure can follow) where the plan's Ribbit step was ([the redesign, sections 12.5 to 12.7](RULESET_7_CULT_REDESIGN.md#125-as-built-a-r1-the-army-rules-and-favour-pulp_wars-mch938)).
   Every seat's play against the Cult reads an Imp a Brood holds, and a
   Mass on its Doorstep, as held, and minds the warden, Awestruck, Drag,
   Swarm, the chanters, a hungry Herald, and the engine's Unbound target
@@ -18746,8 +18813,9 @@ and tricks). In summary:
     the trickle, and a bound Herald's card shows its "Hunger 2"
     (`pulp_wars-mch9.42`).
   - **Sacrifice, Seize, Summon, Channel, Anchor, Star-fall, the Great
-    Summoning, Proclaim, Ribbit, Switcheroo, and the Tentacle** have one
-    button each, and what they aim at is picked on the board
+    Summoning, Proclaim, Switcheroo, and the Tentacle** have one
+    button each (Ribbit's went with its command at `7r130`: a Hexer's
+    attack preview says "Ribbit: target becomes a frog"), and what they aim at is picked on the board
     ([board targeting](../ui/BOARD_TARGETING.md)), labelled with what it
     pays or does; a rite's mark is previewed first and then begun. The
     Summon button opens a chooser of the three summons with their prices,

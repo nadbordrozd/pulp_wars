@@ -33,8 +33,8 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * step's unit, city or tile picked, a unit's card, a city reward, the
  * technology screen of its research steps, and the farewell.
  * Tile actions (bead pulp_wars-2yc.60; scenes `tile-actions-*`): a Human
- * Knight, a Cult Hexer (and the chooser of its Attack and Ribbit on one
- * Knight), an Ice Folk Yeti's Freeze, a Martian Brain's Mind Control and
+ * Knight, a Cult Hexer (whose Attack frogs since 7r130, so no chooser on
+ * its Knight), an Ice Folk Yeti's Freeze, a Martian Brain's Mind Control and
  * a Stargazer's compact star badges.
  *
  * Every state is hand-built (tests/fixtures/v7-*-ui.ts and the score
@@ -1281,13 +1281,13 @@ const SCENES: readonly Scene[] = [
     },
   },
   // Tile actions (bead pulp_wars-2yc.60): a selected unit's action badges
-  // (a Human Knight has none, its Moves and Attacks keep their marks), and
-  // the chooser of a tile with an Attack and a Ribbit.
+  // (a Human Knight has none, its Moves and Attacks keep their marks).
+  // (`pulp_wars-n5fa`, 7r130: the Hexer's Attack frogs, so its target has
+  // no Ribbit beside the Attack and no chooser.)
   ...(
     [
       ["knight", "tileActionsKnightFixtureV7", "knight", null],
       ["hexer", "tileActionsHexerFixtureV7", "hexer", null],
-      ["hexer-chooser", "tileActionsHexerFixtureV7", "hexer", "hexed"],
       ["yeti", "tileActionsYetiFixtureV7", "yeti", null],
       ["brain", "tileActionsBrainFixtureV7", "brain", null],
       ["stargazer", "tileActionsStargazerFixtureV7", "stargazer", null],

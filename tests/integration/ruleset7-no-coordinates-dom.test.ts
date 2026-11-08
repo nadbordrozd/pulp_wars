@@ -354,8 +354,7 @@ const FIXTURES: readonly (readonly [
     "Cult: hexes and tricks",
     cultTricksUiFixtureV7,
     [
-      "cult-ribbit aimed",
-      "cult-ribbit performed",
+      // (Ribbit's button went with its command: `pulp_wars-n5fa`, 7r130.)
       "cult-switcheroo aimed",
       "cult-switcheroo performed",
       "cult-tentacle aimed",

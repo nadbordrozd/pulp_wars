@@ -148,14 +148,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
-    expect(PRIOR_RULESET_7_IDS.slice(-59, -57)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(PRIOR_RULESET_7_IDS.slice(-60, -58)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-59, -57)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-60, -58)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -257,8 +257,11 @@ const ROSTER: Readonly<
   FIGHTER: ["Initiate", 2, 7, 1.5, 1, 1, [1, 1], 1, null, true],
   GUARD: ["Idol Bearer", 3, 16, 1.5, 2.5, 1, [1, 1], 1, "FORTIFICATION", false],
   RAIDER: ["Familiar", 3, 8, 2, 1, 2, [1, 1], 2, "SCOUTING", true],
-  MARKSMAN: ["Hexer", 3, 7, 1.5, 1, 1, [1, 2], 1, "MARKSMANSHIP", true],
-  CAPTAIN: ["Summoner", 5, 7, 1, 1, 1, [1, 1], 1, "ADMINISTRATION", true],
+  // One tile, one meaning (`pulp_wars-n5fa`, 7r130): the Hexer Attack 1
+  // (its shot frogs), and the Summoner no attack and no reach (Seize is its
+  // attack).
+  MARKSMAN: ["Hexer", 3, 7, 1, 1, 1, [1, 2], 1, "MARKSMANSHIP", true],
+  CAPTAIN: ["Summoner", 5, 7, 0, 1, 1, [0, 0], 1, "ADMINISTRATION", true],
   // "No attack of its own": Attack 0 and no reach.
   CATAPULT: ["Stargazer", 7, 7, 0, 0.5, 1, [1, 0], 1, "SAWMILLING", false],
   // Vacant (the Caller and the Chosen retired): no cost, no technology, and
@@ -356,14 +359,14 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       // Charge with Raiding; no Escape. The Familiar never channels.
       // Switcheroo (`pulp_wars-mch9.8`).
       RAIDER: ["ATTACK", "CAPTURE", "CHARGE", "SWITCHEROO"],
-      // Ribbit (`pulp_wars-mch9.8`).
+      // Ribbit (`pulp_wars-mch9.8`; the trait of its attack since
+      // `pulp_wars-n5fa`, 7r130).
       MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT", "JOIN_CHANT"],
       GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD", "JOIN_CHANT"],
       // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon; and
       // the Tentacle (the Cult redesign, `pulp_wars-mch9.31`; the Caller's
-      // before).
+      // before). `pulp_wars-n5fa` (7r130): no attack; Seize is its attack.
       CAPTAIN: [
-        "ATTACK",
         "CAPTURE",
         "SACRIFICE",
         "SEIZE",
@@ -1041,10 +1044,11 @@ describe("the Cult registration: the numbers in a fight (section 10)", () => {
     // Fast: the Familiar and the Raider.
     expect(duel(["CULT", "RAIDER"], ["ORIGINAL", "MARKSMAN"])).toEqual([6, 2]);
     expect(duel(["ORIGINAL", "RAIDER"], ["CULT", "RAIDER"])).toEqual([6, 2]);
-    // Ranged: the Hexer's short shot; a Knight kills a Hexer, a Summoner,
-    // and an Initiate (7 of 7 each).
+    // Ranged: the Hexer's short shot (Attack 1 since `pulp_wars-n5fa`,
+    // 7r130: 3 before; it frogs the Fighter too); a Knight kills a Hexer, a
+    // Summoner, and an Initiate (7 of 7 each).
     expect(duel(["CULT", "MARKSMAN"], ["ORIGINAL", "FIGHTER"], 2)).toEqual([
-      3, 0,
+      2, 0,
     ]);
     for (const role of ["FIGHTER", "MARKSMAN", "CAPTAIN"] as const)
       expect(duel(["ORIGINAL", "KNIGHT"], ["CULT", role]), role).toEqual([

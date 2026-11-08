@@ -208,7 +208,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // unchanged.
     // Building placement (`pulp_wars-h0xx`, 7r106): the candidates of
     // `candidateCount` below (was 526c6c…2b4a).
-    "67ba0a1c2ddce9fe572a87fab23cccae05a8fe7759daf686449a1324b7ea4b1e",
+    // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
+    // after PROCLAIM, moving the later command kinds back by one (was
+    // 67ba0a…4b1e); the revision-12-ordinal value is unchanged.
+    "829d22159cb1b97fdfbcccd1cfea701f7a6a949c78aee80a69cc2d821998e4b8",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -304,10 +307,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r129",
+    rulesetId: "pulp-wars-poc-7r130",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r129",
+      rulesetId: "pulp-wars-poc-7r130",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

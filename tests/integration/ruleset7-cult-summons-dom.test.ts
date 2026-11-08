@@ -192,8 +192,9 @@ describe("the summons on their tiles", () => {
       ["SUMMON_IMP", "ICON:ACTION:SUMMON_IMP"],
       ["SUMMON_HORROR", "ICON:ACTION:SUMMON_HORROR"],
       ["SUMMON_MASS", "ICON:ACTION:SUMMON_MASS"],
-      // The Summoner's Tentacle (every technology) shares the tile.
-      ["TENTACLE", undefined],
+      // (The Summoner's Tentacle shared the tile until `pulp_wars-n5fa`,
+      // 7r130: it rises 2 or 3 tiles away. The summons are a choice the
+      // user keeps.)
     ]);
     tap(scene, tile);
     const chooser = requiredElement<HTMLElement>(
@@ -212,7 +213,6 @@ describe("the summons on their tiles", () => {
       ["summon_imp", "Summon Imp", "−2", "ICON:ACTION:SUMMON_IMP"],
       ["summon_horror", "Summon Horror", "−4", "ICON:ACTION:SUMMON_HORROR"],
       ["summon_mass", "Summon Mass", "−5", "ICON:ACTION:SUMMON_MASS"],
-      ["tentacle", "Tentacle", null, null],
     ]);
     expectPlainWords(chooser);
     // The Mass's row: its one helper is seated, so the tap summons there.

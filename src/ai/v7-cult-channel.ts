@@ -116,7 +116,7 @@ import {
  * (`cultRitualPlanV7`), called here once the channel plan has claimed its
  * cultists: the Herald's Move and Proclaim and a Horror's Boo! (above the
  * daemons' ordinary play), the Great Summoning (just above Summon), and
- * Ribbit, Switcheroo, the Tentacle, Star-fall, and its joins (below the
+ * Switcheroo, the Tentacle, Star-fall, and its joins (below the
  * Offering, above the ordinary play). A Summoner calls a Tentacle only when
  * it has no Summon, Seizure, or Sacrifice step (A-R1, section 12.3).
  */

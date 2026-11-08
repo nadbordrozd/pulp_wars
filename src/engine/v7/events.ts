@@ -344,6 +344,13 @@ export interface CombatPreviewV7 {
    */
   readonly frostBreathApplied: boolean;
   /**
+   * One tile, one meaning (`pulp_wars-n5fa`, 7r130): Ribbit. The attacker
+   * is a Cult Hexer and the attack turns its surviving target into a frog
+   * (`attackRibbitV7`; a `UNIT_FROGGED` follows). Ribbit was a command of
+   * its own before.
+   */
+  readonly ribbitApplied: boolean;
+  /**
    * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1):
    * Crushing Shove. `WILL_CRUSH` when the attacker crushes and its
    * surviving target is not pushed, `UNKNOWN_BEHIND_FOG` when `push` is
@@ -1843,7 +1850,9 @@ export type DomainEventV7 =
        * The Cultists (`pulp_wars-mch9.8`, section 9.1): the Hexer `unitId`
        * of `playerId` turned the unit `targetUnitId` of `targetOwnerId`,
        * which stands on `at`, into a frog until the end of its owner's next
-       * turn.
+       * turn. Since `pulp_wars-n5fa` (7r130) it follows the Hexer's
+       * `COMBAT_RESOLVED` whose `ribbitApplied` is true (the `RIBBIT`
+       * command that emitted it before is retired).
        */
       readonly kind: "UNIT_FROGGED";
       readonly playerId: PlayerId;

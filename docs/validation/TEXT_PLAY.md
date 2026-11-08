@@ -422,10 +422,13 @@ log prints `RITUAL BEGUN`, `RITUAL FIZZLED`, `STAR FELL`, `CONSUMED`,
 `.join.u7` (a robed cultist beside that Stargazer joins its pending star's
 chant, +3); `options` says the star's damage before and after the join
 and whom it then also kills, and the log prints `CHANT JOINED`.
-Hexes and tricks (`pulp_wars-mch9.8`) add `.ribbit.u9` (the Hexer frogs that
-unit), `.switch.u9` (the Familiar swaps with it), and `.tentacle.4,5` (the
-Summoner calls a Tentacle up on that tile; the Caller's, and `.pickme`, the
-Chosen's taunt, until the Cult redesign retired both at `7r85`). `options` says what a frog loses, where the two units of a swap
+Hexes and tricks (`pulp_wars-mch9.8`) add `.switch.u9` (the Familiar swaps
+with it, 2 to 4 tiles away) and `.tentacle.4,5` (the Summoner calls a
+Tentacle up on that tile, 2 or 3 tiles away; the Caller's, and `.pickme`,
+the Chosen's taunt, until the Cult redesign retired both at `7r85`).
+`.ribbit.u9` went at `7r130` (`pulp_wars-n5fa`): the Hexer's attack
+(`.a.u9`) frogs a unit it leaves alive, and its `options` line ends with
+`RIBBIT: the target becomes a FROG`. `options` says what a frog loses, where the two units of a swap
 land, and whom a Tentacle slaps at once as the board stands. A unit's line
 shows `FROG until its owner's next turn ends`, `trick spent`, or
 `GRABBED by u40: moves only to tiles next to it`. A Tentacle prints

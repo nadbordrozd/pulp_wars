@@ -86,7 +86,6 @@ import {
 import {
   GREAT_SUMMONING_LABEL_V7,
   PROCLAIM_LABEL_V7,
-  RIBBIT_LABEL_V7,
   STARFALL_LABEL_V7,
   SWITCHEROO_LABEL_V7,
   TENTACLE_LABEL_V7,
@@ -145,7 +144,6 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   ANCHOR: "AIMED",
   BEGIN_RITUAL: "AIMED",
   PROCLAIM: "AIMED",
-  RIBBIT: "AIMED",
   SWITCHEROO: "AIMED",
   TENTACLE: "AIMED",
   JOIN_CHANT: "AIMED",
@@ -649,15 +647,8 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     offered: kind("PROCLAIM"),
     pick: (unitId) => ({ cultPick: { kind: "PROCLAIM", unitId } }),
   },
-  {
-    id: "RIBBIT",
-    label: RIBBIT_LABEL_V7,
-    icon: "frog",
-    dockAction: "cult-ribbit",
-    families: ["RIBBIT"],
-    offered: kind("RIBBIT"),
-    pick: (unitId) => ({ cultPick: { kind: "RIBBIT", unitId } }),
-  },
+  // (Ribbit's badge went with its command: `pulp_wars-n5fa`, 7r130, the
+  // Hexer's Attack badge frogs.)
   {
     id: "SWITCHEROO",
     label: SWITCHEROO_LABEL_V7,

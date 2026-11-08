@@ -594,7 +594,6 @@ the army policy say.
 | 1910            | Summon: a Gibbering Mass, a Horror, or an Imp, by class                                                           |
 | 1900            | The Sacrifice of a spare Initiate (and the one that feeds a Herald's Hunger)                                      |
 | 1890            | The Offering                                                                                                      |
-| 1880            | Ribbit                                                                                                            |
 | 1875            | Switcheroo                                                                                                        |
 | 1870            | The Summoner's Tentacle                                                                                           |
 | 1860            | Star-fall, begun alone                                                                                            |
@@ -877,14 +876,17 @@ garrison off a hostile center while an own unit that captures stands beside
 that center and has not moved. Never with an own or allied unit on its
 eight tiles, and not in place of an attack that kills.
 
-**10. Ribbit**, by a Hexer the plan has not claimed, in this order: the
-enemy that can attack an own channeller or chanter next turn (any hit
-breaks the strand; the most cultists first); then the enemy a Seizure can
-follow this turn (the beating counted with every caster's blow, as on a
-frog, and no Summoner's: it keeps its action for the Seizure); then the
-strongest melee unit in reach, by cost. Not in place of a shot that kills.
+**10. Ribbit** is no step of the plan since `7r130` (`pulp_wars-n5fa`): it
+is the Hexer's attack, which frogs a target it leaves alive, so the
+general attack rules pick the shot and add its frog to the attack's
+strategic value (`CULT_FROG_VALUE_V7` 6; `CULT_FROG_THREAT_VALUE_V7` 4 more
+when the frog's reach covers an own unit, the old step's channeller case;
+`CULT_FROG_SEIZE_VALUE_V7` 4 more when the hit leaves it at half its Hit
+Points or less within two tiles of an own unit that Seizes). The step at
+1880 (the enemy that could hit a channeller, then the one a Seizure could
+follow, then the strongest melee unit in reach) is gone.
 
-**11. Switcheroo** (range 4) swaps with an enemy only (so never an own
+**11. Switcheroo** (2 to 4 tiles since `7r130`) swaps with an enemy only (so never an own
 channeller): a broken enemy that no Seizure reaches where it stands, when a
 Summoner and a holder can stand beside the Familiar's tile and the visible
 enemy does not kill the Familiar where it lands; else an enemy ranged or
@@ -953,8 +955,8 @@ Points taken. A shot the shield wall halves (the combat preview's
 melee blow on the same unit ranks first. A strandless Gibbering Mass on its
 Doorstep held only by one standing idol (no own city center beside it, no
 second idol) makes that Idol Bearer worth the Mass (20): its kill goes
-first at 1286, and so does a Bolas or a Ribbit on it, the status that puts
-the idol down.
+first at 1286, and so does a Bolas on it, or a Hexer's shot that frogs
+it (`ribbitApplied`, since `7r130`), the status that puts the idol down.
 
 **3. A circle.** A hit on the leader of a Great Summoning, or on a chanter
 when it has only its three, ends it: priority 1287 and the Herald's value.
@@ -1137,7 +1139,7 @@ design section 10.4).
   Tender to a frog it is not beside, or use the Candy Top-Up as a cure. It
   does not forecast a Herald's second attack after its advance (only the
   first target is the eye mark), and a status other than a Bolas or a
-  Ribbit that an attack puts on an Idol Bearer is valued only as the
+  Hexer's frog that an attack puts on an Idol Bearer is valued only as the
   attack.
 - The lab `LAB_CULT_MID` has not been played.
 

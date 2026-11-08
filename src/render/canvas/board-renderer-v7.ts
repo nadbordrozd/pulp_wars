@@ -282,7 +282,12 @@ import {
   drawCultTrickUnitMarkersV7,
   type CultTrickArtV7,
 } from "./cult-ritual-canvas-v7";
-import { COWED_BANNER_V7, frogNameV7 } from "../cult-ritual-presentation-v7";
+import {
+  COWED_BANNER_V7,
+  RIBBIT_PREVIEW_V7,
+  frogNameV7,
+  ribbitCombatNotesV7,
+} from "../cult-ritual-presentation-v7";
 import {
   addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
@@ -823,13 +828,13 @@ export interface MapCommandTargetV7 {
     /**
      * The Cultists (bead `pulp_wars-mch9.19`): the tile an aimed Star-fall
      * or Great Summoning marks (chosen first, begun when chosen again),
-     * the city of an aimed Proclaim, the unit of an aimed Ribbit or
-     * Switcheroo, and the tile an aimed Tentacle rises on.
+     * the city of an aimed Proclaim, the unit of an aimed Switcheroo, and
+     * the tile an aimed Tentacle rises on. (An aimed Ribbit's unit went
+     * with its command: `pulp_wars-n5fa`, 7r130.)
      */
     | "STARFALL"
     | "GREAT_SUMMONING"
     | "PROCLAIM"
-    | "RIBBIT"
     | "SWITCHEROO"
     | "TENTACLE"
     /**
@@ -8434,6 +8439,9 @@ function commandMapTargets(
         // The Cult redesign's Swarm (bead pulp_wars-mch9.44): an Imp's
         // attack the defender cannot answer.
         ...(preview === null ? [] : swarmCombatNotesV7(preview)),
+        // One tile, one meaning (`pulp_wars-n5fa`, 7r130): a Hexer's shot
+        // frogs a target it leaves alive (Ribbit is its attack).
+        ...(preview === null ? [] : ribbitCombatNotesV7(preview)),
         // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
         // The giants' signatures: a Siege Hammer's own note says it.
         ...(preview === null || preview.siegeHammer
@@ -8460,6 +8468,8 @@ function commandMapTargets(
         ...advanceNotes.map((note) => `Attacker ${note.toLowerCase()}.`),
         preview?.idolHalved === true ? IDOL_HALVED_SEMANTIC_V7 : null,
         preview?.noRetaliationReason === "SWARMED" ? SWARMED_SEMANTIC_V7 : null,
+        // `pulp_wars-n5fa` (7r130): the Hexer's shot frogs its survivor.
+        preview?.ribbitApplied === true ? `${RIBBIT_PREVIEW_V7}.` : null,
         whirl === null
           ? null
           : `${whirlSummaryV7(whirl)}.${whirlWarnings.map((line) => ` ${line}.`).join("")}`,

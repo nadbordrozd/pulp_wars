@@ -215,11 +215,11 @@ describe("the words", () => {
       "STARFALL",
       "GREAT_SUMMONING",
       "PROCLAIM",
-      "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
       // (Pick Me! retired with the Chosen, `pulp_wars-mch9.31`; Join the
-      // chant came with the Cult redesign, `pulp_wars-mch9.34`.)
+      // chant came with the Cult redesign, `pulp_wars-mch9.34`; Ribbit's
+      // button went with its command, `pulp_wars-n5fa`, 7r130.)
       "JOIN_CHANT",
     ]);
     for (const kind of CULT_TRICK_KINDS_V7) {
@@ -231,7 +231,9 @@ describe("the words", () => {
       expect(words).not.toMatch(/[A-Z]{2,}_[A-Z]|\(\d+, ?\d+\)|[+*/=]\s*\d/);
       expect(CULT_TRICK_LABELS_V7[kind].length).toBeLessThanOrEqual(16);
     }
-    expect(isCultTrickPickV7({ kind: "RIBBIT" })).toBe(true);
+    expect(isCultTrickPickV7({ kind: "SWITCHEROO" })).toBe(true);
+    // `pulp_wars-n5fa` (7r130): the Hexer's shot frogs; nothing aims Ribbit.
+    expect(isCultTrickPickV7({ kind: "RIBBIT" })).toBe(false);
     expect(isCultTrickPickV7({ kind: "CHANNEL" })).toBe(false);
   });
 
@@ -250,7 +252,7 @@ describe("the words", () => {
       ),
     ).toBe(true);
     expect(cultTrickCommandsV7(commands, "STARFALL", summoner)).toEqual([]);
-    expect(cultTrickCommandsV7(commands, "RIBBIT", summoner)).toEqual([]);
+    expect(cultTrickCommandsV7(commands, "SWITCHEROO", summoner)).toEqual([]);
   });
 
   it("gives no reason for an action that is offered, another unit's, or not the unit's", () => {
@@ -261,17 +263,17 @@ describe("the words", () => {
     );
     for (const kind of CULT_TRICK_KINDS_V7)
       expect(cultTrickUnavailableTextV7(view, hexer, kind, true)).toBeNull();
-    // A Hexer has none of the others.
+    // A Hexer has none of them (its Ribbit is its attack since
+    // `pulp_wars-n5fa`, 7r130).
     for (const kind of CULT_TRICK_KINDS_V7)
-      if (kind !== "RIBBIT")
-        expect(
-          cultTrickUnavailableTextV7(view, hexer, kind, false),
-          kind,
-        ).toBeNull();
+      expect(
+        cultTrickUnavailableTextV7(view, hexer, kind, false),
+        kind,
+      ).toBeNull();
     // The rival's view of the same Hexer: nothing.
     const rival = viewOf(state, 1);
     expect(
-      cultTrickUnavailableTextV7(rival, hexer, "RIBBIT", false),
+      cultTrickUnavailableTextV7(rival, hexer, "SWITCHEROO", false),
     ).toBeNull();
   });
 
@@ -565,12 +567,16 @@ describe("the chips and a frog's numbers", () => {
     expect(
       cultTrickChipsV7(view, unit(T.bearer)).map((chip) => chip.id),
     ).toEqual([]);
+    // `pulp_wars-n5fa` (7r130): the Hexer's shot frogs with no wait, so
+    // only the Familiar's Switcheroo is spent.
+    expect(cultTrickChipsV7(view, unit(T.hexer))).toEqual([]);
     expect(
-      cultTrickChipsV7(view, unit(T.hexer)).map((chip) => [
+      cultTrickChipsV7(view, unit(T.familiar)).map((chip) => [
         chip.id,
         chip.label,
+        chip.icon,
       ]),
-    ).toEqual([["hex-spent", "Spent"]]);
+    ).toEqual([["hex-spent", "Spent", "ICON:ACTION:SWITCHEROO"]]);
     // Every chip has its sentence in the unit's "?" (the glossary).
     for (const id of ["chanting", "frog", "grabbed", "hex-spent", "attacks"])
       expect(statusGlossaryV7(id), id).not.toBeNull();
@@ -597,8 +603,9 @@ describe("the notices", () => {
 
   it("tells the caster and the victim of each hex and trick", () => {
     const state = cultTricksUiFixtureV7();
+    // `pulp_wars-n5fa` (7r130): the Hexer's shot frogs the Knight.
     const ribbit: CommandV7 = {
-      kind: "RIBBIT",
+      kind: "ATTACK",
       unitId: idAt(state, T.hexer),
       targetUnitId: idAt(state, T.knight),
     };
@@ -710,8 +717,9 @@ describe("the notices", () => {
 describe("what each event plays", () => {
   it("plays a cue for each command, where its viewer saw it", () => {
     const state = cultTricksUiFixtureV7();
+    // `pulp_wars-n5fa` (7r130): the Hexer's shot frogs the Knight.
     const ribbit = step(state, {
-      kind: "RIBBIT",
+      kind: "ATTACK",
       unitId: idAt(state, T.hexer),
       targetUnitId: idAt(state, T.knight),
     });

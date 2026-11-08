@@ -699,7 +699,7 @@ describe("the Cult in the interface's words and lists", () => {
     }
   });
 
-  it("says what the Idol Bearer and the Stargazer cannot do, and nothing of another faction", () => {
+  it("says what the Idol Bearer, the Stargazer and the Summoner cannot do, and nothing of another faction", () => {
     const restrictions = (role: (typeof UNIT_ROLE_IDS_V7)[number]) =>
       recruitmentRolePresentationV7(role, "CULT").restrictions;
     expect(restrictions("GUARD")).toEqual(["Can't attack after moving."]);
@@ -713,13 +713,10 @@ describe("the Cult in the interface's words and lists", () => {
       // Star-fall is its ritual (`pulp_wars-mch9.7`).
       ["CHANNEL", "STARFALL", "JOIN_CHANT"],
     );
-    for (const role of [
-      "FIGHTER",
-      "RAIDER",
-      "MARKSMAN",
-      "CAPTAIN",
-      "JUGGERNAUT",
-    ] as const)
+    // `pulp_wars-n5fa` (7r130): the Summoner has no attack either (Seize
+    // is its attack).
+    expect(restrictions("CAPTAIN")).toEqual([NO_ATTACK_TEXT_V7]);
+    for (const role of ["FIGHTER", "RAIDER", "MARKSMAN", "JUGGERNAUT"] as const)
       expect(restrictions(role), role).toEqual([]);
     // (Channel and Behold! arrived with the channel, `pulp_wars-mch9.5`.)
     // (And Awestruck, the warden's aura, `pulp_wars-mch9.33`.)

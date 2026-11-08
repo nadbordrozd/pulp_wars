@@ -16,15 +16,18 @@ import * as badges from "../../src/render/canvas/tile-action-badges-v7";
 import { tileActionPlanForSelectionV7 } from "../../src/render/canvas/tile-actions-v7";
 import {
   TILE_ACTIONS_UI_V7 as A,
-  tileActionsHexerFixtureV7,
+  tileActionsYetiFixtureV7,
 } from "../fixtures/v7-tile-actions-ui";
+import { FROZEN_UI_V7 } from "../fixtures/v7-frozen-sea-ui";
 
 /**
  * Tile actions on the real board host (bead pulp_wars-2yc.60): the badges
  * are drawn over the board with the selected unit's actions, a tap or
  * Enter on a badged tile goes to the app with the tile's place on screen,
  * Tab stops on every badged tile, the cursor names each action without a
- * coordinate, and a tile without badges keeps its one-tap pick.
+ * coordinate, and a tile without badges keeps its one-tap pick. (A Yeti
+ * with its Attack and Freeze on one boat since `pulp_wars-n5fa`, 7r130: a
+ * Hexer's Attack and Ribbit before.)
  */
 
 afterEach(() => vi.restoreAllMocks());
@@ -120,21 +123,21 @@ const key = (canvas: HTMLCanvasElement, name: string): boolean => {
 
 describe("tile actions on the board host", () => {
   it("draws the selected unit's badges over the board", () => {
-    const { model } = scene(tileActionsHexerFixtureV7(), A.hexer);
+    const { model } = scene(tileActionsYetiFixtureV7(), A.yeti);
     const rig = hostRig(model);
-    rig.host.activate(A.hexer);
+    rig.host.activate(A.yeti);
     expect(rig.drawn).toHaveBeenCalled();
     expect(rig.drawn.mock.calls.at(-1)?.[1]).toBe(model.tileActions);
     rig.host.destroy();
   });
 
   it("hands a badged tile's tap to the app with its place on screen", () => {
-    const { model } = scene(tileActionsHexerFixtureV7(), A.hexer);
+    const { model } = scene(tileActionsYetiFixtureV7(), A.yeti);
     const rig = hostRig(model);
-    rig.host.activate(A.hexed);
+    rig.host.activate(FROZEN_UI_V7.prey);
     expect(rig.callbacks.onTileActions).toHaveBeenCalledTimes(1);
     const [where, anchor] = rig.callbacks.onTileActions.mock.calls[0] ?? [];
-    expect(where).toEqual(A.hexed);
+    expect(where).toEqual(FROZEN_UI_V7.prey);
     expect(anchor).toMatchObject({
       size: expect.any(Number),
       x: expect.any(Number),
@@ -145,7 +148,7 @@ describe("tile actions on the board host", () => {
   });
 
   it("keeps a plain Move's one tap", () => {
-    const { model, view } = scene(tileActionsHexerFixtureV7(), A.hexer);
+    const { model, view } = scene(tileActionsYetiFixtureV7(), A.yeti);
     const rig = hostRig(model);
     const plan = renderer.buildBoardRenderPlanV7(
       view,
@@ -170,16 +173,18 @@ describe("tile actions on the board host", () => {
   });
 
   it("stops Tab on a badged tile, names its actions, and opens it with Enter", () => {
-    const { model } = scene(tileActionsHexerFixtureV7(), A.hexer);
+    const { model } = scene(tileActionsYetiFixtureV7(), A.yeti);
     const rig = hostRig(model);
     const stops: string[] = [];
     while (key(rig.canvas, "Tab")) stops.push(rig.description());
-    const hexed = stops.find((words) => words.includes("Ribbit"));
-    expect(hexed).toBeDefined();
-    expect(hexed).toContain("Available: Attack");
+    const prey = stops.find(
+      (words) => words.includes("Freeze") && words.includes("Attack"),
+    );
+    expect(prey).toBeDefined();
+    expect(prey).toContain("Available: Attack");
     for (const words of stops) expect(words).not.toMatch(/\d+, ?\d+/);
-    // Back to the hexed Knight, and Enter opens its actions.
-    rig.host.activate(A.hexed);
+    // Back to the boat, and Enter opens its actions.
+    rig.host.activate(FROZEN_UI_V7.prey);
     rig.callbacks.onTileActions.mockClear();
     key(rig.canvas, "Enter");
     expect(rig.callbacks.onTileActions).toHaveBeenCalledTimes(1);
@@ -187,9 +192,9 @@ describe("tile actions on the board host", () => {
   });
 
   it("does nothing new while the board does not take input", () => {
-    const { model } = scene(tileActionsHexerFixtureV7(), A.hexer);
+    const { model } = scene(tileActionsYetiFixtureV7(), A.yeti);
     const rig = hostRig({ ...model, interactive: false });
-    rig.host.activate(A.hexed);
+    rig.host.activate(FROZEN_UI_V7.prey);
     expect(rig.callbacks.onTileActions).not.toHaveBeenCalled();
     rig.host.destroy();
   });

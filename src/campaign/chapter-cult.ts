@@ -54,7 +54,7 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       objective: "Take Cinderfield by turn 20.",
       hints: Object.freeze([
         "Skeletons shrug off shots: send a Horror in.",
-        "A frog loses its walls: Ribbit, then strike.",
+        "A frog loses its walls: a Hexer's shot frogs, then strike.",
         "An Offering trades two people for 6 Favour.",
       ]),
       closing:

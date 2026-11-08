@@ -2041,13 +2041,14 @@ describe("text-mode play harness", () => {
     expect(offeredIds(session)).toContain(`u${herald}.a.u${at(4, 7)}`);
   });
 
-  // The Cult's tricks (`pulp_wars-mch9.8`): the harness offers Ribbit,
+  // The Cult's tricks (`pulp_wars-mch9.8`): the harness offers the Hexer's
+  // frogging shot (Ribbit is its attack since `pulp_wars-n5fa`, 7r130),
   // Switcheroo, and the Tentacle with what each does, and prints a frog, a
   // spent trick, a Tentacle, and its Grab. A constructed position on the
   // seat's own turn; no turn is ended. (Pick Me! retired with the Chosen,
   // and the Tentacle is the Summoner's: the Cult redesign,
   // `pulp_wars-mch9.31`.)
-  it("prints the tricks, and offers Ribbit, Switcheroo, and the Tentacle", () => {
+  it("prints the tricks, and offers the frogging shot, Switcheroo, and the Tentacle", () => {
     // A Hexer two tiles from a Knight; a Familiar two tiles from a
     // Catapult; a Summoner with a Fighter in reach of a Tentacle; an Idol
     // Bearer beside another Fighter.
@@ -2085,38 +2086,39 @@ describe("text-mode play harness", () => {
       if (found === undefined) throw new Error(`no unit at ${x},${y}`);
       return found.id;
     };
-    const ribbit = `u${at(2, 2)}.ribbit.u${at(2, 4)}`;
+    // `pulp_wars-n5fa` (7r130): the Hexer's shot frogs (no Ribbit id).
+    const shot = `u${at(2, 2)}.a.u${at(2, 4)}`;
     const swap = `u${at(5, 2)}.switch.u${at(5, 4)}`;
     const tentacle = `u${at(8, 2)}.tentacle.8,4`;
     expect(offeredIds(session)).toEqual(
-      expect.arrayContaining([ribbit, swap, tentacle]),
+      expect.arrayContaining([shot, swap, tentacle]),
+    );
+    expect(offeredIds(session).some((id) => id.includes(".ribbit."))).toBe(
+      false,
     );
     expect(offeredIds(session).some((id) => id.endsWith(".pickme"))).toBe(
       false,
     );
     // Every offered trick has an id of its own.
     const ids = queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
-      .filter((command) =>
-        ["RIBBIT", "SWITCHEROO", "TENTACLE"].includes(command.kind),
-      )
+      .filter((command) => ["SWITCHEROO", "TENTACLE"].includes(command.kind))
       .map(textPlayCommandIdV7);
     expect(new Set(ids).size).toBe(ids.length);
     for (const id of ids)
-      expect(id).toMatch(
-        /^u\d+\.(ribbit\.u\d+|switch\.u\d+|tentacle\.\d+,\d+)$/,
-      );
+      expect(id).toMatch(/^u\d+\.(switch\.u\d+|tentacle\.\d+,\d+)$/);
     const options = ok("options", "--session", session, "--all");
+    // `pulp_wars-n5fa` (7r130): the Hexer's shot says it frogs.
     expect(options).toContain(
-      "a FROG until the end of its owner's next turn: Defense 0.5 flat with no fortification and no cover, Move 1, no attack, no strike back, no capture",
+      "RIBBIT: the target becomes a FROG until the end of its owner's next turn (Defense 0.5 flat, Move 1, no attack, no strike back, no capture",
     );
-    expect(options).toContain("this unit cannot Ribbit on your next turn");
+    expect(options).not.toContain("cannot Ribbit");
     expect(options).toContain("this unit 5,2->5,4, it 5,4->5,2");
     expect(options).toContain("TENTACLE on 8,4");
     expect(options).toContain(
       "(the weakest unit beside it, FRIEND OR FOE; an ordinary attack, it may be hit back)",
     );
-    // Ribbit: the Knight is a frog, and the Hexer's trick is spent.
-    const frogged = ok("do", "--session", session, ribbit);
+    // Ribbit: the Hexer's shot frogs the Knight.
+    const frogged = ok("do", "--session", session, shot);
     expect(frogged).toMatch(/RIBBIT by .* of S0: .* @2,4 is a FROG/);
     // The Tentacle: it rises, slaps the Fighter, and holds it.
     const risen = ok("do", "--session", session, tentacle);
@@ -2137,7 +2139,7 @@ describe("text-mode play harness", () => {
     );
     expect(view).toMatch(/GRABBED by u\d+: moves only to tiles next to it/);
     expect(view).not.toContain("[JUGGERNAUT]");
-    for (const id of [ribbit, swap, tentacle])
+    for (const id of [shot, swap, tentacle])
       expect(offeredIds(session)).not.toContain(id);
   });
 

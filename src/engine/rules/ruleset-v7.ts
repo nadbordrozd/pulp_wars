@@ -548,7 +548,8 @@ export type UnitRoleAbilityV7 =
   // Initiate's Pamphlets, the Familiar's Switcheroo, the Hexer's Ribbit, the
   // Summoner's Tentacle (the Caller's until the Cult redesign,
   // `pulp_wars-mch9.31`, which also retired the Chosen's Pick Me!), and the
-  // Tentacle's Grab.
+  // Tentacle's Grab. `pulp_wars-n5fa` (7r130): `RIBBIT` is a trait of the
+  // Hexer's attack (a target it leaves alive becomes a frog), no command.
   | "PAMPHLETS"
   | "SWITCHEROO"
   | "RIBBIT"
@@ -4453,6 +4454,9 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
  * robed cultists the casters. The Initiate, Hexer, Summoner, and Stargazer
  * have 7 HP; the Initiate and the Hexer Attack 1.5 and the Initiate Defense
  * 1; the Hexer costs 3 and the Stargazer 7. The Idol Bearer keeps its body.
+ * One tile, one meaning (`pulp_wars-n5fa`, 7r130): the Summoner has no
+ * attack (Seize is its attack), and the Hexer Attack 1 with a shot that
+ * frogs (no Ribbit command).
  * The Caller (`KNIGHT`) and the Chosen (`SWORDSMAN`) retired: their slots
  * are vacant ({@link CULT_VACANT_ROLES_V7}), with Pick Me! and Martyr gone
  * and the Tentacle moved to the Summoner.
@@ -4503,13 +4507,17 @@ export const CULT_ROLE_RULES_V7: Readonly<
   // The Hexer: a short shot on a caster's body. It never advances.
   // `pulp_wars-mch9.8` (section 9.1): Ribbit, every second turn. The
   // redesign: 3 Coins, 7 HP, Attack 1.5 (4, 9, and 2 before).
+  // `pulp_wars-n5fa` (7r130): Ribbit is no command any more. The Hexer's
+  // attack frogs a target it leaves alive (the `RIBBIT` ability is that
+  // trait now, `attackRibbitV7`), and its Attack is 1 (1.5 before) to pay
+  // for a hex on every shot.
   MARKSMAN: role({
     role: "MARKSMAN",
     label: "Hexer",
     tacticalRole: "RANGED",
     cost: 3,
     maxHp: 7,
-    attack2: 3,
+    attack2: 2,
     defense2: 2,
     move: 1,
     range: 2,
@@ -4545,22 +4553,24 @@ export const CULT_ROLE_RULES_V7: Readonly<
   // Gibbering Mass with Gibbering Masses, since the redesign). The redesign
   // (`pulp_wars-mch9.31`): 7 HP (10 before), and the Tentacle with
   // Tentacles (the capability `tentacles`; the retired Caller's before).
+  // `pulp_wars-n5fa` (7r130): the Summoner has no attack (Attack 0, no
+  // `ATTACK`, Range 0, as the Stargazer and the Martian Brain) and never
+  // strikes back; Seize is its attack (it was Attack 1 at range 1).
   CAPTAIN: role({
     role: "CAPTAIN",
     label: "Summoner",
     tacticalRole: "SUPPORT",
     cost: 5,
     maxHp: 7,
-    attack2: 2,
+    attack2: 0,
     defense2: 2,
     move: 1,
-    range: 1,
-    minimumRange: 1,
+    range: 0,
+    minimumRange: 0,
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
     abilities: [
-      "ATTACK",
       "CAPTURE",
       "SACRIFICE",
       "SEIZE",
@@ -4780,12 +4790,14 @@ export const PROCLAIM_RANGE_V7 = 3 as const;
 /** The Cultists (section 4.2): Ravage, the Herald's attacks in a turn. */
 export const RAVAGE_ATTACKS_V7 = 2 as const;
 /**
- * The Cultists (`pulp_wars-mch9.8`, section 9.1): Ribbit. The farthest
- * (Chebyshev) the Hexer's target may be; a frog's flat Defense in
- * half-units (0.5) and its Move; and the Start Turns of its owner a Hexer or
- * a Familiar waits after its trick (2: the turn after the cast is skipped).
+ * The Cultists (`pulp_wars-mch9.8`, section 9.1): Ribbit. A frog's flat
+ * Defense in half-units (0.5) and its Move; and the Start Turns of its
+ * owner a Familiar waits after its Switcheroo (2: the turn after the swap
+ * is skipped). `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's attack,
+ * which frogs a target it leaves alive, so it has no range of its own (the
+ * Hexer's Range; `RIBBIT_RANGE_V7` was 2) and no cooldown (a Hexer waited a
+ * turn after a Ribbit before).
  */
-export const RIBBIT_RANGE_V7 = 2 as const;
 export const FROG_DEFENSE2_V7 = 1 as const;
 export const FROG_MOVE_V7 = 1 as const;
 export const HEX_COOLDOWN_TURNS_V7 = 2 as const;
@@ -4801,10 +4813,22 @@ export const IDOL_SHIELD_MINIMUM_RANGE_V7 = 2 as const;
  */
 export const SWITCHEROO_RANGE_V7 = 4 as const;
 /**
+ * The nearest unit a Switcheroo may swap with (`pulp_wars-n5fa`, 7r130): a
+ * neighbour is only ever an Attack (or Select, for an own unit), so a swap
+ * reaches 2 to 4 tiles (Chebyshev) and never the unit next door.
+ */
+export const SWITCHEROO_MIN_RANGE_V7 = 2 as const;
+/**
  * The Cultists (section 9.3): the farthest (Chebyshev) from its Summoner
  * (the retired Caller's before `pulp_wars-mch9.31`) a Tentacle may rise, and the neutral turns it stays before it sinks.
  */
 export const TENTACLE_RANGE_V7 = 3 as const;
+/**
+ * The nearest tile a Tentacle may rise on (`pulp_wars-n5fa`, 7r130): 2 or 3
+ * tiles (Chebyshev) from its Summoner, never beside it, so a free tile next
+ * to a selected Summoner is a Move (or a summon's).
+ */
+export const TENTACLE_MIN_RANGE_V7 = 2 as const;
 export const TENTACLE_LIFETIME_V7 = 3 as const;
 
 /**

@@ -1325,7 +1325,6 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // one command per tile in reach, and the others aim on the board, so
   // none is ever a generic button. Their buttons and board targeting are
   // bead pulp_wars-mch9.19.
-  "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
   // The Cult redesign's join (`pulp_wars-mch9.34`): its own "Join the
@@ -1378,7 +1377,6 @@ const CULT_TRICK_ICONS_V7: Readonly<Record<CultTrickKindV7, UiIconIdV7>> = {
   STARFALL: "comet",
   GREAT_SUMMONING: "eye",
   PROCLAIM: "megaphone",
-  RIBBIT: "frog",
   SWITCHEROO: "swap",
   TENTACLE: "tentacle",
   // The Cult redesign (`pulp_wars-mch9.34`): a candle, as the join badge.
@@ -8928,7 +8926,7 @@ export class Ruleset7DomAppView {
         ...this.#cultActionButtons(view, unit.id),
         ...this.#cultChannelActionButtons(view, unit.id),
         // Rituals, hexes and tricks: Star-fall, the Great Summoning,
-        // Proclaim, Ribbit, Switcheroo, Tentacle and Pick Me!.
+        // Proclaim, Switcheroo, Tentacle (Ribbit and Pick Me! retired).
         ...this.#cultTrickActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
@@ -11122,7 +11120,6 @@ export class Ruleset7DomAppView {
       case "STARFALL":
       case "GREAT_SUMMONING":
       case "PROCLAIM":
-      case "RIBBIT":
       case "SWITCHEROO":
       case "TENTACLE":
       case "JOIN_CHANT":
@@ -18346,7 +18343,7 @@ export class Ruleset7DomAppView {
    * Rituals, hexes and tricks (bead pulp_wars-mch9.19; BOARD_TARGETING.md
    * section 3.9): one button per action of the selected own unit, whatever
    * the number of tiles, cities or units: Star-fall, the Great Summoning,
-   * Proclaim, Ribbit, Switcheroo and Tentacle arm their aiming (pressed
+   * Proclaim, Switcheroo and Tentacle arm their aiming (pressed
    * while aiming) and are picked on the board. (Pick Me!, cast by its
    * button, retired with the Chosen: the Cult redesign,
    * `pulp_wars-mch9.31`.) Without an offered command a button is
@@ -20324,7 +20321,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r129",
+    rulesetId: "pulp-wars-poc-7r130",
     seed,
     width,
     height: width,

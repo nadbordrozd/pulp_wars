@@ -943,7 +943,6 @@ describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
     "BOO",
     "BEGIN_RITUAL",
     "PROCLAIM",
-    "RIBBIT",
     "SWITCHEROO",
     "TENTACLE",
   ];

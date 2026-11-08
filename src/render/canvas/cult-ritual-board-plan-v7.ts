@@ -1,14 +1,12 @@
 import {
   PROCLAIM_RANGE_V7,
-  RIBBIT_RANGE_V7,
+  SWITCHEROO_MIN_RANGE_V7,
   SWITCHEROO_RANGE_V7,
   previewBeginRitualV7,
   previewJoinChantV7,
   previewProclaimV7,
-  previewRibbitV7,
   previewRitualV7,
   previewSwitcherooV7,
-  ribbitRejectionV7,
   ritualChantersV7,
   starfallDamageV7,
   tentacleSlapTargetV7,
@@ -28,7 +26,6 @@ import {
   CULT_TRICK_PICKS_V7,
   JOIN_CHANT_TARGET_LABEL_V7,
   PROCLAIM_TARGET_LABEL_V7,
-  RIBBIT_TARGET_LABEL_V7,
   RITUAL_CONFIRM_HINT_V7,
   SWITCHEROO_TARGET_LABEL_V7,
   TENTACLE_SLAP_LABEL_V7,
@@ -37,7 +34,6 @@ import {
   frogLookV7,
   joinChantTargetNameV7,
   proclaimTargetNameV7,
-  ribbitTargetNameV7,
   ritualMarkNameV7,
   starfallHitLabelV7,
   starfallTargetNameV7,
@@ -70,7 +66,7 @@ import {
  * redesign, `pulp_wars-mch9.31`; the taunt marker and tether stay in the
  * canvas for the warden's Awestruck.) **While aimed:** the
  * mark of a rite (chosen first, begun when chosen again), the city of a
- * Proclaim, the unit of a Ribbit or a Switcheroo, and the tile of a
+ * Proclaim, the unit of a Switcheroo (a Ribbit is an attack since 7r130), and the tile of a
  * Tentacle.
  *
  * Everything is read from the public view, the offered commands and the
@@ -88,7 +84,6 @@ export type CultTrickPickV7 =
   | {
       readonly kind:
         | "PROCLAIM"
-        | "RIBBIT"
         | "SWITCHEROO"
         | "TENTACLE"
         // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer whose
@@ -101,7 +96,6 @@ const TRICK_PICK_KINDS: ReadonlySet<string> = new Set([
   "STARFALL",
   "GREAT_SUMMONING",
   "PROCLAIM",
-  "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
   "JOIN_CHANT",
@@ -467,26 +461,6 @@ export function cultTrickPickTargetsV7(
               },
             ];
       });
-    case "RIBBIT":
-      return offered.flatMap((command): MapCommandTargetV7[] => {
-        if (command.kind !== "RIBBIT") return [];
-        const preview = previewRibbitV7(
-          view,
-          command.unitId,
-          command.targetUnitId,
-        );
-        return preview === null
-          ? []
-          : [
-              {
-                at: preview.at,
-                command,
-                family: "RIBBIT",
-                previewLabel: RIBBIT_TARGET_LABEL_V7,
-                semanticLabel: `${ribbitTargetNameV7(name(command.targetUnitId), preview)} ${prompt}.`,
-              },
-            ];
-      });
     case "SWITCHEROO":
       return offered.flatMap((command): MapCommandTargetV7[] => {
         if (command.kind !== "SWITCHEROO") return [];
@@ -607,7 +581,7 @@ export function starfallForecastKeyV7(leaderUnitId: UnitId): string {
 /**
  * Preview entries of an aimed trick that are not targets: the cultists
  * that would chant, the chosen mark with its forecast, a Switcheroo's
- * reach, an enemy a Ribbit cannot take, and a city that kneels already.
+ * reach (2 to 4 tiles since 7r130), and a city that kneels already.
  */
 export function addCultTrickPickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -665,15 +639,17 @@ export function addCultTrickPickEntriesV7(
   }
   const taken = new Set(targets.map((target) => key(target.at)));
   // Switcheroo's reach of 4 (the Cult redesign, `pulp_wars-mch9.34`;
-  // outlined by bead `pulp_wars-mch9.43`): every tile within 4 outlined in
-  // the chalk's cream (a Channel's reach of 3 has the lodge's green), so
-  // the swap's range is read before a unit is picked; the units it may
-  // swap with are its targets.
+  // outlined by bead `pulp_wars-mch9.43`): every tile 2 to 4 away (never a
+  // neighbour since `pulp_wars-n5fa`, 7r130, so the ring has an inner edge)
+  // outlined in the chalk's cream (a Channel's reach of 3 has the lodge's
+  // green), so the swap's range is read before a unit is picked; the units
+  // it may swap with are its targets.
   if (pick.kind === "SWITCHEROO") {
     const reach: CoordV7[] = [];
     for (let dy = -SWITCHEROO_RANGE_V7; dy <= SWITCHEROO_RANGE_V7; dy += 1)
       for (let dx = -SWITCHEROO_RANGE_V7; dx <= SWITCHEROO_RANGE_V7; dx += 1)
-        reach.push({ x: actor.at.x + dx, y: actor.at.y + dy });
+        if (Math.max(Math.abs(dx), Math.abs(dy)) >= SWITCHEROO_MIN_RANGE_V7)
+          reach.push({ x: actor.at.x + dx, y: actor.at.y + dy });
     outlineEntries(
       entries,
       view,
@@ -681,22 +657,6 @@ export function addCultTrickPickEntriesV7(
       "TRICK_RANGE",
       `ability-area:SWITCHEROO_RANGE:${actor.id}`,
     );
-    return;
-  }
-  if (pick.kind === "RIBBIT") {
-    for (const unit of view.units) {
-      if (
-        unit.ownerId === actor.ownerId ||
-        chebyshev(unit.at, actor.at) > RIBBIT_RANGE_V7 ||
-        taken.has(key(unit.at))
-      )
-        continue;
-      const rejection = ribbitRejectionV7(view, actor, unit);
-      if (rejection?.code !== "RIBBIT_NOT_LEGAL") continue;
-      if (rejection.reason === "FROG") grey(unit.at, `${unit.id}`, "A frog");
-      else if (rejection.reason === "IMMUNE")
-        grey(unit.at, `${unit.id}`, "Cannot be hexed");
-    }
     return;
   }
   if (pick.kind === "PROCLAIM") {

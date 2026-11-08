@@ -153,14 +153,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
-    expect(PRIOR_RULESET_7_IDS.slice(-58, -56)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(PRIOR_RULESET_7_IDS.slice(-59, -57)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-58, -56)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-59, -57)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -264,9 +264,9 @@ describe("the Cult's Favour: identity", () => {
 describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
   it("gives the Summoner Sacrifice and Seize; the Chosen and its Martyr retired", () => {
     // (Summon and Channel joined with the channel, `pulp_wars-mch9.5`; the
-    // Tentacle with the Cult redesign, `pulp_wars-mch9.31`.)
+    // Tentacle with the Cult redesign, `pulp_wars-mch9.31`; no attack since
+    // `pulp_wars-n5fa`, 7r130: Seize is its attack.)
     expect(effectiveRoleRuleV7("CAPTAIN", "CULT").abilities).toEqual([
-      "ATTACK",
       "CAPTURE",
       "SACRIFICE",
       "SEIZE",
@@ -414,8 +414,8 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       // Rituals and the Herald (`pulp_wars-mch9.7`).
       "BEGIN_RITUAL",
       "PROCLAIM",
-      // Hexes and tricks (`pulp_wars-mch9.8`).
-      "RIBBIT",
+      // Hexes and tricks (`pulp_wars-mch9.8`; `RIBBIT` retired with
+      // `pulp_wars-n5fa`, 7r130).
       "SWITCHEROO",
       "TENTACLE",
       // The Cult redesign (`pulp_wars-mch9.34`).
@@ -1010,10 +1010,8 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
     );
     const summoner = unitAtV7(state, at(5, 2));
     expect(summoner.ownerId).toBe(seatIdV7(state, 0));
-    expect(unitRoleRuleV7(state, summoner).abilities).toEqual([
-      "ATTACK",
-      "CAPTURE",
-    ]);
+    // (No attack either since `pulp_wars-n5fa`, 7r130.)
+    expect(unitRoleRuleV7(state, summoner).abilities).toEqual(["CAPTURE"]);
     expect(offeredV7(state, "SACRIFICE", "SEIZE")).toEqual([]);
     expect(rejectedV7(state, sacrifice(state, at(5, 2), at(5, 3)))).toEqual({
       code: "UNIT_ROLE_INVALID",

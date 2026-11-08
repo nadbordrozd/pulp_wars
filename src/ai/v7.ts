@@ -311,6 +311,9 @@ import {
 import {
   CULT_FEED_INITIATE_VALUE_V7,
   CULT_MASS_TECHNOLOGY_V7,
+  CULT_FROG_SEIZE_VALUE_V7,
+  CULT_FROG_THREAT_VALUE_V7,
+  CULT_FROG_VALUE_V7,
   CULT_RESEARCH_AFTER_ROLES_V7,
   CULT_RESEARCH_BEFORE_STARGAZER_V7,
   cultBackRowV7,
@@ -7589,6 +7592,9 @@ function armyIceFolkShooterHeldV7(
  * attack that kills where nobody else reaches the tile, and its hit that
  * does not kill (the ordinary exchange rules judge it), are still made; so
  * is every attack of a Summoner the visible enemy kills where it stands.
+ * (Since `pulp_wars-n5fa`, 7r130, the Summoner has no attack, so no
+ * back-row unit of the Cult's own roster advances after a kill; the rule
+ * stays for any that would.)
  */
 function armyCultBackRowAdvanceHeldV7(
   context: PolicyContextV7,
@@ -12594,15 +12600,12 @@ function isPolicyCandidate(
   // step of the Cult seat's plan (`src/ai/v7-cult-rituals.ts`) only: a join
   // spends a cultist's action on a star that hurts friend and foe.
   if (command.kind === "JOIN_CHANT") return false;
-  // Hexes and tricks (`pulp_wars-mch9.8`): likewise (Ribbit, Switcheroo,
+  // Hexes and tricks (`pulp_wars-mch9.8`): likewise (Switcheroo,
   // Tentacle). A swap or a wild Tentacle can hurt its own side,
   // so none may be picked by a general rule. (Pamphlets needs no rule: it
-  // is the ordinary Capture, offered a turn earlier.)
-  if (
-    command.kind === "RIBBIT" ||
-    command.kind === "SWITCHEROO" ||
-    command.kind === "TENTACLE"
-  )
+  // is the ordinary Capture, offered a turn earlier. Ribbit is the Hexer's
+  // attack since `pulp_wars-n5fa`, 7r130: the attack rules score its frog.)
+  if (command.kind === "SWITCHEROO" || command.kind === "TENTACLE")
     return false;
   // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section
   // 13.2): a Freeze only with a reason (a ship to lock in, the next tile of
@@ -15778,6 +15781,22 @@ function scoreCommandWithContext(
         priority = martian.priority;
         strategicValue += martian.strategic;
       }
+      // One tile, one meaning (`pulp_wars-n5fa`, 7r130): a Hexer's shot
+      // frogs a target it leaves alive (Ribbit, a step of the Cult plan
+      // before), so the frog is worth what the hex was.
+      if (
+        preview.ribbitApplied &&
+        actor !== undefined &&
+        targetUnit !== undefined &&
+        actor.ownerId === view.viewer.id &&
+        isHostile(view, targetUnit.ownerId)
+      )
+        strategicValue += cultFrogAttackValueV7(
+          context,
+          actor,
+          targetUnit,
+          preview,
+        );
       // The Ice Folk revision (`pulp_wars-7g3.4`): Shatter, Sweep, Boulders,
       // the Frost Wyrm, the order of the chips, and against the Ice Folk the
       // Witch and the Shatter window.
@@ -17614,11 +17633,14 @@ function vampireAttackAcceptableV7(
   );
   if (hp <= 0) return false;
   // The Ice Folk roster rework (`pulp_wars-s55m.4`): a target the Frost
-  // Wyrm's breath freezes does not act on its owner's next turn.
+  // Wyrm's breath freezes does not act on its owner's next turn; nor does
+  // one a Hexer's shot frogs (`pulp_wars-n5fa`, 7r130: a frog cannot
+  // attack).
+  const stilled = preview.frostBreathApplied || preview.ribbitApplied;
   const after = projectPublicUnits(
     view,
     view.units
-      .filter((unit) => !(preview.frostBreathApplied && unit.id === target.id))
+      .filter((unit) => !(stilled && unit.id === target.id))
       .map((unit) =>
         unit.id === actor.id
           ? { ...unit, hp }
@@ -17626,7 +17648,7 @@ function vampireAttackAcceptableV7(
             ? { ...unit, hp: target.hp - preview.damageToDefender }
             : unit,
       ),
-    preview.frostBreathApplied ? [actor.id] : [actor.id, target.id],
+    stilled ? [actor.id] : [actor.id, target.id],
   );
   const wounded = after.units.find((unit) => unit.id === actor.id);
   if (wounded === undefined) return false;
@@ -19505,16 +19527,16 @@ function cultAgainstValueV7(
     (command.kind !== "MOVE" &&
       command.kind !== "ATTACK" &&
       command.kind !== "TEND_WOUNDED" &&
-      command.kind !== "THROW_BOLAS" &&
-      command.kind !== "RIBBIT")
+      command.kind !== "THROW_BOLAS")
   )
     return unchanged;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   if (actor === undefined || actor.ownerId !== view.viewer.id) return unchanged;
   // The Cult redesign's A-R4 (`pulp_wars-mch9.41`): a status on a hostile
-  // Idol Bearer puts its idol down while it lasts.
-  if (command.kind === "THROW_BOLAS" || command.kind === "RIBBIT") {
+  // Idol Bearer puts its idol down while it lasts. (A Ribbit is an
+  // `ATTACK` since `pulp_wars-n5fa`, 7r130: below.)
+  if (command.kind === "THROW_BOLAS") {
     const value = cultAgainstStatusV7(facts, command.targetUnitId, priority);
     return { ...value, forced: value.priority > priority };
   }
@@ -19544,7 +19566,7 @@ function cultAgainstValueV7(
     const target = context.lookup.unitsById.get(command.targetUnitId);
     const hit = queryCombatPreviewV7(view, actor.id, command.targetUnitId);
     if (target === undefined || hit === null) return unchanged;
-    const value = cultAgainstAttackV7(
+    const struck = cultAgainstAttackV7(
       facts,
       view,
       (attackerId, targetUnitId) =>
@@ -19554,6 +19576,18 @@ function cultAgainstValueV7(
       hit,
       priority,
     );
+    // `pulp_wars-n5fa` (7r130): a (mind-controlled) Hexer's shot that frogs
+    // a hostile Idol Bearer puts its idol down, as a Bolas does.
+    const status = hit.ribbitApplied
+      ? cultAgainstStatusV7(facts, target.id, struck.priority)
+      : null;
+    const value =
+      status === null
+        ? struck
+        : {
+            priority: Math.max(struck.priority, status.priority),
+            strategic: struck.strategic + status.strategic,
+          };
     return {
       ...value,
       forced:
@@ -24440,6 +24474,50 @@ function iceFolkAttackRejectedV7(
   )
     return false;
   return !attackPurposeFactsV7(context, command, preview).savesCity;
+}
+
+/**
+ * One tile, one meaning (`pulp_wars-n5fa`, 7r130): what an own Hexer's shot
+ * that frogs the hostile `target` (`preview.ribbitApplied`) is worth: the
+ * frog itself (`CULT_FROG_VALUE_V7`: no attack or strike back on its
+ * owner's next turn, Defense 0.5), more when its reach covers an own unit
+ * (`CULT_FROG_THREAT_VALUE_V7`), and more when the hit leaves it at half
+ * its Hit Points or less within a step of an own unit that Seizes
+ * (`CULT_FROG_SEIZE_VALUE_V7`: a frog is broken at half its Hit Points).
+ */
+function cultFrogAttackValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  const view = context.view;
+  let strategic = CULT_FROG_VALUE_V7;
+  const reach = context.threatenedTiles.get(target.id);
+  if (
+    reach !== undefined &&
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        unit.hp > 0 &&
+        reach.has(coordKey(unit.at)),
+    )
+  )
+    strategic += CULT_FROG_THREAT_VALUE_V7;
+  const left = target.hp - preview.damageToDefender;
+  if (
+    left * 2 <= target.maxHp &&
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.hp > 0 &&
+        distance(unit.at, target.at) <= 2 &&
+        unitRoleRuleV7(view, unit).abilities.includes("SEIZE"),
+    )
+  )
+    strategic += CULT_FROG_SEIZE_VALUE_V7;
+  return strategic;
 }
 
 /**

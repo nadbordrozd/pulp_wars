@@ -1063,7 +1063,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
           // forward by two (was 0729cd…38e6); the revision-12-ordinal value is
           // unchanged.
-          "f122ff13fac19f7f643099b79f68192ea6a3430c21fed1bb8210ef0f58561f00",
+          // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
+          // after PROCLAIM, moving the later command kinds back by one (was
+          // f122ff…1f00); the revision-12-ordinal value is unchanged.
+          "e160e8008cf19d1255a18a9c5b27d2df50c872ac7291e9262364d626d2a13801",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1201,7 +1204,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
           // forward by two (was fc35f1…afc2); the revision-12-ordinal value is
           // unchanged.
-          "4633b343d597687e14e375496c25ecc843e16cfb57954eb8586fc6d12b62d578",
+          // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
+          // after PROCLAIM, moving the later command kinds back by one (was
+          // 4633b3…d578); the revision-12-ordinal value is unchanged.
+          "9f97e80fd6abee2a3b45e3a40beba2fb8fe943eb6311ce13edde0c0d5bc75367",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

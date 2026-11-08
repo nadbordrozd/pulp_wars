@@ -8,11 +8,9 @@ import {
 import type { CommandV7 } from "./commands";
 import type { CultReducerKitV7 } from "./cult";
 import {
-  ribbitRejectionV7,
   switcherooRejectionV7,
   tentacleRejectionV7,
   unitIsTentacleV7,
-  type RibbitRejectionV7,
   type SwitcherooRejectionV7,
   type TentacleRejectionV7,
 } from "./cult-hexes";
@@ -36,7 +34,9 @@ import {
 /**
  * The Cultists of the Ancient Ones, hexes and tricks (`pulp_wars-mch9.8`,
  * the sixth Cult engine bead; docs/product/RULESET_7_CULTISTS.md sections
- * 9.1 to 9.3): the reducer steps of Ribbit, Switcheroo, and the Tentacle,
+ * 9.1 to 9.3): the frog a Hexer's attack leaves (Ribbit, a command until
+ * `pulp_wars-n5fa`, 7r130; the attack step is the reducer's), the reducer
+ * steps of Switcheroo and the Tentacle,
  * and what the turn does to their lists (a frog ends with its owner's turn,
  * a cooldown counts its owner's Start Turns, a Tentacle sinks at the end of
  * its third neutral turn). (Pick Me! retired with the Chosen: the Cult
@@ -49,6 +49,19 @@ import {
 
 const sortedIds = (ids: readonly UnitId[]): readonly UnitId[] =>
   [...ids].sort((left, right) => left - right);
+
+/**
+ * Section 9.1, Ribbit (`pulp_wars-n5fa`, 7r130): the Cult state with the
+ * unit `unitId` a frog, as a Hexer's attack that leaves it alive makes it
+ * (`attackRibbitV7` decides; the frog lasts until the end of its owner's
+ * next turn, {@link withFrogsTurnEndedV7}). The Hexer's attack starts no
+ * cooldown.
+ */
+export function withFroggedV7(cult: CultStateV7, unitId: UnitId): CultStateV7 {
+  return cult.frogs.includes(unitId)
+    ? cult
+    : { ...cult, frogs: sortedIds([...cult.frogs, unitId]) };
+}
 
 /**
  * Section 9.1: the Cult state without the frog `unitId` (cured by Tend
@@ -85,7 +98,7 @@ export function withFrogsTurnEndedV7(
 /**
  * Sections 9.1 and 9.2: the tricks' step of the Start Turn of `playerId`,
  * with the Mind Control cooldowns: each hex cooldown of a unit of that seat
- * counts down and leaves the list at 0 (so a Hexer or a Familiar skips its
+ * counts down and leaves the list at 0 (so a Familiar skips its
  * owner's turn after the cast). Returns `state` itself when nothing
  * changes.
  */
@@ -161,7 +174,7 @@ export function prunedTricksV7(state: GameStateV7): GameStateV7 {
 
 // ----------------------------------------------------- Reducer steps ---
 
-type TargetCommandV7 = Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>;
+type TargetCommandV7 = Extract<CommandV7, { kind: "SWITCHEROO" }>;
 type TentacleCommandV7 = Extract<CommandV7, { kind: "TENTACLE" }>;
 
 /** Marks a unit as having used its primary action. */
@@ -186,7 +199,7 @@ function rejectWith(
   kit: CultReducerKitV7,
   original: GameStateV7,
   unit: UnitStateV7,
-  rejection: RibbitRejectionV7 | SwitcherooRejectionV7 | TentacleRejectionV7,
+  rejection: SwitcherooRejectionV7 | TentacleRejectionV7,
 ): ApplyCommandResultV7 {
   switch (rejection.code) {
     case "UNIT_ROLE_INVALID":
@@ -210,59 +223,6 @@ function visibleTarget(
   return named !== undefined && isUnitVisibleToPlayerV7(state, actor, named)
     ? named
     : undefined;
-}
-
-/**
- * Section 9.1: `RIBBIT`, a primary action of a Hexer in place of its attack
- * that may follow its Move: the target is a frog until the end of its
- * owner's next turn (`UNIT_FROGGED`), and the Hexer cannot Ribbit on its
- * owner's next turn. A frogged cultist is disrupted (the command's
- * disruption step: a frog is a status).
- */
-export function applyRibbitV7(
-  kit: CultReducerKitV7,
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: TargetCommandV7,
-): ApplyCommandResultV7 {
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
-    return kit.rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return kit.rejected(original, actorCheck.code, actorCheck.params);
-  const hexer = actorCheck.unit;
-  const target = visibleTarget(state, actor, command.targetUnitId);
-  const rejection = ribbitRejectionV7(state, hexer, target);
-  if (rejection !== null) return rejectWith(kit, original, hexer, rejection);
-  if (target === undefined) return kit.rejected(original, "INVALID_STATE");
-  try {
-    return kit.accepted(
-      kit.checked({
-        ...state,
-        commandIndex: kit.nextSafe(state.commandIndex),
-        units: state.units.map((unit) =>
-          unit.id === hexer.id ? withPrimaryUsed(unit) : unit,
-        ),
-        cult: {
-          ...withHexCooldown(state.cult, hexer.id),
-          frogs: sortedIds([...state.cult.frogs, target.id]),
-        },
-      }),
-      [
-        {
-          kind: "UNIT_FROGGED",
-          playerId: actor,
-          unitId: hexer.id,
-          targetUnitId: target.id,
-          targetOwnerId: target.ownerId,
-          at: { x: target.at.x, y: target.at.y },
-        },
-      ],
-    );
-  } catch (cause) {
-    return kit.arithmeticFailure(original, cause);
-  }
 }
 
 /**

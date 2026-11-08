@@ -2709,6 +2709,7 @@ function combat(input: unknown): boolean {
       "crackApplied",
       "frostbiteApplied",
       "frostBreathApplied",
+      "ribbitApplied",
       "crush",
       "crushDamage",
       "collisionDamage",
@@ -2791,6 +2792,10 @@ function combat(input: unknown): boolean {
     // a surviving target.
     typeof input.frostBreathApplied === "boolean" &&
     (input.frostBreathApplied !== true || input.defenderDies === false) &&
+    // `pulp_wars-n5fa` (7r130): a Hexer's shot frogs only a surviving
+    // target.
+    typeof input.ribbitApplied === "boolean" &&
+    (input.ribbitApplied !== true || input.defenderDies === false) &&
     (input.crackApplied !== true || input.defenderDies === false) &&
     (input.frostbiteApplied !== true || input.attackerDies === false) &&
     (input.attackerShieldDamage === 0 ||

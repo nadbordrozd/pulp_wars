@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  SWITCHEROO_MIN_RANGE_V7,
   SWITCHEROO_RANGE_V7,
   previewJoinChantV7,
   previewWardenV7,
@@ -417,7 +418,7 @@ describe("join the chant: the icon and the live preview", () => {
 });
 
 describe("Switcheroo's reach of 4", () => {
-  it("outlines every tile within 4 of the Familiar while aimed, and offers the unit 4 tiles away", () => {
+  it("outlines every tile 2 to 4 from the Familiar while aimed, and offers the unit 4 tiles away", () => {
     const state = cultTricksUiFixtureV7();
     const plan = selected(state, T.familiar, (unitId) => ({
       cultPick: { kind: "SWITCHEROO", unitId },
@@ -435,9 +436,15 @@ describe("Switcheroo's reach of 4", () => {
     for (let dy = -SWITCHEROO_RANGE_V7; dy <= SWITCHEROO_RANGE_V7; dy += 1)
       for (let dx = -SWITCHEROO_RANGE_V7; dx <= SWITCHEROO_RANGE_V7; dx += 1) {
         const at = { x: T.familiar.x + dx, y: T.familiar.y + dy };
-        if (inside(at)) expected.push(key(at));
+        // `pulp_wars-n5fa` (7r130): never a neighbour, so the ring has an
+        // inner edge.
+        if (
+          inside(at) &&
+          Math.max(Math.abs(dx), Math.abs(dy)) >= SWITCHEROO_MIN_RANGE_V7
+        )
+          expected.push(key(at));
       }
-    expect(SWITCHEROO_RANGE_V7).toBe(4);
+    expect([SWITCHEROO_MIN_RANGE_V7, SWITCHEROO_RANGE_V7]).toEqual([2, 4]);
     expect(reach.map((entry) => key(entry.at)).sort()).toEqual(expected.sort());
     expect(reach.every((entry) => entry.abilityStyle === "TRICK_RANGE")).toBe(
       true,

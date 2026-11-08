@@ -51,6 +51,13 @@ function planOf(state: GameStateV7, unitAt: CoordV7): TileActionPlanV7 | null {
   );
 }
 
+function need<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("missing");
+  return value;
+}
+const same = (left: CoordV7, right: CoordV7): boolean =>
+  left.x === right.x && left.y === right.y;
+
 const move = (to: CoordV7): MapCommandTargetV7 => ({
   at: to,
   family: "MOVE",
@@ -62,17 +69,20 @@ const attack = (to: CoordV7): MapCommandTargetV7 => ({
   command: { kind: "ATTACK", unitId: id(1), targetUnitId: id(9) },
   previewLabel: "Deal 4 · take 2",
 });
-const ribbit = (to: CoordV7): MapCommandTargetV7 => ({
+// A Tesla Tower's Zap beside an Attack on one enemy: a choice the user
+// keeps (`pulp_wars-n5fa`; the Hexer's Ribbit was this test's pair until
+// 7r130, when its attack began to frog).
+const zap = (to: CoordV7): MapCommandTargetV7 => ({
   at: to,
-  family: "RIBBIT",
-  command: { kind: "RIBBIT", unitId: id(1), targetUnitId: id(9) },
+  family: "ZAP",
+  command: { kind: "ZAP", unitId: id(1), targetUnitId: id(9) },
 });
 const tentacle = (to: CoordV7): MapCommandTargetV7 => ({
   at: to,
   family: "TENTACLE",
   command: { kind: "TENTACLE", unitId: id(1), at: to },
 });
-const RIBBIT = { id: "RIBBIT", label: "Ribbit", icon: "frog" } as const;
+const ZAP = { id: "ZAP", label: "Zap", icon: "range" } as const;
 const TENTACLE = {
   id: "TENTACLE",
   label: "Tentacle",
@@ -198,18 +208,18 @@ describe("tile actions: the planner", () => {
     expect(tile?.actions[0]?.target?.command.kind).toBe("MOVE");
   });
 
-  it("lists an Attack and a hex on the same enemy, each in its style", () => {
+  it("lists an Attack and a Zap on the same enemy, each in its style", () => {
     const plan = planTileActionsV7({
       ...base,
       boardTargets: [attack(at(6, 6))],
-      abilities: [{ ability: RIBBIT, targets: [ribbit(at(6, 6))] }],
+      abilities: [{ ability: ZAP, targets: [zap(at(6, 6))] }],
     });
     const tile = tileActionsAtV7(plan, at(6, 6));
     expect(
       tile?.actions.map((action) => [action.id, action.style, action.icon]),
     ).toEqual([
       ["ATTACK", "ATTACK", "attack"],
-      ["RIBBIT", "ATTACK", "frog"],
+      ["ZAP", "ATTACK", "range"],
     ]);
     expect(tile?.chooser).toBe(true);
   });
@@ -347,20 +357,30 @@ describe("tile actions: the factions' scenes", () => {
     expect(planOf(tileActionsKnightFixtureV7(), A.knight)).toBeNull();
   });
 
-  it("puts an Attack and a Ribbit on the Knight a Cult Hexer may shoot or hex", () => {
-    const plan = planOf(tileActionsHexerFixtureV7(), A.hexer);
+  // `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's attack (a shot that
+  // leaves its target alive frogs it), so the Knight it may shoot means
+  // Attack alone: no Ribbit badge and no chooser.
+  it("gives the Knight a Cult Hexer may shoot one meaning: its Attack, which frogs", () => {
+    const state = tileActionsHexerFixtureV7();
+    const plan = planOf(state, A.hexer);
     const tile = tileActionsAtV7(plan, A.hexed);
-    expect(tile?.actions.map((action) => action.id)).toEqual([
-      "ATTACK",
-      "RIBBIT",
-    ]);
-    expect(tile?.chooser).toBe(true);
-    // The Juggernaut no hex takes carries no Ribbit.
+    expect(tile?.chooser ?? false).toBe(false);
     expect(
-      tileActionsAtV7(plan, CULT_TRICK_UI_V7.giant)?.actions.some(
-        (action) => action.id === "RIBBIT",
-      ) ?? false,
-    ).toBe(false);
+      (tile?.actions ?? []).filter((action) => action.id !== "ATTACK"),
+    ).toEqual([]);
+    for (const tile of plan?.tiles ?? []) expect(tile.chooser).toBe(false);
+    const view = viewForV7(state, state.humanPlayerId);
+    const hexer = need(view.units.find((unit) => same(unit.at, A.hexer)));
+    const knight = need(view.units.find((unit) => same(unit.at, A.hexed)));
+    const offered = queryPlayerCommandsV7(view).filter(
+      (command) => "unitId" in command && command.unitId === hexer.id,
+    );
+    expect(offered.map((command) => command.kind)).not.toContain("RIBBIT");
+    expect(offered).toContainEqual({
+      kind: "ATTACK",
+      unitId: hexer.id,
+      targetUnitId: knight.id,
+    });
   });
 
   // (The Chosen's Pick Me! retired with the Cult redesign,

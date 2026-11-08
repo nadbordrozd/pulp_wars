@@ -47,11 +47,8 @@ import { at } from "../fixtures/v7-revision20";
  * played.
  */
 
-const TRICK_KINDS: readonly CommandV7["kind"][] = [
-  "RIBBIT",
-  "SWITCHEROO",
-  "TENTACLE",
-];
+// (`RIBBIT` retired with `pulp_wars-n5fa`, 7r130: the Hexer's shot frogs.)
+const TRICK_KINDS: readonly CommandV7["kind"][] = ["SWITCHEROO", "TENTACLE"];
 
 /**
  * Seat `cultSeat` is the Cult, to move, with a Hexer, a Familiar, and a
@@ -129,17 +126,11 @@ describe("hexes and tricks: the words", () => {
         ?.effects.map((effect) => effect.kind);
     expect(effects(0)).toContain("SWITCHEROO");
     expect(effects(1)).not.toContain("SWITCHEROO");
-    expect(SWITCHEROO_UNLOCK_TEXT_V7).toContain("within 4 tiles");
+    // `pulp_wars-n5fa` (7r130): never a neighbour.
+    expect(SWITCHEROO_UNLOCK_TEXT_V7).toContain("2 to 4 tiles away");
   });
 
   it("gives each command an id of its own in the text harness", () => {
-    expect(
-      textPlayCommandIdV7({
-        kind: "RIBBIT",
-        unitId: unitId(5),
-        targetUnitId: unitId(9),
-      }),
-    ).toBe("u5.ribbit.u9");
     expect(
       textPlayCommandIdV7({
         kind: "SWITCHEROO",

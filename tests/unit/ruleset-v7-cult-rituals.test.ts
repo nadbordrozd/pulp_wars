@@ -258,13 +258,13 @@ describe("rituals: identity", () => {
   // took 7r89 after it, and its Imp (`pulp_wars-mch9.36`) 7r90, and its
   // Gibbering Mass (`pulp_wars-mch9.37`) 7r91.
   it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-42, -40)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-43, -41)).toEqual([
       "pulp-wars-poc-7r87",
       "pulp-wars-poc-7r88",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42, -40)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-43, -41)).toEqual([
       "pulpWars.save.v7r87.current",
       "pulpWars.save.v7r88.current",
     ]);
@@ -294,10 +294,11 @@ describe("rituals: identity", () => {
 describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
   it("orders the new command and event kinds after the channel's", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
-    // (`pulp_wars-mch9.8` adds the four tricks after PROCLAIM.)
+    // (`pulp_wars-mch9.8` adds the tricks after PROCLAIM; Ribbit retired
+    // with `pulp_wars-n5fa`, 7r130.)
     expect(
       commands.slice(commands.indexOf("BOO"), commands.indexOf("BOO") + 4),
-    ).toEqual(["BOO", "BEGIN_RITUAL", "PROCLAIM", "RIBBIT"]);
+    ).toEqual(["BOO", "BEGIN_RITUAL", "PROCLAIM", "SWITCHEROO"]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     const from = events.indexOf("DAEMON_BOUND");
     expect(events.slice(from, from + 11)).toEqual([

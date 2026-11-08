@@ -201,7 +201,10 @@ describe("ruleset-7 late public query performance", () => {
       // unchanged.
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
       // (was fd5236…e3ec).
-      "68c51b2bfb835fd04c215a182a9240f6338d970999c2bc864f7a53b10e1953c7",
+      // One tile, one meaning (`pulp_wars-n5fa`, 7r130) removes RIBBIT
+      // after PROCLAIM, moving the later command kinds back by one (was
+      // 68c51b…53c7); the revision-12-ordinal value is unchanged.
+      "0399f8c9b0ea4066e34f6bacb5b6b4323d14e609e0abddea6fd5acd6c9204feb",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

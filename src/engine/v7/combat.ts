@@ -75,7 +75,7 @@ import {
   unitHasToothacheV7,
   unitThumpDamageV7,
 } from "./candy-abilities";
-import { unitIsFrogV7 } from "./cult-hexes";
+import { attackRibbitV7, unitIsFrogV7 } from "./cult-hexes";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import { impSwarmsV7 } from "./cult-imp";
 import { idolShieldsV7 } from "./cult-warden";
@@ -1149,6 +1149,8 @@ export function calculateCombatPreviewV7(
       defender,
       defenderDies,
     ),
+    // `pulp_wars-n5fa` (7r130): a Hexer's shot frogs a surviving target.
+    ribbitApplied: attackRibbitV7(state, attacker, defender, defenderDies),
     ...crushPreviewV7(state, attacker, defender, distance, push, {
       defenderDies,
       // A Dinosaur defender that kills the attacker grows (and heals)

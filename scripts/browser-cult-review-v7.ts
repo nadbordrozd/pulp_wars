@@ -855,15 +855,17 @@ async function proclaim(connection: Connection, size: Size): Promise<void> {
   await capture(connection, `cowed-city-${size}.png`);
 }
 
-/** Each hex and trick aimed, with its focused target. */
+/**
+ * Each hex and trick aimed, with its focused target. (`pulp_wars-n5fa`,
+ * 7r130: Ribbit is the Hexer's attack, so the Hexer is selected and shoots
+ * the Knight, which the shot frogs; there is no Ribbit button to aim.)
+ */
 async function tricks(connection: Connection, size: Size): Promise<void> {
   await mount(connection, "cultTricksUiFixtureV7");
   const at = await trickTiles(connection);
   await activate(connection, at.hexer as Coord);
-  await click(connection, "cult-ribbit");
-  await tab(connection, 1);
-  await record(connection, `${size}RibbitAim`);
-  await capture(connection, `ribbit-aim-${size}.png`);
+  await record(connection, `${size}HexerShot`);
+  await capture(connection, `hexer-shot-${size}.png`);
   await pick(connection, at.knight as Coord);
   await delay(1_200);
   await activate(connection, at.knight as Coord);

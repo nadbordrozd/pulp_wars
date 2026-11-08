@@ -119,7 +119,7 @@ const EVERY_FAMILY: Readonly<
   GREAT_SUMMONING: "PLACE",
   TENTACLE: "PLACE",
   PROCLAIM: "ATTACK",
-  RIBBIT: "ATTACK",
+  // (RIBBIT retired with its command: `pulp_wars-n5fa`, 7r130.)
   SWITCHEROO: "ATTACK",
   // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer a cultist joins.
   JOIN_CHANT: "SUPPORT",

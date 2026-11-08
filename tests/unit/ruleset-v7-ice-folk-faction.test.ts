@@ -203,10 +203,12 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
     // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
-    // FIRE_MOON_GUN after JOIN_CHANT (87).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(88);
+    // FIRE_MOON_GUN after JOIN_CHANT (87). The Mothership redesign
+    // (`pulp_wars-ewpj`) adds MASS_BEAM_DOWN (88), and one tile, one meaning
+    // (`pulp_wars-n5fa`, 7r130) removes RIBBIT (87).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 18)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 17)).toEqual([
       "BREAK_OFF",
       "FROST_BOLT",
       "STAMPEDE",
@@ -222,8 +224,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       // The Cult's rituals (`pulp_wars-mch9.7`).
       "BEGIN_RITUAL",
       "PROCLAIM",
-      // The Cult's tricks (`pulp_wars-mch9.8`).
-      "RIBBIT",
+      // The Cult's tricks (`pulp_wars-mch9.8`; RIBBIT retired with
+      // `pulp_wars-n5fa`, 7r130).
       "SWITCHEROO",
       "TENTACLE",
       // (PICK_ME retired with the Chosen, `pulp_wars-mch9.31`.)

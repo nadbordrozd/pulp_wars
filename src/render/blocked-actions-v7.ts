@@ -212,7 +212,7 @@ const TURN_NEUTRAL_KINDS: ReadonlySet<CommandV7["kind"]> = new Set<
  * unit's turn: an Attack, and an ability the engine offers only with a
  * hostile unit to hurt or take (a Barricade attack, a Board, a Bomb Run, a
  * Whirl, a Swallow, a Stomp, a Tesla Tower Zap). A disabling spell (Freeze,
- * Bolas, Mind Control, Ribbit), a Kaboom (offered with or without a target)
+ * Bolas, Mind Control), a Kaboom (offered with or without a target)
  * and every other action are not attacks. The dock's turn chip and the
  * board's "can attack" ring both read it, so they always agree.
  */

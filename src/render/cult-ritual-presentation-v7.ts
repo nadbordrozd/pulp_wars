@@ -4,10 +4,11 @@ import {
   FROG_MOVE_V7,
   HERALD_FAVOUR_COST_V7,
   PROCLAIM_RANGE_V7,
-  RIBBIT_RANGE_V7,
   RITUAL_MINIMUM_CHANTERS_V7,
   STARFALL_CHANTER_DAMAGE_V7,
+  SWITCHEROO_MIN_RANGE_V7,
   SWITCHEROO_RANGE_V7,
+  TENTACLE_MIN_RANGE_V7,
   TENTACLE_RANGE_V7,
   attackAllowanceV7,
   attacksLeftV7,
@@ -17,7 +18,6 @@ import {
   grabbingTentacleAtV7,
   isRobedCultistV7,
   proclaimRejectionV7,
-  ribbitRejectionV7,
   switcherooRejectionV7,
   technologyCapabilitiesV7,
   tentacleRejectionV7,
@@ -32,7 +32,6 @@ import {
   type PlayerViewV7,
   type PublicRitualV7,
   type PublicUnitV7,
-  type RibbitPreviewV7,
   type RitualFizzleReasonV7,
   type RitualKindV7,
   type RitualPreviewV7,
@@ -61,7 +60,8 @@ import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
  * The Cultists of the Ancient Ones, rituals, hexes and tricks in the
  * interface (bead `pulp_wars-mch9.19`; docs/product/RULESET_7_CULTISTS.md
  * sections 7, 8.2, 8.6, 9, and 14.3; docs/ui/BOARD_TARGETING.md section
- * 3.9): the words of Star-fall, the Great Summoning, Proclaim, Ribbit,
+ * 3.9): the words of Star-fall, the Great Summoning, Proclaim, Ribbit (the
+ * Hexer's attack since `pulp_wars-n5fa`, 7r130: its preview line only),
  * Switcheroo, and Tentacle: the buttons and their reasons, the marks'
  * labels, the cursor's sentences, the unit card's chips, a frog's real
  * numbers, and the notices. (Pick Me! retired with the Chosen: the Cult
@@ -70,15 +70,16 @@ import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
  */
 
 /**
- * The seven actions the dock aims with one button each. Join the chant
+ * The six actions the dock aims with one button each. Join the chant
  * (the Cult redesign, `pulp_wars-mch9.34`) has a button only while it is
  * offered; its icon on the casting Stargazer is the tile-action badge.
+ * (Ribbit's button went with its command: `pulp_wars-n5fa`, 7r130, the
+ * Hexer's attack frogs.)
  */
 export const CULT_TRICK_KINDS_V7 = [
   "STARFALL",
   "GREAT_SUMMONING",
   "PROCLAIM",
-  "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
   "JOIN_CHANT",
@@ -97,7 +98,6 @@ export const CULT_TRICK_LABELS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   STARFALL: STARFALL_LABEL_V7,
   GREAT_SUMMONING: GREAT_SUMMONING_LABEL_V7,
   PROCLAIM: PROCLAIM_LABEL_V7,
-  RIBBIT: RIBBIT_LABEL_V7,
   SWITCHEROO: SWITCHEROO_LABEL_V7,
   TENTACLE: TENTACLE_LABEL_V7,
   JOIN_CHANT: JOIN_CHANT_LABEL_V7,
@@ -110,9 +110,8 @@ export const CULT_TRICK_TOOLTIPS_V7: Readonly<Record<CultTrickKindV7, string>> =
       "It chants alone. At the start of your next turn a star hits every unit on the marked tile and the eight around it, friend and foe. Cultists beside it can join the chant this turn to make it hit harder",
     GREAT_SUMMONING: `It and three or more cultists beside it chant, for ${HERALD_FAVOUR_COST_V7} Favour. At the start of your next turn the Herald stands on the marked tile and they all channel it`,
     PROCLAIM: `KNEEL! An enemy city within ${PROCLAIM_RANGE_V7} tiles hides in its cellars: no income and no city action until its owner's turn ends`,
-    RIBBIT: `Turns an enemy within ${RIBBIT_RANGE_V7} tiles into a frog until its next turn ends. A frog hops one tile, is easy to hurt, and cannot attack or strike back`,
-    SWITCHEROO: `It and a unit within ${SWITCHEROO_RANGE_V7} tiles swap places, friend or foe. Never on a city or village`,
-    TENTACLE: `Up comes a Tentacle within ${TENTACLE_RANGE_V7} tiles. It belongs to nobody, and slaps and grabs whoever is weakest beside it`,
+    SWITCHEROO: `It and a unit ${SWITCHEROO_MIN_RANGE_V7} to ${SWITCHEROO_RANGE_V7} tiles away swap places, friend or foe. Never a neighbour, never on a city or village`,
+    TENTACLE: `Up comes a Tentacle ${TENTACLE_MIN_RANGE_V7} or ${TENTACLE_RANGE_V7} tiles away. It belongs to nobody, and slaps and grabs whoever is weakest beside it`,
     JOIN_CHANT: `It chants with the Stargazer beside it, so the star hits ${STARFALL_CHANTER_DAMAGE_V7} harder. Give it another order this turn and it stops chanting`,
   };
 
@@ -121,7 +120,6 @@ export const CULT_TRICK_PICKS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   STARFALL: "Choose the tile the star falls on",
   GREAT_SUMMONING: "Choose a tile next to it for the Herald",
   PROCLAIM: "Choose an enemy city",
-  RIBBIT: "Choose an enemy to turn into a frog",
   SWITCHEROO: "Choose a unit to swap places with",
   TENTACLE: "Choose a tile for the Tentacle",
   JOIN_CHANT: "Choose the Stargazer to chant with",
@@ -156,10 +154,22 @@ export const PROCLAIM_NO_ATTACK_V7 = "No attack left this turn";
 export const PROCLAIM_OUT_OF_REACH_V7 = `No enemy city within ${PROCLAIM_RANGE_V7} tiles`;
 export const PROCLAIM_COWED_V7 = "The city is Cowed already";
 export const HEX_SPENT_V7 = "Spent: ready again next turn";
-export const RIBBIT_NO_TARGET_V7 = `No enemy within ${RIBBIT_RANGE_V7} tiles it can hex`;
-export const SWITCHEROO_NO_TARGET_V7 = `Nobody within ${SWITCHEROO_RANGE_V7} tiles to swap with`;
+export const SWITCHEROO_NO_TARGET_V7 = `Nobody ${SWITCHEROO_MIN_RANGE_V7} to ${SWITCHEROO_RANGE_V7} tiles away to swap with`;
 export const TENTACLE_EXISTS_V7 = "Its Tentacle is still up";
-export const TENTACLE_NO_TILE_V7 = `No free tile within ${TENTACLE_RANGE_V7} tiles`;
+export const TENTACLE_NO_TILE_V7 = `No free tile ${TENTACLE_MIN_RANGE_V7} or ${TENTACLE_RANGE_V7} tiles away`;
+/**
+ * One tile, one meaning (`pulp_wars-n5fa`, 7r130): the line a Hexer's attack
+ * preview shows when the shot frogs its surviving target (as Frost Breath's
+ * "Frost Breath: target Frozen").
+ */
+export const RIBBIT_PREVIEW_V7 = `${RIBBIT_LABEL_V7}: target becomes a frog`;
+
+/** Ribbit's note of an attack's public preview: none or one. */
+export function ribbitCombatNotesV7(preview: {
+  readonly ribbitApplied?: boolean;
+}): readonly string[] {
+  return preview.ribbitApplied === true ? [RIBBIT_PREVIEW_V7] : [];
+}
 
 /** "Needs 3 cultists beside it that have not acted". */
 export function greatSummoningChantersTextV7(): string {
@@ -281,18 +291,6 @@ export function cultTrickUnavailableTextV7(
       // The nearer miss first: a city in reach that kneels already.
       if (reasons.includes("COWED")) return PROCLAIM_COWED_V7;
       return reasons.includes("RANGE") ? PROCLAIM_OUT_OF_REACH_V7 : null;
-    }
-    case "RIBBIT": {
-      const rejection = ribbitRejectionV7(view, unit, undefined);
-      if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
-        return null;
-      if (frog) return TRICK_FROGGED_V7;
-      if (rejection.code === "UNIT_ALREADY_ACTED")
-        return CHANNEL_ALREADY_ACTED_V7;
-      if (rejection.reason === "EMBARKED") return CHANNEL_EMBARKED_V7;
-      return rejection.reason === "COOLDOWN"
-        ? HEX_SPENT_V7
-        : RIBBIT_NO_TARGET_V7;
     }
     case "SWITCHEROO": {
       if (!abilities.includes("SWITCHEROO")) return null;
@@ -483,9 +481,6 @@ export function proclaimTargetNameV7(attacksLeftAfter: number): string {
   return `Proclaim at this city: it earns nothing and has no city action until its owner's turn ends. ${attacksLeftAfter === 0 ? "The Herald has no attack left after it" : `The Herald keeps ${attacksLeftAfter} attack`}.`;
 }
 
-/** The label at a unit an armed Ribbit may hex. */
-export const RIBBIT_TARGET_LABEL_V7 = "Frog";
-
 /** What a hex or a swap also breaks, as a short label, or null. */
 export function trickBreaksLabelV7(facts: {
   readonly holdsStrand: boolean;
@@ -493,15 +488,6 @@ export function trickBreaksLabelV7(facts: {
 }): string | null {
   if (facts.holdsStrand) return "Strand breaks";
   return facts.inRitual ? "Leaves the circle" : null;
-}
-
-/** The cursor's sentence for a Ribbit target. */
-export function ribbitTargetNameV7(
-  target: string,
-  preview: RibbitPreviewV7,
-): string {
-  const breaks = trickBreaksLabelV7(preview);
-  return `Turn this ${target} into a frog until its next turn ends: Defense ${frogDefenseTextV7()}, Move ${FROG_MOVE_V7}, no attack.${breaks === null ? "" : ` ${breaks}.`}`;
 }
 
 /** The label at a unit an armed Switcheroo may swap with. */
@@ -620,7 +606,7 @@ export interface CultTrickChipV7 {
   /** The raster asked for; the chip shows its word alone without one. */
   readonly icon:
     | `ICON:STATUS:${"CANDLELIT" | "FROG" | "GRABBED"}`
-    | `ICON:ACTION:${"RIBBIT" | "SWITCHEROO"}`
+    | "ICON:ACTION:SWITCHEROO"
     | null;
   /** A harm done to the unit: the chip takes the loss colour. */
   readonly harm?: true;
@@ -697,9 +683,9 @@ export function cultTrickChipsV7(
         cooldown.turnsRemaining >= 2
           ? "It used its trick: it cannot use it on its owner's next turn"
           : "It used its trick last turn: it is ready again next turn",
-      icon: abilitiesOf(view, unit).includes("SWITCHEROO")
-        ? "ICON:ACTION:SWITCHEROO"
-        : "ICON:ACTION:RIBBIT",
+      // Only a Familiar's Switcheroo waits a turn since `pulp_wars-n5fa`
+      // (7r130; a Hexer's Ribbit did too before).
+      icon: "ICON:ACTION:SWITCHEROO",
     });
   // Ravage (section 4.2): an own Herald's attacks left of its two.
   if (

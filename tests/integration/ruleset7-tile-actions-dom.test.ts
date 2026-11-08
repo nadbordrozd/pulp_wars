@@ -7,6 +7,7 @@ import {
   DWARF_MOLE_ROAD_V7,
   dwarfMoleRoadFixtureV7,
 } from "../fixtures/v7-dwarf-ui";
+import { CULT_TRICK_UI_V7 } from "../fixtures/v7-cult-ui";
 import { FROZEN_UI_V7 } from "../fixtures/v7-frozen-sea-ui";
 import {
   required,
@@ -75,22 +76,37 @@ describe("tile actions in the DOM", () => {
     const knight = rig(tileActionsKnightFixtureV7());
     select(knight, A.knight);
     expect(required(knight.host.lastModel).tileActions ?? null).toBeNull();
+    // `pulp_wars-n5fa` (7r130): a Cult Hexer's shot frogs, so its target
+    // is a lone Attack (a Ribbit badge beside it before).
     document.body.innerHTML = '<div id="app"></div>';
     const hexer = rig(tileActionsHexerFixtureV7());
     select(hexer, A.hexer);
-    const plan = required(hexer.host.lastModel).tileActions;
     expect(
-      tileActionsAtV7(plan, A.hexed)?.actions.map((action) => action.id),
-    ).toEqual(["ATTACK", "RIBBIT"]);
+      tileActionsAtV7(required(hexer.host.lastModel).tileActions, A.hexed) ??
+        null,
+    ).toBeNull();
+    // A Yeti's Freeze beside its Attack on a boat is a choice the user
+    // keeps.
+    document.body.innerHTML = '<div id="app"></div>';
+    const yeti = rig(tileActionsYetiFixtureV7());
+    select(yeti, A.yeti);
+    const plan = required(yeti.host.lastModel).tileActions;
+    expect(
+      tileActionsAtV7(plan, FROZEN_UI_V7.prey)?.actions.map(
+        (action) => action.id,
+      ),
+    ).toEqual(["ATTACK", "FREEZE"]);
   });
 
-  it("opens a chooser on a tile with an Attack and a Ribbit; Ribbit hexes", async () => {
-    const scene = rig(tileActionsHexerFixtureV7());
-    select(scene, A.hexer);
-    tap(scene, A.hexed);
+  it("opens a chooser on a tile with an Attack and a Freeze; Freeze freezes", async () => {
+    // (A Hexer's Attack and Ribbit were this chooser's pair until
+    // `pulp_wars-n5fa`, 7r130, made the shot frog.)
+    const scene = rig(tileActionsYetiFixtureV7());
+    select(scene, A.yeti);
+    tap(scene, FROZEN_UI_V7.prey);
     const panel = required(chooser());
     expect(panel.getAttribute("role")).toBe("menu");
-    expect(rows()).toEqual(["attack", "ribbit"]);
+    expect(rows()).toEqual(["attack", "freeze"]);
     // Every row has an accessible name; nothing names a tile.
     for (const row of panel.querySelectorAll<HTMLElement>("[role=menuitem]"))
       expect(row.getAttribute("aria-label")).toMatch(/^[A-Z][a-z]/);
@@ -104,33 +120,33 @@ describe("tile actions in the DOM", () => {
     panel.dispatchEvent(
       new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
     );
-    expect(document.activeElement).toBe(requiredButton("tile-choice-ribbit"));
-    requiredButton("tile-choice-ribbit").click();
+    expect(document.activeElement).toBe(requiredButton("tile-choice-freeze"));
+    requiredButton("tile-choice-freeze").click();
     await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]?.kind).toBe("RIBBIT");
+    expect(scene.controller.accepted[0]?.kind).toBe("FREEZE");
     expect(chooser()).toBeNull();
   });
 
   it("attacks from the chooser as a tap on the Attack mark does", async () => {
-    const scene = rig(tileActionsHexerFixtureV7());
-    select(scene, A.hexer);
-    tap(scene, A.hexed);
+    const scene = rig(tileActionsYetiFixtureV7());
+    select(scene, A.yeti);
+    tap(scene, FROZEN_UI_V7.prey);
     requiredButton("tile-choice-attack").click();
     await waitUntil(() => scene.controller.accepted.length === 1);
     expect(scene.controller.accepted[0]?.kind).toBe("ATTACK");
   });
 
   it("closes the chooser with Escape and with a press elsewhere, sending nothing", async () => {
-    const scene = rig(tileActionsHexerFixtureV7());
-    select(scene, A.hexer);
-    tap(scene, A.hexed);
+    const scene = rig(tileActionsYetiFixtureV7());
+    select(scene, A.yeti);
+    tap(scene, FROZEN_UI_V7.prey);
     required(chooser()).dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
     expect(chooser()).toBeNull();
     // The selection stays; only the chooser closed.
     expect(document.querySelector(".v7-selection-dock")).not.toBeNull();
-    tap(scene, A.hexed);
+    tap(scene, FROZEN_UI_V7.prey);
     expect(chooser()).not.toBeNull();
     document
       .querySelector(".v7-selection-dock")
@@ -242,12 +258,15 @@ describe("tile actions in the DOM", () => {
   });
 
   it("keeps the dock's button: arming it narrows the board to that ability", () => {
+    // (The Familiar's Switcheroo; the Hexer's Ribbit button went with its
+    // command, `pulp_wars-n5fa`, 7r130.)
     const scene = rig(tileActionsHexerFixtureV7());
-    select(scene, A.hexer);
+    select(scene, CULT_TRICK_UI_V7.familiar);
     expect(required(scene.host.lastModel).tileActions).not.toBeNull();
-    requiredButton("cult-ribbit").click();
+    expect(document.querySelector('[data-action="cult-ribbit"]')).toBeNull();
+    requiredButton("cult-switcheroo").click();
     const model = required(scene.host.lastModel);
-    expect(model.interaction.cultPick).toMatchObject({ kind: "RIBBIT" });
+    expect(model.interaction.cultPick).toMatchObject({ kind: "SWITCHEROO" });
     expect(model.tileActions ?? null).toBeNull();
     requiredElement<HTMLElement>("[data-v7-cult-pick]");
   });

@@ -399,6 +399,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // hostile target's reach that a Frost Wyrm's Frost Breath shields (the
     // viewer's units on the board; a burrowed one is not struck next turn).
     "src/ai/v7.ts::frostBreathAttackValueV7": "BOARD",
+    // `pulp_wars-n5fa` (7r130): the own units a frogged target's reach
+    // covers, and an own Summoner near enough to Seize it (the viewer's
+    // units on the board; a burrowed one is neither struck nor seizes).
+    "src/ai/v7.ts::cultFrogAttackValueV7": "BOARD",
     "src/ai/v7.ts::iceFolkWoundedAtHomeV7": "BOARD",
     "src/ai/v7.ts::isPolicyCandidate": "BOARD",
     "src/ai/v7.ts::knightOverrunLeafValue": "BOARD",
@@ -1300,13 +1304,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/cult-tricks.ts::tricksStartTurnStepV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::prunedTricksV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::visibleTarget": "BOARD",
-    "src/engine/v7/cult-tricks.ts::applyRibbitV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::applySwitcherooV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::withTentacleRisenV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::withGrabAfterSlapV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::applyTentacleV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::resolveTentacleCountdownV7": "BOARD",
-    "src/engine/v7/query.ts::previewRibbitV7": "BOARD",
     "src/engine/v7/query.ts::previewSwitcherooV7": "BOARD",
     "src/engine/v7/query.ts::previewTentacleV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveTentacleSlapV7": "BOARD",

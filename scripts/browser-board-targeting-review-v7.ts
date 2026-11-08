@@ -256,6 +256,47 @@ const SHOTS: readonly Shot[] = [
     unit: "witch",
     marks: ["MOVE", "ATTACK"],
   },
+  // `pulp_wars-n5fa` (7r130): one tile, one meaning for the Cult. A
+  // selected Summoner has no attack: the broken enemy beside it carries the
+  // Seize badge alone, the healthy one nothing, and its Tentacle badges
+  // stand 2 or 3 tiles away; a selected Hexer's shot at the Knight 2 tiles
+  // away (the cursor on it) says "Ribbit: target becomes a frog"; a
+  // selected Familiar's Switcheroo badges stand 2 to 4 tiles away, and its
+  // armed ring has an inner edge.
+  {
+    name: "simplify-summoner",
+    module: "/tests/fixtures/v7-cult-ui.ts",
+    fixture: "cultSummonerSimplifyUiFixtureV7",
+    coords: "CULT_SIMPLIFY_UI_V7",
+    unit: "summoner",
+    marks: ["MOVE", "ATTACK", "PLACE"],
+  },
+  {
+    name: "simplify-hexer",
+    module: "/tests/fixtures/v7-cult-ui.ts",
+    fixture: "cultHexerSimplifyUiFixtureV7",
+    coords: "CULT_SIMPLIFY_UI_V7",
+    unit: "hexer",
+    keys: ["ArrowDown", "ArrowDown"],
+    marks: ["MOVE", "ATTACK"],
+  },
+  {
+    name: "simplify-familiar",
+    module: "/tests/fixtures/v7-cult-ui.ts",
+    fixture: "cultFamiliarSimplifyUiFixtureV7",
+    coords: "CULT_SIMPLIFY_UI_V7",
+    unit: "familiar",
+    marks: ["MOVE", "ATTACK", "SUPPORT"],
+  },
+  {
+    name: "simplify-familiar-armed",
+    module: "/tests/fixtures/v7-cult-ui.ts",
+    fixture: "cultFamiliarSimplifyUiFixtureV7",
+    coords: "CULT_SIMPLIFY_UI_V7",
+    unit: "familiar",
+    action: "cult-switcheroo",
+    marks: ["ATTACK", "SUPPORT"],
+  },
   // The marks on the other grounds: Snow with a Forest and Mountains, and
   // the Undead gloam ground.
   {

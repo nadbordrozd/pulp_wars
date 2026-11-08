@@ -22,7 +22,6 @@ import {
   technologyCapabilitiesV7,
   EGG_DEFENSE2_V7,
   FROG_DEFENSE2_V7,
-  FROG_MOVE_V7,
   HEX_COOLDOWN_TURNS_V7,
   TENTACLE_LIFETIME_V7,
   TENTACLE_RANGE_V7,
@@ -355,8 +354,8 @@ import {
   summonRejectionV7,
 } from "./cult-channel";
 import {
+  attackRibbitV7,
   pamphletsApplyV7,
-  ribbitRejectionV7,
   switcherooRejectionV7,
   tentacleRejectionV7,
   tentacleSlapTargetV7,
@@ -1904,14 +1903,8 @@ function appendPublicCultCommandsV7(
   // and Tentacles of visible units are in the view, a target is a
   // visible unit, a tile is one the viewer has explored, and a swap reads
   // the viewer's own Engineering and Navigation.
-  if (abilities.includes("RIBBIT"))
-    for (const target of view.units)
-      if (ribbitRejectionV7(view, unit, target) === null)
-        candidates.push({
-          kind: "RIBBIT",
-          unitId: unit.id,
-          targetUnitId: target.id,
-        });
+  // (Ribbit is the Hexer's attack since `pulp_wars-n5fa`, 7r130: no
+  // command of its own.)
   if (abilities.includes("SWITCHEROO")) {
     const seat = publicSwitcherooSeatV7(view, unit);
     const facts = publicGiantTileFactsV7(view);
@@ -6049,67 +6042,6 @@ export function previewProclaimV7(
     cityOwnerId: city.ownerId,
     at: { x: city.at.x, y: city.at.y },
     attacksLeftAfter: attacksLeftV7(view, herald) - 1,
-  };
-}
-
-/**
- * The Cultists (`pulp_wars-mch9.8`, section 9.1): the preview of an offered
- * Ribbit: the unit that becomes a frog (until its owner's next turn ends),
- * what the viewer sees it lose, and the Hexer's wait.
- */
-export interface RibbitPreviewV7 {
-  readonly unitId: UnitId;
-  readonly targetUnitId: UnitId;
-  readonly targetOwnerId: PlayerId;
-  readonly at: CoordV7;
-  /** A frog's flat Defense in half-units (`FROG_DEFENSE2_V7`: 0.5). */
-  readonly defense2After: number;
-  /** A frog's Move (`FROG_MOVE_V7`). */
-  readonly moveAfter: number;
-  /** It holds a strand the viewer sees, which the hex breaks. */
-  readonly holdsStrand: boolean;
-  /** It is in a ritual the viewer sees, which it leaves. */
-  readonly inRitual: boolean;
-  /**
-   * The Start Turns of its owner the Hexer waits (`HEX_COOLDOWN_TURNS_V7`):
-   * it cannot Ribbit on its owner's next turn.
-   */
-  readonly cooldownTurns: number;
-}
-
-/** Section 9.1: null unless that `RIBBIT` is offered. */
-export function previewRibbitV7(
-  view: PlayerViewV7,
-  unitId: UnitId,
-  targetUnitId: UnitId,
-): RibbitPreviewV7 | null {
-  if (
-    !queryPlayerCommandsV7(view).some(
-      (command) =>
-        command.kind === "RIBBIT" &&
-        command.unitId === unitId &&
-        command.targetUnitId === targetUnitId,
-    )
-  )
-    return null;
-  const target = view.units.find((unit) => unit.id === targetUnitId);
-  if (target === undefined) return null;
-  return {
-    unitId,
-    targetUnitId,
-    targetOwnerId: target.ownerId,
-    at: { x: target.at.x, y: target.at.y },
-    defense2After: FROG_DEFENSE2_V7,
-    moveAfter: FROG_MOVE_V7,
-    holdsStrand: view.cult.strands.some(
-      (strand) => strand.cultistUnitId === target.id,
-    ),
-    inRitual: view.cult.rituals.some(
-      (ritual) =>
-        ritual.leaderUnitId === target.id ||
-        ritual.chanterUnitIds.includes(target.id),
-    ),
-    cooldownTurns: HEX_COOLDOWN_TURNS_V7,
   };
 }
 
@@ -13022,6 +12954,8 @@ function publicCombatPreviewCore(
       target,
       defenderDies,
     ),
+    // `pulp_wars-n5fa` (7r130): a Hexer's shot frogs a surviving target.
+    ribbitApplied: attackRibbitV7(view, attacker, target, defenderDies),
     ...publicCrushPreviewV7(view, attacker, target, distance, push, {
       defenderDies,
       hpAfter: grownHpV7(

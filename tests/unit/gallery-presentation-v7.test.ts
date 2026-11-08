@@ -629,8 +629,10 @@ describe("Gallery animation preview scenes", () => {
         if (galleryUnitCellV7(role, faction).kind === "EMPTY") continue;
         const cues = galleryDemoCuesV7(faction, role);
         // The Stargazer cannot attack, and its Star-fall needs a circle of
-        // chanters: it has no cue, and its detail shows no preview.
-        if (faction === "CULT" && role === "CATAPULT") {
+        // chanters: it has no cue, and its detail shows no preview. Since
+        // `pulp_wars-n5fa` (7r130) the Summoner has no attack either, and
+        // its Seize needs a broken enemy a second cultist holds.
+        if (faction === "CULT" && (role === "CATAPULT" || role === "CAPTAIN")) {
           expect(cues).toEqual([]);
           continue;
         }

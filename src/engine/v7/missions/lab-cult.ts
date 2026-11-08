@@ -101,7 +101,7 @@ export const LAB_CULT_MID_V7: MissionDefinitionV7 = {
         "FORESTRY",
         // Stargazers (Star-fall).
         "SAWMILLING",
-        // Hexers (Ribbit).
+        // Hexers (a shot that frogs: Ribbit).
         "MARKSMANSHIP",
         // Familiars (Switcheroo).
         "SCOUTING",

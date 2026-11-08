@@ -387,13 +387,13 @@ import {
   unitIsTentacleV7,
 } from "./cult-hexes";
 import {
-  applyRibbitV7,
   applySwitcherooV7,
   applyTentacleV7,
   prunedTricksV7,
   resolveTentacleCountdownV7,
   tricksStartTurnStepV7,
   withFrogCuredV7,
+  withFroggedV7,
   withFrogsTurnEndedV7,
   withGrabAfterSlapV7,
 } from "./cult-tricks";
@@ -611,16 +611,15 @@ export type RuleErrorCodeV7 =
   // section 8.2): a join of a Star-fall's chant that is refused
   // (`EMBARKED`, `CHANTING`, `ACTED`, `STATUS`, `RITUAL`, `ADJACENT`).
   | "JOIN_CHANT_NOT_LEGAL"
-  // The Cultists (`pulp_wars-mch9.8`, section 9): an illegal Ribbit
-  // (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`),
-  // Switcheroo (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`, `IMMUNE`,
-  // `RANGE`, `CENTER`, `TILE`), or Tentacle (`EMBARKED`, `TECHNOLOGY`,
-  // `EXISTS`, `TILE`); and a command of a frog other than Move, Disembark,
-  // Promote, Disband, or Wait (`UNIT_FROGGED { unitId }`). A Move of a
-  // grabbed unit away from its Tentacle is `MOVEMENT_ILLEGAL` reason
-  // `GRABBED`. (Pick Me!'s `PICK_ME_NOT_LEGAL` and `ATTACK_TAUNTED` retired
-  // with the Chosen: the Cult redesign, `pulp_wars-mch9.31`.)
-  | "RIBBIT_NOT_LEGAL"
+  // The Cultists (`pulp_wars-mch9.8`, section 9): an illegal Switcheroo
+  // (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`, `IMMUNE`, `RANGE`,
+  // `CENTER`, `TILE`), or Tentacle (`EMBARKED`, `TECHNOLOGY`, `EXISTS`,
+  // `TILE`); and a command of a frog other than Move, Disembark, Promote,
+  // Disband, or Wait (`UNIT_FROGGED { unitId }`). A Move of a grabbed unit
+  // away from its Tentacle is `MOVEMENT_ILLEGAL` reason `GRABBED`. (Pick
+  // Me!'s `PICK_ME_NOT_LEGAL` and `ATTACK_TAUNTED` retired with the Chosen:
+  // the Cult redesign, `pulp_wars-mch9.31`; Ribbit's `RIBBIT_NOT_LEGAL` with
+  // its command: `pulp_wars-n5fa`, 7r130, Ribbit is the Hexer's attack.)
   | "SWITCHEROO_NOT_LEGAL"
   | "TENTACLE_NOT_LEGAL"
   | "UNIT_FROGGED"
@@ -2387,9 +2386,8 @@ function applyCommandCoreV7(
   // The Cult redesign (`pulp_wars-mch9.34`, section 8.2).
   if (command.kind === "JOIN_CHANT")
     return applyJoinChantV7(DWARF_KIT_V7, stateInput, state, actor, command);
-  // The Cultists, hexes and tricks (sections 9 and 8.2).
-  if (command.kind === "RIBBIT")
-    return applyRibbitV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Cultists, hexes and tricks (sections 9 and 8.2). (`RIBBIT` retired:
+  // `pulp_wars-n5fa`, 7r130, the Hexer's attack frogs.)
   if (command.kind === "SWITCHEROO")
     return applySwitcherooV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "TENTACLE")
@@ -7463,6 +7461,18 @@ function resolveAttackExchangeV7(
       unitsFrozenEventV7(actor, attacker.id, "FROST_BREATH", applied.results),
     );
   }
+  // One tile, one meaning (`pulp_wars-n5fa`, 7r130): Ribbit. A Hexer's
+  // attack turns its surviving target into a frog until the end of its
+  // owner's next turn, after the deaths (the Cult state takes it below).
+  if (preview.ribbitApplied)
+    events.push({
+      kind: "UNIT_FROGGED",
+      playerId: attacker.ownerId,
+      unitId: attacker.id,
+      targetUnitId: defender.id,
+      targetOwnerId: defender.ownerId,
+      at: { x: defender.at.x, y: defender.at.y },
+    });
   if (preview.frostbiteApplied) {
     const applied = withFrozenAppliedV7(state, frozen, [attacker.id]);
     frozen = applied.frozen;
@@ -7668,7 +7678,9 @@ function resolveAttackExchangeV7(
   // The Cultists (RULESET_7_CULTISTS.md section 8.3): every enemy a bound
   // daemon kills, by its attack or its retaliation, pays its seat the
   // victim's value in Favour (never a daemon or a Tentacle).
-  let cult = state.cult;
+  let cult = preview.ribbitApplied
+    ? withFroggedV7(state.cult, defender.id)
+    : state.cult;
   if (attacker.summoned !== undefined || defender.summoned !== undefined) {
     if (preview.defenderDies)
       cult = withDaemonKillFavourV7(state, cult, attacker, defender, events);

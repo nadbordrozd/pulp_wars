@@ -376,11 +376,15 @@ describe("Barricades in skirmish: a Dwarf Engineer narrows a choke", () => {
 describe("Barricades in skirmish: no Barricade, no change", () => {
   // The fingerprints of these decisions were taken before pulp_wars-ovqq
   // (commit 85269490); with no Barricade on the board every search is the
-  // plain breadth-first search it was.
+  // plain breadth-first search it was. One tile, one meaning
+  // (`pulp_wars-n5fa`, 7r130) removes RIBBIT from the command kinds, so the
+  // tie-break ordinal of every kind after PROCLAIM moves by one and the
+  // fingerprints were retaken (was 758cd317, 6e190739, f03f54c9, c737b285,
+  // and cfd7a51e); the decisions are unchanged.
   const cases: Record<string, readonly [() => PlayerViewV7, string]> = {
     "the walled city": [
       () => viewOf(skirmish({ pieces: FIGHTERS, mountains: RING })),
-      "758cd317",
+      "99ccc2ff",
     ],
     "the fog": [
       () =>
@@ -394,12 +398,12 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             fog: WEST,
           }),
         ),
-      "6e190739",
+      "d527d65b",
     ],
     "the endgame": [
       () =>
         endgameView(viewOf(skirmish({ pieces: FIGHTERS, mountains: RING }))),
-      "f03f54c9",
+      "4543d7f5",
     ],
     "the gap in the wall": [
       () =>
@@ -410,7 +414,7 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             fog: WEST,
           }),
         ),
-      "c737b285",
+      "fa46e1b5",
     ],
     "the Dwarf seat": [
       () =>
@@ -425,7 +429,7 @@ describe("Barricades in skirmish: no Barricade, no change", () => {
             activeSeat: 1,
           }),
         ),
-      "cfd7a51e",
+      "d5bc23f5",
     ],
   };
   for (const [name, [make, expected]] of Object.entries(cases))

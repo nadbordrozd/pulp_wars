@@ -19,7 +19,6 @@ import {
   withUnboundHeraldV7,
   withUnboundV7,
 } from "./v7-cult";
-import { unitAtV7 } from "./v7-goblin-arena";
 import { at, fieldV7, type FieldOptionsV7 } from "./v7-revision20";
 
 /**
@@ -477,7 +476,7 @@ export const CULT_TRICK_UI_V7 = {
   knight: at(4, 5),
   /** A Human Fighter beside the Idol Bearer. */
   fighter: at(2, 6),
-  /** A Human Juggernaut within 2 of the Hexer: no hex takes it. */
+  /** A Human Juggernaut within 2 of the Hexer: its shot never frogs it. */
   giant: at(7, 4),
   /** Where the hexed scene's Tentacle stands, beside the Knight. */
   tentacle: at(5, 6),
@@ -509,20 +508,29 @@ function hexed(state: GameStateV7): GameStateV7 {
     A.tentacle,
     { grabbed: A.knight, turnsLeft: 2 },
   );
+  // `pulp_wars-n5fa` (7r130): only a Familiar's Switcheroo waits a turn (a
+  // Hexer's Ribbit is its attack); the rival's side has no Familiar.
+  const familiar = spent.units.find(
+    (unit) =>
+      unit.at.x === A.familiar.x &&
+      unit.at.y === A.familiar.y &&
+      unit.role === "RAIDER",
+  );
   return checkedV7({
     ...spent,
     cult: {
       ...spent.cult,
-      hexCooldowns: [
-        { unitId: unitAtV7(spent, A.hexer).id, turnsRemaining: 2 as const },
-      ],
+      hexCooldowns:
+        familiar === undefined
+          ? []
+          : [{ unitId: familiar.id, turnsRemaining: 2 as const }],
     },
   });
 }
 
 /**
- * The same after the tricks: the Knight is a frog a Tentacle holds, and the
- * Hexer's Ribbit is spent.
+ * The same after the tricks: the Knight is a frog a Tentacle holds (the
+ * Hexer's shot frogged it), and the Familiar's Switcheroo is spent.
  */
 export function cultTricksDoneUiFixtureV7(): GameStateV7 {
   return hexed(cultTricksUiFixtureV7());
@@ -929,4 +937,59 @@ export function cultSummonsRivalUiFixtureV7(): GameStateV7 {
     A.mass,
     { role: "MASS" },
   );
+}
+
+/**
+ * One tile, one meaning for the Cult (`pulp_wars-n5fa`, 7r130; the review
+ * captures of `scripts/browser-board-targeting-review-v7.ts`). A Summoner
+ * with no attack: a broken Human Fighter beside it that an Initiate holds
+ * (Seize alone), a healthy Knight beside it (no target), and its Tentacle
+ * tiles 2 or 3 away. A Hexer whose shot frogs a Knight 2 tiles away (the
+ * attack preview says so) and only hurts a Juggernaut. A Familiar whose
+ * Switcheroo reaches 2 to 4 tiles, with an enemy and an own unit beside it
+ * (an Attack and Select, never a swap).
+ */
+export const CULT_SIMPLIFY_UI_V7 = {
+  summoner: at(5, 3),
+  holder: at(7, 4),
+  broken: at(6, 4),
+  knight: at(4, 4),
+  hexer: at(5, 3),
+  hexed: at(5, 5),
+  giant: at(7, 3),
+  familiar: at(5, 3),
+  neighbour: at(6, 4),
+  near: at(3, 5),
+  far: at(9, 3),
+  friend: at(4, 3),
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+export function cultSummonerSimplifyUiFixtureV7(): GameStateV7 {
+  const A = CULT_SIMPLIFY_UI_V7;
+  return cultFieldV7([
+    { seat: 0, role: "CAPTAIN", at: A.summoner },
+    { seat: 0, role: "FIGHTER", at: A.holder },
+    { seat: 1, role: "FIGHTER", at: A.broken, hp: 4 },
+    { seat: 1, role: "KNIGHT", at: A.knight },
+  ]);
+}
+
+export function cultHexerSimplifyUiFixtureV7(): GameStateV7 {
+  const A = CULT_SIMPLIFY_UI_V7;
+  return cultFieldV7([
+    { seat: 0, role: "MARKSMAN", at: A.hexer },
+    { seat: 1, role: "KNIGHT", at: A.hexed },
+    { seat: 1, role: "JUGGERNAUT", at: A.giant },
+  ]);
+}
+
+export function cultFamiliarSimplifyUiFixtureV7(): GameStateV7 {
+  const A = CULT_SIMPLIFY_UI_V7;
+  return cultFieldV7([
+    { seat: 0, role: "RAIDER", at: A.familiar },
+    { seat: 0, role: "FIGHTER", at: A.friend },
+    { seat: 1, role: "FIGHTER", at: A.neighbour },
+    { seat: 1, role: "FIGHTER", at: A.near },
+    { seat: 1, role: "FIGHTER", at: A.far },
+  ]);
 }

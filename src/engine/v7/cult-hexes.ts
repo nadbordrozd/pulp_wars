@@ -1,7 +1,8 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
-  RIBBIT_RANGE_V7,
+  SWITCHEROO_MIN_RANGE_V7,
   SWITCHEROO_RANGE_V7,
+  TENTACLE_MIN_RANGE_V7,
   TENTACLE_RANGE_V7,
   canEnterTerrainV7,
   primaryActionBlockedAfterMoveV7,
@@ -16,13 +17,11 @@ import {
   type SummonedUnitRefV7,
 } from "../rules/ruleset-v7";
 import type { CommandV7 } from "./commands";
-import { arePlayersHostileV7 } from "./economy";
 import { awestruckRefusingAttackV7, type WardenLookupV7 } from "./cult-warden";
 import type { GiantTileFactsV7 } from "./giants";
 import {
   isNeutralOwnerV7,
   type CoordV7,
-  type GameStateV7,
   type UnitActivationV7,
   type UnitFormV7,
   type UnitRoleIdV7,
@@ -33,7 +32,9 @@ import {
  * the sixth Cult engine bead; docs/product/RULESET_7_CULTISTS.md sections
  * 9.1 to 9.3 and 8.7): what the canonical state and a player's view share
  * of Ribbit and the frog, Switcheroo, and the Tentacle and Grab: who is a
- * frog, who is grabbed, the legality of the three commands, and the frog's
+ * frog, who is grabbed, whether a Hexer's attack frogs (Ribbit is that
+ * attack since `pulp_wars-n5fa`, 7r130, and no command), the legality of the
+ * two other commands, and the frog's
  * restriction on other commands ({@link trickRefusalV7}). (The Chosen's
  * Pick Me! retired with the Chosen: the Cult redesign, `pulp_wars-mch9.31`.) The reducer steps are in
  * src/engine/v7/cult-tricks.ts.
@@ -136,7 +137,10 @@ function primaryActedV7(unit: ActorFactsV7): boolean {
   );
 }
 
-/** Sections 9.1 and 9.2: whether the unit's trick is on cooldown. */
+/**
+ * Section 9.2: whether the unit's Switcheroo is on cooldown. (A Hexer's
+ * Ribbit had one too until `pulp_wars-n5fa`, 7r130, made it the attack.)
+ */
 export function hexOnCooldownV7(
   lookup: TrickListsV7,
   unit: { readonly id: UnitId },
@@ -147,54 +151,34 @@ export function hexOnCooldownV7(
   );
 }
 
-export type RibbitRejectionV7 =
-  | { readonly code: "UNIT_ROLE_INVALID" }
-  | { readonly code: "UNIT_ALREADY_ACTED" }
-  | {
-      readonly code: "RIBBIT_NOT_LEGAL";
-      readonly reason:
-        "EMBARKED" | "COOLDOWN" | "TARGET" | "IMMUNE" | "FROG" | "RANGE";
-    };
-
 /**
- * Section 9.1, shared by the reducer and the public command query: the
- * first reason the Hexer `hexer` may not Ribbit `target` (the unit the
- * command names if it is on the board and the actor sees it, else
- * undefined), or null. The Hexer is a land-form unit with Ribbit that has
- * not used a primary action (it may have moved) and did not cast on its
- * owner's previous turn; the target is a hostile land-form unit within
- * `RIBBIT_RANGE_V7` tiles that a hex takes ({@link trickTakesV7}) and that
- * is not a frog already.
+ * Section 9.1, Ribbit (`pulp_wars-n5fa`, 7r130: the Hexer's attack, no
+ * command of its own), shared by the reducer's combat preview and the
+ * public one, so the preview is exact: whether an `ATTACK` by `attacker` on
+ * `defender` turns the defender into a frog. The attacker is a land-form
+ * unit whose role under its kind has `RIBBIT` (the Hexer; a mind-controlled
+ * one too: it is a trick of the unit), the attack leaves the defender alive
+ * (`defenderDies` false), and a hex takes the defender ({@link
+ * trickTakesV7}: a player's land-form unit that is no reward giant, two-slot
+ * unit, Egg, or summoned unit) and it is not a frog already. A retaliation
+ * is no attack of the Hexer's and never frogs. (Until 7r130 Ribbit was a
+ * `RIBBIT` command in place of the attack, within 2 tiles, every second
+ * turn; the attack's own reach replaces both.)
  */
-export function ribbitRejectionV7(
-  lookup: FrozenLookupV7 &
-    TrickListsV7 &
-    Pick<GameStateV7, "setup" | "humanPlayerId">,
-  hexer: ActorFactsV7,
-  target: TrickUnitFactsV7 | undefined,
-): RibbitRejectionV7 | null {
-  if (!unitRoleRuleV7(lookup, hexer).abilities.includes("RIBBIT"))
-    return { code: "UNIT_ROLE_INVALID" };
-  if (hexer.form !== "LAND")
-    return { code: "RIBBIT_NOT_LEGAL", reason: "EMBARKED" };
-  if (primaryActedV7(hexer) || primaryActionBlockedAfterMoveV7(lookup, hexer))
-    return { code: "UNIT_ALREADY_ACTED" };
-  if (hexOnCooldownV7(lookup, hexer))
-    return { code: "RIBBIT_NOT_LEGAL", reason: "COOLDOWN" };
-  if (
-    target === undefined ||
-    target.hp <= 0 ||
-    target.id === hexer.id ||
-    !arePlayersHostileV7(lookup, hexer.ownerId, target.ownerId)
-  )
-    return { code: "RIBBIT_NOT_LEGAL", reason: "TARGET" };
-  if (!trickTakesV7(lookup, target))
-    return { code: "RIBBIT_NOT_LEGAL", reason: "IMMUNE" };
-  if (unitIsFrogV7(lookup, target))
-    return { code: "RIBBIT_NOT_LEGAL", reason: "FROG" };
-  if (chebyshev(hexer.at, target.at) > RIBBIT_RANGE_V7)
-    return { code: "RIBBIT_NOT_LEGAL", reason: "RANGE" };
-  return null;
+export function attackRibbitV7(
+  lookup: FactionRosterV7 & TrickListsV7,
+  attacker: Pick<TrickUnitFactsV7, "id" | "role" | "form" | "ownerId"> &
+    SummonedUnitRefV7,
+  defender: TrickUnitFactsV7,
+  defenderDies: boolean,
+): boolean {
+  return (
+    !defenderDies &&
+    attacker.form === "LAND" &&
+    unitRoleRuleV7(lookup, attacker).abilities.includes("RIBBIT") &&
+    trickTakesV7(lookup, defender) &&
+    !unitIsFrogV7(lookup, defender)
+  );
 }
 
 // ---------------------------------------------------------- Switcheroo ---
@@ -294,7 +278,10 @@ export function switcherooRejectionV7(
     unitRoleMechanicsV7(lookup, target).immovable
   )
     return { code: "SWITCHEROO_NOT_LEGAL", reason: "IMMUNE" };
-  if (chebyshev(familiar.at, target.at) > SWITCHEROO_RANGE_V7)
+  // `pulp_wars-n5fa` (7r130): 2 to 4 tiles; a neighbour is only ever an
+  // Attack (or Select, for an own unit).
+  const distance = chebyshev(familiar.at, target.at);
+  if (distance < SWITCHEROO_MIN_RANGE_V7 || distance > SWITCHEROO_RANGE_V7)
     return { code: "SWITCHEROO_NOT_LEGAL", reason: "RANGE" };
   const here = facts.tile(familiar.at);
   const there = facts.tile(target.at);
@@ -382,8 +369,9 @@ export type TentacleRejectionV7 =
  * mind-controlled one has none: it needs a Cult seat) whose owner has
  * Tentacles (`unlocked`, the capability `tentacles` of the Cult
  * `CHIVALRY`), that has not used a primary action (it may have moved) and
- * has no Tentacle of its own on the board; the tile is 1 to
- * `TENTACLE_RANGE_V7` tiles away and free ({@link tentacleTileLegalV7}).
+ * has no Tentacle of its own on the board; the tile is
+ * `TENTACLE_MIN_RANGE_V7` (2; 1 before `pulp_wars-n5fa`, 7r130) to
+ * `TENTACLE_RANGE_V7` (3) tiles away and free ({@link tentacleTileLegalV7}).
  */
 export function tentacleRejectionV7(
   lookup: FrozenLookupV7 & TrickListsV7,
@@ -403,7 +391,7 @@ export function tentacleRejectionV7(
     return { code: "TENTACLE_NOT_LEGAL", reason: "EXISTS" };
   const distance = chebyshev(caller.at, at);
   if (
-    distance < 1 ||
+    distance < TENTACLE_MIN_RANGE_V7 ||
     distance > TENTACLE_RANGE_V7 ||
     !tentacleTileLegalV7(facts, at)
   )

@@ -10,6 +10,7 @@ import {
   CULT_TRICK_PICKS_V7,
   GREAT_SUMMONING_NO_TILE_V7,
   HEX_SPENT_V7,
+  RIBBIT_PREVIEW_V7,
   PROCLAIM_COWED_V7,
   RITUAL_CONFIRM_HINT_V7,
   STARFALL_MOVED_V7,
@@ -654,33 +655,30 @@ describe("Proclaim and the Cowed city", () => {
 });
 
 describe("Ribbit and the frog", () => {
-  it("arms, marks who can be hexed, and turns the Knight into a frog", async () => {
+  // `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's attack. Its shot's
+  // preview says it frogs, the giant's says nothing of a frog, and there is
+  // no Ribbit button to arm.
+  it("shows the frog on the Hexer's shot, and its shot turns the Knight into a frog", async () => {
     const scene = rig(cultTricksUiFixtureV7());
     const { controller, host } = scene;
     select(scene, T.hexer);
-    expect(cultButtons()).toEqual(["ribbit"]);
-    requiredButton("cult-ribbit").click();
-    expect(live()).toContain(CULT_TRICK_PICKS_V7.RIBBIT);
-    const targets = boardPlan(host).targets;
-    expect(targets.map((target) => [target.family, target.at])).toEqual([
-      ["RIBBIT", T.knight],
-    ]);
-    expect(targetHighlightStyleV7("RIBBIT")).toBe("ATTACK");
-    expect(targets[0]?.previewLabel).toBe("Frog");
-    expect(targets[0]?.semanticLabel).toMatch(
-      /^Turn this Knight into a frog until its next turn ends: Defense 0\.5, Move 1, no attack\./,
-    );
-    // The giant in reach keeps its reason in grey.
+    expect(cultButtons()).toEqual([]);
+    expect(document.querySelector('[data-action="cult-ribbit"]')).toBeNull();
+    const shot = targetAt(scene, T.knight);
+    expect(shot.family).toBe("ATTACK");
+    expect(shot.previewNote).toContain(RIBBIT_PREVIEW_V7);
+    expect(shot.semanticLabel).toContain(`${RIBBIT_PREVIEW_V7}.`);
+    const giant = targetAt(scene, T.giant);
+    expect(giant.family).toBe("ATTACK");
+    expect(giant.previewNote ?? "").not.toContain(RIBBIT_PREVIEW_V7);
     expect(
-      entries(scene, "ability-target:RIBBIT_BLOCKED:").map((entry) => [
-        entry.at,
-        entry.label,
-        entry.abilityStyle,
-      ]),
-    ).toEqual([[T.giant, "Cannot be hexed", "MARTIAN_BLOCKED"]]);
-    host.callbacks?.onCommand(required(targets[0]));
+      boardPlan(host).targets.filter(
+        (target) => target.family !== "ATTACK" && target.family !== "MOVE",
+      ),
+    ).toEqual([]);
+    host.callbacks?.onCommand(shot);
     await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toMatchObject({ kind: "RIBBIT" });
+    expect(controller.accepted[0]).toMatchObject({ kind: "ATTACK" });
     expect(live()).toContain("Ribbit! The Knight is a frog");
     await waitUntil(() => unitMarks(scene, T.knight)?.frog !== undefined);
 
@@ -696,16 +694,19 @@ describe("Ribbit and the frog", () => {
     expect(dock().querySelector('[data-stat="defense"] button')).toBeNull();
     expectPlainWords(dock());
 
-    // The Hexer: spent, with the reason on its button.
+    // The Hexer: nothing spent (a shot frogs every turn).
     select(scene, T.hexer);
-    expect(chips()).toContainEqual(["hex-spent", "Spent"]);
+    expect(chips()).not.toContainEqual(["hex-spent", "Spent"]);
     scene.app.destroy();
   });
 
-  it("shows the cooldown as the button's reason on the next turn", () => {
+  it("shows a spent Switcheroo as the button's reason on the next turn", () => {
+    // (A Hexer's Ribbit waited a turn too before `pulp_wars-n5fa`, 7r130.)
     const scene = rig(cultTricksDoneUiFixtureV7());
     select(scene, T.hexer);
-    const button = requiredButton("cult-ribbit");
+    expect(chips()).not.toContainEqual(["hex-spent", "Spent"]);
+    select(scene, T.familiar);
+    const button = requiredButton("cult-switcheroo");
     expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.dataset.disabledReason).toBe(HEX_SPENT_V7);
     expect(chips()).toContainEqual(["hex-spent", "Spent"]);
@@ -777,10 +778,19 @@ describe("Tentacle and Grab", () => {
     expect(beside.semanticLabel).toMatch(
       /It slaps and grabs the Juggernaut at once/,
     );
-    // Beside the Summoner alone: its own unit, in the warning stripes.
-    expect(targetAt(scene, at(8, 2)).cultFocus?.marks).toEqual([
-      { at: T.caller, label: "Slapped", friendly: true },
+    // Beside the Hexer alone: its own unit, in the warning stripes.
+    expect(targetAt(scene, at(5, 2)).cultFocus?.marks).toEqual([
+      { at: T.hexer, label: "Slapped", friendly: true },
     ]);
+    // `pulp_wars-n5fa` (7r130): 2 or 3 tiles away, never beside it.
+    for (const target of targets) {
+      const reach = Math.max(
+        Math.abs(target.at.x - T.caller.x),
+        Math.abs(target.at.y - T.caller.y),
+      );
+      expect(reach).toBeGreaterThanOrEqual(2);
+      expect(reach).toBeLessThanOrEqual(3);
+    }
     const alone = targetAt(scene, at(9, 4));
     expect(alone.cultFocus).toBeUndefined();
     expect(alone.semanticLabel).toMatch(/Nobody stands beside it now/);
@@ -872,10 +882,12 @@ describe("The hexes on the board and on the card, for their victim", () => {
     scene.app.destroy();
   });
 
-  it("refuses a frogged cultist's tricks with one reason", () => {
-    const scene = rig(withFrogsV7(cultTricksUiFixtureV7(), [T.hexer]));
-    select(scene, T.hexer);
-    expect(requiredButton("cult-ribbit").dataset.disabledReason).toBe(
+  it("refuses a frog's tricks with one reason", () => {
+    // (The Familiar's Switcheroo; the Hexer's Ribbit is its attack since
+    // `pulp_wars-n5fa`, 7r130.)
+    const scene = rig(withFrogsV7(cultTricksUiFixtureV7(), [T.familiar]));
+    select(scene, T.familiar);
+    expect(requiredButton("cult-switcheroo").dataset.disabledReason).toBe(
       TRICK_FROGGED_V7,
     );
     expect(stat("defense")).toBe("0.5");

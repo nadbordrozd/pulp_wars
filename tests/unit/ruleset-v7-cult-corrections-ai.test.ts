@@ -378,9 +378,10 @@ describe("the Summoner does not kill its way into the enemy line (section 15.10)
       foe("FIGHTER", 6, 0),
     ]);
     expect(attacks(state, at(6, 3))).toEqual([]);
-    // With nobody else near, the kill is made.
+    // `pulp_wars-n5fa` (7r130): the Summoner has no attack at all (Seize is
+    // its attack), so it makes no kill with nobody else near either.
     const alone = cultScene([own("CAPTAIN", 6, 3), catapult]);
-    expect(attacks(alone, at(6, 3)).length).toBeGreaterThan(0);
+    expect(attacks(alone, at(6, 3))).toEqual([]);
     // An Initiate is no back-row unit: it makes the kill.
     const initiate = cultScene([
       own("FIGHTER", 6, 3),

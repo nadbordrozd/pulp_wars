@@ -45,7 +45,14 @@ The dock never lists one button, portrait or chip per target.
   its Move nothing, so a tile next to it is a Move and one farther a
   Tunnel (with no Hammerer able to ride, one tap digs it); and the Ice
   Witch's Frost Bolt flies exactly 2 tiles, so an enemy beside her means
-  Attack (her Cold Snap button freezes the ring).
+  Attack (her Cold Snap button freezes the ring). Since `7r130`
+  (`pulp_wars-n5fa`) the Cult's do too: the Summoner has no attack, so a
+  broken enemy beside it means Seize alone, and its Tentacle rises 2 or 3
+  tiles away, never on a tile it could step to; the Hexer has no Ribbit
+  command, because its Attack frogs a target it leaves alive (its preview
+  says "Ribbit: target becomes a frog"); and the Familiar's Switcheroo
+  reaches 2 to 4 tiles, so a neighbour means Attack (or Select, for an
+  own unit).
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is made with the armed button, or, unarmed,
@@ -112,8 +119,9 @@ arming).
   Re-bake, Swallow, Goblin Toss, Break Off, Board, Sacrifice, Seize,
   Summon Imp, Summon Horror and Summon Mass (each its own badge), Channel
   (the summons a cultist can help bind), Anchor,
-  Star-fall, the Great Summoning, Proclaim, Ribbit, Switcheroo and
-  Tentacle. The list is derived from the offered commands: an ability's
+  Star-fall, the Great Summoning, Proclaim, Switcheroo and Tentacle (a
+  Hexer's Ribbit is its Attack since `7r130`, `pulp_wars-n5fa`: no badge
+  of its own). The list is derived from the offered commands: an ability's
   tiles are exactly the targets its armed pick shows (the first step of a
   two-step pick: a Beam Down's passenger, a Summon's helper, a Toss's
   Goblin, a Re-bake's Crumbs, a Break Off's first tile, a Bomb Run's
@@ -166,7 +174,7 @@ arming).
 - **Keyboard and the cursor.** Tab stops on every badged tile as well as
   the unit targets; Enter there does its one action or opens its chooser.
   The cursor's line names each action of the tile ("Available: Attack:
-  Deal 6 · take 0, Ribbit: ...").
+  Deal 6 · take 0, Freeze: ...").
 - **The dock is unchanged.** Every ability keeps its one button; arming it
   hides the badges and narrows the board to that ability's targets, as in
   section 1.
@@ -203,8 +211,9 @@ arming).
   that offers several opens the tile
   chooser, one row per summon with its icon and price ("Summon Imp −2",
   "Summon Horror −4", "Summon Mass −5"). A tile badge column holds three
-  badges, so a Summoner's tile with a Move, three summons and a Tentacle
-  shows the Move, the Imp and "+3"; the chooser lists them all.
+  badges, so a Summoner's tile with a Move and three summons shows the
+  Move, the Imp and "+2"; the chooser lists them all. (A Tentacle shared
+  that tile until `7r130`, `pulp_wars-n5fa`: it rises 2 or 3 tiles away.)
 - **An aimed ability's badge on another own unit** opens the chooser with
   Select, unless the ability is `oneTap`.
 
@@ -246,7 +255,7 @@ The legend of every other kind of target, each a variant of a style:
 | A Bat Escape landing                                                                                                                                                         | Move   | Dashed brackets on a dark casing, with its bat      | Undead violet `#c9a6ff`   |
 | A chosen Tunnel destination                                                                                                                                                  | Move   | Solid brackets inside a thin solid frame            | teal `#64e6cf`            |
 | Another landing of a seated Hammerer                                                                                                                                         | Move   | A small dot                                         | teal `#64e6cf`            |
-| Attack, Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Board (capture a ship), Seize, Swallow, Stomp, Proclaim, Ribbit, Crack Ice, a Tesla Tower Zap               | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
+| Attack, Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Board (capture a ship), Seize, Swallow, Stomp, Proclaim, Crack Ice, a Tesla Tower Zap                       | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
 | Hatch, Sugar Toss, Top-Up, a passenger to beam or tunnel, a Goblin to toss, an own unit to pull, Sacrifice, Channel, Anchor, joining a chant, free a frozen ship (Crack Ice) | Help   | Brackets with a plus                                | lavender `#c49bff`        |
 | Lay Egg, Beam Down tile, Assemble, Barricade, Re-bake, Freeze, a Toss landing, Break Off, a Summon, Star-fall, the Great Summoning, Tentacle                                 | Place  | Brackets with corner pips                           | cream `#ffe7a3`           |
 | An area support's recipient (not a target, section 2.1)                                                                                                                      | Help   | A broken ring with a plus                           | lavender `#c49bff`        |
@@ -771,10 +780,12 @@ loose." with its "Hunger 2" chip (both sentences when both apply).
 
 ### 3.9 The Cultists: rituals, hexes and tricks (bead `pulp_wars-mch9.19`)
 
-The two rites, the Herald's Proclaim and the three tricks Ribbit,
-Switcheroo and the Tentacle
+The two rites, the Herald's Proclaim and the two tricks Switcheroo and
+the Tentacle
 ([rules](../product/RULESET_7_CURRENT.md#267-rituals), sections 26.7 to
-26.10 and 26.12; Pick Me! went with the Chosen) each have **one button** on their unit, whatever the number of
+26.10 and 26.12; Pick Me! went with the Chosen, and Ribbit's button with
+its command at `7r130`, `pulp_wars-n5fa`: the Hexer's Attack frogs, and
+its attack preview says "Ribbit: target becomes a frog") each have **one button** on their unit, whatever the number of
 tiles, cities or units. Code: `src/render/cult-ritual-presentation-v7.ts`
 (the words), `src/render/canvas/cult-ritual-board-plan-v7.ts` (the targets
 and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
@@ -785,14 +796,13 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 | Star-fall       | Stargazer | (b)   | One button. Armed, every tile the star may fall on is a Place mark; the star begins alone (the Cult redesign, bead `pulp_wars-mch9.34`), so nobody is labelled to chant. The first pick of a tile previews it: its nine tiles on a warning tint, each unit there with what it takes ("−6", red when it dies, the warning stripes on the player's own), and in the dock "6 damage · 3 units · 1 of yours" with **Begin**. Picking the same tile again begins it; cultists then join with Join the chant ([section 1.1](#11-tile-actions-an-icon-on-every-target-tile-bead-pulp_wars-2yc60)) | Place, then one confirmation                |
 | Great Summoning | Summoner  | (b)   | One button with its price ("−18" and the Favour candle). Armed, the tiles next to the Summoner are Place marks; a tile whose unit would be consumed is labelled with the Favour ("+18 Favour"), one whose unit would stop the Herald "Blocks"; the player's own chanters read "Chants" alone until one's tile is the chosen mark (bead `pulp_wars-mch9.24`). The first pick previews it ("4 chanters · 5 / 3 · consumes +18 Favour") with **Begin**                                                                                                                                        | Place, then one confirmation                |
 | Proclaim        | Herald    | (b)   | One button. Armed, each enemy city within 3 wears the Attack mark on its center, labelled "Kneel!". A city that kneels already keeps "Cowed" in grey                                                                                                                                                                                                                                                                                                                                                                                                                                       | Attack                                      |
-| Ribbit          | Hexer     | (b)   | One button. Armed, each enemy within 2 that a hex takes wears the Attack mark labelled "Frog"; one it does not take keeps "Cannot be hexed" or "A frog" in grey                                                                                                                                                                                                                                                                                                                                                                                                                            | Attack                                      |
-| Switcheroo      | Familiar  | (b)   | One button. Armed, every tile within 4 is outlined in the chalk's cream (`TRICK_RANGE`, bead `pulp_wars-mch9.43`) and each unit within 4 it may swap with is labelled "Swap": the Help ring on an own unit, the Attack mark on an enemy. The focused target shows both units faintly beside each other's tile and two bowed arrows between the tiles                                                                                                                                                                                                                                       | Help or Attack, by the target (`highlight`) |
-| Tentacle        | Summoner  | (b)   | One button. Armed, each free tile within 3 is a Place mark; the focused tile marks the unit the Tentacle slaps at once ("Slapped", the warning stripes on the player's own)                                                                                                                                                                                                                                                                                                                                                                                                                | Place                                       |
+| Switcheroo      | Familiar  | (b)   | One button. Armed, every tile 2 to 4 away is outlined in the chalk's cream (`TRICK_RANGE`, bead `pulp_wars-mch9.43`; a ring with an inner edge since `7r130`, `pulp_wars-n5fa`: never a neighbour) and each unit 2 to 4 away it may swap with is labelled "Swap": the Help ring on an own unit, the Attack mark on an enemy. The focused target shows both units faintly beside each other's tile and two bowed arrows between the tiles                                                                                                                                                   | Help or Attack, by the target (`highlight`) |
+| Tentacle        | Summoner  | (b)   | One button. Armed, each free tile 2 or 3 away (never beside the Summoner since `7r130`) is a Place mark; the focused tile marks the unit the Tentacle slaps at once ("Slapped", the warning stripes on the player's own)                                                                                                                                                                                                                                                                                                                                                                   | Place                                       |
 
 - **All are armed, even with one target** (Pick Me! went with the Chosen,
   bead `pulp_wars-mch9.31`). A rite cannot be
-  taken back and a star hurts friends; a Proclaim, a Ribbit and a Tentacle
-  are hostile; a Switcheroo's own unit is selected by a click and its
+  taken back and a star hurts friends; a Proclaim and a Tentacle are
+  hostile; a Switcheroo's own unit is selected by a click and its
   enemy attacked. Escape, Cancel or another selection disarms and sends
   nothing; Tab steps through the targets, the arrow keys walk a star's
   tiles, Enter picks.
@@ -807,14 +817,15 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
   that have not acted",
   "Needs 18 Favour", "No tile next to it for the Herald", "No attack left
   this turn", "No enemy city within 3 tiles", "The city is Cowed already",
-  "Spent: ready again next turn", "No enemy within 2 tiles it can hex",
-  "Nobody within 4 tiles to swap with", "Its Tentacle is still up", "No
-  free tile within 3 tiles", and, for a frogged
+  "Spent: ready again next turn", "Nobody 2 to 4 tiles away to swap
+  with", "Its Tentacle is still up", "No free tile 2 or 3 tiles away",
+  and, for a frogged
   cultist, "A frog can only hop". A Summoner with fewer than three robed
   cultists beside it has no Great Summoning button, and a Familiar without
   the technology no Switcheroo.
 - **Icons.** The buttons draw `ICON:ACTION:STARFALL`, `GREAT_SUMMONING`,
-  `PROCLAIM`, `RIBBIT`, `SWITCHEROO` and `TENTACLE`, the chips
+  `PROCLAIM`, `SWITCHEROO` and `TENTACLE` (`RIBBIT` stays registered for
+  the frog's cue), the chips
   `ICON:STATUS:CANDLELIT`, `FROG` and `GRABBED`, the board the
   frog's sprite `UNIT:CULT:FROG` (and `PORTRAIT:CULT:FROG` on the badge of a frog at sea,
   bead `pulp_wars-mch9.26`) and the two rites' icons on their leaders (the Cowed
@@ -1014,7 +1025,7 @@ for tools; it is never read out.
   back and begun (on the board and from the dock), its marks under way for
   its seat and for a rival, the Great Summoning's labels and price, every
   reason, Proclaim and the Cowed city's banner and panel line, the Herald's
-  attack pips, Ribbit with its grey reasons and the frog's real numbers,
+  attack pips, the Hexer's frogging shot and the frog's real numbers,
   Switcheroo's styles and ghosts, the Tentacle's tiles and slap, the
   victim's chips, an Unbound Herald's
   binding pips, the notices of both seats, the cue each event plays (a

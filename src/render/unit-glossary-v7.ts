@@ -161,9 +161,10 @@ const ENTRIES = {
     "Sacrifice",
     "Offers one of your own units next to it to the Ancient Ones. The unit is gone for good, and you gain Favour for it.",
   ],
+  // `pulp_wars-n5fa` (7r130): the Summoner has no other attack.
   SEIZE: [
     "Seize",
-    "Offers a badly hurt enemy next to it, while another of your robed cultists stands beside that enemy. It pays double Favour.",
+    "Offers a badly hurt enemy next to it, held by another of your robed cultists, for double Favour. It is the Summoner's only attack.",
   ],
   // The channel (`pulp_wars-mch9.5`, sections 6 and 8).
   // The Cult redesign (`pulp_wars-mch9.36`, section 7): the Imp alone.
@@ -287,17 +288,19 @@ const ENTRIES = {
     "Pamphlets",
     "Captures a neutral village in the same turn it walks onto it. Every other unit has to wait a turn.",
   ],
+  // `pulp_wars-n5fa` (7r130): Switcheroo reaches two to four tiles, Ribbit
+  // is the Hexer's attack, and a Tentacle rises two or three tiles away.
   SWITCHEROO: [
     "Switcheroo",
-    "Swaps places with a unit up to four tiles away, friend or foe, but never on a city or village. It cannot swap two turns running.",
+    "Swaps places with a unit two to four tiles away, never a neighbour, friend or foe, and never on a city or village. It cannot swap two turns running.",
   ],
   RIBBIT: [
     "Ribbit",
-    "Turns an enemy within 2 tiles into a frog until its next turn ends. The Hexer cannot do it two turns running.",
+    "Its attack turns an enemy it leaves alive into a frog until that unit's next turn ends. Giants and big units just take the damage.",
   ],
   TENTACLE: [
     "Tentacle",
-    "Calls up a Tentacle on a free tile within 3 tiles. It belongs to nobody and slaps whoever is weakest beside it.",
+    "Calls up a Tentacle on a free tile two or three tiles away, never next to it. It belongs to nobody and slaps whoever is weakest beside it.",
   ],
   GRAB: [
     "Grab",

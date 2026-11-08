@@ -389,12 +389,12 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Cultists (`pulp_wars-mch9.8`). `RIBBIT` (section 9.1): the
-       * Hexer `unitId` turns the hostile unit `targetUnitId` within 2 tiles
-       * into a frog. `SWITCHEROO` (section 9.2): the Familiar `unitId` and
-       * the unit `targetUnitId` within 2 tiles swap places.
+       * The Cultists (`pulp_wars-mch9.8`). `SWITCHEROO` (section 9.2): the
+       * Familiar `unitId` and the unit `targetUnitId` 2 to 4 tiles away
+       * swap places. (`RIBBIT`, the Hexer's hex, retired with
+       * `pulp_wars-n5fa`, 7r130: the Hexer's `ATTACK` frogs.)
        */
-      readonly kind: "RIBBIT" | "SWITCHEROO";
+      readonly kind: "SWITCHEROO";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId;
     }
@@ -672,8 +672,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "SUGAR_TOSS" ||
     kind === "TOP_UP" ||
     kind === "SWALLOW" ||
-    // The Cultists (`pulp_wars-mch9.8`).
-    kind === "RIBBIT" ||
+    // The Cultists (`pulp_wars-mch9.8`; `RIBBIT` retired, `pulp_wars-n5fa`).
     kind === "SWITCHEROO" ||
     // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap.
     kind === "ZAP"
@@ -1214,9 +1213,8 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "SUGAR_TOSS" ||
     command.kind === "TOP_UP" ||
     command.kind === "SWALLOW" ||
-    // The Cultists: `RIBBIT` and `SWITCHEROO` by unit, then target.
-    // (`TENTACLE` is ordered by its tile.)
-    command.kind === "RIBBIT" ||
+    // The Cultists: `SWITCHEROO` by unit, then target. (`TENTACLE` is
+    // ordered by its tile.)
     command.kind === "SWITCHEROO"
   )
     return command.targetUnitId;

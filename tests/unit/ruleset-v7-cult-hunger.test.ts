@@ -114,13 +114,13 @@ describe("the Cult redesign E-R2 and E-R3: the identity (7r89)", () => {
   // the Imp (`pulp_wars-mch9.36`) took 7r90 after it, and the Gibbering
   // Mass (`pulp_wars-mch9.37`) 7r91.
   it("was 7r89 after 7r88, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r129");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r129.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-41, -39)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r130");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r130.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-42, -40)).toEqual([
       "pulp-wars-poc-7r88",
       "pulp-wars-poc-7r89",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-41, -39)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42, -40)).toEqual([
       "pulpWars.save.v7r88.current",
       "pulpWars.save.v7r89.current",
     ]);

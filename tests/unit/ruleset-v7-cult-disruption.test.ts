@@ -499,12 +499,14 @@ const PATH_CASES: readonly PathCaseV7[] = [
     },
   },
   {
-    name: "another lodge's Ribbit",
-    proves: ["UNIT_FROGGED"],
-    cause: "STATUS",
+    // `pulp_wars-n5fa` (7r130): Ribbit is the Hexer's shot, so the frog
+    // comes with a hit, which is the first cause of the frozen order.
+    name: "another lodge's Hexer's shot, which frogs (Ribbit)",
+    proves: ["COMBAT_RESOLVED", "UNIT_FROGGED"],
+    cause: "HP_LOSS",
     build: () => {
       const state = rig("CULT", [{ role: "MARKSMAN", at: at(4, 8) }]);
-      return { state, command: targeted("RIBBIT", state, at(4, 8)) };
+      return { state, command: targeted("ATTACK", state, at(4, 8)) };
     },
   },
   {
@@ -512,8 +514,9 @@ const PATH_CASES: readonly PathCaseV7[] = [
     proves: ["UNITS_SWAPPED"],
     cause: "MOVED",
     build: () => {
-      const state = rig("CULT", [{ role: "RAIDER", at: at(4, 7) }]);
-      return { state, command: targeted("SWITCHEROO", state, at(4, 7)) };
+      // Two tiles away: a neighbour is no Switcheroo since `pulp_wars-n5fa`.
+      const state = rig("CULT", [{ role: "RAIDER", at: at(3, 6) }]);
+      return { state, command: targeted("SWITCHEROO", state, at(3, 6)) };
     },
   },
   {

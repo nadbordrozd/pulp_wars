@@ -281,7 +281,6 @@ import {
   previewProclaimV7,
   previewRampageV7,
   previewRitualV7,
-  previewRibbitV7,
   previewSwitcherooV7,
   previewTentacleV7,
   attacksLeftV7,
@@ -1107,9 +1106,8 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.${command.ritual === "STARFALL" ? "starfall" : "summoning"}.${xyV7(command.at)}`;
     case "PROCLAIM":
       return `u${command.unitId}.proclaim.c${command.cityId}`;
-    // Hexes and tricks (`pulp_wars-mch9.8`).
-    case "RIBBIT":
-      return `u${command.unitId}.ribbit.u${command.targetUnitId}`;
+    // Hexes and tricks (`pulp_wars-mch9.8`; `RIBBIT` retired with
+    // `pulp_wars-n5fa`, 7r130: the Hexer's attack frogs).
     case "SWITCHEROO":
       return `u${command.unitId}.switch.u${command.targetUnitId}`;
     case "TENTACLE":
@@ -1500,6 +1498,8 @@ const COMBAT_BASE_KEYS_V7 = new Set([
   "siegeHammer",
   "wallsDestroyed",
   "glacialSmash",
+  // `pulp_wars-n5fa` (7r130): a Hexer's frog, printed by `combatTextV7`.
+  "ribbitApplied",
 ]);
 
 /**
@@ -1629,6 +1629,12 @@ function combatTextV7(
     );
   if (preview.glacialSmash === true)
     parts.push("GLACIAL SMASH (shatters at 8 hp or less)");
+  // One tile, one meaning (`pulp_wars-n5fa`, 7r130): Ribbit is the Hexer's
+  // attack, and it frogs a target it leaves alive.
+  if (preview.ribbitApplied === true)
+    parts.push(
+      "RIBBIT: the target becomes a FROG until the end of its owner's next turn (Defense 0.5 flat, Move 1, no attack, no strike back, no capture; Seizable at half its hp; a healer cures it)",
+    );
   // Tuning 2 (7r47): whether the attacker takes the target's tile (after a
   // kill, or following a Gore push); a ranged unit never does.
   // A preview names the tile; a resolved exchange (no HP given) does not.
@@ -2131,15 +2137,8 @@ function describeCommandV7(
       return `BOO: every living unit beside it jumps one tile away, friend or foe${preview === null ? "" : ` | ${preview.results.map((entry) => `${context.memory.tag(entry.unitId)} ${entry.outcome === "JUMPS" ? `-> ${xyV7(entry.to)}` : entry.outcome === "STAYS" ? "stays (blocked)" : `-> ${xyV7(entry.to)}?`}${entry.holdsStrand && entry.outcome !== "STAYS" ? " (its strand BREAKS)" : ""}`).join(", ")}`} | no damage | in place of its attack`;
     }
     // Hexes and tricks (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections
-    // 9.1 to 9.3 and 8.2).
-    case "RIBBIT": {
-      const preview = previewRibbitV7(
-        view,
-        command.unitId,
-        command.targetUnitId,
-      );
-      return `RIBBIT ${context.memory.tag(command.targetUnitId)}: a FROG until the end of its owner's next turn: Defense 0.5 flat with no fortification and no cover, Move 1, no attack, no strike back, no capture, no other action; Seizable at half its hp${preview?.holdsStrand === true ? " | its strand BREAKS" : ""}${preview?.inRitual === true ? " | it leaves its ritual" : ""} | a healer (Tend Wounded, Repair, Top-Up) cures it | this unit cannot Ribbit on your next turn | uses its action (in place of its attack)`;
-    }
+    // 9.1 to 9.3 and 8.2). (Ribbit is the Hexer's attack since
+    // `pulp_wars-n5fa`, 7r130: its frog is a line of the attack's text.)
     case "SWITCHEROO": {
       const preview = previewSwitcherooV7(
         view,

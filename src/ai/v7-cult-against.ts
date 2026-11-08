@@ -866,8 +866,9 @@ function wardenValue(
 }
 
 /**
- * A status on a hostile Idol Bearer (`pulp_wars-mch9.41`; a Bolas or a
- * Ribbit offered on it): its idol is down while the status lasts, which is
+ * A status on a hostile Idol Bearer (`pulp_wars-mch9.41`; a Bolas offered
+ * on it, or a Hexer's shot that frogs it, Ribbit's command until
+ * `pulp_wars-n5fa`, 7r130): its idol is down while the status lasts, which is
  * worth what its kill is (`wardenValue`), with the priority of that kill
  * when a Mass it alone holds then breaks loose.
  */
