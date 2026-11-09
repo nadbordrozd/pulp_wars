@@ -1429,8 +1429,8 @@ Scouts at level 2 for the unit, and an Ice Folk Survey gave none.
 the Ice Witch, the Mammoth, the Snow Golem, the Frost Wyrm (the Sabretooth
 before `pulp_wars-s55m.4`): from a
 Gathering opener Scouting, Hunting, Marksmanship, Crafting, Deep Winter,
-Leadership, Engineering, Mammoths, Forestry, Boulders, Raiding, and
-Frost Wyrms. Brittle is the first of the late technologies.
+Leadership, Engineering, Mammoths, Forestry, Snow Golems (Boulders before
+`7r134`), Raiding, and Frost Wyrms. Brittle is the first of the late technologies.
 
 **2. The army** (`armySharesV7`, `armyRoleScoreV7`, `armyClassV7`). 40%
 line, 15% defenders, 20% ranged, 10% siege, 15% breakthrough (35, 10, 25,
@@ -1438,10 +1438,10 @@ line, 15% defenders, 20% ranged, 10% siege, 15% breakthrough (35, 10, 25,
 10, before the Frost Wyrm of `pulp_wars-s55m.4`); one Sled for
 `ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7` (4) units,
 `ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7` (3) at most. The Snow Golem has
-the siege share and fights as a ranged unit (`armyClassV7` returns
-`RANGED` for a role with Boulders): it moves two tiles and throws from one
-or two in the same turn, so it takes a tile with a shot and stays behind
-the line instead of standing a turn before it fires.
+the siege share and, since `pulp_wars-3qtp` (`7r134`: the Catapult's
+reach, Move 1, no attack after moving), fights as the siege unit it is
+(`armyClassV7` returned `RANGED` for a role with Boulders before, when it
+moved two tiles and threw in the same turn).
 
 **3. Bodies first, and Scouts** (`armyBodiesSeatV7`, `preferredReward`).
 The rule of step two of the Undead pass holds for an Ice Folk seat, which
@@ -6004,7 +6004,8 @@ rules and their values are in `src/ai/v7-ice-folk.ts`; the policy
 the public view (`chilled`, the `snow` and `blizzard` tile flags, the
 `iceFolk.shatterThreshold` of a visible unit's stats), the offered commands,
 and the public previews (`queryCombatPreviewV7` with `shatters`, `sweep`,
-`plantedApplied`, `fortificationIgnored`, `hiddenBlizzardPossible`, and the
+`snowball` (`plantedApplied` and `fortificationIgnored` before `7r134`),
+`hiddenBlizzardPossible`, and the
 option `assumeTargetChilled`), cached per decision. They add no PRNG use, no
 elapsed-time input, and no work units. Values are in the policy's usual
 units (a unit is worth its cost x 4 plus its HP).
@@ -6048,11 +6049,11 @@ Shared estimates (every match; all neutral without an Ice Folk seat):
   unit within two tiles of her (at most four), a Sled 6 more plus 4 when an
   own unit is within two tiles of it, a Mammoth 6 more (the Necromancer
   precedent).
-- **Labels.** The Mammoth (`SWEEP`, labelled `DEFENDER`) and the Boulder
-  Yeti (`BOULDERS`, labelled `SIEGE`) are line units
-  (`policyTacticalRoleV7`, the Triceratops precedent): the Mammoth is not
-  kept as a garrison, the Snow Golem needs no screen and no siege ring,
-  and the volley bonus is not its. The Witch is never counted as a healer
+- **Labels.** The Mammoth (`SWEEP`, labelled `DEFENDER`) is a line unit
+  (`policyTacticalRoleV7`, the Triceratops precedent): it is not kept as a
+  garrison. (The Boulder Yeti, later the Snow Golem, was one too while it
+  had `BOULDERS`; since `pulp_wars-3qtp`, `7r134`, it is a siege unit like
+  the Catapult: screened, with the siege ring and the volley bonus.) The Witch is never counted as a healer
   next to her target (she has no Tend Wounded).
 - A ranged kill whose preview is flagged `hiddenBlizzardPossible` and that
   the halved hit would not make is scored as a chip, not a kill.
@@ -6106,12 +6107,16 @@ As the Ice Folk:
   goes at 1179 (above every chip) and gains half the target's value. Chips
   (900) go in the spec's order: Snow Hunters (903, Cold Blood), Mammoths
   (902, Sweep), the other units (901), Sleds (900).
-- **Sweep, Boulders, the Frost Wyrm.** A Mammoth's attack gains 8 when it
-  tramples Field Defense and 6 per flank victim it leaves Chilled in the
-  window for another offered attack (the flank damage and kills are the
-  generic splash values). An unmoved Snow Golem with an offered attack
-  makes no routine Move (the planted throw); its hit gains 3 per
-  fortification level ignored. The Frost Wyrm (`pulp_wars-s55m.4`; the
+- **Sweep, the Snowball, the Frost Wyrm.** A Mammoth's attack gains 8 when
+  it tramples Field Defense, 4 per flank unit it shatters (`7r134`: a flank
+  hit is full damage and can shatter), and 6 per flank victim it leaves
+  Chilled in the window for another offered attack (the flank damage and
+  kills are the generic splash values, read from the preview's `splash`).
+  An unmoved Snow Golem with an offered attack makes no routine Move (it
+  cannot attack after one since `7r134`; the planted throw before), and a
+  Snowball that leaves its hostile target alive and Frozen is valued like
+  a Frost Breath (below; its Boulders' 3 per fortification level ignored
+  went with `7r134`). The Frost Wyrm (`pulp_wars-s55m.4`; the
   Sabretooth's backline and isolated kill values are gone with it) chips
   first (904, before the Snow Hunters' Cold Blood and the blows that
   Shatter); its Frost Breath gains 6 on a hostile unit not Frozen yet, 6

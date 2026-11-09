@@ -298,8 +298,11 @@ export function attackFortificationV7(
     readonly charge: boolean;
     readonly ignoresCityWalls: boolean;
     readonly disintegrator?: boolean;
-    /** The Ice Folk revision section 7.6: a Snow Golem's Boulders. */
-    readonly boulders?: boolean;
+    /**
+     * The role mechanic `ignoresFortification` (the Herald; a Snow Golem's
+     * Boulders until `pulp_wars-3qtp`, 7r134).
+     */
+    readonly ignoresFortification?: boolean;
     /**
      * The Dwarf revision section 10.1: a Steam Cannon with Blasting
      * Charges (Walls, Field Defense, and Dig In; cover stays).
@@ -325,7 +328,7 @@ export function attackFortificationV7(
   const ignored =
     attack.charge ||
     attack.disintegrator === true ||
-    attack.boulders === true ||
+    attack.ignoresFortification === true ||
     attack.blasting === true ||
     attack.breach === true ||
     attack.siegeHammer === true
@@ -464,9 +467,9 @@ export function calculateCombatPreviewV7(
   // The Dwarf revision section 7.1: a construct's attack uses its maximum
   // HP for its own force (Unflinching, on attack only).
   const unflinching = attackIsUnflinchingV7(state, attacker);
-  // The Ice Folk revision (section 8, step 1): Rockfall, Planted, and Cold
-  // Blood. Ice Folk Freeze (`pulp_wars-w49.37`): only a land-form unit is
-  // Frozen.
+  // The Ice Folk revision (section 8, step 1): Rockfall and Cold Blood
+  // (Planted went with `pulp_wars-3qtp`, 7r134). Ice Folk Freeze
+  // (`pulp_wars-w49.37`): only a land-form unit is Frozen.
   const attackerLand = attacker.form === "LAND";
   // Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship or embarked
   // unit is Frozen like any unit (never an Egg).
@@ -481,11 +484,6 @@ export function calculateCombatPreviewV7(
     defender.form === "LAND" && unitIsFrogV7(state, defender);
   const rockfallApplied =
     attackerLand && attackerMechanics.rockfallAttack2 > 0 && distance === 2;
-  const plantedApplied =
-    attackerLand &&
-    attackerMechanics.plantedBonus2 > 0 &&
-    !attacker.activation.moved &&
-    (plannedPathLength ?? 0) === 0;
   const coldBloodApplied =
     attackerLand && attackerMechanics.coldBloodBonus2 > 0 && defenderFrozen;
   // The Undead pass, correction (`pulp_wars-w49.13`): Carrion, a Ghoul's
@@ -592,7 +590,6 @@ export function calculateCombatPreviewV7(
         gangUp * 2 +
         unitAlphaAttack2V7(state, attacker) +
         runUpAttack2 +
-        (plantedApplied ? attackerMechanics.plantedBonus2 : 0) +
         (coldBloodApplied ? attackerMechanics.coldBloodBonus2 : 0) +
         (carrionApplied ? attackerMechanics.carrionBonus2 : 0) +
         packHunt2;
@@ -643,8 +640,10 @@ export function calculateCombatPreviewV7(
           attacker,
           ownerResearchedTechsV7(state, attacker.ownerId),
         ).raysIgnoreFortification,
-      // The Ice Folk revision section 7.6: Boulders.
-      boulders: attackerLand && attackerMechanics.ignoresFortification,
+      // The Herald's `ignoresFortification` (a Snow Golem's Boulders until
+      // `pulp_wars-3qtp`, 7r134).
+      ignoresFortification:
+        attackerLand && attackerMechanics.ignoresFortification,
       // The Dwarf revision section 10.1: a Blasting Steam Cannon.
       blasting: cannonIgnoresFortificationV7(
         state,
@@ -871,8 +870,15 @@ export function calculateCombatPreviewV7(
             !splashVictims.some((victim) => victim.id === unit.id),
         );
   // The Ice Folk revision section 7.5 Sweep: every hostile unit on the two
-  // flank tiles takes the fixed Sweep damage (Armoured and Shields apply).
-  const sweep = attackerLand && attackerMechanics.sweepDamage > 0;
+  // flank tiles is hit too. The Snow Golem and the Mammoth
+  // (`pulp_wars-3qtp`, 7r134, ICE_FOLK_REDESIGN_2026-11.md section 3.8):
+  // each flank hit is the damage this attack would deal that unit by the
+  // ordinary formula (its own Defense, fortification, and cover; Armoured,
+  // Plated, and its Shield apply), with no retaliation, and it shatters a
+  // Frozen flank unit it would leave at 1 to the threshold (a fixed 2 that
+  // never shattered before). A flank hit sweeps nothing further.
+  const sweep =
+    attackerLand && attackerMechanics.sweeps && options.sweepFlankHit !== true;
   const sweepTiles = sweep ? sweepFlankTilesV7(attacker.at, defender.at) : [];
   const sweepVictims = sweep
     ? state.units.filter(
@@ -887,10 +893,14 @@ export function calculateCombatPreviewV7(
   const splash = sweep
     ? sortedByPosition(sweepVictims).map((unit) =>
         sweepEntryV7(
-          state,
           unit,
-          shieldOfV7(state.shields, unit.id),
-          attackerMechanics.sweepDamage,
+          calculateCombatPreviewV7(
+            state,
+            attackerId,
+            unit.id,
+            plannedPathLength,
+            { ...options, sweepFlankHit: true },
+          ),
         ),
       )
     : sortedByPosition([
@@ -1128,7 +1138,9 @@ export function calculateCombatPreviewV7(
     shatters,
     coldBloodApplied,
     rockfallApplied,
-    plantedApplied,
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a Snow
+    // Golem's shot freezes the target's tile after the exchange.
+    snowball: attackIsSnowballV7(attackerRule, attacker),
     blizzardHalved,
     idolHalved,
     snowCover,
@@ -1605,6 +1617,13 @@ export interface CombatOptionsV7 {
    * otherwise answers only for a hostile target). Never an offered target.
    */
   readonly whirlHit?: boolean;
+  /**
+   * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the preview
+   * of one Sweep flank hit of the attack (its defender side becomes the
+   * flank's `splash` entry). It sweeps no further flank, and a public
+   * preview skips the checks the primary target already passed.
+   */
+  readonly sweepFlankHit?: boolean;
 }
 
 /**
@@ -1623,28 +1642,46 @@ export function advanceSiteAllowedV7(
 }
 
 /**
- * The Ice Folk revision section 7.5: one Sweep flank entry: the fixed Sweep
- * damage, reduced by Armoured, taken from the victim's Shield first, capped
- * at its HP. `damage` is HP damage.
+ * The Ice Folk revision section 7.5: one Sweep flank entry. The Snow Golem
+ * and the Mammoth (`pulp_wars-3qtp`, 7r134): the defender side of the
+ * attack's own preview on that flank unit (`hit`, computed with the option
+ * `sweepFlankHit`): its HP damage (its whole HP on a Shatter), death, and
+ * Shield damage, and `shatters` only when the hit shatters it. A null `hit`
+ * (a public preview that cannot read the unit) leaves no entry.
  */
 export function sweepEntryV7(
-  roster: FactionRosterV7,
-  unit: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form" | "at" | "hp">,
-  shield: number,
-  sweepDamage: number,
+  unit: Pick<UnitStateV7, "id" | "at">,
+  hit: Pick<
+    CombatPreviewV7,
+    "damageToDefender" | "defenderDies" | "defenderShieldDamage" | "shatters"
+  >,
 ): CombatSplashEntryV7 {
-  const hit = absorbHitV7(
-    shield,
-    unit.hp,
-    armouredDamageV7(roster, unit, sweepDamage),
-  );
   return {
     unitId: unit.id,
     at: unit.at,
-    damage: hit.hpDamage,
-    dies: hit.hpDamage >= unit.hp,
-    shieldDamage: hit.shieldDamage,
+    damage: hit.damageToDefender,
+    dies: hit.defenderDies,
+    shieldDamage: hit.defenderShieldDamage,
+    ...(hit.shatters ? { shatters: true as const } : {}),
   };
+}
+
+/**
+ * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
+ * ICE_FOLK_REDESIGN_2026-11.md section 3.7): whether an `ATTACK` by this
+ * attacker is a Snowball (a land-form unit whose role, under its kind, has
+ * `SNOWBALL`: the Snow Golem). A Snowball freezes the target's tile after
+ * the exchange (the one Freeze rule, `freezeTilesV7`): a surviving target
+ * is Frozen, open neutral land under it becomes Snow, and open water there
+ * (a ship it sank) becomes the attacker's ice with Rime.
+ */
+export function attackIsSnowballV7(
+  attackerRule: EffectiveRoleRuleV7,
+  attacker: Pick<UnitStateV7, "form">,
+): boolean {
+  return (
+    attacker.form === "LAND" && attackerRule.abilities.includes("SNOWBALL")
+  );
 }
 
 function sortedByPosition<

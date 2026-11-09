@@ -181,7 +181,10 @@ describe("Shatter worked examples (section 5.6)", () => {
     expect(run?.combat).toMatchObject({ shatters: true, damageToDefender: 8 });
   });
 
-  it("Guard at 15 HP on a Walled center: Mammoth 4, Mammoth 5, then the Yeti's 5 would leave 1: shatters", () => {
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): with the
+  // Mammoth's Attack 3 the first blow deals 5 and the second shatters the
+  // Guard (Mammoth 4, Mammoth 5, then a Yeti's 6 before).
+  it("Guard at 15 HP on a Walled center: Mammoth 5, then the second Mammoth's blow would leave 3 or less: shatters", () => {
     // Three attackers walk up to the capital's ring (the ring holds the
     // fixture's Farms) and attack after moving.
     const walled = walledV7({
@@ -210,38 +213,30 @@ describe("Shatter worked examples (section 5.6)", () => {
     for (const [from, to] of [
       [at(6, 7), at(7, 7)],
       [at(6, 8), at(7, 8)],
-      [at(6, 9), at(7, 9)],
     ] as const) {
       state = moveV7(state, from, [to]).state;
       const run = attackV7(state, to, at(8, 8));
       runs.push(run);
       state = run.state;
     }
-    const [first, second, third] = runs;
-    // Ice Folk Freeze: no retaliation from a Frozen defender (7 and 6
-    // before).
+    const [first, second] = runs;
+    // Ice Folk Freeze: no retaliation from a Frozen defender.
     expect(first?.combat).toMatchObject({
-      damageToDefender: 4,
-      damageToAttacker: 0,
-    });
-    expect(second?.combat).toMatchObject({
       damageToDefender: 5,
       damageToAttacker: 0,
     });
-    expect(third?.combat).toMatchObject({
+    expect(second?.combat).toMatchObject({
       shatters: true,
-      damageToDefender: 6,
+      damageToDefender: 10,
+      damageToAttacker: 0,
     });
-    // Not Frozen, the Guard strikes back: the Yeti takes its open-ground 5 and lives
-    // (tuning 1, 7r46; with the Walls in the retaliation it took 10, capped
-    // at its 9 HP, and died).
-    const warm = checkedV7({ ...(second?.state as GameStateV7), frozen: [] });
+    // Not Frozen, the Guard at 10 strikes back and is not shattered (tuning
+    // 1, 7r46: the retaliation reads no Walls).
+    const warm = checkedV7({ ...(first?.state as GameStateV7), frozen: [] });
     const walked = moveV7(warm, at(6, 9), [at(7, 9)]).state;
-    expect(attackV7(walked, at(7, 9), at(8, 8)).combat).toMatchObject({
-      shatters: false,
-      damageToAttacker: 5,
-      attackerDies: false,
-    });
+    const yeti = attackV7(walked, at(7, 9), at(8, 8)).combat;
+    expect(yeti).toMatchObject({ shatters: false, retaliation: true });
+    expect(yeti.damageToAttacker).toBeGreaterThan(0);
   });
 
   it("Zombie 18 HP: the third Yeti hit would leave 2: shatters, and leaves no Grave", () => {
@@ -261,18 +256,24 @@ describe("Shatter worked examples (section 5.6)", () => {
     ).toMatchObject({ cause: "SHATTER" });
   });
 
-  it("Triceratops 20 HP: Mammoth 6, Yeti 5, then the Yeti would leave 3: shatters (two slots are not exempt)", () => {
+  // 7r134 (`pulp_wars-3qtp`, the Mammoth's Attack 3): Mammoth 8, then a
+  // second Mammoth's blow would leave 3 or less (Mammoth 6, Yeti 5, Yeti
+  // before; a Yeti's 6 on the 6 HP the Mammoth and a Yeti now leave is a
+  // plain kill).
+  it("Triceratops 20 HP: Mammoth 8, then a second Mammoth would leave 3 or less: shatters (two slots are not exempt)", () => {
     const state = against("DINOSAUR", "SWORDSMAN", [
       { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
-      { seat: 0, role: "FIGHTER", at: at(4, 4) },
-      { seat: 0, role: "FIGHTER", at: at(4, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(4, 4) },
     ]);
-    const runs = hits(state, [at(4, 3), at(4, 4), at(4, 2)]);
-    expect(runs.map((run) => run.combat.damageToDefender)).toEqual([6, 5, 9]);
-    expect(runs[2]?.combat.shatters).toBe(true);
+    const runs = hits(state, [at(4, 3), at(4, 4)]);
+    expect(runs.map((run) => run.combat.damageToDefender)).toEqual([8, 12]);
+    expect(runs[1]?.combat.shatters).toBe(true);
   });
 
-  it("T-Rex 28 HP: dead on the fifth hit by plain damage; the window was never hit", () => {
+  // 7r134 (`pulp_wars-3qtp`): the Mammoth's 8 (6 before) opens the window,
+  // so the fourth hit shatters it (the fifth killed it by plain damage
+  // before, with the window never hit).
+  it("T-Rex 28 HP: Mammoth 8, Yeti 5, Yeti 6, then the fourth hit would leave 3 or less: shatters", () => {
     const state = against("DINOSAUR", "KNIGHT", [
       { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       { seat: 0, role: "FIGHTER", at: at(4, 4) },
@@ -280,24 +281,17 @@ describe("Shatter worked examples (section 5.6)", () => {
       { seat: 0, role: "FIGHTER", at: at(5, 2) },
       { seat: 0, role: "FIGHTER", at: at(6, 2) },
     ]);
-    const runs = hits(state, [
-      at(4, 3),
-      at(4, 4),
-      at(4, 2),
-      at(5, 2),
-      at(6, 2),
-    ]);
+    const runs = hits(state, [at(4, 3), at(4, 4), at(4, 2), at(5, 2)]);
     expect(runs.map((run) => run.combat.damageToDefender)).toEqual([
-      6, 5, 6, 6, 5,
+      8, 5, 6, 9,
     ]);
     expect(runs.map((run) => run.combat.shatters)).toEqual([
       false,
       false,
       false,
-      false,
-      false,
+      true,
     ]);
-    expect(runs[4]?.combat.defenderDies).toBe(true);
+    expect(runs[3]?.combat.defenderDies).toBe(true);
   });
 
   it("Goblin 6 HP: dead by plain damage; Shatter never happens", () => {
@@ -332,9 +326,13 @@ describe("Shatter worked examples (section 5.6)", () => {
     });
   });
 
-  // Tuning 1 (7r46): the Human Knight has 13 HP, so the Mammoth's 8 leaves
-  // it 5 and it no longer shatters at full HP; the 10-HP Captain does.
-  it("Spitter, Captain, Wolf Rider: a Mammoth's 8 would leave 2: shatters at full HP", () => {
+  // Tuning 1 (7r46): the Human Knight has 13 HP, so the Mammoth's 8 left
+  // it 5 and it no longer shattered at full HP; the 10-HP Captain did. The
+  // Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): at Attack 3 the
+  // Mammoth kills the 10-HP Spitter, Captain and Wolf Rider outright, and
+  // shatters the 13-HP Knight, the 12-HP Marksman and the 10-HP Caveman at
+  // full HP.
+  it("a Mammoth's blow kills a 10-HP Spitter, Captain or Wolf Rider outright, and shatters a full-HP Knight, Marksman or Caveman", () => {
     for (const [faction, role] of [
       ["DINOSAUR", "MARKSMAN"],
       ["ORIGINAL", "CAPTAIN"],
@@ -344,8 +342,22 @@ describe("Shatter worked examples (section 5.6)", () => {
         { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       ]);
       expect(hits(state, [at(4, 3)])[0]?.combat, role).toMatchObject({
-        shatters: true,
+        shatters: false,
+        defenderDies: true,
         damageToDefender: 10,
+      });
+    }
+    for (const [faction, role, hp] of [
+      ["ORIGINAL", "KNIGHT", 13],
+      ["ORIGINAL", "MARKSMAN", 12],
+      ["DINOSAUR", "FIGHTER", 10],
+    ] as const) {
+      const state = against(faction, role, [
+        { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
+      ]);
+      expect(hits(state, [at(4, 3)])[0]?.combat, role).toMatchObject({
+        shatters: true,
+        damageToDefender: hp,
       });
     }
   });
@@ -421,8 +433,31 @@ describe("Shatter worked examples (section 5.6)", () => {
 });
 
 describe("Shatter exact points (section 5.5)", () => {
-  it("is melee only: a Snow Hunter and a Snow Golem shatter at distance 1, not at 2", () => {
-    for (const role of ["MARKSMAN", "CATAPULT"] as const) {
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+  // Golem shoots from 2 or 3 tiles only, so it never shatters (it sets the
+  // Shatter up with its Snowball).
+  it("is melee only: a Snow Hunter shatters at distance 1, not at 2; a Snow Golem never shoots from 1", () => {
+    const golem = against(
+      "DINOSAUR",
+      "FIGHTER",
+      [{ seat: 0, role: "CATAPULT", at: at(4, 3) }],
+      { hp: 9 },
+    );
+    expect(offeredV7(golem)).not.toContainEqual({
+      kind: "ATTACK",
+      unitId: unitAtV7(golem, at(4, 3)).id,
+      targetUnitId: unitAtV7(golem, at(5, 3)).id,
+    });
+    const golemFar = against(
+      "DINOSAUR",
+      "FIGHTER",
+      [{ seat: 0, role: "CATAPULT", at: at(3, 3) }],
+      { hp: 9 },
+    );
+    expect(hits(golemFar, [at(3, 3)])[0]?.combat).toMatchObject({
+      shatters: false,
+    });
+    for (const role of ["MARKSMAN"] as const) {
       const near = against(
         "DINOSAUR",
         "FIGHTER",

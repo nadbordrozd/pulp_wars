@@ -492,18 +492,18 @@ describe("Glacier (section 8.10)", () => {
   });
 
   it("offers the cheapest legal path to every tile: no detour over ice, no Move back to the start (`pulp_wars-mm8p`)", () => {
-    // Seat 0 is the Ice Folk: a Snow Golem (Move 2, 4 half-points; Glacier
-    // adds none since `pulp_wars-s55m.2`; the Frost Wyrm of
-    // `pulp_wars-s55m.4` flies and never skates) on (1, 1) with its ice on
-    // (0, 3) to (3, 3). Every land step costs a point and every skate onto
-    // the ice half of one.
+    // Seat 0 is the Ice Folk: a Sled (Move 2, 4 half-points; Glacier adds
+    // none since `pulp_wars-s55m.2`; the Frost Wyrm of `pulp_wars-s55m.4`
+    // flies and never skates; the Snow Golem had Move 2 until
+    // (`pulp_wars-3qtp`, 7r134)) on (1, 1) with its ice on (0, 3) to (3, 3). Every
+    // land step costs a point and every skate onto the ice half of one.
     const START: CoordV7 = { x: 1, y: 1 };
     const ICE_ROW: readonly CoordV7[] = [0, 1, 2, 3].map((x) => ({ x, y: 3 }));
     const build = (technologies: readonly TechnologyIdV7[]) =>
       frozenArenaV7({
         technologies: [technologies, ALL],
         units: [
-          { seat: 0, role: "CATAPULT", at: START },
+          { seat: 0, role: "RAIDER", at: START },
           { seat: 1, role: "FIGHTER", at: { x: 9, y: 9 } },
         ],
         ice: ICE_ROW.map((at) => ({ at })),

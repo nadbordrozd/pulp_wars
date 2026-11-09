@@ -259,19 +259,19 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
     expect(preview(state, at(6, 2), at(6, 1))?.splash).toHaveLength(2);
   });
 
-  it("throws the Snow Golem planted instead of moving", () => {
+  it("throws the Snow Golem's snowball instead of moving", () => {
     const pieces = [own("CATAPULT", 6, 3), foe("FIGHTER", 6, 1)];
     // The older policy (a match with a Candy seat; a Dwarf seat before
     // step two of the Dwarf pass, `pulp_wars-w49.28`) offers it no Move.
     const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "CANDY"] });
     expect(unitCandidatesV7(older, at(6, 3), "MOVE")).toEqual([]);
-    // Both policies throw before anything else (the army rules, step two
-    // of the Ice Folk pass, `pulp_wars-w49.27`, rank the planted throw
-    // above every Move of the Snow Golem).
+    // Both policies throw before anything else (a Move would forfeit the
+    // shot: since `pulp_wars-3qtp`, 7r134, the Snow Golem cannot attack
+    // after moving; its throw was Planted before).
     for (const state of [older, asIce(pieces)]) {
       const best = unitCandidatesV7(state, at(6, 3))[0];
       expect(best?.command).toEqual(attackV7(state, at(6, 3), at(6, 1)));
-      expect(preview(state, at(6, 3), at(6, 1))?.plantedApplied).toBe(true);
+      expect(preview(state, at(6, 3), at(6, 1))?.snowball).toBe(true);
     }
   });
 });

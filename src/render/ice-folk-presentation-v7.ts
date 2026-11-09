@@ -4,14 +4,13 @@ import {
   COLD_BLOOD_BONUS2_V7,
   DEEP_WINTER_RADIUS_V7,
   DEEP_WINTER_RECOVER_V7,
-  PLANTED_BONUS2_V7,
   ROCKFALL_ATTACK2_V7,
   SHATTER_HP_V7,
   STAMPEDE_DAMAGE_V7,
   STAMPEDE_MIN_RANGE_V7,
   STAMPEDE_RANGE_V7,
-  SWEEP_DAMAGE_V7,
   UNIT_ROLE_IDS_V7,
+  canBeFrozenV7,
   canEnterTerrainV7,
   effectiveRoleRuleV7,
   isIceAtV7,
@@ -141,9 +140,21 @@ export function sweepPreviewTextV7(unit: string, damage: number): string {
 }
 /** Bead pulp_wars-2yc.63: the Mammoth's Trample is Wrecker. */
 export const TRAMPLE_PREVIEW_V7 = "Destroys Field Defense";
-export const BOULDERS_PREVIEW_V7 = "Ignores fortification";
 export const ROCKFALL_PREVIEW_V7 = `Rockfall: Attack ${half(ROCKFALL_ATTACK2_V7)} from the Mountain`;
-export const PLANTED_PREVIEW_V7 = `Planted: +${half(PLANTED_BONUS2_V7)} Attack`;
+/**
+ * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
+ * ICE_FOLK_REDESIGN_2026-11.md section 3.7): the Snow Golem's Snowball
+ * (its Boulders and Planted, "Ignores fortification" and "Planted: +1
+ * Attack", before). The preview says "Snowball: target Frozen" when the
+ * shot leaves a target it can Freeze alive, and "Snowball: freezes the
+ * tile" otherwise.
+ */
+export const SNOWBALL_LABEL_V7 = "Snowball";
+export const SNOWBALL_TOOLTIP_V7 = "Its shot freezes the tile it hits.";
+export const SNOWBALL_PREVIEW_V7 = `${SNOWBALL_LABEL_V7}: target Frozen`;
+export const SNOWBALL_TILE_PREVIEW_V7 = `${SNOWBALL_LABEL_V7}: freezes the tile`;
+/** A Sweep flank hit that shatters its Frozen victim (7r134). */
+export const SWEEP_SHATTERS_V7 = "shatters";
 export const COLD_BLOOD_PREVIEW_V7 = `Cold Blood: +${half(COLD_BLOOD_BONUS2_V7)} Attack`;
 /**
  * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's
@@ -215,16 +226,8 @@ export function shatterThresholdTextV7(threshold: number): string {
 export const ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7 =
   "Ice Folk cannot build Field Defense";
 
-/**
- * Section 13.2 "Snow Golem info": "Planted: Attack 3" or "Moved: Attack
- * 2", from the registry's Attack and the Planted bonus.
- */
-export function boulderThrowTextV7(planted: boolean): string {
-  const attack2 = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").attack2;
-  return planted
-    ? `Planted: Attack ${half(attack2 + PLANTED_BONUS2_V7)}`
-    : `Moved: Attack ${half(attack2)}`;
-}
+// (Section 13.2 "Snow Golem info", "Planted: Attack 3" or "Moved: Attack
+// 2", went with Planted, `pulp_wars-3qtp`, 7r134.)
 
 // ----------------------------------------------------------- Frozen state
 
@@ -381,7 +384,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     pluralLabel(label(role)),
   );
   const rockfall = iceFolkRolesWith("ROCKFALL").map(label);
-  const boulders = iceFolkRolesWith("BOULDERS").map(label);
+  const snowballers = iceFolkRolesWith("SNOWBALL").map(label);
   const breathers = iceFolkRolesWith("FROST_BREATH").map(label);
   const wakers = iceFolkRolesWith("COLD_WAKE").map(label);
   const stampeders = iceFolkRolesWith("STAMPEDE").map(label);
@@ -392,7 +395,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       FROZEN_LABEL_V7,
-      `a ${COLD_SNAP_LABEL_V7}, a ${COLD_WAKE_LABEL_V7}, a ${joinOr(breathers)}'s ${FROST_BREATH_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act and does not strike back until it thaws at the end of its owner's next turn. It can be frozen again at once.`,
+      `a ${COLD_SNAP_LABEL_V7}, a ${COLD_WAKE_LABEL_V7}, a ${joinOr(snowballers)}'s ${SNOWBALL_LABEL_V7}, a ${joinOr(breathers)}'s ${FROST_BREATH_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act and does not strike back until it thaws at the end of its owner's next turn. It can be frozen again at once.`,
     ],
     [
       "Shatter",
@@ -424,7 +427,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Sweep and Wrecker",
-      `a ${joinOr(sweepers)}'s attack also deals ${SWEEP_DAMAGE_V7} to the units on both sides of its target and knocks down the Field Defense under it.`,
+      `a ${joinOr(sweepers)}'s attack also hits the enemies on both sides of its target, at full damage and with no blow back, and knocks down the Field Defense under it.`,
     ],
     [
       "Mountain-born",
@@ -435,8 +438,8 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       `a ${joinOr(rockfall)} on a Mountain can attack two tiles away at Attack ${half(ROCKFALL_ATTACK2_V7)}.`,
     ],
     [
-      "Boulders",
-      `a ${joinOr(boulders)}'s throw ignores Walls and Field Defense, and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`,
+      SNOWBALL_LABEL_V7,
+      `a ${joinOr(snowballers)}'s shot freezes the tile it hits: an enemy it leaves alive is Frozen, and open neutral land under it becomes Snow.`,
     ],
     [
       FROST_BREATH_LABEL_V7,
@@ -484,8 +487,8 @@ export function iceFolkAbilityNameV7(
       return COLD_SNAP_LABEL_V7;
     case "STAMPEDE":
       return STAMPEDE_LABEL_V7;
-    case "BOULDERS":
-      return "Boulders";
+    case "SNOWBALL":
+      return SNOWBALL_LABEL_V7;
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm.
     case "FLY":
       return "Flies";
@@ -512,7 +515,7 @@ export function iceFolkAbilityDescriptionV7(
     case "COLD_BLOOD":
       return `+${half(COLD_BLOOD_BONUS2_V7)} Attack against a Frozen unit.`;
     case "SWEEP":
-      return `Its attack also deals ${SWEEP_DAMAGE_V7} to the hostile units on both sides of its target.`;
+      return "Its attack also hits the two enemies beside the target, at full damage.";
     case "TRAMPLE":
       return "Its attack knocks down the Field Defense under its target.";
     case "BLIZZARD":
@@ -521,8 +524,8 @@ export function iceFolkAbilityDescriptionV7(
       return COLD_SNAP_TOOLTIP_V7;
     case "STAMPEDE":
       return STAMPEDE_TOOLTIP_V7;
-    case "BOULDERS":
-      return `Its throw ignores Walls and Field Defense and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`;
+    case "SNOWBALL":
+      return SNOWBALL_TOOLTIP_V7;
     case "FLY":
       return "Flies over any terrain, any unit, and Shallow and Deep Water, and ignores zones of control.";
     case "FROST_BREATH":
@@ -568,9 +571,7 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("SWEEP") ? ["Sweep"] : []),
     ...(abilities.includes("TRAMPLE") ? ["Wrecker"] : []),
     ...(abilities.includes("STAMPEDE") ? [STAMPEDE_LABEL_V7] : []),
-    ...(abilities.includes("BOULDERS")
-      ? ["ignores Walls and Field Defense"]
-      : []),
+    ...(abilities.includes("SNOWBALL") ? [SNOWBALL_LABEL_V7] : []),
     ...(abilities.includes("FROST_BREATH") ? [FROST_BREATH_LABEL_V7] : []),
   ];
   const label = iceFolkLabelV7(role);
@@ -624,16 +625,16 @@ export const GLIDE_MOVE_LABEL_V7 = "Glide: Snow to Snow at half cost";
 
 /** One line of Ice Folk unit information. */
 export interface IceFolkUnitInfoLineV7 {
-  readonly id:
-    "frozen" | "threshold" | "snow" | "blizzard" | "rockfall" | "planted";
+  readonly id: "frozen" | "threshold" | "snow" | "blizzard" | "rockfall";
   readonly name: string;
   readonly description: string;
 }
 
 /**
  * Unit info lines that are not abilities: the unit's Frozen (any owner), and
- * for an Ice Folk unit its Shatter threshold, its Snow and Blizzard, a
- * Yeti's Rockfall reach and a Snow Golem's throw now.
+ * for an Ice Folk unit its Shatter threshold, its Snow and Blizzard, and a
+ * Yeti's Rockfall reach (a Snow Golem's Planted throw went with
+ * `pulp_wars-3qtp`, 7r134).
  */
 export function iceFolkUnitInfoLinesV7(
   view: PlayerViewV7,
@@ -678,14 +679,6 @@ export function iceFolkUnitInfoLinesV7(
       name: "Rockfall",
       description: `On this Mountain it can attack two tiles away at Attack ${half(ROCKFALL_ATTACK2_V7)}.`,
     });
-  if (mechanics.planted !== null)
-    lines.push({
-      id: "planted",
-      name: boulderThrowTextV7(mechanics.planted),
-      description: mechanics.planted
-        ? "It has not moved this turn: its throw now has the Planted bonus."
-        : "It moved this turn: its throw now has no Planted bonus.",
-    });
   return lines;
 }
 
@@ -725,8 +718,9 @@ export interface IceFolkCombatLinesV7 {
  * combat preview only: "Shatters", "Won't strike back (Frozen)" for a
  * Frozen defender (Ice Folk Freeze; "Frozen" when it would not strike
  * back anyway and survives), the Sweep
- * flank victims with their damage, "Tramples Field Defense", "Ignores
- * fortification", "Rockfall", "Planted", "Cold Blood", "Snow cover",
+ * flank victims with their damage (", shatters" on a flank Shatter, 7r134),
+ * "Tramples Field Defense", "Rockfall", "Snowball" (7r134; Boulders'
+ * "Ignores fortification" and "Planted" before), "Cold Blood", "Snow cover",
  * "Blizzard: half damage", and "A hidden Blizzard may change this". Empty
  * for an exchange without any of them.
  */
@@ -747,18 +741,19 @@ export function iceFolkCombatLinesV7(
   )
     notes.push(FROZEN_LABEL_V7);
   if (preview.rockfallApplied) notes.push(ROCKFALL_PREVIEW_V7);
-  if (preview.plantedApplied) notes.push(PLANTED_PREVIEW_V7);
   if (preview.coldBloodApplied) notes.push(COLD_BLOOD_PREVIEW_V7);
   // The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Breath.
   if (preview.frostBreathApplied) notes.push(FROST_BREATH_PREVIEW_V7);
-  const boulders =
-    attacker !== undefined &&
-    attacker.form === "LAND" &&
-    (unitRoleRuleV7(view, attacker).abilities as readonly string[]).includes(
-      "BOULDERS",
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Snowball.
+  if (preview.snowball)
+    notes.push(
+      attacker !== undefined &&
+        defender !== undefined &&
+        !preview.defenderDies &&
+        canBeFrozenV7(view, attacker.ownerId, defender)
+        ? SNOWBALL_PREVIEW_V7
+        : SNOWBALL_TILE_PREVIEW_V7,
     );
-  if (boulders && preview.fortificationIgnored > 0)
-    notes.push(BOULDERS_PREVIEW_V7);
   if (preview.snowCover) notes.push(SNOW_COVER_PREVIEW_V7);
   if (preview.blizzardHalved) notes.push(BLIZZARD_PREVIEW_V7);
   const sweep: IceFolkCombatLinesV7["sweep"][number][] = [];
@@ -784,7 +779,7 @@ export function iceFolkCombatLinesV7(
         at: entry.at,
         damage: hit,
         dies: entry.dies,
-        text: `${sweepPreviewTextV7(name, hit)}${shield}${entry.dies ? ", lethal" : ""}`,
+        text: `${sweepPreviewTextV7(name, hit)}${shield}${entry.shatters === true ? `, ${SWEEP_SHATTERS_V7}` : entry.dies ? ", lethal" : ""}`,
       });
     }
   }

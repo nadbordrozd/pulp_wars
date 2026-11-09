@@ -212,6 +212,7 @@ import {
   openWaterAtV7,
   ramShoveTileOpenV7,
   sweepEntryV7,
+  attackIsSnowballV7,
   tractorBeamTargetTechnologyV7,
   undeadCombatEffectsV7,
   type CombatOptionsV7,
@@ -12118,25 +12119,28 @@ function publicCombatPreviewCore(
     !primaryUsedForQuery(attacker) ||
     attacker.activation.overrunActive ||
     twinShot;
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a Sweep
+  // flank hit is part of an attack whose primary target passed these.
   if (
-    attacker.form === "EMBARKED" ||
-    attacker.form === "EGG" ||
-    !attackerRule.abilities.includes("ATTACK") ||
-    // The Candy revision section 5.3: a Crashed unit cannot attack.
-    unitIsCrashedV7(view, attacker.id) ||
-    !attackReady ||
-    (!attacker.activation.overrunActive &&
-      !twinShot &&
-      attacker.activation.attacksUsed >= 1) ||
-    primaryActionBlockedAfterMoveV7(view, attacker) ||
-    distance < attackerRule.minimumRange ||
-    distance > publicAttackMaximumRangeV7(view, attacker) ||
-    // The Cultists (`pulp_wars-mch9.8`, section 9.1): a frog does not
-    // attack; and (the Cult redesign, `pulp_wars-mch9.33`, section 8.1) a
-    // unit beside a standing hostile idol attacks only an Idol Bearer
-    // beside it (Awestruck).
-    unitIsFrogV7(view, attacker) ||
-    awestruckRefusingAttackV7(view, view.units, attacker, target.id) !== null
+    options.sweepFlankHit !== true &&
+    (attacker.form === "EMBARKED" ||
+      attacker.form === "EGG" ||
+      !attackerRule.abilities.includes("ATTACK") ||
+      // The Candy revision section 5.3: a Crashed unit cannot attack.
+      unitIsCrashedV7(view, attacker.id) ||
+      !attackReady ||
+      (!attacker.activation.overrunActive &&
+        !twinShot &&
+        attacker.activation.attacksUsed >= 1) ||
+      primaryActionBlockedAfterMoveV7(view, attacker) ||
+      distance < attackerRule.minimumRange ||
+      distance > publicAttackMaximumRangeV7(view, attacker) ||
+      // The Cultists (`pulp_wars-mch9.8`, section 9.1): a frog does not
+      // attack; and (the Cult redesign, `pulp_wars-mch9.33`, section 8.1) a
+      // unit beside a standing hostile idol attacks only an Idol Bearer
+      // beside it (Awestruck).
+      unitIsFrogV7(view, attacker) ||
+      awestruckRefusingAttackV7(view, view.units, attacker, target.id) !== null)
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -12177,9 +12181,9 @@ function publicCombatPreviewCore(
     attacker,
     view.viewer.researchedTechs,
   );
-  // The Ice Folk revision (section 8, step 1): Planted is already in the
-  // public Attack total (the `PLANTED` modifier); a Rockfall replaces the
-  // role Attack, and Cold Blood is added against a Frozen target.
+  // The Ice Folk revision (section 8, step 1): a Rockfall replaces the role
+  // Attack, and Cold Blood is added against a Frozen target (Planted went
+  // with `pulp_wars-3qtp`, 7r134).
   const attackerMechanics0 = unitRoleMechanicsV7(view, attacker);
   const attackerLand = attacker.form === "LAND";
   // Ice Folk freeze rework (`pulp_wars-s55m.1`): a ship or an embarked unit
@@ -12195,9 +12199,6 @@ function publicCombatPreviewCore(
     attackerLand && attackerMechanics0.rockfallAttack2 > 0 && distance === 2;
   const coldBloodApplied =
     attackerLand && attackerMechanics0.coldBloodBonus2 > 0 && targetFrozen;
-  const plantedApplied = attack.modifiers.some(
-    (modifier) => modifier.source === "PLANTED",
-  );
   // The Undead pass, correction (`pulp_wars-w49.13`): Carrion.
   const carrionApplied =
     attackerLand &&
@@ -12309,8 +12310,10 @@ function publicCombatPreviewCore(
         rayPower !== "NONE" &&
         unitCapabilitiesV7(view, attacker, view.viewer.researchedTechs)
           .raysIgnoreFortification,
-      // The Ice Folk revision section 7.6: Boulders.
-      boulders: attackerLand && attackerMechanics0.ignoresFortification,
+      // The Herald's `ignoresFortification` (a Snow Golem's Boulders until
+      // `pulp_wars-3qtp`, 7r134).
+      ignoresFortification:
+        attackerLand && attackerMechanics0.ignoresFortification,
       // The Dwarf revision section 10.1: a Blasting Steam Cannon.
       blasting: cannonIgnoresFortificationV7(
         view,
@@ -12538,8 +12541,12 @@ function publicCombatPreviewCore(
             !splashVictims.some((victim) => victim.id === unit.id),
         );
   // The Ice Folk revision section 7.5 Sweep: the Mammoth's neighbours are
-  // always explored by its owner, so the flank victims are exact.
-  const sweep = attackerLand && attackerMechanics0.sweepDamage > 0;
+  // always explored by its owner, so the flank victims are exact. The Snow
+  // Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): each flank hit is the
+  // defender side of this attack's own preview on that unit, as canonical
+  // resolution computes it.
+  const sweep =
+    attackerLand && attackerMechanics0.sweeps && options.sweepFlankHit !== true;
   const sweepTiles = sweep ? sweepFlankTilesV7(attacker.at, target.at) : [];
   const byPosition = <U extends { readonly id: number; readonly at: CoordV7 }>(
     units: readonly U[],
@@ -12558,14 +12565,13 @@ function publicCombatPreviewCore(
             sweepTiles.some((at) => same(at, unit.at)) &&
             publicHostile(view, attacker.ownerId, unit.ownerId),
         ),
-      ).map((unit) =>
-        sweepEntryV7(
-          view,
-          unit,
-          shieldOfV7(view.shields, unit.id),
-          attackerMechanics0.sweepDamage,
-        ),
-      )
+      ).flatMap((unit) => {
+        const hit = publicCombatPreviewCore(view, attackerId, unit.id, {
+          ...options,
+          sweepFlankHit: true,
+        });
+        return hit === null ? [] : [sweepEntryV7(unit, hit)];
+      })
     : byPosition([
         ...splashVictims,
         ...(pierced === undefined ? [] : [pierced]),
@@ -12792,7 +12798,8 @@ function publicCombatPreviewCore(
     shatters,
     coldBloodApplied,
     rockfallApplied,
-    plantedApplied,
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134).
+    snowball: attackIsSnowballV7(attackerRule, attacker),
     blizzardHalved,
     idolHalved,
     snowCover,
@@ -13502,7 +13509,9 @@ function publicAttackChainV7(
     const blast = sim.blastUnit(victim);
     const rising = sim.rise(blast);
     if (rising !== null) risings.push(rising);
-    if (isExplodingUnitV7(view, blast))
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a flank
+    // unit a Sweep shatters never explodes either.
+    if (isExplodingUnitV7(view, blast) && entry.shatters !== true)
       initial.push({ unit: blast, cause: "DEATH" });
   }
   if (preview.attackerDies) {

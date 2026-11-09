@@ -22,7 +22,6 @@ import {
   MILITIA_FIGHTERS_V7,
   SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
-  PLANTED_BONUS2_V7,
   PLAYER_EVENT_KIND_ORDER_V7,
   ROCKFALL_ATTACK2_V7,
   RULESET_7,
@@ -31,7 +30,6 @@ import {
   SHOWCASE_UNIT_TEMPLATES_V7,
   showcaseUnitRoleV7,
   STARTING_FIGHTERS_V7,
-  SWEEP_DAMAGE_V7,
   TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -155,11 +153,12 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       BLIZZARD_RADIUS_V7,
       DEEP_WINTER_RADIUS_V7,
       DEEP_WINTER_RECOVER_V7,
-      SWEEP_DAMAGE_V7,
       ROCKFALL_ATTACK2_V7,
-      PLANTED_BONUS2_V7,
       COLD_BLOOD_BONUS2_V7,
-    ]).toEqual([3, 4, 1, 1, 2, 6, 2, 3, 2, 1]);
+    ]).toEqual([3, 4, 1, 1, 2, 6, 3, 1]);
+    // (`SWEEP_DAMAGE_V7` 2 and `PLANTED_BONUS2_V7` 2 went with
+    // `pulp_wars-3qtp`, 7r134: a Sweep flank hit is full damage, and the
+    // Snow Golem has no Planted bonus.)
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
     // tiles around the Witch (2 before; the Bolas's and the Frost Bolt's 2
     // went with the one Freeze effect, `pulp_wars-xv0t`); the Stampede goes
@@ -672,16 +671,20 @@ const ROSTER = [
     "CATAPULT",
     "SAWMILLING",
     // Ice Folk Freeze: 9 Coins and 10 HP (8 and 12 before).
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the
+    // Catapult's Attack 3, Move 1, range 2 to 3, and no attack after
+    // moving, with Defense 1 and the Snowball (Attack 2, Defense 1.5, Move
+    // 2, range 1 to 2, an attack after moving, and Boulders before).
     9,
     10,
-    4,
+    6,
+    2,
+    1,
+    2,
     3,
-    2,
     1,
-    2,
-    1,
-    true,
-    ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN"],
+    false,
+    ["ATTACK", "CAPTURE", "SNOWBALL", "MOUNTAIN_BORN"],
     false,
   ],
   [
@@ -783,10 +786,11 @@ describe("Ice Folk roster (section 3)", () => {
       role: "SWORDSMAN",
       label: "Mammoth",
       tacticalRole: "LINE",
-      // Ice Folk Freeze: 7 Coins (6 before) and Stampede.
-      cost: 7,
+      // Ice Folk Freeze: 7 Coins (6 before) and Stampede. The Snow Golem
+      // and the Mammoth (`pulp_wars-3qtp`, 7r134): 8 Coins and Attack 3.
+      cost: 8,
       maxHp: 20,
-      attack2: 5,
+      attack2: 6,
       defense2: 4,
       move: 1,
       range: 1,
@@ -800,7 +804,7 @@ describe("Ice Folk roster (section 3)", () => {
     const mechanics = (role: UnitRoleIdV7) => roleMechanicsV7(role, "ICE_FOLK");
     expect(mechanics("GUARD")).toMatchObject({
       frostbite: true,
-      sweepDamage: 0,
+      sweeps: false,
       tramplesFieldDefense: false,
     });
     expect(
@@ -829,12 +833,16 @@ describe("Ice Folk roster (section 3)", () => {
       ),
     ).toEqual(["KNIGHT"]);
     expect(mechanics("SWORDSMAN")).toMatchObject({
-      sweepDamage: SWEEP_DAMAGE_V7,
+      sweeps: true,
       tramplesFieldDefense: true,
     });
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Boulders
+    // (ignoring fortification) and Planted are gone; it still destroys
+    // Field Defense like every `CATAPULT`.
     expect(mechanics("CATAPULT")).toMatchObject({
-      ignoresFortification: true,
-      plantedBonus2: PLANTED_BONUS2_V7,
+      ignoresFortification: false,
+      demolishesFieldDefense: true,
+      advancesAfterKill: false,
     });
     expect(mechanics("FIGHTER").rockfallAttack2).toBe(ROCKFALL_ATTACK2_V7);
     expect(mechanics("MARKSMAN").coldBloodBonus2).toBe(COLD_BLOOD_BONUS2_V7);
@@ -859,7 +867,7 @@ describe("Ice Folk roster (section 3)", () => {
       "TRAMPLE",
       "BLIZZARD",
       "COLD_SNAP",
-      "BOULDERS",
+      "SNOWBALL",
       "FROST_BREATH",
       "COLD_AURA",
     ];
@@ -878,10 +886,9 @@ describe("Ice Folk roster (section 3)", () => {
           ignoresZocStops:
             (faction === "ORIGINAL" && role === "RAIDER") ||
             (faction === "UNDEAD" && role === "MARKSMAN"),
-          sweepDamage: 0,
+          sweeps: false,
           tramplesFieldDefense: false,
           ignoresFortification: false,
-          plantedBonus2: 0,
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
           frostBreath: false,
@@ -1015,7 +1022,8 @@ describe("Ice Folk roster (section 3)", () => {
     for (const [role, refund] of [
       ["FIGHTER", 1],
       // Ice Folk Freeze (`pulp_wars-w49.37`): half of the Sled's 4, the
-      // Witch's 6, the Snow Golem's 9, and the Mammoth's 7.
+      // Witch's 6, the Snow Golem's 9, and the Mammoth's 7 (8 since
+      // `pulp_wars-3qtp`, 7r134).
       ["RAIDER", 2],
       ["MARKSMAN", 1],
       // (7r55: the Walrus, half of 4.)
@@ -1023,7 +1031,7 @@ describe("Ice Folk roster (section 3)", () => {
       ["CAPTAIN", 3],
       ["CATAPULT", 4],
       ["KNIGHT", 4],
-      ["SWORDSMAN", 3],
+      ["SWORDSMAN", 4],
     ] as const) {
       const state = iceFieldV7([
         {
@@ -1173,7 +1181,7 @@ describe("Ice Folk technology (section 4)", () => {
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
       // The ninth unit (7r55): the nodes named for their unit.
-      SAWMILLING: "Boulders",
+      SAWMILLING: "Snow Golems",
       CHIVALRY: "Frost Wyrms",
       METALLURGY: "Mammoths",
     });
@@ -1596,8 +1604,7 @@ describe("Ice Folk public unit stats (section 11)", () => {
       mountainBorn: true,
       shatterThreshold: 4,
       rockfall: false,
-      planted: null,
-      sweepDamage: 0,
+      sweeps: false,
       blizzard: false,
       // The frozen sea (naval branch section 12).
       onIce: false,
@@ -1608,7 +1615,7 @@ describe("Ice Folk public unit stats (section 11)", () => {
       iceCover: false,
     });
     expect(stats(at(4, 3)).iceFolk).toMatchObject({
-      planted: true,
+      sweeps: false,
       mountainBorn: true,
       onSnow: false,
     });
@@ -1620,14 +1627,14 @@ describe("Ice Folk public unit stats (section 11)", () => {
       inBlizzard: true,
       snowCover: false,
     });
-    expect(stats(at(6, 5)).iceFolk).toMatchObject({ sweepDamage: 2 });
-    // The Attack row lists Planted for an unmoved Snow Golem; the Defense
-    // row lists Snow cover.
+    expect(stats(at(6, 5)).iceFolk).toMatchObject({ sweeps: true });
+    // The Attack row of an unmoved Snow Golem lists no Planted (gone with
+    // `pulp_wars-3qtp`, 7r134); the Defense row lists Snow cover.
     expect(
       stats(at(4, 3))
         .stats.find((stat) => stat.id === "ATTACK")
         ?.modifiers.map((term) => term.source),
-    ).toEqual(["PLANTED"]);
+    ).toEqual([]);
     expect(
       stats(at(8, 7))
         .stats.find((stat) => stat.id === "DEFENSE")

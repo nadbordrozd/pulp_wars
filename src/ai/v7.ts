@@ -543,7 +543,6 @@ import {
   type MartianPolicyToolsV7,
 } from "./v7-martian";
 import {
-  BOULDER_FORTIFICATION_VALUE_V7,
   FLANK_SETUP_VALUE_V7,
   FRAGILE_SNOW_COST_V7,
   ICE_OBJECTIVE_SCALE_V7,
@@ -24416,14 +24415,17 @@ function frostBreathAttackValueV7(
  * Chilled unit at the threshold or below for another offered attack, when
  * no own attack kills it outright now, goes at 1179 (above every chip) and
  * gains half the target's value; chips go Snow Hunters, Mammoths, other
- * melee units, Sleds; a Mammoth's Sweep gains 8 for trampled Field Defense
- * and 6 per flank victim left Chilled in the window; a Snow Golem gains 3
- * per fortification level ignored. A Frost Wyrm's chip goes first (901 +
- * 4); its Frost Breath gains 6 on a hostile unit not Frozen yet, 6 more on
- * a ship, and 4 more on a unit that reaches an own unit next turn; a hit
- * whose freeze leaves the target at the threshold or below for another own
- * Ice Folk unit's offered blow from the next tile goes at 1179 and gains
- * half the target's value (the Ice Folk roster rework, `pulp_wars-s55m.4`).
+ * melee units, Sleds; a Mammoth's Sweep gains 8 for trampled Field Defense,
+ * 4 per flank unit it shatters, and 6 per flank victim left Chilled in the
+ * window. A Frost Wyrm's chip goes first (901 + 4); its Frost Breath gains 6
+ * on a hostile unit not Frozen yet, 6 more on a ship, and 4 more on a unit
+ * that reaches an own unit next turn; a hit whose freeze leaves the target
+ * at the threshold or below for another own Ice Folk unit's offered blow
+ * from the next tile goes at 1179 and gains half the target's value (the
+ * Ice Folk roster rework, `pulp_wars-s55m.4`). The Snow Golem and the
+ * Mammoth (`pulp_wars-3qtp`, 7r134): a Snow Golem's Snowball that leaves its
+ * target alive and Frozen is valued like a Frost Breath (its Boulders'
+ * 3 per fortification level ignored went with them).
  *
  * Against the Ice Folk: a kill on the Witch goes at 1182 (above every other
  * kill); a hit on her that this turn's attacks complete goes at 1179
@@ -24493,6 +24495,9 @@ function iceFolkAttackAdjustmentV7(
       if (tile?.explored === true && tile.fieldDefense)
         strategic += TRAMPLE_VALUE_V7;
       for (const entry of preview.splash) {
+        // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a flank
+        // hit at full damage shatters a Frozen flank unit.
+        if (entry.shatters === true) strategic += SHATTER_KILL_VALUE_V7;
         const victim = context.lookup.unitsById.get(entry.unitId);
         if (
           victim === undefined ||
@@ -24512,12 +24517,17 @@ function iceFolkAttackAdjustmentV7(
           strategic += FLANK_SETUP_VALUE_V7;
       }
     }
-    if (abilities.includes("BOULDERS"))
-      strategic +=
-        BOULDER_FORTIFICATION_VALUE_V7 * preview.fortificationIgnored;
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm
-    // strikes and freezes.
-    if (preview.frostBreathApplied && isHostile(view, target.ownerId)) {
+    // strikes and freezes. The Snow Golem and the Mammoth
+    // (`pulp_wars-3qtp`, 7r134): so does a Snow Golem's Snowball on a
+    // target it leaves alive.
+    if (
+      (preview.frostBreathApplied ||
+        (preview.snowball &&
+          !preview.defenderDies &&
+          canBeFrozenV7(view, actor.ownerId, target))) &&
+      isHostile(view, target.ownerId)
+    ) {
       const wyrm = frostBreathAttackValueV7(
         context,
         actor,
@@ -24707,7 +24717,8 @@ function iceFolkWitchSnapMoveV7(
  *
  * As the Ice Folk: the Witch takes only her best Move (rule 2) at 1296 and
  * otherwise stays; an unmoved Snow Golem with an offered attack makes no
- * routine Move (the planted throw); a Frost Wyrm never moves into visible
+ * routine Move (it cannot attack after one since `pulp_wars-3qtp`, 7r134;
+ * the planted throw before); a Frost Wyrm never moves into visible
  * lethal reach unless it strikes from there or it is no worse; at equal
  * route progress a unit ends within 1 of an own Witch, then on Snow, and a
  * Yeti on a Mountain within Rockfall range of a visible hostile unit.
@@ -24853,10 +24864,10 @@ function iceFolkMoveValueV7(
         next = Math.max(next, MAMMOTH_FLANK_MOVE_PRIORITY_V7);
     }
   }
-  // The planted throw.
+  // A Snow Golem's shot (no attack after a Move).
   if (
     routine &&
-    abilities.includes("BOULDERS") &&
+    abilities.includes("SNOWBALL") &&
     !actor.activation.moved &&
     cache.attackers.has(actor.id)
   )
@@ -27635,11 +27646,10 @@ function screenValue(
   at: CoordV7 | null,
 ): number {
   // Revision 20: a Triceratops (a line unit) screens and needs no screen.
-  // The Ice Folk revision: neither is the Snow Golem.
+  // The Snow Golem is screened like the Catapult since `pulp_wars-3qtp`
+  // (7r134; a line unit before).
   const screened = (unit: PublicUnitV7): boolean =>
-    (unit.role === "CATAPULT" &&
-      !linebreakerV7(view, unit) &&
-      !hasAbilityForIceV7(view, unit, "BOULDERS")) ||
+    (unit.role === "CATAPULT" && !linebreakerV7(view, unit)) ||
     unit.role === "MARKSMAN";
   if (at === null || screened(actor)) return 0;
   if (
@@ -28144,7 +28154,6 @@ function publicProjectedDamageWithLookupV7(
     defender,
     defenderAt,
     options.chilled === true,
-    lookup,
   );
   const attackRule = unitRoleRuleV7(view, attacker);
   const defenseRule = unitRoleRuleV7(view, defender);
@@ -28364,10 +28373,8 @@ const NO_ICE_FOLK_BLOW_V7: {
  * or on what earlier blows leave, had none of them.
  *
  * - `bonus2`: Cold Blood (a Snow Hunter's +0.5 Attack against a Chilled
- *   unit; `chilled` or the public Chill entry), less Planted for a Boulder
- *   Yeti projected from a tile it does not stand on (the published Attack
- *   of one that has not moved has the +1, and a throw after a Move does
- *   not).
+ *   unit; `chilled` or the public Chill entry). (Planted went with
+ *   `pulp_wars-3qtp`, 7r134.)
  * - `rockfall2`: for a Yeti's strike from a Mountain two tiles away, the
  *   Rockfall's `attack2`; null for every other blow. (From any other tile
  *   no such attack exists; the hunt leaves those tiles out,
@@ -28383,7 +28390,6 @@ function iceFolkBlowV7(
   defender: PublicUnitV7,
   defenderAt: CoordV7,
   chilledAssumed: boolean,
-  lookup?: PolicyLookupV7,
 ): {
   readonly bonus2: number;
   readonly rockfall2: number | null;
@@ -28401,18 +28407,7 @@ function iceFolkBlowV7(
     defender.form === "LAND" &&
     (chilledAssumed || frozenForPolicyV7(facts, defender.id));
   const gap = distance(attacker.at, defenderAt);
-  let bonus2 = chilled ? mechanics.coldBloodBonus2 : 0;
-  if (mechanics.plantedBonus2 > 0) {
-    const real =
-      lookup?.unitsById.get(attacker.id) ??
-      view.units.find((unit) => unit.id === attacker.id);
-    if (
-      real !== undefined &&
-      !real.activation.moved &&
-      !same(real.at, attacker.at)
-    )
-      bonus2 -= mechanics.plantedBonus2;
-  }
+  const bonus2 = chilled ? mechanics.coldBloodBonus2 : 0;
   const rockfall2 =
     mechanics.rockfallAttack2 > 0 &&
     gap === 2 &&

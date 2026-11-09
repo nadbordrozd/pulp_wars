@@ -116,7 +116,7 @@ function setupFor(spec: TournamentMatchSpecV7): MatchSetupV7 {
   const aiCount = (spec.factions.length - 1) as AiCountV7;
   const size = regularBoardSizeV7(mapType, aiCount);
   return {
-    rulesetId: "pulp-wars-poc-7r133",
+    rulesetId: "pulp-wars-poc-7r134",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: spec.seed,
     width: size,

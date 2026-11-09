@@ -313,10 +313,16 @@ export function withSnowMeltedV7(state: GameStateV7): GameStateV7 {
  * effect (`pulp_wars-xv0t`, 7r133): the Cold Snap, the Frost Giant's Cold
  * Wake, Black Ice (until the naval branch is rebuilt), the Walrus's
  * Frostbite, and the Frost Wyrm's Frost Breath; `BOLAS`, `FROST_BOLT`,
- * `COLD_AURA`, `SHARDS`, and `FREEZE` retired.
+ * `COLD_AURA`, `SHARDS`, and `FREEZE` retired. The Snow Golem and the
+ * Mammoth (`pulp_wars-3qtp`, 7r134): the Snow Golem's Snowball.
  */
 export type FrozenSourceV7 =
-  "COLD_SNAP" | "COLD_WAKE" | "BLACK_ICE" | "FROSTBITE" | "FROST_BREATH";
+  | "COLD_SNAP"
+  | "COLD_WAKE"
+  | "BLACK_ICE"
+  | "FROSTBITE"
+  | "FROST_BREATH"
+  | "SNOWBALL";
 
 /** One `UNITS_FROZEN` event (section 21.15). */
 export function unitsFrozenEventV7(

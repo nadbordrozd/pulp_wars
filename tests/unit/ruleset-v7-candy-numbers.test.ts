@@ -266,7 +266,8 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Knight", "11 / 4"],
       ["Raptor", "9 / 5", { attackerExtra: CHARGE }],
       ["Goblin", "9 / 5", { helpers: 2 }],
-      ["Mammoth", "6 / 6"],
+      // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Attack 3.
+      ["Mammoth", "7 / 5"],
       ["T-Rex", "11 / 4"],
       ["Catapult", "7 / -", { distance: 2 }],
       ["Marksman", "4 / -", { distance: 2 }],

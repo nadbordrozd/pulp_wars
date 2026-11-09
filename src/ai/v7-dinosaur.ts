@@ -248,17 +248,16 @@ export function linebreakerV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
  * with Charge! is a front-line attacker (`LINE`) whatever its registered
  * label (the Triceratops keeps `SIEGE`, which only excludes it from War
  * Drums). The Ice Folk revision (`pulp_wars-7g3.4`, section 12, "judge
- * units by their abilities"): the Mammoth (`SWEEP`, labelled `DEFENDER`) and
- * the Snow Golem (`BOULDERS`, labelled `SIEGE`) attack after moving and
- * march with the wave, so they are line units too. Every other rule keeps
- * its label.
+ * units by their abilities"): the Mammoth (`SWEEP`, labelled `DEFENDER`)
+ * attacks after moving and marches with the wave, so it is a line unit too
+ * (the Snow Golem was one until `pulp_wars-3qtp`, 7r134; it is a siege unit
+ * with the Catapult's reach since). Every other rule keeps its label.
  */
 export function policyTacticalRoleV7(
   rule: EffectiveRoleRuleV7,
 ): EffectiveRoleRuleV7["tacticalRole"] {
   return rule.abilities.includes("LINEBREAKER") ||
-    rule.abilities.includes("SWEEP") ||
-    rule.abilities.includes("BOULDERS")
+    rule.abilities.includes("SWEEP")
     ? "LINE"
     : rule.tacticalRole;
 }

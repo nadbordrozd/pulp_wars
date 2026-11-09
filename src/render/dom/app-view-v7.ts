@@ -655,7 +655,6 @@ import {
   iceFolkCommandLabelV7,
   iceFolkRewardLabelV7,
   iceFolkRoleUnlockTextV7,
-  boulderThrowTextV7,
   matchHasIceFolkSeatV7,
   snowTooltipV7,
   moveIsDiveV7,
@@ -8410,9 +8409,9 @@ export class Ruleset7DomAppView {
           );
       }
       // The Ice Folk revision (section 13.1): Frozen on a unit of any owner
-      // (with its turns left; Ice Folk Freeze, `pulp_wars-w49.38`), and a
-      // Snow Golem's throw, from the view's `frozen` list and
-      // `stats.iceFolk`. (Bead pulp_wars-2yc.63: Snow, a Blizzard and a
+      // (with its turns left; Ice Folk Freeze, `pulp_wars-w49.38`), from the
+      // view's `frozen` list (a Snow Golem's Planted chip went with
+      // `pulp_wars-3qtp`, 7r134). (Bead pulp_wars-2yc.63: Snow, a Blizzard and a
       // Mountain's Rockfall belong to the tile; the tile dock shows them.)
       if (matchHasIceFolkSeatV7(view)) {
         const iceChip = (
@@ -8445,17 +8444,6 @@ export class Ruleset7DomAppView {
             cube.classList.add("v7-ice-folk-chip-icon");
             chip.prepend(cube);
           }
-        }
-        const mechanics = stats?.iceFolk;
-        if (mechanics !== undefined && unit.form === "LAND") {
-          if (mechanics.planted !== null)
-            iceChip(
-              boulderThrowTextV7(mechanics.planted),
-              "planted",
-              mechanics.planted
-                ? "It has not moved this turn: its throw has the Planted bonus"
-                : "It moved this turn: no Planted bonus",
-            );
         }
       }
       // The Candy revision (section 15.2): Rushed, Home Sweet Home, Crashed
@@ -19942,7 +19930,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r133",
+    rulesetId: "pulp-wars-poc-7r134",
     seed,
     width,
     height: width,

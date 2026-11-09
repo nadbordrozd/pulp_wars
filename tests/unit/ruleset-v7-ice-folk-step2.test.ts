@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
-    expect(PRIOR_RULESET_7_IDS.slice(-75, -73)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
+    expect(PRIOR_RULESET_7_IDS.slice(-76, -74)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-75, -73)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-76, -74)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -249,11 +249,14 @@ describe("step two of the Ice Folk pass: Scouts", () => {
 describe("step two of the Ice Folk pass: who plays the army rules", () => {
   const pieces = [own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)];
 
-  it("counts an Ice Folk seat among the army factions, its Snow Golem a ranged unit with the siege share", () => {
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow Golem has the
+  // Catapult's reach and stands a turn before it fires, so it fights as the
+  // siege unit it is counted as (a ranged unit before).
+  it("counts an Ice Folk seat among the army factions, its Snow Golem a siege unit", () => {
     const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK");
     expect([armyShareClassV7(boulder), armyClassV7(boulder)]).toEqual([
       "SIEGE",
-      "RANGED",
+      "SIEGE",
     ]);
     expect(ARMY_PLAY_FACTIONS_V7).toEqual([
       "ORIGINAL",
@@ -501,7 +504,9 @@ describe("step two of the Ice Folk pass: what the policy counts for its own blow
       }
   });
 
-  it("counts Planted for a Snow Golem that stays, and not for one that moves", () => {
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): no Planted; the Snow
+  // Golem's throw is Attack 3 and never follows a Move.
+  it("projects a Snow Golem's throw as the engine resolves it, and it has none after a Move", () => {
     const state = field([
       own("CATAPULT", 6, 4),
       own("FIGHTER", 8, 8),
@@ -512,33 +517,26 @@ describe("step two of the Ice Folk pass: what the policy counts for its own blow
     const boulder = publicUnit(view, at(6, 4));
     const near = publicUnit(view, at(6, 2));
     const far = publicUnit(view, at(6, 1));
-    // Planted where it stands: 8 on the Fighter two tiles away.
+    // Where it stands: 8 on the Fighter two tiles away, and on the one
+    // three tiles away.
     expect(queryCombatPreviewV7(view, boulder.id, near.id)).toMatchObject({
       damageToDefender: 8,
-      plantedApplied: true,
+      snowball: true,
     });
     expect(publicProjectedDamageForPolicyV7(view, boulder, near, near.at)).toBe(
       8,
     );
-    // From another tile the throw is not Planted: 5, and the engine agrees
-    // once the Move is made.
+    expect(queryCombatPreviewV7(view, boulder.id, far.id)).toMatchObject({
+      damageToDefender: 8,
+    });
+    // After a Move it has no throw at all.
     const from = at(5, 3);
-    expect(
-      publicProjectedDamageForPolicyV7(
-        view,
-        { ...boulder, at: from },
-        far,
-        far.at,
-      ),
-    ).toBe(5);
     const moved = applyOkV7(state, seatIdV7(state, 0), {
       kind: "MOVE",
       unitId: boulder.id,
       path: [from],
     }).state;
-    expect(
-      queryCombatPreviewV7(viewOf(moved), boulder.id, far.id),
-    ).toMatchObject({ damageToDefender: 5, plantedApplied: false });
+    expect(queryCombatPreviewV7(viewOf(moved), boulder.id, far.id)).toBeNull();
   });
 });
 

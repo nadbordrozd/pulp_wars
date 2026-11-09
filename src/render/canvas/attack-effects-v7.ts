@@ -53,8 +53,13 @@ export type AttackEffectIdV7 =
   | "GATLING_BURST"
   /** The Steam Cannon (Dwarf CATAPULT): muzzle flash, steam, iron ball. */
   | "CANNON_BLAST"
-  /** The Snow Golem and a Yeti's Rockfall: an ice-crusted boulder. */
+  /** A Yeti's Rockfall (the Snow Golem's too until 7r134): an ice-crusted boulder. */
   | "ICE_BOULDER"
+  /**
+   * The Snow Golem's Snowball (`pulp_wars-3qtp`, 7r134): the boulder cue
+   * recoloured as a packed snowball with frost crystals (no new art).
+   */
+  | "SNOWBALL"
   /** The Snow Hunter (Ice Folk MARKSMAN): an ice-tipped harpoon on a line. */
   | "HARPOON"
   /** The Pie Launcher (Candy CATAPULT): a cream pie, lobbed, and its splat. */
@@ -73,6 +78,7 @@ export const ATTACK_EFFECT_IDS_V7: readonly AttackEffectIdV7[] = [
   "GATLING_BURST",
   "CANNON_BLAST",
   "ICE_BOULDER",
+  "SNOWBALL",
   "HARPOON",
   "PIE_THROW",
   "GUMBALL_SHOT",
@@ -169,6 +175,7 @@ export const ATTACK_EFFECT_DURATIONS_V7: Readonly<
   GATLING_BURST: 380,
   CANNON_BLAST: 460,
   ICE_BOULDER: 460,
+  SNOWBALL: 460,
   HARPOON: 380,
   PIE_THROW: 460,
   GUMBALL_SHOT: 380,
@@ -187,6 +194,7 @@ export const ATTACK_EFFECT_HIT_V7: Readonly<Record<AttackEffectIdV7, number>> =
     GATLING_BURST: 0.54,
     CANNON_BLAST: 0.56,
     ICE_BOULDER: 0.58,
+    SNOWBALL: 0.58,
     HARPOON: 0.5,
     PIE_THROW: 0.58,
     GUMBALL_SHOT: 0.52,
@@ -206,6 +214,7 @@ const FLIGHT: Readonly<
   GATLING_BURST: { from: 0, to: 0.3 },
   CANNON_BLAST: { from: 0.06, to: ATTACK_EFFECT_HIT_V7.CANNON_BLAST },
   ICE_BOULDER: { from: 0, to: ATTACK_EFFECT_HIT_V7.ICE_BOULDER },
+  SNOWBALL: { from: 0, to: ATTACK_EFFECT_HIT_V7.SNOWBALL },
   HARPOON: { from: 0, to: ATTACK_EFFECT_HIT_V7.HARPOON },
   PIE_THROW: { from: 0, to: ATTACK_EFFECT_HIT_V7.PIE_THROW },
   GUMBALL_SHOT: { from: 0, to: ATTACK_EFFECT_HIT_V7.GUMBALL_SHOT },
@@ -229,6 +238,7 @@ const ARC: Readonly<Record<AttackEffectIdV7, number>> = {
   GATLING_BURST: 0,
   CANNON_BLAST: 52,
   ICE_BOULDER: 72,
+  SNOWBALL: 72,
   HARPOON: 14,
   PIE_THROW: 64,
   GUMBALL_SHOT: 10,
@@ -275,7 +285,9 @@ export function attackEffectForV7(
   if (faction === "GOBLIN" && role === "CATAPULT") return "FIREWORK_ROCKET";
   if (faction === "DWARF" && role === "MARKSMAN") return "GATLING_BURST";
   if (faction === "DWARF" && role === "CATAPULT") return "CANNON_BLAST";
-  if (faction === "ICE_FOLK" && role === "CATAPULT") return "ICE_BOULDER";
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+  // Golem throws a snowball.
+  if (faction === "ICE_FOLK" && role === "CATAPULT") return "SNOWBALL";
   if (faction === "ICE_FOLK" && options.rockfall === true) return "ICE_BOULDER";
   if (faction === "ICE_FOLK" && role === "MARKSMAN") return "HARPOON";
   // The Candy revision (bead pulp_wars-jdb.6): the pie and the gumball.
@@ -414,7 +426,7 @@ export function attackEffectPlanV7(
             ? 4
             : 14;
   const lift =
-    effect === "ICE_BOULDER"
+    effect === "ICE_BOULDER" || effect === "SNOWBALL"
       ? 62
       : effect === "NECRO_BOLT"
         ? 62
@@ -709,7 +721,10 @@ export function drawAttackFeedbackV7(
       drawCannonBlast(context, plan);
       break;
     case "ICE_BOULDER":
-      drawIceBoulder(context, plan);
+      drawIceBoulder(context, plan, ICE_BOULDER_LOOK);
+      break;
+    case "SNOWBALL":
+      drawIceBoulder(context, plan, SNOWBALL_LOOK);
       break;
     case "HARPOON":
       drawHarpoon(context, plan);
@@ -1254,9 +1269,32 @@ function drawCannonBlast(
 /** An irregular eight-sided rock outline. */
 const ROCK_SHAPE = [1, 0.82, 0.95, 0.78, 1, 0.86, 0.92, 0.8] as const;
 
+/** The colours of the thrown lump: a Rockfall's rock or a Golem's snowball. */
+interface ThrownLumpLookV7 {
+  readonly body: string;
+  readonly light: string;
+  readonly outline: string;
+}
+const ICE_BOULDER_LOOK: ThrownLumpLookV7 = {
+  body: ICE.slate,
+  light: "#6f7a8e",
+  outline: ICE.outline,
+};
+/**
+ * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snowball,
+ * the boulder's shape in packed snow (shaded snow body, white light, the
+ * snow rim as its outline), still crusted with ice crystals.
+ */
+const SNOWBALL_LOOK: ThrownLumpLookV7 = {
+  body: ICE.snowShade,
+  light: ICE.snow,
+  outline: ICE.iceDark,
+};
+
 function drawIceBoulder(
   context: CanvasRenderingContext2D,
   plan: AttackEffectPlanV7,
+  look: ThrownLumpLookV7,
 ): void {
   const zoom = plan.zoom * plan.scale;
   for (const shot of plan.shots) {
@@ -1291,15 +1329,15 @@ function drawIceBoulder(
       context.closePath();
     };
     rock(1);
-    context.fillStyle = ICE.slate;
+    context.fillStyle = look.body;
     context.fill();
-    context.strokeStyle = ICE.outline;
+    context.strokeStyle = look.outline;
     context.lineWidth = Math.max(1, 2.4 * zoom);
     context.stroke();
     context.save();
     context.translate(-radius * 0.18, -radius * 0.22);
     rock(0.62);
-    context.fillStyle = "#6f7a8e";
+    context.fillStyle = look.light;
     context.fill();
     context.restore();
     // Ice crystals crusted on it, turning with the rock.

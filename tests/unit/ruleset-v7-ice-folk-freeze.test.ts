@@ -701,7 +701,8 @@ describe("the fairness numbers (`pulp_wars-w49.37`)", () => {
     expect(rule("GUARD").defense2).toBe(4);
     expect(rule("CAPTAIN")).toMatchObject({ cost: 6, maxHp: 10 });
     expect(rule("CATAPULT")).toMatchObject({ cost: 9, maxHp: 10 });
-    expect(rule("SWORDSMAN").cost).toBe(7);
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): 8 Coins (7 before).
+    expect(rule("SWORDSMAN").cost).toBe(8);
     expect(rule("JUGGERNAUT").maxHp).toBe(36);
     // Unchanged.
     expect(rule("FIGHTER")).toMatchObject({ cost: 2, maxHp: 9 });

@@ -132,11 +132,12 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
     expect(triceratops.tacticalRole).toBe("LINE");
     expect(policyTacticalRoleV7(triceratops)).toBe("LINE");
     expect(policySiegeRuleV7(triceratops)).toBe(false);
-    // `pulp_wars-7g3.4`: the Mammoth (Sweep) and the Snow Golem
-    // (Boulders) are line units too.
+    // `pulp_wars-7g3.4`: the Mammoth (Sweep) is a line unit too (the Snow
+    // Golem was one with Boulders until (`pulp_wars-3qtp`, 7r134); it is a siege
+    // unit with the Catapult's reach since).
     // (7r55: the Mammoth is the heavy role; the Walrus, the new
     // defender, keeps its DEFENDER label.)
-    for (const role of ["SWORDSMAN", "CATAPULT"] as const) {
+    for (const role of ["SWORDSMAN"] as const) {
       expect(policyTacticalRoleV7(effectiveRoleRuleV7(role, "ICE_FOLK"))).toBe(
         "LINE",
       );
@@ -148,7 +149,6 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of ["FIGHTER", "CATAPULT", "KNIGHT", "GUARD"] as const) {
         const rule = effectiveRoleRuleV7(role, faction);
-        if (faction === "ICE_FOLK" && role === "CATAPULT") continue;
         expect(policyTacticalRoleV7(rule)).toBe(rule.tacticalRole);
         expect(policySiegeRuleV7(rule)).toBe(role === "CATAPULT");
       }

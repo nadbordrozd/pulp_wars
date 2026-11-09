@@ -9,7 +9,34 @@
 >   Freeze rule, stored Snow, docks never frozen, the Witch's Cold Snap
 >   ring, the Frost Giant's Cold Wake; `FREEZE`, `FROST_BOLT`,
 >   `THROW_BOLAS` (the Sled has Escape and 12 HP), the Cold Aura, the
->   shards, and the Blizzard's Snow are gone. Beads 2 to 6 are not built.
+>   shards, and the Blizzard's Snow are gone.
+> - **Bead 2 is done** in `pulp-wars-poc-7r134` (`pulp_wars-3qtp`): the
+>   Snow Golem of 3.7 (9 Coins, Attack 3, Defense 1, Move 1, range 2–3, no
+>   attack after moving, the Snowball; Boulders and Planted gone) and the
+>   Mammoth of 3.8 (Attack 3, 8 Coins, Sweep at formula damage that can
+>   Shatter). Beads 3 to 6 are not built.
+> - **Decisions taken in bead 2:** (1) The Golem keeps the numbers of 3.7,
+>   so it is not better than the Catapult on every axis: it costs one Coin
+>   more (9 against 8) for Defense 1 (0.5), the Snowball, Mountain-born and
+>   Glide, with the same Attack 3, range 2–3, Move 1 and no attack after
+>   moving (the across-the-roster comparison with the Human units is the
+>   later bead `pulp_wars-px48`). (2) A Sweep flank hit is the defender
+>   side of the attack's own preview on that unit (its Attack against that
+>   unit, the unit's Defense, fortification and cover, Armoured, Plated and
+>   Shield; no retaliation or other answer); a flank unit it shatters dies
+>   with cause `SHATTER` (no Grave, no blast), and its `splash` entry
+>   carries `shatters: true`. (3) The preview flag is `snowball: boolean`
+>   (the attack is a Snowball); the freeze reads the board after the deaths,
+>   so a sunk ship's open water becomes ice (with Rime) and a killed unit's
+>   neutral land Snow. (4) The Golem's projectile is the boulder cue
+>   recoloured as a snowball (attack cue `SNOWBALL`; no new art). (5) The
+>   Ice Folk Sawmilling is shown as "Snow Golems" (Boulders, the retired
+>   ability, before), like Frost Wyrms and Mammoths. (6) The Normal AI
+>   plays the Golem as siege (the Catapult's class), values a Snowball that
+>   leaves its target Frozen like a Frost Breath, and a flank Shatter like a
+>   Shatter kill. (7) The worked example of 3.7 "a Guard takes 7 (10 left)"
+>   holds for a Guard on Field Defense; in the open a Human Guard has
+>   Defense 1 against a shot (tuning 5) and takes 10.
 > - **Design change during bead 1** (the user, 2026-11-08: "walrus
 >   freezing units that hit it is fine. we can have the special giant unit
 >   freeze everything around it whenever it moves. it's a powerful ability
@@ -700,6 +727,7 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
   `shatters`), AI attack scoring through them, unit cards, glossary, the
   Golem's projectile (reuse or recolour), rules doc 21.4, 21.10, 21.11,
   21.13.
+  **Done** in `7r134` (`pulp_wars-3qtp`).
 - **Acceptance:** the worked numbers of 3.7 and 3.8 hold in hand-built
   states (a Golem deals a Fighter 8 and Freezes it; a Golem-frozen Guard
   shatters to a Mammoth blow; a Mammoth blow deals 8, 8 and 8 to three

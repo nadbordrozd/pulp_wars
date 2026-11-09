@@ -248,8 +248,13 @@ export interface CombatPreviewV7 {
    * is the Rockfall value.
    */
   readonly rockfallApplied: boolean;
-  /** Section 7.6: the Snow Golem's Planted bonus is in `attack2`. */
-  readonly plantedApplied: boolean;
+  /**
+   * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134; the Planted
+   * flag `plantedApplied` before): the attack is a Snow Golem's Snowball,
+   * which freezes the target's tile after the exchange (a surviving target
+   * is Frozen; `attackIsSnowballV7`).
+   */
+  readonly snowball: boolean;
   /**
    * Section 6.3: the hit on the defender was halved by a Blizzard;
    * `damageToDefender` is the halved value.
@@ -265,7 +270,10 @@ export interface CombatPreviewV7 {
   readonly idolHalved: boolean;
   /** Section 6.2: the defender's cover comes from Snow. */
   readonly snowCover: boolean;
-  /** Section 7.5: a Mammoth's Sweep; its flank victims are `splash`. */
+  /**
+   * Section 7.5: a Mammoth's Sweep; its flank victims are `splash`, each hit
+   * at the attack's ordinary damage since `pulp_wars-3qtp` (7r134).
+   */
   readonly sweep: boolean;
   /**
    * Section 10.10: only in a public preview, an unexplored tile lies within
@@ -440,6 +448,12 @@ export interface CombatSplashEntryV7 {
    * (0 when none). Splash, Pierce, Wail, and explosion entries carry it.
    */
   readonly shieldDamage: number;
+  /**
+   * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): only on a
+   * Sweep flank entry that shatters its Frozen victim (`damage` is then its
+   * whole HP and `dies` true); absent otherwise.
+   */
+  readonly shatters?: true;
 }
 /**
  * A Plague damage entry: Plague bypasses Shields (section 5.3), so it keeps
@@ -1155,13 +1169,19 @@ export type DomainEventV7 =
        * target owner's own entries, with `sourceUnitId` null when the source
        * is hidden). The one Freeze effect (`pulp_wars-xv0t`, 7r133) retired
        * the sources `BOLAS`, `FROST_BOLT`, `COLD_AURA`, `SHARDS`, and
-       * `FREEZE`.
+       * `FREEZE`; the Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134)
+       * added `SNOWBALL` (a Snow Golem's shot froze the target's tile).
        */
       readonly kind: "UNITS_FROZEN";
       readonly playerId: PlayerId;
       readonly sourceUnitId: UnitId | null;
       readonly source:
-        "COLD_SNAP" | "COLD_WAKE" | "BLACK_ICE" | "FROSTBITE" | "FROST_BREATH";
+        | "COLD_SNAP"
+        | "COLD_WAKE"
+        | "BLACK_ICE"
+        | "FROSTBITE"
+        | "FROST_BREATH"
+        | "SNOWBALL";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly turnsLeft: 1 | 2;

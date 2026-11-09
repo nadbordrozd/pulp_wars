@@ -395,8 +395,9 @@ export function moveIsGlideV7(
 
 /**
  * The Ice Folk lines of an attack preview: "Shatters" for the label, the
- * notes (Won't strike back (Frozen), Rockfall, Planted, Cold Blood, Ignores fortification,
- * Snow cover, Blizzard, Trample, the hidden-Blizzard caveat) and the Sweep
+ * notes (Won't strike back (Frozen), Rockfall, Cold Blood, the Snowball
+ * (`pulp_wars-3qtp`; Planted and Ignores fortification before), Snow
+ * cover, Blizzard, Trample, the hidden-Blizzard caveat) and the Sweep
  * flank victims. Null in a match without an Ice Folk seat, so its attack
  * previews are unchanged.
  */

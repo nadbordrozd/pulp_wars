@@ -2689,7 +2689,7 @@ function combat(input: unknown): boolean {
       "shatters",
       "coldBloodApplied",
       "rockfallApplied",
-      "plantedApplied",
+      "snowball",
       "blizzardHalved",
       "idolHalved",
       "snowCover",
@@ -2807,7 +2807,7 @@ function combat(input: unknown): boolean {
       input.shatters,
       input.coldBloodApplied,
       input.rockfallApplied,
-      input.plantedApplied,
+      input.snowball,
       input.blizzardHalved,
       input.idolHalved,
       input.snowCover,
@@ -3035,7 +3035,7 @@ function candyHitEntry(
   );
 }
 function splash(input: unknown): boolean {
-  return splashEntries(input, false);
+  return splashShapedEntries(input, false, true, true);
 }
 /**
  * The giants' signatures: one fixed hit of at most `maximum`, split between
@@ -3211,18 +3211,32 @@ function splashShapedEntries(
   input: unknown,
   zeroDamage: boolean,
   shielded: boolean,
+  /**
+   * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a combat
+   * preview's Sweep entry may carry `shatters: true` (a shattered flank
+   * unit, which dies).
+   */
+  shatters = false,
 ): boolean {
   if (!isDenseArrayV7(input)) return false;
   let previous: { x: number; y: number; unitId: number } | null = null;
   const ids = new Set<number>();
   for (const entry of input) {
+    const shattered =
+      shatters &&
+      typeof entry === "object" &&
+      entry !== null &&
+      Object.hasOwn(entry, "shatters");
     if (
       !hasExactKeysV7(
         entry,
         shielded
-          ? ["at", "damage", "dies", "shieldDamage", "unitId"]
+          ? shattered
+            ? ["at", "damage", "dies", "shatters", "shieldDamage", "unitId"]
+            : ["at", "damage", "dies", "shieldDamage", "unitId"]
           : ["at", "damage", "dies", "unitId"],
       ) ||
+      (shattered && (entry.shatters !== true || entry.dies !== true)) ||
       !id(entry.unitId) ||
       (shielded &&
         (!nn(entry.shieldDamage) ||
@@ -3450,7 +3464,10 @@ function frozenSource(input: unknown): boolean {
     input === "FROSTBITE" ||
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's
     // Frost Breath.
-    input === "FROST_BREATH"
+    input === "FROST_BREATH" ||
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a Snow
+    // Golem's Snowball.
+    input === "SNOWBALL"
   );
 }
 /**

@@ -604,16 +604,18 @@ const ENTRIES = {
     "Stampede",
     "If it has not moved, it charges two or three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside. Nobody strikes back.",
   ],
-  BOULDERS: [
-    "Boulders",
-    "Its throw ignores Walls and Field Defense, and hits harder when it has not moved.",
-  ],
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
+  // ICE_FOLK_REDESIGN_2026-11.md section 3.3): the Snow Golem's Snowball
+  // (its Boulders and Planted before).
+  SNOWBALL: ["Snowball", "Its shot freezes the tile it hits."],
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the Frost Giant's
   // (its Cold Aura before).
   COLD_WAKE: ["Cold Wake", "After each Move, it freezes every tile around it."],
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134, section
+  // 3.8): each flank hit is the attack's full damage.
   SWEEP: [
     "Sweep",
-    "Its attack also hurts the enemies on both sides of the target.",
+    "Its attack also hits the two enemies beside the target, at full damage.",
   ],
   // The Walrus keeps it through the one Freeze effect (`pulp_wars-xv0t`).
   FROSTBITE: [
@@ -837,10 +839,6 @@ const ENTRIES = {
   STATUS_FROZEN: [
     "Frozen",
     "It cannot move or act or strike back until it thaws at the end of its owner's next turn. Ice Folk can shatter a weak Frozen unit.",
-  ],
-  STATUS_PLANTED: [
-    "Planted",
-    "A Snow Golem that has not moved this turn throws harder.",
   ],
   STATUS_RUSHED: [
     "Rushed",
@@ -1143,10 +1141,12 @@ export function roleTraitGlossaryIdsV7(
   if (rules.snow && mechanics.movementMode === "GROUND") traits.push("DIVE");
   if (mechanics.frostbite) traits.push("FROSTBITE");
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): what freezing a tile
-  // does, for the Witch's Cold Snap and the Frost Giant's Cold Wake.
+  // does, for the Witch's Cold Snap and the Frost Giant's Cold Wake (and
+  // the Snow Golem's Snowball, `pulp_wars-3qtp`, 7r134).
   if (
     rule.abilities.includes("COLD_SNAP") ||
-    rule.abilities.includes("COLD_WAKE")
+    rule.abilities.includes("COLD_WAKE") ||
+    rule.abilities.includes("SNOWBALL")
   )
     traits.push("FREEZE");
   // `pulp_wars-befg`: the Whirligig's Whirl is its attack, not an ability.
@@ -1271,7 +1271,6 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   submerged: "SUBMERGED",
   boardable: "STATUS_BOARDABLE",
   frozen: "STATUS_FROZEN",
-  planted: "STATUS_PLANTED",
   rushed: "STATUS_RUSHED",
   "home-sweet-home": "STATUS_HOME_SWEET_HOME",
   crashed: "STATUS_CRASHED",

@@ -665,7 +665,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/ice-folk-presentation-v7.ts::matchHasIceFolkSeatV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::iceFolkLabelV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::iceFolkRolesWith": "SEAT",
-  "src/render/ice-folk-presentation-v7.ts::boulderThrowTextV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::shatterThresholdAgainstV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::iceFolkRoleUnlockTextV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::iceFolkRecruitNotesV7": "SEAT",

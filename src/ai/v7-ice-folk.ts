@@ -101,8 +101,6 @@ export const SHATTER_KILL_VALUE_V7 = 4;
 export const TRAMPLE_VALUE_V7 = 8;
 /** A Sweep flank hit that leaves a Frozen unit inside the window. */
 export const FLANK_SETUP_VALUE_V7 = 6;
-/** A Snow Golem hit: per fortification level ignored. */
-export const BOULDER_FORTIFICATION_VALUE_V7 = 3;
 /**
  * The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's Frost
  * Breath on a hostile unit not Frozen yet (it loses its owner's next

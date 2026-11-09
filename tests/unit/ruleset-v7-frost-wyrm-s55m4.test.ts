@@ -115,8 +115,8 @@ function play(state: GameStateV7, command: CommandV7) {
 describe("the identity", () => {
   // The starting border freeze (`pulp_wars-s55m.6`) took 7r126 after it.
   it("was 7r125 after 7r124, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r125");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r124");
@@ -186,15 +186,17 @@ describe("the Frost Wyrm (the KNIGHT slot)", () => {
     });
     // The one Freeze effect (`pulp_wars-xv0t`) keeps the Walrus's Frostbite.
     expect(roleMechanicsV7("GUARD", "ICE_FOLK").frostbite).toBe(true);
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Catapult's reach
+    // and the Snowball in Boulders' place.
     expect(effectiveRoleRuleV7("CATAPULT", "ICE_FOLK")).toMatchObject({
       label: "Snow Golem",
       cost: 9,
       maxHp: 10,
-      range: 2,
-      abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN"],
+      range: 3,
+      abilities: ["ATTACK", "CAPTURE", "SNOWBALL", "MOUNTAIN_BORN"],
     });
     expect(roleMechanicsV7("CATAPULT", "ICE_FOLK")).toMatchObject({
-      ignoresFortification: true,
+      ignoresFortification: false,
       mountainBorn: true,
     });
   });

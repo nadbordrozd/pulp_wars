@@ -5,11 +5,9 @@ import {
   COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
   DEEP_WINTER_RECOVER_V7,
-  PLANTED_BONUS2_V7,
   ROCKFALL_ATTACK2_V7,
   SHATTER_HP_V7,
   STAMPEDE_DAMAGE_V7,
-  SWEEP_DAMAGE_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   previewColdSnapV7,
@@ -27,7 +25,6 @@ import {
 } from "../../src/engine/index";
 import {
   BLIZZARD_PREVIEW_V7,
-  BOULDERS_PREVIEW_V7,
   COLD_BLOOD_PREVIEW_V7,
   COLD_SNAP_NO_TARGET_V7,
   FROZEN_CANNOT_ACT_V7,
@@ -37,11 +34,11 @@ import {
   STAMPEDE_NO_LINE_V7,
   HIDDEN_BLIZZARD_PREVIEW_V7,
   ICE_FOLK_HELP_RULES_V7,
-  PLANTED_PREVIEW_V7,
+  SNOWBALL_PREVIEW_V7,
+  SNOWBALL_TILE_PREVIEW_V7,
   ROCKFALL_PREVIEW_V7,
   SNOW_COVER_PREVIEW_V7,
   TRAMPLE_PREVIEW_V7,
-  boulderThrowTextV7,
   coldSnapSummaryV7,
   coldWakeMovePreviewV7,
   freezeSummaryV7,
@@ -128,9 +125,10 @@ describe("Ice Folk texts (section 13.2)", () => {
     expect(ROCKFALL_PREVIEW_V7).toBe(
       `Rockfall: Attack ${half(ROCKFALL_ATTACK2_V7)} from the Mountain`,
     );
-    expect(PLANTED_PREVIEW_V7).toBe(
-      `Planted: +${half(PLANTED_BONUS2_V7)} Attack`,
-    );
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Planted is
+    // gone; the Snowball has no number.
+    expect(SNOWBALL_PREVIEW_V7).toBe("Snowball: target Frozen");
+    expect(SNOWBALL_TILE_PREVIEW_V7).toBe("Snowball: freezes the tile");
     expect(COLD_BLOOD_PREVIEW_V7).toBe(
       `Cold Blood: +${half(COLD_BLOOD_BONUS2_V7)} Attack`,
     );
@@ -139,11 +137,6 @@ describe("Ice Folk texts (section 13.2)", () => {
     expect(COLD_SNAP_RANGE_V7).toBe(1);
     // The one Freeze effect (`pulp_wars-xv0t`): every tile around her.
     expect(COLD_SNAP_NO_TARGET_V7).toBe("Nothing around her to freeze");
-    const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").attack2;
-    expect(boulderThrowTextV7(true)).toBe(
-      `Planted: Attack ${half(boulder + PLANTED_BONUS2_V7)}`,
-    );
-    expect(boulderThrowTextV7(false)).toBe(`Moved: Attack ${half(boulder)}`);
   });
 
   it("names the Snow tile for the viewer's faction", () => {
@@ -188,7 +181,7 @@ describe("Ice Folk texts (section 13.2)", () => {
       `Train ${label("SWORDSMAN")} (Sweep, Wrecker, Stampede)`,
     );
     expect(iceFolkRoleUnlockTextV7("CATAPULT")).toBe(
-      `Train ${label("CATAPULT")} (ignores Walls and Field Defense)`,
+      `Train ${label("CATAPULT")} (Snowball)`,
     );
     expect(iceFolkRecruitNotesV7("FIGHTER", "ICE_FOLK")).toContain(
       "Ice Folk cannot build Field Defense.",
@@ -280,7 +273,8 @@ describe("Frozen and the Shatter window (section 13.1)", () => {
       iceFolkUnitInfoLinesV7(view, unitAt(view, at), statsAt(view, at)).map(
         (line) => line.id,
       );
-    expect(ids(AT.boulderYeti)).toEqual(["threshold", "blizzard", "planted"]);
+    // (The Snow Golem's "planted" line went with `pulp_wars-3qtp`, 7r134.)
+    expect(ids(AT.boulderYeti)).toEqual(["threshold", "blizzard"]);
     expect(ids(AT.rockfallYeti)).toEqual(["threshold", "rockfall"]);
     expect(ids(AT.frozenEnemy)).toEqual(["frozen"]);
     expect(ids(AT.sweepTarget)).toEqual([]);
@@ -335,21 +329,33 @@ describe("Ice Folk attack previews (section 13.1)", () => {
     expect(lines.sweep.map((entry) => entry.text)).toEqual(
       sweep.splash.map(
         (entry) =>
-          `Sweep: ${effectiveRoleRuleV7(unitAt(view, entry.at).role, "ORIGINAL").label} ${entry.damage} damage${entry.dies ? ", lethal" : ""}`,
+          `Sweep: ${effectiveRoleRuleV7(unitAt(view, entry.at).role, "ORIGINAL").label} ${entry.damage} damage${entry.shatters === true ? ", shatters" : entry.dies ? ", lethal" : ""}`,
       ),
     );
-    expect(sweep.splash.every((entry) => entry.damage <= SWEEP_DAMAGE_V7)).toBe(
-      true,
-    );
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): each flank
+    // hit is the Mammoth's own attack on that unit (a fixed 2 before).
+    expect(sweep.splash).toHaveLength(2);
+    for (const entry of sweep.splash) {
+      const own = preview(view, AT.mammoth, entry.at);
+      expect(entry.damage).toBe(own.damageToDefender);
+      expect(entry.dies).toBe(own.defenderDies);
+      expect(entry.damage).toBeGreaterThan(2);
+    }
   });
 
-  it("names Boulders, Planted, Rockfall and Cold Blood from the preview flags", () => {
-    expect(
-      iceFolkCombatLinesV7(
-        view,
-        preview(view, AT.boulderYeti, AT.boulderTarget),
-      ).notes,
-    ).toEqual([PLANTED_PREVIEW_V7, BOULDERS_PREVIEW_V7]);
+  it("names the Snowball, Rockfall and Cold Blood from the preview flags", () => {
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+    // Golem's shot Freezes the Guard it leaves alive (Boulders and Planted
+    // before).
+    const throwPreview = preview(view, AT.boulderYeti, AT.boulderTarget);
+    expect(throwPreview).toMatchObject({
+      snowball: true,
+      defenderDies: false,
+      fortificationIgnored: 0,
+    });
+    expect(iceFolkCombatLinesV7(view, throwPreview).notes).toEqual([
+      SNOWBALL_PREVIEW_V7,
+    ]);
     expect(
       iceFolkCombatLinesV7(
         view,
@@ -646,7 +652,9 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Sweep and Wrecker",
       "Mountain-born",
       "Rockfall",
-      "Boulders",
+      // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Boulders
+      // became the Snowball.
+      "Snowball",
       // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm's
       // Frost Breath replaced the Sabretooth's Slips past.
       "Frost Breath",
@@ -668,7 +676,9 @@ describe("Ice Folk Help (section 13.3)", () => {
       `Ice Folk units recover ${DEEP_WINTER_RECOVER_V7} in their own territory`,
     );
     expect(DEEP_WINTER_RADIUS_V7).toBe(2);
-    expect(rule("Sweep and Wrecker")).toContain(`deals ${SWEEP_DAMAGE_V7}`);
+    expect(rule("Sweep and Wrecker")).toContain("at full damage");
+    expect(rule("Snowball")).toContain("freezes the tile it hits");
+    expect(rule("Frozen")).toContain("Snowball");
     expect(rule("Freeze")).toContain(
       "Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn.",
     );

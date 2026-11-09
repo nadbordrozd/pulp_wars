@@ -443,7 +443,7 @@ export function withFreezeAppliedV7(
   state: GameStateV7,
   actor: PlayerId,
   sourceUnitId: UnitId | null,
-  source: "COLD_SNAP" | "COLD_WAKE",
+  source: "COLD_SNAP" | "COLD_WAKE" | "SNOWBALL",
   freeze: FreezeSetV7,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   if (!freezeChangesAnythingV7(freeze)) return { state, events: [] };

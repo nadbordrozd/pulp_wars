@@ -433,8 +433,8 @@ export type UnitRoleAbilityV7 =
   | "SHIELD_CANOPY"
   // The Ice Folk revision (section 3): Mountain-born, the Yeti's Rockfall,
   // the Snow Hunter's Cold Blood, the Mammoth's Sweep and Trample, the Ice
-  // Witch's Blizzard and Cold Snap, the Snow Golem's Boulders. The Ice Folk
-  // roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's Frost
+  // Witch's Blizzard and Cold Snap, the Snow Golem's Boulders (its Snowball
+  // since `pulp_wars-3qtp`, 7r134). The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's Frost
   // Breath replaced the Sabretooth's Prowl. The one Freeze effect
   // (`pulp_wars-xv0t`, 7r133): the Frost Giant's Cold Wake (its Cold Aura
   // before); the Sled's Bolas, the Witch's Frost
@@ -446,7 +446,7 @@ export type UnitRoleAbilityV7 =
   | "TRAMPLE"
   | "BLIZZARD"
   | "COLD_SNAP"
-  | "BOULDERS"
+  | "SNOWBALL"
   | "FROST_BREATH"
   | "COLD_WAKE"
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede.
@@ -732,20 +732,24 @@ export interface RoleMechanicsV7 {
    * until `pulp_wars-s55m.4`).
    */
   readonly ignoresZocStops: boolean;
-  /** The Ice Folk revision (section 7.5): the Sweep damage (0 without). */
-  readonly sweepDamage: number;
+  /**
+   * The Ice Folk revision (section 7.5): Sweep, every attack also hits the
+   * hostile units on the two flank tiles. Since `pulp_wars-3qtp` (7r134)
+   * each flank hit is the attack's ordinary formula damage on that unit (a
+   * fixed `sweepDamage` 2 before).
+   */
+  readonly sweeps: boolean;
   /**
    * The Ice Folk revision (section 7.5): Trample, every attack destroys
    * Field Defense on the target's tile (reason `TRAMPLE`).
    */
   readonly tramplesFieldDefense: boolean;
   /**
-   * The Ice Folk revision (section 7.6): Boulders, every attack ignores the
-   * defender's fortification for the whole exchange (cover stays).
+   * Every attack ignores the defender's fortification for the whole
+   * exchange (cover stays): the Herald. (The Snow Golem's Boulders had it
+   * until `pulp_wars-3qtp`, 7r134, and its Planted bonus went then too.)
    */
   readonly ignoresFortification: boolean;
-  /** The Ice Folk revision (section 7.6): the Planted `attack2` bonus. */
-  readonly plantedBonus2: number;
   /**
    * The Ice Folk revision (section 7.2): the `attack2` of a Rockfall (an
    * attack at distance 2 from a Mountain), or 0 without Rockfall.
@@ -2012,10 +2016,9 @@ const mechanics = (
           runners: false,
           glidesThroughZoc: false,
           ignoresZocStops: false,
-          sweepDamage: 0,
+          sweeps: false,
           tramplesFieldDefense: false,
           ignoresFortification: false,
-          plantedBonus2: 0,
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
           carrionBonus2: 0,
@@ -3539,6 +3542,14 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   }),
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Snow Golem
   // (the Boulder Yeti before; the same rules).
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
+  // docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.7): the Catapult's
+  // reach and blow (range 2 to 3, Attack 3, Move 1, no attack after
+  // moving), Defense 1, and the Snowball (every shot freezes the tile it
+  // hits); Boulders and Planted are gone (Attack 2, 3 Planted, Defense
+  // 1.5, Move 2, range 1 to 2, and an attack after moving before). It
+  // keeps 9 Coins, one more than the Catapult, for its sturdier Defense,
+  // the Snowball, Mountain-born, and Glide.
   CATAPULT: role({
     role: "CATAPULT",
     label: "Snow Golem",
@@ -3547,15 +3558,15 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     // before).
     cost: 9,
     maxHp: 10,
-    attack2: 4,
-    defense2: 3,
-    move: 2,
-    range: 2,
-    minimumRange: 1,
+    attack2: 6,
+    defense2: 2,
+    move: 1,
+    range: 3,
+    minimumRange: 2,
     sightRadius: 1,
     technology: "SAWMILLING",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN"],
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE", "SNOWBALL", "MOUNTAIN_BORN"],
   }),
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm
   // replaced the Sabretooth (Prowl, Overrun, and Cold Blood). A flyer that
@@ -3613,13 +3624,17 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth is the Ice
   // Folk heavy line unit (Metallurgy; it was the `GUARD` role at Drill).
   // Ice Folk Freeze (`pulp_wars-w49.37`): 7 Coins (6 before) and Stampede.
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
+  // docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.8): Attack 3 (2.5
+  // before) and 8 Coins (7 before), the Triceratops price; its Sweep hits
+  // each flank unit for the attack's ordinary damage.
   SWORDSMAN: role({
     role: "SWORDSMAN",
     label: "Mammoth",
     tacticalRole: "LINE",
-    cost: 7,
+    cost: 8,
     maxHp: 20,
-    attack2: 5,
+    attack2: 6,
     defense2: 4,
     move: 1,
     range: 1,
@@ -3636,9 +3651,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
  * the Yeti, the Snow Golem, and the Frost Giant are Mountain-born; every
  * land role but the Frost Wyrm Glides; the Frost Wyrm flies (over Deep
  * Water without Navigation), never advances, and breathes frost; the
- * Mammoth Sweeps and Tramples; the Snow Golem ignores fortification, is
- * Planted when unmoved, and never advances; the Yeti has Rockfall and the
- * Snow Hunter Cold Blood. Every role uses one slot. Boats are Human boats.
+ * Mammoth Sweeps and Tramples; the Snow Golem never advances (its Boulders
+ * and Planted went with `pulp_wars-3qtp`, 7r134: its Snowball is the role
+ * ability `SNOWBALL`); the Yeti has Rockfall and the Snow Hunter Cold
+ * Blood. Every role uses one slot. Boats are Human boats.
  */
 export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: {
@@ -3659,8 +3675,6 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     advancesAfterKill: false,
     mountainBorn: true,
     glides: true,
-    ignoresFortification: true,
-    plantedBonus2: 2,
   },
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
   // Wyrm flies like the Gyrocopter (no advance after a kill), over Deep
@@ -3683,7 +3697,7 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Mammoth in the heavy slot keeps Glide, Sweep,
   // and Trample.
-  SWORDSMAN: { glides: true, sweepDamage: 2, tramplesFieldDefense: true },
+  SWORDSMAN: { glides: true, sweeps: true, tramplesFieldDefense: true },
 });
 
 export const ICE_FOLK_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -5485,7 +5499,10 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     NAVAL_ENGINEERING: "Hoarfrost",
     SEAMANSHIP: "Black Ice",
     SUBMERSIBLES: "Glacier",
-    SAWMILLING: "Boulders",
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): named for
+    // its unit like Frost Wyrms and Mammoths (Boulders, the Snow Golem's
+    // retired ability, before).
+    SAWMILLING: "Snow Golems",
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): Sabretooths before.
     CHIVALRY: "Frost Wyrms",
     METALLURGY: "Mammoths",
@@ -7291,12 +7308,8 @@ export const BLIZZARD_RADIUS_V7 = 1;
 export const DEEP_WINTER_RADIUS_V7 = 2;
 /** The Ice Folk revision (section 6.6): Recover in own territory. */
 export const DEEP_WINTER_RECOVER_V7 = 6;
-/** The Ice Folk revision (section 7.5): a Sweep flank hit. */
-export const SWEEP_DAMAGE_V7 = 2;
 /** The Ice Folk revision (section 7.2): the Rockfall `attack2`. */
 export const ROCKFALL_ATTACK2_V7 = 3;
-/** The Ice Folk revision (section 7.6): the Planted `attack2` bonus. */
-export const PLANTED_BONUS2_V7 = 2;
 /** The Ice Folk revision (section 7.4): the Cold Blood `attack2` bonus. */
 export const COLD_BLOOD_BONUS2_V7 = 1;
 

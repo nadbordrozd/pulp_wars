@@ -169,20 +169,14 @@ describe("Ice Folk unit dock", () => {
     app.destroy();
   });
 
-  it("names the Snow Golem's throw, the Witch's Blizzard and an Ice Folk unit's threshold", () => {
+  it("shows no Planted chip on the Snow Golem, and names the Witch's Blizzard and an Ice Folk unit's threshold", () => {
     const controller = new FixtureController(iceFolkUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const view = required(controller.snapshot().view);
     selectUnitAt(controller, host, AT.boulderYeti);
-    const stats = required(
-      view.unitStats.find(
-        (entry) => entry.unitId === unitAt(controller, AT.boulderYeti).id,
-      )?.iceFolk,
-    );
-    expect(chipText("planted")).toBe(
-      stats.planted === true ? "Planted: Attack 3" : "Moved: Attack 2",
-    );
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Planted is
+    // gone, so the Snow Golem's card has no throw chip.
+    expect(chipText("planted")).toBeNull();
     // Bead pulp_wars-2yc.86: the faction chip is in the details.
     expect(
       openUnitDetailsV7().querySelector(".v7-faction-chip")?.textContent,

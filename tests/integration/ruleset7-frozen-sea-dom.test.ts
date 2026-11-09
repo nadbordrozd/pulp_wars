@@ -240,7 +240,10 @@ describe("moving on ice", () => {
     app.destroy();
   });
 
-  it("the Snow Golem skates too: trails on the ice", () => {
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+  // Golem has Move 1, so it skates two ice tiles at half a point each, a
+  // path too short for a trail (it drew one with Move 2).
+  it("the Snow Golem skates too: two ice tiles at half cost", () => {
     const { host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     host.callbacks?.onSelection({
       kind: "UNIT",
@@ -250,7 +253,6 @@ describe("moving on ice", () => {
       FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
     expect(onIce.length).toBeGreaterThan(1);
-    expect(onIce.some((target) => target.slide !== undefined)).toBe(true);
     app.destroy();
   });
 

@@ -311,7 +311,8 @@ const HEAVY: Readonly<Record<FactionIdV7, Numbers>> = {
   // since `pulp_wars-ke95` (the Triceratops and the Steam Tank did not).
   DINOSAUR: num(8, 20, 6, 4, 2),
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth costs 7 (6 before).
-  ICE_FOLK: num(7, 20, 5, 4, 1),
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): 8 Coins and Attack 3.
+  ICE_FOLK: num(8, 20, 6, 4, 1),
   DWARF: num(9, 16, 6, 4, 2),
   CANDY: num(6, 16, 6, 5, 1),
   // The Chosen (the Champion with half a Defense less) retired with the
@@ -402,11 +403,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
-    expect(PRIOR_RULESET_7_IDS.at(-79)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
+    expect(PRIOR_RULESET_7_IDS.at(-80)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-79)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-80)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -684,7 +685,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       "STAMPEDE",
     ]);
     expect(roleMechanicsV7("SWORDSMAN", "ICE_FOLK")).toMatchObject({
-      sweepDamage: 2,
+      sweeps: true,
       tramplesFieldDefense: true,
       glides: true,
       buildsFieldDefense: false,
@@ -697,7 +698,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       "CAPTURE",
     ]);
     expect(roleMechanicsV7("GUARD", "ICE_FOLK")).toMatchObject({
-      sweepDamage: 0,
+      sweeps: false,
       tramplesFieldDefense: false,
       glides: true,
       buildsFieldDefense: false,
@@ -939,7 +940,7 @@ describe("the ninth unit: technology display names", () => {
       NAVAL_ENGINEERING: "Hoarfrost",
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
-      SAWMILLING: "Boulders",
+      SAWMILLING: "Snow Golems",
       CHIVALRY: "Frost Wyrms",
       METALLURGY: "Mammoths",
     },
@@ -2176,7 +2177,9 @@ describe("the moved units keep their rules in the heavy slot", () => {
     const state = fieldDefenseV7(base, at(3, 8));
     const hit = attackV7(state, at(4, 8), at(3, 8));
     expect(hit.combat.sweep).toBe(true);
-    expect(hit.combat.splash.map((entry) => entry.damage)).toEqual([2, 2]);
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): each flank Fighter
+    // takes the Mammoth's full 8 (a fixed 2 before).
+    expect(hit.combat.splash.map((entry) => entry.damage)).toEqual([8, 8]);
     expect(eventsOf(hit.events, "FIELD_DEFENSE_DESTROYED")).toEqual([
       { kind: "FIELD_DEFENSE_DESTROYED", at: at(3, 8), reason: "TRAMPLE" },
     ]);

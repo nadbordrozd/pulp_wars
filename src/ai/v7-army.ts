@@ -813,12 +813,10 @@ export function armyClassV7(rule: EffectiveRoleRuleV7): ArmyClassV7 | null {
   // Triceratops, registered as `SIEGE`) fights in the line: it walks up and
   // strikes the unit beside it, needs no screen, and is no fragile target.
   if (rule.abilities.includes("LINEBREAKER")) return "LINE";
-  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Snow Golem
-  // (registered as `SIEGE`) moves two tiles and throws from one or two in
-  // the same turn, and strikes back at both: it fights as a ranged unit
-  // (it takes a tile with a shot and stays behind the line), not as a
-  // siege unit that must stand a turn before it fires.
-  if (rule.abilities.includes("BOULDERS")) return "RANGED";
+  // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, played the Snow
+  // Golem as a ranged unit while it threw after a Move; since
+  // `pulp_wars-3qtp`, 7r134, it has the Catapult's reach and stands a turn
+  // before it fires, so it fights as the siege unit it is registered as.)
   return armyShareClassV7(rule);
 }
 

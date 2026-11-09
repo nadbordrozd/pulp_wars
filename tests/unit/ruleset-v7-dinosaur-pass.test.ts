@@ -207,15 +207,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-81, -78)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-82, -79)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -78)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-82, -79)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -1005,13 +1005,12 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(armyShareClassV7(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR"))).toBe(
       "LINE",
     );
-    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`: the Snow Golem
-    // has the siege share of an Ice Folk army and fights as a ranged unit:
-    // it moves and throws in one turn, from one or two tiles.)
+    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, played the Snow
+    // Golem as a ranged unit while it moved and threw in one turn; since
+    // (`pulp_wars-3qtp`, 7r134) it has the Catapult's reach and fights as siege.)
     for (const faction of ARMY_PLAY_FACTIONS_V7)
       for (const role of ROSTER) {
         const rule = effectiveRoleRuleV7(role, faction);
-        if (faction === "ICE_FOLK" && role === "CATAPULT") continue;
         expect(armyShareClassV7(rule), `${faction} ${role}`).toBe(
           armyClassV7(rule),
         );
@@ -1019,9 +1018,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     for (const faction of ARMY_PLAY_FACTIONS_V7) {
       const rule = effectiveRoleRuleV7("CATAPULT", faction);
       expect(armyShareClassV7(rule), faction).toBe("SIEGE");
-      expect(armyClassV7(rule), faction).toBe(
-        faction === "ICE_FOLK" ? "RANGED" : "SIEGE",
-      );
+      expect(armyClassV7(rule), faction).toBe("SIEGE");
     }
   });
 

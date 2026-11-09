@@ -490,7 +490,7 @@ describe("Ruleset 7 unit glossary", () => {
       "submerged",
       "boardable",
       "frozen",
-      "planted",
+      // (The Snow Golem's "planted" chip went with `pulp_wars-3qtp`, 7r134.)
       "bombed",
       "dug-in",
       "not-dug-in",

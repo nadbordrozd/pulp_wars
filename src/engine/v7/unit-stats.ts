@@ -116,10 +116,10 @@ export type UnitStatModifierSourceV7 =
   | "FOREST"
   | "HIGH_GROUND"
   // The Ice Folk revision: Snow cover (Defense), and the Attack sources
-  // Planted (a stat modifier), Rockfall, and Cold Blood (the latter two
-  // depend on the target and are applied by the combat preview).
+  // Rockfall and Cold Blood (they depend on the target and are applied by
+  // the combat preview; the Planted modifier went with `pulp_wars-3qtp`,
+  // 7r134).
   | "SNOW"
-  | "PLANTED"
   | "ROCKFALL"
   | "COLD_BLOOD"
   // The Dwarf revision: Dig In, one fortification level in the Field Defense
@@ -247,11 +247,11 @@ export interface PublicIceFolkMechanicsV7 {
   /** A Yeti in land form standing on a Mountain (Rockfall reach). */
   readonly rockfall: boolean;
   /**
-   * A Snow Golem's attack made now: true when Planted, false after a Move;
-   * null for every other role and afloat.
+   * A land-form Mammoth: its attack Sweeps (each flank unit takes the
+   * attack's ordinary damage; the fixed `sweepDamage` and the Snow Golem's
+   * `planted` went with `pulp_wars-3qtp`, 7r134).
    */
-  readonly planted: boolean | null;
-  readonly sweepDamage: number;
+  readonly sweeps: boolean;
   /** A land-form Ice Witch (her Blizzard). */
   readonly blizzard: boolean;
   /**
@@ -544,17 +544,7 @@ export function publicUnitStatsV7(
   // The frozen sea (naval branch section 8.10): Glacier's cover on ice is
   // the Snow cover too.
   const iceCover = iceCoverAppliesV7(state, unit);
-  // Section 7.6 Planted: what an attack made now (or on the owner's next
-  // turn, before any Move) would have.
   const iceFolk = unitOwnerIsIceFolkV7(state, unit);
-  const planted =
-    !embarked &&
-    unit.form === "LAND" &&
-    mechanics.plantedBonus2 > 0 &&
-    !(
-      state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
-      unit.activation.moved
-    );
   const fortificationModifiers = fortificationTerms(state, unit);
   // The ninth unit (7r55): the Thagomizer. A Cracked unit's role Defense is
   // 1 lower (never below 0.5) for the rest of the active seat's turn.
@@ -663,17 +653,6 @@ export function publicUnitStatsV7(
                   "ALPHA",
                   "Alpha",
                   "An Alpha adds 1 Attack to every attack it makes.",
-                  2,
-                ),
-              ]
-            : []),
-          ...(planted
-            ? [
-                modifier(
-                  mechanics.plantedBonus2,
-                  "PLANTED",
-                  "Planted",
-                  "A Snow Golem that has not moved this turn has +1 Attack.",
                   2,
                 ),
               ]
@@ -1033,11 +1012,7 @@ export function publicUnitStatsV7(
               unit.form === "LAND" &&
               mechanics.rockfallAttack2 > 0 &&
               tileAtV7(state.board, unit.at)?.terrain === "MOUNTAIN",
-            planted:
-              mechanics.plantedBonus2 > 0 && unit.form === "LAND"
-                ? planted
-                : null,
-            sweepDamage: unit.form === "LAND" ? mechanics.sweepDamage : 0,
+            sweeps: unit.form === "LAND" && mechanics.sweeps,
             blizzard:
               unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
             onIce: unit.form === "LAND" && isIceAtV7(state, unit.at),

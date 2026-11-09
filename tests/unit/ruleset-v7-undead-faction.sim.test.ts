@@ -168,7 +168,8 @@ describe("ruleset-7 all-Human parity digests", () => {
   // and `blizzard: false` of every explored view tile, the `chill: null`
   // unit stat, `curedFrozen: false` in Tend results, and the eight neutral
   // combat-preview fields (`shatters`, `coldBloodApplied`,
-  // `rockfallApplied`, `plantedApplied`, `blizzardHalved`, `snowCover`,
+  // `rockfallApplied`, `plantedApplied` (`snowball` since `pulp_wars-3qtp`,
+  // 7r134), `blizzardHalved`, `snowCover`,
   // `sweep`, `hiddenBlizzardPossible`, all false), removed before hashing.
   // `pulp_wars-0hi.3` (revision 20 section 6.3: Human Fighter, Raider, and
   // Marksman 12 HP, Guard 17) re-pins the command, event, final state, view,
@@ -416,7 +417,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           shatters,
           coldBloodApplied,
           rockfallApplied,
-          plantedApplied,
+          snowball,
           blizzardHalved,
           snowCover,
           sweep,
@@ -469,7 +470,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           shatters,
           coldBloodApplied,
           rockfallApplied,
-          plantedApplied,
+          snowball,
           blizzardHalved,
           snowCover,
           sweep,

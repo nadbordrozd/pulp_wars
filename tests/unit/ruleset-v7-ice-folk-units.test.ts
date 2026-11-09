@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
+  calculateCombatPreviewV7,
+  queryPlayerCommandsV7,
   queryThreatenedTilesV7,
   sweepFlankTilesV7,
   viewForV7,
@@ -60,22 +62,8 @@ describe("Mountain-born (section 7.1)", () => {
       );
       expect(unitAtV7(moved.state, at(5, 3)).role, role).toBe(role);
     }
-    // The Snow Golem (Move 2) crosses two Mountains without stopping.
-    const ridge = [at(5, 3), at(6, 3)].reduce(
-      mountainV7,
-      iceFieldV7(
-        [
-          { seat: 0, role: "CATAPULT", at: at(4, 3) },
-          { seat: 1, role: "FIGHTER", at: at(1, 1) },
-        ],
-        { techs: { 0: [...NO_ENGINEERING] } },
-      ),
-    );
-    applyOkV7(
-      ridge,
-      activeIdV7(ridge),
-      move(ridge, at(4, 3), at(5, 3), at(6, 3)),
-    );
+    // (The Snow Golem crossed two Mountains in one Move while it had Move
+    // 2; since `pulp_wars-3qtp`, 7r134, it has the Catapult's Move 1.)
     // A Sled is not Mountain-born: Engineering is required.
     const sled = mountainV7(
       iceFieldV7(
@@ -315,7 +303,7 @@ describe("Sweep and Trample (section 7.5)", () => {
     expect(sweepFlankTilesV7(center, at(7, 5))).toEqual([]);
   });
 
-  it("deals 2 to every hostile unit on a flank tile, any form, with Armoured and Shields applied, never to own units", () => {
+  it("hits every hostile unit on a flank tile with the attack's own damage, Armoured and Shields applied, never own units", () => {
     // Mammoth (4, 4) attacks (5, 4): flanks (5, 3) and (5, 5) (a village
     // center: hostile there too).
     const state = iceFieldV7(
@@ -329,12 +317,20 @@ describe("Sweep and Trample (section 7.5)", () => {
     );
     const run = attackV7(state, at(4, 4), at(5, 4));
     expect(run.combat.sweep).toBe(true);
-    // The Ankylosaurus (Armoured) takes 1; the own Yeti is untouched.
+    // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the
+    // Ankylosaurus (Armoured) takes what the Mammoth's own attack on it
+    // deals (1 of the fixed 2 before); the own Yeti is untouched.
+    const alone = calculateCombatPreviewV7(
+      state,
+      unitAtV7(state, at(4, 4)).id,
+      unitAtV7(state, at(5, 3)).id,
+    );
+    expect(alone.damageToDefender).toBeGreaterThan(1);
     expect(run.combat.splash).toEqual([
       {
         unitId: unitAtV7(state, at(5, 3)).id,
         at: at(5, 3),
-        damage: 1,
+        damage: alone.damageToDefender,
         dies: false,
         shieldDamage: 0,
       },
@@ -349,15 +345,17 @@ describe("Sweep and Trample (section 7.5)", () => {
       ],
       { factions: ["ICE_FOLK", "MARTIAN"] },
     );
-    expect(attackV7(shielded, at(4, 4), at(5, 4)).combat.splash).toEqual([
-      {
-        unitId: unitAtV7(shielded, at(5, 3)).id,
-        at: at(5, 3),
-        damage: 1,
-        dies: false,
-        shieldDamage: 1,
-      },
-    ]);
+    const flank = attackV7(shielded, at(4, 4), at(5, 4)).combat.splash;
+    expect(flank).toHaveLength(1);
+    // (At full damage the Shielded Grunt dies: its Shield takes 1 and its
+    // HP the rest.)
+    expect(flank[0]).toMatchObject({
+      unitId: unitAtV7(shielded, at(5, 3)).id,
+      at: at(5, 3),
+      damage: unitAtV7(shielded, at(5, 3)).hp,
+      dies: true,
+      shieldDamage: 1,
+    });
   });
 
   it("a flank kill is credited, leaves a Grave, explodes, and never shatters; the Mammoth dying does not stop it", () => {
@@ -377,6 +375,7 @@ describe("Sweep and Trample (section 7.5)", () => {
     );
     const run = attackV7(state, at(4, 4), at(5, 4));
     expect(run.combat).toMatchObject({ attackerDies: true, sweep: true });
+    // The Mammoth at 1 HP still deals 2: a plain kill, not a Shatter.
     expect(run.combat.splash).toEqual([
       {
         unitId: unitAtV7(state, at(5, 3)).id,
@@ -426,47 +425,36 @@ describe("Sweep and Trample (section 7.5)", () => {
   });
 });
 
-describe("Boulders and Planted (section 7.6)", () => {
-  it("ignore fortification for the damage and the retaliation, keep cover, and are Planted when unmoved", () => {
+// The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Boulders and
+// Planted are gone; the Snow Golem's Snowball is tested in
+// ruleset-v7-golem-mammoth-fofr.test.ts.
+describe("the Snow Golem's throw (section 7.6, since 7r134)", () => {
+  it("counts the Walls (no Boulders) and has Attack 3 (no Planted)", () => {
     const walled = walledV7({
       attackerFaction: "ICE_FOLK",
       attackers: [{ role: "CATAPULT", at: at(8, 6) }],
     });
     const run = attackV7(walled, at(8, 6), at(8, 8));
     expect(run.combat).toMatchObject({
-      fortificationLevel: 0,
-      fortificationIgnored: 2,
-      plantedApplied: true,
+      fortificationIgnored: 0,
+      snowball: true,
       attack2: 6,
-      // 7 (and 4 after a Move) before
-      // tuning 5 (`pulp_wars-w49.4`): the Human Guard has Defense 1 against an attack from two or more tiles.
-      damageToDefender: 10,
     });
-    // After a Move: Attack 2, not Planted.
-    const moved = walledV7({
-      attackerFaction: "ICE_FOLK",
-      attackers: [{ role: "CATAPULT", at: at(8, 5) }],
-    });
-    const walked = moveV7(moved, at(8, 5), [at(8, 6)]).state;
-    expect(attackV7(walked, at(8, 6), at(8, 8)).combat).toMatchObject({
-      plantedApplied: false,
-      attack2: 4,
-      damageToDefender: 6,
-    });
+    expect(run.combat.fortificationLevel).toBeGreaterThan(0);
   });
 
   it("destroys Field Defense (reason CATAPULT) and never advances", () => {
     const base = iceFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(4, 7) },
+      { seat: 0, role: "CATAPULT", at: at(5, 7) },
       { seat: 1, role: "FIGHTER", at: at(3, 7), hp: 1 },
     ]);
     const state = fieldDefenseV7(base, at(3, 7));
-    const run = attackV7(state, at(4, 7), at(3, 7));
+    const run = attackV7(state, at(5, 7), at(3, 7));
     expect(run.combat).toMatchObject({ defenderDies: true, advances: false });
     expect(
       run.events.find((event) => event.kind === "FIELD_DEFENSE_DESTROYED"),
     ).toMatchObject({ reason: "CATAPULT" });
-    expect(run.attacker?.at).toEqual(at(4, 7));
+    expect(run.attacker?.at).toEqual(at(5, 7));
   });
 });
 
@@ -594,13 +582,12 @@ describe("previews and offers (section 11)", () => {
     ).toHaveLength(3);
   });
 
-  it("the Snow Golem's estimate after a planned Move uses Attack 2", () => {
+  it("the Snow Golem is offered no attack after a Move (no Planted since 7r134)", () => {
     const state = iceFieldV7([
       { seat: 0, role: "CATAPULT", at: at(4, 3) },
       { seat: 1, role: "FIGHTER", at: at(6, 3) },
     ]);
     const actor = unitAtV7(state, at(4, 3)).id;
-    const target = unitAtV7(state, at(6, 3)).id;
     const moved = checkedV7({
       ...state,
       units: state.units.map((unit) =>
@@ -609,8 +596,11 @@ describe("previews and offers (section 11)", () => {
           : unit,
       ),
     });
-    expect(attackV7(moved, at(4, 3), at(6, 3)).combat.attack2).toBe(4);
+    expect(
+      queryPlayerCommandsV7(viewForV7(moved, activeIdV7(moved))).filter(
+        (command) => command.kind === "ATTACK" && command.unitId === actor,
+      ),
+    ).toEqual([]);
     expect(attackV7(state, at(4, 3), at(6, 3)).combat.attack2).toBe(6);
-    void target;
   });
 });

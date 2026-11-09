@@ -46,9 +46,16 @@ export const ATTACK_EFFECTS_SCENE_SHOOTERS_V7: Readonly<
   },
   ICE_BOULDER: {
     faction: "ICE_FOLK",
-    role: "CATAPULT",
+    role: "FIGHTER",
     range: 2,
-    label: "Boulder Yeti",
+    label: "Yeti's Rockfall",
+  },
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134).
+  SNOWBALL: {
+    faction: "ICE_FOLK",
+    role: "CATAPULT",
+    range: 3,
+    label: "Snow Golem",
   },
   HARPOON: {
     faction: "ICE_FOLK",

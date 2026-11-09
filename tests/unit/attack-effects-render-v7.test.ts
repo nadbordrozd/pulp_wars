@@ -156,7 +156,9 @@ describe("Attack cues: which attacks get one (bead pulp_wars-b5f.5)", () => {
       ["GOBLIN:CATAPULT", "FIREWORK_ROCKET"],
       ["DWARF:MARKSMAN", "GATLING_BURST"],
       ["DWARF:CATAPULT", "CANNON_BLAST"],
-      ["ICE_FOLK:CATAPULT", "ICE_BOULDER"],
+      // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+      // Golem throws a snowball (the boulder recoloured).
+      ["ICE_FOLK:CATAPULT", "SNOWBALL"],
       ["ICE_FOLK:MARKSMAN", "HARPOON"],
       // The Candy UI (bead pulp_wars-jdb.6): the pie and the gumball.
       ["CANDY:CATAPULT", "PIE_THROW"],
@@ -255,11 +257,11 @@ describe("Attack cues: which attacks get one (bead pulp_wars-b5f.5)", () => {
     ).toBe(true);
   });
 
-  it("marks the Snow Golem's boulder, a Rockfall, and the Snow Hunter's harpoon", () => {
+  it("marks the Snow Golem's snowball, a Rockfall's boulder, and the Snow Hunter's harpoon", () => {
     const at = ICE_FOLK_UI_V7;
     expect(
       attackSteps(iceFolkUiFixtureV7(), at.boulderYeti, at.boulderTarget)[0],
-    ).toMatchObject({ kind: "CATAPULT", attackEffect: "ICE_BOULDER" });
+    ).toMatchObject({ kind: "CATAPULT", attackEffect: "SNOWBALL" });
     expect(
       attackSteps(iceFolkUiFixtureV7(), at.rockfallYeti, at.rockfallTarget)[0],
     ).toMatchObject({ kind: "CATAPULT", attackEffect: "ICE_BOULDER" });
@@ -528,6 +530,7 @@ describe("Attack cue plans", () => {
       "FIREWORK_ROCKET",
       "CANNON_BLAST",
       "ICE_BOULDER",
+      "SNOWBALL",
       "BROADSIDE",
     ] as const)
       expect(peak(effect), effect).toBeGreaterThan(15 * camera.zoom);

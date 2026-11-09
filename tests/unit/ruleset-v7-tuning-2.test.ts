@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r133");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r133.current");
-    expect(PRIOR_RULESET_7_IDS.at(-87)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(132);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
+    expect(PRIOR_RULESET_7_IDS.at(-88)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(133);
   });
 });
 
@@ -180,7 +180,8 @@ describe("1: who moves after a kill", () => {
       "MARTIAN Ray Gunner",
       "MARTIAN Colossus",
       "ICE_FOLK Snow Hunter",
-      "ICE_FOLK Snow Golem",
+      // (The Snow Golem shoots from 2 or 3 tiles only since
+      // (`pulp_wars-3qtp`, 7r134).)
       "DWARF Clockwork Gunner",
       "CANDY Gumball Gunner",
       "CULT Hexer",

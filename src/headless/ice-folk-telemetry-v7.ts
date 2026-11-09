@@ -109,11 +109,14 @@ export interface IceFolkMetricsV7 {
   /** Snow tiles at each Ice Folk End Turn. */
   snowTilesAtEndTurnTotal: number;
   snowTilesAtEndTurnMaximum: number;
-  boulderThrowsPlanted: number;
-  boulderThrowsMoved: number;
-  boulderDamage: number;
-  boulderFortificationIgnored: number;
-  boulderFieldDefenseDestroyed: number;
+  /**
+   * The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Snow Golem
+   * shots (Snowballs), their damage, and the Field Defense they destroyed
+   * (the Boulders' Planted, moved, and fortification counts went).
+   */
+  snowballThrows: number;
+  snowballDamage: number;
+  snowballFieldDefenseDestroyed: number;
   /**
    * The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Wyrm Moves that
    * crossed or ended over open water; its kills by victim role.
@@ -125,13 +128,19 @@ export interface IceFolkMetricsV7 {
 // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the `UNITS_FROZEN`
 // sources (the Bolas, the Frost Bolt, the Cold Aura, the shards, and the
 // water Freeze retired; the Walrus's Frostbite stays).
+// The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snowball.
 export type ChillSourceV7 =
-  "COLD_SNAP" | "COLD_WAKE" | "BLACK_ICE" | "FROSTBITE" | "FROST_BREATH";
+  | "COLD_SNAP"
+  | "COLD_WAKE"
+  | "BLACK_ICE"
+  | "FROSTBITE"
+  | "FROST_BREATH"
+  | "SNOWBALL";
 export type ShatterSetupV7 =
   | "CHARGE_AT_FULL_HP"
   | "SWEEP_FLANK"
   | "SNOW_HUNTER"
-  | "BOULDER"
+  | "SNOWBALL"
   | "YETI"
   | "OTHER_HIT"
   | "EARLIER_DAMAGE";
@@ -145,12 +154,14 @@ const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
   "FROSTBITE",
   // The Ice Folk roster rework (`pulp_wars-s55m.4`).
   "FROST_BREATH",
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134).
+  "SNOWBALL",
 ];
 const SHATTER_SETUPS_V7: readonly ShatterSetupV7[] = [
   "CHARGE_AT_FULL_HP",
   "SWEEP_FLANK",
   "SNOW_HUNTER",
-  "BOULDER",
+  "SNOWBALL",
   "YETI",
   "OTHER_HIT",
   "EARLIER_DAMAGE",
@@ -205,11 +216,9 @@ export function createIceFolkMetricsV7(): IceFolkMetricsV7 {
     deepSnowStoppedMoves: 0,
     snowTilesAtEndTurnTotal: 0,
     snowTilesAtEndTurnMaximum: 0,
-    boulderThrowsPlanted: 0,
-    boulderThrowsMoved: 0,
-    boulderDamage: 0,
-    boulderFortificationIgnored: 0,
-    boulderFieldDefenseDestroyed: 0,
+    snowballThrows: 0,
+    snowballDamage: 0,
+    snowballFieldDefenseDestroyed: 0,
     frostWyrmWaterMoves: 0,
     frostWyrmKillsByRole: zero(UNIT_ROLE_IDS_V7),
   };
@@ -505,13 +514,11 @@ function recordCombat(
     metrics.rockfallDamage += preview.damageToDefender;
     metrics.rockfallKills += Number(preview.defenderDies);
   }
-  if (attackerMechanics.ignoresFortification && attacker.form === "LAND") {
-    if (preview.plantedApplied) metrics.boulderThrowsPlanted += 1;
-    else metrics.boulderThrowsMoved += 1;
-    metrics.boulderDamage += preview.damageToDefender;
-    metrics.boulderFortificationIgnored += preview.fortificationIgnored;
+  if (preview.snowball) {
+    metrics.snowballThrows += 1;
+    metrics.snowballDamage += preview.damageToDefender;
     const tile = tileAt(before, defender.at);
-    if (tile?.fieldDefense === true) metrics.boulderFieldDefenseDestroyed += 1;
+    if (tile?.fieldDefense === true) metrics.snowballFieldDefenseDestroyed += 1;
   }
   if (preview.blizzardHalved) {
     metrics.blizzardHalvedAttacks += 1;
@@ -552,8 +559,8 @@ function recordCombat(
       defender.id,
       attackerRule.abilities.includes("COLD_BLOOD")
         ? "SNOW_HUNTER"
-        : attackerMechanics.ignoresFortification
-          ? "BOULDER"
+        : preview.snowball
+          ? "SNOWBALL"
           : attackerRule.abilities.includes("ROCKFALL")
             ? "YETI"
             : "OTHER_HIT",

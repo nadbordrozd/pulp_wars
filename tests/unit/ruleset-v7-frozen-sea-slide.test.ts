@@ -159,13 +159,15 @@ describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
         ice: [...bridge(2), ...bridge(7)],
       });
       const from = { x: 2, y: 2 };
-      expect(effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").move).toBe(2);
-      // Four ice tiles at half a point each: the whole Move of 2.
-      expect(spent(state, from, lineV7(from, 0, 1, 4))).toMatchObject({
+      // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow Golem
+      // has Move 1 (2 before).
+      expect(effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").move).toBe(1);
+      // Two ice tiles at half a point each: the whole Move of 1.
+      expect(spent(state, from, lineV7(from, 0, 1, 2))).toMatchObject({
         legal: true,
-        spentPoints2: 4,
+        spentPoints2: 2,
       });
-      expect(spent(state, from, lineV7(from, 0, 1, 5))).toEqual({
+      expect(spent(state, from, lineV7(from, 0, 1, 3))).toEqual({
         legal: false,
         reason: "BUDGET_EXCEEDED",
       });

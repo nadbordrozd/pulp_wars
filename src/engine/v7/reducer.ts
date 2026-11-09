@@ -7029,11 +7029,13 @@ function resolveAttackExchangeV7(
   if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
   else if (preview.defenderDies)
     died(defender, preview.shatters ? "SHATTER" : "ATTACK");
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): a flank
+  // unit a Sweep shatters dies like a shattered defender (no Grave).
   for (const splash of preview.splash)
     if (splash.dies)
       died(
         requireValue(state.units.find((unit) => unit.id === splash.unitId)),
-        "SPLASH",
+        splash.shatters === true ? "SHATTER" : "SPLASH",
       );
   if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
   else if (preview.attackerDies) died(attacker, "RETALIATION");
@@ -7170,6 +7172,39 @@ function resolveAttackExchangeV7(
       unitsFrozenEventV7(actor, attacker.id, "FROST_BREATH", applied.results),
     );
   }
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
+  // ICE_FOLK_REDESIGN_2026-11.md section 3.7): a Snowball freezes the
+  // target's tile after the exchange (the one Freeze rule): a surviving
+  // target is Frozen (`turnsLeft` 1), open neutral land under it becomes
+  // Snow, and open water a sunk ship leaves becomes the Golem's ice with
+  // Rime. It reads the board after the deaths.
+  let snowballIce = state.ice;
+  let snowballSnow = state.snow;
+  if (preview.snowball) {
+    const afterExchange = { ...state, board, units, frozen } as GameStateV7;
+    const freeze = freezeTilesV7({
+      tiles: [defender.at],
+      freezeWater: unitCapabilitiesV7(
+        state,
+        attacker,
+        ownerResearchedTechsV7(state, actor),
+      ).freezeWater,
+      tileAt: canonicalFreezeTileFactsV7(afterExchange, actor, (unit) =>
+        isUnitVisibleToPlayerV7(afterExchange, actor, unit),
+      ),
+    });
+    const applied = withFreezeAppliedV7(
+      afterExchange,
+      actor,
+      attacker.id,
+      "SNOWBALL",
+      freeze,
+    );
+    frozen = applied.state.frozen;
+    snowballIce = applied.state.ice;
+    snowballSnow = applied.state.snow;
+    events.push(...applied.events);
+  }
   // One tile, one meaning (`pulp_wars-n5fa`, 7r130): Ribbit. A Hexer's
   // attack turns its surviving target into a frog until the end of its
   // owner's next turn, after the deaths (the Cult state takes it below).
@@ -7253,7 +7288,11 @@ function resolveAttackExchangeV7(
     const victim = requireValue(
       state.units.find((unit) => unit.id === splash.unitId),
     );
-    if (splash.dies && isExplodingUnitV7(state, victim))
+    if (
+      splash.dies &&
+      splash.shatters !== true &&
+      isExplodingUnitV7(state, victim)
+    )
       initialExplosions.push({ unit: victim, cause: "DEATH" });
   }
   if (preview.attackerDies && isExplodingUnitV7(state, attacker))
@@ -7464,6 +7503,8 @@ function resolveAttackExchangeV7(
       toothache,
       ninthUnit,
       frozen,
+      ice: snowballIce,
+      snow: snowballSnow,
       // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Feast lets the
       // attacker attack once more this turn (after its first attack).
       feastedThisTurn: preview.feast

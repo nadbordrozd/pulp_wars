@@ -8355,8 +8355,9 @@ function commandMapTargets(
         ? martianAttackTargetExtrasV7(view, preview)
         : null;
       // The Ice Folk revision (Ice Folk matches only): Shatter, Frozen,
-      // Sweep, Trample, Boulders, Rockfall, Planted, Cold Blood, Snow cover,
-      // the Blizzard and the hidden-Blizzard caveat.
+      // Sweep, Trample, Rockfall, the Snowball (Boulders and Planted before
+      // `pulp_wars-3qtp`), Cold Blood, Snow cover, the Blizzard and the
+      // hidden-Blizzard caveat.
       const iceFolk = iceFolkMatch
         ? iceFolkAttackTargetExtrasV7(view, preview)
         : null;

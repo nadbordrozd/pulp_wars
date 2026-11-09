@@ -63,6 +63,9 @@ const ATTACK_EFFECT_SOUNDS: Readonly<
   GATLING_BURST: { launch: "attack.gatling", impact: "impact.hit" },
   CANNON_BLAST: { launch: "attack.cannon", impact: "impact.heavy" },
   ICE_BOULDER: { launch: "attack.siege", impact: "impact.ice" },
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+  // Golem's snowball keeps the boulder's sounds.
+  SNOWBALL: { launch: "attack.siege", impact: "impact.ice" },
   HARPOON: { launch: "attack.ranged", impact: "impact.hit" },
   PIE_THROW: { launch: "attack.siege", impact: "impact.splat" },
   GUMBALL_SHOT: { launch: "attack.pop", impact: "impact.hit" },

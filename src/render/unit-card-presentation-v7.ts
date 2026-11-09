@@ -36,7 +36,6 @@ const STATUS_MODIFIER_SOURCES: Readonly<Record<string, readonly string[]>> = {
   berserk: ["BERSERK"],
   cracked: ["CRACKED"],
   "dug-in": ["DIG_IN"],
-  planted: ["PLANTED"],
   "ray-power": ["HALF_POWER"],
   cooling: ["HALF_POWER"],
   shield: ["FORCE_FIELD"],

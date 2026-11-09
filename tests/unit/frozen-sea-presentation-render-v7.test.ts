@@ -396,6 +396,8 @@ describe("moving on ice", () => {
     expect(ashore.command.path).toHaveLength(FROZEN_UI_V7.bridge.length + 1);
   });
 
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): with Move 1
+  // the Snow Golem skates two ice tiles, too short a path for a trail.
   it("the Snow Golem skates the ice too (every Ice Folk ground unit)", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
     const golem = unitAt(view, { x: 0, y: 2 });
@@ -406,7 +408,6 @@ describe("moving on ice", () => {
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
     expect(onIce.length).toBeGreaterThan(1);
-    expect(onIce.some((target) => target.slide !== undefined)).toBe(true);
   });
 
   it("another faction's ground unit is offered no Move onto the ice (pulp_wars-y242; it slipped onto it before)", () => {

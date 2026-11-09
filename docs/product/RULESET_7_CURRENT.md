@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r133`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r134`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,46 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r134` (`pulp_wars-3qtp`, **the Snow Golem and the
+Mammoth**; the user, 2026-11-08: "the mamoth attacking neighbouring units
+is meaningless. the attack does almost no damage. it should do the normal
+amount of damage." and "snow golem is weak compared to catapult. lower
+range and lower damage not really compensated by anything."; Bead 2 of
+[the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md)). (1) The **Snow
+Golem** has the Catapult's reach and blow: Attack 3, range 2 to 3 (minimum
+range 2: it cannot shoot an adjacent unit), Move 1, no attack after
+moving, with Defense 1 (1.5 before) at 9 Coins (the Catapult: 8, Defense
+0.5). Its **Snowball** (ability `SNOWBALL`) freezes the tile its shot hits
+after the exchange (the one Freeze rule, [section 21.16](#2116-the-frozen-sea)):
+a surviving target is Frozen for its owner's next turn, open neutral land
+under it becomes stored Snow, and the open water a sunk ship leaves
+becomes the Golem's ice with Rime ([section 21.11](#2111-the-snow-golems-snowball)).
+**Boulders** (ignoring fortification) and **Planted** (+1 Attack unmoved)
+are gone; it still destroys Field Defense (reason `CATAPULT`). (2) The
+**Mammoth** has Attack 3 (2.5 before) and costs 8 Coins (7 before); its
+**Sweep** hits each hostile flank unit for the damage the attack would
+deal that unit by the ordinary formula (its Defense, fortification and
+cover; Armoured, Plated and its Shield), not the fixed 2 of
+`SWEEP_DAMAGE_V7`, with no retaliation, and it **shatters** a Frozen flank
+unit it would leave at 1 to the threshold (a flank Shatter leaves no Grave
+and sets off no blast; [section 21.10](#2110-sweep-and-trample)). A
+full-HP Mammoth deals three Fighters 8 each and takes one retaliation of 4.
+(3) **State and events:** the preview flag `plantedApplied` is
+`snowball`; a Sweep `splash` entry may carry `shatters: true`;
+`UNITS_FROZEN.source` gains `SNOWBALL`; the role mechanics `sweepDamage`
+and `plantedBonus2` are `sweeps` and gone, and the public `iceFolk` stats
+carry `sweeps` instead of `sweepDamage` and `planted`; the `PLANTED` Attack
+modifier and the constants `SWEEP_DAMAGE_V7` and `PLANTED_BONUS2_V7` are
+gone. No command kind, event kind or ordinal changed. (4) The **Normal AI**
+reads both through the previews: a Snowball that leaves its target alive
+and Frozen is valued like a Frost Breath (a Shatter setup goes at its
+priority), a Sweep flank Shatter is worth a Shatter kill, and the Snow
+Golem now plays as the siege unit it is registered as (a ranged line unit
+before). The Golem's shot is a recoloured boulder (the `SNOWBALL` attack
+cue; no new art), and the Ice Folk Sawmilling is shown as Snow Golems
+(Boulders before). A save, replay, or setup of `7r133` is rejected, and the
+browser autosave has a new key.
 
 `pulp-wars-poc-7r133` (`pulp_wars-xv0t`, **one Freeze effect**; the
 user, 2026-11-08, on the Ice Folk: "too many freezing mechanics that look
@@ -2254,10 +2294,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r133`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r134`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r133.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r134.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -5885,7 +5925,7 @@ names every player sees (a cell in bold is the faction's own):
 | `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants        | Land Grants     | Land Grants          | Land Grants             | Land Grants               |
 | `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting            | Hunting         | Hunting              | Hunting                 | Hunting                   |
 | `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry           | Forestry        | Forestry             | Forestry                | Forestry                  |
-| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**        | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**            |
+| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**        | **Snow Golems** | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**            |
 | `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**     | **Ray Gunners**    | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**                |
 | `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding      | **Heat Sinks**     | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding               |
 | `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting         | **Saucers**        | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**             |
@@ -6116,7 +6156,7 @@ differently from the Human table are:
 | Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                                                                                                          |
 | ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Administration    | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                                                                                                                                                          |
-| Sawmilling        | same          | Sawmill; Snow Golem (ignores Walls and Field Defense)                                                                                                                                                                     |
+| Sawmilling        | same          | Sawmill; Snow Golem (Snowball)                                                                                                                                                                                            |
 | Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                                                                                                                  |
 | Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                                                                                    |
 | Scouting          | same          | Sled (Escape; `7r133`, Bolas before); Sled Sight 2                                                                                                                                                                        |
@@ -7576,17 +7616,17 @@ The Ice Folk (`ICE_FOLK`) roster, by mechanical role, with the
 units cross Mountains without Engineering and without stopping
 ([section 21.8](#218-mountain-born-and-rockfall)):
 
-| Unit        | Role         | Tech           | Cost |  HP |               Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                         |
-| ----------- | ------------ | -------------- | ---: | --: | -------------------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------------------------------------- |
-| Yeti        | `FIGHTER`    | start          |    2 |  9⁸ |                2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                         |
-| Sled        | `RAIDER`     | Scouting       |    4 |  12 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                    |
-| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
-| Walrus      | `GUARD`      | Fortification  |    4 |  16 |              1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                              |
-| Mammoth     | `SWORDSMAN`  | Metallurgy     |    7 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
-| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); no Rally; no Tend Wounded                                |
-| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |  10 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | yes     | Boulders (ignore fortification); Planted; Mountain-born; never advances                           |
-| Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
-| Frost Giant | `JUGGERNAUT` | reward only    |    — |  36 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                 |
+| Unit        | Role         | Tech           | Cost |  HP |  Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                         |
+| ----------- | ------------ | -------------- | ---: | --: | ------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| Yeti        | `FIGHTER`    | start          |    2 |  9⁸ |   2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                         |
+| Sled        | `RAIDER`     | Scouting       |    4 |  12 |   2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                    |
+| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |   8 |   2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
+| Walrus      | `GUARD`      | Fortification  |    4 |  16 | 1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                              |
+| Mammoth     | `SWORDSMAN`  | Metallurgy     |    8 |  20 |   3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
+| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |   1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); no Rally; no Tend Wounded                                |
+| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |  10 |   3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                    |
+| Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |  14 |   3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
+| Frost Giant | `JUGGERNAUT` | reward only    |    — |  36 |   4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                 |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -7617,7 +7657,8 @@ Golem the Snow Golem, with the same numbers.
   ([section 21.9](#219-cold-blood)).
 - **Mammoth** has Guard parity for capture: unlike the Guard it may
   attack after moving, and it cannot build Field Defense. Every attack it
-  makes is a Sweep and a Trample ([section 21.10](#2110-sweep-and-trample)),
+  makes is a Sweep at full damage (since `7r134`, with Attack 3 and 8
+  Coins) and a Trample ([section 21.10](#2110-sweep-and-trample)),
   and an unmoved Mammoth may Stampede 2 or 3 tiles instead
   ([section 21.18](#2118-the-mammoths-stampede)).
 - **Ice Witch** has Captain parity for capture and nothing else: no
@@ -7626,12 +7667,15 @@ Golem the Snow Golem, with the same numbers.
   primary actions are Attack and Cold Snap
   ([section 21.6](#216-the-blizzard-and-cold-snap)), which freezes the
   ring of eight tiles round her (since `7r133`; her Frost Bolt is gone).
-- **Snow Golem** has range 1–2 with minimum range 1 and may attack after
-  moving, unlike the Catapult; like it, it captures, never advances,
-  keeps the `SIEGE` label, and every attack it makes destroys Field Defense
-  on the target's tile (reason `CATAPULT`). Its attacks ignore fortification,
-  and it has +1 Attack on a turn in which it has not moved
-  ([section 21.11](#2111-boulders-and-planted)). It is Mountain-born.
+- **Snow Golem** (since `7r134`) has the Catapult's Attack 3, range 2–3
+  with minimum range 2, Move 1, and no attack after moving; like it, it
+  captures, never advances, keeps the `SIEGE` label, and every attack it
+  makes destroys Field Defense on the target's tile (reason `CATAPULT`).
+  It has Defense 1 (the Catapult 0.5) and costs 9 Coins (the Catapult 8).
+  Every shot is a **Snowball**: it freezes the tile it hits
+  ([section 21.11](#2111-the-snow-golems-snowball)). It is Mountain-born
+  and Glides. (Before `7r134`: range 1–2, Move 2, an attack after moving,
+  Attack 2 or 3 Planted, Defense 1.5, and Boulders.)
 - **Frost Wyrm** (`7r125`; the Sabretooth before) has Knight parity for
   `CAPTURE` only: it flies, over Shallow and Deep Water without
   Navigation, never advances after a kill, has no Charge and no Overrun,
@@ -7658,22 +7702,23 @@ Golem the Snow Golem, with the same numbers.
   ship: rewards and treasure units are land units, it cannot Board without
   a ship, and the state schema refuses an Ice Folk seat that owns one.
 - Ice Folk Disband refunds: Yeti and Snow Hunter 1; Sled and Walrus 2;
-  Ice Witch and Mammoth 3; Snow Golem and Frost Wyrm 4. The Frost Giant cannot Disband.
+  Ice Witch 3; Mammoth, Snow Golem and Frost Wyrm 4. The Frost Giant cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Yeti `ATTACK`,
   `CAPTURE`, `MOUNTAIN_BORN`, `ROCKFALL`; Sled `ATTACK`, `CAPTURE`, `CHARGE`,
   `ESCAPE`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Walrus `ATTACK`,
   `CAPTURE`; Mammoth `ATTACK`, `CAPTURE`, `SWEEP`, `TRAMPLE`, `STAMPEDE`;
   Ice Witch `ATTACK`, `CAPTURE`, `BLIZZARD`, `COLD_SNAP`; Snow Golem
-  `ATTACK`, `CAPTURE`, `BOULDERS`, `MOUNTAIN_BORN`; Frost Wyrm `ATTACK`,
+  `ATTACK`, `CAPTURE`, `SNOWBALL`, `MOUNTAIN_BORN` (`BOULDERS` before
+  `7r134`); Frost Wyrm `ATTACK`,
   `CAPTURE`, `FLY`, `FROST_BREATH` (`7r125`); Frost Giant `ATTACK`,
   `CAPTURE`, `COLD_WAKE`, `MOUNTAIN_BORN`, `GLACIAL_SMASH`. Since `7r133`
   none has `FREEZE`, `BOLAS`, `FROST_BOLT`, or `COLD_AURA`.
   Mountain-born, Glide, Prowl,
-  the Sweep damage, Trample, ignoring fortification, the Planted bonus, the
-  Rockfall Attack, Cold Blood, and the advance are role mechanics
-  (`mountainBorn`, `glides`, `ignoresZocStops`, `sweepDamage`,
-  `tramplesFieldDefense`, `ignoresFortification`, `plantedBonus2`,
-  `rockfallAttack2`, `coldBloodBonus2`, `advancesAfterKill`), exposed
+  Sweep, Trample, the Rockfall Attack, Cold Blood, and the advance are role
+  mechanics (`mountainBorn`, `glides`, `ignoresZocStops`, `sweeps`,
+  `tramplesFieldDefense`, `rockfallAttack2`, `coldBloodBonus2`,
+  `advancesAfterKill`; `sweepDamage`, and the Snow Golem's
+  `ignoresFortification` and `plantedBonus2`, before `7r134`), exposed
   through the `iceFolk` block of the public unit stats
   ([section 21.15](#2115-commands-events-errors-and-queries)).
 
@@ -8630,9 +8675,9 @@ Candy, and Cult campaigns. No match was played.
   Control, Tractor Beam, Cold Snap, Stampede,
   Crack Ice, Board, Bomb Run, Assemble). Guard,
   Zombie, Orc Brute, Ankylosaurus, Shield Projector, Catapult, Lich, Rocket
-  Cart, Steam Cannon, and Battleship cannot attack after moving; the
-  Triceratops (revision 20), the Tripod, the Mammoth, the Snow Golem, and
-  the Steam Mole can. Board (an `ATTACK` since `7r131`) and `CRACK_ICE` (the frozen sea
+  Cart, Steam Cannon, Snow Golem (since `7r134`), and Battleship cannot
+  attack after moving; the Triceratops (revision 20), the Tripod, the
+  Mammoth, and the Steam Mole can. Board (an `ATTACK` since `7r131`) and `CRACK_ICE` (the frozen sea
   redesign, `7r100`: every land unit and ship of the eight other factions,
   [section 21.16](#2116-the-frozen-sea)) follow the same flag, so a
   Battleship that moved cannot board or crack. Every read of this role flag for a unit
@@ -8740,7 +8785,7 @@ Candy, and Cult campaigns. No match was played.
   [section 18.6](#186-blast-resolution)), every Triceratops, Tripod, or
   Snow Golem attack destroys it on the target tile (reason `CATAPULT`,
   [sections 19.11](#1911-charge), [20.5](#205-pierce-and-the-disintegrator),
-  and [21.11](#2111-boulders-and-planted)), and every Mammoth attack
+  and [21.11](#2111-the-snow-golems-snowball)), and every Mammoth attack
   destroys it there too (reason `TRAMPLE`,
   [section 21.10](#2110-sweep-and-trample)). A Steam Cannon attack destroys
   it on the target tile (reason `CATAPULT`), a surfacing Steam Mole on its
@@ -8850,7 +8895,7 @@ attack  = base Attack (a half-power heat ray: half, rounded down;
         + 1 (Charge/Pounce/Strafe) + 1 (Inspired/Frenzied/War Drums/Psychic Command)
         + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–1; 0–2 with Wallbreaker)
         + 1 (Pack Hunt)
-        + 1 (Planted) + 0.5 (Cold Blood) + 1 (Ram)
+        + 0.5 (Cold Blood) + 1 (Ram)
 defense = base Defense + fortification level          (embarked or Egg: 1;
                                                        a Human Guard hit from
                                                        two or more tiles: 1
@@ -8956,15 +9001,15 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   combat preview and `COMBAT_RESOLVED` carry
   `gangUp` (0 for every non-Goblin, naval, or embarked attacker), and
   `attack2` includes it.
-- **Rockfall, Planted, Cold Blood** (Ice Folk,
-  [sections 21.8](#218-mountain-born-and-rockfall),
-  [21.11](#2111-boulders-and-planted), and
+- **Rockfall, Cold Blood** (Ice Folk,
+  [sections 21.8](#218-mountain-born-and-rockfall) and
   [21.9](#219-cold-blood)): a Yeti attacking from a Mountain at
-  distance 2 uses Attack 1.5; an unmoved Snow Golem has +1 Attack; a Snow
+  distance 2 uses Attack 1.5; a Snow
   Hunter has +0.5 Attack against a Frozen defender, at any distance. The
-  preview carries `rockfallApplied`, `plantedApplied`, and
-  `coldBloodApplied`, and `attack2` includes them. None applies to
-  retaliation.
+  preview carries `rockfallApplied` and
+  `coldBloodApplied`, and `attack2` includes them. Neither applies to
+  retaliation. (The Snow Golem's Planted, +1 Attack unmoved, went with
+  `7r134`.)
 - **Unflinching** (a Dwarf construct in land form,
   [section 22.6](#226-clockwork)): when a Clockwork Gunner or Brass Titan
   makes an `ATTACK`, its own force uses its maximum HP instead of its
@@ -9020,21 +9065,20 @@ Field Defense level wherever it stands within 1 of an own city center,
 whatever the tile's territory, and never a second one from Field Defense
 ([section 22.7](#227-dig-in)); the preview carries `dugIn`. There is no
 other city-center defense bonus. Three Dinosaur attacks, a Martian heat ray
-fired with the Disintegrator, every Snow Golem attack, and a Steam Cannon
+fired with the Disintegrator, and a Steam Cannon
 shot fired with Blasting Charges remove levels (Dig In included) for the
 exchange (for the damage taken; the retaliation never uses fortification,
 [section 13.2](#132-damage)), without destroying Walls
 ([sections 19](#19-dinosaur-faction-rules),
-[20.5](#205-pierce-and-the-disintegrator),
-[21.11](#2111-boulders-and-planted), and
-[22.9](#229-steam-cannon-knockback)):
+[20.5](#205-pierce-and-the-disintegrator), and
+[22.9](#229-steam-cannon-knockback)); a Snow Golem's attack did too until
+`7r134` (Boulders):
 
 | Attack                                                                     | Fortification applied                     | Cover      | Preview fields                                                          |
 | -------------------------------------------------------------------------- | ----------------------------------------- | ---------- | ----------------------------------------------------------------------- |
 | Spitter (Acid)                                                             | none                                      | none (× 1) | `acid: true`, `fortificationIgnored: 0`                                 |
 | Triceratops (Charge!)                                                      | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3)                        |
 | heat ray (full or half) whose owner has the Disintegrator                  | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3)                        |
-| Snow Golem (Boulders)                                                      | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3)                        |
 | Steam Cannon whose owner has Blasting Charges                              | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3)                        |
 | a land-form attack from distance 1 whose owner has Explosives (**Breach**) | none                                      | kept       | `breachApplied: true`, `fortificationIgnored`: the levels removed (1–3) |
 | any other dinosaur whose owner has Wallbreaker                             | Field Defense or Dig In only (Walls gone) | kept       | `fortificationIgnored`: 2 on a Walled center                            |
@@ -9102,11 +9146,12 @@ Disintegrator ([section 21.5](#215-snow)).
 - **A ranged unit never advances** (tuning 2, `pulp-wars-poc-7r47`;
   `isRangedRoleRuleV7`). A unit is ranged when its kind's role has a range
   above 1, whatever the distance of the attack: the Marksman (since tuning
-  1), Spitter, Grunt, Ray Gunner, Colossus, Snow Hunter, Snow Golem,
+  1), Spitter, Grunt, Ray Gunner, Colossus, Snow Hunter,
   Clockwork Gunner, and Gumball Gunner stay where they are after killing an
   adjacent unit (before `7r47` the Spitter, Grunt, Ray Gunner, Colossus,
   Snow Hunter, and Gumball Gunner advanced after a kill from distance 1).
-  The Catapult, Lich, Rocket Cart, Bomb Chucker, Tripod, Steam Cannon, and
+  The Catapult, Lich, Rocket Cart, Bomb Chucker, Tripod, Steam Cannon,
+  Snow Golem (since `7r134`), and
   Pie Launcher cannot attack an adjacent unit, a ship never advances (the
   advance needs a land-form attacker), and a Yeti's Rockfall is an attack
   from distance 2 by a range-1 unit, so none of them ever advanced. The
@@ -10150,14 +10195,18 @@ Harbours from it.
   Hunter, the Walrus (with Deep Winter), the Ice Witch, the Mammoth, the
   Snow Golem, the Sabretooth, with Brittle first of the late
   technologies. It fields two fifths line units, 15% Walruses, a fifth
-  Snow Hunters, 15% Snow Golems (which fight as ranged units), a tenth
+  Snow Hunters, 15% Snow Golems (siege units since `7r134`; they fought as
+  ranged units before), a tenth
   Sabretooths, and one Sled for four units (three at most). Like the other
   army seats it trains before it researches while it fields fewer units
   that capture than its cities and two more, and takes Scouts at level 2
   whatever its Coins. It keeps no more Walruses than it owns cities and no
   more than a third of its army, and the garrison of a threatened city
-  yields to a Snow Hunter. It knows Cold Blood, that a Snow Golem loses
-  Planted by a Move, Rockfall from a Mountain, and that an adjacent blow
+  yields to a Snow Hunter. It knows Cold Blood, that a Snow Golem shoots
+  only before it moves (its Snowball, valued like a Frost Breath when it
+  leaves the target Frozen, `7r134`; Planted before), Rockfall from a
+  Mountain, that a Mammoth's Sweep shatters a Frozen flank unit, and that an
+  adjacent blow
   which leaves a Frozen unit at 1 to 3 HP (4 with Brittle) kills it; its
   combined kills may begin with a Cold Snap or a Frost Giant's Move (its
   Cold Wake; the Bolas and the Frost Bolt before `7r133`), then the shots
@@ -10995,7 +11044,8 @@ Harbours from it.
   Snow cover and the Blizzard's halving from the public flags, count Shatter
   in every lethal-reach estimate (a unit left at a visible Ice Folk melee
   unit's public threshold is in lethal reach when it is, or can be,
-  Frozen by then), and judge the Mammoth and the Snow Golem as line units
+  Frozen by then), and judge the Mammoth as a line unit (the Snow Golem was
+  one until `7r134`)
   and the Witch as no healer. As the Ice Folk, Normal trains a first unit of
   each role and bodies first in a threatened city, researches Drill and
   Scouting, then (with two cities) Administration and Marksmanship, Deep
@@ -13748,7 +13798,7 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 | `MARKSMAN`      | Snow Hunter   | Cold Blood                                                   |
 | `GUARD`         | Walrus        | Freeze source (Frostbite, `7r55`; the Walrus before `7r125`) |
 | `CAPTAIN`       | Ice Witch     | Blizzard; Freeze source (Cold Snap)                          |
-| `CATAPULT`      | Snow Golem    | Boulders; Planted; Mountain-born (the Snow Golem before)     |
+| `CATAPULT`      | Snow Golem    | Freeze source (Snowball, `7r134`); Mountain-born             |
 | `KNIGHT`        | Frost Wyrm    | Flyer over Deep Water; Frost Breath (`7r125`); no Glide      |
 | `SWORDSMAN`     | Mammoth       | Sweep, Trample, and Stampede (`GUARD` before `7r55`)         |
 | `JUGGERNAUT`    | Frost Giant   | Freeze source (Cold Wake); Glacial Smash; Mountain-born      |
@@ -13762,7 +13812,8 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 - **Freeze sources** (the one Freeze effect, `pulp_wars-xv0t`, `7r133`):
   the Ice Witch's **Cold Snap** and the Frost Giant's **Cold Wake** freeze
   every tile of a ring ([section 21.16](#2116-the-frozen-sea): water to
-  ice, open neutral land to Snow, a hostile unit Frozen); the Frost Wyrm's
+  ice, open neutral land to Snow, a hostile unit Frozen), and the Snow
+  Golem's **Snowball** (`7r134`) the one tile its shot hits; the Frost Wyrm's
   **Frost Breath** and the Walrus's **Frostbite** Freeze a unit only; and,
   with Black Ice, the seat's ice ([section 21.16](#2116-the-frozen-sea)).
   No other attack freezes. Every source Freezes ships, embarked units, and
@@ -13921,9 +13972,12 @@ explode). A shattered **Bitten** unit still rises as its biter's Zombie
 (`BITTEN_UNIT_RISEN` follows the `SHATTER` death), and the attacker then
 does not advance.
 
-- **Distance 1 only**, whatever the role: a Snow Hunter or a Snow Golem
-  shatters an adjacent unit; a Rockfall, a shot, or a throw at distance 2
-  never does. A retaliation and a Sweep flank hit never shatter.
+- **Distance 1 only**, whatever the role: a Snow Hunter shatters an
+  adjacent unit; a Rockfall, a shot, or a throw at distance 2 never does
+  (the Snow Golem shoots from 2 or 3 tiles only since `7r134`, so it never
+  shatters: its Snowball sets the Shatter up). A retaliation never
+  shatters; since `7r134` a **Sweep flank hit** does (it is an Ice Folk
+  blow from the next tile, [section 21.10](#2110-sweep-and-trample)).
 - **Only the HP after the hit matters:** a hit that deals no HP damage (a
   weak hit, or one a Shield absorbs entirely) still shatters a Frozen unit
   at 1 to 3 HP. A hit that kills by itself is an ordinary kill, with its
@@ -13944,22 +13998,23 @@ does not advance.
 Worked examples (engine formula, open Grass, threshold 3, the target Frozen and at full HP unless stated; a Yeti has 9 HP, Attack 2, and
 Defense 1.5):
 
-| Target                           | Hits, in order                          | Result                                                                 |
-| -------------------------------- | --------------------------------------- | ---------------------------------------------------------------------- |
-| Fighter (12 HP)                  | Yeti 5 (takes 0); Yeti                  | the second hit, 6, would leave 1: **shatters**                         |
-| Fighter on Field Defense         | Yeti 4 (takes 0); Yeti                  | the second hit, 5, would leave 3: **shatters**                         |
-| Caveman or Skeleton (10 HP)      | Sled with Charge, or Frost Wyrm         | 8 would leave 2: **shatters** at full HP, no retaliation               |
-| Fighter (12 HP)                  | Sled with Charge, or Frost Wyrm         | 8 would leave 4: shatters only with Brittle                            |
-| Grunt (8 HP, Shield 2)           | Yeti 5 (Shield 2, HP 3; takes 0); Yeti  | the second hit takes the 5 HP left: plain damage, no Shatter           |
-| Zombie (18 HP)                   | Yeti 5; Yeti 5; Yeti                    | the third hit, 6, would leave 2: **shatters**, no Grave                |
-| Triceratops (20 HP)              | Mammoth 6; Yeti 5; Yeti                 | the third hit, 6, would leave 3: **shatters**                          |
-| T-Rex (28 HP)                    | Mammoth 6; Yeti 5; Yeti 6; Yeti 6; Yeti | dead on the fifth hit (8) by plain damage; no hit landed in the window |
-| Knight or Spitter (10 HP)        | Mammoth                                 | 8 would leave 2: **shatters** at full HP                               |
-| Bomb Chucker (8 HP)              | Yeti                                    | 6 would leave 2: **shatters**, and no bomb goes off                    |
-| Rocket Cart (8 HP)               | Yeti                                    | 7 would leave 1: **shatters**; the Yeti advances and takes no blast    |
-| Guard at 3 HP on a Walled center | Ice Witch                               | 2 would leave 1: **shatters** (not Frozen, the Witch takes 11: dead)   |
-| Goblin (6 HP)                    | any Ice Folk hit                        | dead by plain damage; Shatter never happens against Goblins at full HP |
-| a `JUGGERNAUT`-role unit at 3 HP | Yeti                                    | never shatters; the hit is ordinary, and a Frozen one does not reply   |
+| Target                           | Hits, in order                         | Result                                                                 |
+| -------------------------------- | -------------------------------------- | ---------------------------------------------------------------------- |
+| Fighter (12 HP)                  | Yeti 5 (takes 0); Yeti                 | the second hit, 6, would leave 1: **shatters**                         |
+| Fighter on Field Defense         | Yeti 4 (takes 0); Yeti                 | the second hit, 5, would leave 3: **shatters**                         |
+| Caveman or Skeleton (10 HP)      | Sled with Charge, or Frost Wyrm        | 8 would leave 2: **shatters** at full HP, no retaliation               |
+| Fighter (12 HP)                  | Sled with Charge, or Frost Wyrm        | 8 would leave 4: shatters only with Brittle                            |
+| Grunt (8 HP, Shield 2)           | Yeti 5 (Shield 2, HP 3; takes 0); Yeti | the second hit takes the 5 HP left: plain damage, no Shatter           |
+| Zombie (18 HP)                   | Yeti 5; Yeti 5; Yeti                   | the third hit, 6, would leave 2: **shatters**, no Grave                |
+| Triceratops (20 HP)              | Mammoth 8; Mammoth                     | the second blow would leave 3 or less: **shatters**                    |
+| T-Rex (28 HP)                    | Mammoth 8; Yeti 5; Yeti 6; Yeti        | the fourth hit would leave 3 or less: **shatters**                     |
+| Knight (13 HP)                   | Mammoth                                | 10 would leave 3: **shatters** at full HP                              |
+| Spitter or Captain (10 HP)       | Mammoth                                | 10: dead by plain damage                                               |
+| Bomb Chucker (8 HP)              | Yeti                                   | 6 would leave 2: **shatters**, and no bomb goes off                    |
+| Rocket Cart (8 HP)               | Yeti                                   | 7 would leave 1: **shatters**; the Yeti advances and takes no blast    |
+| Guard at 3 HP on a Walled center | Ice Witch                              | 2 would leave 1: **shatters** (not Frozen, the Witch takes 11: dead)   |
+| Goblin (6 HP)                    | any Ice Folk hit                       | dead by plain damage; Shatter never happens against Goblins at full HP |
+| a `JUGGERNAUT`-role unit at 3 HP | Yeti                                   | never shatters; the hit is ordinary, and a Frozen one does not reply   |
 
 **Glacial Smash** (`pulp_wars-w49.30`,
 [section 11.1](#111-the-giants-signatures)): a land-form Frost Giant's
@@ -14213,43 +14268,61 @@ Every `ATTACK` a land-form Mammoth makes:
   tile on the ring of eight around the Mammoth (one step clockwise and one
   counter-clockwise): beside a target straight ahead, and between a
   diagonal target and the Mammoth's row and column. Every **hostile** unit
-  on a flank tile, in any form (an Egg too), takes `SWEEP_DAMAGE_V7` **2**,
-  with no retaliation or modifiers; Armoured reduces it to 1, a Shield
-  absorbs it first, and it is capped at the victim's HP. Flank hits resolve
-  with the exchange, from the pre-attack state, whether or not the Mammoth
-  survives. A flank victim that dies is credited to the Mammoth like a
-  hostile splash kill (cause `SPLASH`), leaves an ordinary Grave or rising,
-  and explodes if it is an exploding unit (the Mammoth is then in its
-  blast). A flank hit never shatters. Own and allied units are never hit.
-  The victims are the preview's `splash` entries (with `shieldDamage`), the
-  preview has `sweep: true`, and it is exact (the Mammoth's neighbours are
-  explored by its owner).
+  on a flank tile, in any form (an Egg too), takes **the damage the
+  Mammoth's attack would deal it** by the ordinary formula (since `7r134`,
+  `pulp_wars-3qtp`; a fixed `SWEEP_DAMAGE_V7` 2 before): its own Defense,
+  fortification and cover, the attack's Attack against it, then Armoured,
+  Plated and its Shield, with no retaliation (nor Frostbite, Shock Field,
+  Bounce or any other answer). A flank hit is an Ice Folk blow from the
+  next tile, so it **shatters** a Frozen flank unit it would leave at 1 to
+  the threshold (never a `JUGGERNAUT`-role unit;
+  [section 21.4](#214-shatter)). Flank hits resolve with the exchange,
+  from the pre-attack state, whether or not the Mammoth survives. A flank
+  victim that dies is credited to the Mammoth like a hostile splash kill
+  (cause `SPLASH`), leaves an ordinary Grave or rising, and explodes if it
+  is an exploding unit (the Mammoth is then in its blast); a shattered one
+  dies with cause `SHATTER`, leaves no Grave and never explodes (a Bitten
+  one still rises). Own and allied units are never hit. The victims are
+  the preview's `splash` entries (with `shieldDamage`, and `shatters: true`
+  on a Shatter), the preview has `sweep: true`, and it is exact (each entry
+  is the defender side of the attack's own preview on that unit; the
+  Mammoth's neighbours are explored by its owner). Example (full HP, open
+  Grass): a Mammoth's blow on a Fighter with a Fighter on each flank deals
+  8, 8 and 8 and takes one retaliation of 4; a Frozen flank Fighter at 11
+  HP would keep 3: it shatters.
 - **Trample.** Field Defense on the **target's** tile is destroyed, whoever
   owns the tile and whether or not either unit survives (reason
   `TRAMPLE`); it still counts for that exchange. Flank tiles keep theirs.
 
-### 21.11 Boulders and Planted
+### 21.11 The Snow Golem's Snowball
 
-Every `ATTACK` a land-form Snow Golem makes, at distance 1 or 2:
+Since `pulp-wars-poc-7r134` (`pulp_wars-3qtp`; Boulders and Planted
+before) the Snow Golem is a siege unit with the Catapult's reach and blow:
+Attack 3, range 2 to 3 (minimum range 2: an adjacent unit is never its
+target), Move 1, and no attack after moving. Every `ATTACK` a land-form
+Snow Golem makes:
 
-- **ignores fortification** (role mechanic `ignoresFortification`): the
-  defender's fortification level is 0 for the damage it takes (the Charge!
-  convention; the retaliation never uses fortification,
-  [section 13.2](#132-damage)); cover stays and Walls are
-  not destroyed. The preview reports `fortificationLevel: 0` and the
-  removed levels in `fortificationIgnored`;
+- counts the defender's fortification and cover as for any attack (no
+  fortification is ignored; the preview's `fortificationIgnored` is 0);
 - **destroys Field Defense** on the target's tile (reason `CATAPULT`, as for
   every `CATAPULT`-role attack);
-- is **Planted** when the unit has not moved this turn: +1 Attack
-  (`PLANTED_BONUS2_V7` 2), so Attack 3 planted and 2 after a Move
-  (`plantedApplied`; an estimate for an attack after a planned Move uses
-  Attack 2).
+- is a **Snowball** (ability `SNOWBALL`, preview flag `snowball`): after
+  the exchange (the deaths read first) it freezes the target's tile by the
+  one Freeze rule ([section 21.16](#2116-the-frozen-sea)): a target it
+  leaves alive is **Frozen** (`turnsLeft` 1: it loses its owner's next
+  turn), open land outside every territory becomes stored Snow, and the open
+  water a sunk ship leaves becomes the Golem's ice with Rime (Deep Water
+  with Pack Ice); territory land, a Rift, a dock and water under a unit
+  afloat are left. The events are `UNITS_FROZEN` with source `SNOWBALL`
+  and `TILES_FROZEN`, after the deaths.
 
-It retaliates at distance 1 and 2 with its ordinary Defense, never advances
-after a kill (`advancesAfterKill` false), and captures; at distance 1
-it can shatter. Examples (full HP): planted, it deals a Guard on a Walled
-center with Field Defense 7 (a Yeti without Brittle deals that Guard 2 and
-takes 8 of its 9 HP), and a Fighter 8; after a Move, a Guard 4.
+It retaliates at distance 2 and 3, never advances after a kill
+(`advancesAfterKill` false), captures, and never shatters (no blow from the
+next tile): it sets the Shatter up for the melee line. Examples (full HP,
+open Grass): it deals a Fighter 8 (4 left, Frozen); it deals a Guard on
+Field Defense in its own territory 7 (10 left, Frozen, the Field Defense
+destroyed), and a Mammoth's blow of 9 on that Guard would leave 1: it
+shatters.
 
 ### 21.12 The Frost Wyrm and the Cold Wake
 
@@ -14316,34 +14389,38 @@ An Ice Folk attack is an ordinary `ATTACK` resolved by the ordinary attack
 resolution, with these steps (new ones in bold):
 
 1. Attack: base Attack, Charge, Alpha, run-up, Gang Up, Inspired,
-   **Rockfall**, **Planted**, **Cold Blood**. Defense: fortification (0 for
-   Acid, Charge!, a Disintegrator ray, **Boulders**), cover (**Snow cover**
-   for an unfortified Ice Folk defender on Snow).
+   **Rockfall**, **Cold Blood** (Planted went with `7r134`). Defense:
+   fortification (0 for Acid, Charge!, a Disintegrator ray; Boulders
+   before `7r134`), cover (**Snow cover** for an unfortified Ice Folk
+   defender on Snow).
 2. Damage both ways from pre-combat HP (none back from a **Frozen**
    defender, [section 21.3](#213-what-a-frozen-unit-cannot-do)); the **Blizzard** halves a hit from
    distance 2 or more on a protected Ice Folk defender; Armoured; Martian
    Shields absorb.
 3. **Shatter test** on the primary defender: a shattered defender dies and
    does not retaliate.
-4. Lifesteal; **Sweep** flank hits (Armoured and Shields apply to each).
+4. Lifesteal; **Sweep** flank hits (since `7r134` each the attack's own
+   damage on that unit, with its Shatter test; Armoured, Plated and
+   Shields apply to each).
 5. Kill credit (the defender, hostile flank and splash kills), then growth.
-6. Field Defense on the target tile destroyed (`CATAPULT` for a Boulder
-   Yeti, **`TRAMPLE`** for a Mammoth, otherwise the ordinary reasons).
+6. Field Defense on the target tile destroyed (`CATAPULT` for a Snow
+   Golem, **`TRAMPLE`** for a Mammoth, otherwise the ordinary reasons).
 7. Deaths in order: the defender, flank and splash victims in `(y, x, id)`
    order, the attacker, each an Infect rising, a Bitten rising, or an
-   ordinary death with its Grave; **a shattered defender has cause
-   `SHATTER` and leaves no Grave** (a Bitten one still rises). The
+   ordinary death with its Grave; **a shattered defender or flank unit has
+   cause `SHATTER` and leaves no Grave** (a Bitten one still rises). The
    controlled unit of a dead Brain is released; bites and Plague land on the
-   survivors.
+   survivors; **a Snowball freezes the target's tile** (`7r134`).
 8. Push of a surviving target (Frost Giant), then the advance (never for a
    Snow Golem).
 9. The death-blast chain of the exploding units among the dead, **except a
-   shattered defender**; Plunder; reveals; the economy, reward, and
-   achievement tail.
+   shattered defender or flank unit**; Plunder; reveals; the economy,
+   reward, and achievement tail.
 
 Events: `COMBAT_RESOLVED`; `FIELD_DEFENSE_DESTROYED`; `UNIT_DIED` (cause
 `SHATTER`, `ATTACK`, `SPLASH`, or `RETALIATION`), each followed by
-`GRAVE_CREATED` or a rising where one applies; `UNIT_GREW`; `UNIT_PUSHED`;
+`GRAVE_CREATED` or a rising where one applies; `UNITS_FROZEN` (source
+`SNOWBALL`) and `TILES_FROZEN` of a Snowball; `UNIT_GREW`; `UNIT_PUSHED`;
 `UNIT_MOVED`; the chain events; `PLUNDER_AWARDED`; `TILES_REVEALED`; the
 tail.
 
@@ -14351,7 +14428,7 @@ tail.
 
 | Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, Raise Dead      | Ice Folk land-form units leave Graves like any unit; a shattered unit of any faction leaves none; a unit killed by plain damage, a Sweep flank hit, a Rockfall, a shot, or a throw leaves an ordinary Grave. Raise Dead is unchanged on Snow; a risen Skeleton is not Frozen.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Graves, Raise Dead      | Ice Folk land-form units leave Graves like any unit; a shattered unit of any faction (a Sweep flank unit too since `7r134`) leaves none; a unit killed by plain damage, a Sweep flank hit, a Rockfall, a shot, or a throw leaves an ordinary Grave. Raise Dead is unchanged on Snow; a risen Skeleton is not Frozen.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Infect, Bitten          | An Ice Folk unit killed by a Zombie rises as an ordinary Zombie; a Witch that rises has left the board, so her Blizzard ends. A Zombie's kill is never a Shatter. A Bitten unit that is shattered still rises as its biter's Zombie in place (no Frozen entry), and the attacker does not advance. No Ice Folk unit cures a bite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Plague, Wail            | Plague applies to Ice Folk units; its damage and spread are not attacks, so the Blizzard does not halve them. Wail is not an attack (never halved) and uses the target's cover, so Snow cover counts: 2 on a Yeti in the open, 1 on Snow. A Lich's hit on an Ice Folk unit in its Witch's Blizzard is halved (8 on a Yeti on Snow becomes 4) and its splash derives from the halved hit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Lifesteal, Unanswered   | A Vampire is a melee attacker, never halved; an Ice Folk unit never retaliates against it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -14359,11 +14436,11 @@ tail.
 | Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts ignore Snow cover and the Blizzard, a shattered exploding unit does not explode, a Frozen goblin-crewed unit cannot Kaboom, and Gang Up beats cover (a Goblin with two helpers deals a Yeti 11 in the open and 10 on Snow, either way more than its 9 HP).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): Eggs are never Frozen or shattered; deep snow cuts a run-up and a Pounce short; Charge! and Wallbreaker ignore fortification but not Snow cover, which is read from the defender's own fortification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Frozen ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to the Tractor Beam (a Brain takes it since `7r99`); a mind-controlled Ice Folk unit keeps its Ice Folk rules (a controlled Witch's Blizzard serves her controller).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Snow Golem's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A Frozen Captain cannot Rally and a Frozen Knight cannot attack. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack (a Snow Golem's too since `7r134`); a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A Frozen Captain cannot Rally and a Frozen Knight cannot attack. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it. A Frozen unit on a center still besieges it but cannot capture it until it thaws. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; a Cold Snap spends no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Boats, water            | The Ice Folk have no boats and never embark; they freeze the sea ([section 21.16](#2116-the-frozen-sea)). Since `pulp_wars-s55m.1` an embarked or naval unit of any faction is Frozen like a land unit, does not strike back while Frozen, and shatters to an Ice Folk blow from the next tile in the window (no ship is ever icebound or crushed any more); a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Rift                    | A Rift is never Snow and Mountain-born does not cover it, so no Ice Folk unit enters one. A flyer on a Rift is in land form: it can be Frozen, attacked from an adjacent tile, and shattered; the attacker does not advance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but does not thaw it). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Cold Snap and a Cold Wake are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but does not thaw it). Shatter, hostile Sweep, Rockfall, Snowball, and retaliation kills are credited; a Cold Snap and a Cold Wake are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Dwarf rules             | [Section 22.13](#2213-interactions-with-other-rules): tunnels ignore Snow, and a surfaced unit stands on Snow like any ground unit; deep snow ends a Dwarf ground unit's Move (only the Move-2 Steam Tank notices), and the Gyrocopter flies over it. Every Dwarf land unit can be Frozen, constructs and the Brass Titan included, and shattered, except the Brass Titan (`JUGGERNAUT`); a mound is neither; a burrowed unit's Frozen entry keeps counting down at its owner's End Turn, and the Engineer's Repair thaws it. A Frozen Gyrocopter cannot bomb, a Frozen Mole cannot tunnel, a Frozen Hammerer cannot ride, a Frozen Gunner cannot fire, and a Frozen Engineer can neither Repair nor Assemble. The Shatter test reads a Steam Tank's HP after the Plated cap. The Blizzard halves a Gunner's or a Steam Cannon's shot from distance 2 or more, never a bomb or an eruption (not attacks); bombs and eruptions also ignore Snow cover. |
 
 ### 21.15 Commands, events, errors, and queries
@@ -14378,7 +14455,8 @@ tail.
   `ATTACK` accepts a Yeti's distance-2 target from a Mountain. A pending city reward blocks these commands like every command.
 - **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`): `UNITS_FROZEN` (named
   `UNITS_CHILLED` before `pulp_wars-w49.37`, in the same place) right after
-  `UNITS_RALLIED`, with `results: [{ unitId, turnsLeft }]`;
+  `UNITS_RALLIED`, with `results: [{ unitId, turnsLeft }]` (source
+  `SNOWBALL` since `7r134`);
   `MAMMOTH_STAMPEDED` right after `GIANT_BROKE_OFF`; `TILES_FROZEN` (the
   one Freeze effect, `7r133`; `WATER_FROZEN` before, in its place)
   ([section 21.18](#2118-the-mammoths-stampede)).
@@ -14390,12 +14468,14 @@ tail.
   appearing or disappearing.
 - **Combat preview** (`CombatPreviewV7`, so also `COMBAT_RESOLVED`), eight
   fields, all false for an attack that involves no Ice Folk unit:
-  `shatters`, `coldBloodApplied`, `rockfallApplied`, `plantedApplied`,
+  `shatters`, `coldBloodApplied`, `rockfallApplied`, `snowball`
+  (`plantedApplied` before `7r134`),
   `blizzardHalved` (`damageToDefender` is the halved value), `snowCover`
   (the defender's × 1.25 comes from Snow), `sweep` (the flank victims are the
-  `splash` entries), and `hiddenBlizzardPossible` (public previews only).
-  Boulders report `fortificationLevel: 0` and `fortificationIgnored`; a
-  Trample is read from `sweep` and the target tile's Field Defense.
+  `splash` entries, each a flank hit at the attack's own damage, with
+  `shatters: true` on a flank Shatter since `7r134`), and
+  `hiddenBlizzardPossible` (public previews only). A Trample is read from
+  `sweep` and the target tile's Field Defense.
 - **Errors:** `UNIT_FROZEN { unitId }` (a Frozen ship's refused command
   too, since `pulp_wars-s55m.1`); `COLD_SNAP_NOT_LEGAL` (`EMBARKED`,
   `NO_TARGET`; `BOLAS_NOT_LEGAL` and `FROST_BOLT_NOT_LEGAL` are gone since
@@ -14409,21 +14489,22 @@ tail.
   display name "Ice Folk"; unlock kinds `WITCH_SUPPORT`, `DEEP_WINTER`, and
   `BRITTLE`; capabilities `deepWinter` and `shatterThreshold`; abilities
   `MOUNTAIN_BORN`, `ROCKFALL`, `COLD_BLOOD`, `SWEEP`, `TRAMPLE`,
-  `BLIZZARD`, `COLD_SNAP`, `BOULDERS`, `FROST_BREATH` (`PROWL` until
+  `BLIZZARD`, `COLD_SNAP`, `SNOWBALL` (`BOULDERS` until `7r134`),
+  `FROST_BREATH` (`PROWL` until
   `7r124`), `COLD_WAKE` (`7r133`; `COLD_AURA` before), and `STAMPEDE`
   (`BOLAS` and `FROST_BOLT` are gone since `7r133`); role
-  mechanics `mountainBorn`, `glides`, `sweepDamage`,
-  `tramplesFieldDefense`, `ignoresFortification`, `plantedBonus2`,
+  mechanics `mountainBorn`, `glides`, `sweeps` (`sweepDamage` before
+  `7r134`), `tramplesFieldDefense`,
   `rockfallAttack2`, `coldBloodBonus2`, `frostbite` (the Walrus),
   `frostBreath`, and `fliesOverDeepWater` (`7r125`), with `buildsFieldDefense` false
-  for the Yeti and the Mammoth and `advancesAfterKill` false for the Boulder
-  Yeti; faction rules `snow` true and `treasureUnitRole` `RAIDER`; constants
+  for the Yeti and the Mammoth and `advancesAfterKill` false for the Snow
+  Golem (its `ignoresFortification` and `plantedBonus2` went with `7r134`); faction rules `snow` true and `treasureUnitRole` `RAIDER`; constants
   `SHATTER_HP_V7` 3, `BRITTLE_SHATTER_HP_V7` 4, `COLD_SNAP_RANGE_V7` 1 (the
   ring of the Cold Snap and the Cold Wake), `STAMPEDE_RANGE_V7` 3,
   `STAMPEDE_DAMAGE_V7` 3, `BLIZZARD_RADIUS_V7` 1,
-  `DEEP_WINTER_RADIUS_V7` 2, `DEEP_WINTER_RECOVER_V7` 6, `SWEEP_DAMAGE_V7`
-  2, `ROCKFALL_ATTACK2_V7` 3, `PLANTED_BONUS2_V7` 2, and
-  `COLD_BLOOD_BONUS2_V7` 1.
+  `DEEP_WINTER_RADIUS_V7` 2, `DEEP_WINTER_RECOVER_V7` 6,
+  `ROCKFALL_ATTACK2_V7` 3, and `COLD_BLOOD_BONUS2_V7` 1
+  (`SWEEP_DAMAGE_V7` 2 and `PLANTED_BONUS2_V7` 2 went with `7r134`).
 - **Derived queries** for a state and a view: `isSnowV7` and `isBlizzardV7`
   (on a view, the public `snow` and `blizzard` tile flags, which the UI
   draws from and never recomputes), `unitIsFrozenV7`,
@@ -14448,8 +14529,8 @@ tail.
   `previewFrostBoltV7` are gone. **`previewStampedeV7(view, unitId, at)`**:
   see [section 21.18](#2118-the-mammoths-stampede).
 - `queryCombatPreviewV7` and `estimateCombatV7` include Snow cover, the
-  Blizzard of visible Witches, Rockfall, Planted (from the unit's `moved`
-  flag; Attack 2 for an attack after a planned Move), Cold Blood, Sweep, and
+  Blizzard of visible Witches, Rockfall, Cold Blood, Sweep (each flank
+  hit the attack's own public preview on that unit), the Snowball, and
   Shatter, no retaliation from a Frozen defender, and accept the option
   `assumeTargetFrozen`. Every preview
   equals the resolution, except one flagged `hiddenBlizzardPossible` or
@@ -14458,16 +14539,16 @@ tail.
   unit its Glide reach on known Snow, a Mountain-born unit its Mountain
   paths, a Frost Wyrm its flight over water (Deep Water too), a Yeti the
   distance-2 tiles
-  from every Mountain origin, and a Snow Golem range 2 from every tile it
-  can reach; it adds nothing for a Cold Snap or a Stampede, and
+  from every Mountain origin, and a Snow Golem its range 2 to 3 like any
+  ranged unit; it adds nothing for a Cold Snap or a Stampede, and
   a Frozen unit of any seat threatens nothing.
 - **Public unit stats** carry, for every unit, `frozen` (null, or `{ turnsLeft }`), and for units of an Ice Folk seat the
   `iceFolk` block: `onSnow`, `inBlizzard`, `snowCover`, `glides`,
   `mountainBorn`, `shatterThreshold`, `rockfall` (true while it stands on a
-  Mountain), `planted` (what an attack made now would be, or null),
-  `sweepDamage`, and `blizzard` (true for a land-form Witch). The position
-  facts are the Snow and Blizzard the reader knows of. The Attack row lists
-  the source `PLANTED`; a snowy cover row reads `SNOW`.
+  Mountain), `sweeps` (a land-form Mammoth; `planted` and `sweepDamage`
+  before `7r134`), and `blizzard` (true for a land-form Witch). The
+  position facts are the Snow and Blizzard the reader knows of. A snowy
+  cover row reads `SNOW` (the Attack row's `PLANTED` went with `7r134`).
 - `PublicPlayerV7` and the leaderboard carry `ICE_FOLK` and
   `ICE_FOLK_BASELINE_V1`.
 - The rules, events, errors, and queries of the frozen sea (freezing a
