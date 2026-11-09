@@ -749,9 +749,11 @@ describe("every other seat cracks the ice where it gains", () => {
     ).toBe(false);
   });
 
-  it("follows a Sled's slide through a zone of control in the threat estimate", () => {
+  it("stops a Sled in a zone of control on the ice in the threat estimate, as the engine", () => {
     // The Ice Folk bridge, a Human Fighter on its ice at (2, 5) whose zone
     // covers (3, 4) to (3, 6), and a Yeti and a Sled on the Ice Folk shore.
+    // Skating is plain movement (`pulp_wars-ecnj`, 7r135): the Sled's
+    // Runners glided through the zone to the end of the ice before.
     const { state, view } = scene(
       against(
         [
@@ -769,21 +771,20 @@ describe("every other seat cracks the ice where it gains", () => {
       (unit) => unit.id === idAt(state, { x: 4, y: 8 }),
     );
     if (yeti === undefined || sled === undefined) throw new Error("not seen");
-    // The Yeti's slide stops in the zone; the Sled's Runners go on to the
-    // end of the ice.
-    expect(publicStandTilesForPolicyV7(view, yeti)).toContainEqual({
-      x: 3,
-      y: 6,
-    });
-    expect(publicStandTilesForPolicyV7(view, yeti)).not.toContainEqual({
-      x: 3,
-      y: 3,
-    });
-    expect(publicStandTilesForPolicyV7(view, sled)).toContainEqual({
-      x: 3,
-      y: 3,
-    });
-    // The engine offers the Sled that Move on its turn, and the Yeti not.
+    // The Yeti steps onto the ice (a full point from the bare shore); the
+    // Sled Glides on and stops on entering the zone, on (3, 6).
+    const yetiStands = publicStandTilesForPolicyV7(view, yeti);
+    expect(yetiStands).toContainEqual({ x: 3, y: 7 });
+    expect(yetiStands).not.toContainEqual({ x: 3, y: 6 });
+    const sledStands = publicStandTilesForPolicyV7(view, sled);
+    expect(sledStands).toContainEqual({ x: 3, y: 6 });
+    for (const beyond of [
+      { x: 3, y: 5 },
+      { x: 3, y: 4 },
+      { x: 3, y: 3 },
+    ])
+      expect(sledStands).not.toContainEqual(beyond);
+    // The engine offers the same Moves on their turn.
     const theirs = queryPlayerCommandsV7(viewOf(turnOf(state, 1), 1));
     const endsAt = (unitId: UnitId, at: CoordV7): boolean =>
       theirs.some(
@@ -792,8 +793,11 @@ describe("every other seat cracks the ice where it gains", () => {
           command.unitId === unitId &&
           same(command.path.at(-1) as CoordV7, at),
       );
-    expect(endsAt(sled.id, { x: 3, y: 3 })).toBe(true);
-    expect(endsAt(yeti.id, { x: 3, y: 3 })).toBe(false);
+    expect(endsAt(sled.id, { x: 3, y: 6 })).toBe(true);
+    expect(endsAt(sled.id, { x: 3, y: 5 })).toBe(false);
+    expect(endsAt(sled.id, { x: 3, y: 3 })).toBe(false);
+    expect(endsAt(yeti.id, { x: 3, y: 7 })).toBe(true);
+    expect(endsAt(yeti.id, { x: 3, y: 6 })).toBe(false);
   });
 });
 

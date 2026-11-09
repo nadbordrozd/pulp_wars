@@ -639,7 +639,6 @@ import {
   COLD_SNAP_LABEL_V7,
   COLD_SNAP_TOOLTIP_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
-  GLIDE_MOVE_LABEL_V7,
   SNOW_LABEL_V7,
   STAMPEDE_CHARGE_V7,
   STAMPEDE_CONFIRM_HINT_V7,
@@ -658,15 +657,11 @@ import {
   matchHasIceFolkSeatV7,
   snowTooltipV7,
   moveIsDiveV7,
-  moveUsesSkateV7,
   stampedePlanV7,
   stampedeSemanticV7,
   type IceFolkAbilityKindV7,
 } from "../ice-folk-presentation-v7";
-import {
-  moveIsGlideV7,
-  type IceFolkPickV7,
-} from "../canvas/ice-folk-board-plan-v7";
+import { type IceFolkPickV7 } from "../canvas/ice-folk-board-plan-v7";
 import {
   BOARDABLE_LABEL_V7,
   BOARD_UNLOCK_V7,
@@ -704,21 +699,16 @@ import {
   FREEZE_SHALLOW_UNLOCK_V7,
   ICE_LAND_GRANT_UNLOCK_V7,
   DIVE_MOVE_LABEL_V7,
-  SKATE_MOVE_LABEL_V7,
   ICE_MOVE_TEXT_V7,
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
-  SKATE_TRAIL_LABEL_V7,
   frozenSeaBoundaryNoticeV7,
   glacierUnlockTextV7,
   iceChipLabelV7,
   iceChipTooltipV7,
   unitHasCrackIceV7,
 } from "../frozen-sea-presentation-v7";
-import {
-  moveOnIceV7,
-  type FreezePickV7,
-} from "../canvas/frozen-sea-board-plan-v7";
+import { type FreezePickV7 } from "../canvas/frozen-sea-board-plan-v7";
 import {
   ASSEMBLE_LABEL_V7,
   ASSEMBLE_PICK_V7,
@@ -8734,14 +8724,9 @@ export class Ruleset7DomAppView {
       if (legend !== null) dock.append(legend);
       const launchLegend = this.#launchLegend(view, unit.id);
       if (launchLegend !== null) dock.append(launchLegend);
-      const glideLegend = this.#glideLegend(view, unit.id);
-      if (glideLegend !== null) dock.append(glideLegend);
-      // Ice Folk Freeze: the tiles only Glacier's +1 Move across ice reaches.
-      const glacierLegend = this.#glacierLegend(view, unit.id);
-      if (glacierLegend !== null) dock.append(glacierLegend);
-      // The frozen sea: what the pale tiles on ice mean for this unit.
-      const iceLegend = this.#iceMoveLegend(view, unit.id);
-      if (iceLegend !== null) dock.append(iceLegend);
+      // Ice Folk movement: what the dive tiles mean for this unit.
+      const diveLegend = this.#diveLegend(view, unit.id);
+      if (diveLegend !== null) dock.append(diveLegend);
       // The Vampire and Banshee rework (`pulp_wars-iqhp`): the Feast's
       // "attack again" prompt, and what the Bat Escape and Ethereal tiles
       // mean.
@@ -9579,7 +9564,7 @@ export class Ruleset7DomAppView {
           [
             iceHere !== undefined,
             iceHere === undefined ? "" : iceChipLabelV7(iceHere),
-            // Bead pulp_wars-2yc.63: who slides here, which the card of a
+            // Bead pulp_wars-2yc.63: who moves here, which the card of a
             // unit on the ice no longer says.
             iceHere === undefined
               ? ""
@@ -11480,64 +11465,30 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * `pulp_wars-1wy.5`: the legend of an Ice Folk unit's Glide tiles (the
-   * tiles its half-cost steps from Snow onto Snow reach beyond its Move),
-   * shown while it has any.
+   * Ice Folk movement (`pulp_wars-s55m.2`): the legend of an Ice Folk
+   * unit's Fishing Hole dives, shown while it has any. (The Glide and skate
+   * tiles and the skate trail went with `pulp_wars-ecnj`, 7r135: a Move
+   * over Snow or ice is marked as any Move.)
    */
-  #glideLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+  #diveLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     if (
       !matchHasIceFolkSeatV7(view) ||
       !this.#snapshot.offeredCommands.some(
         (command) =>
           command.kind === "MOVE" &&
           command.unitId === unitId &&
-          moveIsGlideV7(view, command),
+          moveIsDiveV7(view, command),
       )
     )
       return null;
     const legend = el(this.#document, "ul", "v7-landing-legend");
-    legend.setAttribute("aria-label", "Glide markers");
+    legend.setAttribute("aria-label", "Ice markers");
     const item = el(this.#document, "li", "v7-landing-legend-item");
-    item.dataset.landingMarker = "glide";
+    item.dataset.landingMarker = "dive";
     const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
     swatch.setAttribute("aria-hidden", "true");
-    item.append(swatch, text(this.#document, "span", GLIDE_MOVE_LABEL_V7));
+    item.append(swatch, text(this.#document, "span", DIVE_MOVE_LABEL_V7));
     legend.append(item);
-    return legend;
-  }
-
-  /**
-   * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's tiles before): the
-   * legend of an Ice Folk unit's skate tiles (the tiles only skating or a
-   * Runners glide reaches) and of its Fishing Hole dives, shown while it
-   * has any.
-   */
-  #glacierLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
-    if (!matchHasIceFolkSeatV7(view)) return null;
-    const moves = this.#snapshot.offeredCommands.filter(
-      (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
-        command.kind === "MOVE" && command.unitId === unitId,
-    );
-    const skate = moves.some(
-      (command) =>
-        !moveIsGlideV7(view, command) && moveUsesSkateV7(view, command),
-    );
-    const dive = moves.some((command) => moveIsDiveV7(view, command));
-    if (!skate && !dive) return null;
-    const legend = el(this.#document, "ul", "v7-landing-legend");
-    legend.setAttribute("aria-label", "Ice markers");
-    for (const [marker, label, shown] of [
-      ["glacier", SKATE_MOVE_LABEL_V7, skate],
-      ["dive", DIVE_MOVE_LABEL_V7, dive],
-    ] as const) {
-      if (!shown) continue;
-      const item = el(this.#document, "li", "v7-landing-legend-item");
-      item.dataset.landingMarker = marker;
-      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
-      swatch.setAttribute("aria-hidden", "true");
-      item.append(swatch, text(this.#document, "span", label));
-      legend.append(item);
-    }
     return legend;
   }
 
@@ -17247,32 +17198,6 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The frozen sea: the legend of a unit's Moves on ice, shown while it has
-   * any: the skate trail of an Ice Folk unit. (The slip's "Ice: your Move
-   * ends here" is gone with `pulp_wars-y242`, 7r132: only the Ice Folk walk
-   * on ice, and a walker or flyer crosses it like land.)
-   */
-  #iceMoveLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
-    if (view.ice.length === 0) return null;
-    const slide = this.#snapshot.offeredCommands.some(
-      (command) =>
-        command.kind === "MOVE" &&
-        command.unitId === unitId &&
-        moveOnIceV7(view, command) !== null,
-    );
-    if (!slide) return null;
-    const legend = el(this.#document, "ul", "v7-landing-legend");
-    legend.setAttribute("aria-label", "Ice markers");
-    const item = el(this.#document, "li", "v7-landing-legend-item");
-    item.dataset.landingMarker = "slide";
-    const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
-    swatch.setAttribute("aria-hidden", "true");
-    item.append(swatch, text(this.#document, "span", SKATE_TRAIL_LABEL_V7));
-    legend.append(item);
-    return legend;
-  }
-
-  /**
    * Map curiosities round 3 (bead pulp_wars-737.20; BOARD_TARGETING.md
    * section 3.10): the one Zap button of a unit on the Tesla Tower and the
    * one Fire button of a unit on the Moon Gun, while the engine offers the
@@ -19930,7 +19855,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r134",
+    rulesetId: "pulp-wars-poc-7r135",
     seed,
     width,
     height: width,

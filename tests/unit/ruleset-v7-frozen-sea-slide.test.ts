@@ -35,11 +35,12 @@ const NO_GLACIER = NAVAL_TECHS_V7.filter((tech) => tech !== "SUBMERSIBLES");
 // docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3 and 8.7): ice is
 // ground for land-form units and closed to ships; every other ground unit
 // slipped (its Move ended on entering ice) until `pulp_wars-y242` (7r132):
-// since then only the Ice Folk, walkers, and flyers enter ice. Ice Folk movement
-// (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the forced slide before): an
-// Ice Folk unit skates (each step onto ice costs half a Move point), the
-// Sled and the Snow Hunter glide free straight on along the ice (Runners),
-// and the Sled glides on through zones of control.
+// since then only the Ice Folk, walkers, and flyers enter ice. Skating is
+// plain movement (`pulp_wars-ecnj`, `pulp-wars-poc-7r135`; Skate, Runners
+// and the Sled's glide through zones of control of `pulp_wars-s55m.2`
+// before, the forced slide before them): an Ice Folk unit Glides on ice as
+// on Snow (a step from a frozen tile onto a frozen tile costs half a Move
+// point), and a zone of control stops it on ice as anywhere.
 
 const CENTER: CoordV7 = { x: 5, y: 5 };
 const DIRECTIONS: readonly (readonly [number, number])[] = [
@@ -90,16 +91,16 @@ const destinations = (state: GameStateV7, from: CoordV7, seat: 0 | 1 = 0) =>
 const spent = (state: GameStateV7, from: CoordV7, path: readonly CoordV7[]) =>
   validateMovementPathV7(state, navalUnitAtV7(state, from), path);
 
-describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
-  it("each step onto ice costs an Ice Folk unit half a Move point, and it may stop on any tile", () => {
+describe("Glide on ice (skating is plain movement, pulp_wars-ecnj, 7r135)", () => {
+  it("each step between ice tiles costs an Ice Folk unit half a Move point, a step onto it from bare land a full one", () => {
     const state = frozenArenaV7({
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
+      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 3 } }],
       ice: bridge(2),
     });
-    const from = { x: 2, y: 2 };
-    const column = lineV7(from, 0, 1, 5);
+    const from = { x: 2, y: 3 };
+    const column = lineV7(from, 0, 1, 4);
     expect(effectiveRoleRuleV7("FIGHTER", "ICE_FOLK").move).toBe(1);
-    // A Yeti (Move 1) skates two ice tiles: half a point each.
+    // A Yeti (Move 1) on the ice crosses two ice tiles: half a point each.
     expect(spent(state, from, column.slice(0, 1))).toMatchObject({
       legal: true,
       spentPoints2: 1,
@@ -121,17 +122,26 @@ describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
       expect.arrayContaining([column[0], column[1]] as CoordV7[]),
     );
     expect(destinations(state, from)).not.toContainEqual(column[2]);
-    // A step off the ice onto land costs a full point (ice is no Road).
-    const onIce = patchFrozenUnitV7(state, navalUnitAtV7(state, from).id, {
-      at: { x: 2, y: 3 },
-    });
-    expect(spent(onIce, { x: 2, y: 3 }, [from])).toMatchObject({
+    // A step off the ice onto bare land costs a full point (ice is no
+    // Road), and so does a step from bare land onto the ice (half before
+    // 7r135, Skate).
+    expect(spent(state, from, [{ x: 2, y: 2 }])).toMatchObject({
       legal: true,
       spentPoints2: 2,
     });
+    const ashore = patchFrozenUnitV7(state, navalUnitAtV7(state, from).id, {
+      at: { x: 2, y: 2 },
+    });
+    expect(spent(ashore, { x: 2, y: 2 }, [from])).toMatchObject({
+      legal: true,
+      spentPoints2: 2,
+    });
+    expect(spent(ashore, { x: 2, y: 2 }, [from, column[0] as CoordV7])).toEqual(
+      { legal: false, reason: "BUDGET_EXCEEDED" },
+    );
   });
 
-  it("skates in all eight directions and may turn on the ice", () => {
+  it("Glides in all eight directions and may turn on the ice", () => {
     const state = frozenArenaV7({
       technologies: [NO_GLACIER, NO_GLACIER],
       units: [{ seat: 0, role: "FIGHTER", at: CENTER }],
@@ -148,17 +158,17 @@ describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
       });
   });
 
-  it("every Ice Folk ground role skates, the Frost Wyrm flies over the ice, and Glacier adds no Move", () => {
+  it("every Ice Folk ground role Glides, the Frost Wyrm flies over the ice, and Glacier adds no Move", () => {
     for (const technologies of [NO_GLACIER, NAVAL_TECHS_V7]) {
       const state = frozenArenaV7({
         technologies: [technologies, technologies],
         units: [
-          { seat: 0, role: "CATAPULT", at: { x: 2, y: 2 } },
+          { seat: 0, role: "CATAPULT", at: { x: 2, y: 3 } },
           { seat: 0, role: "KNIGHT", at: { x: 7, y: 2 } },
         ],
         ice: [...bridge(2), ...bridge(7)],
       });
-      const from = { x: 2, y: 2 };
+      const from = { x: 2, y: 3 };
       // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow Golem
       // has Move 1 (2 before).
       expect(effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").move).toBe(1);
@@ -172,7 +182,7 @@ describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
         reason: "BUDGET_EXCEEDED",
       });
       // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm is a
-      // flyer: it does not skate, each tile is a whole step of its Move 3.
+      // flyer: it does not Glide, each tile is a whole step of its Move 3.
       const wyrm = { x: 7, y: 2 };
       expect(effectiveRoleRuleV7("KNIGHT", "ICE_FOLK").move).toBe(3);
       expect(spent(state, wyrm, lineV7(wyrm, 0, 1, 3))).toMatchObject({
@@ -189,155 +199,113 @@ describe("Skating (Ice Folk movement, pulp_wars-s55m.2)", () => {
   it("passes its own units on the ice", () => {
     const state = frozenArenaV7({
       units: [
-        { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
-        { seat: 0, role: "MARKSMAN", at: { x: 2, y: 3 } },
+        { seat: 0, role: "FIGHTER", at: { x: 2, y: 3 } },
+        { seat: 0, role: "MARKSMAN", at: { x: 2, y: 4 } },
       ],
       ice: bridge(2),
     });
-    const from = { x: 2, y: 2 };
+    const from = { x: 2, y: 3 };
     acceptV7(state, 0, move(state, from, lineV7(from, 0, 1, 2)));
-    expect(destinations(state, from)).toContainEqual({ x: 2, y: 4 });
-    expect(destinations(state, from)).not.toContainEqual({ x: 2, y: 3 });
+    expect(destinations(state, from)).toContainEqual({ x: 2, y: 5 });
+    expect(destinations(state, from)).not.toContainEqual({ x: 2, y: 4 });
   });
-});
 
-describe("Runners (Ice Folk movement, pulp_wars-s55m.2)", () => {
-  it("the Sled and the Snow Hunter glide free in a straight line along the ice and stop anywhere", () => {
+  it("the Sled crosses four ice tiles and the Snow Hunter two: no free straight glide (Runners went with 7r135)", () => {
     const state = frozenArenaV7({
       units: [
-        { seat: 0, role: "RAIDER", at: { x: 2, y: 2 } },
-        { seat: 0, role: "MARKSMAN", at: { x: 7, y: 2 } },
+        { seat: 0, role: "RAIDER", at: { x: 2, y: 3 } },
+        { seat: 0, role: "MARKSMAN", at: { x: 7, y: 3 } },
       ],
       ice: [...bridge(2), ...bridge(7)],
     });
-    const sled = { x: 2, y: 2 };
-    const hunter = { x: 7, y: 2 };
-    const column = lineV7(sled, 0, 1, 5);
-    // The first step onto the ice is a skate; every step straight on is free.
-    for (const length of [1, 2, 3, 4, 5])
+    const sled = { x: 2, y: 3 };
+    const hunter = { x: 7, y: 3 };
+    const column = lineV7(sled, 0, 1, 4);
+    for (const length of [1, 2, 3, 4])
       expect(spent(state, sled, column.slice(0, length))).toMatchObject({
         legal: true,
-        spentPoints2: 1,
+        spentPoints2: length,
       });
-    // The Sled (Move 2) then steps ashore at a full point.
-    const ashore = [...column, { x: 2, y: 8 }];
-    expect(spent(state, sled, ashore)).toMatchObject({
-      legal: true,
-      spentPoints2: 3,
-    });
-    const result = acceptV7(state, 0, move(state, sled, ashore));
-    const sledId = navalUnitAtV7(state, sled).id;
-    expect(navalUnitV7(result.state, sledId).at).toEqual({ x: 2, y: 8 });
-    // The glided tiles are part of the path (its Charge counts them).
-    expect(navalUnitV7(result.state, sledId).activation.movedPathLength).toBe(
-      6,
-    );
-    // Every tile of the ice is offered, and the shore beyond it.
-    expect(destinations(state, sled)).toEqual(
-      expect.arrayContaining([...column, { x: 2, y: 8 }] as CoordV7[]),
-    );
-    // The Snow Hunter (Move 1) glides the whole column too, and no farther.
-    const hunterColumn = lineV7(hunter, 0, 1, 5);
-    expect(spent(state, hunter, hunterColumn)).toMatchObject({
-      legal: true,
-      spentPoints2: 1,
-    });
-    expect(spent(state, hunter, [...hunterColumn, { x: 7, y: 8 }])).toEqual({
+    // Ashore beyond the bridge is past the Sled's Move 2.
+    expect(spent(state, sled, [...column, { x: 2, y: 8 }])).toEqual({
       legal: false,
       reason: "BUDGET_EXCEEDED",
     });
-    expect(destinations(state, hunter)).toEqual(
-      expect.arrayContaining(hunterColumn as CoordV7[]),
+    const result = acceptV7(state, 0, move(state, sled, column));
+    const sledId = navalUnitAtV7(state, sled).id;
+    expect(navalUnitV7(result.state, sledId).at).toEqual({ x: 2, y: 7 });
+    expect(navalUnitV7(result.state, sledId).activation.movedPathLength).toBe(
+      4,
     );
+    expect(destinations(state, sled)).toEqual(
+      expect.arrayContaining([...column] as CoordV7[]),
+    );
+    expect(destinations(state, sled)).not.toContainEqual({ x: 2, y: 8 });
+    const hunterColumn = lineV7(hunter, 0, 1, 3);
+    expect(spent(state, hunter, hunterColumn.slice(0, 2))).toMatchObject({
+      legal: true,
+      spentPoints2: 2,
+    });
+    expect(spent(state, hunter, hunterColumn)).toEqual({
+      legal: false,
+      reason: "BUDGET_EXCEEDED",
+    });
   });
 
-  it("a turn on the ice is a new skate; only a straight step from ice onto ice is free", () => {
-    // An L: down the column x = 2 to (2, 5), then east along row 5 to (5, 5).
+  it("a turn on the ice costs what a straight step costs", () => {
+    // An L: down the column x = 2 to (2, 5), then east along row 5.
     const state = frozenArenaV7({
-      units: [{ seat: 0, role: "MARKSMAN", at: { x: 2, y: 2 } }],
+      units: [{ seat: 0, role: "RAIDER", at: { x: 2, y: 3 } }],
       ice: [
         ...lineV7({ x: 2, y: 2 }, 0, 1, 3).map((at) => ({ at })),
         ...lineV7({ x: 2, y: 5 }, 1, 0, 3).map((at) => ({ at })),
       ],
     });
-    const from = { x: 2, y: 2 };
-    const path = [...lineV7(from, 0, 1, 3), ...lineV7({ x: 2, y: 5 }, 1, 0, 3)];
-    // One skate onto the column, one more for the turn: Move 1.
+    const from = { x: 2, y: 3 };
+    const path = [...lineV7(from, 0, 1, 2), ...lineV7({ x: 2, y: 5 }, 1, 0, 2)];
     expect(spent(state, from, path)).toMatchObject({
       legal: true,
-      spentPoints2: 2,
+      spentPoints2: 4,
     });
     expect(destinations(state, from)).toEqual(
       expect.arrayContaining([...path] as CoordV7[]),
     );
-    // A Yeti has no Runners: the same ice costs half a point a tile.
-    const yeti = frozenArenaV7({
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
-      ice: [
-        ...lineV7({ x: 2, y: 2 }, 0, 1, 3).map((at) => ({ at })),
-        ...lineV7({ x: 2, y: 5 }, 1, 0, 3).map((at) => ({ at })),
-      ],
-    });
-    expect(spent(yeti, from, path.slice(0, 3))).toEqual({
-      legal: false,
-      reason: "BUDGET_EXCEEDED",
-    });
   });
 
-  it("the Sled glides on through a zone of control while it goes straight; the others stop in it", () => {
+  it("the Sled stops on entering a zone of control on the ice, like every unit", () => {
     const scene = (role: "RAIDER" | "MARKSMAN" | "FIGHTER") =>
       frozenArenaV7({
         units: [
-          { seat: 0, role, at: { x: 2, y: 2 } },
+          { seat: 0, role, at: { x: 2, y: 3 } },
           // A hostile Fighter on ice beside (2, 4), (2, 5), and (2, 6).
           { seat: 1, role: "FIGHTER", at: { x: 3, y: 5 } },
         ],
         ice: [...bridge(2), { at: { x: 3, y: 5 } }, { at: { x: 1, y: 5 } }],
       });
-    const from = { x: 2, y: 2 };
-    const column = lineV7(from, 0, 1, 5);
-    const sled = scene("RAIDER");
-    // Straight through the zone to the far end of the ice.
-    expect(spent(sled, from, column)).toMatchObject({
-      legal: true,
-      spentPoints2: 1,
-      interruption: null,
-    });
-    acceptV7(sled, 0, move(sled, from, column));
-    // It may stop in the zone, too.
-    acceptV7(sled, 0, move(sled, from, column.slice(0, 3)));
-    // A turn in the zone ends the Move there.
-    expect(
-      rejectV7(
-        sled,
-        0,
-        move(sled, from, [...column.slice(0, 2), { x: 1, y: 5 }]),
-      ),
-    ).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "ZOC_STOPS_MOVE" },
-    });
-    expect(destinations(sled, from)).toContainEqual({ x: 2, y: 7 });
-    // The Snow Hunter has Runners but stops in the zone.
-    const hunter = scene("MARKSMAN");
-    expect(rejectV7(hunter, 0, move(hunter, from, column.slice(0, 3)))).toEqual(
-      {
+    const from = { x: 2, y: 3 };
+    const column = lineV7(from, 0, 1, 4);
+    for (const role of ["RAIDER", "MARKSMAN", "FIGHTER"] as const) {
+      const state = scene(role);
+      expect(
+        rejectV7(state, 0, move(state, from, column.slice(0, 2))),
+        role,
+      ).toEqual({
         code: "MOVEMENT_ILLEGAL",
         params: { reason: "ZOC_STOPS_MOVE" },
-      },
-    );
-    acceptV7(hunter, 0, move(hunter, from, column.slice(0, 2)));
-    expect(destinations(hunter, from)).not.toContainEqual({ x: 2, y: 7 });
-    // So does a Yeti.
-    const yeti = scene("FIGHTER");
-    expect(destinations(yeti, from)).toContainEqual({ x: 2, y: 4 });
-    expect(destinations(yeti, from)).not.toContainEqual({ x: 2, y: 5 });
+      });
+      acceptV7(state, 0, move(state, from, column.slice(0, 1)));
+      expect(destinations(state, from), role).toContainEqual({ x: 2, y: 4 });
+      expect(destinations(state, from), role).not.toContainEqual({
+        x: 2,
+        y: 5,
+      });
+    }
   });
 
-  it("a Sled meeting a zone it had not seen glides on while it goes straight", () => {
+  it("a Sled meeting a zone it had not seen stops there (it glided on before 7r135)", () => {
     const base = frozenArenaV7({
       units: [
-        { seat: 0, role: "RAIDER", at: { x: 2, y: 2 } },
+        { seat: 0, role: "RAIDER", at: { x: 2, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 3, y: 6 } },
       ],
       ice: bridge(2),
@@ -355,23 +323,22 @@ describe("Runners (Ice Folk movement, pulp_wars-s55m.2)", () => {
           : player,
       ),
     };
-    const from = { x: 2, y: 2 };
-    const whole = lineV7(from, 0, 1, 5);
+    const from = { x: 2, y: 3 };
+    const whole = lineV7(from, 0, 1, 4);
     const result = acceptV7(hidden, 0, move(hidden, from, whole));
     expect(
       navalUnitV7(result.state, navalUnitAtV7(hidden, from).id).at,
-    ).toEqual({ x: 2, y: 7 });
+    ).toEqual({ x: 2, y: 5 });
     expect(
       result.events.some((event) => event.kind === "UNIT_MOVE_INTERRUPTED"),
-    ).toBe(false);
+    ).toBe(true);
   });
 
-  it("publishes skating and Runners on the public unit stats", () => {
+  it("publishes no skating or Runners stat (gone with 7r135)", () => {
     const state = frozenArenaV7({
       units: [
         { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
         { seat: 0, role: "RAIDER", at: { x: 4, y: 2 } },
-        { seat: 0, role: "MARKSMAN", at: { x: 6, y: 2 } },
       ],
       ice: bridge(2),
     });
@@ -380,18 +347,14 @@ describe("Runners (Ice Folk movement, pulp_wars-s55m.2)", () => {
       view.unitStats.find(
         (entry) => entry.unitId === navalUnitAtV7(state, at).id,
       )?.iceFolk;
-    expect(stats({ x: 2, y: 2 })).toMatchObject({
-      skates: true,
-      runners: false,
-    });
-    expect(stats({ x: 4, y: 2 })).toMatchObject({
-      skates: true,
-      runners: true,
-    });
-    expect(stats({ x: 6, y: 2 })).toMatchObject({
-      skates: true,
-      runners: true,
-    });
+    for (const at of [
+      { x: 2, y: 2 },
+      { x: 4, y: 2 },
+    ]) {
+      expect(stats(at)).toMatchObject({ glides: true });
+      expect(stats(at)).not.toHaveProperty("skates");
+      expect(stats(at)).not.toHaveProperty("runners");
+    }
   });
 
   it("every offered Move of an Ice Folk unit on and around ice is accepted as offered", () => {
@@ -438,7 +401,7 @@ describe("Runners (Ice Folk movement, pulp_wars-s55m.2)", () => {
       );
   });
 
-  it("gives a visible Ice Folk unit its skating reach in the threatened tiles", () => {
+  it("gives a visible Ice Folk unit its Glide reach in the threatened tiles", () => {
     const state = frozenArenaV7({
       units: [
         { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
@@ -447,26 +410,31 @@ describe("Runners (Ice Folk movement, pulp_wars-s55m.2)", () => {
       ice: [...bridge(2), ...bridge(7)],
     });
     const opponent = viewForV7(state, seatV7(state, 1).id);
-    // The Yeti skates to (2, 4) and strikes row 5, not row 6.
+    // The Yeti steps onto (2, 3) (a full point from bare land) and strikes
+    // row 4, not row 5.
     const yeti = navalUnitAtV7(state, { x: 2, y: 2 });
     const yetiReach = queryThreatenedTilesV7(opponent, yeti.id);
     expect(yetiReach).toEqual(
       expect.arrayContaining([
-        { x: 1, y: 5 },
-        { x: 2, y: 5 },
-        { x: 3, y: 5 },
+        { x: 1, y: 4 },
+        { x: 2, y: 4 },
+        { x: 3, y: 4 },
       ]),
     );
-    expect(yetiReach).not.toContainEqual({ x: 2, y: 6 });
-    // The Sled glides to the far end and strikes the shore beyond.
+    expect(yetiReach).not.toContainEqual({ x: 2, y: 5 });
+    // The Sled reaches (7, 5) (a full point, then two halves) and strikes
+    // row 6, never the far shore (it glided there before 7r135).
     const sled = navalUnitAtV7(state, { x: 7, y: 2 });
-    expect(queryThreatenedTilesV7(opponent, sled.id)).toEqual(
+    const sledReach = queryThreatenedTilesV7(opponent, sled.id);
+    expect(sledReach).toEqual(
       expect.arrayContaining([
-        { x: 6, y: 9 },
-        { x: 7, y: 9 },
-        { x: 8, y: 9 },
+        { x: 6, y: 6 },
+        { x: 7, y: 6 },
+        { x: 8, y: 6 },
       ]),
     );
+    expect(sledReach).not.toContainEqual({ x: 7, y: 7 });
+    expect(sledReach).not.toContainEqual({ x: 7, y: 9 });
   });
 });
 

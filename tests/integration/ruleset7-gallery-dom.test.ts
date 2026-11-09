@@ -262,7 +262,7 @@ describe("Ruleset 7 Gallery", () => {
       expect(cell.dataset.faction).toBe("ICE_FOLK");
       expect(cell.dataset.emptyReason).toBe("no-ships");
       expect(cell.getAttribute("aria-label")).toBe(
-        "No ships: the Ice Folk freeze the sea and slide across it",
+        "No ships: the Ice Folk freeze the sea and walk across it",
       );
       expect(cell.textContent).toBe("Ice");
       expect(cell.querySelector('[data-icon="snowflake"]')).not.toBeNull();

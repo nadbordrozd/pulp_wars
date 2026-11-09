@@ -71,18 +71,38 @@ const ownMoves = (state: GameStateV7, from: CoordV7) => {
       command.kind === "MOVE" && command.unitId === unitId,
   );
 };
+const sortedTiles = (tiles: readonly CoordV7[]): CoordV7[] =>
+  [...tiles].sort((left, right) => left.y - right.y || left.x - right.x);
 const dives = (state: GameStateV7, from: CoordV7): CoordV7[] =>
-  ownMoves(state, from)
-    .filter(
-      (command) =>
-        command.path.length === 1 &&
-        Math.max(
-          Math.abs((command.path[0] as CoordV7).x - from.x),
-          Math.abs((command.path[0] as CoordV7).y - from.y),
-        ) > 1,
-    )
-    .map((command) => command.path[0] as CoordV7)
-    .sort((left, right) => left.y - right.y || left.x - right.x);
+  sortedTiles(
+    ownMoves(state, from)
+      .filter(
+        (command) =>
+          command.path.length === 1 &&
+          Math.max(
+            Math.abs((command.path[0] as CoordV7).x - from.x),
+            Math.abs((command.path[0] as CoordV7).y - from.y),
+          ) > 1,
+      )
+      .map((command) => command.path[0] as CoordV7),
+  );
+/**
+ * Skating is plain movement (`pulp_wars-ecnj`, 7r135): Glide crosses the
+ * capital's Snow and the holes' ice at half a point a step, so a Yeti walks
+ * to every hole of this radius-1 territory, and the movement query offers
+ * the walk (a dive only to a hole no walk reaches). The holes an offered
+ * Move ends on, by walk or dive.
+ */
+const holesReached = (
+  state: GameStateV7,
+  from: CoordV7,
+  holes: readonly CoordV7[] = DIVE_HOLES_V7,
+): CoordV7[] =>
+  sortedTiles(
+    ownMoves(state, from)
+      .map((command) => command.path.at(-1) as CoordV7)
+      .filter((to) => holes.some((hole) => hole.x === to.x && hole.y === to.y)),
+  );
 const dive = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
   kind: "MOVE",
   unitId: navalUnitAtV7(state, from).id,
@@ -92,8 +112,8 @@ const dive = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
 describe("the identity", () => {
   // The Ice Folk roster rework (`pulp_wars-s55m.4`) took 7r125 after it.
   it("was 7r124 after 7r123, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r124");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r123");
@@ -109,13 +129,16 @@ describe("the identity", () => {
 });
 
 describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
-  it("is offered from an own Fishing Hole to every other free one, as the unit's whole Move", () => {
+  it("goes from an own Fishing Hole to every other free one, as the unit's whole Move", () => {
     const state = diveScene([{ seat: 0, role: "FIGHTER", at: NORTH_WEST }]);
-    expect(dives(state, NORTH_WEST)).toEqual([
+    // Every other hole is offered; Glide walks there over the Snow (two
+    // half-point steps), so no dive is offered in this small territory.
+    expect(holesReached(state, NORTH_WEST)).toEqual([
       NORTH_EAST,
       SOUTH_WEST,
       SOUTH_EAST,
     ]);
+    expect(dives(state, NORTH_WEST)).toEqual([]);
     const yeti = navalUnitAtV7(state, NORTH_WEST);
     expect(validateMovementPathV7(state, yeti, [SOUTH_EAST])).toMatchObject({
       legal: true,
@@ -123,11 +146,9 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
       spentPoints2: 2,
       interruption: null,
     });
-    // The canonical enumeration offers the same dives.
+    // The canonical enumeration reaches the same holes.
     expect(
-      reachableMovementPathsV7(state, yeti)
-        .filter((path) => path.path.length === 1)
-        .map((path) => path.destination),
+      reachableMovementPathsV7(state, yeti).map((path) => path.destination),
     ).toEqual(expect.arrayContaining([NORTH_EAST, SOUTH_WEST, SOUTH_EAST]));
     const result = acceptV7(state, 0, dive(state, NORTH_WEST, SOUTH_EAST));
     expect(result.events[0]).toEqual({
@@ -154,12 +175,12 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
       { seat: 0, role: "MARKSMAN", at: NORTH_EAST },
       { seat: 0, role: "FIGHTER", at: beside },
     ]);
-    expect(dives(state, NORTH_WEST)).toEqual([SOUTH_WEST, SOUTH_EAST]);
+    expect(holesReached(state, NORTH_WEST)).toEqual([SOUTH_WEST, SOUTH_EAST]);
     expect(rejectV7(state, 0, dive(state, NORTH_WEST, NORTH_EAST))).toEqual({
       code: "MOVEMENT_ILLEGAL",
       params: { reason: "OCCUPIED" },
     });
-    // A unit beside the holes, not on one: no dive.
+    // A unit beside the holes, not on one: no dive (it walks to them).
     expect(dives(state, beside)).toEqual([]);
     expect(rejectV7(state, 0, dive(state, beside, SOUTH_EAST))).toEqual({
       code: "MOVEMENT_ILLEGAL",
@@ -182,7 +203,12 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
       [{ seat: 0, role: "FIGHTER", at: NORTH_WEST }],
       [NORTH_WEST, SOUTH_EAST],
     );
-    expect(dives(state, NORTH_WEST)).toEqual([SOUTH_EAST]);
+    expect(holesReached(state, NORTH_WEST, [SOUTH_EAST])).toEqual([SOUTH_EAST]);
+    const yeti = navalUnitAtV7(state, NORTH_WEST);
+    expect(validateMovementPathV7(state, yeti, [SOUTH_EAST])).toMatchObject({
+      legal: true,
+      spentPoints2: 2,
+    });
     expect(
       rejectV7(state, 0, dive(state, NORTH_WEST, SOUTH_WEST)).params,
     ).toEqual({ reason: "NOT_ADJACENT" });
@@ -201,11 +227,13 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
     );
   });
 
-  it("the Normal AI dives to reach an enemy it can then strike", () => {
+  it("the Normal AI goes to the hole beside an enemy it can then strike", () => {
     // A weak Human Marksman on the ice beside the south-east hole; the Yeti
-    // on the north-west hole reaches it only by the dive. A land bridge
-    // down column 5 joins the two capitals, so no ice crossing holds the
-    // Yeti back, and the seat's other units have acted.
+    // on the north-west hole reached it only by the dive until Glide
+    // crossed the ice (`pulp_wars-ecnj`, 7r135): now the offered Move is the
+    // walk over the capital's Snow. A land bridge down column 5 joins the
+    // two capitals, so no ice crossing holds the Yeti back, and the seat's
+    // other units have acted.
     const base = withFishingHolesV7(
       frozenArenaV7({
         units: [
@@ -235,7 +263,9 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
     const best = chooseNormalCommandV7(view).candidates.find(
       (item) => "unitId" in item.command && item.command.unitId === yeti.id,
     );
-    expect(best?.command).toEqual(dive(state, NORTH_WEST, SOUTH_EAST));
+    expect(best?.command).toMatchObject({ kind: "MOVE", unitId: yeti.id });
+    if (best?.command.kind !== "MOVE") throw new Error("no Move");
+    expect(best.command.path.at(-1)).toEqual(SOUTH_EAST);
   });
 });
 

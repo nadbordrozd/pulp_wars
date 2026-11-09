@@ -34,7 +34,6 @@ import {
   COLD_SNAP_NO_TARGET_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
   FROZEN_CANNOT_ACT_V7,
-  GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_HELP_RULES_V7,
   SHATTERS_PREVIEW_V7,
   coldSnapSummaryV7,
@@ -66,10 +65,7 @@ import {
   closeDetailsV7,
   openUnitDetailsV7,
 } from "../fixtures/v7-unit-card-dom";
-import {
-  DIVE_MOVE_LABEL_V7,
-  SKATE_MOVE_LABEL_V7,
-} from "../../src/render/frozen-sea-presentation-v7";
+import { DIVE_MOVE_LABEL_V7 } from "../../src/render/frozen-sea-presentation-v7";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
@@ -215,10 +211,10 @@ describe("Ice Folk unit dock", () => {
       "Blizzard",
       "Cold Snap",
       // (Her Frost Bolt went with the one Freeze effect, `pulp_wars-xv0t`.)
+      // Glide covers Snow and ice (`pulp_wars-ecnj`, 7r135; "Skates" before).
       "Glide",
       // Ice Folk movement (`pulp_wars-s55m.2`): every Ice Folk land unit
-      // skates and dives.
-      "Skates",
+      // dives.
       "Dive",
       // The one Freeze effect (`pulp_wars-xv0t`): what her Cold Snap does
       // to each tile.
@@ -334,40 +330,40 @@ describe("Ice Folk unit dock", () => {
       document.querySelector('.v7-selection-dock [data-unit-status="snow"]'),
     ).toBeNull();
     expect(document.querySelector('[data-modifier-source="snow"]')).toBeNull();
-    // Its range reaches two tiles inside the Snow: the legend names the
-    // pale-ice outlines, and the board marks them.
-    expect(requiredElement('[data-landing-marker="glide"]').textContent).toBe(
-      GLIDE_MOVE_LABEL_V7,
+    // Its range reaches two tiles inside the Snow, marked as any Move
+    // (`pulp_wars-ecnj`, 7r135: the Glide tiles and their legend are gone).
+    const reach = boardPlan(host).targets.filter(
+      (target) => target.family === "MOVE",
     );
     expect(
-      boardPlan(host).targets.some((target) => target.glide === true),
+      reach.some(
+        (target) =>
+          Math.max(
+            Math.abs(target.at.x - ICE_FOLK_GLIDE_V7.inside.x),
+            Math.abs(target.at.y - ICE_FOLK_GLIDE_V7.inside.y),
+          ) === 2,
+      ),
     ).toBe(true);
-    // A unit on open ground has neither.
+    for (const target of reach) expect(target).not.toHaveProperty("glide");
+    expect(document.querySelector("[data-landing-marker]")).toBeNull();
+    // A unit on open ground has no Snow term either.
     selectUnitAt(controller, host, ICE_FOLK_GLIDE_V7.outside);
-    expect(document.querySelector('[data-landing-marker="glide"]')).toBeNull();
     expect(document.querySelector('[data-modifier-source="snow"]')).toBeNull();
-    expect(
-      boardPlan(host).targets.some((target) => target.glide === true),
-    ).toBe(false);
     app.destroy();
   });
 });
 
-describe("skating and dives on the ice (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
-  it("names the tile only skating reaches", () => {
+describe("Glide and dives on the ice (Ice Folk movement)", () => {
+  it("marks no tile as skating's: a Move on the ice is plain movement (`pulp_wars-ecnj`)", () => {
     const controller = new FixtureController(frozenGlacierUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, FROZEN_GLACIER_UI_V7.walker);
-    expect(requiredElement('[data-landing-marker="glacier"]').textContent).toBe(
-      SKATE_MOVE_LABEL_V7,
-    );
-    expect(
-      boardPlan(host)
-        .targets.filter((target) => target.skate === true)
-        .map((target) => target.at),
-    ).toEqual([FROZEN_GLACIER_UI_V7.glacierTile]);
-    expect(document.querySelector('[data-landing-marker="dive"]')).toBeNull();
+    expect(document.querySelector("[data-landing-marker]")).toBeNull();
+    for (const target of boardPlan(host).targets) {
+      expect(target).not.toHaveProperty("skate");
+      expect(target).not.toHaveProperty("slide");
+    }
     app.destroy();
   });
 

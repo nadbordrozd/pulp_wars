@@ -109,11 +109,11 @@ function meanings(
 
 describe("the identity (pulp_wars-ev6q)", () => {
   it("was 7r129 after 7r128, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
-    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r128");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
+    expect(PRIOR_RULESET_7_IDS.at(-7)).toBe("pulp-wars-poc-7r128");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-7)).toBe(
       "pulpWars.save.v7r128.current",
     );
   });

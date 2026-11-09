@@ -15,7 +15,6 @@ import {
   ICE_MOVE_TEXT_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
-  SKATE_TRAIL_LABEL_V7,
 } from "../../src/render/frozen-sea-presentation-v7";
 import {
   boardPlan,
@@ -37,7 +36,8 @@ import {
 // docs/ui/BOARD_TARGETING.md section 3.5): no Freeze for a line role since
 // the one Freeze effect (`pulp_wars-xv0t`), the Ice Witch's one-tap Cold
 // Snap and its ring (`pulp_wars-s55m.1`),
-// the slide and the slip, a Frozen ship, the ice chip, and the Ice Folk
+// a Move on ice (plain movement since `pulp_wars-ecnj`; the slide and the
+// slip before), a Frozen ship, the ice chip, and the Ice Folk
 // technology cards, Help and Gallery.
 
 const COORDINATE = /\b\d{1,2}, ?\d{1,2}\b/;
@@ -176,35 +176,29 @@ describe("the Ice Witch's Cold Snap: one tap, units and water", () => {
 });
 
 describe("moving on ice", () => {
-  it("a skater sees the ice tiles it reaches, with its trail and the legend (Ice Folk movement, `pulp_wars-s55m.2`)", async () => {
+  it("a Yeti sees the ice tile it reaches as a plain Move mark, with no trail and no legend (skating is plain movement, `pulp_wars-ecnj`)", async () => {
     const { controller, host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     const yeti = unitAt(FROZEN_UI_V7.bridgeHead);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: yeti.id });
-    // A Yeti (Move 1) skates two bridge tiles, half a Move each.
-    const first = required(FROZEN_UI_V7.bridge[0]);
-    const last = required(FROZEN_UI_V7.bridge[1]);
+    // A Yeti (Move 1) on the bare shore: the step onto the ice is a full
+    // one (Glide needs a frozen tile at both ends), so it reaches the first
+    // bridge tile and no farther (two, skating, before 7r135).
+    const last = required(FROZEN_UI_V7.bridge[0]);
     const destination = required(
       boardPlan(host).targets.find(
         (target) => target.family === "MOVE" && at(target.at) === at(last),
       ),
     );
-    expect(destination.slide).toEqual([
-      { from: FROZEN_UI_V7.bridgeHead, tiles: [first, last] },
-    ]);
-    // It may stop on the first; the third is out of its reach.
-    expect(
-      boardPlan(host).targets.some((target) => at(target.at) === at(first)),
-    ).toBe(true);
-    for (const tile of FROZEN_UI_V7.bridge.slice(2))
+    expect(destination).not.toHaveProperty("slide");
+    expect(destination).not.toHaveProperty("skate");
+    for (const tile of FROZEN_UI_V7.bridge.slice(1))
       expect(
         boardPlan(host).targets.some((target) => at(target.at) === at(tile)),
       ).toBe(false);
-    const legend = requiredElement<HTMLElement>(
-      '.v7-selection-dock [data-landing-marker="slide"]',
-    );
-    expect(legend.textContent).toBe(SKATE_TRAIL_LABEL_V7);
+    // No skate trail, skate tile, Glide or slip legend: a Move on ice is
+    // marked as any Move.
     expect(
-      document.querySelector('.v7-selection-dock [data-landing-marker="slip"]'),
+      document.querySelector(".v7-selection-dock [data-landing-marker]"),
     ).toBeNull();
     host.callbacks?.onCommand(destination);
     await waitUntil(() => controller.accepted.length === 1);
@@ -241,9 +235,9 @@ describe("moving on ice", () => {
   });
 
   // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
-  // Golem has Move 1, so it skates two ice tiles at half a point each, a
-  // path too short for a trail (it drew one with Move 2).
-  it("the Snow Golem skates too: two ice tiles at half cost", () => {
+  // Golem has Move 1. Skating is plain movement (`pulp_wars-ecnj`, 7r135):
+  // from the bare shore the step onto the ice is a full one.
+  it("the Snow Golem walks onto the ice too: one tile from the bare shore", () => {
     const { host, app, unitAt } = rig(frozenSlideUiFixtureV7());
     host.callbacks?.onSelection({
       kind: "UNIT",
@@ -252,7 +246,9 @@ describe("moving on ice", () => {
     const onIce = boardPlan(host).targets.filter((target) =>
       FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
-    expect(onIce.length).toBeGreaterThan(1);
+    expect(onIce.map((target) => at(target.at))).toEqual([
+      at(required(FROZEN_UI_V7.bridge[0])),
+    ]);
     app.destroy();
   });
 

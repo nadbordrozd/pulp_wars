@@ -8178,7 +8178,7 @@ export function queryThreatenedTilesV7(
   // are a Hover Pods foot unit's (its launch tiles).
   const machine = publicUnitLaunchesV7(view, unit);
   // The Ice Folk revision section 11: the reach includes Glide on known
-  // Snow, Mountain-born paths, and Prowl (the public movement query), and a
+  // Snow and ice, Mountain-born paths, and Prowl (the public movement query), and a
   // Yeti reaches 2 from every Mountain origin (Rockfall).
   const origins = [
     unit.at,

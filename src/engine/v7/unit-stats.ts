@@ -71,7 +71,6 @@ import {
   shieldOfV7,
   unitShieldMaximumV7,
 } from "./martian";
-import { unitHasRunnersV7, unitSkatesV7 } from "./ice";
 import {
   batEscapeTilesV7,
   feastReadyV7,
@@ -260,17 +259,6 @@ export interface PublicIceFolkMechanicsV7 {
    * an ice tile in land form.
    */
   readonly onIce: boolean;
-  /**
-   * Ice Folk movement (`pulp_wars-s55m.2`, 7r124; `slides` before): the
-   * unit skates, each step onto ice costs it half a Move point.
-   */
-  readonly skates: boolean;
-  /**
-   * Ice Folk movement (`pulp_wars-s55m.2`): Runners, a step from ice onto
-   * ice straight on from the step before costs nothing (the Sled and the
-   * Snow Hunter).
-   */
-  readonly runners: boolean;
   /**
    * The frozen sea (section 8.10): Glacier's cover applies to the unit now
    * (on ice, with the capability, fortification 0). Public on a visible
@@ -1016,8 +1004,6 @@ export function publicUnitStatsV7(
             blizzard:
               unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
             onIce: unit.form === "LAND" && isIceAtV7(state, unit.at),
-            skates: unitSkatesV7(state, unit),
-            runners: unitHasRunnersV7(state, unit),
             iceCover,
           },
         }

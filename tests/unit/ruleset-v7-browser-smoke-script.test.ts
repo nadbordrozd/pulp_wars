@@ -54,7 +54,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
   });
 
-  it("plays the frozen sea in the CHIBI look: no Freeze, the Cold Snap, the slide, a Frozen ship", () => {
+  it("plays the frozen sea in the CHIBI look: no Freeze, the Cold Snap, the ice bridge, a Frozen ship", () => {
     // The frozen sea (bead pulp_wars-5ti.7, second part).
     const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
     expect(source).toContain("await captureFrozenSeaEvidence(");
@@ -72,15 +72,15 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(source).toContain(
       "trace?.command?.kind !== 'COLD_SNAP' || !trace.eventKinds.includes('TILES_FROZEN')",
     );
-    expect(source).toContain("the Sled did not reach the far shore");
+    expect(source).toContain("the Sled did not reach the third bridge tile");
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Frozen ship, and
     // the Witch's one-press Cold Snap.
     expect(source).toContain('[data-unit-status="frozen"]');
     expect(source).toContain('[data-action="ice-folk-cold-snap"]');
     expect(source).toContain("Ice Folk technology name: ");
-    // The Witch's ring is captured before the slide.
+    // The Witch's ring is captured before the ice bridge.
     expect(source.indexOf("frozen-witch-ring.png")).toBeLessThan(
-      source.indexOf("frozen-slide.png"),
+      source.indexOf("frozen-bridge.png"),
     );
   });
 
@@ -886,7 +886,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r134.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r135.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1170,7 +1170,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
     },
     persisted: {
       version: 7,
-      rulesetId: "pulp-wars-poc-7r134",
+      rulesetId: "pulp-wars-poc-7r135",
       commandIndex: 3,
     },
     ordinaryBoundary: {

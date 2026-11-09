@@ -14,7 +14,6 @@ import {
 } from "../../assets/sea-ice-v7";
 import {
   CRACK_ICE_PICK_V7,
-  SKATE_TRAIL_LABEL_V7,
   crackIceOutcomeTextV7,
   crackIceOutcomeV7,
   crackIceTargetLabelV7,
@@ -33,7 +32,8 @@ import type {
  * depth, its edges against open water, its snow or cracks), the Crack Ice
  * picking mode, the ring of the Ice Witch's Cold Snap (the one Freeze
  * effect, `pulp_wars-xv0t`, 7r133: water to ice, open land to Snow; the
- * line roles' `FREEZE` is gone), and the slide of a Move across ice. Everything is read from the
+ * line roles' `FREEZE` is gone; the skate trail went with `pulp_wars-ecnj`,
+ * 7r135). Everything is read from the
  * public view, the offered commands and the public previews.
  */
 
@@ -230,72 +230,4 @@ export function addFreezeRingEntriesV7(
     view,
     new Set(preview.targets.map((target) => target.unitId)),
   );
-}
-
-/** A slide inside a Move: from the first ice tile entered to the stop. */
-export interface MoveSlideV7 {
-  /** The tile the unit steps from. */
-  readonly from: CoordV7;
-  /** The ice tiles it crosses, in order; the last is where it stops. */
-  readonly tiles: readonly CoordV7[];
-}
-
-/**
- * What a Move does on ice, read from the command's own path (the path the
- * engine offers and will walk) and the view's ice list:
- *
- * a unit that skates (`stats.iceFolk.skates`): every run of two or more
- * ice tiles in one straight line is drawn as a skate trail (Ice Folk
- * movement, `pulp_wars-s55m.2`; a forced slide before). (The slip of every
- * other ground unit is gone with `pulp_wars-y242`, 7r132: such a unit never
- * enters ice, and a walker or flyer crosses it like land.)
- *
- * Null for a Move with no skate trail.
- */
-export function moveOnIceV7(
-  view: PlayerViewV7,
-  command: Extract<CommandV7, { kind: "MOVE" }>,
-): {
-  readonly slides: readonly MoveSlideV7[];
-} | null {
-  if (view.ice.length === 0) return null;
-  const unit = view.units.find((candidate) => candidate.id === command.unitId);
-  const end = command.path.at(-1);
-  if (unit === undefined || end === undefined || unit.form !== "LAND")
-    return null;
-  const ice = new Set(view.ice.map((entry) => key(entry.at)));
-  if (!command.path.some((at) => ice.has(key(at)))) return null;
-  const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
-  if (stats?.iceFolk?.skates !== true) return null;
-  const slides: MoveSlideV7[] = [];
-  let from = unit.at;
-  let run: CoordV7[] = [];
-  let runFrom = from;
-  let direction: string | null = null;
-  const flush = (): void => {
-    if (run.length >= 2) slides.push({ from: runFrom, tiles: run });
-    run = [];
-    direction = null;
-  };
-  for (const to of command.path) {
-    const step = `${Math.sign(to.x - from.x)},${Math.sign(to.y - from.y)}`;
-    if (!ice.has(key(to))) flush();
-    else if (run.length > 0 && step === direction) run.push(to);
-    else {
-      flush();
-      run = [to];
-      runFrom = from;
-      direction = step;
-    }
-    from = to;
-  }
-  flush();
-  return slides.length === 0 ? null : { slides };
-}
-
-/** The label a Move on ice adds to its cursor description, or null. */
-export function moveOnIceLabelV7(
-  onIce: ReturnType<typeof moveOnIceV7>,
-): string | null {
-  return onIce === null ? null : SKATE_TRAIL_LABEL_V7;
 }

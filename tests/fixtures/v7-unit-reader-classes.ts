@@ -830,7 +830,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
       "BOARD",
     "src/render/canvas/frozen-sea-board-plan-v7.ts::addFreezeRingEntriesV7":
       "BOARD",
-    "src/render/canvas/frozen-sea-board-plan-v7.ts::moveOnIceV7": "BOARD",
     "src/render/frozen-sea-presentation-v7.ts::frozenSeaBoundaryNoticeV7":
       "BOARD",
     // Bead pulp_wars-5ti.27: Crack Ice's reasons (a land unit standing on
@@ -871,16 +870,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/ice-folk-board-plan-v7.ts::iceFolkPickTargetsV7":
       "BOARD",
     "src/render/canvas/ice-folk-board-plan-v7.ts::selectedWitchV7": "BOARD",
-    // `pulp_wars-1wy.5`: the Glide tiles of an offered Move (the mover is
-    // on the board; a burrowed unit is offered no Move).
-    "src/render/canvas/ice-folk-board-plan-v7.ts::glideStepsV7": "BOARD",
-    "src/render/canvas/ice-folk-board-plan-v7.ts::moveIsGlideV7": "BOARD",
     // Ice Folk Freeze (`pulp_wars-w49.38`): a Stampede's line walks the
     // units on the board (a mound blocks a shove through the occupancy
     // predicate, which reads the view's `burrowed` list), a Frost Giant's
-    // Move freezes units on the board, and Glacier reads the mover.
+    // Move freezes units on the board, and a dive reads the mover (the
+    // skate and Glide tiles went with `pulp_wars-ecnj`).
     "src/render/ice-folk-presentation-v7.ts::stampedePlanV7": "BOARD",
-    "src/render/ice-folk-presentation-v7.ts::moveUsesSkateV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::moveIsDiveV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianPickEntriesV7":
       "BOARD",

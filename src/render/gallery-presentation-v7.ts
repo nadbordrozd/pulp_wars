@@ -445,7 +445,7 @@ export type GalleryUnitCellV7 =
 /** The Gallery's words for a faction with no ship in a naval row. */
 export const GALLERY_NO_SHIPS_LABEL_V7 = "Ice";
 export const GALLERY_NO_SHIPS_TEXT_V7 =
-  "No ships: the Ice Folk freeze the sea and slide across it";
+  "No ships: the Ice Folk freeze the sea and walk across it";
 
 /** A faction lays Eggs when one of its roles is egg-laid (the Dinosaurs). */
 export function factionLaysEggsV7(faction: FactionIdV7): boolean {

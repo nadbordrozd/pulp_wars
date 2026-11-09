@@ -10,7 +10,7 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
-import { iceAtV7, unitSkatesV7 } from "../engine/v7/ice";
+import { iceAtV7, unitIsIceFolkGroundV7 } from "../engine/v7/ice";
 import {
   previewColdSnapV7,
   previewColdWakeV7,
@@ -33,7 +33,7 @@ import type {
  * **An Ice Folk seat** has no ship and so no naval plan; it has an ice plan
  * (`iceSeaPlanV7`): the crossing it freezes toward an objective it cannot
  * walk to, the builder that freezes it, and the wave that waits at its head
- * and skates across. The one Freeze effect (`pulp_wars-xv0t`, 7r133): the
+ * and walks across. The one Freeze effect (`pulp_wars-xv0t`, 7r133): the
  * builder is an Ice Witch, who casts her Cold Snap from the crossing's tip,
  * or a Frost Giant, whose Cold Wake freezes the ring around every tile it
  * ends a Move on (it walks out along the crossing, one new tile a Move).
@@ -49,10 +49,9 @@ import type {
  * lands beside the ice, and every other seat Cracks the ice
  * (`iceCrackScoreV7`) to open an own or allied dock iced over, to break a
  * bridge that threatens a center, and to open its ships' way. The threat
- * estimate follows Ice Folk movement (`pulp_wars-s55m.2`): a skate onto ice
- * costs half a step, a Runners glide straight on is free
- * (`iceGlideLineV7`, through zones of control for the Sled), and a Fishing
- * Hole dive reaches every other own hole.
+ * estimate follows Ice Folk movement: Glide (`pulp_wars-ecnj`, 7r135; Skate
+ * and Runners before) makes a step between frozen tiles, Snow or ice, cost
+ * half, and a Fishing Hole dive reaches every other own hole.
  *
  * The frozen sea redesign (`pulp_wars-5ti.26`,
  * docs/product/RULESET_7_ICE_REDESIGN.md section 3): ice is permanent, so no
@@ -193,7 +192,7 @@ const isWater = (tile: ExploredTileV7): boolean => tile.biome === null;
  * `unit` on `at` on their next turn), and `standTiles`: the tiles a visible
  * hostile unit can stand on and still use its primary action this turn (its
  * own tile, and every tile its Move reaches when it may act after a Move;
- * the slide is followed; every tile its Move reaches for a Frost Giant,
+ * every tile its Move reaches for a Frost Giant,
  * whose Cold Wake freezes on arrival).
  */
 export interface FrozenSeaToolsV7 {
@@ -222,50 +221,6 @@ export interface FrozenSeaToolsV7 {
    * consider passes over it, or an allied unit stands on ice beside it).
    */
   readonly plannedThrough: (at: CoordV7) => boolean;
-}
-
-// --- The glide in a reach estimate ---------------------------------------------
-
-/**
- * Ice Folk movement (`pulp_wars-s55m.2`, 7r124) for an estimate over the
- * public view: the tiles a unit with Runners glides to, free, after it has
- * stepped onto the known ice tile `first` in the direction (`dx`, `dy`):
- * every next tile straight on while it is on the board, explored, ice, and
- * not held by a unit that blocks it (`blocked`: a hostile unit; an own one
- * is passed), and while the tile it is on is in no zone of control that
- * stops it (`zoc`: always false for the Sled, which glides through zones).
- * `first` itself is not in the list.
- */
-export function iceGlideLineV7(
-  view: PlayerViewV7,
-  first: CoordV7,
-  dx: number,
-  dy: number,
-  blocked: (at: CoordV7) => boolean,
-  zoc: (at: CoordV7) => boolean,
-): readonly CoordV7[] {
-  const line: CoordV7[] = [];
-  if (dx === 0 && dy === 0) return line;
-  let current = first;
-  for (;;) {
-    if (zoc(current)) return line;
-    const next = { x: current.x + dx, y: current.y + dy };
-    if (
-      exploredTile(view, next) === undefined ||
-      !isIceAtV7(view, next) ||
-      blocked(next)
-    )
-      return line;
-    line.push(next);
-    current = next;
-  }
-}
-
-/** Whether the unit skates on ice (`pulp_wars-s55m.2`): a land-form unit of the Ice Folk kind, in a view with ice. */
-export function iceSkaterV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
-  return (
-    view.ice.length > 0 && unit.form === "LAND" && unitSkatesV7(view, unit)
-  );
 }
 
 // --- The ice plan ----------------------------------------------------------------
@@ -473,7 +428,7 @@ const COST_CENTER_HEAD = 2 * COST_TURN;
  * to a tile next to the target's land (`targetSteps`). A tile to freeze
  * costs 1000, one that is already ice `iceCost`, a tile within 3 of a
  * visible hostile Battleship 3000 more, a change of direction 10 (a
- * straight run slides), each step of the walk at either end `walkCost`,
+ * straighter crossing is preferred), each step of the walk at either end `walkCost`,
  * and a head on a settlement center 20 (the wave enters past its
  * garrison). A dock is never part of it (a dock never freezes).
  */
@@ -1338,7 +1293,7 @@ export type IceMoveV7 =
  *   the head (`STAGE`, 720) and does not step onto the crossing, or onto
  *   the builder's stand tile, until it is ready (`HOLD`): complete, or one
  *   Freeze short. Then it crosses
- *   (`CROSS`, 1108) by the offered Moves (skating, `pulp_wars-s55m.2`).
+ *   (`CROSS`, 1108) by the offered Moves (Glide on the ice, `pulp_wars-ecnj`).
  * - No Move of the plan goes into lethal reach the unit is not already in.
  */
 export function iceCrossingMoveV7(
@@ -1407,8 +1362,7 @@ export function iceCrossingMoveV7(
             priority: ICE_BUILD_MOVE_PRIORITY_V7,
             strategic: 40,
           };
-    // The walk to the stand tile, over land or the ice short of it (a
-    // slide that enters the crossing askew stops before the tip), never
+    // The walk to the stand tile, over land or the ice short of it, never
     // past it.
     if (there < standSteps) return { kind: "HOLD" };
     if (there < here && !lethal())
@@ -1583,7 +1537,7 @@ export function iceFreezeReachesV7(
 /**
  * Section 13.3: whether a Move of an own ship to `to` is refused: a
  * visible hostile Witch or Frost Giant can Freeze it there this
- * turn (its reach by a Move, the slide on known ice included, plus its
+ * turn (its reach by a Move, Glide on known ice included, plus its
  * ring), and it cannot where the ship stands (a ship already in reach may
  * go anywhere). A Battleship therefore shells the ice from three tiles and
  * comes no nearer. Ships only.
@@ -1700,7 +1654,7 @@ function iceJoinsV7(
  *   city center, a visible hostile Ice Folk unit is within 6 of that
  *   center, and the Crack breaks it; the nearer the center the better (ten
  *   a step nearer), and five more when the ice joins it to that unit (the
- *   line it would slide along).
+ *   ice it would walk along).
  * - **Lane** (1107): the cracker is afloat and the tile is the next step of
  *   its public water route (`route`, where ice costs `iceRouteStepCostV7`):
  *   no tile around it leads on as cheaply.
@@ -1752,7 +1706,9 @@ export function iceCrackScoreV7(
   if (breaks) {
     const sliders = view.units.filter(
       (unit) =>
-        unit.hp > 0 && tools.isHostile(unit.ownerId) && iceSkaterV7(view, unit),
+        unit.hp > 0 &&
+        tools.isHostile(unit.ownerId) &&
+        unitIsIceFolkGroundV7(view, unit),
     );
     const centers = view.cities.filter(
       (city) =>

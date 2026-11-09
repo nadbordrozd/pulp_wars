@@ -652,7 +652,8 @@ export function blizzardHalvedDamageV7(damage: number): number {
 /**
  * Section 6.2 (1): whether the unit Glides: a land-form unit of an Ice Folk
  * seat whose role Glides (every Ice Folk land role but the Frost Wyrm, a
- * flyer).
+ * flyer): a step from a frozen tile (Snow or ice) onto a frozen tile costs
+ * it half, like a Road (ice too since `pulp_wars-ecnj`, 7r135).
  */
 export function unitGlidesV7(
   roster: FactionRosterV7,

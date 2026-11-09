@@ -26,7 +26,6 @@ import {
   iceSeaPlanV7,
   iceSeaResearchV7,
   iceShipMoveRejectedV7,
-  iceGlideLineV7,
   iceTargetBonusV7,
   type FrozenSeaToolsV7,
   type IcePlanV7,
@@ -574,19 +573,22 @@ describe("the builders: a bridge frozen toward the far shore", () => {
   });
 
   it("steps onto the newest ice, and its Cold Wake freezes the next tile", () => {
+    // The Frost Giant stands on the first ice tile of the crossing (since
+    // skating became plain movement, `pulp_wars-ecnj`, 7r135, a step from
+    // the bare head onto the ice is a full one, so it starts on the ice).
     const { state, view } = scene({
       technologies: [PACK_ICE, PACK_ICE],
       units: [
-        { seat: 0, role: "JUGGERNAUT", at: HEAD },
+        { seat: 0, role: "JUGGERNAUT", at: COLUMN[0] as CoordV7 },
         { seat: 0, role: "FIGHTER", at: { x: 3, y: 1 } },
       ],
       ice: column(2),
     });
-    const builder = idAt(state, HEAD);
+    const builder = idAt(state, COLUMN[0] as CoordV7);
     expect(requiredPlan(view).builders).toEqual([builder]);
     const step = bestOf(view, builder);
     expect(step?.score.priority).toBe(ICE_BUILD_MOVE_PRIORITY_V7);
-    // The Frost Giant (Move 1) skates two ice tiles to the tip.
+    // The Frost Giant (Move 1) Glides one ice tile to the tip.
     expect(endOf(step?.command as CommandV7)).toEqual({ x: 3, y: 4 });
     const result = acceptV7(state, 0, step?.command as CommandV7);
     expect(navalUnitV7(result.state, builder).at).toEqual({ x: 3, y: 4 });
@@ -682,7 +684,7 @@ describe("the builders: a bridge frozen toward the far shore", () => {
   });
 });
 
-describe("the wave: it waits at the head and slides across", () => {
+describe("the wave: it waits at the head and walks across", () => {
   // The builder on the tip is a Witch (the one Freeze effect: her Cold
   // Snap freezes the next tile from there).
   const wave = (ice: number): FrozenArenaOptionsV7 => ({
@@ -724,17 +726,18 @@ describe("the wave: it waits at the head and slides across", () => {
     expect(Math.abs(end.x - HEAD.x)).toBeLessThan(Math.abs(7 - HEAD.x));
   });
 
-  it("crosses by the offered skate once the crossing is one tile short", () => {
+  it("crosses by the offered Move once the crossing is one tile short", () => {
     const { state, view } = scene(wave(4));
     const waiting = idAt(state, HEAD);
     expect(requiredPlan(view)).toMatchObject({ unfrozen: 1, ready: true });
     const cross = bestOf(view, waiting);
     expect(cross?.score.priority).toBe(ICE_CROSS_MOVE_PRIORITY_V7);
-    // Ice Folk movement (`pulp_wars-s55m.2`): it skates two tiles (half a
-    // Move each) toward the builder on the tip.
-    expect(endOf(cross?.command as CommandV7)).toEqual({ x: 3, y: 4 });
+    // Skating is plain movement (`pulp_wars-ecnj`, 7r135): from the bare
+    // head the step onto the ice is a full one, so it crosses one tile
+    // toward the builder on the tip (it skated two before).
+    expect(endOf(cross?.command as CommandV7)).toEqual({ x: 3, y: 3 });
     const result = acceptV7(state, 0, cross?.command as CommandV7);
-    expect(navalUnitV7(result.state, waiting).at).toEqual({ x: 3, y: 4 });
+    expect(navalUnitV7(result.state, waiting).at).toEqual({ x: 3, y: 3 });
     // The builder's last Cold Snap comes before the wave's Moves.
     const builder = idAt(state, { x: 3, y: 6 });
     expect(bestOf(view, builder)?.command).toEqual({
@@ -755,13 +758,14 @@ describe("the wave: it waits at the head and slides across", () => {
       builders: [],
       stand: null,
     });
-    // The lead unit steps ashore; the next skates two tiles on behind it.
+    // The lead unit steps ashore; the next steps onto the ice behind it (a
+    // full point from the bare head since `pulp_wars-ecnj`, 7r135).
     const ashore = bestOf(view, lead);
     expect(ashore?.command.kind).toBe("MOVE");
     expect(endOf(ashore?.command as CommandV7)?.y).toBe(8);
     const next = bestOf(view, idAt(state, HEAD));
     expect(next?.score.priority).toBe(ICE_CROSS_MOVE_PRIORITY_V7);
-    expect(endOf(next?.command as CommandV7)).toEqual({ x: 3, y: 4 });
+    expect(endOf(next?.command as CommandV7)).toEqual({ x: 3, y: 3 });
     // A unit that has crossed has the ordinary policy again.
     const landed = acceptV7(state, 0, ashore?.command as CommandV7).state;
     const after = viewOf(landed);
@@ -1015,8 +1019,9 @@ describe("every seat against the ice", () => {
     ice,
   });
 
-  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): skating and Runners.
-  it("follows skating and the Runners glide in the threat estimate", () => {
+  // Skating is plain movement (`pulp_wars-ecnj`, 7r135; skating and
+  // Runners of `pulp_wars-s55m.2` before): Glide in the threat estimate.
+  it("follows Glide on the ice in the threat estimate, as the engine", () => {
     const { state, view } = scene(
       against(
         [
@@ -1030,21 +1035,22 @@ describe("every seat against the ice", () => {
       ),
     );
     const yeti = publicUnit(view, idAt(state, { x: 3, y: 8 }));
-    // A Yeti (Move 1) skates two ice tiles: (3, 7) and (3, 6), half each.
+    // A Yeti (Move 1) on the bare shore: the step onto the ice is a full
+    // one, so it stands on (3, 7) and no farther (it skated to (3, 6)
+    // before).
     const stands = publicStandTilesForPolicyV7(view, yeti);
     expect(stands).toContainEqual({ x: 3, y: 7 });
-    expect(stands).toContainEqual({ x: 3, y: 6 });
-    expect(stands).not.toContainEqual({ x: 3, y: 5 });
+    expect(stands).not.toContainEqual({ x: 3, y: 6 });
     const reach = publicThreatenedTilesForPolicyV7(view, yeti);
-    expect(reach).toEqual(expect.arrayContaining([{ x: 3, y: 5 }]));
-    expect(reach).not.toContainEqual({ x: 3, y: 4 });
+    expect(reach).toEqual(expect.arrayContaining([{ x: 3, y: 6 }]));
+    expect(reach).not.toContainEqual({ x: 3, y: 5 });
     // The engine's own query agrees.
     expect(queryThreatenedTilesV7(view, yeti.id)).toEqual(
-      expect.arrayContaining([{ x: 3, y: 5 }]),
+      expect.arrayContaining([{ x: 3, y: 6 }]),
     );
     expect(queryThreatenedTilesV7(view, yeti.id)).not.toContainEqual({
       x: 3,
-      y: 4,
+      y: 5,
     });
     // And the Moves the estimate assumed are the ones the engine offers its
     // owner on its turn.
@@ -1052,37 +1058,22 @@ describe("every seat against the ice", () => {
       queryPlayerCommandsV7(viewOf(turnOf(state, 1), 1)),
       yeti.id,
     );
-    expect(offered).toContain("3,6");
-    expect(offered).not.toContain("3,5");
-    // A Sled glides free straight on along the ice: every tile of it.
+    expect(offered).toContain("3,7");
+    expect(offered).not.toContain("3,6");
+    // A Sled (Move 2): a full point onto the ice, then two half points: it
+    // stands on three tiles of it, never the fourth (Runners slid it the
+    // whole line before).
     const sled = publicUnit(view, idAt(state, { x: 8, y: 8 }));
     const sledStands = publicStandTilesForPolicyV7(view, sled);
-    for (const at of lineV7({ x: 8, y: 8 }, 0, -1, 4))
+    for (const at of lineV7({ x: 8, y: 8 }, 0, -1, 3))
       expect(sledStands).toContainEqual(at);
-    expect(
-      endsOf(queryPlayerCommandsV7(viewOf(turnOf(state, 1), 1)), sled.id),
-    ).toContain("8,4");
-    // A hostile unit, or a zone of control, on the ice ends the glide.
-    expect(
-      iceGlideLineV7(
-        view,
-        { x: 3, y: 7 },
-        0,
-        -1,
-        (at) => at.y === 5,
-        () => false,
-      ),
-    ).toEqual([{ x: 3, y: 6 }]);
-    expect(
-      iceGlideLineV7(
-        view,
-        { x: 3, y: 7 },
-        0,
-        -1,
-        () => false,
-        (at) => at.y === 6,
-      ),
-    ).toEqual([{ x: 3, y: 6 }]);
+    expect(sledStands).not.toContainEqual({ x: 8, y: 4 });
+    const sledOffered = endsOf(
+      queryPlayerCommandsV7(viewOf(turnOf(state, 1), 1)),
+      sled.id,
+    );
+    expect(sledOffered).toContain("8,5");
+    expect(sledOffered).not.toContain("8,4");
   });
 
   it("keeps a ship out of a hostile Frost Giant's Cold Wake reach", () => {
@@ -1100,11 +1091,13 @@ describe("every seat against the ice", () => {
     expect(iceHostileFreezersV7(view, tools).map((unit) => unit.id)).toEqual([
       giant,
     ]);
-    // Beside the farthest tile the Frost Giant skates to, (3, 6).
-    expect(iceFreezeReachesV7(view, tools, { x: 4, y: 5 })).toBe(true);
-    expect(iceFreezeReachesV7(view, tools, { x: 4, y: 4 })).toBe(false);
+    // Beside the farthest tile the Frost Giant reaches, (3, 7): from the
+    // bare shore the step onto the ice is a full one (`pulp_wars-ecnj`,
+    // 7r135; it skated to (3, 6) before).
+    expect(iceFreezeReachesV7(view, tools, { x: 4, y: 6 })).toBe(true);
+    expect(iceFreezeReachesV7(view, tools, { x: 4, y: 5 })).toBe(false);
     const offered = endsOf(queryPlayerCommandsV7(view), boat);
-    expect(offered).toContain("4,5");
+    expect(offered).toContain("4,6");
     const kept = candidateEnds(view, boat);
     expect(kept.length).toBeGreaterThan(0);
     for (const end of kept) {
@@ -1114,23 +1107,23 @@ describe("every seat against the ice", () => {
         iceShipMoveRejectedV7(view, tools, publicUnit(view, boat), { x, y }),
       ).toBe(false);
     }
-    expect(kept).not.toContain("4,5");
-    // The projection is the engine's: with the boat on (4, 5) the Ice Folk
-    // seat skates its Frost Giant to (3, 6), and its Cold Wake Freezes the boat.
-    const sailed = patchNavalUnitV7(state, boat, { at: { x: 4, y: 5 } });
+    expect(kept).not.toContain("4,6");
+    // The projection is the engine's: with the boat on (4, 6) the Ice Folk
+    // seat moves its Frost Giant to (3, 7), and its Cold Wake Freezes the boat.
+    const sailed = patchNavalUnitV7(state, boat, { at: { x: 4, y: 6 } });
     const theirs = turnOf(sailed, 1);
-    const skate = queryPlayerCommandsV7(viewOf(theirs, 1)).find(
+    const step = queryPlayerCommandsV7(viewOf(theirs, 1)).find(
       (command) =>
         command.kind === "MOVE" &&
         command.unitId === giant &&
         endOf(command)?.x === 3 &&
-        endOf(command)?.y === 6,
+        endOf(command)?.y === 7,
     );
-    if (skate === undefined) throw new Error("the skate is not offered");
+    if (step === undefined) throw new Error("the step is not offered");
     expect(
-      previewColdWakeV7(viewOf(theirs, 1), giant, { x: 3, y: 6 })?.targets,
+      previewColdWakeV7(viewOf(theirs, 1), giant, { x: 3, y: 7 })?.targets,
     ).toEqual([boat]);
-    expect(acceptV7(theirs, 1, skate).state.frozen).toEqual([
+    expect(acceptV7(theirs, 1, step).state.frozen).toEqual([
       { unitId: boat, turnsLeft: 1 },
     ]);
     // A boat already in reach may go anywhere.

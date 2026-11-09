@@ -61,7 +61,6 @@ import {
   shatterThresholdAgainstV7,
   shatterWindowV7,
   snowTooltipV7,
-  moveUsesSkateV7,
   stampedeLabelV7,
   stampedePlanV7,
   stampedeSemanticV7,
@@ -141,7 +140,7 @@ describe("Ice Folk texts (section 13.2)", () => {
 
   it("names the Snow tile for the viewer's faction", () => {
     expect(snowTooltipV7(humanView(iceFolkUiFixtureV7()))).toBe(
-      "Snow: your units move at half cost from Snow to Snow and have light cover here unless fortified",
+      "Snow: your units move at half cost between Snow and ice tiles and have light cover here unless fortified",
     );
     expect(snowTooltipV7(humanView(iceFolkVictimFixtureV7()))).toBe(
       "Snow: your units stop on entering, as in a Forest. Ice Folk units have cover",
@@ -604,18 +603,18 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
     expect(coldWakeMovePreviewV7(view, yetiMove)).toBeNull();
   });
 
-  it("marks only the ice tile skating reaches (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
-    const skating = humanView(frozenGlacierUiFixtureV7());
-    const walker = unitAt(skating, FROZEN_GLACIER_UI_V7.walker);
-    const marked = queryPlayerCommandsV7(skating).flatMap((command) =>
-      command.kind === "MOVE" &&
-      command.unitId === walker.id &&
-      moveUsesSkateV7(skating, command)
-        ? [command.path.at(-1)]
-        : [],
-    );
-    expect(marked).toEqual([FROZEN_GLACIER_UI_V7.glacierTile]);
-    // Glacier adds nothing: with Rime alone the same tile is skated to.
+  it("reaches the same ice with and without Glacier, and marks none of it (skating is plain movement, `pulp_wars-ecnj`)", () => {
+    const ends = (view: PlayerViewV7) =>
+      queryPlayerCommandsV7(view)
+        .flatMap((command) =>
+          command.kind === "MOVE" ? [command.path.at(-1) as CoordV7] : [],
+        )
+        .map((at) => `${String(at.x)},${String(at.y)}`)
+        .sort();
+    const all = humanView(frozenGlacierUiFixtureV7());
+    // Glacier adds nothing: with Rime alone the same tiles are reached,
+    // the first ice tile and never the second (a full point onto the ice
+    // from the bare shore).
     const plain = humanView(
       frozenArenaV7({
         technologies: [["SHORECRAFT"], ["SHORECRAFT"]],
@@ -623,14 +622,10 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
         ice: FROZEN_GLACIER_UI_V7.ice.map((at) => ({ at })),
       }),
     );
-    expect(
-      queryPlayerCommandsV7(plain).some(
-        (command) =>
-          command.kind === "MOVE" &&
-          command.path.at(-1)?.x === FROZEN_GLACIER_UI_V7.glacierTile.x &&
-          command.path.at(-1)?.y === FROZEN_GLACIER_UI_V7.glacierTile.y,
-      ),
-    ).toBe(true);
+    expect(ends(plain)).toEqual(ends(all));
+    expect(ends(all)).not.toContain(
+      `${String(FROZEN_GLACIER_UI_V7.glacierTile.x)},${String(FROZEN_GLACIER_UI_V7.glacierTile.y)}`,
+    );
   });
 });
 

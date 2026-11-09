@@ -581,7 +581,12 @@ const ENTRIES = {
   ],
 
   // --------------------------------------------------------------- Ice Folk
-  GLIDE: ["Glide", "Moves faster from snow to snow."],
+  // Skating is plain movement (`pulp_wars-ecnj`, 7r135): Glide covers ice
+  // (Skate, Runners and the Sled's glide past enemies are gone).
+  GLIDE: [
+    "Glide",
+    "Between Snow and ice tiles, moves at half cost, as on a Road.",
+  ],
   MOUNTAIN_BORN: [
     "Mountain-born",
     "Crosses mountains freely, with no technology needed.",
@@ -628,15 +633,6 @@ const ENTRIES = {
   SEA_WINGS: [
     "Sea wings",
     "Flies over shallow and deep water with no technology needed.",
-  ],
-  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): every Ice Folk land
-  // unit skates and dives; the Sled's and the Snow Hunter's Runners, the
-  // Sled's glide past enemies; and every other faction's Crack Ice.
-  SKATES: ["Skates", "Ice costs half a move."],
-  RUNNERS: ["Runners", "Glides free in a straight line on ice."],
-  GLIDES_PAST: [
-    "Glides past",
-    "Its straight glide on ice goes on past enemies; it stops when it turns or leaves the ice.",
   ],
   DIVE: [
     "Dive",
@@ -1132,12 +1128,9 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.shield > 0) traits.push("SHIELD");
   if (mechanics.shockFieldDamage > 0) traits.push("SHOCK_FIELD");
   if (mechanics.glides) traits.push("GLIDE");
-  // Ice Folk movement (`pulp_wars-s55m.2`): a kind rule of the Ice Folk,
-  // on the ground (the Ice Folk roster rework: the Frost Wyrm flies).
-  if (rules.snow && mechanics.movementMode === "GROUND") traits.push("SKATES");
   if (mechanics.fliesOverDeepWater) traits.push("SEA_WINGS");
-  if (mechanics.runners) traits.push("RUNNERS");
-  if (mechanics.glidesThroughZoc) traits.push("GLIDES_PAST");
+  // Ice Folk movement (`pulp_wars-s55m.2`): the dive, a kind rule of the Ice
+  // Folk on the ground (the Ice Folk roster rework: the Frost Wyrm flies).
   if (rules.snow && mechanics.movementMode === "GROUND") traits.push("DIVE");
   if (mechanics.frostbite) traits.push("FROSTBITE");
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): what freezing a tile

@@ -9,6 +9,7 @@ import {
   frozenArenaV7,
   frozenShipsV7,
   lineV7,
+  patchFrozenUnitV7,
   withFishingHolesV7,
 } from "./v7-frozen-sea";
 
@@ -29,7 +30,7 @@ export const FROZEN_UI_V7 = {
   witch: { x: 8, y: 2 },
   /** An enemy Patrol Boat a Freeze toward the south-east Freezes. */
   prey: { x: 3, y: 3 },
-  /** Slide: a bridge of five ice tiles down column 1, and its far shore. */
+  /** A bridge of five ice tiles down column 1, and its far shore. */
   bridgeHead: { x: 1, y: 2 },
   bridge: lineV7({ x: 1, y: 2 }, 0, 1, 5),
   farShore: { x: 1, y: 8 },
@@ -79,10 +80,11 @@ export function frozenFreezeUiFixtureV7(
 }
 
 /**
- * The slide: a five-tile ice bridge from the viewer's shore to the far one,
- * with a Yeti (it slides; `sled` makes it a Sled, which has the Move left
- * to step ashore) and a Snow Golem (it walks; the Sabretooth until the
- * Frost Wyrm, a flyer, took its slot) at its head. With
+ * The ice bridge (the slide's scene until skating became plain movement,
+ * `pulp_wars-ecnj`, 7r135): a five-tile ice bridge from the viewer's bare
+ * shore to the far one, with a Yeti (`sled` makes it a Sled; the step onto
+ * the ice is a full one, every step on it half) and a Snow Golem (the
+ * Sabretooth until the Frost Wyrm, a flyer, took its slot) at its head. With
  * `slipper`, seat 0 is Human and seat 1 the Ice Folk whose ice it is: the
  * viewer's Fighter may not step onto the ice (only the Ice Folk walk on ice
  * since `pulp_wars-y242`, 7r132; it slipped onto the first tile before), so
@@ -158,11 +160,12 @@ export function frozenShipUiFixtureV7(
 
 /**
  * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's +1 Move across ice
- * before, bead `pulp_wars-w49.38`): an Ice Folk Yeti (Move 1) on the north
- * shore at the head of a four-tile ice line down column 1, with every Ice
- * Folk Naval technology. It skates the first two ice tiles at half a Move
- * each; the second, `glacierTile` (the name kept), is past its Move and
- * only skating reaches it.
+ * before, bead `pulp_wars-w49.38`): an Ice Folk Yeti (Move 1) on the bare
+ * north shore at the head of a four-tile ice line down column 1, with every
+ * Ice Folk Naval technology. Since skating became plain movement
+ * (`pulp_wars-ecnj`, 7r135) the step onto the ice is a full one, so it
+ * reaches the first ice tile only; the second, `glacierTile` (the name
+ * kept), is out of its reach (skating reached it before).
  */
 export const FROZEN_GLACIER_UI_V7 = {
   walker: { x: 1, y: 2 },
@@ -182,10 +185,15 @@ export function frozenGlacierUiFixtureV7(): GameStateV7 {
  * Ice Folk movement (`pulp_wars-s55m.2`): the Fishing Hole dive. Seat 0's
  * capital on (5, 2) with four Fishing Holes on its ice two tiles apart
  * (`DIVE_HOLES_V7`), every Ice Folk Naval technology, and a Yeti on the
- * north-west hole, which may dive to the other three.
+ * north-west hole, which may dive to the other three. Since Glide crosses
+ * ice (`pulp_wars-ecnj`, 7r135) the Yeti could walk to every hole over the
+ * capital's Snow, and a dive is offered only to a hole no walk reaches, so
+ * an enemy Fighter on (5, 1) holds the Snow between them: its zone of
+ * control stops every walk short of the other holes.
  */
 export const FROZEN_DIVE_UI_V7 = {
   diver: { x: 4, y: 1 },
+  blocker: { x: 5, y: 1 },
   destinations: [
     { x: 6, y: 1 },
     { x: 4, y: 3 },
@@ -194,14 +202,37 @@ export const FROZEN_DIVE_UI_V7 = {
 } as const;
 
 export function frozenDiveUiFixtureV7(): GameStateV7 {
-  return withFishingHolesV7(
+  // The enemy waits on its own back row while the holes are built (their
+  // city rewards put a Sled on the capital and move its Yeti onto (5, 1)),
+  // then that Yeti goes to the back row and the enemy onto (5, 1).
+  const parked = { x: 9, y: 9 };
+  const built = withFishingHolesV7(
     frozenArenaV7({
       technologies: [ALL, ALL],
-      units: [{ seat: 0, role: "FIGHTER", at: FROZEN_DIVE_UI_V7.diver }],
+      units: [
+        { seat: 0, role: "FIGHTER", at: FROZEN_DIVE_UI_V7.diver },
+        { seat: 1, role: "FIGHTER", at: parked },
+      ],
       terrain: DIVE_TERRAIN_V7,
       ports: [false, true],
       ice: DIVE_HOLES_V7.map((at) => ({ at })),
     }),
     DIVE_HOLES_V7,
   );
+  const blocker = built.units.find(
+    (unit) => unit.at.x === parked.x && unit.at.y === parked.y,
+  );
+  if (blocker === undefined) throw new Error("the blocker is missing");
+  const there = built.units.find(
+    (unit) =>
+      unit.at.x === FROZEN_DIVE_UI_V7.blocker.x &&
+      unit.at.y === FROZEN_DIVE_UI_V7.blocker.y,
+  );
+  const cleared =
+    there === undefined
+      ? built
+      : patchFrozenUnitV7(built, there.id, { at: { x: 0, y: 0 } });
+  return patchFrozenUnitV7(cleared, blocker.id, {
+    at: FROZEN_DIVE_UI_V7.blocker,
+  });
 }

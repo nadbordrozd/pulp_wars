@@ -79,14 +79,15 @@ export function iceIndexSetV7(
 }
 
 /**
- * Ice Folk movement (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the forced
- * slide before): whether the unit **skates**: a land-form unit of the Ice
- * Folk kind, every role on the ground (the Ice Folk roster rework,
- * `pulp_wars-s55m.4`: the Frost Wyrm flies and never skates). Each step it
- * makes onto an ice tile costs half a Move point (ice is its road). A body
- * rule, so a mind-controlled Ice Folk unit skates for its controller.
+ * Ice Folk movement (`pulp_wars-s55m.2`; `unitSkatesV7` until
+ * `pulp_wars-ecnj`, 7r135): whether the unit is an Ice Folk ground unit: a
+ * land-form unit of the Ice Folk kind, every role on the ground (the Ice
+ * Folk roster rework, `pulp_wars-s55m.4`: the Frost Wyrm flies). Such a
+ * unit may dive through Fishing Holes. A body rule, so a mind-controlled
+ * Ice Folk unit counts for its controller. (Skating is plain movement since
+ * 7r135: Glide, `unitGlidesV7`, covers Snow and ice alike.)
  */
-export function unitSkatesV7(
+export function unitIsIceFolkGroundV7(
   roster: FactionRosterV7,
   unit: {
     readonly id: UnitId;
@@ -99,47 +100,6 @@ export function unitSkatesV7(
     unit.form === "LAND" &&
     unitKindWalksIceV7(roster, unit) &&
     unitRoleMechanicsV7(roster, unit).movementMode === "GROUND"
-  );
-}
-
-/**
- * Ice Folk movement (`pulp_wars-s55m.2`): **Runners**, whether a step of
- * the skating unit from ice onto ice in the same direction as the step
- * before it in the same Move costs nothing (the Sled and the Snow Hunter,
- * a body rule of the role under its kind), so it glides any distance in a
- * straight line along ice and may stop on any tile of it.
- */
-export function unitHasRunnersV7(
-  roster: FactionRosterV7,
-  unit: {
-    readonly id: UnitId;
-    readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
-    readonly form: UnitFormV7;
-  },
-): boolean {
-  return (
-    unitSkatesV7(roster, unit) && unitRoleMechanicsV7(roster, unit).runners
-  );
-}
-
-/**
- * Ice Folk movement (`pulp_wars-s55m.2`): whether the unit's step onto ice
- * that enters a hostile zone of control does not end its Move while its
- * next step glides on straight along the ice (the Sled).
- */
-export function unitGlidesThroughZocV7(
-  roster: FactionRosterV7,
-  unit: {
-    readonly id: UnitId;
-    readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
-    readonly form: UnitFormV7;
-  },
-): boolean {
-  return (
-    unitHasRunnersV7(roster, unit) &&
-    unitRoleMechanicsV7(roster, unit).glidesThroughZoc
   );
 }
 

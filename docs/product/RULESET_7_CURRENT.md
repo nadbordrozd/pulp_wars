@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r134`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r135`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,40 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r135` (`pulp_wars-ecnj`, **skating is plain movement**;
+the user, 2026-11-08: "skating UI is strange with the arrows and also
+overpowered. the sled can skate the entire length of the map. that's a bit
+much. I don't want extra UI for skating. its just movement."; Bead 3 of
+[the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md), section 3.6). (1)
+**Glide covers Snow and ice alike** ([section 21.5](#215-snow)): for a
+land-form Ice Folk ground unit a step **from a frozen tile onto a frozen
+tile** (Snow or ice) costs one half-point, like a step off a Road node;
+every other step costs what it costs anyone, so a step from bare land onto
+ice (half before, Skate) and a step off the ice onto bare land are full
+steps. Glide and a Road do not add up: such a step costs one half-point,
+never less. A Move-1 unit crosses two frozen tiles a turn and the Sled
+(Move 2) four. (2) **Removed:** Skate as a separate rule, **Runners** (the
+Sled's and the Snow Hunter's free straight glide along ice, which let a
+Sled cross a whole frozen sea in one Move), and **the Sled's glide through
+zones of control**: a unit entering a hostile zone of control on ice
+stops there as anywhere ([section 21.16](#2116-the-frozen-sea)). (3)
+**State, queries and AI:** the role mechanics `runners` and
+`glidesThroughZoc`, the public stats `iceFolk.skates` and
+`iceFolk.runners`, the route search's `glideDirection`, and the helpers
+`unitHasRunnersV7` and `unitGlidesThroughZocV7` are gone (`unitSkatesV7`
+is `unitIsIceFolkGroundV7`, the dive's test); the movement query, the
+`MOVE` validation and the Normal AI's threat estimate read one step cost
+(its free Runners line, `iceGlideLineV7`, is gone, and the city-threat
+estimate without Glide now leaves out ice as it left out Snow). No
+command kind, event kind or ordinal changed. (4) **Interface:** a Move on
+ice is marked and drawn as any Move: the skate trail and its arrows, the
+skate tiles, the Glide tiles on Snow, their legends and the "Skate:",
+"Runners" and "Glide:" labels are gone (a Fishing Hole dive keeps its
+mark); the glossary and Help have one Glide line ("Between Snow and ice
+tiles, Ice Folk move at half cost, as on a Road."), and the Skates,
+Runners and Glides past traits are gone. A save, replay, or setup of
+`7r134` is rejected, and the browser autosave has a new key.
 
 `pulp-wars-poc-7r134` (`pulp_wars-3qtp`, **the Snow Golem and the
 Mammoth**; the user, 2026-11-08: "the mamoth attacking neighbouring units
@@ -2294,10 +2328,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r134`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r135`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r134.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r135.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6166,7 +6200,7 @@ differently from the Human table are:
 | Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                                                                                         |
 | Fortification     | Deep Winter   | Walrus (Frostbite; `7r56`); Snow spreads two tiles from your city centers; an idle unit recovers 6 in your territory                                                                                                      |
 | Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                                                                           |
-| Shorecraft        | Rime          | Harvest Fish; your freezes ice Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole (and its dive); your units skate on ice; no Port, no Patrol Boat, and no embarking (`pulp_wars-s55m.2`) |
+| Shorecraft        | Rime          | Harvest Fish; your freezes ice Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole (and its dive); your units Glide on ice; no Port, no Patrol Boat, and no embarking (`pulp_wars-s55m.2`) |
 | Navigation        | Pack Ice      | your freezes ice Deep Water; Gather Pearls; sea links may cross Deep Water                                                                                                                                                |
 | Naval Engineering | Hoarfrost     | nothing (`7r133`; a Freeze line of three tiles before, Icebound before `pulp_wars-s55m.1`); no Shipyard and no training discount (`pulp_wars-s55m.2`)                                                                     |
 | Seamanship        | Black Ice     | hostile land units on your ice are Frozen at the start of your turn                                                                                                                                                       |
@@ -8504,18 +8538,19 @@ Candy, and Cult campaigns. No match was played.
   and ZOC. A Move has `2 * Move` half-points; a step costs 1 when the tile
   being left is a usable Road node and 2 otherwise
   ([section 9.2](#92-road-movement)), or, for a land-form Ice Folk unit
-  other than the Sabretooth, when the step is from Snow onto Snow (Glide,
-  [section 21.5](#215-snow)). A tile entered by a slide on ice costs
-  nothing, and a step that leaves an ice tile costs 2 (ice is water: it has
-  no Road).
+  other than the Frost Wyrm, when the step is from a frozen tile onto a
+  frozen tile, Snow or ice (Glide, [section 21.5](#215-snow); ice since
+  `7r135`). Any other step that leaves an ice tile costs 2 (ice is water:
+  it has no Road).
 - **Ice** ([section 21.16](#2116-the-frozen-sea)). An ice tile is ground
   for a land-form unit of the Ice Folk kind and for a walker or flyer of
   any kind, and closed to every unit afloat and (since `7r132`,
   `pulp_wars-y242`: only the Ice Folk walk on ice) to a ground unit of any
   other kind: a step onto known ice is refused with `ICE_FORBIDDEN`, and
   ice on a tile it had not explored interrupts the Move before it (`ICE`).
-  Ice Folk units skate on it (section 21.16; the forced slide and the
-  slip of every other unit, `ICE_STOPS_MOVE`, are gone). Ice is read once
+  Ice Folk units Glide on it (section 21.16; skating and Runners until
+  `7r135`, the forced slide and the slip of every other unit,
+  `ICE_STOPS_MOVE`, are gone). Ice is read once
   per `MOVE`, from the state before the command.
 - A Move ends on entering an unexplored cell, a Forest (unless a Road edge or
   Fieldcraft freedom for the `RAIDER` and `MARKSMAN` roles: Raider and
@@ -8602,9 +8637,8 @@ Candy, and Cult campaigns. No match was played.
   player's unit passes a Martian unit. A Dwarf Gyrocopter is such a flyer
   too. An own unit standing on a Snow tile where a non-Ice-Folk mover would
   have to stop cannot be passed either (an ice tile is never passed by a
-  mover that may not enter it); and an Ice Folk unit that slides never passes a
-  unit standing on ice, its owner's included (the Sabretooth, which walks
-  the ice, passes its owner's units there as on land).
+  mover that may not enter it); an Ice Folk unit passes its owner's units
+  on ice as on land.
 - **Mounds** ([section 22.3](#223-the-mound-surfacing-and-the-eruption)). A
   burrowed Dwarf unit stands on no tile, but its mound reserves one: the one
   occupancy predicate `tileOccupiedV7` is true for a tile with a unit or a
@@ -8630,8 +8664,9 @@ Candy, and Cult campaigns. No match was played.
   ice on a tile it had not explored before the command (`ICE`, since
   `7r132`: it stops before that tile, which it may not enter; it stopped
   on it before), interrupts the Move,
-  which is still accepted. A slide that meets a zone of control first seen
-  during the Move stops there with the ordinary `ZOC` interruption. The mover stands on the last
+  which is still accepted. A Move on ice that meets a zone of control
+  first seen during the Move stops there with the ordinary `ZOC`
+  interruption. The mover stands on the last
   tile it entered; if that tile holds an own unit, it ends on the last tile
   of the entered path that holds no unit, or on its starting tile if there
   is none. `UNIT_MOVED.path` is the entered path cut to that tile (omitted
@@ -8649,9 +8684,8 @@ Candy, and Cult campaigns. No match was played.
   flyer through every visible unit). It reads Snow from the view's public
   `snow` flags: for an Ice Folk mover hidden Snow can only make a step
   cheaper, so every offered `MOVE` is still accepted. Ice on explored tiles
-  is public, so skates and the ice refusal are exact: for an Ice Folk unit the query
-  offers only tiles a Move can really end on (the end of each slide, never
-  a tile it would slide through).
+  is public, so Glide on ice and the ice refusal are exact (`7r135`: no
+  slide, so every tile a Move reaches on ice is a tile it can end on).
 - **ZOC:** a hostile land unit projects ZOC onto adjacent land cells. A naval
   unit projects it onto adjacent water it could enter. A land unit projects
   onto adjacent water only against an afloat unit it could attack at range 1.
@@ -9991,7 +10025,7 @@ Harbours from it.
   (`7r109`, no unit froze). `UNITS_CRUSHED` is projected like Plague
   damage: the results of units the viewer owns or could see. The Ram, the
   torpedo, Board, and Freeze previews are exact (every tile and unit they
-  read is visible to the actor), and so are skates and the ice refusal on
+  read is visible to the actor), and so are Glide on ice and the ice refusal on
   explored tiles; ice on a tile a ground mover of another kind than the
   Ice Folk had not explored interrupts its Move before it (`ICE`).
 - Exact projection rules are in
@@ -10726,8 +10760,8 @@ Harbours from it.
   near, otherwise the cheapest Yeti) walks to its head, Freezes two
   tiles, steps onto the newest ice, and Freezes again; **the wave** waits
   at the head until the crossing is complete or one Freeze short and then
-  crosses by the offered Moves, skating (`pulp_wars-s55m.2`; sliding
-  before). Ice is permanent, so a crossing
+  crosses by the offered Moves, Gliding on the ice (`pulp_wars-ecnj`,
+  `7r135`; skating, and sliding before it). Ice is permanent, so a crossing
   is built once: a tile a Crack broke out of it is the next tile to
   freeze, a cracked tile of it is mended, and a tile of it another seat
   holds is taken back. The seat Freezes only with a reason: the crossing,
@@ -10751,10 +10785,10 @@ Harbours from it.
   ship's route (its water routes pass ice at two steps more, four for
   thick ice); never under ice its own units' Moves pass, never instead
   of a kill. **Every seat** plays against the ice: its threat estimate
-  follows Ice Folk movement (`pulp_wars-s55m.2`: a skate onto ice at half
-  a step, a Runners glide straight on for free, the Sled's through zones
-  of control, and a Fishing Hole dive to every other own hole; ice takes
-  zones of control like land); a ship does not end a Move where a unit of
+  follows Ice Folk movement (`pulp_wars-ecnj`, `7r135`: Glide, a step
+  between frozen tiles, Snow or ice, at half a step, and a Fishing Hole
+  dive to every other own hole; ice takes zones of control like land; a
+  skate, a free Runners glide and the Sled's glide through zones before); a ship does not end a Move where a unit of
   a seat that has been seen to Freeze can lock it in this turn; a land
   unit (since `7r132` only a walker or flyer can) does not end a Move on
   the ice of a hostile Ice Folk seat (Black Ice is assumed, research being
@@ -13837,7 +13871,8 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   Every Ice Folk land unit except the Frost Giant is trained on the city
   center with `TRAIN`. The Ice Witch's **Cold Snap** and the Frost Giant's
   **Cold Wake** make ice (with Rime); no role has `FREEZE` since `7r133`.
-  All but the Frost Wyrm, a flyer, **skate** on ice (`pulp_wars-s55m.2`,
+  All but the Frost Wyrm, a flyer, **Glide** on ice as on Snow
+  (`pulp_wars-ecnj`, `7r135`; they skated since `pulp_wars-s55m.2`,
   `7r124`).
 
 ### 21.2 Frozen
@@ -14065,35 +14100,45 @@ snow(tile) =
 - Snow lies on Grass, Forest, and Mountain alike, on Roads, improvements,
   resources, Field Defense, centers, Graves, and chests, and changes none of
   them. Water and Rift tiles are never Snow, and neither is an ice tile
-  (no Glide and no deep snow there; Glacier gives the Snow cover on ice by
-  its own rule, [section 21.16](#2116-the-frozen-sea)). Several sources do
-  not add up.
+  (no deep snow there; Glide covers ice by the same rule as Snow, below;
+  Glacier gives the Snow cover on ice by its own rule,
+  [section 21.16](#2116-the-frozen-sea)). Several sources do not add up.
 
 **What Snow does.** For a land-form Ice Folk unit:
 
 1. **Glide** (`pulp_wars-1wy.3`, `7r37`: both ends; before it, every step
-   that left Snow). A step **from a Snow tile onto a Snow tile** costs one
-   half-point instead of two; every other step costs what it costs for any
-   unit (two, or one from a usable Road node). Snow and a Road node do not
-   add up. Both ends of every step are read from the state before the
-   command. So a Move-1 unit on Snow moves two tiles while it stays on
-   Snow, a Sled up to four, and a step off the Snow is a full step:
+   that left Snow; over ice too since `pulp_wars-ecnj`, `7r135`, when
+   skating became plain movement). A **frozen tile** is a Snow tile or an
+   ice tile ([section 21.16](#2116-the-frozen-sea)). A step **from a frozen
+   tile onto a frozen tile** costs one half-point instead of two; every
+   other step costs what it costs for any unit (two, or one from a usable
+   Road node), so a step from bare land onto ice, or off the ice onto bare
+   land, is a full step. **Glide and a Road do not add up**: a step that
+   leaves a usable Road node and also Glides costs one half-point, never
+   less (a Road is never on ice, so this only meets on Snow). Both ends of
+   every step are read from the state before the command. So a Move-1 unit
+   moves two tiles while it stays on frozen tiles, a Sled up to four, and
+   a step onto bare land is a full step:
 
    | Mover                                        | Reach                                                             |
    | -------------------------------------------- | ----------------------------------------------------------------- |
    | Yeti trained on a center, leaving home       | 1 tile (the center to the edge costs a half-point, off it a full) |
    | Yeti inside its own territory or Deep Winter | 2 tiles                                                           |
+   | Yeti on ice (or from Snow onto ice)          | 2 tiles                                                           |
+   | Yeti on bare land beside the ice             | 1 tile (the step onto the ice is a full one)                      |
    | Sled leaving home                            | 2 tiles, like a Raider                                            |
-   | Sled inside Snow                             | up to 4 steps                                                     |
+   | Sled inside Snow, on ice, or across both     | up to 4 steps                                                     |
    | a unit on a patch of stored Snow             | 2 steps across it (the Blizzard made no Snow since `7r133`)       |
 
    The **Frost Wyrm never Glides** (role mechanic `glides`; a flyer). Every other
    Move rule is unchanged: Forest and unexplored cells still end an Ice
-   Folk unit's Move, zones of control too, and a Mountain stops the units
-   that are not Mountain-born. The public movement query reads both ends
-   from the view's `snow` flags (every Snow tile is public since `7r133`:
-   a hidden Witch's Blizzard made Snow the viewer could not know of
-   before), so every offered `MOVE` is accepted.
+   Folk unit's Move, **zones of control too, on ice as anywhere** (the
+   Sled's glide through them is gone with `7r135`), and a Mountain stops
+   the units that are not Mountain-born. The public movement query reads
+   both ends from the view's `snow` flags and the ice on explored tiles
+   (every Snow tile is public since `7r133`: a hidden Witch's Blizzard made
+   Snow the viewer could not know of before), so every offered `MOVE` is
+   accepted, and the Normal AI's threat estimate reads the same tiles.
 
 2. **Snow cover** (`pulp_wars-1wy.3`, `7r37`: × 1.25; before it × 1.5). A
    defender on Snow whose **own fortification level is 0** has cover
@@ -14338,7 +14383,7 @@ public movement query and the Normal AI's reach are exact). Over water it
 stays in the air in land form as every flyer since `7r116`: it attacks
 and is no afloat unit (no blockade, no embark). It
 never advances after a kill (`advancesAfterKill` false), never Glides on
-Snow, never skates on ice, never dives through a Fishing Hole, and takes
+Snow or ice, never dives through a Fishing Hole, and takes
 no cover (a flyer), but it has Snow cover's absence and the Blizzard's
 protection like any land-form Ice Folk unit. Since `pulp_wars-ke95` it
 ends a Move on any settlement center, so it captures.
@@ -14510,7 +14555,7 @@ tail.
   draws from and never recomputes), `unitIsFrozenV7`,
   `unitMayActAfterMoveV7`, and `unitMayEnterMountainV7`.
 - **`queryPlayerCommandsV7`** offers, for an Ice Folk seat, `MOVE` commands
-  that follow Glide, Mountain-born, skating, and the Frost Wyrm's flight;
+  that follow Glide (over Snow and ice), Mountain-born, and the Frost Wyrm's flight;
   `ATTACK` at distance 2 for a
   Yeti on a Mountain; `COLD_SNAP` for every Witch whose ring would change
   something; and `STAMPEDE` for
@@ -14566,8 +14611,8 @@ option to crack ice around them"). An Ice Folk seat never builds a ship.
 With **Rime** the Ice Witch's Cold Snap and the Frost Giant's Cold Wake
 freeze the water round them (the one Freeze effect, `pulp_wars-xv0t`,
 `7r133`; a line Freeze of seven roles before), and **the ice stays**. Their
-units **skate** across it (half a Move a tile; the Sled and the Snow Hunter
-glide free in a straight line); their cities **build on it** (Fishing
+units **Glide** across it as on Snow (a step between frozen tiles costs
+half, `pulp_wars-ecnj`, `7r135`; skating and Runners before); their cities **build on it** (Fishing
 Holes, between which their units **dive**, and their mills and markets;
 no harbour since `pulp_wars-s55m.2`), so frozen home water is new
 land, not lost water. **Only the Ice Folk walk on it** (`pulp_wars-y242`,
@@ -14589,8 +14634,7 @@ always empty.
 | Freeze     | Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn (a Cold Snap, a Frost Giant's Move).             |
 | Ice stays  | Ice never melts; it is gone only when someone cracks it.                                                                                       |
 | Border ice | With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.                                               |
-| Skate      | Ice Folk units skate: each step onto ice costs half a move.                                                                                    |
-| Runners    | Sleds and Snow Hunters glide free in a straight line on ice and may stop anywhere; a Sled glides on past enemies.                              |
+| Glide      | Between Snow and ice tiles, Ice Folk move at half cost, as on a Road.                                                                          |
 | Dive       | Fishing Hole: +1 population. A unit on your Fishing Hole that has not moved may dive to any other free Fishing Hole of yours as its move.      |
 | Hole links | With Rime, Fishing Holes of two of your cities up to five tiles of water or ice apart link them as Ports do (section 9.5).                     |
 | Who walks  | Only Ice Folk units and units that fly or stride go onto ice. Every other land unit stops at its edge and may crack it instead.                |
@@ -14709,8 +14753,8 @@ always empty.
   Bitten rising, no Crumbs. The tile's Fish or Pearls stay and may be
   harvested under the ordinary gates. A sea link counts an ice tile as
   water. A tunnel never passes under it, and an eruption hits a land-form
-  unit standing on it. Ice is not land for Roads (skating is the Ice
-  Folk road) nor for the Port's shore rule.
+  unit standing on it. Ice is not land for Roads (Glide is the Ice Folk
+  road on it) nor for the Port's shore rule.
 - **Ships cannot enter ice.** A unit afloat (`NAVAL` or `EMBARKED`) never
   enters, passes, or is pushed, shoved, or pulled onto an ice tile, and a
   naval unit projects no ZOC onto ice. No afloat unit is ever on ice
@@ -14799,52 +14843,47 @@ refusals (`UNIT_IS_EGG`, `UNIT_ALREADY_HANDLED`).
   its own lane and open its own dock; the Ice Folk make ice and never need
   to break their own.
 
-**Skating, Runners, and the dive** (Ice Folk movement, `pulp_wars-s55m.2`,
-`pulp-wars-poc-7r124`; the forced slide before; the user, 2026-11-06: "the
-sliding mechanic is confusing. I have no idea how it works ... in
-polytoipia sliding just means they have extra movement on ice. Maybe we can
-do that and also have an unlimited slide in straight line as an extra bonus
-for some of the units"). All three are body rules of the Ice Folk kind (a
-mind-controlled Ice Folk unit keeps them for its controller), read from the
-ice of the state before the command (like Snow); a Move may stop on any
-tile it reaches, ice included.
+**Glide on ice and the dive** (Ice Folk movement: skating is plain movement
+since `pulp_wars-ecnj`, `pulp-wars-poc-7r135`, Bead 3 of
+[the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md), section 3.6; the
+user, 2026-11-08: "skating UI is strange with the arrows and also
+overpowered. the sled can skate the entire length of the map. that's a bit
+much. I don't want extra UI for skating. its just movement." Skate, Runners
+and the Sled's glide through zones of control of `pulp_wars-s55m.2`,
+`7r124`, are gone; the forced slide before them). Both are body rules of
+the Ice Folk kind (a mind-controlled Ice Folk unit keeps them for its
+controller), read from the ice of the state before the command (like
+Snow); a Move may stop on any tile it reaches, ice included.
 
-- **Skate** (`unitSkatesV7`: a land-form unit of the Ice Folk kind, every
-  ground role; the Frost Wyrm flies and does not, `7r125`; public stat
-  `iceFolk.skates`): **every step
-  onto an ice tile costs half a Move point** (1 half-point; as a step from
-  a usable Road node, and never less). A step that leaves ice for land
-  costs the ordinary step (ice is no Road node). With permanent ice,
-  skating is the Ice Folk road network: a bridge built once is used for
-  the rest of the match.
-- **Runners** (`unitHasRunnersV7`: role mechanic `runners`, the Sled and
-  the Snow Hunter; public stat `iceFolk.runners`): **a step from an ice
-  tile onto an ice tile in the same direction as the step before it in the
-  same Move costs nothing.** So the first step onto the ice is a skate and
-  every straight step after it along the ice is free: the unit glides any
-  distance in a straight line and may stop on any tile of it; a turn is a
-  new skate (half a point), after which a straight run is free again. A
-  hop is no step of a glide.
-- **The Sled glides through zones of control** (`unitGlidesThroughZocV7`:
-  role mechanic `glidesThroughZoc`): a step of the Sled onto ice that
-  enters a hostile zone of control does not end its Move while the path's
-  next step goes on straight along the ice (same direction, onto ice);
-  where its path turns, leaves the ice, or ends in the zone, the Move ends
-  there as any step's (a turn rejected with `ZOC_STOPS_MOVE`, or
-  interrupted with `ZOC` for a zone first seen during the Move). The Snow
-  Hunter's glide stops in a zone like any step.
-- Glided and skated tiles are ordinary path tiles: they reveal sight, count
-  toward the Charge path length, and a Wreck salvage
-  at the end of the Move. A skating unit passes its own units on ice as on
-  land and never ends on a unit. A route search keys an ice tile of a
-  Runners path by the direction of its last step (`glideDirection`), so
-  every offered path is the cheapest.
+- **Glide** ([section 21.5](#215-snow); role mechanic `glides`, every Ice
+  Folk ground role; the Frost Wyrm flies and does not): an ice tile is a
+  **frozen tile** like a Snow tile, so **a step from a frozen tile onto a
+  frozen tile costs one half-point** and every other step the ordinary
+  cost. A step from bare land onto the ice is a full step, and so is a step
+  off the ice onto bare land; a step between Snow and ice is a Glide. A
+  Road is never on ice (ice is no Road node), and Glide and a Road never
+  add up. So a Move-1 unit crosses two ice tiles a turn and the Sled (Move 2) four: with permanent ice, a bridge built once is a road for the rest
+  of the match, but no unit crosses a whole sea in one Move.
+- **Zones of control** stop a Move on ice as anywhere: a step onto ice that
+  enters a hostile zone of control ends the Move there (rejected with
+  `ZOC_STOPS_MOVE` when the path goes on, interrupted with `ZOC` for a zone
+  first seen during the Move).
+- Tiles crossed on ice are ordinary path tiles: they reveal sight, count
+  toward the Charge path length, and a Wreck salvage at the end of the
+  Move. An Ice Folk unit passes its own units on ice as on land and never
+  ends on a unit. The route search keys a tile by its position alone (the
+  `glideDirection` of a Runners path is gone), and the movement query, the
+  `MOVE` validation and the Normal AI's threat estimate use the same step
+  cost.
+- **Interface:** a Move on ice is marked and drawn as any Move: the skate
+  trail and its arrows, the skate tiles, the Glide tiles and the "Skate:"
+  and "Runners" labels are gone; only a dive keeps its own mark.
 - **The dive** (the Fishing Hole): a land-form unit of the Ice Folk kind
   that stands on a **Fishing Hole in its owner's territory** and **has not
   moved** (no Escape Move, not Grabbed or Dragged) may, **as its whole
   Move**, go to **any other Fishing Hole of its owner** that is explored by
   it and holds no living unit: a `MOVE` whose path is that one tile, not
-  next to the unit (an adjacent hole is an ordinary skate). The budget is
+  next to the unit (an adjacent hole is an ordinary step). The budget is
   spent, `movedPathLength` is 1, the unit sees from the hole (the
   `UNIT_MOVED` path is the one tile), and it may then act if its role may
   act after moving. A hole that holds a unit the owner can see is refused
@@ -14922,7 +14961,7 @@ crack. And `iceCover`: a land-form unit of the Ice Folk kind on ice whose
 own fortification level is 0 has the Snow cover, **× 1.25**
 (`SNOW_COVER_V7`; the preview's `iceCover`, and the public `iceCover`
 stat). Since `pulp_wars-s55m.2` Glacier adds **no Move** on ice
-(`GLACIER_ICE_MOVE_BONUS_V7` is gone: skating made it redundant) and grants
+(`GLACIER_ICE_MOVE_BONUS_V7` is gone: skating, now Glide, made it redundant) and grants
 **no Harbours**.
 
 **Building on ice and the Fishing Hole** (`pulp_wars-s55m.2`; the user,
@@ -14990,7 +15029,7 @@ it; Glacier's thick ice), not immunity.
 | Plague, Bitten, Wail   | Unchanged on ships and on ice. A Black Ice freeze and a bite coexist.                                                                                                                                                                                  |
 | Kaboom, blasts, bombs  | Hit ships, Submarines, Frozen ships, and units on ice like any unit. A blast never cracks or makes ice (cracking is an action).                                                                                                                        |
 | Dinosaurs              | A Triceratops never Charges onto ice nor follows onto it (`7r132`); its push moves an Ice Folk target onto ice and never triggers Black Ice. Eggs are never on ice.                                                                                    |
-| Martians               | Flyers and walkers cross ice like land and never crack it; a machine that ends a Move on ice stands. A controlled Ice Folk unit skates and freezes for its controller (its ice is the controller's: Black Ice and building on it no) and never cracks. |
+| Martians               | Flyers and walkers cross ice like land and never crack it; a machine that ends a Move on ice stands. A controlled Ice Folk unit Glides and freezes for its controller (its ice is the controller's: Black Ice and building on it no) and never cracks. |
 | Dwarves                | Tunnels never run under ice and a mound is never on ice; a burrowed unit cannot crack; a bomb run may land on ice; eruptions hit land-form units on ice.                                                                                               |
 | Candy                  | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. A Crashed unit cannot crack.                                                                                                                                         |
 | Push, Knockback, pulls | A land-form unit of the Ice Folk kind, a walker, or a flyer may be pushed, knocked back, or pulled onto ice; any other land-form unit (`7r132`) and an afloat unit never (a Frozen ship may be pushed on the water); none of it triggers Black Ice.    |
@@ -15004,14 +15043,14 @@ it; Glacier's thick ice), not immunity.
 
 | Situation                                                                             | Result                                                                                                                                                               |
 | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| An Ice Witch on the shore casts toward an island 3 Shallow tiles away                 | turn 1: the three water tiles in front of her are ice, and the open land round her Snow; turn 2: she skates out a tile and casts again: the next row. The ice stays  |
+| An Ice Witch on the shore casts toward an island 3 Shallow tiles away                 | turn 1: the three water tiles in front of her are ice, and the open land round her Snow; turn 2: she steps out a tile and casts again: the next row. The ice stays   |
 | A Human Swordsman on the island shore cracks the newest tile (no Glacier)             | it is water again; the next Ice Folk turn a Cold Snap beside it freezes it back                                                                                      |
 | The same with Glacier                                                                 | the tile is cracked; any Ice Folk freeze over it mends it before the second Crack                                                                                    |
 | A Frost Giant walks onto the ice beside an enemy Patrol Boat                          | its Cold Wake Freezes the boat through its owner's next turn (its tile stays water) and ices the open water round the Giant; a Yeti's blow in the window shatters it |
 | A Human Knight beside Ice Folk ice (`7r132`)                                          | it may not ride onto the ice: the tile is Crack Ice alone, and a crack (two on thick ice) opens it to water                                                          |
 | A Martian Tripod steps onto Ice Folk ice (Black Ice)                                  | Frozen at once; on the Ice Folk turn two hits Shatter it; if it lives, it thaws after its next turn and may then walk off or attack (it never cracks)                |
 | An Ice Folk coastal city with five shallow tiles in its footprint, Rime, Milling      | the border freeze already made them ice; three Fishing Holes (9 Coins, +3) and a Windmill on the ice beside them and one Frost Garden (5 Coins, +4): +7 population   |
-| A Sled on a long ice sheet, a Human Guard's zone of control between it and a Marksman | it glides straight through the zone (Runners) to the tile beside the Marksman and attacks with Charge                                                                |
+| A Sled on a long ice sheet, a Human Guard's zone of control between it and a Marksman | it Glides up to 4 tiles a Move and stops on entering the Guard's zone (`7r135`; it glided through before), so it reaches the Marksman a turn later or goes round     |
 | Four Fishing Holes round an Ice Folk city, a Yeti on one, an enemy beside another     | the Yeti dives to the far hole (its whole Move) and attacks the enemy from there                                                                                     |
 | The Ice Folk capture a Human port city                                                | its Port is theirs and keeps working as a dock; no freeze ices it (`7r133`; an Ice Harbour before)                                                                   |
 
@@ -15020,7 +15059,7 @@ it; Glacier's thick ice), not immunity.
 - **Commands:** `CRACK_ICE { kind, unitId, at }` right after `COLD_SNAP`
   (`FREEZE`, between them, is gone since `7r133`), and
   `BUILD_FISHING_HOLE { kind, at }` right after `BUILD_LUMBER_CAMP` in
-  `COMMAND_KIND_ORDER_V7`. `MOVE` validates skating, Runners, dives, and
+  `COMMAND_KIND_ORDER_V7`. `MOVE` validates Glide on ice, dives, and
   the ice refusal (`7r132`; the slip before). A pending city reward blocks
   them like every command.
 - **Events:** `TILES_FROZEN` (`WATER_FROZEN` until `7r133`, in its place,
@@ -15043,10 +15082,11 @@ it; Glacier's thick ice), not immunity.
   land role but the Ice Witch had it); Crack Ice
   is a kind rule (`unitCracksIceV7`: every unit not of the Ice Folk kind
   whose role's movement mode is `GROUND`, in land, naval, or embarked
-  form) rather than a role-table ability, and so are skating, the dive,
+  form) rather than a role-table ability, and so are the dive
   and walking on ice (`unitWalksOnIceV7`: the Ice Folk kind, or a walker
-  or flyer; `canEnterTerrainV7`'s `iceFolk`); role mechanics `runners` (the Sled and the
-  Snow Hunter) and `glidesThroughZoc` (the Sled); improvement `FISHING_HOLE`
+  or flyer; `canEnterTerrainV7`'s `iceFolk`); the role mechanics `runners`
+  and `glidesThroughZoc` are gone (`7r135`: Glide, `glides`, covers ice);
+  improvement `FISHING_HOLE`
   (appended to `IMPROVEMENT_IDS_V7`); unlock kinds `FREEZE { depth }` (what
   water the seat's freezes reach), `BLACK_ICE`, and `GLACIER` (no field;
   `LONG_FREEZE`, Hoarfrost's, is gone since `7r133`), and the Ice Folk
@@ -15059,8 +15099,9 @@ it; Glacier's thick ice), not immunity.
   `ICE_CRUSH_DAMAGE_V7`, and since `pulp_wars-s55m.2`
   `GLACIER_ICE_MOVE_BONUS_V7` are gone).
 - **Helpers:** `isIceAtV7` and `iceAtV7` read through an index of the
-  immutable list (`iceEntryIndexV7`), `unitSkatesV7` (`unitSlidesV7`
-  before), `unitHasRunnersV7`, `unitGlidesThroughZocV7`,
+  immutable list (`iceEntryIndexV7`), `unitIsIceFolkGroundV7`
+  (`unitSkatesV7` until `7r135`, `unitSlidesV7` before;
+  `unitHasRunnersV7` and `unitGlidesThroughZocV7` are gone),
   `unitKindWalksIceV7`, `unitWalksOnIceV7`, and `seatKindWalksIceV7`
   (`7r132`, in the ruleset module),
   `publicDiveDestinationsForUnitV7`,
@@ -15075,11 +15116,12 @@ it; Glacier's thick ice), not immunity.
   something, `CRACK_ICE` for every legal `at` (an own or
   allied iced-over dock included), every build on own ice
   (`BUILD_FISHING_HOLE` among them, never `BUILD_PORT` or
-  `BUILD_SHIPYARD`), and every `MOVE` with skating, Runners, and the dives;
+  `BUILD_SHIPYARD`), and every `MOVE` with Glide on ice and the dives;
   `queryThreatenedTilesV7` follows them. Every offered command is
   accepted, and every preview equals the resolution.
-- **Public unit stats:** in the `iceFolk` block, `onIce`, `skates`
-  (`slides` before `pulp_wars-s55m.2`), `runners`, and `iceCover` (the
+- **Public unit stats:** in the `iceFolk` block, `onIce` and `iceCover`
+  (`skates` and `runners` are gone with `7r135`; `slides` before
+  `pulp_wars-s55m.2`; the
   `icebound` stat is gone, `pulp_wars-s55m.1`; a Frozen ship's `frozen`
   stat says it all).
 - **Normal AI, presentation, and balance:** the Normal AI's rules for and

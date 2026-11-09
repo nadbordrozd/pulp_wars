@@ -14,7 +14,7 @@ import {
   canEnterTerrainV7,
   effectiveRoleRuleV7,
   isIceAtV7,
-  unitSkatesV7,
+  unitIsIceFolkGroundV7,
   isNeutralOwnerV7,
   previewColdWakeV7,
   previewStampedeV7,
@@ -27,7 +27,6 @@ import {
   unitMovementModeV7,
   technologyCapabilitiesV7,
   unitRoleRuleV7,
-  validatePlayerMovementPathV7,
   type ColdSnapPreviewV7,
   type ColdWakePreviewV7,
   type CombatPreviewV7,
@@ -173,7 +172,7 @@ export const HIDDEN_BLIZZARD_PREVIEW_V7 = "A hidden Blizzard may change this";
 export const SNOW_LABEL_V7 = "Snow";
 export const BLIZZARD_LABEL_V7 = "Blizzard";
 export const SNOW_TOOLTIP_ICE_FOLK_V7 =
-  "Snow: your units move at half cost from Snow to Snow and have light cover here unless fortified";
+  "Snow: your units move at half cost between Snow and ice tiles and have light cover here unless fortified";
 export const SNOW_TOOLTIP_OTHERS_V7 =
   "Snow: your units stop on entering, as in a Forest. Ice Folk units have cover";
 /**
@@ -407,7 +406,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Snow",
-      "Ice Folk land and frozen open land are Snow: Ice Folk units move at half cost from Snow to Snow and have light cover on it unless they are fortified, and other units stop on entering it, as in a Forest.",
+      "Ice Folk land and frozen open land are Snow: Ice Folk units move at half cost between Snow and ice tiles and have light cover on it unless they are fortified, and other units stop on entering it, as in a Forest.",
     ],
     [
       "Blizzard",
@@ -596,11 +595,11 @@ export function iceFolkRecruitNotesV7(
   return [
     ...(mechanics.mountainBorn ? [`${MOUNTAIN_BORN_INFO_V7}.`] : []),
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): the Frost Wyrm
-    // flies, so it neither glides nor skates.
+    // flies, so it never glides.
     ...(mechanics.fliesOverDeepWater
       ? [SEA_WINGS_TOOLTIP_V7]
       : mechanics.glides
-        ? ["Moves at half cost from Snow to Snow."]
+        ? ["Moves at half cost between Snow and ice tiles."]
         : ["Never glides on Snow."]),
     ...(roleMechanicsV7(role, "ORIGINAL").buildsFieldDefense &&
     !mechanics.buildsFieldDefense
@@ -612,16 +611,13 @@ export function iceFolkRecruitNotesV7(
 /**
  * `pulp_wars-1wy.5`: what Snow does for an Ice Folk unit standing on it with
  * Snow cover: light cover (x 1.25) and, for a role that glides, the half
- * cost of a step from Snow onto Snow (never of a step off the Snow).
+ * cost of a step from Snow or ice onto Snow or ice (never of a step off it).
  */
 export function snowChipTooltipV7(glides: boolean): string {
   return glides
-    ? "On Snow: light cover here, and its steps from Snow to Snow cost half"
+    ? "On Snow: light cover here, and its steps between Snow and ice tiles cost half"
     : "On Snow: light cover here";
 }
-
-/** `pulp_wars-1wy.5`: the cursor description of a Move that glides. */
-export const GLIDE_MOVE_LABEL_V7 = "Glide: Snow to Snow at half cost";
 
 /** One line of Ice Folk unit information. */
 export interface IceFolkUnitInfoLineV7 {
@@ -1089,7 +1085,7 @@ export function coldWakeMoveLabelV7(preview: ColdWakePreviewV7): string {
   }).replace("Freezes", "freezes")}`;
 }
 
-// ------------------------------------------------------ Skating and dives
+// ------------------------------------------------------------------ Dives
 
 /**
  * Ice Folk movement (`pulp_wars-s55m.2`, section 21.16): whether an offered
@@ -1107,39 +1103,9 @@ export function moveIsDiveV7(
     to !== undefined &&
     command.path.length === 1 &&
     unit.ownerId === view.viewer.id &&
-    unitSkatesV7(view, unit) &&
+    unitIsIceFolkGroundV7(view, unit) &&
     Math.max(Math.abs(to.x - unit.at.x), Math.abs(to.y - unit.at.y)) > 1
   );
-}
-
-/**
- * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's +1 Move before): whether
- * an offered walk of an own land-form Ice Folk unit reaches its tile only
- * by skating (each step onto ice costs half) or a Runners glide (free
- * straight on): the tile is farther than the unit's Move, the path enters
- * an ice tile the viewer knows, and the path is legal (the engine's public
- * path validation). The distance test keeps a tile the unit reaches anyway
- * unmarked when the offered path happens to step on the ice on its way.
- */
-export function moveUsesSkateV7(
-  view: PlayerViewV7,
-  command: Extract<CommandV7, { kind: "MOVE" }>,
-): boolean {
-  if (view.ice.length === 0 || moveIsDiveV7(view, command)) return false;
-  const unit = view.units.find((candidate) => candidate.id === command.unitId);
-  const to = command.path.at(-1);
-  if (
-    unit === undefined ||
-    to === undefined ||
-    unit.ownerId !== view.viewer.id ||
-    !unitSkatesV7(view, unit) ||
-    !command.path.some((at) => isIceAtV7(view, at))
-  )
-    return false;
-  const move = unitRoleRuleV7(view, unit).move;
-  if (Math.max(Math.abs(to.x - unit.at.x), Math.abs(to.y - unit.at.y)) <= move)
-    return false;
-  return validatePlayerMovementPathV7(view, unit, command.path).legal;
 }
 
 // ------------------------------------------------------------- log lines

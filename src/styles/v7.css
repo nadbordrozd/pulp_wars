@@ -95,7 +95,7 @@
   --pw-ground: #8ab85c;
   --pw-marker-landing: #64e6cf;
   --pw-marker-after-move: #f4c95d;
-  --pw-marker-slide: #d6f0ff;
+  --pw-marker-dive: #d6f0ff;
   --pw-marker-launch: #c7e7f5;
   /*
    * The technology tree's night ground (bead pulp_wars-2yc.58): a dark
@@ -7605,22 +7605,11 @@ html:has(.v7-match-shell) body {
   color: var(--pw-text-2);
 }
 
-/* An Ice Folk unit's Glide tiles: pale-ice dashed outlines. */
-.v7-landing-legend-item[data-landing-marker="slide"] .v7-landing-legend-swatch,
-.v7-landing-legend-item[data-landing-marker="slip"] .v7-landing-legend-swatch,
-.v7-landing-legend-item[data-landing-marker="glide"] .v7-landing-legend-swatch {
-  border-color: var(--pw-marker-slide);
-}
-
-/* Ice Folk movement (pulp_wars-s55m.2): skate reach, dotted (Glacier's +1
-   Move before); a Fishing Hole dive, a solid pale-ice ring. */
-.v7-landing-legend-item[data-landing-marker="glacier"]
-  .v7-landing-legend-swatch {
-  border-style: dotted;
-  border-color: var(--pw-marker-slide);
-}
+/* Ice Folk movement (pulp_wars-s55m.2): a Fishing Hole dive, a solid
+   pale-ice ring. (The Glide, skate and slide markers went with
+   pulp_wars-ecnj, 7r135: a Move over Snow or ice is marked as any Move.) */
 .v7-landing-legend-item[data-landing-marker="dive"] .v7-landing-legend-swatch {
-  border-color: var(--pw-marker-slide);
+  border-color: var(--pw-marker-dive);
   border-radius: 50%;
 }
 

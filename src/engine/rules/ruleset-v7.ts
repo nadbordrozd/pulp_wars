@@ -704,28 +704,14 @@ export interface RoleMechanicsV7 {
   readonly mountainBorn: boolean;
   /**
    * The Ice Folk revision (section 6.2): Glide. In land form a step from a
-   * Snow tile onto a Snow tile costs one half-point (`pulp_wars-1wy.3`:
-   * both ends, no longer every step that leaves Snow). True for every Ice
-   * Folk land role except the Frost Wyrm (a flyer; the Sabretooth before
-   * `pulp_wars-s55m.4`); false for every other faction.
+   * frozen tile onto a frozen tile (Snow or ice; ice since
+   * `pulp_wars-ecnj`, 7r135, when Skate, Runners and the Sled's glide
+   * through zones of control went) costs one half-point, like a step off a
+   * Road node, never less (`pulp_wars-1wy.3`: both ends). True for every
+   * Ice Folk land role except the Frost Wyrm (a flyer; the Sabretooth
+   * before `pulp_wars-s55m.4`); false for every other faction.
    */
   readonly glides: boolean;
-  /**
-   * Ice Folk movement (`pulp_wars-s55m.2`, `pulp-wars-poc-7r124`; the
-   * redesign's slide before): Runners. In land form, a step from an ice
-   * tile onto an ice tile in the same direction as the step before it, in
-   * the same Move, costs nothing, so the unit glides any distance in a
-   * straight line along ice and may stop on any tile of it (the Sled and
-   * the Snow Hunter). A body rule.
-   */
-  readonly runners: boolean;
-  /**
-   * Ice Folk movement (`pulp_wars-s55m.2`): a step onto ice that enters a
-   * hostile zone of control does not end the unit's Move while its next
-   * step glides on straight along the ice (the Sled; the redesign's
-   * Runners before). A body rule.
-   */
-  readonly glidesThroughZoc: boolean;
   /**
    * The Ice Folk revision (section 7.7): Prowl. Entering hostile zone of
    * control does not end the unit's Move (the Human Raider; the Sabretooth
@@ -2013,8 +1999,6 @@ const mechanics = (
           movementMode: "GROUND",
           mountainBorn: false,
           glides: false,
-          runners: false,
-          glidesThroughZoc: false,
           ignoresZocStops: false,
           sweeps: false,
           tramplesFieldDefense: false,
@@ -3663,11 +3647,12 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     glides: true,
     rockfallAttack2: 3,
   },
-  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): Runners, a free glide
-  // straight along ice, for the Sled and the Snow Hunter; the Sled also
-  // glides through zones of control (the redesign's Runners before).
-  RAIDER: { glides: true, runners: true, glidesThroughZoc: true },
-  MARKSMAN: { glides: true, runners: true, coldBloodBonus2: 1 },
+  // Skating is plain movement (`pulp_wars-ecnj`, 7r135): the Sled's and the
+  // Snow Hunter's Runners (a free straight glide on ice, 7r124) and the
+  // Sled's glide through zones of control are gone; they Glide like the
+  // rest.
+  RAIDER: { glides: true },
+  MARKSMAN: { glides: true, coldBloodBonus2: 1 },
   // The ninth unit (7r55): the Walrus (Frostbite).
   GUARD: { buildsFieldDefense: false, glides: true, frostbite: true },
   CAPTAIN: { glides: true },
@@ -3679,7 +3664,7 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
   // Wyrm flies like the Gyrocopter (no advance after a kill), over Deep
   // Water without Navigation, and its attacks Freeze (Frost Breath). As a
-  // flyer it neither Glides on Snow nor skates on ice.
+  // flyer it never Glides on Snow or ice.
   KNIGHT: {
     movementMode: "FLY",
     advancesAfterKill: false,

@@ -22,16 +22,10 @@ import {
   type BoardRenderInteractionV7,
   type BoardRenderPlanV7,
 } from "../../src/render/canvas/board-renderer-v7";
-import {
-  moveOnIceLabelV7,
-  moveOnIceV7,
-  seaIceCellsV7,
-} from "../../src/render/canvas/frozen-sea-board-plan-v7";
+import { seaIceCellsV7 } from "../../src/render/canvas/frozen-sea-board-plan-v7";
 import {
   SEA_ICE_CRACKS_V7,
   drawSeaIceCellV7,
-  drawSlideArrowV7,
-  slideArrowWidthV7,
   seaIceCracksV7,
 } from "../../src/render/canvas/frozen-sea-canvas-v7";
 import {
@@ -47,8 +41,6 @@ import {
   ICE_FOR_SHIPS_HELP_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
-  SKATE_MOVE_LABEL_V7,
-  SKATE_TRAIL_LABEL_V7,
   freezeRingLabelV7,
   frozenSeaBoundaryNoticeV7,
   frozenSeaCombatNotesV7,
@@ -69,7 +61,8 @@ import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 // The frozen sea interface (bead pulp_wars-5ti.7, second part;
 // docs/ui/BOARD_TARGETING.md section 3.5): the board plan, the words and
-// the canvas marks of Freeze, the ice, and the slide (Icebound and the
+// the canvas marks of Freeze and the ice (the slide went with `pulp_wars-ecnj`,
+// 7r135: a Move on ice is plain movement; Icebound and the
 // crush went with the Ice Folk freeze rework, `pulp_wars-s55m.1`).
 
 const COORDINATE = /\b\d{1,2}, ?\d{1,2}\b/;
@@ -339,66 +332,48 @@ describe("ice on the board plan", () => {
   });
 });
 
-describe("moving on ice", () => {
-  it("a skater's Move carries its trail over the ice it crosses (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
+describe("moving on ice (skating is plain movement, `pulp_wars-ecnj`, 7r135)", () => {
+  it("a Yeti's Move onto the ice is a plain Move mark: no trail, no skate tile, no label", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
     const yeti = unitAt(view, FROZEN_UI_V7.bridgeHead);
     const built = plan(view, yeti.id);
-    // A Yeti (Move 1) skates two bridge tiles, half a Move each, and may
-    // stop on either.
-    const [first, second] = FROZEN_UI_V7.bridge as readonly {
-      x: number;
-      y: number;
-    }[];
-    if (first === undefined || second === undefined)
-      throw new Error("bridge missing");
+    // A Yeti (Move 1) on the bare shore: the step onto the ice is a full
+    // one, so it reaches the first bridge tile only (two, skating, before).
     const onIce = built.targets.filter(
       (target) =>
         target.family === "MOVE" &&
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
     expect(onIce.map((target) => at(target.at))).toEqual([
-      at(first),
-      at(second),
+      at(FROZEN_UI_V7.bridge[0] as CoordV7),
     ]);
-    const skated = onIce.find((target) => at(target.at) === at(second));
-    expect(skated?.slide).toEqual([
-      { from: FROZEN_UI_V7.bridgeHead, tiles: [first, second] },
-    ]);
-    // The skate reach (past the Yeti's Move) names the skate once.
-    expect(skated?.skate).toBe(true);
-    expect(skated?.semanticLabel).toBe(SKATE_MOVE_LABEL_V7);
-    // A trail alone is named as such; a one-tile step carries none.
-    expect(
-      moveOnIceLabelV7(
-        moveOnIceV7(view, {
-          kind: "MOVE",
-          unitId: yeti.id,
-          path: [first, second],
-        }),
-      ),
-    ).toBe(SKATE_TRAIL_LABEL_V7);
-    expect(onIce[0]?.slide).toBeUndefined();
+    for (const target of built.targets.filter(
+      (candidate) => candidate.family === "MOVE",
+    )) {
+      for (const gone of ["slide", "skate", "glide"])
+        expect(target).not.toHaveProperty(gone);
+      expect(target.semanticLabel ?? "").not.toMatch(/skate|slide|glide/i);
+    }
   });
 
-  it("a Sled slides the bridge and steps ashore in the same Move", () => {
+  it("a Sled Glides two bridge tiles past the first and stops short of the far shore", () => {
     const view = viewOf(frozenSlideUiFixtureV7({ sled: true }));
     const sled = unitAt(view, FROZEN_UI_V7.bridgeHead);
     const built = plan(view, sled.id);
-    const ashore = built.targets.find(
-      (target) =>
-        target.family === "MOVE" && at(target.at) === at(FROZEN_UI_V7.farShore),
-    );
-    expect(ashore?.slide).toEqual([
-      { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
-    ]);
-    if (ashore?.command.kind !== "MOVE") throw new Error("no Move ashore");
-    expect(ashore.command.path).toHaveLength(FROZEN_UI_V7.bridge.length + 1);
+    const reached = built.targets
+      .filter((target) => target.family === "MOVE")
+      .map((target) => at(target.at));
+    // A full point onto the ice, then half a point a tile: three tiles of
+    // the bridge (Runners slid it to the far shore before).
+    for (const tile of FROZEN_UI_V7.bridge.slice(0, 3))
+      expect(reached).toContain(at(tile));
+    for (const tile of [...FROZEN_UI_V7.bridge.slice(3), FROZEN_UI_V7.farShore])
+      expect(reached).not.toContain(at(tile));
   });
 
-  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): with Move 1
-  // the Snow Golem skates two ice tiles, too short a path for a trail.
-  it("the Snow Golem skates the ice too (every Ice Folk ground unit)", () => {
+  // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow
+  // Golem has Move 1; from the bare shore it reaches one ice tile.
+  it("the Snow Golem walks onto the ice too (every Ice Folk ground unit)", () => {
     const view = viewOf(frozenSlideUiFixtureV7());
     const golem = unitAt(view, { x: 0, y: 2 });
     const built = plan(view, golem.id);
@@ -407,7 +382,7 @@ describe("moving on ice", () => {
         target.family === "MOVE" &&
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
-    expect(onIce.length).toBeGreaterThan(1);
+    expect(onIce).toHaveLength(1);
   });
 
   it("another faction's ground unit is offered no Move onto the ice (pulp_wars-y242; it slipped onto it before)", () => {
@@ -625,62 +600,7 @@ describe("frozen-sea marks on the canvas", () => {
     expect(named("stroke")).toHaveLength(1);
   });
 
-  it("draws a slide's arrow along its tiles", () => {
-    const { context, named } = recorder();
-    drawSlideArrowV7(
-      context,
-      [
-        { x: 0, y: 0 },
-        { x: 0, y: 80 },
-        { x: 0, y: 160 },
-      ],
-      1,
-      { prominent: true },
-    );
-    // A casing and a colour stroke of one path with an arrowhead.
-    expect(named("stroke")).toHaveLength(2);
-    const lines = named("lineTo");
-    expect(lines[0]).toEqual(["lineTo", 0, 80]);
-    // The tip passes the last tile's centre, pointing down.
-    expect(lines[1]?.[2]).toBeGreaterThan(160);
-    // One point alone draws nothing.
-    const none = recorder();
-    drawSlideArrowV7(none.context, [{ x: 0, y: 0 }], 1);
-    expect(none.calls).toEqual([]);
-  });
-
-  it("keeps the slide arrow readable at the desktop's zoom steps", () => {
-    // `pulp_wars-5ti.10`: the camera zoom of the chibi zoom steps 0.75 and 1
-    // (60 and 80 px tiles). The first arrow was a 4 to 7 px casing there.
-    for (const zoom of [0.46875, 0.625]) {
-      expect(slideArrowWidthV7(zoom, false)).toBeGreaterThanOrEqual(8);
-      expect(slideArrowWidthV7(zoom, true)).toBeGreaterThanOrEqual(10);
-      expect(slideArrowWidthV7(zoom, true)).toBeGreaterThan(
-        slideArrowWidthV7(zoom, false),
-      );
-      const { context } = recorder();
-      drawSlideArrowV7(
-        context,
-        [
-          { x: 0, y: 0 },
-          { x: 0, y: 128 * zoom },
-          { x: 0, y: 256 * zoom },
-        ],
-        zoom,
-      );
-      // The pale core, stroked last, is more than half the casing: at
-      // least 4 px.
-      expect(context.lineWidth).toBeCloseTo(
-        slideArrowWidthV7(zoom, false) * 0.55,
-        6,
-      );
-      expect(context.lineWidth).toBeGreaterThanOrEqual(4);
-    }
-    // Above the floor it scales with the camera, as before.
-    expect(slideArrowWidthV7(2, true)).toBe(30);
-  });
-
-  it("the board draws ice cells and the slide", () => {
+  it("the board draws ice cells, and a Move onto the ice as any Move (no arrow)", () => {
     const art: IceFolkBoardArtV7 = {
       snowTile: () => null,
       caps: () => null,
@@ -705,12 +625,35 @@ describe("frozen-sea marks on the canvas", () => {
     const iced = viewOf(frozenShipUiFixtureV7());
     const named = draw(plan(iced, null));
     expect(named("ellipse").length).toBeGreaterThanOrEqual(3);
-    // The slide's arrow is drawn while the Yeti is selected.
-    const slide = viewOf(frozenSlideUiFixtureV7());
-    const yeti = unitAt(slide, FROZEN_UI_V7.bridgeHead);
-    const resting = draw(plan(slide, null));
-    const selected = draw(plan(slide, yeti.id));
-    expect(selected("stroke").length).toBeGreaterThan(resting("stroke").length);
+    // Skating is plain movement (`pulp_wars-ecnj`, 7r135: the slide's
+    // arrow is gone). With the Sled selected, the Move mark on the ice
+    // costs the canvas exactly what a Move mark on land costs: leaving
+    // either out of the plan removes the same draw calls.
+    const bridge = viewOf(frozenSlideUiFixtureV7({ sled: true }));
+    const sled = unitAt(bridge, FROZEN_UI_V7.bridgeHead);
+    const selected = plan(bridge, sled.id);
+    const onBridge = (target: { readonly at: CoordV7 }) =>
+      FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at));
+    const iceMove = selected.targets.find(
+      (target) =>
+        target.family === "MOVE" &&
+        at(target.at) === at(FROZEN_UI_V7.bridge[2] as CoordV7),
+    );
+    const landMove = selected.targets.find(
+      (target) => target.family === "MOVE" && !onBridge(target),
+    );
+    if (iceMove === undefined || landMove === undefined)
+      throw new Error("no Move on the ice or on land");
+    const without = (left: unknown) =>
+      draw({
+        ...selected,
+        targets: selected.targets.filter((target) => target !== left),
+      });
+    const whole = draw(selected);
+    for (const call of ["stroke", "lineTo", "moveTo", "fill"])
+      expect(whole(call).length - without(iceMove)(call).length, call).toBe(
+        whole(call).length - without(landMove)(call).length,
+      );
   });
 });
 
@@ -718,9 +661,9 @@ describe("frozen-sea words", () => {
   it("has the Ice Folk Help list and one line for everyone else", () => {
     expect(ICE_HELP_RULES_V7.map(([name]) => name)).toEqual([
       "Freeze",
-      // Ice Folk movement (`pulp_wars-s55m.2`; "Slide" before).
-      "Skate",
-      "Runners",
+      // Skating is plain movement (`pulp_wars-ecnj`, 7r135: one Glide line;
+      // "Skate" and "Runners" before, "Slide" before them).
+      "Glide",
       "Dive",
       // Fishing Hole links (`pulp_wars-vg5l`, 7r127).
       "Hole links",

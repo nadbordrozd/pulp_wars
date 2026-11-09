@@ -14,7 +14,30 @@
 >   Snow Golem of 3.7 (9 Coins, Attack 3, Defense 1, Move 1, range 2–3, no
 >   attack after moving, the Snowball; Boulders and Planted gone) and the
 >   Mammoth of 3.8 (Attack 3, 8 Coins, Sweep at formula damage that can
->   Shatter). Beads 3 to 6 are not built.
+>   Shatter).
+> - **Bead 3 is done** in `pulp-wars-poc-7r135` (`pulp_wars-ecnj`): skating
+>   is plain movement (3.6). Glide covers Snow and ice; Skate, Runners, the
+>   Sled's glide through zones of control, `glideDirection`, the skate
+>   trail, its arrows and the "Skate:" and "Runners" labels are gone.
+>   Beads 4 to 6 are not built.
+> - **Decisions taken in bead 3:** (1) **Glide and a Road:** a step that
+>   leaves a usable Road node and also Glides costs one half-point, never
+>   less (the two never add up; a Road is never on ice, so they meet only
+>   on Snow). (2) **Zones of control:** entering a hostile zone of control
+>   ends a Move on ice as anywhere; a zone first seen during the Move
+>   interrupts it there (`ZOC`). (3) **The Glide marker on Snow went
+>   too:** with one rule for Snow and ice, the pale Glide tiles and their
+>   "Glide: Snow to Snow" legend of `pulp_wars-1wy.5` would have marked
+>   Moves on ice; every Move mark is now a plain one (only a dive keeps its
+>   mark). (4) The Normal AI's city-threat estimate, which leaves Glide out
+>   (`pulp_wars-7g3.4`), now leaves out ice as well as Snow; its unit
+>   threat estimate uses the engine's step cost. (5) `unitSkatesV7` is
+>   `unitIsIceFolkGroundV7` (it now only gates the dive); the public stats
+>   `iceFolk.skates` and `iceFolk.runners` are gone. (6) **The dive:** in a
+>   radius-1 territory Glide now walks a unit between any two Fishing Holes
+>   over the capital's Snow, so the movement query offers the walk and a
+>   dive only to a hole no walk reaches (bead 4 moves the dive to Under the
+>   Ice). No command kind, event kind or ordinal changed.
 > - **Decisions taken in bead 2:** (1) The Golem keeps the numbers of 3.7,
 >   so it is not better than the Catapult on every axis: it costs one Coin
 >   more (9 against 8) for Defense 1 (0.5), the Snowball, Mountain-born and
@@ -754,7 +777,9 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
 - **Focused tests:** `ruleset-v7-ice-movement-s55m2`,
   `ruleset-v7-frozen-sea-slide`, `ruleset-v7-ice-folk-snow`,
   `ruleset-v7-ice-only-ice-folk-y242`, `frozen-sea-presentation-render-v7`,
-  `ice-redesign-interface-render-v7`.
+  `ice-redesign-interface-render-v7`, plus a new
+  `ruleset-v7-skating-plain-move-ecnj.test.ts`. **Done** in `7r135`
+  (`pulp_wars-ecnj`).
 
 ### Bead 4: the naval branch rebuilt (`7r136`)
 

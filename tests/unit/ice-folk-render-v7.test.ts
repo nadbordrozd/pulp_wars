@@ -782,23 +782,27 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     expect(texts(draw(chosen))).toContain("−3 · stops");
   });
 
-  // Ice Folk movement (`pulp_wars-s55m.2`; Glacier's "+1" mark before).
-  it("marks the tile only skating reaches, with a chevron token and no text", () => {
-    const skating = humanView(frozenGlacierUiFixtureV7());
-    const plan = planFor(skating, FROZEN_GLACIER_UI_V7.walker);
-    const marked = plan.targets.filter((target) => target.skate === true);
-    expect(marked.map((target) => target.at)).toEqual([
-      FROZEN_GLACIER_UI_V7.glacierTile,
-    ]);
-    expect(marked[0]?.semanticLabel).toBe("Skate: ice costs half a move");
-    expect(texts(draw(plan))).not.toContain("+1");
-    // The token adds strokes to the selected plan.
-    const resting = draw(planFor(skating, null)).filter(
-      (call) => call[0] === "stroke",
-    ).length;
+  // Ice Folk movement (`pulp_wars-s55m.2`; Glacier's "+1" mark before; the
+  // skate tile's chevron token until skating became plain movement,
+  // `pulp_wars-ecnj`, 7r135).
+  it("marks no tile as skating's: a Move onto the ice is a plain Move mark", () => {
+    const view = humanView(frozenGlacierUiFixtureV7());
+    const plan = planFor(view, FROZEN_GLACIER_UI_V7.walker);
+    const moves = plan.targets.filter((target) => target.family === "MOVE");
+    expect(moves.length).toBeGreaterThan(0);
+    for (const target of moves) {
+      expect(target).not.toHaveProperty("skate");
+      expect(target.semanticLabel ?? "").not.toMatch(/skate/i);
+    }
+    // The second ice tile is out of a Yeti's reach from the bare shore.
     expect(
-      draw(plan).filter((call) => call[0] === "stroke").length,
-    ).toBeGreaterThan(resting);
+      moves.some(
+        (target) =>
+          target.at.x === FROZEN_GLACIER_UI_V7.glacierTile.x &&
+          target.at.y === FROZEN_GLACIER_UI_V7.glacierTile.y,
+      ),
+    ).toBe(false);
+    expect(texts(draw(plan))).not.toContain("+1");
   });
 
   it("marks the Fishing Holes a unit may dive to, with ripples", () => {

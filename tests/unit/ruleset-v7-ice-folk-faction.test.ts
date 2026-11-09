@@ -1608,10 +1608,8 @@ describe("Ice Folk public unit stats (section 11)", () => {
       blizzard: false,
       // The frozen sea (naval branch section 12).
       onIce: false,
-      // Ice Folk movement (`pulp_wars-s55m.2`): every Ice Folk land unit
-      // skates; Runners are the Sled's and the Snow Hunter's.
-      skates: true,
-      runners: false,
+      // (`skates` and `runners` went with `pulp_wars-ecnj`, 7r135: Glide
+      // covers ice.)
       iceCover: false,
     });
     expect(stats(at(4, 3)).iceFolk).toMatchObject({

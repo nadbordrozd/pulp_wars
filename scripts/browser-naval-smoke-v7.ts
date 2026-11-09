@@ -935,8 +935,8 @@ function sceneTools(connection: Connection): {
  * naval art (the Ram and Torpedo ability icons, the sea ice sheets, the
  * sea ice sheets) is drawn by the gate. A Yeti's Freeze is armed and its
  * tile picked on the board; the Ice Witch's Cold Snap ring is previewed and
- * cast on one press (`pulp_wars-s55m.1`); a Sled slides across an ice
- * bridge to the far shore; a Frozen Battleship shows its Frozen chip; the
+ * cast on one press (`pulp_wars-s55m.1`); a Sled Glides onto an ice
+ * bridge (`pulp_wars-ecnj`); a Frozen Battleship shows its Frozen chip; the
  * Ice Folk technology cards carry their names. Each
  * scene is a fixture of tests/fixtures/v7-frozen-sea-ui.ts.
  */
@@ -1117,21 +1117,25 @@ async function captureFrozenSeaEvidence(
     })()`,
   );
 
-  // The slide: a Sled steps onto the bridge, slides to its end and steps
-  // ashore on the far side in one Move.
+  // The ice bridge (skating is plain movement since `pulp_wars-ecnj`,
+  // 7r135; a slide with its arrow and legend before): a Sled steps onto
+  // the bridge from the bare shore (a full point) and Glides two tiles on
+  // it (half a point each), and its Move marks carry no legend.
   const slide = await frozen("frozenSlideUiFixtureV7", { sled: true });
   await activate(slide.bridgeHead);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock [data-landing-marker="slide"]') !== null`,
+    `document.querySelector('.v7-selection-dock') !== null && document.querySelector('.v7-selection-dock [data-landing-marker]') === null`,
   );
   // Zoomed out one step, so the whole bridge shows above the dock.
   await evaluate(connection, `globalThis.__NAVAL_DOM__.boardHost.zoom('OUT')`);
   await delay(350);
-  await capture(connection, "frozen-slide.png", directory);
+  await capture(connection, "frozen-bridge.png", directory);
   await evaluate(connection, `globalThis.__NAVAL_DOM__.boardHost.zoom('IN')`);
   await delay(200);
-  await activate(slide.farShore);
+  const glideEnd = (slide.bridge as readonly { x: number; y: number }[])[2];
+  if (glideEnd === undefined) throw new Error("the bridge has no third tile");
+  await activate(glideEnd);
   await waitForExpression(
     connection,
     `globalThis.__NAVAL_DOM__.traces.length === 1`,
@@ -1140,9 +1144,9 @@ async function captureFrozenSeaEvidence(
     connection,
     `(() => {
       const trace = globalThis.__NAVAL_DOM__.traces[0];
-      if (trace?.command?.kind !== 'MOVE') throw new Error('the slide was not a MOVE');
+      if (trace?.command?.kind !== 'MOVE') throw new Error('the Glide was not a MOVE');
       const end = trace.command.path[trace.command.path.length - 1];
-      if (end.x !== 1 || end.y !== 8) throw new Error('the Sled did not reach the far shore');
+      if (end.x !== 1 || end.y !== 5) throw new Error('the Sled did not reach the third bridge tile');
       return { command: trace.command.kind, steps: trace.command.path.length };
     })()`,
   );
@@ -1221,7 +1225,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r134', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r135', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only

@@ -214,13 +214,14 @@ describe("the Sunken Wreck under ice (section 21.16)", () => {
           same(command.path.at(-1) as CoordV7, ICE3),
       ),
     ).toBe(false);
-    // A Snow Hunter steps onto the ice and glides on (Runners, Ice Folk
-    // movement `pulp_wars-s55m.2`) to its end, the Wreck.
+    // A Sled steps onto the ice (a full point from the shore) and Glides on
+    // (half a point a tile; skating is plain movement since
+    // `pulp_wars-ecnj`, 7r135) to its end, the Wreck.
     const slide = withWreck(
       frozenArenaV7({
         factions: ["ICE_FOLK", "ORIGINAL"],
         technologies: [ALL, ALL],
-        units: [{ seat: 0, role: "MARKSMAN", at: SHORE }],
+        units: [{ seat: 0, role: "RAIDER", at: SHORE }],
         ice: [ICE1, ICE2, ICE3].map((at) => ({ at, seat: 0 as const })),
       }),
     );
@@ -521,31 +522,33 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     expect(cast.accepted ? cast.state.ice : []).toEqual([]);
   });
 
-  it("skates like every Ice Folk body (Ice Folk movement, `pulp_wars-s55m.2`)", () => {
+  it("Glides on ice like every Ice Folk body (skating is plain movement, `pulp_wars-ecnj`)", () => {
     const state = controlled(
       [],
       [ICE1, ICE2, ICE3].map((at) => ({ at, seat: 1 as const })),
     );
     const yeti = navalUnitAtV7(state, SHORE);
-    // Half a Move a tile of ice: two tiles for its Move 1, and it may stop
-    // on the first.
+    // From the bare shore the step onto the ice is a full one: its whole
+    // Move 1 (half, a skate, before 7r135).
     acceptV7(state, 0, { kind: "MOVE", unitId: yeti.id, path: [ICE1] });
-    const skated = acceptV7(state, 0, {
-      kind: "MOVE",
-      unitId: yeti.id,
-      path: [ICE1, ICE2],
-    });
-    expect(navalUnitV7(skated.state, yeti.id).at).toEqual(ICE2);
     expect(
       rejectV7(state, 0, {
         kind: "MOVE",
         unitId: yeti.id,
-        path: [ICE1, ICE2, ICE3],
+        path: [ICE1, ICE2],
       }),
     ).toEqual({
       code: "MOVEMENT_ILLEGAL",
       params: { reason: "BUDGET_EXCEEDED" },
     });
+    // On the ice, half a Move a tile: two tiles for its Move 1.
+    const onIce = patchFrozenUnitV7(state, yeti.id, { at: ICE1 });
+    const glided = acceptV7(onIce, 0, {
+      kind: "MOVE",
+      unitId: yeti.id,
+      path: [ICE2, ICE3],
+    });
+    expect(navalUnitV7(glided.state, yeti.id).at).toEqual(ICE3);
   });
 
   it("Black Ice follows the seat that owns the ice: a Martian seat has none", () => {

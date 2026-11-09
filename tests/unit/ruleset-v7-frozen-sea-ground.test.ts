@@ -408,7 +408,7 @@ describe("Glacier (section 8.10)", () => {
     // The opponent reads it from the unit's public stats.
     expect(queryUnitStatsV7(view, yeti.id)?.iceFolk).toMatchObject({
       onIce: true,
-      skates: true,
+      glides: true,
       iceCover: true,
       onSnow: false,
     });
@@ -597,13 +597,15 @@ describe("Glacier (section 8.10)", () => {
         paths.map((entry) => [keyOf(entry.destination), entry.spentPoints2]),
       ),
     ).toEqual(costs);
-    // Every path keeps the 4 half-points; a skate onto the ice row costs
-    // half: (3, 3) is a land step and a skate away.
+    // Every path keeps the 4 half-points; the step onto the ice row from
+    // bare land is a full one since skating became plain movement
+    // (`pulp_wars-ecnj`, 7r135; half, a skate, before): (3, 3) is two land
+    // steps' worth away.
     for (const entry of paths)
       expect(entry.spentPoints2).toBeLessThanOrEqual(4);
     expect(
       paths.find((entry) => keyOf(entry.destination) === "3,3"),
-    ).toMatchObject({ spentPoints2: 3 });
+    ).toMatchObject({ spentPoints2: 4 });
     expect(paths.some((entry) => entry.path.some(onIce))).toBe(true);
     // Without Glacier the same paths are offered.
     const barePaths = offered(build(NO_GLACIER));

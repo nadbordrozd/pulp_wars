@@ -12,7 +12,7 @@ import {
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   roleMechanicsV7,
-  unitSkatesV7,
+  unitIsIceFolkGroundV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -115,8 +115,8 @@ function play(state: GameStateV7, command: CommandV7) {
 describe("the identity", () => {
   // The starting border freeze (`pulp_wars-s55m.6`) took 7r126 after it.
   it("was 7r125 after 7r124, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r134");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r134.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r125");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r124");
@@ -240,8 +240,8 @@ describe("the Frost Wyrm's flight", () => {
   it("neither skates nor dives nor glides: every step is a whole one of its Move 3", () => {
     const state = iceFieldV7([own("KNIGHT", at(2, 2)), FAR]);
     const wyrm = unitAtV7(state, at(2, 2));
-    expect(unitSkatesV7(state, wyrm)).toBe(false);
-    expect(unitSkatesV7(state, unitAtV7(state, at(9, 1)))).toBe(false);
+    expect(unitIsIceFolkGroundV7(state, wyrm)).toBe(false);
+    expect(unitIsIceFolkGroundV7(state, unitAtV7(state, at(9, 1)))).toBe(false);
     const names = roleGlossaryV7("KNIGHT", "ICE_FOLK").map(
       (entry) => entry.name,
     );
@@ -250,9 +250,10 @@ describe("the Frost Wyrm's flight", () => {
     );
     for (const gone of ["Skates", "Dive", "Glide", "Slips past", "Overrun"])
       expect(names, gone).not.toContain(gone);
-    // Every other Ice Folk land unit still skates.
+    // Every other Ice Folk land unit Glides over Snow and ice (Skates
+    // before skating became plain movement, `pulp_wars-ecnj`, 7r135).
     expect(roleGlossaryV7("FIGHTER", "ICE_FOLK").map((e) => e.name)).toContain(
-      "Skates",
+      "Glide",
     );
   });
 });

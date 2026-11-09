@@ -642,8 +642,6 @@ import {
   iceSeaResearchV7,
   iceSeaSeatV7,
   iceShipMoveRejectedV7,
-  iceGlideLineV7,
-  iceSkaterV7,
   iceTargetBonusV7,
   iceRouteStepCostV7,
   landGrantIceTilesV7,
@@ -2683,13 +2681,7 @@ function* hasReplacementPathWorkV7(
           validation.traversedPath.length !== candidate.length
         )
           continue;
-        // Ice Folk movement (`pulp_wars-s55m.2`): a Runners path on ice is
-        // a search state of its own for each direction (a glide is free).
-        const glide = validation.glideDirection;
-        const key =
-          glide === undefined
-            ? coordKey(next)
-            : `${coordKey(next)}>${glide.dx},${glide.dy}`;
+        const key = coordKey(next);
         if (
           (best.get(key) ?? Number.POSITIVE_INFINITY) <= validation.spentPoints2
         )
@@ -11670,8 +11662,8 @@ function* publicThreatenedTilesWorkV7(
   // non-Martian unit, so other matches are unchanged.
   const mode: "GROUND" | "STRIDE" | "FLY" =
     unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
-  // The Ice Folk revision (`pulp_wars-7g3.4`): an Ice Folk unit Glides off
-  // known Snow (half cost); another faction's ground unit is stopped by
+  // The Ice Folk revision (`pulp_wars-7g3.4`): an Ice Folk unit Glides over
+  // known Snow and ice (half cost); another faction's ground unit is stopped by
   // known Snow (deep snow; Fieldcraft is assumed absent, as Forest freedom
   // is); Prowl ignores zones of control (a Human Raider; it may end on any
   // settlement center since `pulp_wars-ke95`; only a Dwarf rider on its
@@ -11704,14 +11696,13 @@ function* publicThreatenedTilesWorkV7(
   // ending on one) and ignores hostile zones of control, so a screen does
   // not keep it from the units behind. Only the Colossus has the ability.
   const overstrides = unitOverstridesV7(view, unit);
-  // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): an Ice Folk land unit
-  // skates (a step onto known ice costs half); with Runners (the Sled, the
-  // Snow Hunter) a step onto ice also reaches every tile straight on along
-  // the ice at the same cost (`iceGlideLineV7`), the Sled's through zones
-  // of control. False in a view without ice.
-  const skates = iceSkaterV7(view, unit);
-  const runners = skates && unitRoleMechanicsV7(view, unit).runners;
-  const zocGlider = runners && unitRoleMechanicsV7(view, unit).glidesThroughZoc;
+  // Glide over Snow and ice (`pulp_wars-ecnj`, 7r135; Skate and Runners
+  // before): a tile is frozen for the estimate when it is explored and has
+  // Snow or ice, as the public movement validation reads it.
+  const frozenTile = (
+    tile: PlayerViewV7["board"]["tiles"][number] | undefined,
+  ): boolean =>
+    tile?.explored === true && (tile.snow === true || isIceAtV7(view, tile.at));
   const zocAt = (target: PlayerViewV7["board"]["tiles"][number]): boolean =>
     mode !== "FLY" &&
     !prowls &&
@@ -11799,22 +11790,16 @@ function* publicThreatenedTilesWorkV7(
             !view.cities.some(
               (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
             ));
-        const skateCost = skates && isIceAtV7(view, tile.at);
         // Revision 18: leaving a usable Road node costs half; the Forest and
         // Mountain stop is still waived only when both ends are Road nodes.
         // `pulp_wars-ev6q` (7r129): Roads give the Steam Mole nothing.
         const roadCost = unit.form === "LAND" && !ignoresRoads && priorRoadNode;
         const roadEdge =
           roadCost && publicRoadNodeForOwner(tile, unit.ownerId, lookup);
-        // `pulp_wars-1wy.3`: Glide is a step from Snow onto Snow.
-        const glideCost =
-          glides &&
-          priorTile?.explored === true &&
-          priorTile.snow === true &&
-          tile.explored &&
-          tile.snow === true;
-        const spent2 =
-          current.spent2 + (roadCost || glideCost || skateCost ? 1 : 2);
+        // `pulp_wars-1wy.3`, `pulp_wars-ecnj`: Glide is a step from a frozen
+        // tile onto a frozen tile (Snow or ice); it never adds to a Road.
+        const glideCost = glides && frozenTile(priorTile) && frozenTile(tile);
+        const spent2 = current.spent2 + (roadCost || glideCost ? 1 : 2);
         if (spent2 > (facts.move + sugarRushMove) * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
@@ -11840,39 +11825,6 @@ function* publicThreatenedTilesWorkV7(
         best.set(key, spent2);
         if (!passedOnly) origins.set(key, tile.at);
         if (!stops && !stuck) queue.push({ at: tile.at, spent2 });
-        // Runners: the glide straight on along the ice, free.
-        if (
-          runners &&
-          skateCost &&
-          !stuck &&
-          !terrainStop &&
-          (!hostileZoc || zocGlider)
-        )
-          for (const glide of iceGlideLineV7(
-            view,
-            tile.at,
-            tile.at.x - current.at.x,
-            tile.at.y - current.at.y,
-            (at) =>
-              (lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
-                (occupant) =>
-                  occupant.id !== unit.id &&
-                  occupant.hp > 0 &&
-                  occupant.ownerId !== unit.ownerId,
-              ),
-            (at) => !zocGlider && zocAt(tileAtPublicV7(view, at)),
-          )) {
-            const glideKey = coordKey(glide);
-            if ((best.get(glideKey) ?? Number.POSITIVE_INFINITY) <= spent2)
-              continue;
-            best.set(glideKey, spent2);
-            const ownOn = (lookup.occupantsByKey.get(glideKey) ?? []).some(
-              (occupant) => occupant.id !== unit.id && occupant.hp > 0,
-            );
-            if (!ownOn) origins.set(glideKey, glide);
-            if (!zocAt(tileAtPublicV7(view, glide)))
-              queue.push({ at: glide, spent2 });
-          }
       }
       yield;
     }

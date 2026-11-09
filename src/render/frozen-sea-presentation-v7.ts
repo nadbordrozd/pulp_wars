@@ -21,20 +21,20 @@ import { playerSubjectV7 } from "./player-names-v7";
  * The frozen sea interface (bead pulp_wars-5ti.7, second part;
  * docs/product/RULESET_7_NAVAL_BRANCH.md sections 8, 14.1 and 14.2): the
  * words of Freeze (the one Freeze effect, `pulp_wars-xv0t`, 7r133: the
- * `FREEZE` command and Hoarfrost's line are gone), the ice, skating,
- * Runners, the Fishing Hole dive (the forced slide before
- * `pulp_wars-s55m.2`; the slip of every other unit before `pulp_wars-y242`,
- * 7r132), who walks on ice, Black Ice and Glacier, shared by
- * the dock, the board plan, Help, the
- * technology cards and the Gallery. Every number is read from the engine's
- * constants, public previews, public unit stats and the view's ice list.
+ * `FREEZE` command and Hoarfrost's line are gone), the ice, Glide over
+ * Snow and ice (skating is plain movement since `pulp_wars-ecnj`, 7r135:
+ * Skate, Runners, the skate trail and its arrows are gone), the Fishing
+ * Hole dive (the slip of every other unit before `pulp_wars-y242`, 7r132),
+ * who walks on ice, Black Ice and Glacier, shared by the dock, the board
+ * plan, Help, the technology cards and the Gallery. Every number is read
+ * from the engine's constants, public previews, public unit stats and the
+ * view's ice list.
  */
 
 export const FREEZE_LABEL_V7 = "Freeze";
 export const ICE_LABEL_V7 = "Ice";
-/** Ice Folk movement (`pulp_wars-s55m.2`): skating, Runners, the dive. */
-export const SKATE_LABEL_V7 = "Skate";
-export const RUNNERS_LABEL_V7 = "Runners";
+/** Ice Folk movement: Glide (`pulp_wars-ecnj`) and the dive. */
+export const GLIDE_LABEL_V7 = "Glide";
 export const DIVE_LABEL_V7 = "Dive";
 export const BLACK_ICE_LABEL_V7 = "Black Ice";
 export const GLACIER_LABEL_V7 = "Glacier";
@@ -51,10 +51,13 @@ export const ICE_COVER_LABEL_V7 = "Ice cover";
  */
 export const FREEZE_RULE_V7 =
   "Freezing a tile turns water to ice and open land to Snow; an enemy on it is Frozen for a turn.";
-export const SKATE_RULE_V7 =
-  "Ice Folk units skate: each step onto ice costs half a move.";
-export const RUNNERS_RULE_V7 =
-  "Sleds and Snow Hunters glide free in a straight line on ice and may stop anywhere; a Sled glides on past enemies.";
+/**
+ * Skating is plain movement (`pulp_wars-ecnj`, 7r135,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.6): Glide's glossary
+ * and Help line.
+ */
+export const GLIDE_RULE_V7 =
+  "Between Snow and ice tiles, Ice Folk move at half cost, as on a Road.";
 export const DIVE_RULE_V7 = `Fishing Hole: +${FISHING_HOLE_POPULATION_V7} population. A unit on your Fishing Hole that has not moved may dive to any other free Fishing Hole of yours as its move.`;
 /**
  * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk sea link.
@@ -89,8 +92,7 @@ export const ICE_BUILD_RULE_V7 =
 /** The frozen sea's rules, in reading order (the Ice Folk tech cards' "?"). */
 export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [FREEZE_LABEL_V7, FREEZE_RULE_V7],
-  [SKATE_LABEL_V7, SKATE_RULE_V7],
-  [RUNNERS_LABEL_V7, RUNNERS_RULE_V7],
+  [GLIDE_LABEL_V7, GLIDE_RULE_V7],
   [DIVE_LABEL_V7, DIVE_RULE_V7],
   [HOLE_LINKS_LABEL_V7, HOLE_LINKS_RULE_V7],
   [ICE_WALKERS_LABEL_V7, ICE_WALKERS_RULE_V7],
@@ -349,7 +351,7 @@ export function iceChipTooltipV7(
     own && viewerHasBlackIceV7(view)
       ? ` ${BLACK_ICE_LABEL_V7}: an enemy that steps onto it is Frozen.`
       : "";
-  return `${ICE_LABEL_V7}: only Ice Folk units and units that fly or stride go onto it; other units crack it. Ice Folk skate (half a move).${thickness}${blackIce}`;
+  return `${ICE_LABEL_V7}: only Ice Folk units and units that fly or stride go onto it; other units crack it. Ice Folk Glide on it, as on Snow.${thickness}${blackIce}`;
 }
 
 /**
@@ -370,14 +372,12 @@ export function viewerHasBlackIceV7(view: PlayerViewV7): boolean {
   ).blackIce;
 }
 
-/** The marks of a Move on ice (Ice Folk movement, `pulp_wars-s55m.2`). */
-export const SKATE_TRAIL_LABEL_V7 = "Skate: across the ice";
 /**
- * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's +1 Move before): the
- * mark of a tile only skating or a Runners glide reaches, and of a Fishing
- * Hole dive (the legend and the cursor description).
+ * Ice Folk movement (`pulp_wars-s55m.2`): the mark of a Fishing Hole dive
+ * (the legend and the cursor description). A Move on ice has no mark of
+ * its own since `pulp_wars-ecnj` (7r135: the skate trail, its arrows and
+ * the skate tiles are gone).
  */
-export const SKATE_MOVE_LABEL_V7 = "Skate: ice costs half a move";
 export const DIVE_MOVE_LABEL_V7 =
   "Dive: through your Fishing Holes, as the whole move";
 
@@ -385,11 +385,12 @@ export const ICE_COVER_PREVIEW_V7 = ICE_COVER_LABEL_V7;
 export const ICE_COVER_TOOLTIP_V7 = `${ICE_COVER_LABEL_V7}: light cover on its own ice (${GLACIER_LABEL_V7})`;
 export const ON_ICE_LABEL_V7 = "On ice";
 /**
- * Bead pulp_wars-2yc.63: who slides on ice, in the tooltip of a tile's ice
- * chip (a unit card no longer says "On ice").
+ * Bead pulp_wars-2yc.63: who moves on ice, in the tooltip of a tile's ice
+ * chip (a unit card no longer says "On ice"). Glide over ice since
+ * `pulp_wars-ecnj` (7r135; skating before).
  */
 export const ICE_MOVE_TEXT_V7 =
-  "Ice Folk skate across ice at half a move a tile; units that fly or stride cross it like land; no other unit goes onto it.";
+  "Ice Folk move at half cost between ice and Snow tiles; units that fly or stride cross it like land; no other unit goes onto it.";
 
 /** The frozen-sea lines of an attack preview: cover on ice. */
 export function frozenSeaCombatNotesV7(

@@ -13,9 +13,10 @@ import type { SeaIceCellV7 } from "./frozen-sea-board-plan-v7";
  * - **An ice cell** over its water: the cut sheet of `seaIceTileV7` (the
  *   live and the Classic look), or a code-drawn floe in the same colours
  *   (LEGACY, a sheet still loading); then the melting cracks of its stage.
- * - **A slide's arrow** from the tile a unit steps from, across the ice, to
- *   the tile it stops on. (An icebound ship's pack ice and crush pill went
- *   with Icebound, `pulp_wars-s55m.1`.)
+ *
+ * (A slide's arrow across the ice went with `pulp_wars-ecnj`, 7r135: a Move
+ * on ice is drawn as any Move. An icebound ship's pack ice and crush pill
+ * went with Icebound, `pulp_wars-s55m.1`.)
  *
  * The marks never move, so the reduced-motion still is the mark itself.
  */
@@ -35,8 +36,6 @@ export const SEA_ICE_COLOURS_V7 = {
   snow: "#ffffff",
   crack: "#2f5d7e",
   crackLight: "#f6fdff",
-  slide: "#d6f0ff",
-  slideCasing: "#10131c",
   crushToken: "#10243a",
   crushRim: "#9fd8f2",
   crushText: "#ffffff",
@@ -255,99 +254,6 @@ export function drawIceBuildingPadV7(
   context.lineWidth = Math.max(1, pad.rimWidth * zoom);
   context.beginPath();
   context.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-  context.stroke();
-  context.restore();
-}
-
-/**
- * The slide arrow's weight (`pulp_wars-5ti.10`): the casing's width in
- * world units and its floor in canvas pixels. At the desktop's zoom steps
- * (a camera zoom of 0.47 and 0.625) the first arrow was a 4 to 7 px
- * casing round a 2 to 3 px core, which a row of Move outlines drowned.
- */
-export const SLIDE_ARROW_WEIGHT_V7 = {
-  prominent: { width: 15, minimum: 10 },
-  quiet: { width: 12, minimum: 8 },
-} as const;
-
-/** The casing width of a slide arrow at `zoom`, in canvas pixels. */
-export function slideArrowWidthV7(zoom: number, prominent: boolean): number {
-  const weight = prominent
-    ? SLIDE_ARROW_WEIGHT_V7.prominent
-    : SLIDE_ARROW_WEIGHT_V7.quiet;
-  return Math.max(weight.minimum, weight.width * zoom);
-}
-
-/**
- * A slide's arrow through `points` (canvas px, the tile the unit steps
- * from first): a dark line with a pale ice core, so it reads on the ice
- * and on open water alike, and an arrowhead on the tile it stops on. `prominent` (the focused
- * destination) draws it at full weight.
- */
-export function drawSlideArrowV7(
-  context: CanvasRenderingContext2D,
-  points: readonly { readonly x: number; readonly y: number }[],
-  zoom: number,
-  options: {
-    readonly prominent?: boolean;
-    readonly highContrast?: boolean;
-  } = {},
-): void {
-  const first = points[0];
-  const last = points.at(-1);
-  const before = points.at(-2);
-  if (
-    first === undefined ||
-    last === undefined ||
-    before === undefined ||
-    points.length < 2
-  )
-    return;
-  const prominent = options.prominent === true;
-  const width = slideArrowWidthV7(zoom, prominent);
-  const length = Math.hypot(last.x - before.x, last.y - before.y) || 1;
-  const ux = (last.x - before.x) / length;
-  const uy = (last.y - before.y) / length;
-  // The line stops short of the last tile's centre, where the head begins.
-  const tip = { x: last.x + ux * 10 * zoom, y: last.y + uy * 10 * zoom };
-  // The line leaves the unit's own tile a little past its centre.
-  const second = points[1] ?? last;
-  const firstLength = Math.hypot(second.x - first.x, second.y - first.y) || 1;
-  const sx = first.x + ((second.x - first.x) / firstLength) * 34 * zoom;
-  const sy = first.y + ((second.y - first.y) / firstLength) * 34 * zoom;
-  context.save();
-  context.lineCap = "round";
-  context.lineJoin = "round";
-  context.setLineDash([]);
-  context.globalAlpha *= prominent ? 1 : 0.85;
-  const trace = (): void => {
-    context.beginPath();
-    context.moveTo(sx, sy);
-    for (const point of points.slice(1, -1)) context.lineTo(point.x, point.y);
-    context.lineTo(tip.x, tip.y);
-    // The arrowhead.
-    // The head keeps its proportion to a line held at its pixel floor.
-    const head = Math.max(24 * zoom, width * 2);
-    const spread = Math.max(15 * zoom, width * 1.25);
-    context.moveTo(tip.x, tip.y);
-    context.lineTo(
-      tip.x - ux * head - uy * spread,
-      tip.y - uy * head + ux * spread,
-    );
-    context.moveTo(tip.x, tip.y);
-    context.lineTo(
-      tip.x - ux * head + uy * spread,
-      tip.y - uy * head - ux * spread,
-    );
-  };
-  trace();
-  context.strokeStyle = SEA_ICE_COLOURS_V7.slideCasing;
-  context.lineWidth = width;
-  context.stroke();
-  trace();
-  context.strokeStyle =
-    options.highContrast === true ? "#ffffff" : SEA_ICE_COLOURS_V7.slide;
-  context.lineWidth = width * 0.55;
   context.stroke();
   context.restore();
 }

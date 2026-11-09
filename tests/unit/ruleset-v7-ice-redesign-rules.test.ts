@@ -245,9 +245,10 @@ describe("Black Ice freezes on entry, once (section 2.8)", () => {
 });
 
 // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): the slide is no longer
-// forced; the Sled glides straight on through a zone of control and may
-// stop anywhere on the ice.
-describe("Runners: the Sled's glide is not stopped by zones of control (section 2.7)", () => {
+// forced. Skating is plain movement (`pulp_wars-ecnj`, 7r135): the Sled's
+// Runners, which glided straight on through a zone of control, are gone; a
+// zone of control stops it on the ice as anywhere.
+describe("zones of control stop a Sled on the ice (section 2.7; its Runners glided through them until 7r135)", () => {
   // A bridge down column 2 from the north shore to the south shore, with a
   // Human Fighter on the ice to its west whose zone of control covers
   // (2, 3) to (2, 5).
@@ -268,66 +269,85 @@ describe("Runners: the Sled's glide is not stopped by zones of control (section 
   const validate = (state: GameStateV7, path: readonly CoordV7[]) =>
     validateMovementPathV7(state, navalUnitAtV7(state, SHORE), path);
 
-  it("a Sled glides through the zone to the end of the ice; a Yeti stops in it", () => {
-    const sled = bridge("RAIDER");
-    const through = validate(sled, BRIDGE);
-    expect(through).toMatchObject({ legal: true, destination: { x: 2, y: 7 } });
-    // No forced slide: it may also stop in the zone.
-    expect(validate(sled, [ICE1])).toMatchObject({
-      legal: true,
-      destination: ICE1,
-      stopped: true,
-    });
+  it("a Sled stops on the first tile of the zone, like a Yeti", () => {
+    for (const role of ["RAIDER", "FIGHTER"] as const) {
+      const state = bridge(role);
+      expect(validate(state, [ICE1]), role).toMatchObject({
+        legal: true,
+        destination: ICE1,
+        stopped: true,
+      });
+      expect(validate(state, BRIDGE), role).toEqual({
+        legal: false,
+        reason: "ZOC_STOPS_MOVE",
+      });
+      expect(validate(state, [ICE1, ICE2]), role).toEqual({
+        legal: false,
+        reason: "ZOC_STOPS_MOVE",
+      });
+    }
     // The public paths agree, and so does the threat a viewer sees.
+    const sled = bridge("RAIDER");
     const sledUnit = navalUnitAtV7(sled, SHORE);
     const view = viewForV7(sled, seatV7(sled, 0).id);
     const unit = view.units.find((candidate) => candidate.id === sledUnit.id);
     if (unit === undefined) throw new Error("no Sled");
-    expect(
-      reachablePlayerMovementPathsV7(view, unit).some(
-        (path) => path.path.at(-1)?.x === 2 && path.path.at(-1)?.y === 7,
-      ),
-    ).toBe(true);
-    acceptV7(sled, 0, { kind: "MOVE", unitId: sledUnit.id, path: BRIDGE });
-    expect(
-      queryThreatenedTilesV7(sled, sledUnit.id, seatV7(sled, 1).id),
-    ).toContainEqual({ x: 2, y: 8 });
-    expect(
-      queryUnitStatsV7(viewForV7(sled, seatV7(sled, 0).id), sledUnit.id)
-        ?.iceFolk?.runners,
-    ).toBe(true);
-    // A Yeti's slide stops in the zone.
-    const yeti = bridge("FIGHTER");
-    expect(validate(yeti, [ICE1])).toMatchObject({
-      legal: true,
-      destination: ICE1,
-      stopped: true,
-    });
-    expect(validate(yeti, BRIDGE).legal).toBe(false);
-    expect(
-      queryUnitStatsV7(
-        viewForV7(yeti, seatV7(yeti, 0).id),
-        navalUnitAtV7(yeti, SHORE).id,
-      )?.iceFolk?.runners,
-    ).toBe(false);
+    const ends = reachablePlayerMovementPathsV7(view, unit).map(
+      (path) => path.destination,
+    );
+    expect(ends).toContainEqual(ICE1);
+    expect(ends).not.toContainEqual(ICE2);
+    expect(ends).not.toContainEqual({ x: 2, y: 7 });
+    const threat = queryThreatenedTilesV7(
+      sled,
+      sledUnit.id,
+      seatV7(sled, 1).id,
+    );
+    expect(threat).toContainEqual(ICE2);
+    expect(threat).not.toContainEqual({ x: 2, y: 8 });
+    expect(queryUnitStatsV7(view, sledUnit.id)?.iceFolk).not.toHaveProperty(
+      "runners",
+    );
   });
 
-  it("a Sled ends on no unit, passes its own, and where its glide stops in the zone the Move ends", () => {
-    const blocked = bridge("RAIDER", [
-      { seat: 0, role: "GUARD", at: { x: 2, y: 6 } },
-    ]);
-    // Stopping on (2, 5), in the zone: the Move ends there.
-    expect(validate(blocked, BRIDGE.slice(0, 3))).toMatchObject({
-      legal: true,
-      destination: { x: 2, y: 5 },
-      stopped: true,
+  it("a Sled on the ice past the zone Glides on and passes its own units, never ending on one", () => {
+    // The Sled stands on (2, 6), below the zone, with a Walrus on (2, 7).
+    const below = frozenArenaV7({
+      technologies: [ALL, ALL],
+      units: [
+        { seat: 0, role: "RAIDER", at: { x: 2, y: 6 } },
+        { seat: 0, role: "GUARD", at: { x: 2, y: 7 } },
+        { seat: 1, role: "FIGHTER", at: { x: 1, y: 4 } },
+      ],
+      ice: [...BRIDGE.map((at) => ({ at })), { at: { x: 1, y: 4 } }],
     });
-    // Never on the Walrus, but past it (an own unit is passed).
-    expect(validate(blocked, BRIDGE.slice(0, 4)).legal).toBe(false);
-    expect(validate(blocked, BRIDGE)).toMatchObject({
+    const from = { x: 2, y: 6 };
+    const sled = navalUnitAtV7(below, from);
+    // Never on the Walrus, but past it ashore: half a point onto (2, 7),
+    // a full one off the ice.
+    expect(validateMovementPathV7(below, sled, [{ x: 2, y: 7 }]).legal).toBe(
+      false,
+    );
+    expect(
+      validateMovementPathV7(below, sled, [
+        { x: 2, y: 7 },
+        { x: 2, y: 8 },
+      ]),
+    ).toMatchObject({
       legal: true,
-      destination: { x: 2, y: 7 },
+      destination: { x: 2, y: 8 },
+      spentPoints2: 3,
     });
+    // Up the bridge into the zone: (2, 5) ends the Move.
+    expect(validateMovementPathV7(below, sled, [{ x: 2, y: 5 }])).toMatchObject(
+      { legal: true, stopped: true, spentPoints2: 1 },
+    );
+    expect(
+      validateMovementPathV7(below, sled, [
+        { x: 2, y: 5 },
+        { x: 2, y: 4 },
+      ]),
+    ).toEqual({ legal: false, reason: "ZOC_STOPS_MOVE" });
   });
 });
 

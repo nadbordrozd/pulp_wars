@@ -192,7 +192,6 @@ import {
   drawBlizzardRingV7,
   drawStampedeArrowsV7,
   drawDiveReachV7,
-  drawSkateReachV7,
   drawFrozenCasingV7,
   drawFrozenGlyphV7,
   drawIceFolkBadgeV7,
@@ -206,7 +205,6 @@ import {
 import {
   addIceFolkPickEntriesV7,
   coldWakeMoveExtrasV7,
-  moveIsGlideV7,
   iceFolkAttackTargetExtrasV7,
   iceFolkPickTargetsV7,
   iceFolkTerrainCellsV7,
@@ -290,22 +288,14 @@ import {
 import {
   addFreezeRingEntriesV7,
   crackIcePickTargetsV7,
-  moveOnIceLabelV7,
-  moveOnIceV7,
   seaIceCellsV7,
   type FreezePickV7,
   type FreezeRingWeightV7,
-  type MoveSlideV7,
   type SeaIceCellV7,
 } from "./frozen-sea-board-plan-v7";
-import {
-  drawIceBuildingPadV7,
-  drawSeaIceCellV7,
-  drawSlideArrowV7,
-} from "./frozen-sea-canvas-v7";
+import { drawIceBuildingPadV7, drawSeaIceCellV7 } from "./frozen-sea-canvas-v7";
 import {
   DIVE_MOVE_LABEL_V7,
-  SKATE_MOVE_LABEL_V7,
   frozenSeaCombatNotesV7,
 } from "../frozen-sea-presentation-v7";
 import {
@@ -381,9 +371,7 @@ import {
 } from "./candy-canvas-v7";
 import { candyLabelV7, matchHasCandySeatV7 } from "../candy-presentation-v7";
 import {
-  GLIDE_MOVE_LABEL_V7,
   moveIsDiveV7,
-  moveUsesSkateV7,
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
 } from "../ice-folk-presentation-v7";
@@ -896,12 +884,6 @@ export interface MapCommandTargetV7 {
    */
   readonly launch?: true;
   /**
-   * `pulp_wars-1wy.5`: an Ice Folk unit's Move that ends farther than its
-   * Move away, by half-cost steps from Snow onto Snow (Glide). Outlined in
-   * the faction's pale ice, named by the dock's legend.
-   */
-  readonly glide?: true;
-  /**
    * Revision 17 (Goblin matches only): death-blast, chain, bomb-splash and
    * friendly-fire warnings, one warning box each under the target.
    */
@@ -985,12 +967,10 @@ export interface MapCommandTargetV7 {
     readonly own: boolean;
   }[];
   /**
-   * Ice Folk movement (`pulp_wars-s55m.2`; Glacier's +1 Move before): an
-   * Ice Folk unit's Move that only skating or a Runners glide reaches
-   * (`skate`), and a Fishing Hole dive (`dive`). Outlined in the pale ice
-   * (the skate tile with a dotted edge), named by the dock's legend.
+   * Ice Folk movement (`pulp_wars-s55m.2`): a Fishing Hole dive. Outlined
+   * in the pale ice, named by the dock's legend. (The skate tile went with
+   * `pulp_wars-ecnj`, 7r135: a Move on ice is marked as any Move.)
    */
-  readonly skate?: true;
   readonly dive?: true;
   /**
    * Ice Folk Freeze: a Stampede toward this tile (section 21.18): the line,
@@ -1116,12 +1096,6 @@ export interface MapCommandTargetV7 {
     readonly over: CoordV7;
     readonly to: CoordV7;
   };
-  /**
-   * The frozen sea: the slides of a Move across ice (an arrow from the tile
-   * the unit steps from to the tile it stops on), drawn for every such
-   * destination and at full weight on the focused one.
-   */
-  readonly slide?: readonly MoveSlideV7[];
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -5863,13 +5837,6 @@ export function drawBoardV7(input: {
       input.previewFocus ?? null,
       input.highContrast ?? false,
     );
-    drawSlidePreviewV7(
-      context,
-      camera,
-      input.plan,
-      input.previewFocus ?? null,
-      input.highContrast ?? false,
-    );
     drawHopPreviewV7(
       context,
       camera,
@@ -6126,18 +6093,19 @@ export const CULT_SWAP_GHOST_SHIFT_V7 = 22;
 export const LAUNCH_TARGET_STROKE_V7 = "#c7e7f5";
 
 /**
- * `pulp_wars-1wy.5`: the outline of a tile an Ice Folk unit reaches by
- * Glide (the pale ice of ICE_FOLK_PALETTE_V7).
+ * Ice Folk movement (`pulp_wars-s55m.2`): the outline of a Fishing Hole
+ * dive (the pale ice of ICE_FOLK_PALETTE_V7). (`GLIDE_TARGET_STROKE_V7`
+ * before `pulp_wars-ecnj`, 7r135: a Glide is marked as any Move now.)
  */
-export const GLIDE_TARGET_STROKE_V7 = "#d6f0ff";
+export const DIVE_TARGET_STROKE_V7 = "#d6f0ff";
 
 /** The gold of a two-step landing's dotted outline (a Move variant). */
 export const LANDING_AFTER_MOVE_STROKE_V7 = "#f4c95d";
 
 /**
  * Bead pulp_wars-9im: the Move style's named variants keep their own
- * stroke and dash (each has a legend in the dock): a Launch tile, a Glide
- * tile and a two-step landing. Every other target is its style's plain
+ * stroke and dash (each has a legend in the dock): a Launch tile, a dive
+ * and a two-step landing. Every other target is its style's plain
  * mark (target-highlight-v7), whatever its faction.
  */
 function targetVariant(target: MapCommandTargetV7 | undefined): {
@@ -6147,14 +6115,8 @@ function targetVariant(target: MapCommandTargetV7 | undefined): {
   // The Martian revision: a Launch tile is dotted in the pale glass blue.
   if (target?.launch === true)
     return { stroke: LAUNCH_TARGET_STROKE_V7, dash: [3, 5] };
-  if (target?.glide === true) return { stroke: GLIDE_TARGET_STROKE_V7 };
-  // Ice Folk movement: a tile only skating reaches, dotted; a dive.
-  if (target?.skate === true)
-    return { stroke: GLIDE_TARGET_STROKE_V7, dash: [2, 4] };
-  if (target?.dive === true) return { stroke: GLIDE_TARGET_STROKE_V7 };
-  // The frozen sea: the tile a skate trail stops on takes the pale ice
-  // too (the arrow and the legend say so).
-  if (target?.slide !== undefined) return { stroke: GLIDE_TARGET_STROKE_V7 };
+  // Ice Folk movement: a Fishing Hole dive, in the pale ice.
+  if (target?.dive === true) return { stroke: DIVE_TARGET_STROKE_V7 };
   if (target?.family === "LANDING_AFTER_MOVE")
     return { stroke: LANDING_AFTER_MOVE_STROKE_V7, dash: [3, 6] };
   // The Vampire and Banshee rework: a Bat Escape landing is flying reach,
@@ -6221,10 +6183,7 @@ function drawMapTarget(
     drawEtherealReachV7(context, x, y, camera.zoom, highContrast);
   if (entry.target?.batEscape !== undefined)
     drawBatEscapeReachV7(context, x, y, camera.zoom, highContrast);
-  // Ice Folk movement (`pulp_wars-s55m.2`): a tile only skating reaches,
-  // and a Fishing Hole dive.
-  if (entry.target?.skate === true)
-    drawSkateReachV7(context, x, y, camera.zoom, highContrast);
+  // Ice Folk movement (`pulp_wars-s55m.2`): a Fishing Hole dive.
   if (entry.target?.dive === true)
     drawDiveReachV7(context, x, y, camera.zoom, highContrast);
   // Bead pulp_wars-9im: one mark per highlight style (move, attack, help,
@@ -7216,51 +7175,6 @@ function drawBatEscapePreviewV7(
 }
 
 /**
- * The frozen sea: the slide of every Move that crosses ice, as an arrow
- * from the tile the unit steps from to the tile it stops on (a slide two
- * destinations share is drawn once); the focused destination's slides are
- * drawn last and at full weight.
- */
-function drawSlidePreviewV7(
-  context: CanvasRenderingContext2D,
-  camera: CameraState,
-  plan: BoardRenderPlanV7,
-  focus: CoordV7 | null,
-  highContrast: boolean,
-): void {
-  const sliding = plan.targets.filter(
-    (target) => target.slide !== undefined && target.slide.length > 0,
-  );
-  if (sliding.length === 0) return;
-  const point = (at: CoordV7): { readonly x: number; readonly y: number } => ({
-    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
-    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
-  });
-  const drawn = new Set<string>();
-  const draw = (target: MapCommandTargetV7, prominent: boolean): void => {
-    for (const slide of target.slide ?? []) {
-      const end = slide.tiles.at(-1);
-      if (end === undefined) continue;
-      const slideKey = `${coordKey(slide.from)}>${coordKey(end)}`;
-      if (!prominent && drawn.has(slideKey)) continue;
-      drawn.add(slideKey);
-      drawSlideArrowV7(
-        context,
-        [slide.from, ...slide.tiles].map(point),
-        camera.zoom,
-        { prominent, highContrast },
-      );
-    }
-  };
-  const focused =
-    focus === null
-      ? undefined
-      : sliding.find((candidate) => same(candidate.at, focus));
-  for (const target of sliding) if (target !== focused) draw(target, false);
-  if (focused !== undefined) draw(focused, true);
-}
-
-/**
  * The Dwarf revision: the focused (or only) attack target's Knockback
  * destination (an arrow to it, or a cross when the push is blocked), and the
  * focused Tunnel destination's eruption forecast (the ring, each visible
@@ -7900,10 +7814,7 @@ function mapTargets(
     ...commandMapTargets(view, commands, selectedUnitId).map((target) =>
       withVampireBansheeReachV7(
         view,
-        withMoveHopV7(
-          view,
-          withBerserkReachV7(view, withMoveOnIceV7(view, target)),
-        ),
+        withMoveHopV7(view, withBerserkReachV7(view, target)),
       ),
     ),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
@@ -7990,35 +7901,6 @@ function withMoveHopV7(
       target.semanticLabel === undefined
         ? HOP_MOVE_SEMANTIC_V7
         : `${target.semanticLabel}. ${HOP_MOVE_SEMANTIC_V7}`,
-  };
-}
-
-/**
- * The frozen sea: a Move across ice carries its skate trails (an Ice Folk
- * unit, `pulp_wars-s55m.2`; slides before), from the command's own path
- * and the view's ice list (no other ground unit enters ice since
- * `pulp_wars-y242`, 7r132, so nothing slips). Every other target is
- * returned as it is.
- */
-function withMoveOnIceV7(
-  view: PlayerViewV7,
-  target: MapCommandTargetV7,
-): MapCommandTargetV7 {
-  if (target.family !== "MOVE" || target.command.kind !== "MOVE") return target;
-  const onIce = moveOnIceV7(view, target.command);
-  const label = moveOnIceLabelV7(onIce);
-  if (onIce === null || label === null) return target;
-  return {
-    ...target,
-    slide: onIce.slides,
-    // Ice Folk movement (`pulp_wars-s55m.2`): a skate-reach tile already
-    // names the skate; its trail adds no second sentence.
-    semanticLabel:
-      target.semanticLabel === undefined
-        ? label
-        : target.skate === true
-          ? target.semanticLabel
-          : `${target.semanticLabel}. ${label}`,
   };
 }
 
@@ -8130,26 +8012,13 @@ function commandMapTargets(
       const at = command.path.at(-1);
       // The Martian revision: a machine's Move onto water self-launches.
       const launch = martianMatch ? martianMoveLabelV7(view, command) : null;
-      // `pulp_wars-1wy.5`: a tile an Ice Folk unit reaches only by its
-      // half-cost steps from Snow onto Snow is outlined in pale ice.
-      const glide =
-        launch === null && iceFolkMatch && moveIsGlideV7(view, command);
-      // Ice Folk movement (`pulp_wars-s55m.2`): a tile only skating or a
-      // Runners glide reaches, a Fishing Hole dive, and the enemies a Frost
-      // Giant's Move freezes.
+      // Ice Folk movement (`pulp_wars-s55m.2`): a Fishing Hole dive, and
+      // the enemies a Frost Giant's Move freezes. A Move that Glides over
+      // Snow or ice is marked as any Move (`pulp_wars-ecnj`, 7r135: the
+      // Glide and skate tiles are gone).
       const dive =
         launch === null && iceFolkMatch && moveIsDiveV7(view, command);
-      const glacier =
-        launch === null &&
-        !glide &&
-        !dive &&
-        iceFolkMatch &&
-        moveUsesSkateV7(view, command);
-      const iceLabel = dive
-        ? DIVE_MOVE_LABEL_V7
-        : glacier
-          ? SKATE_MOVE_LABEL_V7
-          : null;
+      const iceLabel = dive ? DIVE_MOVE_LABEL_V7 : null;
       const coldWake = iceFolkMatch
         ? coldWakeMoveExtrasV7(view, command)
         : null;
@@ -8192,15 +8061,6 @@ function commandMapTargets(
                     launch: true as const,
                     semanticLabel: `${launch}. Ends this unit's turn afloat.`,
                   }),
-              ...(glide
-                ? { glide: true as const, semanticLabel: GLIDE_MOVE_LABEL_V7 }
-                : {}),
-              ...(glacier
-                ? {
-                    skate: true as const,
-                    semanticLabel: SKATE_MOVE_LABEL_V7,
-                  }
-                : {}),
               ...(dive
                 ? { dive: true as const, semanticLabel: DIVE_MOVE_LABEL_V7 }
                 : {}),
@@ -8211,11 +8071,7 @@ function commandMapTargets(
                       ? {}
                       : { previewLabel: coldWake.label }),
                     coldWake: { units: coldWake.units, ring: coldWake.ring },
-                    semanticLabel: [
-                      glide ? GLIDE_MOVE_LABEL_V7 : null,
-                      iceLabel,
-                      coldWake.semantic,
-                    ]
+                    semanticLabel: [iceLabel, coldWake.semantic]
                       .filter((part): part is string => part !== null)
                       .join(". "),
                   }),
@@ -8225,11 +8081,9 @@ function commandMapTargets(
                     semanticLabel:
                       launch !== null
                         ? `${launch}. Ends this unit's turn afloat. ${provokeWarning}`
-                        : glide
-                          ? `${GLIDE_MOVE_LABEL_V7}. ${provokeWarning}`
-                          : iceLabel !== null
-                            ? `${iceLabel}. ${provokeWarning}`
-                            : provokeWarning,
+                        : iceLabel !== null
+                          ? `${iceLabel}. ${provokeWarning}`
+                          : provokeWarning,
                   }
                 : {}),
               ...(eats === null
@@ -8240,7 +8094,6 @@ function commandMapTargets(
                       launch === null
                         ? null
                         : `${launch}. Ends this unit's turn afloat`,
-                      glide ? GLIDE_MOVE_LABEL_V7 : null,
                       iceLabel,
                       provokes ? provokeWarning : null,
                       eats.label,

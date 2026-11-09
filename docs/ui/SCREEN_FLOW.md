@@ -242,12 +242,12 @@ units and ships have Crack Ice; the lines below say it as it is now (bead
   the faction has icons of its own for them.
 - **Help.** Help is the same short text for every faction (bead
   `pulp_wars-2yc.39`): there is no "On the ice" or "At sea" list; Freeze,
-  the slide, Runners and Crack Ice are explained on the unit's `?` (the
-  unit glossary). The Ice Folk Sea Dog goal reads "Hold the ice with 3
+  Glide (over Snow and ice since `pulp_wars-ecnj`) and Crack Ice are
+  explained on the unit's `?` (the unit glossary). The Ice Folk Sea Dog goal reads "Hold the ice with 3
   units at once."
 - **Gallery.** The Ice Folk cells of the Patrol Boat, Battleship,
   Submarine and Transport rows show a snowflake and "Ice" ("No ships: the
-  Ice Folk freeze the sea and slide across it") instead of a dash.
+  Ice Folk freeze the sea and walk across it") instead of a dash.
 
 ### Research prompts (bead `pulp_wars-gl1`)
 

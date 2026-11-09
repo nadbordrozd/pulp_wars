@@ -17,17 +17,13 @@ import {
   type PlayerViewV7,
 } from "../../src/engine/index";
 import {
-  GLIDE_TARGET_STROKE_V7,
+  DIVE_TARGET_STROKE_V7,
   buildBoardRenderPlanV7,
   drawBoardV7,
   pullPathCellsV7,
   type BoardRenderInteractionV7,
   type BoardRenderPlanV7,
 } from "../../src/render/canvas/board-renderer-v7";
-import {
-  glideStepsV7,
-  moveIsGlideV7,
-} from "../../src/render/canvas/ice-folk-board-plan-v7";
 import {
   TRACTOR_BEAM_DURATION_MS_V7,
   TRACTOR_BEAM_EXTRA_STEP_MS_V7,
@@ -44,7 +40,6 @@ import {
   galleryUnitDetailsV7,
 } from "../../src/render/gallery-presentation-v7";
 import {
-  GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_HELP_RULES_V7,
   snowChipTooltipV7,
 } from "../../src/render/ice-folk-presentation-v7";
@@ -458,7 +453,7 @@ describe("Tractor Beam aiming", () => {
       `a ${mothership} beams up to three of your units from up to two tiles away down around a tile up to three tiles away, each on the nearest free tile; they can still attack but not move.`,
     );
     expect(new Map(ICE_FOLK_HELP_RULES_V7).get("Snow")).toContain(
-      "Ice Folk units move at half cost from Snow to Snow and have light cover on it unless they are fortified",
+      "Ice Folk units move at half cost between Snow and ice tiles and have light cover on it unless they are fortified",
     );
   });
 
@@ -547,7 +542,7 @@ describe("Tractor Beam aiming", () => {
 });
 
 describe("Glide in the movement range (Snow to Snow)", () => {
-  it("marks exactly the tiles reached by half-cost steps inside the Snow", () => {
+  it("reaches the tiles of half-cost steps inside the Snow, marked as any Move", () => {
     const view = humanView(iceFolkGlideFixtureV7());
     const snowAt = (at: CoordV7): boolean =>
       view.board.tiles.some(
@@ -560,24 +555,20 @@ describe("Glide in the movement range (Snow to Snow)", () => {
     const move = effectiveRoleRuleV7("FIGHTER", "ICE_FOLK").move;
     const targetsOf = (at: CoordV7) =>
       planFor(view, at).targets.filter((target) => target.family === "MOVE");
-    // Inside the Snow: the tiles beyond its Move are all Snow, all marked,
-    // and each was reached by Snow-to-Snow steps only.
+    // Inside the Snow: the tiles beyond its Move are all Snow, each reached
+    // by Snow-to-Snow steps only. Since skating became plain movement
+    // (`pulp_wars-ecnj`, 7r135) no Move is marked as a Glide: every Move
+    // tile is a plain Move mark with no label of its own.
     const inside = targetsOf(ICE_FOLK_GLIDE_V7.inside);
     const far = inside.filter(
       (target) => chebyshev(target.at, ICE_FOLK_GLIDE_V7.inside) > move,
     );
     expect(far.length).toBeGreaterThan(0);
     for (const target of inside) {
-      const beyond = chebyshev(target.at, ICE_FOLK_GLIDE_V7.inside) > move;
-      expect(target.glide === true).toBe(beyond);
-      if (!beyond) continue;
-      expect(snowAt(target.at)).toBe(true);
-      expect(target.semanticLabel).toBe(GLIDE_MOVE_LABEL_V7);
-      if (target.command.kind !== "MOVE") throw new Error("kind");
-      expect(glideStepsV7(view, target.command)).toBe(
-        target.command.path.length,
-      );
-      expect(moveIsGlideV7(view, target.command)).toBe(true);
+      expect(target).not.toHaveProperty("glide");
+      expect(target.semanticLabel ?? "").not.toMatch(/glide/i);
+      if (chebyshev(target.at, ICE_FOLK_GLIDE_V7.inside) > move)
+        expect(snowAt(target.at)).toBe(true);
     }
     // On the Snow's edge: a step off the Snow is a full step, so no tile
     // off the Snow lies beyond its Move.
@@ -585,36 +576,23 @@ describe("Glide in the movement range (Snow to Snow)", () => {
     const edge = targetsOf(ICE_FOLK_GLIDE_V7.edge);
     expect(edge.some((target) => !snowAt(target.at))).toBe(true);
     for (const target of edge)
-      if (!snowAt(target.at)) {
+      if (!snowAt(target.at))
         expect(chebyshev(target.at, ICE_FOLK_GLIDE_V7.edge)).toBe(move);
-        expect(target.glide).toBeUndefined();
-      }
     // On open ground nothing glides.
     expect(snowAt(ICE_FOLK_GLIDE_V7.outside)).toBe(false);
     const outside = targetsOf(ICE_FOLK_GLIDE_V7.outside);
     expect(outside.length).toBeGreaterThan(0);
-    for (const target of outside) {
+    for (const target of outside)
       expect(chebyshev(target.at, ICE_FOLK_GLIDE_V7.outside)).toBe(move);
-      expect(target.glide).toBeUndefined();
-    }
-    // A Glide tile is outlined in the faction's pale ice: one outline per
-    // marked tile more than the same board draws without a selection that
-    // glides (other Ice Folk cues share the colour).
+    // No pale-ice outline marks a Glide tile any more (the dive keeps it).
     const iceStrokes = (at: CoordV7): number =>
       sets(draw(planFor(view, at)), "strokeStyle").filter(
-        (stroke) => stroke === GLIDE_TARGET_STROKE_V7,
+        (stroke) => stroke === DIVE_TARGET_STROKE_V7,
       ).length;
     expect(
       iceStrokes(ICE_FOLK_GLIDE_V7.inside) -
         iceStrokes(ICE_FOLK_GLIDE_V7.outside),
-    ).toBe(far.length);
-  });
-
-  it("marks no Glide for a Martian match", () => {
-    const view = humanView(martianMobilityFixtureV7());
-    expect(
-      planFor(view, AT.carrier).targets.some((target) => target.glide === true),
-    ).toBe(false);
+    ).toBe(0);
   });
 });
 
@@ -654,7 +632,7 @@ describe("Snow cover in the Defense row", () => {
         { source: "HALF_POWER", value: { numerator: -3, denominator: 2 } },
       ),
     ).toBe("−1.5");
-    expect(snowChipTooltipV7(true)).toContain("from Snow to Snow");
+    expect(snowChipTooltipV7(true)).toContain("between Snow and ice tiles");
     expect(snowChipTooltipV7(false)).not.toContain("half");
   });
 });
@@ -733,6 +711,8 @@ describe("Gallery: the balance round's cues and details", () => {
       galleryUnitDetailsV7(yeti).abilities.map(
         (ability) => `${ability.name}: ${ability.description}`,
       ),
-    ).toContain("Glide: Moves faster from snow to snow.");
+    ).toContain(
+      "Glide: Between Snow and ice tiles, moves at half cost, as on a Road.",
+    );
   });
 });
