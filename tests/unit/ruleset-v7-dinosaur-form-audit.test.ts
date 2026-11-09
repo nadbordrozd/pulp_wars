@@ -673,13 +673,16 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // land form (an embarked one is refused `EMBARKED`; an Egg never
     // reaches it). (The Frost Giant's Cold Aura test moved to `ice.ts` as
     // its Cold Wake: the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
-    // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry
-    // freezes only a unit that ends its Move, landing or Beam Down in land
-    // form (an Egg never moves; a unit that embarked is afloat). The one
-    // Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant's Cold Wake
-    // freezes only when the Giant ends its Move in land form (an embarked
-    // Giant, an Egg, and a boat freeze nothing).
-    "src/engine/v7/ice.ts": 2,
+    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant's Cold
+    // Wake freezes only when the Giant ends its Move in land form (an
+    // embarked Giant, an Egg, and a boat freeze nothing). (Black Ice's test
+    // went with Black Ice: the naval branch rebuilt, `pulp_wars-tzk6`,
+    // 7r137.)
+    "src/engine/v7/ice.ts": 1,
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
+    // and the Yeti's Rockfall lengthen only a land-form unit's range (a
+    // boat or an embarked unit on the tile shoots as afloat).
+    "src/engine/v7/ice-folk.ts": 1,
     "src/engine/v7/stampede.ts": 1,
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
@@ -859,7 +862,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // exposed on the ice is a land-form unit (an Egg is never on ice, and a
     // unit afloat on ice is icebound; the redesign, `pulp_wars-5ti.26`,
     // took away the value of the kill that broke thawing ice).
-    "src/ai/v7-frozen-sea.ts": 4,
+    // (The naval branch rebuilt, `pulp_wars-tzk6`, 7r137, took away the
+    // refusal to keep a land unit off hostile ice: 3.)
+    "src/ai/v7-frozen-sea.ts": 3,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

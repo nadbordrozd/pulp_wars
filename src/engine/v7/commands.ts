@@ -44,6 +44,8 @@ export type TileCommandKindV7 =
   | "BUILD_MARKET"
   | "BUILD_PORT"
   | "BUILD_SHIPYARD"
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress.
+  | "BUILD_ICE_FORTRESS"
   | "CLEAR_FOREST"
   | "REPLANT_FOREST"
   | "CULTIVATE_FOREST"
@@ -509,6 +511,7 @@ const TILE_KINDS = new Set<CommandKindV7>([
   "BUILD_MARKET",
   "BUILD_PORT",
   "BUILD_SHIPYARD",
+  "BUILD_ICE_FORTRESS",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
   "CULTIVATE_FOREST",

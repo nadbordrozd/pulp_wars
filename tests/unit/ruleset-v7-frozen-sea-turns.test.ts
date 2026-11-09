@@ -35,7 +35,8 @@ const ICEBOUND: readonly TechnologyIdV7[] = [
   "NAVIGATION",
   "NAVAL_ENGINEERING",
 ];
-const BLACK_ICE: readonly TechnologyIdV7[] = ["SHORECRAFT", "SEAMANSHIP"];
+// Harpoons (Black Ice until `pulp_wars-tzk6`, 7r137).
+const HARPOONS: readonly TechnologyIdV7[] = ["SHORECRAFT", "SEAMANSHIP"];
 const ALL: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
   "NAVIGATION",
@@ -81,38 +82,25 @@ describe("permanent ice (redesign section 2.3)", () => {
     expect(parseGameStateV7(state)).not.toBeNull();
   });
 
-  it("the view shows the owner, the crack and whether it is thick, never a countdown", () => {
+  it("the view shows the owner, never a countdown, a crack or a thickness", () => {
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): every Naval
+    // technology makes no ice thick (Glacier is gone).
     const state = frozenArenaV7({
       technologies: [ALL, RIME],
       units: [],
-      ice: [{ at: FAR }, { at: { x: 1, y: 4 }, cracked: true }],
+      ice: [{ at: FAR }, { at: { x: 1, y: 4 } }],
     });
     expect(viewForV7(state, seatV7(state, 1).id).ice).toEqual([
-      {
-        at: { x: 1, y: 4 },
-        ownerId: seatV7(state, 0).id,
-        cracked: true,
-        thick: true,
-      },
-      { at: FAR, ownerId: seatV7(state, 0).id, cracked: false, thick: true },
+      { at: { x: 1, y: 4 }, ownerId: seatV7(state, 0).id },
+      { at: FAR, ownerId: seatV7(state, 0).id },
     ]);
-    // Without Glacier the ice is not thick, and a crack is refused.
-    const thin = frozenArenaV7({
-      technologies: [RIME, RIME],
-      units: [],
-      ice: [{ at: FAR }],
-    });
-    expect(viewForV7(thin, seatV7(thin, 0).id).ice).toEqual([
-      { at: FAR, ownerId: seatV7(thin, 0).id, cracked: false, thick: false },
-    ]);
-    expect(() => frozenStateV7(thin, [{ at: FAR, cracked: true }])).toThrow();
   });
 
-  it("state parsing refuses `turnsLeft` and accepts `cracked`", () => {
+  it("state parsing refuses `turnsLeft` and `cracked`", () => {
     const state = frozenArenaV7({
       technologies: [ALL, ALL],
       units: [],
-      ice: [{ at: FAR, cracked: true }],
+      ice: [{ at: FAR }],
     });
     expect(parseGameStateV7(state)).not.toBeNull();
     const entry = state.ice[0];
@@ -127,6 +115,12 @@ describe("permanent ice (redesign section 2.3)", () => {
       parseGameStateV7({
         ...state,
         ice: [{ ...entry, turnsLeft: 3 }],
+      }),
+    ).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        ice: [{ ...entry, cracked: true }],
       }),
     ).toBeNull();
   });
@@ -169,12 +163,11 @@ describe("permanent ice (redesign section 2.3)", () => {
     expect(iceEntryV7(later.state, FAR)).toEqual({
       at: FAR,
       ownerId: third.id,
-      cracked: false,
     });
   });
 });
 
-describe("Black Ice no longer runs at the Start Turn (redesign section 2.8)", () => {
+describe("nothing freezes a unit on the seat's ice at the Start Turn (Black Ice is gone since 7r137)", () => {
   const scene = (technologies: readonly TechnologyIdV7[]) =>
     frozenArenaV7({
       technologies: [technologies, ALL],
@@ -187,7 +180,7 @@ describe("Black Ice no longer runs at the Start Turn (redesign section 2.8)", ()
     });
 
   it("a hostile land unit that stands on the seat's ice is not frozen by a Start Turn", () => {
-    for (const technologies of [RIME, BLACK_ICE]) {
+    for (const technologies of [RIME, HARPOONS]) {
       const state = scene(technologies);
       const started = round(round(state).state);
       expect(kinds(started.events)).not.toContain("UNITS_FROZEN");
@@ -195,10 +188,10 @@ describe("Black Ice no longer runs at the Start Turn (redesign section 2.8)", ()
     }
   });
 
-  it("a victim of Black Ice that thawed on the ice may act", () => {
-    const base = scene(BLACK_ICE);
+  it("a unit Frozen on the ice that thawed may act", () => {
+    const base = scene(HARPOONS);
     const victim = navalUnitAtV7(base, FAR);
-    // Frozen during its owner's turn (Black Ice on entry): it thaws after
+    // Frozen during its owner's turn (as Frostbite does): it thaws after
     // its owner's next turn and is never frozen again while it stays.
     const state = { ...base, frozen: [{ unitId: victim.id, turnsLeft: 1 }] };
     const parsed = parseGameStateV7(state);

@@ -189,7 +189,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // RECOVER and SWALLOW.)
     // (81: the one Freeze effect, `pulp_wars-xv0t`, 7r133, removes
     // THROW_BOLAS, FREEZE and FROST_BOLT.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(81);
+    // (82: the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, appends
+    // BUILD_ICE_FORTRESS last.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(82);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("COLD_SNAP");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 8)).toEqual([
       "COLD_SNAP", // FREEZE (pulp_wars-5ti.3) followed it until 7r133

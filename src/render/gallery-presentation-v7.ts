@@ -650,8 +650,9 @@ export function galleryBuildingSubjectV7(
   if (improvement === null || improvement === "MONUMENT")
     return monumentArtSubjectV7(galleryMonumentAchievementV7(row), faction);
   // The frozen sea redesign (bead pulp_wars-5ti.27): only the Ice Folk cut
-  // a Fishing Hole, so its one cell is theirs.
-  if (improvement === "FISHING_HOLE")
+  // a Fishing Hole (and, `pulp_wars-tzk6`, 7r137, raise an Ice Fortress on
+  // one), so its one cell is theirs.
+  if (improvement === "FISHING_HOLE" || improvement === "ICE_FORTRESS")
     return factionImprovementSubjectV7(improvement, "ICE_FOLK");
   return factionImprovementSubjectV7(improvement, faction);
 }
@@ -730,12 +731,10 @@ export function galleryBuildingGroundV7(
   row: GalleryBuildingRowIdV7,
   faction: FactionIdV7 | null = null,
 ): GalleryBuildingGroundV7 {
-  // The frozen sea redesign (bead pulp_wars-5ti.27): an Ice Folk dock (the
-  // Ice Harbour, the Great Harbour) and the Fishing Hole stand on ice.
-  if (
-    row === "FISHING_HOLE" ||
-    (faction === "ICE_FOLK" && (row === "PORT" || row === "SHIPYARD"))
-  )
+  // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole (and
+  // the Ice Fortress on one, `pulp_wars-tzk6`, 7r137) stands on ice. (An Ice
+  // Folk dock, a captured one, is a plain dock on water since 7r137.)
+  if (row === "FISHING_HOLE" || row === "ICE_FORTRESS")
     return {
       id: "SHALLOW_ICE",
       layers: [
@@ -842,6 +841,8 @@ const BUILDING_DESCRIPTIONS: Readonly<
   SHIPYARD: "An upgraded Port. Ships cost less.",
   FISHING_HOLE:
     "Cut in Ice Folk ice. Feeds mills and Markets like a farm, and links cities like a Port.",
+  ICE_FORTRESS:
+    "An upgraded Fishing Hole. A unit on it is fortified and shoots 1 further.",
 };
 
 /**

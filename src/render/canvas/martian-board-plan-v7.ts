@@ -16,6 +16,7 @@ import {
   unitFactionV7,
   unitMovementModeV7,
   unitRoleRuleV7,
+  unitSwimsV7,
   type CombatPreviewV7,
   type CommandV7,
   type CoordV7,
@@ -794,6 +795,9 @@ export function martianMoveLabelV7(
   const tile = view.board.tiles.find((candidate) => same(candidate.at, at));
   if (tile?.explored !== true || tile.biome !== null) return null;
   if (martianMachineV7(view, unit)) return LAUNCH_LABEL_V7;
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a swimmer (the
+  // Walrus) stays itself on the water, in land form: a plain Move.
+  if (unitSwimsV7(view, unit, unitMovementModeV7(view, unit))) return null;
   // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): an offered Move
   // of a foot unit onto water that is no dock is a hover launch (a Move to
   // an own dock embarks there as ever).

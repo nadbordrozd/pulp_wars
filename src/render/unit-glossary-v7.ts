@@ -12,11 +12,6 @@ import {
   type UnitRoleAbilityV7,
   type UnitRoleIdV7,
 } from "../engine/index";
-import {
-  ICE_COVER_LABEL_V7,
-  ICE_COVER_TOOLTIP_V7,
-} from "./frozen-sea-presentation-v7";
-
 /**
  * The unit glossary (bead pulp_wars-2yc.39): one name and one or two plain
  * sentences for every ability, trait and status a unit can have, and for
@@ -634,9 +629,15 @@ const ENTRIES = {
     "Sea wings",
     "Flies over shallow and deep water with no technology needed.",
   ],
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the dive needs
+  // Under the Ice; the Walrus swims.
   DIVE: [
     "Dive",
-    "From your Fishing Hole, if it has not moved, it dives to any other free Fishing Hole of yours as its move.",
+    "With Under the Ice: from your Fishing Hole, if it has not moved, it dives to any other free Fishing Hole of yours as its move.",
+  ],
+  SWIM: [
+    "Swim",
+    "Moves onto open water (deep water with Pack Ice) and fights there as on land.",
   ],
   CRACK_ICE: [
     "Crack Ice",
@@ -1129,6 +1130,7 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.shockFieldDamage > 0) traits.push("SHOCK_FIELD");
   if (mechanics.glides) traits.push("GLIDE");
   if (mechanics.fliesOverDeepWater) traits.push("SEA_WINGS");
+  if (mechanics.swims) traits.push("SWIM");
   // Ice Folk movement (`pulp_wars-s55m.2`): the dive, a kind rule of the Ice
   // Folk on the ground (the Ice Folk roster rework: the Frost Wyrm flies).
   if (rules.snow && mechanics.movementMode === "GROUND") traits.push("DIVE");
@@ -1441,6 +1443,7 @@ export const GROUND_MODIFIER_SOURCES_V7: readonly string[] = Object.freeze([
   "CITY_WALLS",
   "CITY_FORTIFICATION",
   "FIELD_DEFENSE",
+  "ICE_FORTRESS",
   "MOUNTAIN",
   "FOREST",
   "SNOW",
@@ -1452,6 +1455,7 @@ const GROUND_LABELS: Readonly<Record<string, string>> = {
   CITY_WALLS: "City Walls",
   CITY_FORTIFICATION: "Fortified",
   FIELD_DEFENSE: "Field Defense",
+  ICE_FORTRESS: "Ice Fortress",
   MOUNTAIN: "Cover",
   FOREST: "Cover",
   SNOW: "Snow cover",
@@ -1520,17 +1524,13 @@ export function groundBonusChipsV7(
         skip.includes(modifier.source)
       )
         continue;
-      // The frozen sea (section 8.10): Glacier's cover on ice is the Snow
-      // cover's amount, named for what it is.
-      const iceCover =
-        modifier.source === "SNOW" && stats.iceFolk?.iceCover === true;
-      const name = iceCover
-        ? ICE_COVER_LABEL_V7
-        : (GROUND_LABELS[modifier.source] ?? modifier.sourceLabel);
+      // (Glacier's cover on ice, named "Ice cover", went with the naval
+      // branch rebuilt, `pulp_wars-tzk6`, 7r137.)
+      const name = GROUND_LABELS[modifier.source] ?? modifier.sourceLabel;
       chips.push({
         id: modifier.source.toLowerCase(),
         label: `${name} ${modifierValueTextV7(stat.base.value, modifier)} ${stat.label}`,
-        text: iceCover ? `${ICE_COVER_TOOLTIP_V7}.` : modifier.description,
+        text: modifier.description,
       });
     }
   }

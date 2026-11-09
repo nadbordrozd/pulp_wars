@@ -92,6 +92,9 @@ export const IMPROVEMENT_ART_KEYS_V7 = {
   // Fishing Hole draws the Fish resource art until its own sprite lands
   // (bead pulp_wars-5ti.27).
   FISHING_HOLE: "v7-resource-fish",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
+  // draws as its Fishing Hole in the legacy look.
+  ICE_FORTRESS: "v7-resource-fish",
 } as const satisfies Readonly<Record<ImprovementIdV7, string>>;
 
 export const RESOURCE_ART_KEYS_V7 = {
@@ -223,6 +226,7 @@ const STATIC_COMMAND_ART_KEYS: Readonly<
   BUILD_MONUMENT: IMPROVEMENT_ART_KEYS_V7.MONUMENT,
   BUILD_PORT: IMPROVEMENT_ART_KEYS_V7.PORT,
   BUILD_SHIPYARD: IMPROVEMENT_ART_KEYS_V7.SHIPYARD,
+  BUILD_ICE_FORTRESS: IMPROVEMENT_ART_KEYS_V7.ICE_FORTRESS,
   DISEMBARK: EMBARKED_UNIT_ART_KEY_V7,
   CLEAR_FOREST: "ui-action-clear-forest",
   REPLANT_FOREST: "ui-action-replant-forest",

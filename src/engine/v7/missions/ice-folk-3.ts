@@ -72,6 +72,14 @@ import type { MissionDefinitionV7 } from "./types";
  * across the strait; the Walrus keeps its Frostbite; and Anvil Bay's Port
  * is never iced over. The board and the seats are unchanged; the retune
  * for the new kit is the campaign bead's.
+ *
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the seat's Rime
+ * now trains the Walrus, which swims the shallows (and, with Pack Ice, the
+ * deep strait) and fights the boats from the water, and its Naval
+ * Engineering (Hoarfrost before, which unlocked nothing) builds the Ice
+ * Fortress on a Fishing Hole. The board and the seats are unchanged; the
+ * retune for the new kit is the campaign bead's.
  */
 export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_3",
@@ -204,7 +212,8 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         { role: "CAPTAIN", at: { x: 5, y: 11 }, tag: "RIME" },
         { role: "FIGHTER", at: { x: 6, y: 11 } },
         { role: "FIGHTER", at: { x: 4, y: 11 } },
-        // The one Guard nobody can train yet (no Fortification).
+        // A Walrus (the one Guard nobody could train before 7r137; Rime
+        // trains it since the naval branch rebuilt, `pulp_wars-tzk6`).
         { role: "GUARD", at: { x: 5, y: 12 } },
         // Retune 4: a Sled.
         { role: "RAIDER", at: { x: 4, y: 12 } },

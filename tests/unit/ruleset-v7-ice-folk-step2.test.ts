@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
-    expect(PRIOR_RULESET_7_IDS.slice(-78, -76)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
+    expect(PRIOR_RULESET_7_IDS.slice(-79, -77)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-78, -76)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-79, -77)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -334,13 +334,16 @@ describe("step two of the Ice Folk pass: the Ice Folk Normal AI's research order
       );
       techs = [...techs, next.tech];
     }
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Walrus is
+    // Rime's, and this field is Dry Land (no Naval technology), so the
+    // order passes it by (Drill and Deep Winter before it until 7r136);
+    // Drill now comes on the way to Engineering.
     expect(order).toEqual([
       "SCOUTING:RAIDER",
       "HUNTING",
       "MARKSMANSHIP:MARKSMAN",
-      "DRILL",
-      "FORTIFICATION:GUARD",
       "ADMINISTRATION:CAPTAIN",
+      "DRILL",
       "ENGINEERING",
       "METALLURGY:SWORDSMAN",
       "FORESTRY",
@@ -441,7 +444,7 @@ describe("step two of the Ice Folk pass: the Ice Folk Normal AI's army", () => {
   it("garrisons a threatened center with one Walrus, and trains a Yeti beside it", () => {
     const threatened = (garrison: UnitRoleIdV7): GameStateV7 =>
       field([own(garrison, 8, 8), foe("FIGHTER", 6, 6)], {
-        techs: techsOf("GATHERING", "DRILL", "FORTIFICATION"),
+        techs: techsOf("GATHERING", "SHORECRAFT"),
         coins: 4,
         orphans: true,
       });

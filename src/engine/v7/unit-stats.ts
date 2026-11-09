@@ -27,11 +27,11 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  ICE_FORTRESS_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import {
   defenseBonusForUnitV7,
   fortificationPartsForUnitV7,
-  iceCoverAppliesV7,
   snowCoverAppliesV7,
 } from "./combat";
 import {
@@ -111,6 +111,9 @@ export type UnitStatModifierSourceV7 =
   | "CITY_WALLS"
   | "CITY_FORTIFICATION"
   | "FIELD_DEFENSE"
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): an own unit on an
+  // Ice Fortress.
+  | "ICE_FORTRESS"
   | "MOUNTAIN"
   | "FOREST"
   | "HIGH_GROUND"
@@ -259,12 +262,8 @@ export interface PublicIceFolkMechanicsV7 {
    * an ice tile in land form.
    */
   readonly onIce: boolean;
-  /**
-   * The frozen sea (section 8.10): Glacier's cover applies to the unit now
-   * (on ice, with the capability, fortification 0). Public on a visible
-   * unit, like Dig In, so that every combat preview is exact.
-   */
-  readonly iceCover: boolean;
+  // (`iceCover`, Glacier's cover on ice, retired with the naval branch
+  // rebuilt, `pulp_wars-tzk6`, 7r137.)
 }
 /**
  * The Dwarf revision (section 14): the Dwarf mechanics of a unit owned by a
@@ -529,9 +528,6 @@ export function publicUnitStatsV7(
   // The Ice Folk revision section 6.2: the cover comes from Snow (the
   // Forest and Mountain cover are the same multiplier, never added).
   const snowCover = snowCoverAppliesV7(state, unit, snowAt);
-  // The frozen sea (naval branch section 8.10): Glacier's cover on ice is
-  // the Snow cover too.
-  const iceCover = iceCoverAppliesV7(state, unit);
   const iceFolk = unitOwnerIsIceFolkV7(state, unit);
   const fortificationModifiers = fortificationTerms(state, unit);
   // The ninth unit (7r55): the Thagomizer. A Cracked unit's role Defense is
@@ -551,7 +547,7 @@ export function publicUnitStatsV7(
     state,
     unit,
     defense.numerator,
-    snowCover || iceCover,
+    snowCover,
   );
   const defenseDelta = rational(
     fortifiedDefense2 * (defense.numerator - defense.denominator),
@@ -1004,7 +1000,6 @@ export function publicUnitStatsV7(
             blizzard:
               unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
             onIce: unit.form === "LAND" && isIceAtV7(state, unit.at),
-            iceCover,
           },
         }
       : {}),
@@ -1204,6 +1199,16 @@ function fortificationTerms(
         "FIELD_DEFENSE",
         "Field defense",
         `Field defense adds ${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense.`,
+      ),
+    );
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): an own Ice Fortress.
+  else if (tile?.improvement === "ICE_FORTRESS" && parts.fieldDefense > 0)
+    terms.push(
+      modifier(
+        ICE_FORTRESS_FORTIFICATION_LEVELS_V7,
+        "ICE_FORTRESS",
+        "Ice Fortress",
+        `An Ice Fortress adds ${ICE_FORTRESS_FORTIFICATION_LEVELS_V7} Defense.`,
       ),
     );
   return terms;

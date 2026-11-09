@@ -68,10 +68,12 @@ describe("Harbours", () => {
         technologies: [NAVAL_TECHS_V7, BEFORE],
         units: [],
       });
-      // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk have no
-      // Harbours and build no Shipyard; the Port they hold gives 1.
+      // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk build no
+      // Shipyard. The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Under
+      // the Ice (their Submersibles) gives the Port they hold the Harbours
+      // bonus: 2.
       if (faction === "ICE_FOLK") {
-        expect(dockAmount(state, 0), faction).toBe(1);
+        expect(dockAmount(state, 0), faction).toBe(2);
         expect(
           rejectV7(state, 0, {
             kind: "BUILD_SHIPYARD",

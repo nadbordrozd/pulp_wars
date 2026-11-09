@@ -60,8 +60,8 @@ describe("the identity", () => {
   // Fishing Hole links (`pulp_wars-vg5l`) took 7r127 after it, and the
   // Mammoth's 2- or 3-tile Stampede (`pulp_wars-57lq`) 7r128.
   it("was 7r126 after 7r125, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r126");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r125");
@@ -87,7 +87,6 @@ describe("the starting border freeze", () => {
       SEAT_0_WATER.map((at) => ({
         at,
         ownerId: seatV7(state, 0).id,
-        cracked: false,
       })),
     );
     // Nothing outside its own borders: the open strait, and the Human
@@ -230,9 +229,7 @@ describe("the starting border freeze", () => {
     const ice = seatV7(state, 0);
     expect(ice.faction).toBe("ICE_FOLK");
     expect(ice.researchedTechs).toContain("SHORECRAFT");
-    expect(state.ice).toEqual([
-      { at: { x: 6, y: 10 }, ownerId: ice.id, cracked: false },
-    ]);
+    expect(state.ice).toEqual([{ at: { x: 6, y: 10 }, ownerId: ice.id }]);
   });
 
   it("freezes the Showcase Ice Folk Coast and no other seat's water, every ship afloat", () => {

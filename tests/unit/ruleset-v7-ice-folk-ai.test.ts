@@ -309,8 +309,9 @@ describe("Ice Folk Normal AI: production and research", () => {
   it("researches the Witch and the Snow Hunter with two cities", () => {
     const view = viewerViewV7(
       asIce([own("FIGHTER", 5, 3), foe("FIGHTER", 1, 1)], {
-        // (The Industry reshuffle, 7r56: and Deep Winter, the Walrus's.)
-        0: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION"],
+        // (The Industry reshuffle, 7r56: and Deep Winter; the Walrus is
+        // Rime's since the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
+        0: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION", "SHORECRAFT"],
       }),
     );
     const plan = iceFolkResearchV7(view, 2, 3, false);

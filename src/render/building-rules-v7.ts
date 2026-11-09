@@ -12,6 +12,7 @@ import {
   type PlayerViewV7,
 } from "../engine/index";
 import { factionBuildingV7 } from "./faction-buildings-v7";
+import { ICE_FORTRESS_UNLOCK_V7 } from "./frozen-sea-presentation-v7";
 
 /**
  * Where each building may be built (bead pulp_wars-2yc.90; the user,
@@ -60,6 +61,8 @@ const NAMES: Readonly<Record<ImprovementIdV7, string>> = {
   PORT: "Port",
   SHIPYARD: "Shipyard",
   FISHING_HOLE: "Fishing Hole",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+  ICE_FORTRESS: "Ice Fortress",
 };
 
 /** "FERTILE_GROUND" as "Fertile Ground". */
@@ -153,7 +156,10 @@ export function buildingRuleTextV7(
     case "SHIPYARD":
       return `${name}: one per city, upgrades one of your active Ports; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
     case "FISHING_HOLE":
-      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; dive between holes; links cities like a ${NAMES.PORT}`;
+      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; links cities like a ${NAMES.PORT}`;
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+    case "ICE_FORTRESS":
+      return ICE_FORTRESS_UNLOCK_V7;
   }
 }
 

@@ -5,7 +5,8 @@ import {
   cityRewardCandidatesV7,
   cityUnitCapacityForV7,
   dockPopulationV7,
-  isIceAtV7,
+  holePopulationV7,
+  isFishingHoleImprovementV7,
   unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
@@ -54,11 +55,10 @@ export function isActivePortV7(
     (candidate) => candidate.id === tile.territoryCityId,
   );
   if (city?.ownerId !== ownerId) return false;
-  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): a dock
-  // on ice (an Ice Harbour) is blockaded by a hostile land-form unit
-  // standing on it, a dock on open water by a hostile unit afloat (no ship
-  // blockades a dock on ice from the water). Never an Egg (revision 19).
-  const onIce = isIceAtV7(state, at);
+  // A dock (always on open water: no dock is iced since the one Freeze
+  // effect, `pulp_wars-xv0t`, 7r133, and none stands on ice since the naval
+  // branch rebuilt, `pulp_wars-tzk6`, 7r137) is blockaded by a hostile unit
+  // afloat on it. Never an Egg (revision 19).
   return !state.units.some(
     (unit) =>
       unit.hp > 0 &&
@@ -66,7 +66,7 @@ export function isActivePortV7(
       unit.at.y === at.y &&
       unit.ownerId !== ownerId &&
       arePlayersHostileV7(state, unit.ownerId, ownerId) &&
-      (onIce ? unit.form === "LAND" : isAfloatFormV7(unit.form)),
+      isAfloatFormV7(unit.form),
   );
 }
 
@@ -99,7 +99,9 @@ export function isActiveFishingHoleV7(
   if (
     tile?.at.x !== at.x ||
     tile.at.y !== at.y ||
-    tile.improvement !== "FISHING_HOLE"
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): an Ice Fortress
+    // is a Fishing Hole here.
+    !isFishingHoleImprovementV7(tile.improvement)
   )
     return false;
   const owner = state.players.find((player) => player.id === ownerId);
@@ -126,6 +128,23 @@ export function harbourPopulationForV7(
     ? 0
     : technologyCapabilitiesV7(owner.researchedTechs, owner.faction)
         .harbourPopulation;
+}
+
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): whether
+ * `ownerId` has Under the Ice (its Fishing Holes and Ice Fortresses give
+ * `UNDER_THE_ICE_POPULATION_V7` more), read through its own tree.
+ */
+export function underTheIceForV7(
+  players: readonly Pick<PlayerStateV7, "id" | "faction" | "researchedTechs">[],
+  ownerId: PlayerId,
+): boolean {
+  const owner = players.find((player) => player.id === ownerId);
+  return (
+    owner !== undefined &&
+    technologyCapabilitiesV7(owner.researchedTechs, owner.faction).underTheIce
+  );
 }
 
 export interface CityGrowthResultV7 {
@@ -508,8 +527,17 @@ export function recomputeLiveEconomyV7(
                 harbourPopulationForV7(beforeState.players, city.ownerId),
               )
             : 0
-          : spatialContributionAtV7(finalGraph, tile.at, tile.improvement)
-              .population,
+          : // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a Fishing
+            // Hole gives 1 and an Ice Fortress 2, each 1 more with Under
+            // the Ice.
+            tile.improvement === "FISHING_HOLE" ||
+              tile.improvement === "ICE_FORTRESS"
+            ? holePopulationV7(
+                tile.improvement,
+                underTheIceForV7(beforeState.players, city.ownerId),
+              )
+            : spatialContributionAtV7(finalGraph, tile.at, tile.improvement)
+                .population,
     };
   });
   const changes: CityEconomyChangeV7[] = [];
@@ -898,7 +926,7 @@ export function seaTradeCityIdsV7(
         (tile) =>
           (tile.improvement === "PORT" ||
             tile.improvement === "SHIPYARD" ||
-            (holeLinks && tile.improvement === "FISHING_HOLE")) &&
+            (holeLinks && isFishingHoleImprovementV7(tile.improvement))) &&
           tile.biome === null &&
           (tile.terrain !== "DEEP_WATER" || navigation),
       )
@@ -909,7 +937,7 @@ export function seaTradeCityIdsV7(
     const active = new Set<number>();
     portCandidates.forEach((port, index) => {
       if (
-        port.improvement === "FISHING_HOLE"
+        isFishingHoleImprovementV7(port.improvement)
           ? isActiveFishingHoleV7(state, port.at, playerId)
           : isActivePortV7(state, port.at, playerId)
       )
@@ -994,7 +1022,7 @@ export function seaTradeCityIdsV7(
   if (holeLinks)
     for (const tile of state.board.tiles) {
       if (
-        tile.improvement !== "FISHING_HOLE" ||
+        !isFishingHoleImprovementV7(tile.improvement) ||
         !isActiveFishingHoleV7(state, tile.at, playerId)
       )
         continue;

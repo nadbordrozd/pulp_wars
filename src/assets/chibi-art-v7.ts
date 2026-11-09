@@ -791,8 +791,18 @@ export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<
   DINOSAUR: ["WINDMILL", ...FOREST_AND_TRADE_LOOKS],
   MARTIAN: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
   // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole is
-  // theirs alone (another faction's falls back to it).
-  ICE_FOLK: ["FARM", ...FOREST_AND_TRADE_LOOKS, "FISHING_HOLE"],
+  // theirs alone (another faction's falls back to it). The naval branch
+  // rebuilt (`pulp_wars-tzk6`, 7r137): so is the Ice Fortress; and a dock
+  // they capture keeps the shared Port and Shipyard look (their Ice Harbour
+  // and Great Harbour looks are gone).
+  ICE_FOLK: [
+    "FARM",
+    ...FOREST_AND_TRADE_LOOKS.filter(
+      (improvement) => improvement !== "PORT" && improvement !== "SHIPYARD",
+    ),
+    "FISHING_HOLE",
+    "ICE_FORTRESS",
+  ],
   DWARF: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
   CANDY: FOREST_AND_TRADE_LOOKS,
   // Bead pulp_wars-mch9.16 (docs/art/factions/CULT.md, Buildings): the
@@ -1223,6 +1233,9 @@ function chibiFallbackSubjectUncachedV7(
   // a Fishing Hole, so a captor's (the shared subject) is drawn in theirs.
   if (subject === "IMPROVEMENT:FISHING_HOLE")
     return "IMPROVEMENT:ICE_FOLK:FISHING_HOLE";
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): nor an Ice Fortress.
+  if (subject === "IMPROVEMENT:ICE_FORTRESS")
+    return "IMPROVEMENT:ICE_FOLK:ICE_FORTRESS";
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;

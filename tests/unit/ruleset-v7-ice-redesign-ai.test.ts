@@ -7,7 +7,6 @@ import {
 } from "../../src/ai/v7";
 import {
   ICE_BRIDGE_FREEZE_PRIORITY_V7,
-  ICE_CRACK_DOCK_PRIORITY_V7,
   ICE_CRACK_HOME_PRIORITY_V7,
   ICE_CRACK_LANE_PRIORITY_V7,
   ICE_HOME_FREEZE_PRIORITY_V7,
@@ -21,7 +20,6 @@ import {
 } from "../../src/ai/v7-frozen-sea";
 import {
   parseGameStateV7,
-  previewCrackIceV7,
   previewEconomicV7,
   queryPublicEconomicPotentialsV7,
   queryPlayerCommandsV7,
@@ -403,42 +401,10 @@ describe("the Ice Folk seat builds its economy on the ice", () => {
   });
 });
 
-describe("the Ice Folk seat plays its Black Ice", () => {
-  it("strikes the enemy its Black Ice froze on entry", () => {
-    // The Ice Folk crossing (3, 3) to (3, 7); a Martian Tripod (a walker:
-    // only the Ice Folk, walkers, and flyers go onto ice since
-    // `pulp_wars-y242`; a Human Fighter before) steps onto its end from the
-    // shore on its own turn and is Frozen at once.
-    const base = frozenArenaV7({
-      factions: ["ICE_FOLK", "MARTIAN"],
-      technologies: [BLACK_ICE, PACK_ICE],
-      units: [
-        { seat: 0, role: "FIGHTER", at: { x: 4, y: 8 } },
-        { seat: 1, role: "CATAPULT", at: { x: 2, y: 8 } },
-      ],
-      ice: column(5),
-    });
-    const intruder = idAt(base, { x: 2, y: 8 });
-    const stepped = acceptV7(turnOf(base, 1), 1, {
-      kind: "MOVE",
-      unitId: intruder,
-      path: [{ x: 3, y: 7 }],
-    });
-    expect(eventOf(stepped.events, "UNITS_FROZEN")).toMatchObject({
-      source: "BLACK_ICE",
-    });
-    const view = viewOf(turnOf(stepped.state, 0));
-    const yeti = idAt(base, { x: 4, y: 8 });
-    expect(bestOf(view, yeti)?.command).toEqual({
-      kind: "ATTACK",
-      unitId: yeti,
-      targetUnitId: intruder,
-    });
-  });
-});
-
-describe("the Ice Folk seat researches Glacier when its ice is cracked", () => {
-  it("raises Glacier to the due research after two hostile Cracks of its crossing", () => {
+// The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Glacier is gone, so
+// the Cracks it reads no longer raise a research; the reading stays.
+describe("the Ice Folk seat reads the Cracks of its ice", () => {
+  it("reads the gaps two hostile Cracks broke in its crossing, and buys no technology for them", () => {
     // The Ice Folk crossing (3, 3) to (3, 7); two Human Patrol Boats beside
     // it crack (3, 4) and (3, 6) on their turn.
     const base = frozenArenaV7({
@@ -457,7 +423,6 @@ describe("the Ice Folk seat researches Glacier when its ice is cracked", () => {
     );
     expect(eventOf(once.events, "ICE_CRACKED")).toMatchObject({
       at: { x: 3, y: 4 },
-      broken: true,
     });
     const twice = acceptV7(
       once.state,
@@ -479,27 +444,17 @@ describe("the Ice Folk seat researches Glacier when its ice is cracked", () => {
     };
     const one = research(once.state);
     expect(one.gaps).toEqual([{ x: 3, y: 4 }]);
-    // One gap is no evidence yet: Glacier stays below the due research (the
-    // one Freeze effect, `pulp_wars-xv0t`: with Hoarfrost unlocking
-    // nothing, Glacier is the seat's last ice technology to buy, so it may
-    // be the pick, at its own low priority).
-    expect(
-      one.want?.tech === "SUBMERSIBLES" ? one.want.priority : 0,
-    ).toBeLessThan(ICE_SEA_DUE_RESEARCH_PRIORITY_V7);
     const two = research(twice.state);
     expect(two.gaps).toEqual([
       { x: 3, y: 4 },
       { x: 3, y: 6 },
     ]);
-    expect(two.want).toEqual({
-      tech: "SUBMERSIBLES",
-      priority: ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
-      strategic: 45,
-    });
+    // No Fishing Hole, so no Under the Ice; no ship near, so no Harpoons.
+    expect(two.want?.tech).not.toBe("SUBMERSIBLES");
     expect(
       scoreCommandV7(two.view, { kind: "RESEARCH", tech: "SUBMERSIBLES" })
         .priority,
-    ).toBe(ICE_SEA_DUE_RESEARCH_PRIORITY_V7);
+    ).toBeLessThan(ICE_SEA_DUE_RESEARCH_PRIORITY_V7);
   });
 
   it("reads a hole in its home ice as a Crack", () => {
@@ -548,75 +503,6 @@ describe("every other seat cracks the ice where it gains", () => {
     ice,
   });
 
-  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): no ship is ever locked
-  // in the ice; an own dock the Ice Folk iced over is cracked open instead.
-  const DOCK: CoordV7 = { x: 4, y: 3 };
-
-  it("cracks an own dock iced over by a hostile Freeze open", () => {
-    const { state, view } = scene(
-      against(
-        [{ seat: 0, role: "PATROL_BOAT", at: { x: 5, y: 4 } }],
-        [{ at: DOCK, seat: 1 }],
-      ),
-    );
-    const boat = idAt(state, { x: 5, y: 4 });
-    expect(
-      iceCrackScoreV7(view, toolsOf(view), crack(boat, DOCK)),
-    ).toMatchObject({
-      reason: "DOCK",
-      priority: ICE_CRACK_DOCK_PRIORITY_V7,
-      preview: { broken: true },
-    });
-    const best = bestOf(view, boat);
-    expect(best?.command).toEqual(crack(boat, DOCK));
-    const result = acceptV7(state, 0, best?.command as CommandV7);
-    expect(eventOf(result.events, "ICE_CRACKED").broken).toBe(true);
-    expect(
-      result.state.board.tiles.find(
-        (tile) => tile.at.x === DOCK.x && tile.at.y === DOCK.y,
-      )?.improvement,
-    ).toBe("PORT");
-  });
-
-  it("cracks thick ice twice in one turn when two units stand beside it, and not with one", () => {
-    // The capital's Fighter on (5, 2) stands beside the dock; a boat on
-    // (5, 4) is the second unit.
-    const options = (two: boolean) =>
-      against(
-        two ? [{ seat: 0, role: "PATROL_BOAT", at: { x: 5, y: 4 } }] : [],
-        [{ at: DOCK, seat: 1 }],
-        GLACIER,
-      );
-    const alone = scene(options(false));
-    const helper = idAt(alone.state, { x: 5, y: 2 });
-    expect(previewCrackIceV7(alone.view, helper, DOCK)?.broken).toBe(false);
-    expect(
-      iceCrackScoreV7(alone.view, toolsOf(alone.view), crack(helper, DOCK)),
-    ).toBeNull();
-    const { state, view } = scene(options(true));
-    const first = iceCrackScoreV7(
-      view,
-      toolsOf(view),
-      crack(idAt(state, { x: 5, y: 4 }), DOCK),
-    );
-    expect(first?.priority).toBe(ICE_CRACK_DOCK_PRIORITY_V7);
-    const cracked = acceptV7(
-      state,
-      0,
-      crack(idAt(state, { x: 5, y: 4 }), DOCK),
-    );
-    expect(eventOf(cracked.events, "ICE_CRACKED").broken).toBe(false);
-    const after = viewOf(cracked.state);
-    const second = crack(idAt(state, { x: 5, y: 2 }), DOCK);
-    expect(iceCrackScoreV7(after, toolsOf(after), second)?.priority).toBe(
-      ICE_CRACK_DOCK_PRIORITY_V7,
-    );
-    const broken = acceptV7(cracked.state, 0, second);
-    expect(eventOf(broken.events, "ICE_CRACKED")).toMatchObject({
-      broken: true,
-    });
-  });
-
   /** The Ice Folk bridge (3, 7) to (3, 3) toward the Human capital (5, 2). */
   const BRIDGE: readonly FrozenIceV7[] = lineV7({ x: 3, y: 8 }, 0, -1, 5).map(
     (at) => ({ at, seat: 1 as const }),
@@ -645,7 +531,7 @@ describe("every other seat cracks the ice where it gains", () => {
     expect(best?.command).toEqual(command);
     expect(best?.score.priority).toBe(ICE_CRACK_HOME_PRIORITY_V7);
     const result = acceptV7(state, 0, command);
-    expect(eventOf(result.events, "ICE_CRACKED").broken).toBe(true);
+    expect(eventOf(result.events, "ICE_CRACKED").at).toBeDefined();
     expect(iceEntryV7(result.state, { x: 3, y: 3 })).toBeUndefined();
     // With no Ice Folk unit in sight the ice is left alone.
     const blind: PlayerViewV7 = {
@@ -736,7 +622,7 @@ describe("every other seat cracks the ice where it gains", () => {
       ),
     ).toHaveLength(1);
     const result = acceptV7(state, 0, best?.command as CommandV7);
-    expect(eventOf(result.events, "ICE_CRACKED").broken).toBe(true);
+    expect(eventOf(result.events, "ICE_CRACKED").at).toBeDefined();
     // With a way round two steps long, the boat sails and cracks nothing.
     const round = scene(
       against(

@@ -133,32 +133,27 @@ describe("the freeze of a tile (section 3.1)", () => {
     expect(preview?.tiles).toEqual([{ x: 2, y: 3 }]);
   });
 
-  it("takes another player's ice, mends its own crack, and leaves its own sound ice and every dock", () => {
-    // The Witch on (3, 2): (2, 3) is the Humans' ice, (3, 3) her own
-    // cracked thick ice (Glacier), her Port (4, 3) beside her.
+  it("takes another player's ice and leaves its own ice and every dock", () => {
+    // The Witch on (3, 2): (2, 3) is the Humans' ice, (3, 3) her own ice,
+    // her Port (4, 3) beside her. (A crack to mend went with Glacier: the
+    // naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
     const state = frozenArenaV7({
       technologies: [ALL, ALL],
       units: [{ seat: 0, role: "CAPTAIN", at: { x: 3, y: 2 } }],
-      ice: [
-        { at: { x: 2, y: 3 }, seat: 1 },
-        { at: { x: 3, y: 3 }, cracked: true },
-      ],
+      ice: [{ at: { x: 2, y: 3 }, seat: 1 }, { at: { x: 3, y: 3 } }],
     });
     const seat0 = seatV7(state, 0).id;
     const result = acceptV7(state, 0, snap(state, { x: 3, y: 2 }));
     expect(iceEntryV7(result.state, { x: 2, y: 3 })).toMatchObject({
       ownerId: seat0,
-      cracked: false,
     });
     expect(iceEntryV7(result.state, { x: 3, y: 3 })).toMatchObject({
       ownerId: seat0,
-      cracked: false,
     });
     expect(iceEntryV7(result.state, { x: 4, y: 3 })).toBeUndefined();
     const event = result.events.find((entry) => entry.kind === "TILES_FROZEN");
     expect(event?.kind === "TILES_FROZEN" ? event.tiles : null).toEqual([
       { x: 2, y: 3 },
-      { x: 3, y: 3 },
     ]);
     // Her own sound ice is no change: a cast with nothing else to freeze is
     // refused.

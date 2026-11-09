@@ -746,6 +746,9 @@ describe("Ruleset 7 Gallery", () => {
       "SHIPYARD",
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
       "FISHING_HOLE",
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice
+      // Fortress.
+      "ICE_FORTRESS",
     ]);
     // Bead pulp_wars-2yc.44: every Monument and the obelisk in every
     // faction's skin, one cell per faction on that faction's ground.
@@ -854,9 +857,14 @@ describe("Ruleset 7 Gallery", () => {
     for (const row of [9, 10, 11, 20, 21])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(9);
     expect(cellNames(9)).toEqual(Array.from({ length: 9 }, () => "Forge"));
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk have
+    // no dock look of their own (no Great Harbour).
     expect(
       cell("SHIPYARD", "ICE_FOLK").querySelector("canvas")?.dataset.subject,
-    ).toBe("IMPROVEMENT:ICE_FOLK:SHIPYARD");
+    ).toBe("IMPROVEMENT:SHIPYARD");
+    expect(
+      cell("SHIPYARD", "UNDEAD").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:UNDEAD:SHIPYARD");
     expect(
       cell("PORT", "ORIGINAL").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:PORT");
@@ -868,11 +876,12 @@ describe("Ruleset 7 Gallery", () => {
       cell("MARKET", "ORIGINAL").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:MARKET");
     // Only the Village and the Mine are still one shared cell, and (the
-    // frozen sea redesign, `pulp_wars-5ti.25`) the Fishing Hole, last.
-    for (const row of [3, 6, rows.length - 1])
+    // frozen sea redesign, `pulp_wars-5ti.25`) the Fishing Hole and (the
+    // naval branch rebuilt, `pulp_wars-tzk6`, 7r137) the Ice Fortress, last.
+    for (const row of [3, 6, rows.length - 2, rows.length - 1])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(
-      20 * 9 + 3,
+      20 * 9 + 4,
     );
     // Bead pulp_wars-2yc.68: every faction's buildings stand on that
     // faction's own ground, as the board draws its territory; a Port and a
@@ -902,9 +911,10 @@ describe("Ruleset 7 Gallery", () => {
         expect(tileOf(row, faction).ground, `${row} ${faction}`).toBe(
           grounds[faction],
         );
-      // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Harbour
-      // and the Great Harbour stand on ice.
-      const dock = faction === "ICE_FOLK" ? "SHALLOW_ICE" : "SHALLOW_WATER";
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): every dock
+      // stands on the water (the Ice Folk's Ice Harbour and Great Harbour
+      // stood on ice before).
+      const dock = "SHALLOW_WATER";
       expect(tileOf("PORT", faction).ground).toBe(dock);
       expect(tileOf("SHIPYARD", faction).ground).toBe(dock);
       expect(tileOf("FARM", faction).fade).toBe("true");

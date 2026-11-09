@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r136" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r137" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -147,8 +147,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r133",
   "pulp-wars-poc-7r134",
   "pulp-wars-poc-7r135",
+  "pulp-wars-poc-7r136",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r136.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r137.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -247,6 +248,10 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   // 2.6): the Ice Folk Fishing Hole on their ice (last, so no earlier
   // improvement moves).
   "FISHING_HOLE",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+  // docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the Ice
+  // Fortress, a Fishing Hole upgraded in place (appended).
+  "ICE_FORTRESS",
 ] as const);
 export const ACHIEVEMENT_IDS_V7 = Object.freeze([
   "EXPLORER",
@@ -503,6 +508,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // Normal AI's tie-break and every pinned command surface) moves. An
   // offered command list still ends with End Turn (`compareCommandsV7`).
   "MASS_BEAM_DOWN",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk Ice
+  // Fortress, appended for the same reason.
+  "BUILD_ICE_FORTRESS",
 ] as const);
 export const REWARD_IDS_V7 = Object.freeze([
   "SURVEY",
@@ -606,17 +614,17 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_REWARD_GRANTED",
   "UNIT_SPAWN_DISPLACED",
   "UNITS_RALLIED",
-  // Ice Folk Freeze (`pulp_wars-w49.37`): a Cold Snap, a Cold Wake, Frost
-  // Breath, or Black Ice froze units (the Ice Folk revision's
-  // `UNITS_CHILLED`, in its place).
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Cold Snap, a Cold Wake, a
+  // Snowball, Frost Breath, or Frostbite froze units (the Ice Folk
+  // revision's `UNITS_CHILLED`, in its place; Black Ice until 7r137).
   "UNITS_FROZEN",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Cold Snap, a Cold
   // Wake, or a border freeze made ice or laid Snow (`WATER_FROZEN` before,
   // in its place). (`ICE_MELTED` and `UNITS_CRUSHED` went with Icebound,
   // `pulp_wars-s55m.1`.)
   "TILES_FROZEN",
-  // The frozen sea redesign (section 2.9): a Crack Ice broke or cracked a
-  // tile.
+  // The frozen sea redesign (section 2.9): a Crack Ice broke a tile (one
+  // Crack breaks any ice since `pulp_wars-tzk6`, 7r137: no cracked state).
   "ICE_CRACKED",
   // The Candy revision: a unit went on a Sugar Rush.
   "UNIT_SUGAR_RUSHED",
@@ -2038,13 +2046,12 @@ export interface BarricadeV7 {
  * ice tile. `ownerId` is the player whose unit froze it last (or who took
  * the city whose territory it lies in). The frozen sea redesign
  * (docs/product/RULESET_7_ICE_REDESIGN.md section 2.3): ice is permanent
- * (no countdown); `cracked` is true only on thick ice (its owner has
- * Glacier) that has taken one Crack Ice.
+ * (no countdown). The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): no
+ * thick ice, so no `cracked` state: one Crack Ice breaks any ice.
  */
 export interface IceTileV7 {
   readonly at: CoordV7;
   readonly ownerId: PlayerId;
-  readonly cracked: boolean;
 }
 
 /**
@@ -2094,7 +2101,7 @@ export interface BurrowedEntryV7 {
  * the unit `unitId` is Frozen. `turnsLeft` is the number of its owner's End
  * Turns until it thaws: 1 for a unit frozen outside its owner's turn (it
  * stays Frozen through that owner's next turn), 2 for one frozen during its
- * owner's own turn (Frostbite; Black Ice), which becomes 1 at that End Turn.
+ * owner's own turn (Frostbite), which becomes 1 at that End Turn.
  */
 export interface FrozenStatusV7 {
   readonly unitId: UnitId;

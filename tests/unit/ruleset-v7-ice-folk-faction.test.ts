@@ -205,8 +205,10 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // (84: one tile, one meaning, `pulp_wars-3u8d`, 7r131, removes BOARD,
     // RECOVER and SWALLOW.)
     // (81: the one Freeze effect, `pulp_wars-xv0t`, 7r133, removes
-    // THROW_BOLAS, FREEZE and FROST_BOLT.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(81);
+    // THROW_BOLAS, FREEZE and FROST_BOLT; 82: the naval branch rebuilt,
+    // `pulp_wars-tzk6`, 7r137, appends BUILD_ICE_FORTRESS.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(82);
+    expect(COMMAND_KIND_ORDER_V7.at(-1)).toBe("BUILD_ICE_FORTRESS");
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
     expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
       "BREAK_OFF",
@@ -636,7 +638,8 @@ const ROSTER = [
   [
     "Walrus",
     "GUARD",
-    "FORTIFICATION",
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Rime's.
+    "SHORECRAFT",
     4,
     16,
     3,
@@ -1109,21 +1112,30 @@ describe("Ice Folk technology (section 4)", () => {
         human.branch,
         human.tier,
         human.prerequisites,
-        // The frozen sea (naval branch sections 2.2 and 8.11): no ship.
-        human.unlockedRoles.filter((role) => !isNavalRoleV7(role)),
+        // The frozen sea (naval branch sections 2.2 and 8.11): no ship. The
+        // naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Walrus is
+        // Rime's, not Fortification's.
+        human.id === "SHORECRAFT"
+          ? ["GUARD"]
+          : human.unlockedRoles.filter(
+              (role) => !isNavalRoleV7(role) && role !== "GUARD",
+            ),
       ]);
       const ICE_NAVAL: Readonly<Record<string, readonly unknown[]>> = {
         // The frozen sea redesign (`pulp_wars-5ti.25`): Rime unlocks the
         // Fishing Hole; Glacier is thick ice (no turns).
         SHORECRAFT: [
+          { kind: "UNIT_ROLE", role: "GUARD" },
           { kind: "FREEZE", depth: "SHALLOW" },
           { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
         ],
         NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
-        // (Hoarfrost's long line went with `FREEZE`: `pulp_wars-xv0t`.)
-        NAVAL_ENGINEERING: [],
-        SEAMANSHIP: [{ kind: "BLACK_ICE" }],
-        SUBMERSIBLES: [{ kind: "GLACIER" }],
+        // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice
+        // Fortress, Harpoons, and Under the Ice (Hoarfrost, Black Ice, and
+        // Glacier before), and the Walrus at Rime.
+        NAVAL_ENGINEERING: [{ kind: "COMMAND", command: "BUILD_ICE_FORTRESS" }],
+        SEAMANSHIP: [{ kind: "HARPOONS" }],
+        SUBMERSIBLES: [{ kind: "UNDER_THE_ICE" }],
       };
       if (human.branch === "NAVAL") {
         // The five Naval nodes keep their economic unlocks, lose every
@@ -1157,11 +1169,9 @@ describe("Ice Folk technology (section 4)", () => {
           ),
         );
       else if (human.id === "FORTIFICATION")
-        expect(ice.unlocks).toEqual([
-          { kind: "DEEP_WINTER" },
-          // The Industry reshuffle (7r56): the defender is here.
-          { kind: "UNIT_ROLE", role: "GUARD" },
-        ]);
+        // (The Industry reshuffle, 7r56, put the defender here; the naval
+        // branch rebuilt, `pulp_wars-tzk6`, 7r137, moved the Walrus to Rime.)
+        expect(ice.unlocks).toEqual([{ kind: "DEEP_WINTER" }]);
       else if (human.id === "EXPLOSIVES")
         expect(ice.unlocks).toEqual([...human.unlocks, { kind: "BRITTLE" }]);
       // The Ice Folk roster rework (`pulp_wars-s55m.4`): Chivalry grants no
@@ -1178,9 +1188,9 @@ describe("Ice Folk technology (section 4)", () => {
       // The frozen sea (naval branch section 2.2).
       SHORECRAFT: "Rime",
       NAVIGATION: "Pack Ice",
-      NAVAL_ENGINEERING: "Hoarfrost",
-      SEAMANSHIP: "Black Ice",
-      SUBMERSIBLES: "Glacier",
+      NAVAL_ENGINEERING: "Ice Fortress",
+      SEAMANSHIP: "Harpoons",
+      SUBMERSIBLES: "Under the Ice",
       // The ninth unit (7r55): the nodes named for their unit.
       SAWMILLING: "Snow Golems",
       CHIVALRY: "Frost Wyrms",
@@ -1231,9 +1241,13 @@ describe("Ice Folk technology (section 4)", () => {
     expect(ice.trainableRoles).toEqual(
       human.trainableRoles.filter((role) => !isNavalRoleV7(role)),
     );
-    // The frozen sea redesign (`pulp_wars-5ti.25`): and the Fishing Hole.
+    // The frozen sea redesign (`pulp_wars-5ti.25`): and the Fishing Hole
+    // (and the Ice Fortress, `pulp_wars-tzk6`, 7r137).
     expect(
-      ice.commands.filter((command) => command !== "BUILD_FISHING_HOLE"),
+      ice.commands.filter(
+        (command) =>
+          command !== "BUILD_FISHING_HOLE" && command !== "BUILD_ICE_FORTRESS",
+      ),
     ).toEqual(
       // Ice Folk movement (`pulp_wars-s55m.2`): and no dock.
       human.commands.filter(
@@ -1249,23 +1263,24 @@ describe("Ice Folk technology (section 4)", () => {
     expect(ice.mountainMovement).toBe(true);
   });
 
-  it("every technology keeps a live unlock for an Ice Folk seat (the section 4 audit), but Hoarfrost", () => {
-    // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Hoarfrost's long
-    // Freeze line went with `FREEZE`; the node is empty until the naval
-    // branch is rebuilt (docs/product/ICE_FOLK_REDESIGN_2026-11.md 3.4).
+  it("every technology keeps a live unlock for an Ice Folk seat (the section 4 audit)", () => {
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Naval
+    // Engineering is the Ice Fortress (empty from 7r133 to 7r136).
     for (const node of ICE_FOLK_BASELINE_V1_NODES)
-      if (node.id !== "NAVAL_ENGINEERING")
-        expect(
-          node.unlocks.length + node.unlockedRoles.length,
-          node.id,
-        ).toBeGreaterThan(0);
+      expect(
+        node.unlocks.length + node.unlockedRoles.length,
+        node.id,
+      ).toBeGreaterThan(0);
     const role = (tech: string) =>
       UNIT_ROLE_IDS_V7.filter(
         (id) => effectiveRoleRuleV7(id, "ICE_FOLK").technology === tech,
       ).map((id) => effectiveRoleRuleV7(id, "ICE_FOLK").label);
     expect(role("SCOUTING")).toEqual(["Sled"]);
     expect(role("MARKSMANSHIP")).toEqual(["Snow Hunter"]);
-    expect(role("FORTIFICATION")).toEqual(["Walrus"]);
+    expect(role("FORTIFICATION")).toEqual([]);
+    // (The Patrol Boat of the roster table is never trained by an Ice Folk
+    // seat: no tree of theirs unlocks a ship.)
+    expect(role("SHORECRAFT")).toEqual(["Walrus", "Patrol Boat"]);
     expect(role("METALLURGY")).toEqual(["Mammoth"]);
     expect(role("ADMINISTRATION")).toEqual(["Ice Witch"]);
     expect(role("SAWMILLING")).toEqual(["Snow Golem"]);
@@ -1296,7 +1311,13 @@ describe("Ice Folk technology (section 4)", () => {
           "SUBMERSIBLES",
         ] as const
       ).map((tech) => technologyNameV7(tech, "ICE_FOLK")),
-    ).toEqual(["Rime", "Pack Ice", "Hoarfrost", "Black Ice", "Glacier"]);
+    ).toEqual([
+      "Rime",
+      "Pack Ice",
+      "Ice Fortress",
+      "Harpoons",
+      "Under the Ice",
+    ]);
     for (const tech of TECHNOLOGY_IDS_V7)
       if (
         tech !== "FORTIFICATION" &&
@@ -1465,9 +1486,11 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     const state = create(["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     const reference = create(["ORIGINAL", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(state.board).toEqual(reference.board);
-    // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk have no Harbours,
-    // so the Coast city's two docks give 2 population fewer; every other
-    // city field is the same.
+    // Ice Folk movement (`pulp_wars-s55m.2`) took the Harbours from the Ice
+    // Folk; the naval branch rebuilt (`pulp_wars-tzk6`, 7r137) gives their
+    // docks the same +1 again through Under the Ice, so the Coast city's two
+    // docks give what they give the Humans; every other city field is the
+    // same.
     const withoutPopulation = (cities: typeof state.cities) =>
       cities.map((city) => ({ ...city, population: 0, economicPopulation: 0 }));
     expect(withoutPopulation(state.cities)).toEqual(
@@ -1476,8 +1499,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     expect(
       state.cities.reduce((sum, city) => sum + city.economicPopulation, 0),
     ).toBe(
-      reference.cities.reduce((sum, city) => sum + city.economicPopulation, 0) -
-        2,
+      reference.cities.reduce((sum, city) => sum + city.economicPopulation, 0),
     );
     const iceId = seatIdV7(state, 0);
     // The ninth unit (7r55): the Mammoth stands where it stood (the
@@ -1535,8 +1557,10 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     // tuning 4 (land trade pays 1 Coin); 20 since the reward ladder rework
     // (`pulp_wars-zypi`: North's and Coast's Economic Miracle, +1 each);
     // 19 since Ice Folk movement (`pulp_wars-s55m.2`: no Harbours, so the
-    // Coast city's docks give 2 population fewer).
-    expect(playerIncomeV7(state, iceId).totalCoins).toBe(19);
+    // Coast city's docks give 2 population fewer); 20 again since the naval
+    // branch rebuilt (`pulp_wars-tzk6`, 7r137: Under the Ice gives those
+    // docks the Harbours bonus).
+    expect(playerIncomeV7(state, iceId).totalCoins).toBe(20);
   });
 
   it("every Ice Folk ability can be offered on the first turns, and every offered command is accepted", () => {
@@ -1611,8 +1635,7 @@ describe("Ice Folk public unit stats (section 11)", () => {
       // The frozen sea (naval branch section 12).
       onIce: false,
       // (`skates` and `runners` went with `pulp_wars-ecnj`, 7r135: Glide
-      // covers ice.)
-      iceCover: false,
+      // covers ice; `iceCover` with Glacier, `pulp_wars-tzk6`, 7r137.)
     });
     expect(stats(at(4, 3)).iceFolk).toMatchObject({
       sweeps: false,

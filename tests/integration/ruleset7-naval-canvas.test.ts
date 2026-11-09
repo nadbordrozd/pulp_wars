@@ -99,9 +99,10 @@ describe("Board on the board host", () => {
     rig.host.activate(FROZEN_UI_V7.permanent);
     const description =
       document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? "";
-    // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent; the
-    // viewer's Glacier makes it thick.
-    expect(description).toContain("Thick: two Cracks break it.");
+    // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent (and
+    // never thick since the naval branch rebuilt, `pulp_wars-tzk6`, 7r137).
+    expect(description).toContain("Ice: only Ice Folk units");
+    expect(description).not.toContain("Thick");
     expect(description).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
     // The plan the renderer gets carries the ice cells.
     expect(

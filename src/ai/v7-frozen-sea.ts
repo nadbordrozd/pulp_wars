@@ -68,20 +68,19 @@ import type {
 
 /** Rime or Pack Ice for a crossing the plan needs (the naval plan's own research has 1280 too). */
 export const ICE_SEA_PLAN_RESEARCH_PRIORITY_V7 = 1280;
-/** Black Ice when the board asks (the due naval research of a seafaring seat has 1170 too). */
+/** Harpoons when the board asks (the due naval research of a seafaring seat has 1170 too). */
 export const ICE_SEA_DUE_RESEARCH_PRIORITY_V7 = 1170;
-/** Glacier, last: above the generic research, below training. */
-export const ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7 = 1075;
 /**
- * The frozen sea redesign: Glacier rises to the due research (1170) once at
- * least this many of the seat's ice tiles are seen cracked open
- * (`iceCrackedOpenTilesV7`).
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Under the Ice and
+ * the Ice Fortress, last: above the generic research, below training.
  */
-export const ICE_GLACIER_CRACK_EVIDENCE_V7 = 2;
+export const ICE_SEA_LATE_RESEARCH_PRIORITY_V7 = 1075;
+/** Under the Ice once the seat has this many Fishing Holes (its +1 population each). */
+export const ICE_UNDER_THE_ICE_HOLES_V7 = 2;
 /** A hostile ship this close to an own city center asks for Rime and for home ice. */
 export const ICE_SEA_HOME_RADIUS_V7 = 3;
-/** A hostile transport this close to own territory asks for Black Ice. */
-export const ICE_SEA_BLACK_ICE_RADIUS_V7 = 3;
+/** A hostile unit afloat this close to own territory asks for Harpoons. */
+export const ICE_SEA_HARPOON_RADIUS_V7 = 3;
 /** A crossing tile this close to a visible hostile Battleship is avoided. */
 export const ICE_SEA_BATTLESHIP_RADIUS_V7 = 3;
 /** The Witch builds a crossing whose stand tile is within this many tiles of her. */
@@ -105,7 +104,7 @@ export const ICE_BUILDER_TRAINING_BIAS_V7 = 30;
 export const ICE_BUILD_MOVE_PRIORITY_V7 = 1112;
 /** A Cold Snap that extends the crossing (or fills a gap a Crack broke in it): below every kill, above routine Moves. */
 export const ICE_BRIDGE_FREEZE_PRIORITY_V7 = 1110;
-/** A Cold Snap that mends a cracked crossing tile, or takes one another seat holds. */
+/** A Cold Snap that takes back a crossing tile another seat holds. */
 export const ICE_MEND_PRIORITY_V7 = 1109;
 /** The wave's Move onto and along a crossing that is ready. */
 export const ICE_CROSS_MOVE_PRIORITY_V7 = 1108;
@@ -118,11 +117,6 @@ export const ICE_STAGE_MOVE_PRIORITY_V7 = 720;
 export const ICE_HOME_FREEZE_PRIORITY_V7 = 712;
 /** An attack on a unit that stands on ice: it has no terrain cover and cannot be fortified. */
 export const ICE_EXPOSED_TARGET_VALUE_V7 = 3;
-/**
- * A Crack that opens an own or allied dock a hostile Freeze iced over
- * (`pulp_wars-s55m.1`): below kills and defence, above routine Moves.
- */
-export const ICE_CRACK_DOCK_PRIORITY_V7 = 1109;
 /** A Crack that breaks a hostile bridge near an own center: below kills and defence, above routine Moves. */
 export const ICE_CRACK_HOME_PRIORITY_V7 = 1108;
 /** A ship's Crack of the ice that is the next step of its route. */
@@ -133,8 +127,6 @@ export const ICE_CRACK_HOME_RADIUS_V7 = 3;
 export const ICE_CRACK_SLIDER_RADIUS_V7 = 6;
 /** The naval route search: a tile of crackable ice costs this many steps more than water. */
 export const ICE_LANE_EXTRA_STEPS_V7 = 2;
-/** ...and thick ice that has not been cracked yet this many (two Cracks). */
-export const ICE_LANE_THICK_EXTRA_STEPS_V7 = 4;
 
 const DIRECTIONS: readonly (readonly [number, number])[] = [
   [-1, -1],
@@ -318,8 +310,7 @@ export function landGrantIceTilesV7(
       if (tile.improvement === "PORT" || tile.improvement === "SHIPYARD")
         continue;
       const ice = iceAtV7(view, tile.at);
-      if (ice !== undefined && ice.ownerId === view.viewer.id && !ice.cracked)
-        continue;
+      if (ice !== undefined && ice.ownerId === view.viewer.id) continue;
       count += 1;
     }
   return count;
@@ -824,11 +815,12 @@ function computeIcePlan(
  *   farther along the crossing is the seat's ice;
  * - **a hole in the home ice:** an open water tile of the seat's territory
  *   with no unit and no dock on it, whose explored water neighbours (two at
- *   least) are all the seat's ice;
- * - **a crack:** the seat's thick ice that has taken one Crack.
+ *   least) are all the seat's ice.
  *
- * A gap is mended at once by the crossing's own Freeze, so a gap that is
- * still there is a recent one (the design's "in the last three rounds").
+ * A gap is refrozen at once by the crossing's own freeze, so a gap that is
+ * still there is a recent one. (Thick ice and its cracks retired with the
+ * naval branch rebuilt, `pulp_wars-tzk6`, 7r137: since then nothing in the
+ * research reads this; it stays a public diagnostic of the policy.)
  */
 export function iceCrackedOpenTilesV7(
   view: PlayerViewV7,
@@ -838,9 +830,6 @@ export function iceCrackedOpenTilesV7(
   const own = (at: CoordV7): boolean =>
     iceEntry(view, at)?.ownerId === view.viewer.id;
   const found = new Map<string, CoordV7>();
-  for (const entry of view.ice)
-    if (entry.ownerId === view.viewer.id && entry.cracked)
-      found.set(keyOf(entry.at), entry.at);
   if (plan !== null) {
     let ownBeyond = false;
     for (let index = plan.crossing.length - 1; index >= 0; index -= 1) {
@@ -899,18 +888,19 @@ function nextOf(
  * In this order, the first want whose next technology is offered:
  *
  * - **Rime** when a crossing exists, or a visible hostile ship is within 3
- *   of an own city center (Rime makes the home ice);
+ *   of an own city center (Rime makes the home ice and, since the naval
+ *   branch rebuilt, `pulp_wars-tzk6`, 7r137, trains the Walrus; the army
+ *   growth also asks for it as the Walrus's technology);
  * - **Pack Ice** when the crossing needs Deep Water;
- * - **Black Ice** once a hostile land unit stands on own ice, or a hostile
- *   transport is visible within 3 of own territory;
- * - **Glacier** (the frozen sea redesign) at the due 1170 once at least two
- *   of the seat's ice tiles are seen cracked open (`iceCrackedOpenTilesV7`:
- *   thick ice holds two Cracks and a Freeze mends one); otherwise last
- *   (1075), with a crossing, once Rime, Pack Ice, and Black Ice are
- *   researched;
- * - (Hoarfrost, whose three-tile Freeze line built a crossing faster, went
- *   with the `FREEZE` command, `pulp_wars-xv0t`, 7r133: the node unlocks
- *   nothing until the naval branch is rebuilt.)
+ * - **Harpoons** (Black Ice before 7r137) at the due 1170 once a hostile
+ *   unit afloat (a ship or a transport) is visible within 3 of own
+ *   territory;
+ * - **Under the Ice** (Glacier before) last (1075), once the seat has
+ *   `ICE_UNDER_THE_ICE_HOLES_V7` Fishing Holes: one more population each,
+ *   and the dive;
+ * - **Ice Fortress** (Hoarfrost before) last (1075), once the seat has a
+ *   Fishing Hole and sees a hostile unit afloat (a fortified sea post that
+ *   shoots one tile further).
  *
  * A technology on the way to the wanted one is asked for in its place. The
  * free opener keeps the ordinary scorer (the caller never asks then).
@@ -960,45 +950,36 @@ export function iceSeaResearchV7(
         ? [tile.at]
         : [],
     );
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Harpoons against
+  // the ships and transports that come close.
   if (
-    hostile.some(
-      (unit) =>
-        unit.form === "LAND" &&
-        iceEntry(view, unit.at)?.ownerId === view.viewer.id,
-    ) ||
-    (ships.some((ship) => ship.form === "EMBARKED") &&
-      ownTerritory().some((at) =>
-        ships.some(
-          (ship) =>
-            ship.form === "EMBARKED" &&
-            chebyshev(ship.at, at) <= ICE_SEA_BLACK_ICE_RADIUS_V7,
-        ),
-      ))
+    ships.length > 0 &&
+    ownTerritory().some((at) =>
+      ships.some((ship) => chebyshev(ship.at, at) <= ICE_SEA_HARPOON_RADIUS_V7),
+    )
   )
     wants.push({
       path: ["SHORECRAFT", "SEAMANSHIP"],
       priority: ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
       strategic: 40,
     });
-  if (
-    researched.includes("SHORECRAFT") &&
-    iceCrackedOpenTilesV7(view, plan).length >= ICE_GLACIER_CRACK_EVIDENCE_V7
-  )
+  const holes = view.board.tiles.filter(
+    (tile) =>
+      tile.explored &&
+      tile.territoryOwnerId === view.viewer.id &&
+      (tile.improvement === "FISHING_HOLE" ||
+        tile.improvement === "ICE_FORTRESS"),
+  ).length;
+  if (holes >= ICE_UNDER_THE_ICE_HOLES_V7)
     wants.push({
       path: ["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"],
-      priority: ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
-      strategic: 45,
+      priority: ICE_SEA_LATE_RESEARCH_PRIORITY_V7,
+      strategic: 25,
     });
-  if (
-    plan !== null &&
-    researched.includes("SHORECRAFT") &&
-    (["NAVIGATION", "SEAMANSHIP"] as const).every((tech) =>
-      researched.includes(tech),
-    )
-  )
+  if (holes > 0 && ships.length > 0)
     wants.push({
-      path: ["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"],
-      priority: ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7,
+      path: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+      priority: ICE_SEA_LATE_RESEARCH_PRIORITY_V7,
       strategic: 20,
     });
   for (const want of wants) {
@@ -1036,10 +1017,9 @@ export interface IceFreezeScoreV7 {
   readonly preview: IceWaterFreezeV7;
 }
 
-/** What a freeze changes on the water: its tiles (made, mended, taken). */
+/** What a freeze changes on the water: its tiles (made or taken). */
 export interface IceWaterFreezeV7 {
   readonly tiles: readonly CoordV7[];
-  readonly mended: readonly CoordV7[];
   readonly taken: readonly CoordV7[];
 }
 
@@ -1069,23 +1049,19 @@ export function iceColdSnapTilesScoreV7(
 }
 
 /**
- * The water a freeze makes the viewer's ice (`tiles`), split into the
- * viewer's own cracks it mends and the other seats' ice it takes.
+ * The water a freeze makes the viewer's ice (`tiles`), and the other seats'
+ * ice among it that it takes.
  */
 export function iceWaterFreezeOfV7(
   view: PlayerViewV7,
   tiles: readonly CoordV7[],
 ): IceWaterFreezeV7 {
-  const mended: CoordV7[] = [];
   const taken: CoordV7[] = [];
   for (const at of tiles) {
     const entry = iceEntry(view, at);
-    if (entry === undefined) continue;
-    if (entry.ownerId === view.viewer.id) {
-      if (entry.cracked) mended.push(at);
-    } else taken.push(at);
+    if (entry !== undefined && entry.ownerId !== view.viewer.id) taken.push(at);
   }
-  return { tiles, mended, taken };
+  return { tiles, taken };
 }
 
 /**
@@ -1097,14 +1073,14 @@ export function iceWaterFreezeOfV7(
  *   wide). The next tile is the first one that is not ice, so a gap a
  *   Crack broke is rebuilt by the same freeze; a complete crossing is
  *   never frozen again.
- * - **Mend** (1109, the frozen sea redesign): it mends a cracked crossing
- *   tile, or takes back one another seat holds.
+ * - **Mend** (1109, the frozen sea redesign): it takes back a crossing tile
+ *   another seat holds (no cracked state since `pulp_wars-tzk6`, 7r137).
  * - **Home ice** (712, re-aimed by the redesign): new ice in own territory
  *   next to an own center a hostile ship or transport is within 3 of (five
  *   a tile), a tile that would then host a building the seat can afford
  *   (`iceBuildSiteV7`: a Fishing Hole, one more beside a contributor for a
- *   mill, Workshop, or Market), and a mended crack of the home ice. Never
- *   by the crossing's builder. Since `pulp_wars-xv0t` (7r133) a freeze
+ *   mill, Workshop, or Market). Never by the crossing's builder. Since
+ *   `pulp_wars-xv0t` (7r133) a freeze
  *   never ices a dock.
  *
  * (A Freeze that reached a ship, 1297, went with the `FREEZE` command: a
@@ -1119,11 +1095,9 @@ function iceWaterFreezeScoreV7(
 ): IceFreezeScoreV7 | null {
   const actor = view.units.find((unit) => unit.id === actorId);
   if (actor === undefined) return null;
-  // The frozen sea redesign: the tiles newly made ice (not mended or taken).
+  // The frozen sea redesign: the tiles newly made ice (not taken).
   const fresh = preview.tiles.filter(
-    (at) =>
-      !preview.mended.some((tile) => same(tile, at)) &&
-      !preview.taken.some((tile) => same(tile, at)),
+    (at) => !preview.taken.some((tile) => same(tile, at)),
   );
   if (plan !== null && !plan.complete) {
     const nextTile = plan.crossing[plan.next];
@@ -1141,10 +1115,10 @@ function iceWaterFreezeScoreV7(
     }
   }
   if (plan !== null) {
-    // The frozen sea redesign (section 3.1): a cracked crossing tile mended,
-    // or one another seat holds taken back. The crossing is the seat's road
-    // for the rest of the match, so it is kept whoever still has to pass.
-    const kept = [...preview.mended, ...preview.taken].filter((at) =>
+    // The frozen sea redesign (section 3.1): a crossing tile another seat
+    // holds taken back. The crossing is the seat's road for the rest of the
+    // match, so it is kept whoever still has to pass.
+    const kept = preview.taken.filter((at) =>
       plan.crossing.some((tile) => same(tile, at)),
     ).length;
     if (kept > 0)
@@ -1183,9 +1157,7 @@ function iceWaterFreezeScoreV7(
     const site = iceBuildSiteV7(view, tools, at);
     if (site !== null) sites += 3 + Number(site.contributor);
   }
-  // A crack of the home ice mended: two a tile.
-  const mended = preview.mended.filter(ownTerritory).length;
-  const strategic = 5 * walled + sites + 2 * mended;
+  const strategic = 5 * walled + sites;
   if (strategic > 0)
     return {
       reason: "HOME",
@@ -1201,6 +1173,7 @@ function iceWaterFreezeScoreV7(
 const ICE_CONTRIBUTORS_V7: ReadonlySet<string> = new Set([
   "FARM",
   "FISHING_HOLE",
+  "ICE_FORTRESS",
   "LUMBER_CAMP",
   "MINE",
 ]);
@@ -1410,83 +1383,6 @@ export function iceCrossingMoveV7(
 
 // --- Against the frozen sea ------------------------------------------------------
 
-/** Whether `ownerId` is a living seat whose own tree has Black Ice (an Ice Folk seat). */
-function blackIceSeat(view: PlayerViewV7, ownerId: PlayerId): boolean {
-  const player = view.players.find((candidate) => candidate.id === ownerId);
-  return (
-    player !== undefined &&
-    player.status === "ACTIVE" &&
-    technologyCapabilitiesV7(["SHORECRAFT", "SEAMANSHIP"], player.faction)
-      .blackIce
-  );
-}
-
-/** The ice entry on `at` when a hostile seat that may have Black Ice owns it. */
-function hostileBlackIce(
-  view: PlayerViewV7,
-  tools: Pick<FrozenSeaToolsV7, "isHostile">,
-  at: CoordV7,
-): PublicIceTileV7 | undefined {
-  const entry = iceEntry(view, at);
-  return entry !== undefined &&
-    tools.isHostile(entry.ownerId) &&
-    blackIceSeat(view, entry.ownerId)
-    ? entry
-    : undefined;
-}
-
-/**
- * Section 13.3 and 11.8 ("do not stand on their ice"): whether a Move of
- * an own land unit that ends on `to` is refused. It is when `to` is the ice
- * of a hostile Ice Folk seat entered from off it: the frozen sea redesign's
- * Black Ice (assumed, research being private) Freezes such a unit at once,
- * for its own next turn, and the Ice Folk may Shatter it. A unit that
- * already stands on such ice is not frozen again and may move on along it
- * (it is leaving or crossing). Flyers and walkers that end on land beyond
- * are not affected: only the end of the Move counts.
- */
-export function iceMoveOntoHostileIceRejectedV7(
-  view: PlayerViewV7,
-  tools: Pick<FrozenSeaToolsV7, "isHostile">,
-  actor: PublicUnitV7,
-  to: CoordV7,
-): boolean {
-  if (
-    view.ice.length === 0 ||
-    actor.form !== "LAND" ||
-    actor.ownerId !== view.viewer.id
-  )
-    return false;
-  return (
-    hostileBlackIce(view, tools, to) !== undefined &&
-    hostileBlackIce(view, tools, actor.at) === undefined
-  );
-}
-
-/**
- * Section 13.3: whether an offered landing is refused: the tile is the ice
- * of a hostile Ice Folk seat and the same unit is offered a landing within
- * 2 of it that is not.
- */
-export function iceLandingRejectedV7(
-  view: PlayerViewV7,
-  tools: Pick<FrozenSeaToolsV7, "isHostile" | "commands">,
-  command: Extract<CommandV7, { kind: "DISEMBARK" }>,
-): boolean {
-  if (
-    view.ice.length === 0 ||
-    hostileBlackIce(view, tools, command.at) === undefined
-  )
-    return false;
-  return tools.commands.some(
-    (offered) =>
-      offered.kind === "DISEMBARK" &&
-      offered.unitId === command.unitId &&
-      chebyshev(offered.at, command.at) <= 2 &&
-      hostileBlackIce(view, tools, offered.at) === undefined,
-  );
-}
-
 /**
  * The visible hostile land units that may Freeze a ship on their next turn
  * (the one Freeze effect, `pulp_wars-xv0t`, 7r133): a Witch (`COLD_SNAP`)
@@ -1582,9 +1478,9 @@ export function iceTargetBonusV7(
  * The frozen sea redesign (section 3.2, "Cut a lane"): the steps a unit
  * afloat counts to enter `at` on a public water route. 1 for open water.
  * Ice it may Crack (its own, a hostile seat's, an eliminated seat's, with
- * no building on it) is passable at `ICE_LANE_EXTRA_STEPS_V7` more, thick
- * ice not yet cracked at `ICE_LANE_THICK_EXTRA_STEPS_V7` more (two Cracks);
- * an ally's ice and built ice are closed (undefined).
+ * no building on it) is passable at `ICE_LANE_EXTRA_STEPS_V7` more (one
+ * Crack breaks any ice since `pulp_wars-tzk6`, 7r137); an ally's ice and
+ * built ice are closed (undefined).
  */
 export function iceRouteStepCostV7(
   view: PlayerViewV7,
@@ -1597,16 +1493,11 @@ export function iceRouteStepCostV7(
     return undefined;
   const tile = exploredTile(view, at);
   if (tile === undefined || tile.improvement !== null) return undefined;
-  return (
-    1 +
-    (entry.thick && !entry.cracked
-      ? ICE_LANE_THICK_EXTRA_STEPS_V7
-      : ICE_LANE_EXTRA_STEPS_V7)
-  );
+  return 1 + ICE_LANE_EXTRA_STEPS_V7;
 }
 
 export interface IceCrackScoreV7 {
-  readonly reason: "DOCK" | "BRIDGE" | "LANE";
+  readonly reason: "BRIDGE" | "LANE";
   readonly priority: number;
   readonly strategic: number;
   readonly immediate: number;
@@ -1641,18 +1532,13 @@ function iceJoinsV7(
  * where nothing is gained. Never when the cracker has an offered attack
  * that kills (`queryCombatPreviewV7`), never under ice an own or allied
  * land unit needs for a Move this turn (`plannedThrough`), never on a tile
- * that holds a ship of another seat. A Crack of thick ice that is not
- * cracked yet breaks nothing by itself: it is a reason only when another
- * own unit is offered the second Crack of the same tile this turn (the
- * policy picks one command at a time, so the two Cracks follow each other),
- * or, for a ship, when that ice is the next step of its route.
+ * that holds a ship of another seat. Every Crack breaks its tile (thick
+ * ice, and the Dock reason for a dock a Freeze iced over, retired with the
+ * naval branch rebuilt, `pulp_wars-tzk6`, 7r137).
  *
- * - **Dock** (1109, `pulp_wars-s55m.1`): the tile is a dock (Port or
- *   Shipyard) of the viewer or an ally that a hostile Freeze iced over, and
- *   the Crack breaks it (eight, ten for a Shipyard).
  * - **Bridge** (1108): the tile is a hostile seat's ice within 3 of an own
- *   city center, a visible hostile Ice Folk unit is within 6 of that
- *   center, and the Crack breaks it; the nearer the center the better (ten
+ *   city center and a visible hostile Ice Folk unit is within 6 of that
+ *   center; the nearer the center the better (ten
  *   a step nearer), and five more when the ice joins it to that unit (the
  *   ice it would walk along).
  * - **Lane** (1107): the cracker is afloat and the tile is the next step of
@@ -1681,62 +1567,41 @@ export function iceCrackScoreV7(
     )
   )
     return null;
-  const breaks =
-    preview.broken ||
-    tools.commands.some(
-      (offered) =>
-        offered.kind === "CRACK_ICE" &&
-        offered.unitId !== actor.id &&
-        same(offered.at, command.at),
-    );
-  const dock = exploredTile(view, command.at);
-  if (dock !== undefined && isDock(dock))
-    return breaks
-      ? {
-          reason: "DOCK",
-          priority: ICE_CRACK_DOCK_PRIORITY_V7,
-          strategic: dock.improvement === "SHIPYARD" ? 10 : 8,
-          immediate: 0,
-          preview,
-        }
-      : null;
   // Only a hostile seat's ice (or an eliminated one's) is cracked.
   if (entry.ownerId === view.viewer.id || !tools.isHostile(entry.ownerId))
     return null;
-  if (breaks) {
-    const sliders = view.units.filter(
-      (unit) =>
-        unit.hp > 0 &&
-        tools.isHostile(unit.ownerId) &&
-        unitIsIceFolkGroundV7(view, unit),
+  const sliders = view.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      tools.isHostile(unit.ownerId) &&
+      unitIsIceFolkGroundV7(view, unit),
+  );
+  const centers = view.cities.filter(
+    (city) =>
+      city.ownerId === view.viewer.id &&
+      chebyshev(city.at, command.at) <= ICE_CRACK_HOME_RADIUS_V7 &&
+      sliders.some(
+        (unit) => chebyshev(unit.at, city.at) <= ICE_CRACK_SLIDER_RADIUS_V7,
+      ),
+  );
+  if (centers.length > 0) {
+    const near = Math.min(
+      ...centers.map((city) => chebyshev(city.at, command.at)),
     );
-    const centers = view.cities.filter(
-      (city) =>
-        city.ownerId === view.viewer.id &&
-        chebyshev(city.at, command.at) <= ICE_CRACK_HOME_RADIUS_V7 &&
-        sliders.some(
-          (unit) => chebyshev(unit.at, city.at) <= ICE_CRACK_SLIDER_RADIUS_V7,
-        ),
+    const threats = sliders.filter((unit) =>
+      centers.some(
+        (city) => chebyshev(unit.at, city.at) <= ICE_CRACK_SLIDER_RADIUS_V7,
+      ),
     );
-    if (centers.length > 0) {
-      const near = Math.min(
-        ...centers.map((city) => chebyshev(city.at, command.at)),
-      );
-      const threats = sliders.filter((unit) =>
-        centers.some(
-          (city) => chebyshev(unit.at, city.at) <= ICE_CRACK_SLIDER_RADIUS_V7,
-        ),
-      );
-      return {
-        reason: "BRIDGE",
-        priority: ICE_CRACK_HOME_PRIORITY_V7,
-        strategic:
-          10 * (ICE_CRACK_HOME_RADIUS_V7 + 1 - near) +
-          (iceJoinsV7(view, command.at, threats) ? 5 : 0),
-        immediate: 0,
-        preview,
-      };
-    }
+    return {
+      reason: "BRIDGE",
+      priority: ICE_CRACK_HOME_PRIORITY_V7,
+      strategic:
+        10 * (ICE_CRACK_HOME_RADIUS_V7 + 1 - near) +
+        (iceJoinsV7(view, command.at, threats) ? 5 : 0),
+      immediate: 0,
+      preview,
+    };
   }
   if (!afloat(actor)) return null;
   const route = tools.route(actor);
@@ -1762,7 +1627,7 @@ export function iceCrackScoreV7(
   return {
     reason: "LANE",
     priority: ICE_CRACK_LANE_PRIORITY_V7,
-    strategic: 5 + 2 * Number(preview.broken),
+    strategic: 7,
     immediate: 0,
     preview,
   };

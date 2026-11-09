@@ -615,11 +615,7 @@ export function applyAttackBarricadeV7(
   if (
     distance < unitRoleRuleV7(state, attacker).minimumRange ||
     distance >
-      attackMaximumRangeV7(
-        state,
-        attacker,
-        tileAtV7(state.board, attacker.at)?.terrain,
-      )
+      attackMaximumRangeV7(state, attacker, tileAtV7(state.board, attacker.at))
   )
     return kit.rejected(original, "TARGET_OUT_OF_RANGE");
   try {

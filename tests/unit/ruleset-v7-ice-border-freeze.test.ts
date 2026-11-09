@@ -104,7 +104,7 @@ describe("the border freeze on a Land Grant", () => {
     const shallow = row(3, 3, 7);
     expect(iceTiles(result.state)).toEqual(shallow);
     for (const entry of result.state.ice)
-      expect(entry).toMatchObject({ ownerId: owner, cracked: false });
+      expect(entry).toMatchObject({ ownerId: owner });
     // The old footprint's water (4, 3) to (6, 3) froze with the new.
     expect(iceEntryV7(result.state, { x: 5, y: 3 })).toBeDefined();
     // The Port is never iced over; its improvement stays.
@@ -175,7 +175,6 @@ describe("the border freeze on a Land Grant", () => {
     expect(iceEntryV7(left.state, { x: 3, y: 3 })).toEqual({
       at: { x: 3, y: 3 },
       ownerId: owner(plain),
-      cracked: false,
     });
     const [event] = frozenEvents(left.events);
     expect(event).toMatchObject({ unitId: null });

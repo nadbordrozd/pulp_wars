@@ -284,23 +284,26 @@ describe("Gallery presentation", () => {
           galleryBuildingGroundV7("FARM", faction),
         );
       for (const row of ["PORT", "SHIPYARD"] as const)
-        expect(galleryBuildingGroundV7(row, faction)).toEqual(
-          faction === "ICE_FOLK"
-            ? galleryBuildingGroundV7("FISHING_HOLE")
-            : {
-                id: "SHALLOW_WATER",
-                layers: [
-                  {
-                    kind: "SUBJECT",
-                    subject: "TERRAIN:SHALLOW_WATER",
-                    at: { x: 0, y: 0 },
-                  },
-                ],
-              },
-        );
+        // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): every dock
+        // stands on the water (the Ice Folk's Ice Harbour and Great Harbour
+        // stood on ice before).
+        expect(galleryBuildingGroundV7(row, faction)).toEqual({
+          id: "SHALLOW_WATER",
+          layers: [
+            {
+              kind: "SUBJECT",
+              subject: "TERRAIN:SHALLOW_WATER",
+              at: { x: 0, y: 0 },
+            },
+          ],
+        });
     }
-    // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Folk docks
-    // and the Fishing Hole stand on their ice over Shallow Water.
+    // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole
+    // stands on its ice over Shallow Water, and so does (`pulp_wars-tzk6`)
+    // the Ice Fortress.
+    expect(galleryBuildingGroundV7("ICE_FORTRESS")).toEqual(
+      galleryBuildingGroundV7("FISHING_HOLE"),
+    );
     expect(galleryBuildingGroundV7("FISHING_HOLE")).toEqual({
       id: "SHALLOW_ICE",
       layers: [
@@ -335,6 +338,8 @@ describe("Gallery presentation", () => {
       "SHIPYARD",
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
       "FISHING_HOLE",
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress.
+      "ICE_FORTRESS",
     ]);
   });
 

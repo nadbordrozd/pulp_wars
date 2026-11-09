@@ -40,8 +40,8 @@ export const FROZEN_UI_V7 = {
    */
   frozenShip: { x: 7, y: 5 },
   /**
-   * Three ice tiles (the frozen sea redesign: the last one cracked), and ice
-   * by the capital.
+   * Three ice tiles (the last one cracked until Glacier went with the naval
+   * branch rebuilt, `pulp_wars-tzk6`, 7r137), and ice by the capital.
    */
   melting: [
     { x: 8, y: 4 },
@@ -124,8 +124,8 @@ export function frozenSlideUiFixtureV7(
  * A Frozen ship (the Ice Folk freeze rework, `pulp_wars-s55m.1`): a hostile
  * Battleship Frozen on open water beside the viewer's ice (the viewer is the
  * Ice Folk), or, with `victim`, the viewer's own Battleship Frozen beside an
- * Ice Folk seat's ice. Beside it: a row of ice (the last tile cracked) and
- * one tile in the Ice Folk capital's territory.
+ * Ice Folk seat's ice. Beside it: a row of ice and one tile in the Ice Folk
+ * capital's territory.
  */
 export function frozenShipUiFixtureV7(
   options: { readonly victim?: boolean } = {},
@@ -144,13 +144,8 @@ export function frozenShipUiFixtureV7(
         { seat: shipSeat, role: "BATTLESHIP", at: FROZEN_UI_V7.frozenShip },
       ],
       ice: [
-        // The frozen sea redesign: ice is permanent; the last of the row is
-        // cracked thick ice (every technology, so Glacier's).
-        ...FROZEN_UI_V7.melting.map((at, index) => ({
-          at,
-          seat: iceSeat,
-          cracked: index === FROZEN_UI_V7.melting.length - 1,
-        })),
+        // The frozen sea redesign: ice is permanent.
+        ...FROZEN_UI_V7.melting.map((at) => ({ at, seat: iceSeat })),
         { at: permanent, seat: iceSeat },
       ],
     }),

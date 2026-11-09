@@ -153,14 +153,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
-    expect(PRIOR_RULESET_7_IDS.slice(-65, -63)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
+    expect(PRIOR_RULESET_7_IDS.slice(-66, -64)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-65, -63)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-66, -64)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -428,8 +428,11 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
     expect(order[order.indexOf("LAY_EGG") + 1]).toBe("OFFERING");
     // The Mothership redesign (`pulp_wars-ewpj`) appended Mass Beam Down
     // after End Turn, so no earlier kind moved.
-    expect(order.at(-2)).toBe("END_TURN");
-    expect(order.at(-1)).toBe("MASS_BEAM_DOWN");
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137) appended Build Ice
+    // Fortress after it.
+    expect(order.at(-3)).toBe("END_TURN");
+    expect(order.at(-2)).toBe("MASS_BEAM_DOWN");
+    expect(order.at(-1)).toBe("BUILD_ICE_FORTRESS");
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     expect(
       events.slice(

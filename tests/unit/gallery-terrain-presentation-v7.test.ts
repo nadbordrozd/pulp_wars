@@ -323,6 +323,6 @@ describe("Gallery terrain sample boards", () => {
     const ice = buildGalleryTerrainSampleV7("ICE", "ICE_FOLK");
     expect(ice?.ice.length).toBeGreaterThan(0);
     // The frozen sea redesign: ice is permanent and sound.
-    expect(ice?.ice.every((tile) => !tile.cracked)).toBe(true);
+    expect(ice?.ice.every((tile) => !("cracked" in tile))).toBe(true);
   });
 });

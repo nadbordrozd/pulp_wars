@@ -508,9 +508,9 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     // not): the three Shallow Water tiles south of her.
     const martian = seatV7(state, 0).id;
     expect(frozen.state.ice).toEqual([
-      { at: { x: 1, y: 3 }, ownerId: martian, cracked: false },
-      { at: ICE1, ownerId: martian, cracked: false },
-      { at: { x: 3, y: 3 }, ownerId: martian, cracked: false },
+      { at: { x: 1, y: 3 }, ownerId: martian },
+      { at: ICE1, ownerId: martian },
+      { at: { x: 3, y: 3 }, ownerId: martian },
     ]);
     // Without the controller's Rime she makes no ice, whatever her own seat
     // researched (her open land still goes to Snow).
@@ -551,10 +551,11 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     expect(navalUnitV7(glided.state, yeti.id).at).toEqual(ICE3);
   });
 
-  it("Black Ice follows the seat that owns the ice: a Martian seat has none", () => {
+  it("no ice freezes a unit that steps onto it, whoever owns it (Black Ice went with 7r137)", () => {
     // The Martian seat owns ice and has researched Seamanship (Hover Pods
-    // in its tree); the Ice Folk seat owns ice with Black Ice. The frozen
-    // sea redesign (`pulp_wars-5ti.25`): Black Ice freezes on entry.
+    // in its tree); the Ice Folk seat owns ice with Seamanship (Harpoons
+    // since the naval branch rebuilt, `pulp_wars-tzk6`, 7r137; Black Ice,
+    // which froze a unit on entry, before).
     const state = controlled(
       NAVAL_TECHS_V7,
       [
@@ -572,18 +573,14 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     );
     const grunt = navalUnitAtV7(state, { x: 8, y: 6 });
     const sled = navalUnitAtV7(state, { x: 6, y: 4 });
-    // The Tripod steps from its seat's ice onto the Ice Folk ice: Frozen.
+    // The Tripod steps from its seat's ice onto the Ice Folk ice: nothing.
     const stepped = acceptV7(state, 0, {
       kind: "MOVE",
       unitId: grunt.id,
       path: [{ x: 8, y: 7 }],
     });
-    expect(stepped.events).toContainEqual(
-      expect.objectContaining({
-        kind: "UNITS_FROZEN",
-        source: "BLACK_ICE",
-        results: [expect.objectContaining({ unitId: grunt.id })],
-      }),
+    expect(stepped.events.some((event) => event.kind === "UNITS_FROZEN")).toBe(
+      false,
     );
     // The Sled steps onto the Martian ice: nothing.
     const theirs = acceptV7(acceptV7(stepped.state, 0, END).state, 1, {
@@ -591,12 +588,9 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
       unitId: sled.id,
       path: [{ x: 7, y: 3 }],
     });
-    expect(
-      theirs.events.some(
-        (event) =>
-          event.kind === "UNITS_FROZEN" && event.source === "BLACK_ICE",
-      ),
-    ).toBe(false);
+    expect(theirs.events.some((event) => event.kind === "UNITS_FROZEN")).toBe(
+      false,
+    );
   });
 });
 

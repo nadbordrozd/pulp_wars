@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-91, -89)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-92, -90)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(135);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(136);
   });
 });
 
@@ -192,7 +192,7 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
     }
   });
 
-  it("Mountain cover and Glacier's cover on ice leave the retaliation as on open ground", () => {
+  it("Mountain cover leaves the retaliation as on open ground, and ice gives no cover", () => {
     const onMountain = mountainV7(
       fieldV7(
         [
@@ -209,7 +209,9 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
       baseRetaliation(full("FIGHTER", "ORIGINAL"), full("GUARD", "UNDEAD")),
     );
 
-    // A Yeti on ice with Glacier, attacked from the shore beside it.
+    // A Yeti on ice, attacked from the shore beside it: ice gives no cover
+    // (Glacier's cover went with Glacier: the naval branch rebuilt,
+    // `pulp_wars-tzk6`, 7r137).
     const frozen = frozenArenaV7({
       factions: ["ORIGINAL", "ICE_FOLK"],
       technologies: [NO_EXPLOSIVES, TECHNOLOGY_IDS_V7],
@@ -227,9 +229,9 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
       yeti.id,
     );
     expect(preview).toMatchObject({
-      iceCover: true,
-      defenseBonusNumerator: 5,
-      defenseBonusDenominator: 4,
+      harpoon: false,
+      defenseBonusNumerator: 1,
+      defenseBonusDenominator: 1,
       retaliation: true,
       damageToAttacker: baseRetaliation(
         full("FIGHTER", "ORIGINAL"),

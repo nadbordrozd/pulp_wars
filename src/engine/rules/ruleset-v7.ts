@@ -45,6 +45,10 @@ export type TechnologyUnlockedCommandV7 = Extract<
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): Rime
   // unlocks the Ice Folk Fishing Hole.
   | "BUILD_FISHING_HOLE"
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+  // docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the Ice Folk
+  // Naval Engineering (Ice Fortress) upgrades a Fishing Hole.
+  | "BUILD_ICE_FORTRESS"
   | "BUILD_MINE"
   | "BUILD_WINDMILL"
   | "BUILD_SAWMILL"
@@ -349,21 +353,25 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "FREEZE"; readonly depth: "SHALLOW" | "DEEP" }
   // (`LONG_FREEZE`, Hoarfrost's longer Freeze line, retired with the
-  // `FREEZE` command: the one Freeze effect, `pulp_wars-xv0t`, 7r133.)
+  // `FREEZE` command: the one Freeze effect, `pulp_wars-xv0t`, 7r133.
+  // `BLACK_ICE` and `GLACIER`, with thick ice, the cracked state and ice
+  // cover, retired with the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
   /**
-   * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`).
-   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.8): a
-   * hostile land unit that ends its own Move, landing, or Beam Down on the
-   * owner's ice, coming from off it, is Frozen at once.
+   * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+   * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): Harpoons (the
+   * Ice Folk `SEAMANSHIP`, the Ram's twin). Every attack of the owner's
+   * units on a unit afloat (naval or embarked form) has
+   * `HARPOON_ATTACK2_V7` more Attack.
    */
-  | { readonly kind: "BLACK_ICE" }
+  | { readonly kind: "HARPOONS" }
   /**
-   * The frozen sea (section 8.10): Glacier (the Ice Folk `SUBMERSIBLES`).
-   * The frozen sea redesign (section 2.5): the owner's ice is thick (two
-   * Crack Ice break it, and the owner's Freeze mends a crack), and its
-   * units on ice have Snow cover.
+   * The naval branch rebuilt (section 3.4): Under the Ice (the Ice Folk
+   * `SUBMERSIBLES`, the Submarine's and Harbours' twin): the dive between
+   * Fishing Holes, `UNDER_THE_ICE_POPULATION_V7` more population from every
+   * Fishing Hole and Ice Fortress, and the Harbours bonus on every active
+   * captured dock.
    */
-  | { readonly kind: "GLACIER" }
+  | { readonly kind: "UNDER_THE_ICE" }
   | { readonly kind: "FIRST_HOSTILE_CAPTURE_SPOILS"; readonly coins: 2 };
 
 export interface TechnologyNodeV7 {
@@ -939,6 +947,16 @@ export interface RoleMechanicsV7 {
    * Wyrm). Every other flyer needs its controller's Navigation there.
    */
   readonly fliesOverDeepWater: boolean;
+  /**
+   * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+   * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the land-form
+   * unit swims (the Walrus): a Move may cross and end on open Shallow Water
+   * that is no dock, and Deep Water too with its controller's Navigation
+   * (the Ice Folk Pack Ice), at one point a tile. It stays a land-form
+   * unit there (never afloat, never embarked): it keeps its stats, attacks
+   * and is attacked as on land. A body rule of the role under its kind.
+   */
+  readonly swims: boolean;
   /**
    * Dwarf crowd control (`pulp_wars-w49.33`): Whirl, which replaced the
    * ninth unit's Three Hammers. Since `pulp_wars-befg` it is the role's
@@ -1968,6 +1986,13 @@ export const RAM_BONUS2_V7 = 2;
  * or more tiles (+1.5 Attack; the role mechanic `ramRunUpBonus2`).
  */
 export const HORNED_PROW_RAM_BONUS2_V7 = 3;
+
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the `attack2`
+ * Harpoons adds to an attack on a unit afloat (+1 Attack, the Ram's).
+ */
+export const HARPOON_ATTACK2_V7 = 2;
 /** The Horned Prow: the tiles a Move must enter for the run-up bonus. */
 export const RAM_RUN_UP_TILES_V7 = 2;
 
@@ -2040,6 +2065,7 @@ const mechanics = (
           frostbite: false,
           frostBreath: false,
           fliesOverDeepWater: false,
+          swims: false,
           whirl: false,
           rallyExcluded: false,
           demolishesFieldDefense: roleId === "CATAPULT",
@@ -3356,26 +3382,33 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * (docs/product/RULESET_7_NAVAL_BRANCH.md section 2.2): the five Naval nodes
  * keep their IDs, tiers, prerequisites, and economic unlocks, lose every
  * ship, the Ram, and Board, and gain the ice unlocks of
- * `ICE_FOLK_NAVAL_UNLOCKS_V7`. They display as Rime, Pack Ice, Hoarfrost
- * (Icebound before `pulp_wars-s55m.1`), Black Ice, and Glacier.
+ * `ICE_FOLK_NAVAL_UNLOCKS_V7`. The naval branch rebuilt (`pulp_wars-tzk6`,
+ * 7r137, docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): they
+ * display as Rime, Pack Ice, Ice Fortress, Harpoons, and Under the Ice
+ * (Hoarfrost, Black Ice, and Glacier before), and the Walrus (the `GUARD`
+ * role) is Rime's, not Fortification's.
  */
 const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
   Partial<Record<TechnologyIdV7, readonly TechnologyUnlockV7[]>>
 > = deepFreeze({
   // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Rime
   // also unlocks the Fishing Hole (since `pulp_wars-s55m.2` the one Ice
-  // Folk ice building: no Ice Harbour).
+  // Folk ice building: no Ice Harbour). The naval branch rebuilt
+  // (`pulp_wars-tzk6`, 7r137): and the Walrus, the amphibious defender (the
+  // Patrol Boat's twin), moved here from Fortification.
   SHORECRAFT: [
+    { kind: "UNIT_ROLE", role: "GUARD" },
     { kind: "FREEZE", depth: "SHALLOW" },
     { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
   ],
+  // Pack Ice: ice on Deep Water, and (Navigation) a Walrus swims there.
   NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
-  // (Hoarfrost's longer Freeze line retired with `FREEZE`: the one Freeze
-  // effect, `pulp_wars-xv0t`, 7r133. The node unlocks nothing until the
-  // naval branch is rebuilt, docs/product/ICE_FOLK_REDESIGN_2026-11.md
-  // section 3.4.)
-  SEAMANSHIP: [{ kind: "BLACK_ICE" }],
-  SUBMERSIBLES: [{ kind: "GLACIER" }],
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
+  // (Hoarfrost before: the Freeze line, then nothing after 7r133), Harpoons
+  // (Black Ice before), and Under the Ice (Glacier before).
+  NAVAL_ENGINEERING: [{ kind: "COMMAND", command: "BUILD_ICE_FORTRESS" }],
+  SEAMANSHIP: [{ kind: "HARPOONS" }],
+  SUBMERSIBLES: [{ kind: "UNDER_THE_ICE" }],
 });
 /** The Ice Folk technology nodes (see the comment above). */
 export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
@@ -3401,11 +3434,14 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
                   : // The frozen sea (naval branch sections 2.2 and 8.11):
                     // the Ice Folk tree unlocks no ship, no Ram, and no
                     // Board. Ice Folk movement (`pulp_wars-s55m.2`, 7r124):
-                    // nor a dock (no Port or Ice Harbour, no Shipyard or
-                    // Great Harbour), nor Harbours or the naval training
-                    // discount: the Fishing Hole is their one ice building.
+                    // nor a dock (no Port, no Shipyard), nor Harbours (Under
+                    // the Ice gives its bonus) or the naval training
+                    // discount: the Fishing Hole is their ice building. The
+                    // naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the
+                    // Walrus (`GUARD`) is Rime's, not Fortification's.
                     (unlock.kind === "UNIT_ROLE" &&
-                        isNavalRoleV7(unlock.role)) ||
+                        (isNavalRoleV7(unlock.role) ||
+                          unlock.role === "GUARD")) ||
                       unlock.kind === "RAM" ||
                       unlock.kind === "BOARDING" ||
                       unlock.kind === "HARBOURS" ||
@@ -3490,7 +3526,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   // held this role until 7r54 and is the `SWORDSMAN` role now). Frostbite
   // is the role mechanic `frostbite`; the one Freeze effect
   // (`pulp_wars-xv0t`, 7r133) took its line `FREEZE` and gave it no Cold
-  // Wake (the Frost Giant alone carries that).
+  // Wake (the Frost Giant alone carries that). The naval branch rebuilt
+  // (`pulp_wars-tzk6`, 7r137, docs/product/ICE_FOLK_REDESIGN_2026-11.md
+  // section 3.4): Rime's unit (Fortification's before), amphibious (the
+  // role mechanic `swims`), with its stats and 4 Coins unchanged.
   GUARD: role({
     role: "GUARD",
     label: "Walrus",
@@ -3504,7 +3543,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "FORTIFICATION",
+    technology: "SHORECRAFT",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
@@ -3658,8 +3697,14 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   // rest.
   RAIDER: { glides: true },
   MARKSMAN: { glides: true, coldBloodBonus2: 1 },
-  // The ninth unit (7r55): the Walrus (Frostbite).
-  GUARD: { buildsFieldDefense: false, glides: true, frostbite: true },
+  // The ninth unit (7r55): the Walrus (Frostbite). The naval branch rebuilt
+  // (`pulp_wars-tzk6`, 7r137): it swims.
+  GUARD: {
+    buildsFieldDefense: false,
+    glides: true,
+    frostbite: true,
+    swims: true,
+  },
   CAPTAIN: { glides: true },
   CATAPULT: {
     advancesAfterKill: false,
@@ -5486,9 +5531,11 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     EXPLOSIVES: "Brittle",
     SHORECRAFT: "Rime",
     NAVIGATION: "Pack Ice",
-    NAVAL_ENGINEERING: "Hoarfrost",
-    SEAMANSHIP: "Black Ice",
-    SUBMERSIBLES: "Glacier",
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Hoarfrost, Black
+    // Ice, and Glacier before.
+    NAVAL_ENGINEERING: "Ice Fortress",
+    SEAMANSHIP: "Harpoons",
+    SUBMERSIBLES: "Under the Ice",
     // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): named for
     // its unit like Frost Wyrms and Mammoths (Boulders, the Snow Golem's
     // retired ability, before).
@@ -7523,15 +7570,60 @@ export function dockPopulationV7(
   return (improvement === "SHIPYARD" ? 2 : 1) + harbourPopulation;
 }
 
-/**
- * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): the
- * Crack Ice it takes to break thick ice (Glacier).
- */
-export const ICE_CRACKS_THICK_V7 = 2;
+// (`ICE_CRACKS_THICK_V7`, Glacier's two Cracks, retired with thick ice:
+// the naval branch rebuilt, `pulp_wars-tzk6`, 7r137. One Crack breaks any
+// ice.)
 /** The frozen sea redesign (section 2.6): the Fishing Hole's price. */
 export const FISHING_HOLE_COST_V7 = 3;
 /** The frozen sea redesign (section 2.6): the Fishing Hole's population. */
 export const FISHING_HOLE_POPULATION_V7 = 1;
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the Ice
+ * Fortress, Naval Engineering's upgrade of an active own Fishing Hole (one
+ * per city, the Shipyard's twin): its price, its population (the hole's 1
+ * and 1 more), the fortification levels it gives an own unit standing on
+ * it, and the range it adds to a unit of range 2 or more standing on it.
+ */
+export const ICE_FORTRESS_COST_V7 = 5;
+export const ICE_FORTRESS_POPULATION_V7 = 2;
+export const ICE_FORTRESS_FORTIFICATION_LEVELS_V7 = 1;
+export const ICE_FORTRESS_RANGE_BONUS_V7 = 1;
+/**
+ * The naval branch rebuilt (section 3.4): Under the Ice, the population
+ * every Fishing Hole and Ice Fortress of the seat adds (the Harbours bonus
+ * of the Fishing Holes; an active captured dock gets the Harbours bonus).
+ */
+export const UNDER_THE_ICE_POPULATION_V7 = 1;
+
+/**
+ * The naval branch rebuilt (section 3.4): whether an improvement is a
+ * Fishing Hole: the hole itself or the Ice Fortress built on one, which
+ * keeps everything the hole does (a Farm for the mills, the Workshop and the
+ * Market, a dive node, a sea-link endpoint).
+ */
+export function isFishingHoleImprovementV7(
+  improvement: ImprovementIdV7 | null | undefined,
+): improvement is "FISHING_HOLE" | "ICE_FORTRESS" {
+  return improvement === "FISHING_HOLE" || improvement === "ICE_FORTRESS";
+}
+
+/**
+ * The naval branch rebuilt (section 3.4): the live population of a Fishing
+ * Hole or an Ice Fortress of a seat with (`underTheIce`) or without Under
+ * the Ice. Like a Farm's, it never depends on a blockade.
+ */
+export function holePopulationV7(
+  improvement: "FISHING_HOLE" | "ICE_FORTRESS",
+  underTheIce: boolean,
+): number {
+  return (
+    (improvement === "ICE_FORTRESS"
+      ? ICE_FORTRESS_POPULATION_V7
+      : FISHING_HOLE_POPULATION_V7) +
+    (underTheIce ? UNDER_THE_ICE_POPULATION_V7 : 0)
+  );
+}
 // (`FREEZE_LINE_V7`, `LONG_FREEZE_LINE_V7`, and `WITCH_FREEZE_RADIUS_V7`
 // retired with `FREEZE`: the one Freeze effect, `pulp_wars-xv0t`, 7r133,
 // freezes the ring of `COLD_SNAP_RANGE_V7`.)
@@ -8079,6 +8171,45 @@ export function unitMayEnterMountainV7(
  * never does (it embarks at a Port). A Move that ends on such a tile
  * self-launches the machine there (it embarks).
  */
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): whether the
+ * unit swims: a land-form unit of the `GROUND` movement mode (`mode`, the
+ * caller's) whose role mechanic `swims` is true (the Walrus; a body rule of
+ * its kind, so exact in every view and kept under Mind Control).
+ */
+export function unitSwimsV7(
+  roster: FactionRosterV7,
+  unit: MartianUnitFactsV7,
+  mode: MovementModeV7,
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    mode === "GROUND" &&
+    unitRoleMechanicsV7(roster, unit).swims
+  );
+}
+
+/**
+ * The naval branch rebuilt (section 3.4): whether a swimmer may enter an
+ * open water tile (no ice; the caller checks that): any water but a dock (a
+ * Port or Shipyard: a Walrus never enters a dock, so it never blockades,
+ * embarks, or is trained at one). Deep Water also needs the mover's
+ * Navigation (the Ice Folk Pack Ice), which the caller's own Deep Water
+ * rule reads. A step onto water costs one point, as on land: a swimmer
+ * never Glides on water.
+ */
+export function swimEntryV7(tile: {
+  readonly terrain: TerrainIdV7;
+  readonly improvement: ImprovementIdV7 | null;
+}): boolean {
+  return (
+    (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
+    tile.improvement !== "PORT" &&
+    tile.improvement !== "SHIPYARD"
+  );
+}
+
 export function canCrossWaterV7(input: {
   readonly terrain: TerrainIdV7;
   readonly movementMode: MovementModeV7;
@@ -8403,16 +8534,20 @@ export interface TechnologyCapabilitiesV7 {
    * it a freeze still Freezes units and lays Snow.
    */
   readonly freezeWater: "NONE" | "SHALLOW" | "DEEP";
-  /** The frozen sea (section 8.8): Black Ice. */
-  readonly blackIce: boolean;
   /**
-   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): the
-   * player's ice is thick (Glacier): `ICE_CRACKS_THICK_V7` Crack Ice break
-   * it, and a Freeze of the player mends a crack.
+   * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+   * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): Harpoons, the
+   * player's attacks on units afloat have `HARPOON_ATTACK2_V7` more Attack.
+   * (Black Ice, thick ice and ice cover before.)
    */
-  readonly thickIce: boolean;
-  /** The frozen sea (section 8.10): Glacier's Snow cover on ice. */
-  readonly iceCover: boolean;
+  readonly harpoons: boolean;
+  /**
+   * The naval branch rebuilt (section 3.4): Under the Ice, the dive between
+   * Fishing Holes and `UNDER_THE_ICE_POPULATION_V7` more population from
+   * every Fishing Hole and Ice Fortress (with `harbourPopulation` for the
+   * captured docks).
+   */
+  readonly underTheIce: boolean;
   /**
    * The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.3): Harvest
    * Rites, the player's cities may make an Offering.
@@ -8555,9 +8690,8 @@ export function technologyCapabilitiesV7(
   let harbourPopulation: 0 | 1 = 0;
   let freezeShallow = false;
   let freezeDeep = false;
-  let blackIce = false;
-  let thickIce = false;
-  let iceCover = false;
+  let harpoons = false;
+  let underTheIce = false;
   let offering = false;
   let greatSummoning = false;
   let switcheroo = false;
@@ -8692,12 +8826,12 @@ export function technologyCapabilitiesV7(
         if (unlock.depth === "DEEP") freezeDeep = true;
         else freezeShallow = true;
         break;
-      case "BLACK_ICE":
-        blackIce = true;
+      case "HARPOONS":
+        harpoons = true;
         break;
-      case "GLACIER":
-        thickIce = true;
-        iceCover = true;
+      case "UNDER_THE_ICE":
+        underTheIce = true;
+        harbourPopulation = HARBOUR_POPULATION_V7;
         break;
       case "OFFERING":
         offering = true;
@@ -8811,9 +8945,8 @@ export function technologyCapabilitiesV7(
     harbourPopulation,
     // Pack Ice requires Rime, so `DEEP` implies the shallows.
     freezeWater: freezeDeep ? "DEEP" : freezeShallow ? "SHALLOW" : "NONE",
-    blackIce,
-    thickIce,
-    iceCover,
+    harpoons,
+    underTheIce,
     offering,
     greatSummoning,
     switcheroo,
@@ -8891,7 +9024,7 @@ export function assertRuleset7Registry(): void {
     !complete ||
     FACTION_IDS_V7.length !== FACTION_TREE_IDS_V7.length ||
     Reflect.ownKeys(FACTION_TREES_V7).length !== FACTION_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 12
+    IMPROVEMENT_IDS_V7.length !== 13
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

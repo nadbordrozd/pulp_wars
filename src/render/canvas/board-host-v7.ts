@@ -3946,7 +3946,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       // The frozen sea: the tile's ice, when it melts, and Black Ice.
       ...(() => {
         const ice = iceOnTileV7(model.view, at);
-        return ice === undefined ? [] : [iceChipTooltipV7(model.view, ice)];
+        return ice === undefined ? [] : [iceChipTooltipV7()];
       })(),
       tile.snow === true ? snowTooltipV7(model.view) : "",
       tile.blizzard === true ? BLIZZARD_TOOLTIP_V7 : "",

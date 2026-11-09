@@ -130,12 +130,7 @@ export interface IceFolkMetricsV7 {
 // water Freeze retired; the Walrus's Frostbite stays).
 // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snowball.
 export type ChillSourceV7 =
-  | "COLD_SNAP"
-  | "COLD_WAKE"
-  | "BLACK_ICE"
-  | "FROSTBITE"
-  | "FROST_BREATH"
-  | "SNOWBALL";
+  "COLD_SNAP" | "COLD_WAKE" | "FROSTBITE" | "FROST_BREATH" | "SNOWBALL";
 export type ShatterSetupV7 =
   | "CHARGE_AT_FULL_HP"
   | "SWEEP_FLANK"
@@ -148,8 +143,8 @@ export type ShatterSetupV7 =
 const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
   "COLD_SNAP",
   "COLD_WAKE",
-  // The frozen sea (naval branch section 8.8).
-  "BLACK_ICE",
+  // (Black Ice, the frozen sea's, went with the naval branch rebuilt,
+  // `pulp_wars-tzk6`, 7r137.)
   // The ninth unit (7r55).
   "FROSTBITE",
   // The Ice Folk roster rework (`pulp_wars-s55m.4`).

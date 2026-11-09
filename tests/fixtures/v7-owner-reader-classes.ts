@@ -33,7 +33,6 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // per-unit policies, and the public Undead faction reads.
   // `pulp_wars-5ti.5`: the owner of an ice tile; an owner that is no
   // player has no Black Ice (the missing record answers false).
-  "src/ai/v7-frozen-sea.ts::blackIceSeat": "NEUTRAL_SAFE",
   "src/ai/v7-martian.ts::factionShieldV7": "PLAYER_ONLY",
   "src/ai/v7-martian.ts::policyUnitFactionV7": "NEUTRAL_AWARE",
   "src/ai/v7-undead.ts::ownerIsRestlessV7": "NEUTRAL_SAFE",
@@ -86,6 +85,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The naval branch: a dock's owner is a city's owner (a seat); an owner
   // that is no player has no Harbours (0).
   "src/engine/v7/economy.ts::harbourPopulationForV7": "NEUTRAL_SAFE",
+  "src/engine/v7/economy.ts::underTheIceForV7": "NEUTRAL_SAFE",
   "src/engine/v7/economy.ts::roadPopulationForCityV7": "PLAYER_ONLY",
   "src/engine/v7/economy.ts::roadPopulationReaderV7": "PLAYER_ONLY",
   // Fishing Hole links (`pulp_wars-vg5l`): the owner of a city's Fishing
@@ -152,6 +152,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyZap": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyFireMoonGun": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyShipyard": "PLAYER_ONLY",
+  "src/engine/v7/reducer.ts::applyIceFortress": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applySpatial": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyTractorBeam": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyTrain": "PLAYER_ONLY",
@@ -217,8 +218,6 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // read the ice owner's record; an owner that is no player has neither
   // (the missing record answers false). A Fishing Hole and a Crack are a
   // seat's commands.
-  "src/engine/v7/ice.ts::iceIsThickV7": "NEUTRAL_SAFE",
-  "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "NEUTRAL_SAFE",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant's Cold
   // Wake reads its owner's record for the water it freezes; an owner that
   // is no player has none (the missing record freezes nothing).

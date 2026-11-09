@@ -17,7 +17,6 @@ import {
 } from "../../src/engine/index";
 import {
   frozenArenaV7,
-  frozenStateV7,
   iceEntryV7,
   patchFrozenUnitV7,
   type FrozenArenaOptionsV7,
@@ -35,7 +34,9 @@ import {
 // The frozen sea redesign (`pulp_wars-5ti.25`,
 // docs/product/RULESET_7_ICE_REDESIGN.md section 2.9): Crack Ice. Any unit
 // or ship of the eight other factions breaks the ice next to it back into
-// water; thick ice (Glacier) takes two Cracks, and a Freeze mends a crack.
+// water. The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): one Crack
+// breaks any ice (thick ice, the cracked state, and the mend went with
+// Glacier).
 // On the authored strait of `v7-naval-branch.ts` (rows 0 to 2 and 8 to 10
 // land, rows 3 and 7 Shallow Water, rows 4 to 6 Deep Water); seat 0 is
 // Human, seat 1 the Ice Folk that own the ice.
@@ -94,7 +95,6 @@ describe("Crack Ice: the result (section 2.9)", () => {
     expect(previewCrackIceV7(view, fighter.id, ICE)).toEqual({
       unitId: fighter.id,
       at: ICE,
-      broken: true,
     });
     const result = acceptV7(state, 0, crack(state, SHORE, ICE));
     expect(result.events).toEqual([
@@ -103,7 +103,6 @@ describe("Crack Ice: the result (section 2.9)", () => {
         playerId: seatV7(state, 0).id,
         unitId: fighter.id,
         at: ICE,
-        broken: true,
       },
     ]);
     expect(parseEventV7(result.events[0]).ok).toBe(true);
@@ -126,57 +125,32 @@ describe("Crack Ice: the result (section 2.9)", () => {
     expect(parseGameStateV7(result.state)).not.toBeNull();
   });
 
-  it("cracks thick ice first and breaks it with the second Crack; the owner's Cold Snap mends a crack", () => {
+  it("one Crack breaks any ice, whatever the owner researched (no thick ice since 7r137)", () => {
     const state = scene(
       [
         { seat: 0, role: "FIGHTER", at: SHORE },
-        { seat: 0, role: "GUARD", at: { x: 1, y: 2 } },
         { seat: 1, role: "CAPTAIN", at: { x: 3, y: 2 } },
       ],
       [ICE],
       ALL,
     );
     const view = viewForV7(state, seatV7(state, 0).id);
-    expect(view.ice).toEqual([
-      { at: ICE, ownerId: seatV7(state, 1).id, cracked: false, thick: true },
-    ]);
+    expect(view.ice).toEqual([{ at: ICE, ownerId: seatV7(state, 1).id }]);
     expect(
       previewCrackIceV7(view, navalUnitAtV7(state, SHORE).id, ICE),
-    ).toMatchObject({ broken: false });
-    const first = acceptV7(state, 0, crack(state, SHORE, ICE));
-    expect(first.events[0]).toMatchObject({
+    ).toEqual({ unitId: navalUnitAtV7(state, SHORE).id, at: ICE });
+    const result = acceptV7(state, 0, crack(state, SHORE, ICE));
+    expect(result.events[0]).toEqual({
       kind: "ICE_CRACKED",
-      broken: false,
-    });
-    expect(iceEntryV7(first.state, ICE)).toEqual({
+      playerId: seatV7(state, 0).id,
+      unitId: navalUnitAtV7(state, SHORE).id,
       at: ICE,
-      ownerId: seatV7(state, 1).id,
-      cracked: true,
     });
-    // Still ice in every way: the next Crack breaks it.
-    const guard = { x: 1, y: 2 };
-    expect(
-      previewCrackIceV7(
-        viewForV7(first.state, seatV7(state, 0).id),
-        navalUnitAtV7(first.state, guard).id,
-        ICE,
-      ),
-    ).toMatchObject({ broken: true });
-    const second = acceptV7(first.state, 0, crack(first.state, guard, ICE));
-    expect(second.events[0]).toMatchObject({ broken: true });
-    expect(iceEntryV7(second.state, ICE)).toBeUndefined();
-    // On the Ice Folk turn a Cold Snap over the cracked tile mends it (a
-    // Freeze line before the one Freeze effect, `pulp_wars-xv0t`).
-    const theirs = turnOf(first.state, 1);
-    const witch = navalUnitAtV7(theirs, { x: 3, y: 2 });
-    const mend = acceptV7(theirs, 1, {
-      kind: "COLD_SNAP",
-      unitId: witch.id,
-    });
-    expect(iceEntryV7(mend.state, ICE)?.cracked).toBe(false);
+    expect(iceEntryV7(result.state, ICE)).toBeUndefined();
+    expect(parseGameStateV7(result.state)).not.toBeNull();
   });
 
-  it("a ship cracks too: thick ice takes two Cracks (no ship is ever in the ice)", () => {
+  it("a ship cracks too, with one Crack (no ship is ever in the ice)", () => {
     const TILE: CoordV7 = { x: 2, y: 4 };
     const FREE: CoordV7 = { x: 2, y: 5 };
     const state = scene(
@@ -184,25 +158,10 @@ describe("Crack Ice: the result (section 2.9)", () => {
       [TILE],
       ALL,
     );
-    const first = acceptV7(state, 0, crack(state, FREE, TILE));
-    expect(first.events[0]).toMatchObject({ broken: false });
-    const second = acceptV7(
-      turnOf(
-        acceptV7(acceptV7(first.state, 0, { kind: "END_TURN" }).state, 1, {
-          kind: "END_TURN",
-        }).state,
-        0,
-      ),
-      0,
-      crack(first.state, FREE, TILE),
-    );
-    expect(second.events[0]).toMatchObject({
-      kind: "ICE_CRACKED",
-      broken: true,
-    });
-    expect(iceEntryV7(second.state, TILE)).toBeUndefined();
+    const result = acceptV7(state, 0, crack(state, FREE, TILE));
+    expect(result.events[0]).toMatchObject({ kind: "ICE_CRACKED", at: TILE });
+    expect(iceEntryV7(result.state, TILE)).toBeUndefined();
   });
-
   it("a submerged Submarine cracks and stays submerged", () => {
     const SUB: CoordV7 = { x: 3, y: 5 };
     const state = scene(
@@ -404,14 +363,24 @@ describe("Crack Ice: the legality rows in order (section 2.9)", () => {
   });
 
   it("row 7: no improvement on it (Pillage instead)", () => {
-    // Seat 1's Port on (6, 7) is an Ice Harbour on its ice.
-    const state = scene(
-      [{ seat: 0, role: "PATROL_BOAT", at: { x: 6, y: 6 } }],
-      [{ x: 6, y: 7 }],
+    // Seat 1 cuts a Fishing Hole in its ice on (5, 7). (A dock on ice, the
+    // Ice Harbour, is gone since the naval branch rebuilt,
+    // `pulp_wars-tzk6`, 7r137.)
+    const HOLE: CoordV7 = { x: 5, y: 7 };
+    const base = turnOf(
+      scene(
+        [{ seat: 0, role: "PATROL_BOAT", at: { x: 5, y: 6 } }],
+        [HOLE],
+        RIME,
+        {
+          coins: [10, 10],
+        },
+      ),
+      1,
     );
-    expect(
-      rejectV7(state, 0, crack(state, { x: 6, y: 6 }, { x: 6, y: 7 })),
-    ).toEqual({
+    const built = acceptV7(base, 1, { kind: "BUILD_FISHING_HOLE", at: HOLE });
+    const state = turnOf(built.state, 0);
+    expect(rejectV7(state, 0, crack(state, { x: 5, y: 6 }, HOLE))).toEqual({
       code: "CRACK_ICE_NOT_LEGAL",
       params: { reason: "BUILT" },
     });
@@ -427,14 +396,7 @@ describe("Crack Ice: the legality rows in order (section 2.9)", () => {
         { seat: 0, role: "BATTLESHIP", at: { x: 2, y: 5 } },
         { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 } },
       ],
-      [
-        ICE,
-        { at: { x: 2, y: 4 }, seat: 1, cracked: true },
-        { x: 3, y: 3 },
-        { x: 4, y: 3 },
-        { x: 1, y: 4 },
-        { x: 1, y: 5 },
-      ],
+      [ICE, { x: 2, y: 4 }, { x: 3, y: 3 }, { x: 1, y: 4 }, { x: 1, y: 5 }],
       ALL,
     );
     const view = viewForV7(state, seatV7(state, 0).id);
@@ -463,18 +425,16 @@ describe("Crack Ice: the legality rows in order (section 2.9)", () => {
             continue;
           }
           const result = acceptV7(state, 0, command);
+          expect(preview).toEqual({ unitId: unit.id, at: { x, y } });
           expect(result.events).toEqual([
             {
               kind: "ICE_CRACKED",
               playerId: seatV7(state, 0).id,
               unitId: unit.id,
               at: { x, y },
-              broken: preview?.broken,
             },
           ]);
-          expect(iceEntryV7(result.state, { x, y }) === undefined).toBe(
-            preview?.broken === true,
-          );
+          expect(iceEntryV7(result.state, { x, y })).toBeUndefined();
         }
   });
 });
@@ -517,16 +477,5 @@ describe("Crack Ice and the factions (section 2.10)", () => {
         faction,
       ).toBe(true);
     }
-  });
-
-  it("frozenStateV7 keeps a crack only on thick ice", () => {
-    const thin = scene([], []);
-    expect(() =>
-      frozenStateV7(thin, [{ at: ICE, seat: 1, cracked: true }]),
-    ).toThrow();
-    const thick = scene([], [], ALL);
-    expect(
-      frozenStateV7(thick, [{ at: ICE, seat: 1, cracked: true }]).ice,
-    ).toEqual([{ at: ICE, ownerId: seatV7(thick, 1).id, cracked: true }]);
   });
 });

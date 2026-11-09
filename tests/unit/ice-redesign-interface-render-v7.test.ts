@@ -49,7 +49,7 @@ import {
   iceBuildUiFixtureV7,
   iceCrackUiFixtureV7,
 } from "../fixtures/v7-ice-redesign-ui";
-import { frozenArenaV7, patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
+import { patchFrozenUnitV7 } from "../fixtures/v7-frozen-sea";
 
 // The frozen sea redesign's interface (bead pulp_wars-5ti.27;
 // docs/product/RULESET_7_ICE_REDESIGN.md section 4.1, docs/ui/
@@ -117,7 +117,7 @@ describe("Crack Ice on the board", () => {
     });
   });
 
-  it("labels plain ice 'Break', and the viewer's own iced-over dock 'Open the dock'", () => {
+  it("labels every ice tile 'Break' (one Crack breaks any ice since 7r137)", () => {
     const view = viewOf(iceCrackUiFixtureV7());
     const warrior = unitAt(view, at.cracker);
     expect(unitHasCrackIceV7(view, warrior)).toBe(true);
@@ -156,42 +156,12 @@ describe("Crack Ice on the board", () => {
       expect(
         tileActionsAtV7(badges, tile)?.actions.map((action) => action.id),
       ).toContain("CRACK_ICE");
-    // The Ice Folk freeze rework (`pulp_wars-s55m.1`): the viewer's own
-    // Port the Ice Folk iced over wears the Help mark.
-    const dock = frozenArenaV7({
-      factions: ["ORIGINAL", "ICE_FOLK"],
-      technologies: [["SHORECRAFT"], ["SHORECRAFT"]],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } }],
-      ice: [{ at: { x: 4, y: 3 }, seat: 1 }],
-    });
-    const dockView = viewOf(dock);
-    const opener = unitAt(dockView, { x: 4, y: 2 });
-    const opened = crackIcePickTargetsV7(
-      dockView,
-      queryPlayerCommandsV7(dockView),
-      { kind: "CRACK_ICE", unitId: opener.id },
-    ).find((target) => same(target.at, { x: 4, y: 3 }));
-    expect(opened).toMatchObject({
-      previewLabel: "Open the dock",
-      highlight: "SUPPORT",
-    });
-    expect(opened?.semanticLabel).toBe(
-      "Crack Ice: The ice breaks into open water: the dock is open again. Choose a highlighted ice tile to crack.",
+    expect(byTile(at.middle)?.semanticLabel).toBe(
+      "Crack Ice: The ice breaks into open water. Choose a highlighted ice tile to crack.",
     );
-  });
-
-  it("names thick ice's first crack and breaks a cracked tile", () => {
-    const view = viewOf(iceCrackUiFixtureV7({ thick: true }));
-    const warrior = unitAt(view, at.cracker);
-    const targets = crackIcePickTargetsV7(view, queryPlayerCommandsV7(view), {
-      kind: "CRACK_ICE",
-      unitId: warrior.id,
-    });
-    const label = (coord: CoordV7) =>
-      targets.find((target) => same(target.at, coord))?.previewLabel;
-    expect(label(at.west)).toBe("Break");
-    expect(label(at.middle)).toBe("Crack · 1 more breaks it");
-    expect(label(at.east)).toBe("Crack · 1 more breaks it");
+    // (The viewer's own iced-over dock, "Open the dock", and thick ice's
+    // "Crack · 1 more breaks it" went with the naval branch rebuilt,
+    // `pulp_wars-tzk6`, 7r137: no dock is iced and no ice is thick.)
   });
 
   it("gives the first failing reason, and no button to the Ice Folk", () => {
@@ -252,9 +222,9 @@ describe("Crack Ice on the board", () => {
     );
   });
 
-  it("is announced, flashed and heard when the ice breaks or cracks", () => {
-    for (const thick of [false, true]) {
-      const state = iceCrackUiFixtureV7({ thick });
+  it("is announced, flashed and heard when the ice breaks", () => {
+    {
+      const state = iceCrackUiFixtureV7();
       const before = viewOf(state);
       const warrior = unitAt(before, at.cracker);
       const command: CommandV7 = {
@@ -272,11 +242,11 @@ describe("Crack Ice on the board", () => {
         result.events,
       );
       const notice = frozenSeaBoundaryNoticeV7(envelope.events, before, after);
-      expect(notice?.text).toBe(thick ? "The ice cracked" : "The ice broke");
+      expect(notice?.text).toBe("The ice broke");
       expect(notice?.toast).toBe(false);
       const steps = corePresentationPlanV7(before, envelope, after);
       const cue = steps.find((step) => step.kind === "ICE_FOLK");
-      const effect = thick ? "ICE_CRACK" : "ICE_BREAK";
+      const effect = "ICE_BREAK";
       expect(cue).toMatchObject({
         effect,
         cells: [at.east],
@@ -315,17 +285,15 @@ describe("Crack Ice on the board", () => {
 });
 
 describe("building on the ice", () => {
-  it("names the Ice Folk dock the Ice Harbour and the Great Harbour", () => {
-    expect(factionBuildingV7("PORT", "ICE_FOLK")?.name).toBe("Ice Harbour");
-    expect(factionBuildingV7("SHIPYARD", "ICE_FOLK")?.name).toBe(
-      "Great Harbour",
-    );
+  it("keeps an Ice Folk dock a plain Port or Shipyard (no Ice Harbour since 7r137)", () => {
+    expect(factionBuildingV7("PORT", "ICE_FOLK")).toBeNull();
+    expect(factionBuildingV7("SHIPYARD", "ICE_FOLK")).toBeNull();
     expect(factionBuildingV7("PORT", "ORIGINAL")).toBeNull();
   });
 
-  it("draws every building on ice on the snow pad, but the Fishing Hole", () => {
-    for (const greatHarbour of [false, true]) {
-      const view = viewOf(iceBuildUiFixtureV7({ greatHarbour }));
+  it("draws every building on ice on the snow pad, but the Fishing Hole; a captured dock stays a plain dock on the water", () => {
+    for (const shipyard of [false, true]) {
+      const view = viewOf(iceBuildUiFixtureV7({ shipyard }));
       const entries = plan(view, null).entries.filter(
         (entry) => entry.kind === "IMPROVEMENT",
       );
@@ -338,13 +306,23 @@ describe("building on the ice", () => {
         onIce: true,
       });
       expect(on(at.harbour)).toMatchObject({
-        artSubject: greatHarbour
-          ? "IMPROVEMENT:ICE_FOLK:SHIPYARD"
-          : "IMPROVEMENT:ICE_FOLK:PORT",
-        label: greatHarbour ? "Great Harbour" : "Ice Harbour",
-        onIce: true,
+        artSubject: shipyard ? "IMPROVEMENT:SHIPYARD" : "IMPROVEMENT:PORT",
+        label: shipyard ? "Shipyard" : "Port",
       });
+      expect(on(at.harbour)?.onIce).toBeUndefined();
     }
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
+    // raised on the hole stands on the pad.
+    const fortress = plan(
+      viewOf(iceBuildUiFixtureV7({ fortress: true })),
+      null,
+    ).entries.find(
+      (entry) => entry.kind === "IMPROVEMENT" && same(entry.at, at.hole),
+    );
+    expect(fortress).toMatchObject({
+      artSubject: "IMPROVEMENT:ICE_FOLK:ICE_FORTRESS",
+      onIce: true,
+    });
     // A building on land has no pad.
     const land = plan(viewOf(iceCrackUiFixtureV7()), null).entries.filter(
       (entry) => entry.kind === "IMPROVEMENT" && entry.onIce === true,

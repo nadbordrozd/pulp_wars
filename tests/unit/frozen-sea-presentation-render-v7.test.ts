@@ -23,11 +23,7 @@ import {
   type BoardRenderPlanV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { seaIceCellsV7 } from "../../src/render/canvas/frozen-sea-board-plan-v7";
-import {
-  SEA_ICE_CRACKS_V7,
-  drawSeaIceCellV7,
-  seaIceCracksV7,
-} from "../../src/render/canvas/frozen-sea-canvas-v7";
+import { drawSeaIceCellV7 } from "../../src/render/canvas/frozen-sea-canvas-v7";
 import {
   ICE_FOLK_EFFECT_DURATIONS_V7,
   drawIceFolkFeedbackV7,
@@ -37,7 +33,7 @@ import type { IceFolkBoardArtV7 } from "../../src/render/canvas/ice-folk-canvas-
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import { TARGET_HIGHLIGHT_FAMILIES_V7 } from "../../src/render/canvas/target-highlight-v7";
 import {
-  ICE_COVER_PREVIEW_V7,
+  HARPOON_PREVIEW_V7,
   ICE_FOR_SHIPS_HELP_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
@@ -46,7 +42,6 @@ import {
   frozenSeaCombatNotesV7,
   iceChipLabelV7,
   iceChipTooltipV7,
-  iceCrackStageV7,
 } from "../../src/render/frozen-sea-presentation-v7";
 import { technologySubjectV7 } from "../../src/assets/chibi-ui-art-v7";
 import { galleryUnitCellV7 } from "../../src/render/gallery-presentation-v7";
@@ -240,28 +235,25 @@ describe("Freeze on the board plan", () => {
 });
 
 describe("ice on the board plan", () => {
-  it("gives each ice cell its depth, its open-water sides and its stage", () => {
+  it("gives each ice cell its depth and its open-water sides", () => {
     const view = viewOf(frozenShipUiFixtureV7());
     const cells = seaIceCellsV7(view);
     expect(cells.size).toBe(view.ice.length);
-    // Three tiles in a row (the frozen sea redesign): sound, sound, and
-    // cracked thick ice.
-    const [first, second, third] = FROZEN_UI_V7.melting.map((coord) =>
+    // Three tiles in a row. (Their crack stages and thick ice's snow went
+    // with Glacier: the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
+    const [first, , third] = FROZEN_UI_V7.melting.map((coord) =>
       cells.get(at(coord)),
     );
-    expect([first?.stage, second?.stage, third?.stage]).toEqual([0, 0, 2]);
+    expect(first).not.toHaveProperty("stage");
+    expect(first).not.toHaveProperty("permanent");
     expect(first?.depth).toBe("DEEP");
     // The row is ice east of the first tile and west of the third.
     expect((first?.openWater ?? 0) & SEA_ICE_EDGE_EAST_V7).toBe(0);
     expect((first?.openWater ?? 0) & SEA_ICE_EDGE_WEST_V7).not.toBe(0);
     expect((third?.openWater ?? 0) & SEA_ICE_EDGE_WEST_V7).toBe(0);
-    // Thick ice (Glacier) by the capital: snow, no cracks.
+    // The ice by the capital.
     const permanent = cells.get(at(FROZEN_UI_V7.permanent));
-    expect(permanent).toMatchObject({
-      depth: "SHALLOW",
-      permanent: true,
-      stage: 0,
-    });
+    expect(permanent).toMatchObject({ depth: "SHALLOW" });
     // The plan carries the cells on their TERRAIN entries, and no Snow
     // stand-in on water any more.
     const built = plan(view, null);
@@ -271,64 +263,18 @@ describe("ice on the board plan", () => {
     for (const entry of iced) expect(entry.snow).toBeUndefined();
   });
 
-  it("maps a crack to the crack stage (the redesign: no melting stages)", () => {
-    expect(iceCrackStageV7({ cracked: false })).toBe(0);
-    expect(iceCrackStageV7({ cracked: true })).toBe(2);
-    for (const stage of [0, 1, 2, 3] as const) {
-      const cracks = seaIceCracksV7({ x: 4, y: 6 }, stage);
-      expect(cracks).toHaveLength(SEA_ICE_CRACKS_V7.lines[stage]);
-      for (const crack of cracks) {
-        expect(crack).toHaveLength(SEA_ICE_CRACKS_V7.segments[stage] + 1);
-        for (const [x, y] of crack) {
-          expect(x).toBeGreaterThanOrEqual(0.08);
-          expect(x).toBeLessThanOrEqual(0.92);
-          expect(y).toBeGreaterThanOrEqual(0.08);
-          expect(y).toBeLessThanOrEqual(0.92);
-        }
-      }
-    }
-    // Deterministic per cell.
-    expect(seaIceCracksV7({ x: 4, y: 6 }, 3)).toEqual(
-      seaIceCracksV7({ x: 4, y: 6 }, 3),
-    );
-    expect(seaIceCracksV7({ x: 4, y: 6 }, 3)).not.toEqual(
-      seaIceCracksV7({ x: 5, y: 6 }, 3),
-    );
-  });
-
-  it("labels the tile's ice with its thickness, without coordinates or turns", () => {
+  it("labels the tile's ice plainly, without coordinates, turns or a thickness", () => {
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): every ice tile
+    // reads the same (no thick ice), so the chip takes no entry.
     const view = viewOf(frozenShipUiFixtureV7());
-    const melting = view.ice.find(
-      (entry) => at(entry.at) === at(FROZEN_UI_V7.melting[2]),
-    );
-    const permanent = view.ice.find(
-      (entry) => at(entry.at) === at(FROZEN_UI_V7.permanent),
-    );
-    if (melting === undefined || permanent === undefined)
-      throw new Error("ice missing");
-    expect(iceChipLabelV7(melting)).toBe("Ice · cracked");
-    expect(iceChipLabelV7(permanent)).toBe("Ice · thick");
-    expect(iceChipTooltipV7(view, melting)).toContain(
-      "Cracked: one more Crack breaks it.",
-    );
-    expect(iceChipTooltipV7(view, permanent)).toContain(
-      "Thick: two Cracks break it.",
-    );
-    for (const entry of view.ice)
-      expect(iceChipTooltipV7(view, entry)).not.toMatch(/turn|melt/i);
-    // The viewer has Black Ice (every technology): its own ice says so.
-    expect(iceChipTooltipV7(view, melting)).toContain("Black Ice:");
-    // Another seat's ice does not (its research is private).
-    const victim = viewOf(frozenShipUiFixtureV7({ victim: true }));
-    const theirs = victim.ice[0];
-    if (theirs === undefined) throw new Error("ice missing");
-    expect(iceChipTooltipV7(victim, theirs)).not.toContain("Black Ice");
+    expect(view.ice.length).toBeGreaterThan(0);
+    expect(iceChipLabelV7()).toBe("Ice");
+    expect(iceChipTooltipV7()).not.toMatch(/turn|melt|thick|Black Ice/i);
     // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132).
-    expect(iceChipTooltipV7(victim, theirs)).toContain(
+    expect(iceChipTooltipV7()).toContain(
       "only Ice Folk units and units that fly or stride go onto it; other units crack it.",
     );
-    for (const entry of view.ice)
-      expect(iceChipTooltipV7(view, entry)).not.toMatch(COORDINATE);
+    expect(iceChipTooltipV7()).not.toMatch(COORDINATE);
   });
 });
 
@@ -442,16 +388,17 @@ describe("a Frozen ship (the Ice Folk freeze rework, `pulp_wars-s55m.1`)", () =>
       noRetaliationReason: "FROZEN",
       damageToAttacker: 0,
     });
-    expect(frozenSeaCombatNotesV7(preview)).toEqual([]);
-    // The enemy's view of a Yeti on its own ice with Glacier: cover.
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Yeti's seat
+    // has every Naval technology, Harpoons among them: its preview row.
+    expect(preview.harpoon).toBe(true);
+    expect(frozenSeaCombatNotesV7(preview)).toEqual([HARPOON_PREVIEW_V7]);
+    expect(HARPOON_PREVIEW_V7).toBe("Harpoon +1");
+    expect(frozenSeaCombatNotesV7({ ...preview, harpoon: false })).toEqual([]);
+    // The enemy's view of a Yeti on its own ice: no cover (Glacier's went).
     const enemy = viewForV7(state, ship.ownerId);
     expect(
-      enemy.unitStats.find((entry) => entry.unitId === yeti.id)?.iceFolk
-        ?.iceCover,
-    ).toBe(true);
-    expect(frozenSeaCombatNotesV7({ ...preview, iceCover: true })).toEqual([
-      ICE_COVER_PREVIEW_V7,
-    ]);
+      enemy.unitStats.find((entry) => entry.unitId === yeti.id)?.iceFolk,
+    ).not.toHaveProperty("iceCover");
   });
 });
 
@@ -569,34 +516,25 @@ describe("frozen-sea marks on the canvas", () => {
     depth: "DEEP",
     openWater: SEA_ICE_EDGE_EAST_V7,
     variant: 0,
-    permanent: false,
-    stage: 3,
-    turnsLeft: 1,
   } as const;
 
-  it("draws the cut sheet and its cracks", () => {
+  it("draws the cut sheet, and no cracks (Glacier's cracked ice went with 7r137)", () => {
     const { context, named } = recorder();
     const tile = { id: "ice" } as unknown as CanvasImageSource;
     drawSeaIceCellV7(context, cell, { x: 3, y: 4 }, ice, tile, { zoom: 0.625 });
     expect(named("drawImage")).toEqual([["drawImage", tile, 100, 200, 80, 80]]);
-    // Three cracks, each stroked twice (a pale edge, then the dark line).
-    expect(named("stroke")).toHaveLength(6);
+    expect(named("stroke")).toHaveLength(0);
   });
 
-  it("draws a code floe without a sheet, snow on permanent ice, no cracks", () => {
+  it("draws a code floe without a sheet, with no snow and no cracks", () => {
     const { context, named } = recorder();
-    drawSeaIceCellV7(
-      context,
-      cell,
-      { x: 3, y: 4 },
-      { ...ice, permanent: true, stage: 0 },
-      null,
-      { zoom: 0.625 },
-    );
+    drawSeaIceCellV7(context, cell, { x: 3, y: 4 }, ice, null, {
+      zoom: 0.625,
+    });
     expect(named("drawImage")).toEqual([]);
     // The floe is held back from its open east side only.
     expect(named("fillRect")).toEqual([["fillRect", 100, 200, 76, 80]]);
-    expect(named("ellipse")).toHaveLength(3);
+    expect(named("ellipse")).toHaveLength(0);
     expect(named("stroke")).toHaveLength(1);
   });
 
@@ -620,11 +558,10 @@ describe("frozen-sea marks on the canvas", () => {
       });
       return named;
     };
-    // LEGACY: every ice cell is a code floe (one ellipse set per permanent
-    // cell).
+    // LEGACY: every ice cell is a code floe (a fill each).
     const iced = viewOf(frozenShipUiFixtureV7());
     const named = draw(plan(iced, null));
-    expect(named("ellipse").length).toBeGreaterThanOrEqual(3);
+    expect(named("fillRect").length).toBeGreaterThanOrEqual(iced.ice.length);
     // Skating is plain movement (`pulp_wars-ecnj`, 7r135: the slide's
     // arrow is gone). With the Sled selected, the Move mark on the ice
     // costs the canvas exactly what a Move mark on land costs: leaving
@@ -677,14 +614,21 @@ describe("frozen-sea words", () => {
       "Crack Ice",
       "Build",
       "No ships",
-      "Black Ice",
-      // (Hoarfrost's longer Freeze line went with `FREEZE`, `pulp_wars-xv0t`.)
-      "Glacier",
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the swimming
+      // Walrus, Harpoons, the Ice Fortress and Under the Ice (Black Ice and
+      // Glacier before; Hoarfrost's line went with `FREEZE`).
+      "Swim",
+      "Harpoons",
+      "Ice Fortress",
+      "Under the Ice",
     ]);
     for (const [, sentence] of [...ICE_HELP_RULES_V7, ICE_FOR_SHIPS_HELP_V7]) {
       expect(sentence.endsWith(".")).toBe(true);
       expect(sentence).not.toMatch(COORDINATE);
     }
+    // The rebuilt branch's lines carry at most one number each.
+    for (const [, sentence] of ICE_HELP_RULES_V7.slice(-4))
+      expect((sentence.match(/\d+/g) ?? []).length).toBeLessThanOrEqual(1);
     expect(ICE_SEA_DOG_GOAL_V7).toBe("Hold the ice with 5 units at once.");
   });
 

@@ -25,7 +25,57 @@
 >   Raider's equal on every number (with Glide for Prowl); it has 11 HP
 >   (12 before). Every other unit already gave way somewhere and is
 >   unchanged. The pass took `7r136`, so beads 4 and 5 below move to
->   `7r137` and `7r138`. Beads 4 to 6 are not built.
+>   `7r137` and `7r138`.
+> - **Bead 4 is done** in `pulp-wars-poc-7r137` (`pulp_wars-tzk6`): the
+>   naval branch of 3.4. Rime trains the Walrus, which swims; Pack Ice
+>   takes it (and the freezes) onto Deep Water; Harpoons (Seamanship) gives
+>   +1 Attack against units afloat; the Ice Fortress (Naval Engineering)
+>   upgrades a Fishing Hole; Under the Ice (Submersibles) gives the dive,
+>   +1 population per hole and Harbours. Black Ice, Hoarfrost, Glacier,
+>   thick and half-cracked ice, the ice cover, the Ice Harbour and the
+>   Great Harbour are gone; one Crack breaks any ice; a captured dock stays
+>   a plain dock on open water. Beads 5 and 6 are not built.
+> - **Decisions taken in bead 4** (the user, 2026-11-09: "the naval branch
+>   should give the ice folk equivalent advantages to what it gives to the
+>   other factions - a way to move over water, attack land and ships and
+>   exploit resources. It can give extra abilities such as skating"; and
+>   "walrus freezing units that hit it is fine"): (1) **The Walrus moves to
+>   Rime and is amphibious** (the open question of 3.4): in land form it
+>   enters open Shallow Water, and Deep Water with its controller's Pack
+>   Ice, never a dock; a water step costs 1 point (no Glide on water); from
+>   the water it attacks land units and ships; it keeps its 4 Coins (not
+>   the 5 of the table), its stats and Frostbite. Pack Ice is needed to
+>   enter Deep Water, not to stand on it (a Walrus a Brain released there
+>   may swim back). (2) **Zones of control:** a swimming Walrus takes the
+>   zone of control of hostile ships as any unit does and exerts its own as
+>   a land unit; it never blockades a dock and never advances onto open
+>   water after a kill; a freeze over its tile leaves the water open. (3)
+>   **Harpoons** apply to a land-form attacker of the Ice Folk kind whose
+>   controller has Seamanship (`HARPOON_ATTACK2_V7` 2 half-points), on a
+>   defender in `NAVAL` or `EMBARKED` form; the preview flag `harpoon`
+>   takes `iceCover`'s slot. (4) **The Ice Fortress** fortifies only its
+>   owner's unit (the Field Defense part, level 1), lengthens the range of
+>   any land-form unit with range 2 or more by 1, and its population (2, or
+>   3 with Under the Ice) is fixed like a hole's (no ship can blockade ice).
+>   `BUILD_ICE_FORTRESS` is appended last to the command order (no ordinal
+>   moved). (5) **Under the Ice** also gives Harbours (+1 per captured
+>   dock), and the dive works between holes and Fortresses. A hostile
+>   seat's dive is assumed in the public threat estimate (research is
+>   private). (6) **Missions:** a seat that forbids Shorecraft (I1, I2, I5,
+>   I6, `CULT_5`, `UNDEAD_6`, `HUMAN_4`, `DWARF_2`, `LAB_ICE_FOLK_MID`)
+>   can no longer train Walruses; I3 (Rime, Pack Ice, Naval Engineering)
+>   now trains them and builds Ice Fortresses, and its third hint is "A
+>   Walrus swims: send it at the boats." The retune is bead 6's. (7) **The
+>   Normal AI** researches Harpoons once a hostile unit afloat is within 3
+>   of its territory, Under the Ice once it has two holes and the Ice
+>   Fortress once it has a hole and sees a ship (both last), asks for Rime
+>   as the Walrus's technology in its army order, upgrades the hole nearest
+>   a visible hostile ship first, and moves the Walrus by water paths;
+>   every Black Ice and thick-ice rule of the AI is gone. (8) **Art:** the
+>   Ice Fortress sprite and the three icons are new PixelLab takes; the
+>   three icons replace the Black Ice, Glacier and Hoarfrost icons in place
+>   (their asset IDs keep the old names), and the Ice Harbour and Great
+>   Harbour masters are kept on disk but no longer drawn.
 > - **Decisions taken in bead 3:** (1) **Glide and a Road:** a step that
 >   leaves a usable Road node and also Glides costs one half-point, never
 >   less (the two never add up; a Road is never on ice, so they meet only
@@ -375,15 +425,15 @@ seafaring factions.
 | `NAVAL_ENGINEERING` |    3 | **Ice Fortress**  | upgrade one Fishing Hole per city to an Ice Fortress (5 Coins): +1 population more; an own unit on it is fortified, and a ranged unit on it reaches 1 tile further | Shipyard (+1, one per city), Battleship     |
 | `SUBMERSIBLES`      |    3 | **Under the Ice** | the dive between Fishing Holes (moved here from Rime); every active Fishing Hole, Ice Fortress and captured dock gives +1 population                               | Submarine (stealth), Harbours (+1 per dock) |
 
-- **The Walrus** (`GUARD` role, now at Rime): 5 Coins (4 now), 16 HP,
+- **The Walrus** (`GUARD` role, now at Rime): 4 Coins (bead 4 kept the
+  price), 16 HP,
   Attack 1.5, Defense 2, Move 1, melee, no attack after moving, captures,
   Glides, Frostbite. The Ice Folk Fortification node (Deep Winter) keeps
-  Deep Winter and no longer unlocks a unit. **Open for bead 4:** this
-  proposal made the Walrus Rime's unit as the bridge builder (Cold Wake);
-  since bead 1 the Walrus has no Cold Wake (the Giant has it), so the
-  Witch's Cold Snap and the Giant build the crossings, and bead 4 decides
-  whether the Walrus still moves to Rime (as a sea-ice defender) or stays
-  at Fortification.
+  Deep Winter and no longer unlocks a unit. **Decided in bead 4:** the
+  Walrus moves to Rime as an **amphibious** unit: it swims open Shallow
+  Water (Deep Water with Pack Ice) in land form, one point a tile, and
+  attacks land units and ships from the water (the Ice Folk's way over the
+  water, as a boat is for the seafaring factions).
 - **Harpoons** is a combat modifier like the Ram, on every Ice Folk attack
   on a unit in `NAVAL` or `EMBARKED` form (the preview row "Harpoon +1").
   A Yeti harpoons a Patrol Boat for 8 instead of 5; a Frozen boat at 10 HP
@@ -539,16 +589,17 @@ freeze, Fishing Holes, Sea Dog, and the Wreck salvage.
 
 ### 4.1 The combos this kit is built for
 
-| Combo                | How it plays                                                                                                                                            | Gate                        |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| Freeze, then Shatter | any freezer Freezes; the next melee blow kills a unit it leaves at 1 to 3 HP, with no strike back; Snow Hunters add Cold Blood from range               | the freezers' techs         |
-| Frost and Sweep      | the Witch's Cold Snap Freezes her ring; a Mammoth's blow hits three Frozen units at full damage, none strikes back, each one left at 3 or less shatters | Administration + Metallurgy |
-| Snowball and Smash   | the Golem Freezes a big unit at range 3; the Frost Giant's Glacial Smash kills it at 8 HP or less                                                       | Sawmilling + a level-5 city |
-| The walking bridge   | a Frost Giant walks out on the sea laying a 3-wide road; ships next to it are Frozen; Yetis and Sleds glide out and harpoon them; boats shatter         | Rime + a level-6 city       |
-| Winter road          | Cold Wakes and Cold Snaps leave Snow on neutral land: the army glides 2 tiles a turn (Sled 4) with Snow cover, and enemy riders stop on entering        | Rime / Administration       |
-| Dive and freeze      | under the ice, a unit dives to a far Fishing Hole and a Witch beside it freezes the ring (a Walrus's Cold Wake before bead 1; revisit in bead 4)        | Under the Ice               |
-| Sea battery          | a Snow Golem on an Ice Fortress shoots 4 tiles, fortified, and Freezes each ship it hits for the Sleds to harpoon                                       | Ice Fortress + Sawmilling   |
-| Ice is trade         | the bridges between cities are the sea links: every ice road is also income, and worth guarding                                                         | Rime                        |
+| Combo                | How it plays                                                                                                                                                   | Gate                        |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Freeze, then Shatter | any freezer Freezes; the next melee blow kills a unit it leaves at 1 to 3 HP, with no strike back; Snow Hunters add Cold Blood from range                      | the freezers' techs         |
+| Frost and Sweep      | the Witch's Cold Snap Freezes her ring; a Mammoth's blow hits three Frozen units at full damage, none strikes back, each one left at 3 or less shatters        | Administration + Metallurgy |
+| Snowball and Smash   | the Golem Freezes a big unit at range 3; the Frost Giant's Glacial Smash kills it at 8 HP or less                                                              | Sawmilling + a level-5 city |
+| The walking bridge   | a Frost Giant walks out on the sea laying a 3-wide road; ships next to it are Frozen; Yetis and Sleds glide out and harpoon them; boats shatter                | Rime + a level-6 city       |
+| Winter road          | Cold Wakes and Cold Snaps leave Snow on neutral land: the army glides 2 tiles a turn (Sled 4) with Snow cover, and enemy riders stop on entering               | Rime / Administration       |
+| Dive and freeze      | under the ice, a unit dives to a far Fishing Hole and a Witch beside it freezes the ring (a Walrus's Cold Wake before bead 1)                                  | Under the Ice               |
+| Walrus raid          | Walruses swim out to a boat (Harpoons +1) and a Witch's Cold Snap Freezes it first; a boat that strikes a Walrus from the next tile is Frozen by its Frostbite | Rime + Seamanship           |
+| Sea battery          | a Snow Golem on an Ice Fortress shoots 4 tiles, fortified, and Freezes each ship it hits for the Sleds to harpoon                                              | Ice Fortress + Sawmilling   |
+| Ice is trade         | the bridges between cities are the sea links: every ice road is also income, and worth guarding                                                                | Rime                        |
 
 ### 4.2 Why it is not always-winning
 
@@ -630,7 +681,7 @@ mission needs a look; hand play (`play-text`) needs the user's go-ahead.
 | I1 The Warm Mountain     | Rime held the pocket "behind Cold Snaps, Frost Bolts and the Sled's bolas"; Frost Bolt and Bolas are gone (the Walrus keeps Frostbite). Hint "Frozen enemies can't act: freeze first, then strike." still true. Likely a little harder; replay first.                                                                           |
 | I2 Waking the Giants     | the Frost Giant decides it; it keeps its wake (now also tiles) but loses the shards that froze the Abbot. Hint "freeze, then smash" still true. Replay.                                                                                                                                                                         |
 | I3 The Frozen Strait     | built on Freeze lines and Hoarfrost. Its seat starts with Rime, Pack Ice and Naval Engineering (now the Ice Fortress) and a Walrus; its Witch now builds the bridge with Cold Snaps; the Steam Launches' Port can no longer be iced shut. Hint "Freeze toward an enemy ship to Freeze it for a turn." must change. Full retune. |
-| I4 A Year Without Summer | won by Walrus Frostbite against Knights. Frostbite stays (decided during bead 1), so the hint "Walruses freeze whoever strikes them up close." stays true; the Walrus may move to Rime in bead 4 (the seat starts with Shorecraft). Replay.                                                                                     |
+| I4 A Year Without Summer | won by Walrus Frostbite against Knights. Frostbite stays (decided during bead 1), so the hint "Walruses freeze whoever strikes them up close." stays true; the Walrus moved to Rime in bead 4 (the seat starts with Shorecraft, so it trains Walruses). Replay.                                                                 |
 | I5 The Ember Lodge       | the Giant's shards go (it won I5 with Glacial Smash, which stays); "Hoarfrost Camp" is a place name and stays; hint "A giant's blow shatters a badly hurt Frozen enemy." still true.                                                                                                                                            |
 | I6 The Winter Crown      | hint "A Sled's bolas holds a daemon still for a turn." must change (bead 1: "An Ice Witch's Cold Snap holds a daemon still for a turn."); the Sleds lose the bolas that held the Horrors. Replay.                                                                                                                               |
 

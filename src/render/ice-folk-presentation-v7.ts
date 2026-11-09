@@ -394,7 +394,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       FROZEN_LABEL_V7,
-      `a ${COLD_SNAP_LABEL_V7}, a ${COLD_WAKE_LABEL_V7}, a ${joinOr(snowballers)}'s ${SNOWBALL_LABEL_V7}, a ${joinOr(breathers)}'s ${FROST_BREATH_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act and does not strike back until it thaws at the end of its owner's next turn. It can be frozen again at once.`,
+      `a ${COLD_SNAP_LABEL_V7}, a ${COLD_WAKE_LABEL_V7}, a ${joinOr(snowballers)}'s ${SNOWBALL_LABEL_V7}, a ${joinOr(breathers)}'s ${FROST_BREATH_LABEL_V7}, or Frostbite freezes an enemy: it cannot move or act and does not strike back until it thaws at the end of its owner's next turn. It can be frozen again at once.`,
     ],
     [
       "Shatter",
@@ -1112,7 +1112,7 @@ export function moveIsDiveV7(
 
 /**
  * Section 13.2 log lines of one projected boundary: every freeze (Cold
- * Snap, Cold Wake, Frostbite, Frost Breath, Black Ice), a
+ * Snap, Cold Wake, Snowball, Frostbite, Frost Breath), a
  * Stampede, a Shatter, and a Trample. A match without an Ice Folk seat
  * never emits these events, so its notices are unchanged.
  */
@@ -1171,9 +1171,6 @@ export function iceFolkBoundaryNoticeV7(
           parts.push(
             `${who} ${sourceName("KNIGHT")}'s ${FROST_BREATH_LABEL_V7} froze ${what}`,
           );
-          break;
-        case "BLACK_ICE":
-          parts.push(`${who} Black Ice froze ${what}`);
           break;
       }
     } else if (event.kind === "COMBAT_RESOLVED") {

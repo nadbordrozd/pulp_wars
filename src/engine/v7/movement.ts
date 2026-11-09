@@ -5,6 +5,9 @@ import {
   MASS_DRAG_TILES_V7,
   canCrossWaterV7,
   canEnterTerrainV7,
+  isFishingHoleImprovementV7,
+  swimEntryV7,
+  unitSwimsV7,
   hoverLaunchAllowedV7,
   flyerMayStandOnSiteV7,
   isIceAtV7,
@@ -345,6 +348,8 @@ function validateMovementPathCoreV7(
   let currentFrozen = frozenAt(current);
   const iceFolkKind = unitKindWalksIceV7(state, unit);
   const summoned = unitIsSummonedV7(unit);
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a Walrus swims.
+  const swims = unitSwimsV7(state, unit, mode);
   // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 6.2 and 7.7):
   // a Stuck unit's Move has at most one step; a Chocolate Bunny's Move may
   // contain one hop.
@@ -528,13 +533,15 @@ function validateMovementPathCoreV7(
       player.researchedTechs.includes("SHORECRAFT") &&
       isActivePortV7(state, step, unit.ownerId);
     // Terrain entry through the shared helper: a land-form unit stands on
-    // land it can enter, embarks at an own active Port, or (a machine)
-    // crosses water; an afloat unit stays on water it can enter.
+    // land it can enter, embarks at an own active Port, swims (a Walrus,
+    // `pulp_wars-tzk6`, 7r137), or (a machine) crosses water; an afloat
+    // unit stays on water it can enter.
     const engineeringRequired =
       unit.form === "LAND"
         ? water
           ? (!autoEmbark &&
               !hoverLaunch &&
+              !(swims && swimEntryV7(tile)) &&
               (summoned ||
                 !canCrossWaterV7({
                   terrain: tile.terrain,
@@ -1310,6 +1317,9 @@ function validatePlayerMovementPathCoreV7(
   let currentFrozen = publicFrozenAt(current);
   const iceFolkKind = unitKindWalksIceV7(view, unit);
   const summoned = unitIsSummonedV7(unit);
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a Walrus swims (a
+  // public body rule; Deep Water reads `navigation` as every unit does).
+  const swims = unitSwimsV7(view, unit, mode);
   // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): exact for the
   // viewer's own units (and those it controls); another seat's research is
   // private, so a unit whose kind's tree grants Hover Pods is assumed to
@@ -1401,6 +1411,7 @@ function validatePlayerMovementPathCoreV7(
           water &&
           !autoEmbark &&
           !hoverLaunch &&
+          !(swims && swimEntryV7(tile)) &&
           (summoned ||
             !canCrossWaterV7({
               terrain: tile.terrain,
@@ -1988,13 +1999,20 @@ const chebyshev = (a: CoordV7, b: CoordV7) =>
  * body rule) on the ground (`unitIsIceFolkGroundV7`; the Frost Wyrm
  * flies and never dives, `pulp_wars-s55m.4`), stands on a Fishing Hole in
  * its owner's territory, and has not moved (no Escape Move), neither
- * Grabbed nor Dragged.
+ * Grabbed nor Dragged. The naval branch rebuilt (`pulp_wars-tzk6`, 7r137):
+ * and its controller has Under the Ice (a unit-level unlock); an Ice
+ * Fortress is a Fishing Hole for the dive.
  */
 function canonicalDiverV7(state: GameStateV7, unit: UnitStateV7): boolean {
   if (
     state.ice.length === 0 ||
     unit.form !== "LAND" ||
     !unitIsIceFolkGroundV7(state, unit) ||
+    !unitCapabilitiesV7(
+      state,
+      unit,
+      ownerResearchedTechsV7(state, unit.ownerId),
+    ).underTheIce ||
     unit.activation.moved ||
     unit.activation.escapeAvailable ||
     unit.activation.overrunActive ||
@@ -2014,7 +2032,7 @@ function canonicalOwnFishingHoleV7(
   const tile = tileAtV7(state.board, at);
   return (
     tile !== undefined &&
-    tile.improvement === "FISHING_HOLE" &&
+    isFishingHoleImprovementV7(tile.improvement) &&
     tileOwner(state, tile) === ownerId
   );
 }
@@ -2094,7 +2112,7 @@ function canonicalDiveDestinationsV7(
   return state.board.tiles
     .filter(
       (tile) =>
-        tile.improvement === "FISHING_HOLE" &&
+        isFishingHoleImprovementV7(tile.improvement) &&
         chebyshev(tile.at, unit.at) > 1 &&
         tileOwner(state, tile) === unit.ownerId,
     )
@@ -2105,7 +2123,9 @@ function canonicalDiveDestinationsV7(
  * Ice Folk movement (`pulp_wars-s55m.2`): the dive read from a view (the
  * same rule as `canonicalDiveV7`): Fishing Holes and territory are public
  * on explored tiles, and an own unit's activation is exact; a hostile
- * unit's dive reach is estimated from its public activation.
+ * unit's dive reach is estimated from its public activation. Under the Ice
+ * is exact for the viewer's own units and assumed for another seat's (its
+ * research is private, as for Hover Pods).
  */
 function publicDiverV7(
   view: PlayerViewV7,
@@ -2116,6 +2136,9 @@ function publicDiverV7(
     context.ice.size === 0 ||
     unit.form !== "LAND" ||
     !unitIsIceFolkGroundV7(view, unit) ||
+    (unit.ownerId === view.viewer.id &&
+      !unitCapabilitiesV7(view, unit, view.viewer.researchedTechs)
+        .underTheIce) ||
     unit.activation.moved ||
     unit.activation.escapeAvailable ||
     unit.activation.overrunActive ||
@@ -2135,7 +2158,7 @@ function publicOwnFishingHoleV7(
   const tile = publicTileAt(view, at);
   return (
     tile?.explored === true &&
-    tile.improvement === "FISHING_HOLE" &&
+    isFishingHoleImprovementV7(tile.improvement) &&
     tile.territoryOwnerId === ownerId
   );
 }
@@ -2185,7 +2208,7 @@ function publicDiveDestinationsV7(
     .filter(
       (tile) =>
         tile.explored &&
-        tile.improvement === "FISHING_HOLE" &&
+        isFishingHoleImprovementV7(tile.improvement) &&
         tile.territoryOwnerId === unit.ownerId &&
         chebyshev(tile.at, unit.at) > 1 &&
         context.unitsByPosition

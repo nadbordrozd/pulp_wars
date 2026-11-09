@@ -635,8 +635,6 @@ import {
   iceColdSnapTilesScoreV7,
   iceCrackScoreV7,
   iceCrossingMoveV7,
-  iceLandingRejectedV7,
-  iceMoveOntoHostileIceRejectedV7,
   iceSeaCrossingTechV7,
   iceSeaPlanV7,
   iceSeaResearchV7,
@@ -12438,29 +12436,24 @@ function icePlanV7(context: PolicyContextV7): IcePlanV7 | null {
 
 /**
  * What every seat refuses against the ice (false at once in a view without
- * ice): a ship's Move into the Freeze reach of a seat that has been seen to
- * Freeze, a land unit's Move that ends on the ice of a hostile Ice Folk
- * seat, and a landing on such ice with a landing beside it on offer.
+ * ice): a ship's Move into the freeze reach of a hostile Witch or Frost
+ * Giant. (The refusal to end a land Move or a landing on hostile ice went
+ * with Black Ice: the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
  */
 function frozenSeaRejectsV7(
   context: PolicyContextV7,
   command: CommandV7,
 ): boolean {
   if (context.view.ice.length === 0) return false;
-  if (command.kind === "DISEMBARK")
-    return iceLandingRejectedV7(
-      context.view,
-      frozenSeaToolsV7(context),
-      command,
-    );
   if (command.kind !== "MOVE") return false;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
   if (actor === undefined || to === undefined) return false;
-  const tools = frozenSeaToolsV7(context);
-  return (
-    iceShipMoveRejectedV7(context.view, tools, actor, to) ||
-    iceMoveOntoHostileIceRejectedV7(context.view, tools, actor, to)
+  return iceShipMoveRejectedV7(
+    context.view,
+    frozenSeaToolsV7(context),
+    actor,
+    to,
   );
 }
 
@@ -14953,6 +14946,12 @@ function scoreCommandWithContext(
       immediateValue += GATHER_PEARLS_V7.coinsReceived;
     } else if (context.naval.active && command.kind === "HARVEST_FISH") {
       priority = Math.max(priority, 1170);
+    } else if (command.kind === "BUILD_ICE_FORTRESS") {
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice
+      // Fortress is a sea post (a fortified tile that shoots one further),
+      // so of the holes on offer the one nearest a visible hostile unit
+      // afloat comes first.
+      strategicValue += iceFortressSiteValueV7(context, command.at);
     }
     // Revision 16 (section 3.6 rule 2): growth before other spending.
     if (openingGrowthHarvestV7(view, command))
@@ -27008,6 +27007,29 @@ function researchChain(
   };
   visit(target);
   return result;
+}
+
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the site value of an
+ * Ice Fortress on `at`, from 0 (no visible hostile unit afloat within
+ * `ICE_FORTRESS_SITE_REACH_V7` tiles) up to that reach for one beside it,
+ * so the hole that faces the enemy's ships is upgraded first.
+ */
+const ICE_FORTRESS_SITE_REACH_V7 = 6;
+function iceFortressSiteValueV7(context: PolicyContextV7, at: CoordV7): number {
+  const view = context.view;
+  const nearest = nearestDistance(
+    at,
+    view.units
+      .filter(
+        (unit) =>
+          unit.hp > 0 &&
+          (unit.form === "NAVAL" || unit.form === "EMBARKED") &&
+          isHostile(view, unit.ownerId),
+      )
+      .map((unit) => unit.at),
+  );
+  return Math.max(0, ICE_FORTRESS_SITE_REACH_V7 + 1 - nearest);
 }
 
 /**

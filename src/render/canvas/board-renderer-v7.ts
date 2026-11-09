@@ -3375,7 +3375,7 @@ export function drawBoardV7(input: {
               sheet.image,
               entry.seaIce.openWater,
               entry.seaIce.variant,
-              entry.seaIce.permanent,
+              false,
             ) ?? null)
           : null;
       drawSeaIceCellV7(context, cell, entry.at, entry.seaIce, tile, {

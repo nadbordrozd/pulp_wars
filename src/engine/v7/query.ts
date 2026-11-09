@@ -42,6 +42,11 @@ import {
   boardedPrizeHpV7,
   boardSeaBeastBlockedV7,
   dockPopulationV7,
+  holePopulationV7,
+  isFishingHoleImprovementV7,
+  ICE_FORTRESS_COST_V7,
+  ICE_FORTRESS_FORTIFICATION_LEVELS_V7,
+  HARPOON_ATTACK2_V7,
   unitIsSubmergedV7,
   isIceAtV7,
   DROWNED_CREW_HP_V7,
@@ -219,6 +224,7 @@ import {
 } from "./combat";
 import {
   attackMaximumRangeV7,
+  attackHarpoonsV7,
   attackShattersV7,
   unitAvoidsForeignSitesV7,
   blizzardHalvedDamageV7,
@@ -619,6 +625,8 @@ const TILE_KINDS = [
   "GATHER_PEARLS",
   "BUILD_PORT",
   "BUILD_SHIPYARD",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+  "BUILD_ICE_FORTRESS",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
   "CULTIVATE_FOREST",
@@ -633,6 +641,8 @@ const TILE_KINDS = [
  */
 const ICE_TILE_KINDS_V7: ReadonlySet<string> = new Set([
   "BUILD_FISHING_HOLE",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): on a Fishing Hole.
+  "BUILD_ICE_FORTRESS",
   ...SPATIAL_KINDS,
 ]);
 const COMMAND_CACHE = new WeakMap<PlayerViewV7, readonly CommandV7[]>();
@@ -2206,12 +2216,7 @@ function publicFreezeTileFactsV7(
       dock: tile.improvement === "PORT" || tile.improvement === "SHIPYARD",
       snow: tile.snow === true,
       ice:
-        entry === undefined
-          ? null
-          : {
-              own: entry.ownerId === view.viewer.id,
-              cracked: entry.cracked,
-            },
+        entry === undefined ? null : { own: entry.ownerId === view.viewer.id },
       occupied: occupants.length > 0,
       freezes: occupants
         .filter(
@@ -2291,19 +2296,18 @@ function publicCrackIceTargetsV7(
 
 /**
  * The frozen sea redesign (section 2.9): the exact result of an offered
- * `CRACK_ICE`: whether the ice breaks (`broken`; otherwise thick ice takes
- * its first crack).
+ * `CRACK_ICE`: the ice on `at` breaks (one Crack breaks any ice since the
+ * naval branch rebuilt, `pulp_wars-tzk6`, 7r137, which retired thick ice
+ * and `broken`).
  */
 export interface CrackIcePreviewV7 {
   readonly unitId: UnitId;
   readonly at: CoordV7;
-  readonly broken: boolean;
 }
 
 /**
  * The frozen sea redesign (section 2.9): the preview of `CRACK_ICE` by the
  * viewer's unit `unitId` on `at`, or null unless that command is offered.
- * Exact: the ice's `thick` and `cracked` are public.
  */
 export function previewCrackIceV7(
   view: PlayerViewV7,
@@ -2321,11 +2325,7 @@ export function previewCrackIceV7(
     return null;
   const entry = iceAtV7(view, at);
   if (entry === undefined) return null;
-  return {
-    unitId,
-    at: { x: at.x, y: at.y },
-    broken: !entry.thick || entry.cracked,
-  };
+  return { unitId, at: { x: at.x, y: at.y } };
 }
 
 /**
@@ -7948,7 +7948,7 @@ export function estimateCombatV7(
       attackMaximumRangeV7(
         state,
         attacker,
-        tileAtV7(state.board, attacker.at)?.terrain,
+        tileAtV7(state.board, attacker.at),
       ) ||
     // The naval branch (sections 5.2 and 5.3): a torpedo targets only
     // units afloat, and a submerged Submarine is attacked only from an
@@ -8199,7 +8199,7 @@ export function queryThreatenedTilesV7(
     return attackMaximumRangeV7(
       view,
       unit,
-      tile?.explored === true ? tile.terrain : undefined,
+      tile?.explored === true ? tile : undefined,
     );
   };
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -8443,7 +8443,9 @@ function calculatePublicEconomicPreviewV7(
       ? ("PORT" as const)
       : command.kind === "BUILD_SHIPYARD"
         ? ("SHIPYARD" as const)
-        : (basic?.improvement ?? spatial?.improvement ?? null);
+        : command.kind === "BUILD_ICE_FORTRESS"
+          ? ("ICE_FORTRESS" as const)
+          : (basic?.improvement ?? spatial?.improvement ?? null);
   const cost =
     basic?.cost ??
     spatial?.cost ??
@@ -8451,7 +8453,8 @@ function calculatePublicEconomicPreviewV7(
       ? GATHER_PEARLS_V7.cost
       : command.kind === "BUILD_PORT"
         ? 4
-        : command.kind === "BUILD_SHIPYARD"
+        : command.kind === "BUILD_SHIPYARD" ||
+            command.kind === "BUILD_ICE_FORTRESS"
           ? 5
           : command.kind === "BUILD_ROAD"
             ? 2
@@ -8646,8 +8649,10 @@ function publicEconomicPreviewExact(
     command.kind === "BUILD_FARM" ||
     command.kind === "BUILD_LUMBER_CAMP" ||
     // The frozen sea redesign (`pulp_wars-5ti.26`): the Fishing Hole is a
-    // contributor like the Lumber Camp.
+    // contributor like the Lumber Camp (and the Ice Fortress on it,
+    // `pulp_wars-tzk6`, 7r137).
     command.kind === "BUILD_FISHING_HOLE" ||
+    command.kind === "BUILD_ICE_FORTRESS" ||
     command.kind === "BUILD_MINE" ||
     command.kind in SPATIAL_ECONOMIC_ACTIONS_V7;
   const ownedCities = view.cities.filter(
@@ -8679,6 +8684,8 @@ function economicCommandChangesLiveGraphV7(kind: CommandV7["kind"]): boolean {
     kind === "BUILD_MINE" ||
     kind === "BUILD_PORT" ||
     kind === "BUILD_SHIPYARD" ||
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+    kind === "BUILD_ICE_FORTRESS" ||
     kind === "BUILD_ROAD" ||
     kind === "REDEVELOP" ||
     kind === "CULTIVATE_FOREST" ||
@@ -8997,7 +9004,7 @@ function publicActiveFishingHoleKeysV7(
       .filter(
         (tile) =>
           tile.explored &&
-          tile.improvement === "FISHING_HOLE" &&
+          isFishingHoleImprovementV7(tile.improvement) &&
           tile.territoryCityId !== null &&
           ownedIds.has(tile.territoryCityId) &&
           !publicTileEnemyOccupiedV7(view, tile.at),
@@ -9107,6 +9114,12 @@ function graphAfterTileCommandV7(
     return replacePublicGraphTileV7(graph, command.at, {
       improvement: "SHIPYARD",
     });
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Fortress keeps
+  // the hole's place in the network.
+  if (command.kind === "BUILD_ICE_FORTRESS")
+    return replacePublicGraphTileV7(graph, command.at, {
+      improvement: "ICE_FORTRESS",
+    });
   if (spatial !== undefined)
     return replacePublicGraphTileV7(
       graph,
@@ -9151,7 +9164,7 @@ function graphAfterTileCommandV7(
           : publicRestoredResourceV7(view, tile.terrain, tile.improvement),
     });
     if (
-      tile.improvement === "FISHING_HOLE" &&
+      isFishingHoleImprovementV7(tile.improvement) &&
       graph.activeFishingHoleKeys.has(coordKeyV7(command.at))
     ) {
       const activeFishingHoleKeys = new Set(graph.activeFishingHoleKeys);
@@ -9200,7 +9213,16 @@ function liveTotalForCityV7(
           ? graph.activePortKeys.has(coordKeyV7(tile.at))
             ? publicDockPopulationV7(graph, improvement)
             : 0
-          : spatialContributionAtV7(graph, tile.at, improvement).population);
+          : // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a Fishing
+            // Hole or an Ice Fortress, 1 more with the viewer's Under the
+            // Ice.
+            isFishingHoleImprovementV7(improvement)
+            ? holePopulationV7(
+                improvement,
+                technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
+                  .underTheIce,
+              )
+            : spatialContributionAtV7(graph, tile.at, improvement).population);
       if (!Number.isSafeInteger(value))
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
@@ -9306,7 +9328,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
           (((tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
             graph.activePortKeys.has(coordKeyV7(tile.at))) ||
             // Fishing Hole links (`pulp_wars-vg5l`, 7r127).
-            (tile.improvement === "FISHING_HOLE" &&
+            (isFishingHoleImprovementV7(tile.improvement) &&
               graph.activeFishingHoleKeys.has(coordKeyV7(tile.at)))) &&
           tile.territoryCityId !== null &&
           ownedIds.has(tile.territoryCityId) &&
@@ -9421,7 +9443,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   );
   for (const tile of graph.board.tiles) {
     if (
-      tile.improvement !== "FISHING_HOLE" ||
+      !isFishingHoleImprovementV7(tile.improvement) ||
       tile.territoryCityId === null ||
       !graph.activeFishingHoleKeys.has(coordKeyV7(tile.at))
     )
@@ -11150,6 +11172,7 @@ function publicPlanningCandidateMayAffectGraphV7(
     candidate.kind === "GATHER_PEARLS" ||
     candidate.kind === "BUILD_PORT" ||
     candidate.kind === "BUILD_SHIPYARD" ||
+    candidate.kind === "BUILD_ICE_FORTRESS" ||
     candidate.kind === "CULTIVATE_FOREST" ||
     candidate.kind === "BLAST_MOUNTAIN" ||
     ECONOMIC_POTENTIAL_KINDS_V7.includes(candidate.kind as never)
@@ -11837,7 +11860,11 @@ function publicTileCommandLegal(
     !(ownIce && ICE_TILE_KINDS_V7.has(kind))
   )
     return false;
-  if (kind === "BUILD_FISHING_HOLE" && !ownIce) return false;
+  if (
+    (kind === "BUILD_FISHING_HOLE" || kind === "BUILD_ICE_FORTRESS") &&
+    !ownIce
+  )
+    return false;
   const city = view.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );
@@ -11934,6 +11961,16 @@ function publicTileCommandLegal(
       publicActiveOwnedPort(view, tile, view.viewer.id) &&
       publicCityDevelopmentFootprintKnown(view, city) &&
       !cityHasImprovement(view, city.id, "SHIPYARD")
+    );
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): an Ice Fortress on
+  // an active own Fishing Hole (own ice, no hostile unit on it: checked
+  // above), one per city.
+  if (kind === "BUILD_ICE_FORTRESS")
+    return (
+      view.viewer.coins >= ICE_FORTRESS_COST_V7 &&
+      tile.improvement === "FISHING_HOLE" &&
+      publicCityDevelopmentFootprintKnown(view, city) &&
+      !cityHasImprovement(view, city.id, "ICE_FORTRESS")
     );
   const spatial =
     SPATIAL_ECONOMIC_ACTIONS_V7[
@@ -12160,6 +12197,13 @@ function publicCombatPreviewCore(
     distance,
     view.viewer.researchedTechs,
   );
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Harpoons.
+  const harpoon = attackHarpoonsV7(
+    view,
+    attacker,
+    target,
+    view.viewer.researchedTechs,
+  );
   const attackStats = view.unitStats.find(
     (stats) => stats.unitId === attacker.id,
   );
@@ -12243,6 +12287,9 @@ function publicCombatPreviewCore(
     (ram
       ? ramBonus2V7(view, attacker, attacker.activation.movedPathLength)
       : 0) +
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Harpoons (the
+    // viewer's research, exact for its own attacker).
+    (harpoon ? HARPOON_ATTACK2_V7 : 0) +
     gangUp * 2 +
     (rockfallApplied
       ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2
@@ -12276,9 +12323,15 @@ function publicCombatPreviewCore(
     targetTakesCover && targetTile.territoryOwnerId === target.ownerId
       ? (targetTile.fortificationLevel ?? 0)
       : 0;
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): an Ice Fortress's
+  // level is in the Field Defense part, as in the canonical parts.
   const tileFieldDefense = Math.min(
     tileFortification,
-    targetTile.fieldDefense ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 : 0,
+    targetTile.fieldDefense
+      ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7
+      : targetTile.improvement === "ICE_FORTRESS"
+        ? ICE_FORTRESS_FORTIFICATION_LEVELS_V7
+        : 0,
   );
   // The Dwarf revision section 8: Dig In is one level in the Field Defense
   // part (never added to Field Defense), read from the target's public
@@ -12367,12 +12420,9 @@ function publicCombatPreviewCore(
     targetTile.snow === true &&
     tileFortification === 0 &&
     unitOwnerIsIceFolkV7(view, target);
-  // The frozen sea (naval branch section 8.10): Glacier's cover on ice,
-  // read from the target's public stats (its owner's technologies are
-  // private; the stats already hold the unit's fortification).
-  const iceCover =
-    !acid && !targetFrog && defenseStats.iceFolk?.iceCover === true;
-  const bonus = coverBonusV7(terrainCover, snowCover || iceCover);
+  // (Glacier's cover on ice retired with the naval branch rebuilt,
+  // `pulp_wars-tzk6`, 7r137.)
+  const bonus = coverBonusV7(terrainCover, snowCover);
   const breachApplied = breach && fortificationIgnored > 0;
   const applied = bonus;
   // The Dwarf revision section 7.1: Unflinching (a construct's attack).
@@ -12817,7 +12867,7 @@ function publicCombatPreviewCore(
     ...bounced,
     ram,
     torpedo,
-    iceCover,
+    harpoon,
     shockDamage,
     crackApplied: attackCracksV7(view, attacker, target, defenderDies),
     frostbiteApplied: frostbitten,
@@ -13170,7 +13220,7 @@ function publicAttackMaximumRangeV7(
   return attackMaximumRangeV7(
     view,
     unit,
-    tile?.explored === true ? tile.terrain : undefined,
+    tile?.explored === true ? tile : undefined,
   );
 }
 

@@ -58,6 +58,11 @@ const BATCHES = {
   CULT: "buildings-cult",
 } as const;
 
+const RETIRED_BY_RULES: ReadonlySet<string> = new Set([
+  "chibi-ice-folk-port",
+  "chibi-ice-folk-shipyard",
+]);
+
 describe("faction building batches", () => {
   it("registers exactly the accepted masters of the eight batches", async () => {
     const byId = new Map(
@@ -75,6 +80,11 @@ describe("faction building batches", () => {
         manifest.assets.map((asset) => asset.id).sort(),
       );
       for (const record of accepted) {
+        // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk
+        // Port and Shipyard looks (the Ice Harbour and the Great Harbour)
+        // are no longer drawn: a captured dock keeps the shared look. Their
+        // accepted masters stay in the batch as history.
+        if (RETIRED_BY_RULES.has(record.id)) continue;
         const asset = manifest.assets.find((spec) => spec.id === record.id);
         const entry = byId.get(record.id);
         if (asset === undefined || entry === undefined)
@@ -136,8 +146,10 @@ describe("faction building batches", () => {
       // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole
       // has no shared building; it is the Lumber Camp of the ice and sits
       // on its footprint.
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): nor has the Ice
+      // Fortress raised on a hole.
       const today = shared.variants(
-        `IMPROVEMENT:${improvement === "FISHING_HOLE" ? "LUMBER_CAMP" : improvement}` as never,
+        `IMPROVEMENT:${improvement === "FISHING_HOLE" || improvement === "ICE_FORTRESS" ? "LUMBER_CAMP" : improvement}` as never,
       )[0];
       if (today === undefined) throw new Error(`${entry.subject}: no shared`);
       // Same role, same placement: inside its own cell like the shared one.

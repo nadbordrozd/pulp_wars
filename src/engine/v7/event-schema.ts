@@ -412,7 +412,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   // The naval branch, the frozen sea (section 8.4 and the redesign's 2.9);
   // the one Freeze effect (`pulp_wars-xv0t`): `TILES_FROZEN` with `snow`.
   TILES_FROZEN: ["kind", "playerId", "unitId", "tiles", "snow"],
-  ICE_CRACKED: ["kind", "playerId", "unitId", "at", "broken"],
+  ICE_CRACKED: ["kind", "playerId", "unitId", "at"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
@@ -1681,13 +1681,11 @@ function validPayload(
     case "UNITS_FROZEN":
       // Ice Folk Freeze (`pulp_wars-w49.37`): the source is never a target
       // and every result is a Frozen entry (`turnsLeft` 1 or 2).
-      // The frozen sea (naval branch section 8.8): Black Ice has no source
-      // unit, and every other source has one.
+      // Every source has a source unit (Black Ice, which had none, retired
+      // with the naval branch rebuilt, `pulp_wars-tzk6`, 7r137).
       return (
         id(e.playerId) &&
-        (e.source === "BLACK_ICE"
-          ? e.sourceUnitId === null
-          : id(e.sourceUnitId)) &&
+        id(e.sourceUnitId) &&
         frozenSource(e.source) &&
         frozenResults(e.results, e.sourceUnitId)
       );
@@ -1702,12 +1700,7 @@ function validPayload(
       );
     case "ICE_CRACKED":
       // The frozen sea redesign (section 2.9).
-      return (
-        id(e.playerId) &&
-        id(e.unitId) &&
-        parseCoordV7(e.at) !== null &&
-        typeof e.broken === "boolean"
-      );
+      return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;
     case "WOUNDED_TENDED":
       return id(e.captainId) && tendResults(e.results);
     case "DEAD_RAISED":
@@ -2704,7 +2697,7 @@ function combat(input: unknown): boolean {
       "bounceTo",
       "ram",
       "torpedo",
-      "iceCover",
+      "harpoon",
       "shockDamage",
       "crackApplied",
       "frostbiteApplied",
@@ -2947,14 +2940,9 @@ function combat(input: unknown): boolean {
         input.noRetaliationReason !== "SPLATTED" &&
         input.noRetaliationReason !== "FROZEN" &&
         input.noRetaliationReason !== "TERROR")) &&
-    // The frozen sea (naval branch section 8.10): ice cover is a cover, so
-    // the defense bonus is not 1.
-    typeof input.iceCover === "boolean" &&
-    (input.iceCover !== true ||
-      (input.snowCover === false &&
-        input.defenseBonusNumerator === SNOW_COVER_V7.numerator &&
-        input.defenseBonusDenominator === SNOW_COVER_V7.denominator &&
-        input.fortificationLevel === 0)) &&
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Harpoons hit a
+    // unit afloat (Glacier's ice cover before, in its place).
+    typeof input.harpoon === "boolean" &&
     // The giants' signatures (RULESET_7_GIANTS.md sections 6.1, 6.6, and
     // 6.7): a crush needs a surviving target that is not pushed; a Glacial
     // Smash is a Shatter.
@@ -3458,8 +3446,6 @@ function frozenSource(input: unknown): boolean {
     // Wake (`BOLAS`, `FROST_BOLT`, `COLD_AURA`, `SHARDS`, and `FREEZE`
     // retired).
     input === "COLD_WAKE" ||
-    // The frozen sea (naval branch section 8.8): Black Ice.
-    input === "BLACK_ICE" ||
     // The ninth unit (`pulp_wars-w49.17`, 7r55): a Walrus's Frostbite.
     input === "FROSTBITE" ||
     // The Ice Folk roster rework (`pulp_wars-s55m.4`): a Frost Wyrm's
@@ -3526,8 +3512,7 @@ function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
   if (hasExactKeysV7(input, FIELDS.ICE_CRACKED) && input.kind === "ICE_CRACKED")
     return input.unitId === null &&
       id(input.playerId) &&
-      parseCoordV7(input.at) !== null &&
-      typeof input.broken === "boolean"
+      parseCoordV7(input.at) !== null
       ? (input as unknown as PlayerEventV7)
       : null;
   return hasExactKeysV7(input, FIELDS.TILES_FROZEN) &&
@@ -3669,6 +3654,9 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "LUMBER_CAMP":
     case "FISHING_HOLE":
       return 3;
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+    case "ICE_FORTRESS":
+      return 5;
     case "MINE":
       return 5;
     case "FORGE":

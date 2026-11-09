@@ -659,7 +659,7 @@ describe("the Moon Gun (section 5)", () => {
     });
     const iced = checkedV7({
       ...state,
-      ice: [{ at: at(4, 6), ownerId: P2, cracked: false }],
+      ice: [{ at: at(4, 6), ownerId: P2 }],
     });
     const result = applyAcceptedV7(iced, P1, fire(iced, at(4, 6)));
     expect(eventKindsV7(result.events)).not.toContain("UNITS_FROZEN");
@@ -674,7 +674,7 @@ describe("the Moon Gun (section 5)", () => {
     });
     const iced = checkedV7({
       ...state,
-      ice: [{ at: at(2, 8), ownerId: P2, cracked: false }],
+      ice: [{ at: at(2, 8), ownerId: P2 }],
     });
     expect(rejectionV7(iced, P1, fire(iced, at(2, 8)))).toEqual({
       code: "MOON_GUN_NOT_LEGAL",

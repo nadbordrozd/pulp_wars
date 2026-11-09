@@ -108,6 +108,17 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-ice-fortress",
+      "subject": "IMPROVEMENT:ICE_FOLK:ICE_FORTRESS",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -287,6 +298,18 @@
       },
       "negativeAddendum": "grass, soil, sand, boat, ship, people, igloo, house",
       "notes": "A second seed of fishing-hole-a."
+    },
+    {
+      "id": "ice-fortress-a",
+      "asset": "chibi-ice-folk-ice-fortress",
+      "endpoint": "generate-image-v2",
+      "seed": 27141,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "grass, soil, sand, boat, ship, pier, people, castle on a hill, stone brick, wood house, water waves",
+      "notes": "Bead pulp_wars-tzk6 (docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4, 7r137): the Ice Fortress, Naval Engineering's upgrade of a Fishing Hole: a squat ice-block tower with a fishing hole at its foot, so it reads as the hole's bigger sibling."
     }
   ]
 }

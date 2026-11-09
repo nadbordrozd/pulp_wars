@@ -1,15 +1,15 @@
 import {
-  FISHING_HOLE_POPULATION_V7,
+  HARPOON_ATTACK2_V7,
+  ICE_FORTRESS_RANGE_BONUS_V7,
   ICE_SEA_DOG_UNITS_V7,
+  UNDER_THE_ICE_POPULATION_V7,
   queryAlliedV7,
   unitCracksIceV7,
   unitIsFrozenV7,
   unitMayActAfterMoveV7,
-  technologyCapabilitiesV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CoordV7,
-  type CrackIcePreviewV7,
   type PlayerEventV7,
   type PlayerViewV7,
   type PublicIceTileV7,
@@ -25,10 +25,11 @@ import { playerSubjectV7 } from "./player-names-v7";
  * Snow and ice (skating is plain movement since `pulp_wars-ecnj`, 7r135:
  * Skate, Runners, the skate trail and its arrows are gone), the Fishing
  * Hole dive (the slip of every other unit before `pulp_wars-y242`, 7r132),
- * who walks on ice, Black Ice and Glacier, shared by the dock, the board
- * plan, Help, the technology cards and the Gallery. Every number is read
- * from the engine's constants, public previews, public unit stats and the
- * view's ice list.
+ * who walks on ice, and (the naval branch rebuilt, `pulp_wars-tzk6`, 7r137,
+ * in place of Black Ice and Glacier) the swimming Walrus, Harpoons, the Ice
+ * Fortress and Under the Ice, shared by the dock, the board plan, Help, the
+ * technology cards and the Gallery. Every number is read from the engine's
+ * constants, public previews, public unit stats and the view's ice list.
  */
 
 export const FREEZE_LABEL_V7 = "Freeze";
@@ -36,9 +37,11 @@ export const ICE_LABEL_V7 = "Ice";
 /** Ice Folk movement: Glide (`pulp_wars-ecnj`) and the dive. */
 export const GLIDE_LABEL_V7 = "Glide";
 export const DIVE_LABEL_V7 = "Dive";
-export const BLACK_ICE_LABEL_V7 = "Black Ice";
-export const GLACIER_LABEL_V7 = "Glacier";
-export const ICE_COVER_LABEL_V7 = "Ice cover";
+/** The naval branch rebuilt (`pulp_wars-tzk6`, 7r137). */
+export const SWIM_LABEL_V7 = "Swim";
+export const HARPOONS_LABEL_V7 = "Harpoons";
+export const ICE_FORTRESS_LABEL_V7 = "Ice Fortress";
+export const UNDER_THE_ICE_LABEL_V7 = "Under the Ice";
 
 /**
  * One short sentence each (RULESET_7_ICE_REDESIGN.md section 2.2, the
@@ -58,7 +61,22 @@ export const FREEZE_RULE_V7 =
  */
 export const GLIDE_RULE_V7 =
   "Between Snow and ice tiles, Ice Folk move at half cost, as on a Road.";
-export const DIVE_RULE_V7 = `Fishing Hole: +${FISHING_HOLE_POPULATION_V7} population. A unit on your Fishing Hole that has not moved may dive to any other free Fishing Hole of yours as its move.`;
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the dive needs Under
+ * the Ice (it was Rime's).
+ */
+export const DIVE_RULE_V7 =
+  "With Under the Ice, a unit on your Fishing Hole that has not moved may dive to any other free Fishing Hole of yours as its move.";
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the glossary's
+ * and Help's lines of the rebuilt branch (at most one number each).
+ */
+export const SWIM_RULE_V7 =
+  "The Walrus swims: it moves onto open water (deep water with Pack Ice), one point a tile, and fights there as on land.";
+export const HARPOONS_RULE_V7 = `Your units have +${HARPOON_ATTACK2_V7 / 2} Attack against ships and boats.`;
+export const ICE_FORTRESS_RULE_V7 = `An upgraded Fishing Hole, one per city: your unit on it is fortified and shoots ${ICE_FORTRESS_RANGE_BONUS_V7} tile further.`;
+export const UNDER_THE_ICE_RULE_V7 = `Each Fishing Hole, Ice Fortress and captured dock of yours gives +${UNDER_THE_ICE_POPULATION_V7} population.`;
 /**
  * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk sea link.
  */
@@ -76,18 +94,15 @@ export const ICE_STAYS_RULE_V7 =
   "Ice never melts; it is gone only when someone cracks it.";
 export const NO_SHIPS_RULE_V7 =
   "Ships cannot enter ice; the Ice Folk have no ships at all.";
-export const BLACK_ICE_RULE_V7 = "An enemy that steps onto your ice is Frozen.";
-export const GLACIER_RULE_V7 =
-  "Your ice is thick: other players must Crack Ice twice to break it, and your freezes mend a crack. Your units on it have cover.";
 /** The border freeze (`pulp_wars-5ti.31`). */
 export const BORDER_ICE_LABEL_V7 = "Border ice";
 export const BORDER_ICE_RULE_V7 =
   "With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.";
 export const CRACK_ICE_LABEL_V7 = "Crack Ice";
 export const CRACK_ICE_RULE_V7 =
-  "Any other land unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on (your own iced-over dock you may crack). Units that fly or stride cross ice instead.";
+  "Any other land unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on. Units that fly or stride cross ice instead.";
 export const ICE_BUILD_RULE_V7 =
-  "The Ice Folk build Fishing Holes, mills, Workshop, Market and Monument on their own ice. They build no harbours.";
+  "The Ice Folk build Fishing Holes, Ice Fortresses, mills, Workshop, Market and Monument on their own ice. They build no harbours; one they capture stays a plain dock.";
 
 /** The frozen sea's rules, in reading order (the Ice Folk tech cards' "?"). */
 export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
@@ -101,8 +116,10 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],
   ["Build", ICE_BUILD_RULE_V7],
   ["No ships", NO_SHIPS_RULE_V7],
-  [BLACK_ICE_LABEL_V7, BLACK_ICE_RULE_V7],
-  [GLACIER_LABEL_V7, GLACIER_RULE_V7],
+  [SWIM_LABEL_V7, SWIM_RULE_V7],
+  [HARPOONS_LABEL_V7, HARPOONS_RULE_V7],
+  [ICE_FORTRESS_LABEL_V7, ICE_FORTRESS_RULE_V7],
+  [UNDER_THE_ICE_LABEL_V7, UNDER_THE_ICE_RULE_V7],
 ];
 
 /** Help "At sea", one line for every other faction in a match with ice. */
@@ -121,17 +138,16 @@ export const FREEZE_SHALLOW_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice 
 /** The border freeze (`pulp_wars-5ti.31`): the Ice Folk Land Grant line. */
 export const ICE_LAND_GRANT_UNLOCK_V7 =
   "Land Grant: with Rime, the water inside the city's borders, old and new, freezes";
-export const FREEZE_DEEP_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on deep water too`;
-export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: an enemy that steps onto your ice is Frozen`;
+export const FREEZE_DEEP_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on deep water too, and Walruses swim there`;
 /**
- * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Glacier
- * makes the ice thick instead of lasting longer. Bead pulp_wars-5ti.30: the
- * line names the other players' Crack Ice, so "thick" is not read as the
- * old melting ice.
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the card lines of
+ * Harpoons, the Ice Fortress and Under the Ice (Black Ice and Glacier
+ * before), one number each at most.
  */
-export function glacierUnlockTextV7(): string {
-  return `${GLACIER_LABEL_V7}: your ice is thick: other players must Crack Ice twice to break it, and your freezes mend a crack; your units on it have cover`;
-}
+export const HARPOONS_UNLOCK_V7 = `${HARPOONS_LABEL_V7}: +${HARPOON_ATTACK2_V7 / 2} Attack against ships and boats`;
+export const ICE_FORTRESS_UNLOCK_V7 = `${ICE_FORTRESS_LABEL_V7}: fortify a Fishing Hole: a unit on it is fortified and shoots ${ICE_FORTRESS_RANGE_BONUS_V7} further`;
+export const UNDER_THE_ICE_UNLOCK_V7 = `${UNDER_THE_ICE_LABEL_V7}: dive between your Fishing Holes; each hole gives +${UNDER_THE_ICE_POPULATION_V7} population`;
 export const ICE_NO_SHIPS_NOTE_V7 = "The Ice Folk build no ships";
 
 /**
@@ -178,10 +194,6 @@ export const CRACK_ICE_TOOLTIP_V7 =
   "Break the ice next to this unit back into open water";
 export const CRACK_ICE_PICK_V7 = "Choose a highlighted ice tile to crack";
 export const CRACK_ICE_BREAK_LABEL_V7 = "Break";
-export const CRACK_ICE_CRACK_LABEL_V7 = "Crack · 1 more breaks it";
-/** Ice Folk freeze rework (`pulp_wars-s55m.1`): an own iced-over dock. */
-export const CRACK_ICE_DOCK_LABEL_V7 = "Open the dock";
-export const CRACK_ICE_DOCK_LATER_LABEL_V7 = "Crack · 1 more opens it";
 export const CRACK_ICE_FROZEN_V7 = FREEZE_FROZEN_MOVED_V7;
 export const CRACK_ICE_ALREADY_ACTED_V7 = FREEZE_ALREADY_ACTED_V7;
 export const CRACK_ICE_MOVED_V7 = "It moved this turn";
@@ -222,7 +234,7 @@ function crackableIceBesideV7(
  * Why an own unit next to crackable ice has no Crack Ice to use, from the
  * rejection rows of section 2.9 in order: Frozen, already acted (or moved,
  * for a role that cannot act after moving), a unit on the ice, a building
- * on it (but an own or allied dock). Null when Crack Ice is offered, for an
+ * on it. Null when Crack Ice is offered, for an
  * Ice Folk unit, off the viewer's turn, and for a unit with no such ice
  * beside it (no button is shown then).
  */
@@ -263,113 +275,38 @@ export function crackIceUnavailableTextV7(
         tile.at.x === at.x &&
         tile.at.y === at.y &&
         tile.explored &&
-        tile.improvement !== null &&
-        !(
-          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
-          tile.territoryOwnerId !== null &&
-          (tile.territoryOwnerId === view.viewer.id ||
-            queryAlliedV7(view, view.viewer.id, tile.territoryOwnerId))
-        ),
+        tile.improvement !== null,
     );
   if (beside.some((entry) => built(entry.at))) return CRACK_ICE_BUILT_V7;
   return CRACK_ICE_ALREADY_ACTED_V7;
 }
 
-/** What an offered Crack Ice does, for its board label and its sentence. */
-export interface CrackIceOutcomeV7 {
-  /** The ice breaks into open water (else thick ice takes its first crack). */
-  readonly broken: boolean;
-  /**
-   * Ice Folk freeze rework (`pulp_wars-s55m.1`): the tile is an own or
-   * allied dock a hostile Freeze iced over: the target wears the Help mark
-   * (opened now, or by the next crack of thick ice).
-   */
-  readonly dock: boolean;
-}
-
-/** The exact outcome of an offered Crack Ice (`previewCrackIceV7`). */
-export function crackIceOutcomeV7(
-  view: PlayerViewV7,
-  preview: CrackIcePreviewV7,
-): CrackIceOutcomeV7 {
-  const tile = view.board.tiles.find(
-    (candidate) =>
-      candidate.at.x === preview.at.x && candidate.at.y === preview.at.y,
-  );
-  const dock =
-    tile?.explored === true &&
-    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD");
-  return { broken: preview.broken, dock };
-}
-
 /**
- * The board label of a Crack Ice: "Break", "Crack · 1 more breaks it", and
- * over an own or allied iced-over dock "Open the dock" or "Crack · 1 more
- * opens it".
+ * The board label of a Crack Ice: "Break" (one Crack breaks any ice since
+ * the naval branch rebuilt, `pulp_wars-tzk6`, 7r137: no thick ice, no
+ * iced-over dock, so every offered Crack Ice has the same outcome).
  */
-export function crackIceTargetLabelV7(outcome: CrackIceOutcomeV7): string {
-  if (outcome.dock)
-    return outcome.broken
-      ? CRACK_ICE_DOCK_LABEL_V7
-      : CRACK_ICE_DOCK_LATER_LABEL_V7;
-  return outcome.broken ? CRACK_ICE_BREAK_LABEL_V7 : CRACK_ICE_CRACK_LABEL_V7;
+export function crackIceTargetLabelV7(): string {
+  return CRACK_ICE_BREAK_LABEL_V7;
 }
 
 /** The sentence of a Crack Ice for the cursor description. */
-export function crackIceOutcomeTextV7(outcome: CrackIceOutcomeV7): string {
-  const result = outcome.broken
-    ? "The ice breaks into open water"
-    : "The thick ice cracks; one more Crack breaks it";
-  const dock = outcome.dock && outcome.broken ? ": the dock is open again" : "";
-  return `${CRACK_ICE_LABEL_V7}: ${result}${dock}.`;
+export function crackIceOutcomeTextV7(): string {
+  return `${CRACK_ICE_LABEL_V7}: The ice breaks into open water.`;
 }
 
-/** The ice chip of the tile dock: "Ice", "Ice · thick" or "Ice · cracked". */
-export function iceChipLabelV7(ice: PublicIceTileV7): string {
-  return ice.cracked
-    ? `${ICE_LABEL_V7} · cracked`
-    : ice.thick
-      ? `${ICE_LABEL_V7} · thick`
-      : ICE_LABEL_V7;
+/** The ice chip of the tile dock: "Ice". */
+export function iceChipLabelV7(): string {
+  return ICE_LABEL_V7;
 }
 
 /**
  * The ice chip's tooltip (the frozen sea redesign, section 4.1): what ice
- * is, how thick it is, and Black Ice. No countdown: ice is permanent.
+ * is. No countdown: ice is permanent (thick ice and Black Ice went with the
+ * naval branch rebuilt, `pulp_wars-tzk6`, 7r137).
  */
-export function iceChipTooltipV7(
-  view: PlayerViewV7,
-  ice: PublicIceTileV7,
-): string {
-  const own = ice.ownerId === view.viewer.id;
-  const thickness = ice.cracked
-    ? " Cracked: one more Crack breaks it."
-    : ice.thick
-      ? " Thick: two Cracks break it."
-      : "";
-  const blackIce =
-    own && viewerHasBlackIceV7(view)
-      ? ` ${BLACK_ICE_LABEL_V7}: an enemy that steps onto it is Frozen.`
-      : "";
-  return `${ICE_LABEL_V7}: only Ice Folk units and units that fly or stride go onto it; other units crack it. Ice Folk Glide on it, as on Snow.${thickness}${blackIce}`;
-}
-
-/**
- * The cracks of an ice tile (the frozen sea redesign, section 4.1): 0 for
- * sound ice, 2 for cracked thick ice (no melting stages: ice is permanent).
- */
-export function iceCrackStageV7(
-  ice: Pick<PublicIceTileV7, "cracked">,
-): 0 | 1 | 2 | 3 {
-  return ice.cracked ? 2 : 0;
-}
-
-/** Whether the viewer's own ice is Black Ice (a seat-level capability). */
-export function viewerHasBlackIceV7(view: PlayerViewV7): boolean {
-  return technologyCapabilitiesV7(
-    view.viewer.researchedTechs,
-    view.viewer.faction,
-  ).blackIce;
+export function iceChipTooltipV7(): string {
+  return `${ICE_LABEL_V7}: only Ice Folk units and units that fly or stride go onto it; other units crack it. Ice Folk Glide on it, as on Snow.`;
 }
 
 /**
@@ -381,8 +318,6 @@ export function viewerHasBlackIceV7(view: PlayerViewV7): boolean {
 export const DIVE_MOVE_LABEL_V7 =
   "Dive: through your Fishing Holes, as the whole move";
 
-export const ICE_COVER_PREVIEW_V7 = ICE_COVER_LABEL_V7;
-export const ICE_COVER_TOOLTIP_V7 = `${ICE_COVER_LABEL_V7}: light cover on its own ice (${GLACIER_LABEL_V7})`;
 export const ON_ICE_LABEL_V7 = "On ice";
 /**
  * Bead pulp_wars-2yc.63: who moves on ice, in the tooltip of a tile's ice
@@ -392,11 +327,17 @@ export const ON_ICE_LABEL_V7 = "On ice";
 export const ICE_MOVE_TEXT_V7 =
   "Ice Folk move at half cost between ice and Snow tiles; units that fly or stride cross it like land; no other unit goes onto it.";
 
-/** The frozen-sea lines of an attack preview: cover on ice. */
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the preview row of
+ * Harpoons (Glacier's ice cover before, in its place).
+ */
+export const HARPOON_PREVIEW_V7 = `Harpoon +${HARPOON_ATTACK2_V7 / 2}`;
+
+/** The frozen-sea lines of an attack preview: Harpoons. */
 export function frozenSeaCombatNotesV7(
   preview: CombatPreviewV7,
 ): readonly string[] {
-  return preview.iceCover ? [ICE_COVER_PREVIEW_V7] : [];
+  return preview.harpoon ? [HARPOON_PREVIEW_V7] : [];
 }
 
 /** The Ice Folk goal of Sea Dog (section 8.11). */
@@ -431,9 +372,8 @@ export function frozenSeaBoundaryNoticeV7(
       const tiles = `${count} ${count === 1 ? "tile" : "tiles"}`;
       parts.push(`${subject(after, event.playerId)} froze ${tiles}`);
     } else if (event.kind === "ICE_CRACKED") {
-      // The frozen sea redesign (section 4.1): a Crack broke or cracked a
-      // tile.
-      parts.push(event.broken ? "The ice broke" : "The ice cracked");
+      // The frozen sea redesign (section 4.1): a Crack broke a tile.
+      parts.push("The ice broke");
       const owner = before.ice.find(
         (entry) => entry.at.x === event.at.x && entry.at.y === event.at.y,
       )?.ownerId;

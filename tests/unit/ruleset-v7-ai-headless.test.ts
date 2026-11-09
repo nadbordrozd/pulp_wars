@@ -68,7 +68,8 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
     expect(UNIT_ROLE_IDS_V7).toHaveLength(12);
     // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole (12).
-    expect(IMPROVEMENT_IDS_V7).toHaveLength(12);
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress.
+    expect(IMPROVEMENT_IDS_V7).toHaveLength(13);
     expect(Object.keys(metrics.commandsByKind)).toEqual(COMMAND_KIND_ORDER_V7);
     expect(Object.keys(metrics.eventsByKind)).toEqual(
       DOMAIN_EVENT_KIND_ORDER_V7,

@@ -16,6 +16,8 @@ import {
   cityRewardRecordMatchesLevelV7,
   canEnterTerrainV7,
   dockPopulationV7,
+  holePopulationV7,
+  isFishingHoleImprovementV7,
   effectiveRoleRuleV7,
   factionFieldsRoleV7,
   factionHasFavourV7,
@@ -47,6 +49,7 @@ import {
   growthSpentV7,
   harbourPopulationForV7,
   roadPopulationForCityV7,
+  underTheIceForV7,
 } from "../economy";
 import { withFullShieldsV7 } from "../martian";
 import { unitSightRadiusAtV7 } from "../movement";
@@ -488,8 +491,14 @@ export function buildMissionStateV7(
                   tile.improvement,
                   harbourPopulationForV7(players, city.ownerId),
                 )
-              : spatialContributionAtV7(graph, tile.at, tile.improvement)
-                  .population,
+              : // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+                isFishingHoleImprovementV7(tile.improvement)
+                ? holePopulationV7(
+                    tile.improvement,
+                    underTheIceForV7(players, city.ownerId),
+                  )
+                : spatialContributionAtV7(graph, tile.at, tile.improvement)
+                    .population,
           source: {
             kind: "IMPROVEMENT",
             improvement: tile.improvement,

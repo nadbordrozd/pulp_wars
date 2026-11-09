@@ -14,15 +14,13 @@ import {
   ICE_HOME_FREEZE_PRIORITY_V7,
   ICE_MEND_PRIORITY_V7,
   ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
-  ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7,
+  ICE_SEA_LATE_RESEARCH_PRIORITY_V7,
   ICE_SEA_PLAN_RESEARCH_PRIORITY_V7,
   ICE_STAGE_MOVE_PRIORITY_V7,
   iceColdSnapTilesScoreV7,
   iceCrossingMoveV7,
   iceFreezeReachesV7,
   iceHostileFreezersV7,
-  iceLandingRejectedV7,
-  iceMoveOntoHostileIceRejectedV7,
   iceSeaPlanV7,
   iceSeaResearchV7,
   iceShipMoveRejectedV7,
@@ -76,6 +74,9 @@ import {
 const RIME: readonly TechnologyIdV7[] = ["SHORECRAFT"];
 const PACK_ICE: readonly TechnologyIdV7[] = [...RIME, "NAVIGATION"];
 const HOARFROST: readonly TechnologyIdV7[] = [...PACK_ICE, "NAVAL_ENGINEERING"];
+// The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Naval Engineering is
+// the Ice Fortress, Seamanship Harpoons, Submersibles Under the Ice (the
+// constants keep the old names of the nodes).
 const BLACK_ICE: readonly TechnologyIdV7[] = [...HOARFROST, "SEAMANSHIP"];
 const GLACIER: readonly TechnologyIdV7[] = [...BLACK_ICE, "SUBMERSIBLES"];
 /** A technology that is not Naval: the free opener is spent. */
@@ -435,13 +436,10 @@ describe("the ice research of an Ice Folk seat", () => {
     );
   });
 
-  // The Ice Folk freeze rework (`pulp_wars-s55m.1`): Hoarfrost (the node
-  // Icebound was) lengthens the Freeze line, so it is wanted while a
-  // crossing is still to be frozen, after Black Ice and Glacier's evidence.
-  // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Hoarfrost lengthened
-  // the `FREEZE` line, which is gone; the node unlocks nothing until the
-  // naval branch is rebuilt, so the crossing never asks for it.
-  it("never asks for Hoarfrost, which unlocks nothing now", () => {
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Naval Engineering
+  // is the Ice Fortress, asked for only with a Fishing Hole and a hostile
+  // ship in sight, so an open crossing never asks for it.
+  it("never asks for the Ice Fortress for a crossing", () => {
     const open = scene({
       technologies: [PACK_ICE, GLACIER],
       units: [{ seat: 0, role: "JUGGERNAUT", at: { x: 2, y: 2 } }],
@@ -460,19 +458,7 @@ describe("the ice research of an Ice Folk seat", () => {
     ).toBeLessThan(ICE_SEA_DUE_RESEARCH_PRIORITY_V7);
   });
 
-  it("asks for Black Ice once an enemy stands on its ice or a transport nears its land", () => {
-    const trespass = scene({
-      technologies: [PACK_ICE, GLACIER],
-      factions: ["ICE_FOLK", "ORIGINAL"],
-      units: [
-        { seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } },
-        { seat: 1, role: "FIGHTER", at: { x: 8, y: 4 } },
-      ],
-      ice: [{ at: { x: 8, y: 4 } }, { at: { x: 8, y: 3 } }],
-    });
-    expect(scoreCommandV7(trespass.view, research("SEAMANSHIP")).priority).toBe(
-      ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
-    );
+  it("asks for Harpoons once a hostile ship or transport nears its land", () => {
     const base = frozenArenaV7({
       technologies: [PACK_ICE, GLACIER],
       units: [
@@ -496,36 +482,33 @@ describe("the ice research of an Ice Folk seat", () => {
     );
   });
 
-  it("leaves Glacier for last", () => {
-    const last = scene({
-      technologies: [BLACK_ICE, GLACIER],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
-    });
+  it("asks for Under the Ice last, once the seat has two Fishing Holes", () => {
+    // Seat 0's capital is on (5, 2): (5, 3) and (6, 3) are its ice.
+    const holes = (count: number): PlayerViewV7 => {
+      let state = frozenArenaV7({
+        technologies: [BLACK_ICE, GLACIER],
+        coins: [20, 20],
+        units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
+        ice: [{ at: { x: 5, y: 3 } }, { at: { x: 6, y: 3 } }],
+      });
+      for (const at of [
+        { x: 5, y: 3 },
+        { x: 6, y: 3 },
+      ].slice(0, count))
+        state = acceptV7(state, 0, { kind: "BUILD_FISHING_HOLE", at }).state;
+      return viewOf(state);
+    };
+    const two = holes(2);
     expect(
-      iceSeaResearchV7(
-        last.view,
-        toolsOf(last.view),
-        planOf(last.view),
-        () => true,
-      ),
+      iceSeaResearchV7(two, toolsOf(two), planOf(two), () => true),
     ).toEqual({
       tech: "SUBMERSIBLES",
-      priority: ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7,
-      strategic: 20,
+      priority: ICE_SEA_LATE_RESEARCH_PRIORITY_V7,
+      strategic: 25,
     });
-    // Before Black Ice, never Glacier (Hoarfrost is no step of it since
-    // `pulp_wars-xv0t`).
-    const early = scene({
-      technologies: [PACK_ICE, GLACIER],
-      units: [{ seat: 0, role: "FIGHTER", at: { x: 2, y: 2 } }],
-    });
+    const one = holes(1);
     expect(
-      iceSeaResearchV7(
-        early.view,
-        toolsOf(early.view),
-        planOf(early.view),
-        () => true,
-      )?.tech,
+      iceSeaResearchV7(one, toolsOf(one), planOf(one), () => true)?.tech,
     ).not.toBe("SUBMERSIBLES");
   });
 
@@ -628,9 +611,11 @@ describe("the builders: a bridge frozen toward the far shore", () => {
   });
 
   // The frozen sea redesign (`pulp_wars-5ti.26`): ice no longer thaws, so
-  // the old "about to thaw" refreeze is gone; a cracked crossing tile is
-  // mended, whoever still has to pass it (the crossing is the seat's road).
-  it("mends cracked crossing tiles", () => {
+  // the old "about to thaw" refreeze is gone; a crossing tile another seat
+  // holds is taken back, whoever still has to pass it (the crossing is the
+  // seat's road). (A cracked tile was mended too until thick ice went with
+  // the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
+  it("takes back crossing tiles another seat holds", () => {
     const options = (wave: boolean): FrozenArenaOptionsV7 => ({
       technologies: [[...GLACIER, ...WITCH], PACK_ICE],
       units: [
@@ -641,8 +626,8 @@ describe("the builders: a bridge frozen toward the far shore", () => {
       ],
       ice: [
         ...column(3),
-        { at: { x: 3, y: 6 }, cracked: true },
-        { at: { x: 3, y: 7 }, cracked: true },
+        { at: { x: 3, y: 6 }, seat: 1 },
+        { at: { x: 3, y: 7 }, seat: 1 },
       ],
     });
     const waiting = scene(options(true));
@@ -664,14 +649,16 @@ describe("the builders: a bridge frozen toward the far shore", () => {
       priority: ICE_MEND_PRIORITY_V7,
       strategic: 6,
     });
-    expect(scored?.preview.mended).toEqual([{ x: 3, y: 6 }]);
+    expect(scored?.preview.taken).toEqual([{ x: 3, y: 6 }]);
     expect(candidates(waiting.view).map((item) => item.command)).toContainEqual(
       command,
     );
     const result = acceptV7(waiting.state, 0, command);
     expect(frozenEvent(result.events).tiles).toEqual(scored?.preview.tiles);
-    expect(iceEntryV7(result.state, { x: 3, y: 6 })?.cracked).toBe(false);
-    // The same ice with nobody left behind it is mended too.
+    expect(iceEntryV7(result.state, { x: 3, y: 6 })?.ownerId).toBe(
+      seatV7(waiting.state, 0).id,
+    );
+    // The same ice with nobody left behind it is taken back too.
     const alone = scene(options(false));
     expect(
       iceColdSnapTilesScoreV7(
@@ -1146,112 +1133,6 @@ describe("every seat against the ice", () => {
     expect(iceHostileFreezersV7(yetis.view, toolsOf(yetis.view))).toEqual([]);
   });
 
-  // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): of another
-  // seat's units only a walker or a flyer may step onto the ice, so the
-  // unit that would is a Martian Tripod (a Human Fighter before).
-  const againstWalker = (
-    units: FrozenArenaOptionsV7["units"],
-    ice?: readonly FrozenIceV7[],
-  ): FrozenArenaOptionsV7 => ({
-    ...against(units, ice),
-    factions: ["MARTIAN", "ICE_FOLK"],
-  });
-
-  it("does not end a Move on the ice of a hostile Ice Folk seat (Black Ice)", () => {
-    const { state, view } = scene(
-      againstWalker(
-        [{ seat: 0, role: "CATAPULT", at: { x: 3, y: 2 } }],
-        lineV7({ x: 3, y: 2 }, 0, 1, 5).map((at) => ({ at, seat: 1 as const })),
-      ),
-    );
-    const fighter = idAt(state, { x: 3, y: 2 });
-    expect(endsOf(queryPlayerCommandsV7(view), fighter)).toContain("3,3");
-    expect(candidateEnds(view, fighter)).not.toContain("3,3");
-    expect(
-      iceMoveOntoHostileIceRejectedV7(
-        view,
-        toolsOf(view),
-        publicUnit(view, fighter),
-        { x: 3, y: 3 },
-      ),
-    ).toBe(true);
-    // Why: the frozen sea redesign (`pulp_wars-5ti.25`): a unit that steps
-    // onto it is Frozen at once by Black Ice.
-    const step = acceptV7(state, 0, {
-      kind: "MOVE",
-      unitId: fighter,
-      path: [{ x: 3, y: 3 }],
-    });
-    const stepped = step.state;
-    expect(
-      step.events.some(
-        (event) =>
-          event.kind === "UNITS_FROZEN" &&
-          event.source === "BLACK_ICE" &&
-          event.results.some((entry) => entry.unitId === fighter),
-      ),
-    ).toBe(true);
-    // A unit already on such ice may move along it; its own seat's ice is
-    // no trap.
-    const onIce = viewOf(stepped);
-    expect(
-      iceMoveOntoHostileIceRejectedV7(
-        onIce,
-        toolsOf(onIce),
-        publicUnit(onIce, fighter),
-        { x: 3, y: 4 },
-      ),
-    ).toBe(false);
-    const own = scene({
-      technologies: [PACK_ICE, PACK_ICE],
-      units: [{ seat: 0, role: "FIGHTER", at: HEAD }],
-      ice: column(5),
-    });
-    expect(
-      iceMoveOntoHostileIceRejectedV7(
-        own.view,
-        toolsOf(own.view),
-        publicUnit(own.view, idAt(own.state, HEAD)),
-        { x: 3, y: 7 },
-      ),
-    ).toBe(false);
-  });
-
-  it("lands beside the ice, not on it", () => {
-    const base = frozenArenaV7(
-      againstWalker(
-        [{ seat: 0, role: "CATAPULT", at: { x: 1, y: 2 } }],
-        [{ at: { x: 3, y: 7 }, seat: 1 }],
-      ),
-    );
-    const cargo = idAt(base, { x: 1, y: 2 });
-    const state = patchNavalUnitV7(base, cargo, {
-      at: { x: 2, y: 7 },
-      form: "EMBARKED",
-    });
-    const view = viewOf(state);
-    const onIce: Extract<CommandV7, { kind: "DISEMBARK" }> = {
-      kind: "DISEMBARK",
-      unitId: cargo,
-      at: { x: 3, y: 7 },
-    };
-    const landings = queryPlayerCommandsV7(view).filter(
-      (command) => command.kind === "DISEMBARK",
-    );
-    expect(landings).toContainEqual(onIce);
-    expect(landings).toContainEqual({ ...onIce, at: { x: 2, y: 8 } });
-    expect(iceLandingRejectedV7(view, toolsOf(view), onIce)).toBe(true);
-    expect(
-      iceLandingRejectedV7(view, toolsOf(view), {
-        ...onIce,
-        at: { x: 2, y: 8 },
-      }),
-    ).toBe(false);
-    expect(candidates(view).map((item) => item.command)).not.toContainEqual(
-      onIce,
-    );
-  });
-
   // The frozen sea redesign (`pulp_wars-5ti.25`): ice never melts, so a
   // kill on it breaks no bridge; only the exposure on the ice is valued.
   it("values a unit on ice as exposed, and no kill breaks a bridge any more", () => {
@@ -1331,9 +1212,6 @@ describe("every seat against the ice", () => {
       if (command.kind !== "MOVE" || end === undefined) continue;
       const actor = publicUnit(view, command.unitId);
       expect(iceShipMoveRejectedV7(view, tools, actor, end)).toBe(false);
-      expect(iceMoveOntoHostileIceRejectedV7(view, tools, actor, end)).toBe(
-        false,
-      );
     }
     expect(iceFreezeReachesV7(view, tools, boat.at)).toBe(false);
   });

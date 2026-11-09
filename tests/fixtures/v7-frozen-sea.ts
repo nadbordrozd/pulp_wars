@@ -40,8 +40,8 @@ export interface FrozenIceV7 {
   readonly at: CoordV7;
   /** The owning seat (0 by default). */
   readonly seat?: 0 | 1 | 2;
-  /** The frozen sea redesign: a crack in thick ice (false by default). */
-  readonly cracked?: boolean;
+  // (`cracked`, a crack in thick ice, went with Glacier: `pulp_wars-tzk6`,
+  // 7r137.)
 }
 
 export interface FrozenArenaOptionsV7 {
@@ -167,7 +167,6 @@ export function frozenStateV7(
     entries.set(`${entry.at.y},${entry.at.x}`, {
       at: { x: entry.at.x, y: entry.at.y },
       ownerId: seatV7(state, entry.seat ?? 0).id,
-      cracked: entry.cracked ?? false,
     });
   const next: GameStateV7 = {
     ...state,

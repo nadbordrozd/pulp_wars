@@ -162,7 +162,7 @@ describe("its home, area, and movement (section 8.3)", () => {
       home: at(6, 10),
       pieces: [ship(0, "PATROL_BOAT", at(7, 12))],
       terrain: [{ at: at(8, 13), terrain: "SHALLOW_WATER" }],
-      ice: [{ at: at(4, 9), ownerId: P2, cracked: false }],
+      ice: [{ at: at(4, 9), ownerId: P2 }],
       factions: ["ORIGINAL", "ICE_FOLK"],
     });
     const home = at(6, 10);
@@ -633,7 +633,7 @@ describe("the Serpent and the frozen sea (section 8.7)", () => {
       at(6, 10),
     ];
     const state = iceFolk({
-      ice: ring.map((tile) => ({ at: tile, ownerId: P1, cracked: false })),
+      ice: ring.map((tile) => ({ at: tile, ownerId: P1 })),
       pieces: [{ seat: 0, role: "FIGHTER", at: at(6, 9) }],
     });
     const serpent = serpentOfV7(state);
@@ -650,7 +650,7 @@ describe("the Serpent and the frozen sea (section 8.7)", () => {
   it("never returns to a frozen home", () => {
     const state = iceFolk({
       serpentAt: at(4, 9),
-      ice: [{ at: SERPENT_HOME_V7, ownerId: P1, cracked: false }],
+      ice: [{ at: SERPENT_HOME_V7, ownerId: P1 }],
     });
     expect(
       seaSerpentStandableV7(facts(state), SERPENT_HOME_V7, SERPENT_HOME_V7),
@@ -760,7 +760,7 @@ describe("parsing (section 10.2)", () => {
       {
         ...json,
         setup: { ...json.setup, factions: ["ORIGINAL", "ICE_FOLK"] },
-        ice: [{ at: SERPENT_HOME_V7, ownerId: P2, cracked: false }],
+        ice: [{ at: SERPENT_HOME_V7, ownerId: P2 }],
       },
       // On Dry Land.
       { ...json, setup: { ...json.setup, mapType: "DRY_LAND" } },

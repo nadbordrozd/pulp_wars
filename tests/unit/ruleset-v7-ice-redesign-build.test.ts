@@ -99,9 +99,12 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     ).toBe(true);
   });
 
-  it("no Great Harbour: a dock the seat holds, iced over, keeps working and is never upgraded", () => {
-    // Seat 0's Port on (4, 3) (as a captured one would be), iced over.
-    const state = scene(ICEBOUND, [WEST], { ports: [true, true] });
+  it("no Great Harbour: a dock the seat holds stays a plain dock on open water, keeps working and is never upgraded", () => {
+    // Seat 0's Port on (4, 3) (as a captured one would be). The naval
+    // branch rebuilt (`pulp_wars-tzk6`, 7r137): no dock is ever under ice,
+    // so it is open water.
+    const state = scene(ICEBOUND, [], { ports: [true, true] });
+    expect(iceEntryV7(state, WEST)).toBeUndefined();
     expect(tileOf(state, WEST)?.improvement).toBe("PORT");
     expect(isOffered(state, at("BUILD_SHIPYARD", WEST))).toBe(false);
     expect(rejectV7(state, 0, at("BUILD_SHIPYARD", WEST))).toEqual({
@@ -120,82 +123,33 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
     ).toBe(true);
   });
 
-  it("no other seat builds a Port on ice, and no ship trains or embarks at a dock on ice", () => {
-    // A Human seat whose Port stands on its own ice (a captured harbour).
+  it("no other seat builds a Port on ice, nor walks onto ice; it may Crack its own", () => {
+    // A Human seat whose capital's water (5, 3) is its own ice (a captured
+    // city's). (A dock under ice, a captured Ice Harbour, went with the
+    // naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
     const state = frozenArenaV7({
       factions: ["ORIGINAL", "ICE_FOLK"],
       technologies: [["SHORECRAFT"], RIME],
       units: [{ seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } }],
-      ice: [
-        { at: WEST, seat: 0 },
-        { at: MIDDLE, seat: 0 },
-      ],
+      ice: [{ at: MIDDLE, seat: 0 }],
     });
-    expect(tileOf(state, WEST)?.improvement).toBe("PORT");
     expect(isOffered(state, at("BUILD_PORT", MIDDLE))).toBe(false);
     expect(rejectV7(state, 0, at("BUILD_PORT", MIDDLE)).code).toBe(
       "INVALID_TILE",
     );
-    expect(
-      offered(state).some((command) => command.kind === "TRAIN_NAVAL"),
-    ).toBe(false);
-    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132; it walked
-    // onto the iced dock and stayed ashore before): the Fighter may not step
-    // onto it, even onto its own seat's ice, and it may Crack its own dock
-    // open instead.
+    // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): the Fighter
+    // may not step onto it, even onto its own seat's ice, and it may Crack
+    // it instead.
     const fighter = navalUnitAtV7(state, { x: 4, y: 2 });
     expect(
-      rejectV7(state, 0, { kind: "MOVE", unitId: fighter.id, path: [WEST] }),
+      rejectV7(state, 0, { kind: "MOVE", unitId: fighter.id, path: [MIDDLE] }),
     ).toEqual({
       code: "MOVEMENT_ILLEGAL",
       params: { reason: "ICE_FORBIDDEN" },
     });
     expect(
-      isOffered(state, { kind: "CRACK_ICE", unitId: fighter.id, at: WEST }),
+      isOffered(state, { kind: "CRACK_ICE", unitId: fighter.id, at: MIDDLE }),
     ).toBe(true);
-  });
-
-  it("a hostile land unit on an Ice Harbour blockades it, and may Pillage it", () => {
-    // A Martian Tripod: a walker (only the Ice Folk, walkers, and flyers go
-    // onto ice since `pulp_wars-y242`; a Human Fighter before).
-    const state = frozenArenaV7({
-      factions: ["ICE_FOLK", "MARTIAN"],
-      technologies: [RIME, ["SCOUTING", "RAIDING"]],
-      units: [{ seat: 1, role: "CATAPULT", at: { x: 3, y: 3 } }],
-      ice: [WEST, { x: 3, y: 3 }].map((tile) => ({ at: tile })),
-    });
-    expect(tileOf(state, WEST)?.improvement).toBe("PORT");
-    const before = cityPopulation(state);
-    const theirs = acceptV7(state, 0, { kind: "END_TURN" }).state;
-    const raider = navalUnitAtV7(theirs, { x: 3, y: 3 });
-    const blockade = acceptV7(theirs, 1, {
-      kind: "MOVE",
-      unitId: raider.id,
-      path: [WEST],
-    });
-    expect(blockade.events).toContainEqual(
-      expect.objectContaining({
-        kind: "PORT_BLOCKADE_CHANGED",
-        at: WEST,
-        activeBefore: true,
-        activeAfter: false,
-      }),
-    );
-    expect(cityPopulation(blockade.state)).toBe(before - 1);
-    expect(
-      viewForV7(blockade.state, seatV7(state, 0).id).naval.ownedPorts,
-    ).toContainEqual(
-      expect.objectContaining({ at: WEST, status: "BLOCKADED" }),
-    );
-    // The next turn it Pillages the harbour; the ice stays.
-    const later = acceptV7(
-      acceptV7(blockade.state, 1, { kind: "END_TURN" }).state,
-      0,
-      { kind: "END_TURN" },
-    ).state;
-    const pillaged = acceptV7(later, 1, { kind: "PILLAGE", unitId: raider.id });
-    expect(tileOf(pillaged.state, WEST)?.improvement).toBeNull();
-    expect(iceEntryV7(pillaged.state, WEST)).toBeDefined();
   });
 
   // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Freeze that reaches

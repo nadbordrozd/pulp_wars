@@ -156,7 +156,16 @@ describe("faction building subjects and names", () => {
       DINOSAUR: ["WINDMILL", ...SIX],
       MARTIAN: ["FARM", "WINDMILL", ...SIX],
       // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole.
-      ICE_FOLK: ["FARM", ...SIX, "FISHING_HOLE"],
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice
+      // Fortress; no own Port or Shipyard look (a captured dock is plain).
+      ICE_FOLK: [
+        "FARM",
+        ...SIX.filter(
+          (improvement) => improvement !== "PORT" && improvement !== "SHIPYARD",
+        ),
+        "FISHING_HOLE",
+        "ICE_FORTRESS",
+      ],
       DWARF: ["FARM", "WINDMILL", ...SIX],
       CANDY: SIX,
       CULT: SIX,
@@ -178,7 +187,9 @@ describe("faction building subjects and names", () => {
     for (const faction of FACTION_IDS_V7)
       for (const improvement of SIX)
         expect(factionImprovementSubjectV7(improvement, faction)).toBe(
-          faction === "ORIGINAL"
+          faction === "ORIGINAL" ||
+            (faction === "ICE_FOLK" &&
+              (improvement === "PORT" || improvement === "SHIPYARD"))
             ? `IMPROVEMENT:${improvement}`
             : `IMPROVEMENT:${faction}:${improvement}`,
         );
@@ -223,12 +234,11 @@ describe("faction building subjects and names", () => {
         .filter(
           (key) =>
             key === "DINOSAUR:SAWMILL" ||
-            // The frozen sea redesign (`pulp_wars-5ti.27`): the Ice Folk
-            // dock is the Ice Harbour and the Great Harbour; their Fishing
-            // Hole is theirs alone and keeps its name.
-            key === "ICE_FOLK:PORT" ||
-            key === "ICE_FOLK:SHIPYARD" ||
-            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD|MARKET|FISHING_HOLE)$/.test(
+            // The frozen sea redesign (`pulp_wars-5ti.27`): their Fishing
+            // Hole (and, `pulp_wars-tzk6`, 7r137, the Ice Fortress) is
+            // theirs alone and keeps its name. (The Ice Folk dock was the
+            // Ice Harbour and the Great Harbour until 7r137.)
+            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD|MARKET|FISHING_HOLE|ICE_FORTRESS)$/.test(
               key,
             ),
         )
@@ -239,7 +249,8 @@ describe("faction building subjects and names", () => {
         "LUMBER_CAMP",
         "FORGE",
         "WORKSHOP",
-        ...(faction === "ICE_FOLK" ? [] : (["PORT", "SHIPYARD"] as const)),
+        "PORT",
+        "SHIPYARD",
         "MARKET",
       ] as const)
         expect(factionBuildingV7(kept, faction)).toBeNull();
@@ -261,8 +272,6 @@ describe("faction building subjects and names", () => {
       "MARTIAN:FARM": "Hydroponic Farm",
       "MARTIAN:WINDMILL": "Solar Array",
       "ICE_FOLK:FARM": "Frost Garden",
-      "ICE_FOLK:PORT": "Ice Harbour",
-      "ICE_FOLK:SHIPYARD": "Great Harbour",
       "DWARF:FARM": "Mushroom Farm",
       "DWARF:WINDMILL": "Steam Pump",
     });
@@ -302,8 +311,9 @@ describe("faction building subjects and names", () => {
     expect(commandSubjectV7({ kind: "BUILD_FORGE", at }, "UNDEAD")).toBe(
       "IMPROVEMENT:UNDEAD:FORGE",
     );
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): no Ice Harbour.
     expect(commandSubjectV7({ kind: "BUILD_PORT", at }, "ICE_FOLK")).toBe(
-      "IMPROVEMENT:ICE_FOLK:PORT",
+      "IMPROVEMENT:PORT",
     );
     expect(commandSubjectV7({ kind: "BUILD_FORGE", at }, "ORIGINAL")).toBe(
       "IMPROVEMENT:FORGE",

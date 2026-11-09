@@ -2,6 +2,8 @@ import type { PlayerId, UnitId } from "../model/ids";
 import {
   EGG_DEFENSE2_V7,
   FROG_DEFENSE2_V7,
+  HARPOON_ATTACK2_V7,
+  ICE_FORTRESS_FORTIFICATION_LEVELS_V7,
   NO_COVER_V7,
   coverBonusV7,
   ownerHasForestCoverV7,
@@ -85,6 +87,7 @@ import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
 import {
   attackFrostBreathV7,
+  attackHarpoonsV7,
   attackMaximumRangeV7,
   attackShattersV7,
   blizzardHalvedDamageV7,
@@ -155,35 +158,14 @@ export function defenseBonusForUnitV7(
 ): DefenseBonusV7 {
   // The Martian revision section 7.1: a walker or flyer never gets cover.
   if (!unitTakesCoverV7(state, unit)) return NO_BONUS;
-  // The frozen sea (naval branch section 8.10): Glacier gives the Snow
-  // cover on ice (never added to anything else).
+  // (Glacier's Snow cover on ice retired with the naval branch rebuilt,
+  // `pulp_wars-tzk6`, 7r137.)
   return coverBonusV7(
     terrainGivesCoverV7(
       tileAtV7(state.board, unit.at)?.terrain,
       ownerHasForestCoverV7(state, unit.ownerId),
     ),
-    snowCoverAppliesV7(state, unit, snowAt) || iceCoverAppliesV7(state, unit),
-  );
-}
-
-/**
- * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.10):
- * Glacier's cover. A land-form unit of the Ice Folk kind standing on ice,
- * whose kind's capabilities under its owner have `iceCover` and whose own
- * fortification level is 0, has the Snow cover (`SNOW_COVER_V7`).
- */
-export function iceCoverAppliesV7(
-  state: GameStateV7,
-  unit: UnitStateV7,
-): boolean {
-  return (
-    state.ice.length > 0 &&
-    unitTakesCoverV7(state, unit) &&
-    unitOwnerIsIceFolkV7(state, unit) &&
-    isIceAtV7(state, unit.at) &&
-    unitCapabilitiesV7(state, unit, ownerResearchedTechsV7(state, unit.ownerId))
-      .iceCover &&
-    fortificationLevelForUnitV7(state, unit) === 0
+    snowCoverAppliesV7(state, unit, snowAt),
   );
 }
 
@@ -264,12 +246,17 @@ export function fortificationPartsForUnitV7(
         ? CITY_WALLS_FORTIFICATION_LEVELS_V7
         : 0,
     // Tuning 4 (`pulp_wars-w49.3`): a Field Defense is two levels (one
-    // before); Dig In is still one, and the two are never added.
+    // before); Dig In is still one, and the two are never added. The naval
+    // branch rebuilt (`pulp_wars-tzk6`, 7r137): an Ice Fortress gives an
+    // own unit on it `ICE_FORTRESS_FORTIFICATION_LEVELS_V7` in this part
+    // (never added to Dig In; no Field Defense stands on ice).
     fieldDefense: tile.fieldDefense
       ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7
-      : dugIn
-        ? 1
-        : 0,
+      : tile.improvement === "ICE_FORTRESS"
+        ? ICE_FORTRESS_FORTIFICATION_LEVELS_V7
+        : dugIn
+          ? 1
+          : 0,
     dugIn,
     tileFieldDefense: tile.fieldDefense,
   };
@@ -558,6 +545,13 @@ export function calculateCombatPreviewV7(
     (plannedPathLength ?? 0) > 0,
   );
   const torpedo = attackIsTorpedoV7(state, attacker);
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Harpoons.
+  const harpoon = attackHarpoonsV7(
+    state,
+    attacker,
+    defender,
+    ownerResearchedTechsV7(state, attacker.ownerId),
+  );
   // `pulp_wars-befg`: a land-form Whirligig's attack is a Whirl (it hits
   // every unit next to it and nothing answers it: no retaliation, Shock
   // Field, Frostbite, Bounce, Sticky Toffee, or Toothache either way).
@@ -584,6 +578,7 @@ export function calculateCombatPreviewV7(
                 : attacker.activation.movedPathLength,
             )
           : 0) +
+        (harpoon ? HARPOON_ATTACK2_V7 : 0) +
         (chargeApplied ? 2 : 0) +
         (inspiredApplied ? 2 : 0) +
         sugarRush2 +
@@ -685,7 +680,6 @@ export function calculateCombatPreviewV7(
     ? NO_BONUS
     : defenseBonusForUnitV7(state, defender, snowAt);
   const snowCover = !uncovered && snowCoverAppliesV7(state, defender, snowAt);
-  const iceCover = !uncovered && iceCoverAppliesV7(state, defender);
 
   const attackForceNumerator =
     BigInt(attack2) * BigInt(unflinching ? attacker.maxHp : attacker.hp);
@@ -1073,7 +1067,7 @@ export function calculateCombatPreviewV7(
         : attackMaximumRangeV7(
             state,
             attacker,
-            tileAtV7(state.board, attacker.at)?.terrain,
+            tileAtV7(state.board, attacker.at),
           ),
     chargeApplied,
     inspiredApplied,
@@ -1156,7 +1150,7 @@ export function calculateCombatPreviewV7(
     ...bounced,
     ram,
     torpedo,
-    iceCover,
+    harpoon,
     shockDamage,
     crackApplied: attackCracksV7(state, attacker, defender, defenderDies),
     frostbiteApplied: frostbitten,

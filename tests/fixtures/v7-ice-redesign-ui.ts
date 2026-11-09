@@ -31,7 +31,7 @@ const NAVAL: readonly TechnologyIdV7[] = [
 export const ICE_REDESIGN_UI_V7 = {
   /** Crack Ice: the Human Warrior on the shore, three ice tiles below it. */
   cracker: { x: 2, y: 2 },
-  /** Plain ice (thick with Glacier, and cracked in the thick scene). */
+  /** Plain ice (thick with Glacier until `pulp_wars-tzk6`, 7r137). */
   west: { x: 1, y: 3 },
   /** Plain ice. */
   middle: { x: 2, y: 3 },
@@ -44,29 +44,31 @@ export const ICE_REDESIGN_UI_V7 = {
   yeti: { x: 2, y: 2 },
   /** The building scene: another player's ice the Freeze takes. */
   foreign: { x: 2, y: 3 },
-  /** The building scene: the Fishing Hole, Workshop and Ice Harbour. */
+  /**
+   * The building scene: the Fishing Hole (or the Ice Fortress on it), the
+   * Workshop, and a captured dock on open water (an Ice Harbour on the ice
+   * until `pulp_wars-tzk6`, 7r137).
+   */
   hole: { x: 4, y: 3 },
   workshop: { x: 5, y: 3 },
   harbour: { x: 6, y: 3 },
 } as const satisfies Record<string, CoordV7>;
 
 /**
- * Seat 0 is Human (the viewer), seat 1 the Ice Folk that own the ice below
- * the Warrior: plain ice, or (`thick`) Glacier's thick ice whose west tile
- * has taken one crack. The Warrior may Crack Ice on all three tiles.
+ * Seat 0 is Human (the viewer), seat 1 the Ice Folk that own the plain ice
+ * below the Warrior (Glacier's thick, cracked variant went with the naval
+ * branch rebuilt, `pulp_wars-tzk6`, 7r137). The Warrior may Crack Ice on
+ * all three tiles.
  */
-export function iceCrackUiFixtureV7(
-  options: { readonly thick?: boolean } = {},
-): GameStateV7 {
+export function iceCrackUiFixtureV7(): GameStateV7 {
   const at = ICE_REDESIGN_UI_V7;
-  const thick = options.thick ?? false;
   return frozenArenaV7({
     factions: ["ORIGINAL", "ICE_FOLK"],
-    technologies: [NAVAL, thick ? NAVAL : ["SHORECRAFT", "NAVIGATION"]],
+    technologies: [NAVAL, ["SHORECRAFT", "NAVIGATION"]],
     ports: [false, false],
     units: [{ seat: 0, role: "FIGHTER", at: at.cracker }],
     ice: [
-      { at: at.west, seat: 1, cracked: thick },
+      { at: at.west, seat: 1 },
       { at: at.middle, seat: 1 },
       { at: at.east, seat: 1 },
       { at: { x: 1, y: 4 }, seat: 1 },
@@ -96,17 +98,17 @@ function accept(state: GameStateV7, command: CommandV7): GameStateV7 {
 }
 
 /**
- * Seat 0 is the Ice Folk (the viewer) with every naval node (thick ice),
- * Crafting and Farming. Its capital's three Shallow Water tiles are its ice,
- * built on with the engine's commands: a Fishing Hole and a Workshop beside
- * it; the third holds an iced-over dock of the seat, its Ice Harbour
- * (`greatHarbour`: a Great Harbour), as a captured one would be (the Ice
- * Folk build no dock since `pulp_wars-s55m.2`).
- * A Yeti on the west shore stands over the Humans' ice (taken by a
- * Freeze) and its own cracked tile (mended by one).
+ * Seat 0 is the Ice Folk (the viewer) with every naval node, Crafting and
+ * Farming. Two of its capital's Shallow Water tiles are its ice, built on
+ * with the engine's commands: a Fishing Hole (`fortress`: raised to an Ice
+ * Fortress) and a Workshop beside it; the third holds a dock of the seat on
+ * open water (`shipyard`: a Shipyard), as a captured one stays since the
+ * naval branch rebuilt (`pulp_wars-tzk6`, 7r137: no Ice Harbour; the Ice
+ * Folk build no dock since `pulp_wars-s55m.2`). A Yeti on the west shore
+ * stands over the Humans' ice and its own.
  */
 export function iceBuildUiFixtureV7(
-  options: { readonly greatHarbour?: boolean } = {},
+  options: { readonly shipyard?: boolean; readonly fortress?: boolean } = {},
 ): GameStateV7 {
   const at = ICE_REDESIGN_UI_V7;
   let state = frozenArenaV7({
@@ -114,26 +116,27 @@ export function iceBuildUiFixtureV7(
     technologies: [[...NAVAL, "DRILL", "GATHERING", "FARMING"], ["SHORECRAFT"]],
     ports: [false, false],
     // Ice Folk movement (`pulp_wars-s55m.2`): the Ice Folk build no dock,
-    // so the Ice Harbour (or Great Harbour) is one the seat holds already,
-    // as a captured one, iced over.
+    // so the dock is one the seat holds already, as a captured one, on
+    // open water.
     improvements: [
       {
         at: at.harbour,
-        improvement: options.greatHarbour === true ? "SHIPYARD" : "PORT",
+        improvement: options.shipyard === true ? "SHIPYARD" : "PORT",
       },
     ],
     units: [{ seat: 0, role: "FIGHTER", at: at.yeti }],
     ice: [
-      { at: at.west, seat: 0, cracked: true },
+      { at: at.west, seat: 0 },
       { at: at.foreign, seat: 1 },
       { at: at.hole, seat: 0 },
       { at: at.workshop, seat: 0 },
-      { at: at.harbour, seat: 0 },
       { at: { x: 7, y: 3 }, seat: 0 },
     ],
   });
   state = accept(state, { kind: "BUILD_FISHING_HOLE", at: at.hole });
   state = accept(state, { kind: "BUILD_WORKSHOP", at: at.workshop });
+  if (options.fortress === true)
+    state = accept(state, { kind: "BUILD_ICE_FORTRESS", at: at.hole });
   return state;
 }
 

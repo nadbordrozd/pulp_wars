@@ -72,7 +72,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "Ice with a unit on it can't be broken: hold your road.",
         "An Ice Witch's Cold Snap freezes the sea around her.",
-        "Soldiers in boats can't strike back.",
+        "A Walrus swims: send it at the boats.",
       ]),
       closing:
         "Anvil Bay surrenders with a dwarvish oath and a pot of tea. Thane Ironbraid sends word: the Ice Folk may pass, and may she please have her harbour back after the Long Night.",

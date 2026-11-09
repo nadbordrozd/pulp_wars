@@ -7,7 +7,6 @@ import {
   parseEventV7,
   parseGameStateV7,
   previewColdSnapV7,
-  previewCrackIceV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -49,8 +48,8 @@ import { at } from "../fixtures/v7-revision20";
 describe("the identity", () => {
   // Ice Folk movement (`pulp_wars-s55m.2`) took 7r124 after it.
   it("was 7r123 after 7r122, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r123");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r122");
@@ -158,7 +157,14 @@ describe("a Frozen ship (section 21.2)", () => {
     const shore = { x: 2, y: 2 };
     const water = { x: 2, y: 3 };
     const scene = (hp: number, frozen: boolean) => {
+      // Without Harpoons (the Ice Folk Seamanship since `pulp_wars-tzk6`,
+      // 7r137), whose +1 Attack is tested in
+      // ruleset-v7-ice-naval-branch-fofr.test.ts.
       const base = frozenArenaV7({
+        technologies: [
+          ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+          NAVAL_TECHS_V7,
+        ],
         units: [
           { seat: 0, role: "FIGHTER", at: shore },
           { seat: 1, role: "PATROL_BOAT", at: water },
@@ -262,7 +268,6 @@ describe("no unit afloat is ever on ice (Icebound is gone)", () => {
           {
             at: { x: 2, y: 5 },
             ownerId: seatV7(base, 0).id,
-            cracked: false,
           },
         ],
       }),
@@ -296,59 +301,6 @@ describe("a freeze and the docks (section 21.16)", () => {
     expect(result.state.frozen).toEqual([{ unitId: boat.id, turnsLeft: 1 }]);
     for (const event of result.events)
       expect(parseEventV7(event).ok).toBe(true);
-  });
-
-  it("ices over a hostile dock, which its owner (and only its owner or an ally) may crack open again", () => {
-    // Seat 0 sails (the active seat); seat 1, the Ice Folk, has iced over
-    // seat 0's Port on (4, 3). Seat 1's own Ice Harbour on (6, 7) is built
-    // on its own ice. Seat 1 has no Glacier, so its ice breaks at once.
-    const state = frozenArenaV7({
-      factions: ["ORIGINAL", "ICE_FOLK"],
-      technologies: [NAVAL_TECHS_V7, ["SHORECRAFT"]],
-      units: [
-        { seat: 0, role: "FIGHTER", at: { x: 4, y: 2 } },
-        { seat: 0, role: "FIGHTER", at: { x: 7, y: 8 } },
-      ],
-      ice: [
-        { at: { x: 4, y: 3 }, seat: 1 },
-        { at: { x: 6, y: 7 }, seat: 1 },
-      ],
-    });
-    const own = navalUnitAtV7(state, { x: 4, y: 2 });
-    const raider = navalUnitAtV7(state, { x: 7, y: 8 });
-    const view = viewForV7(state, seatV7(state, 0).id);
-    expect(previewCrackIceV7(view, own.id, { x: 4, y: 3 })).toEqual({
-      unitId: own.id,
-      at: { x: 4, y: 3 },
-      broken: true,
-    });
-    const cracked = acceptV7(state, 0, {
-      kind: "CRACK_ICE",
-      unitId: own.id,
-      at: { x: 4, y: 3 },
-    });
-    expect(iceEntryV7(cracked.state, { x: 4, y: 3 })).toBeUndefined();
-    expect(
-      cracked.state.board.tiles.find(
-        (tile) => tile.at.x === 4 && tile.at.y === 3,
-      )?.improvement,
-    ).toBe("PORT");
-    expect(cracked.events[0]).toEqual({
-      kind: "ICE_CRACKED",
-      playerId: seatV7(state, 0).id,
-      unitId: own.id,
-      at: { x: 4, y: 3 },
-      broken: true,
-    });
-    // Another player's building on ice is still Pillaged, never cracked.
-    expect(
-      rejectV7(state, 0, {
-        kind: "CRACK_ICE",
-        unitId: raider.id,
-        at: { x: 6, y: 7 },
-      }),
-    ).toEqual({ code: "CRACK_ICE_NOT_LEGAL", params: { reason: "BUILT" } });
-    expect(previewCrackIceV7(view, raider.id, { x: 6, y: 7 })).toBeNull();
   });
 });
 

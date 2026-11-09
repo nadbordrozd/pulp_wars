@@ -689,7 +689,6 @@ import {
   type CuriosityPickV7,
 } from "../canvas/curiosity-board-plan-v7";
 import {
-  BLACK_ICE_UNLOCK_V7,
   CRACK_ICE_LABEL_V7,
   CRACK_ICE_PICK_V7,
   CRACK_ICE_RULE_V7,
@@ -703,7 +702,8 @@ import {
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
   frozenSeaBoundaryNoticeV7,
-  glacierUnlockTextV7,
+  HARPOONS_UNLOCK_V7,
+  UNDER_THE_ICE_UNLOCK_V7,
   iceChipLabelV7,
   iceChipTooltipV7,
   unitHasCrackIceV7,
@@ -9563,12 +9563,12 @@ export class Ruleset7DomAppView {
         for (const [shown, label, tooltip, kind] of [
           [
             iceHere !== undefined,
-            iceHere === undefined ? "" : iceChipLabelV7(iceHere),
+            iceHere === undefined ? "" : iceChipLabelV7(),
             // Bead pulp_wars-2yc.63: who moves here, which the card of a
             // unit on the ice no longer says.
             iceHere === undefined
               ? ""
-              : `${iceChipTooltipV7(view, iceHere)} ${ICE_MOVE_TEXT_V7}`,
+              : `${iceChipTooltipV7()} ${ICE_MOVE_TEXT_V7}`,
             "ice",
           ],
           [tile.snow === true, SNOW_LABEL_V7, snowTooltipV7(view), "snow"],
@@ -9589,12 +9589,9 @@ export class Ruleset7DomAppView {
           chip.dataset.winter = kind;
           if (kind === "ice" && iceHere !== undefined) {
             chip.prepend(uiIconV7(this.#document, "snowflake"));
-            // The frozen sea redesign: thickness, not a countdown.
-            chip.dataset.ice = iceHere.cracked
-              ? "cracked"
-              : iceHere.thick
-                ? "thick"
-                : "sound";
+            // The frozen sea redesign: no countdown; one kind of ice since
+            // the naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+            chip.dataset.ice = "sound";
           }
           chip.title = tooltip;
           chip.setAttribute("aria-label", tooltip);
@@ -19855,7 +19852,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r136",
+    rulesetId: "pulp-wars-poc-7r137",
     seed,
     width,
     height: width,
@@ -20025,14 +20022,19 @@ function effectDescription(
                   : // The frozen sea redesign (bead pulp_wars-5ti.27).
                     effect.command === "BUILD_FISHING_HOLE"
                     ? "Build Fishing Hole"
-                    : // The border freeze (`pulp_wars-5ti.31`).
-                      effect.command === "LAND_GRANT" && faction === "ICE_FOLK"
-                      ? ICE_LAND_GRANT_UNLOCK_V7
-                      : // The Dinosaur pass, correction: a faction's own
-                        // building under its own name ("Build Chopping Block").
-                        factionBuildCommandV7(effect.command, faction) === null
-                        ? title(effect.command)
-                        : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
+                    : // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+                      effect.command === "BUILD_ICE_FORTRESS"
+                      ? "Build Ice Fortress"
+                      : // The border freeze (`pulp_wars-5ti.31`).
+                        effect.command === "LAND_GRANT" &&
+                          faction === "ICE_FOLK"
+                        ? ICE_LAND_GRANT_UNLOCK_V7
+                        : // The Dinosaur pass, correction: a faction's own
+                          // building under its own name ("Build Chopping Block").
+                          factionBuildCommandV7(effect.command, faction) ===
+                            null
+                          ? title(effect.command)
+                          : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
       // Themed naval branches (`pulp_wars-5ti.16`): the faction's own boats.
       return navalRamUnlockTextV7(faction);
@@ -20066,10 +20068,11 @@ function effectDescription(
       return effect.depth === "DEEP"
         ? FREEZE_DEEP_UNLOCK_V7
         : FREEZE_SHALLOW_UNLOCK_V7;
-    case "BLACK_ICE":
-      return BLACK_ICE_UNLOCK_V7;
-    case "GLACIER":
-      return glacierUnlockTextV7();
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+    case "HARPOONS":
+      return HARPOONS_UNLOCK_V7;
+    case "UNDER_THE_ICE":
+      return UNDER_THE_ICE_UNLOCK_V7;
     case "UNIT_ROLE":
       return label(effect.role);
     case "RESOURCE_REVEAL":
@@ -20445,8 +20448,8 @@ function technologyEffectGroupIdV7(
     case "SUGAR_SAILS":
     case "DEEP_OFFERINGS":
     case "HARBOURS":
-    case "BLACK_ICE":
-    case "GLACIER":
+    case "HARPOONS":
+    case "UNDER_THE_ICE":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":
@@ -20733,6 +20736,8 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   BUILD_SHIPYARD: "Shipyard",
   // The frozen sea redesign (bead pulp_wars-5ti.27).
   BUILD_FISHING_HOLE: "Fishing Hole",
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
+  BUILD_ICE_FORTRESS: "Ice Fortress",
   CLEAR_FOREST: "Clear forest",
   REPLANT_FOREST: "Plant forest",
   CULTIVATE_FOREST: "Clear for farming",

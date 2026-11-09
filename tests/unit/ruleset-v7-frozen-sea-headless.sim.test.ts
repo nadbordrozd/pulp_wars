@@ -99,7 +99,7 @@ describe("headless Normal matches with the frozen sea", () => {
       expect(parseGameStateV7(match.state), label).not.toBeNull();
       for (const event of match.events)
         if (event.kind === "COMBAT_RESOLVED") {
-          expect(typeof event.preview.iceCover, label).toBe("boolean");
+          expect(typeof event.preview.harpoon, label).toBe("boolean");
         }
     }
   }, 600_000);

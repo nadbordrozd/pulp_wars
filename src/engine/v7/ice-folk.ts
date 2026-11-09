@@ -2,6 +2,7 @@ import type { PlayerId, UnitId } from "../model/ids";
 import {
   BLIZZARD_RADIUS_V7,
   DEEP_WINTER_RADIUS_V7,
+  ICE_FORTRESS_RANGE_BONUS_V7,
   factionRulesV7,
   ownerResearchedTechsV7,
   technologyCapabilitiesV7,
@@ -23,6 +24,7 @@ import type {
   CoordV7,
   FactionIdV7,
   FrozenStatusV7,
+  TechnologyIdV7,
   GameStateV7,
   UnitFormV7,
   UnitRoleIdV7,
@@ -152,8 +154,8 @@ export function attackFrostBreathV7(
  * during that owner's own turn (it stays Frozen through its next turn), 1
  * otherwise (it thaws at the end of its owner's next turn). Either way the
  * unit loses one turn of its own: the one Freeze effect (`pulp_wars-xv0t`,
- * 7r133) keeps this, since Frostbite (and, until it goes, Black Ice) still
- * freezes a unit during its own turn.
+ * 7r133) keeps this, since Frostbite still freezes a unit during its own
+ * turn (Black Ice did too until `pulp_wars-tzk6`, 7r137).
  */
 export function frozenTurnsForV7(
   state: {
@@ -311,18 +313,14 @@ export function withSnowMeltedV7(state: GameStateV7): GameStateV7 {
 /**
  * The sources of a `UNITS_FROZEN` event (section 21.15). The one Freeze
  * effect (`pulp_wars-xv0t`, 7r133): the Cold Snap, the Frost Giant's Cold
- * Wake, Black Ice (until the naval branch is rebuilt), the Walrus's
- * Frostbite, and the Frost Wyrm's Frost Breath; `BOLAS`, `FROST_BOLT`,
- * `COLD_AURA`, `SHARDS`, and `FREEZE` retired. The Snow Golem and the
- * Mammoth (`pulp_wars-3qtp`, 7r134): the Snow Golem's Snowball.
+ * Wake, the Walrus's Frostbite, and the Frost Wyrm's Frost Breath;
+ * `BOLAS`, `FROST_BOLT`, `COLD_AURA`, `SHARDS`, and `FREEZE` retired. The
+ * Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): the Snow Golem's
+ * Snowball. The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): `BLACK_ICE`
+ * retired.
  */
 export type FrozenSourceV7 =
-  | "COLD_SNAP"
-  | "COLD_WAKE"
-  | "BLACK_ICE"
-  | "FROSTBITE"
-  | "FROST_BREATH"
-  | "SNOWBALL";
+  "COLD_SNAP" | "COLD_WAKE" | "FROSTBITE" | "FROST_BREATH" | "SNOWBALL";
 
 /** One `UNITS_FROZEN` event (section 21.15). */
 export function unitsFrozenEventV7(
@@ -735,8 +733,13 @@ export function unitIgnoresZocStopsV7(
 // ------------------------------------------------------- Unit rules ---
 
 /**
- * Section 7.2 Rockfall: the attack range of a unit standing on `terrain`:
- * the role's range, or 2 for a land-form Yeti (Rockfall) on a Mountain.
+ * Section 7.2 Rockfall: the attack range of a unit standing on `tile` (its
+ * terrain and improvement, or undefined when unknown): the role's range, or
+ * 2 for a land-form Yeti (Rockfall) on a Mountain. The naval branch rebuilt
+ * (`pulp_wars-tzk6`, 7r137, docs/product/ICE_FOLK_REDESIGN_2026-11.md
+ * section 3.4): a land-form unit of range 2 or more on an Ice Fortress
+ * reaches `ICE_FORTRESS_RANGE_BONUS_V7` further (a Snow Hunter 3, a Snow
+ * Golem 4), whoever stands there.
  */
 export function attackMaximumRangeV7(
   roster: FactionRosterV7,
@@ -746,14 +749,47 @@ export function attackMaximumRangeV7(
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
   },
-  terrain: string | undefined,
+  tile:
+    | {
+        readonly terrain: string;
+        readonly improvement?: string | null;
+      }
+    | undefined,
 ): number {
   const range = unitRoleRuleV7(roster, unit).range;
-  return unit.form === "LAND" &&
-    terrain === "MOUNTAIN" &&
+  if (unit.form !== "LAND") return range;
+  if (range >= 2 && tile?.improvement === "ICE_FORTRESS")
+    return range + ICE_FORTRESS_RANGE_BONUS_V7;
+  return tile?.terrain === "MOUNTAIN" &&
     unitRoleMechanicsV7(roster, unit).rockfallAttack2 > 0
     ? Math.max(range, 2)
     : range;
+}
+
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): Harpoons. An
+ * attack (never a retaliation) of a unit whose kind's capabilities under
+ * its controller have `harpoons` (the Ice Folk Seamanship, shown as
+ * Harpoons) on a unit afloat (naval or embarked form) has
+ * `HARPOON_ATTACK2_V7` more Attack. `researchedTechs` is the controller's.
+ */
+export function attackHarpoonsV7(
+  roster: FactionRosterV7,
+  attacker: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitFormV7;
+  },
+  defender: { readonly form: UnitFormV7 },
+  researchedTechs: readonly TechnologyIdV7[],
+): boolean {
+  return (
+    attacker.form === "LAND" &&
+    (defender.form === "NAVAL" || defender.form === "EMBARKED") &&
+    unitCapabilitiesV7(roster, attacker, researchedTechs).harpoons
+  );
 }
 
 /**

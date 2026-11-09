@@ -9,6 +9,7 @@ import {
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import { previewColdSnapV7 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
@@ -528,6 +529,11 @@ export function iceFolkResearchV7(
   if (view.viewer.faction !== "ICE_FOLK") return null;
   const owned = new Set(view.viewer.researchedTechs);
   const tree = factionTreeV7(view.viewer.faction);
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Walrus is
+  // Rime's, a Naval technology no seat may research on Dry Land (or where a
+  // mission forbids it), so a chain through a forbidden technology is
+  // passed by.
+  const forbidden = forbiddenTechnologiesV7(view.setup, view.viewer.seat);
   const chainTo = (target: TechnologyIdV7): readonly TechnologyIdV7[] => {
     const result: TechnologyIdV7[] = [];
     const visit = (tech: TechnologyIdV7): void => {
@@ -560,6 +566,7 @@ export function iceFolkResearchV7(
       const chain = chainTo(tech);
       if (
         chain.length > 0 &&
+        !chain.some((step) => forbidden.has(step)) &&
         (best === null || chain.length < best.chain.length)
       )
         best = { chain, role };

@@ -90,6 +90,7 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // The naval branch (`pulp_wars-5ti.2`): Harbours is the dock owner's own
   // capability (a seat-level economy rule).
   "src/engine/v7/economy.ts::harbourPopulationForV7": "SEAT",
+  "src/engine/v7/economy.ts::underTheIceForV7": "SEAT",
   "src/engine/v7/eggs.ts::laidEggHpV7": "SEAT",
   "src/engine/v7/eggs.ts::laidEggTurnsV7": "SEAT",
   // Also a ship's cost since `pulp_wars-2yc.94`: the themed naval branches
@@ -211,7 +212,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-frozen-sea.ts::iceShipMoveRejectedV7": "SEAT",
   "src/ai/v7-frozen-sea.ts::iceSeaSeatV7": "SEAT",
   "src/ai/v7-frozen-sea.ts::computeIcePlan": "SEAT",
-  "src/ai/v7-frozen-sea.ts::blackIceSeat": "SEAT",
   // `pulp_wars-5ti.26`: only an Ice Folk seat builds on ice (a seat rule,
   // as in the engine's `iceBuildableV7`), and only it buys growth with a
   // Fishing Hole.
@@ -653,7 +653,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/rules/ruleset-v7.ts::boardSeaBeastBlockedV7": "KIND",
   // The frozen sea interface (`pulp_wars-5ti.7`): Black Ice is the ice
   // owner's own capability, and the Sea Dog goal is the viewer's seat's.
-  "src/render/frozen-sea-presentation-v7.ts::viewerHasBlackIceV7": "SEAT",
   // Bead pulp_wars-2yc.70: the deed line reads the viewer's seat faction
   // for its mill's name and the Ice Folk Sea Dog, like the goal; a unit's
   // name goes through `unitDisplayNameV7`, which reads its kind.
@@ -735,8 +734,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // thick ice are the research of the seat that owns the ice; building on
   // ice is a seat rule of the builder's own faction (like Snow), so the
   // reducer's placement checks and the public query read the seat.
-  "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "SEAT",
-  "src/engine/v7/ice.ts::iceIsThickV7": "SEAT",
   // The border freeze (`pulp_wars-5ti.31`): a seat freezes its own
   // territory by its own research, on a grant, a capture, or a research.
   "src/engine/v7/ice.ts::territoryFreezeV7": "SEAT",
@@ -749,6 +746,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Ice Folk movement (`pulp_wars-s55m.2`): an Ice Folk seat builds no
   // Great Harbour (a seat rule).
   "src/engine/v7/reducer.ts::applyShipyard": "SEAT",
+  "src/engine/v7/reducer.ts::applyIceFortress": "SEAT",
+  "src/engine/v7/query.ts::liveTotalForCityV7": "SEAT",
   "src/engine/v7/achievements.ts::revision21AchievementCountsV7": "SEAT",
   "src/engine/v7/state-schema.ts::iceValid": "KIND",
   // City names (`pulp_wars-2yc.30`): a city is named from the list of a

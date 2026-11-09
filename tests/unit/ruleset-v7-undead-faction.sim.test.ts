@@ -431,7 +431,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           bounceTo,
           ram,
           torpedo,
-          iceCover,
+          harpoon,
           shockDamage,
           crackApplied,
           frostbiteApplied,
@@ -445,7 +445,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           false,
         ]);
         // The frozen sea (pulp_wars-5ti.3): two neutral fields.
-        expect(iceCover).toBe(false);
+        expect(harpoon).toBe(false);
         // The naval branch (pulp_wars-5ti.2): two fields that were neutral
         // while no seat researched Seamanship or Submersibles. Since tuning
         // 1 (`pulp_wars-w49.3`, 7r46: cheaper technology with many cities)

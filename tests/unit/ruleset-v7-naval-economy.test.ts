@@ -554,7 +554,6 @@ describe("ruleset-7 naval economy", () => {
       ice: [5, 6, 7].map((x) => ({
         at: { x, y: 2 },
         ownerId: hostile.ownerId,
-        cracked: false,
       })),
     };
     expect(seaLinksV7(frozenRoute, base.humanPlayerId)).toHaveLength(1);

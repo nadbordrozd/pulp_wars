@@ -36,7 +36,7 @@ const NO_GLACIER = NAVAL_TECHS_V7.filter((tech) => tech !== "SUBMERSIBLES");
 // ground for land-form units and closed to ships; every other ground unit
 // slipped (its Move ended on entering ice) until `pulp_wars-y242` (7r132):
 // since then only the Ice Folk, walkers, and flyers enter ice. Skating is
-// plain movement (`pulp_wars-ecnj`, `pulp-wars-poc-7r136`; Skate, Runners
+// plain movement (`pulp_wars-ecnj`, `pulp-wars-poc-7r137`; Skate, Runners
 // and the Sled's glide through zones of control of `pulp_wars-s55m.2`
 // before, the forced slide before them): an Ice Folk unit Glides on ice as
 // on Snow (a step from a frozen tile onto a frozen tile costs half a Move

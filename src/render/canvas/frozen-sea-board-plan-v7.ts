@@ -15,11 +15,9 @@ import {
 import {
   CRACK_ICE_PICK_V7,
   crackIceOutcomeTextV7,
-  crackIceOutcomeV7,
   crackIceTargetLabelV7,
   freezeRingLabelV7,
   freezesRingV7,
-  iceCrackStageV7,
 } from "../frozen-sea-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -44,13 +42,8 @@ export interface SeaIceCellV7 {
   readonly openWater: number;
   /** The edge's stable variant (0 or 1). */
   readonly variant: number;
-  /**
-   * Thick ice (its owner has Glacier; the frozen sea redesign,
-   * RULESET_7_ICE_REDESIGN.md section 4.1): dusted with snow.
-   */
-  readonly permanent: boolean;
-  /** Cracks: 0 (sound) or 2 (cracked thick ice). */
-  readonly stage: 0 | 1 | 2 | 3;
+  // (`permanent`, thick ice dusted with snow, and `stage`, its cracks,
+  // went with Glacier: the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
 }
 
 /**
@@ -102,8 +95,6 @@ export function seaIceCellsV7(
       depth: under === "SHALLOW_WATER" ? "SHALLOW" : "DEEP",
       openWater,
       variant: (entry.at.x * 7 + entry.at.y * 13) & 1,
-      permanent: entry.thick,
-      stage: iceCrackStageV7(entry),
     });
   }
   return cells;
@@ -114,7 +105,7 @@ export function seaIceCellsV7(
  * RULESET_7_ICE_REDESIGN.md section 4.1): one per offered `CRACK_ICE` of
  * the unit, on its ice tile, labelled with the exact outcome of
  * `previewCrackIceV7`. It harms the owner's work, so it wears the Attack
- * mark; over an own or allied iced-over dock it wears the Help mark.
+ * mark.
  */
 export function crackIcePickTargetsV7(
   view: PlayerViewV7,
@@ -126,15 +117,13 @@ export function crackIcePickTargetsV7(
       return [];
     const preview = previewCrackIceV7(view, command.unitId, command.at);
     if (preview === null) return [];
-    const outcome = crackIceOutcomeV7(view, preview);
     return [
       {
         at: command.at,
         command,
         family: "CRACK_ICE",
-        ...(outcome.dock ? { highlight: "SUPPORT" as const } : {}),
-        previewLabel: crackIceTargetLabelV7(outcome),
-        semanticLabel: `${crackIceOutcomeTextV7(outcome)} ${CRACK_ICE_PICK_V7}.`,
+        previewLabel: crackIceTargetLabelV7(),
+        semanticLabel: `${crackIceOutcomeTextV7()} ${CRACK_ICE_PICK_V7}.`,
       },
     ];
   });

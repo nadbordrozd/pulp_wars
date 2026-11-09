@@ -22,12 +22,14 @@ import {
   SUMMONED_MECHANICAL_ROLES_V7,
   summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
-  technologyCapabilitiesV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   cityRewardCandidatesV7,
   cityRewardRecordMatchesLevelV7,
   dockPopulationV7,
+  holePopulationV7,
+  isFishingHoleImprovementV7,
+  swimEntryV7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
   factionHasFavourV7,
@@ -144,6 +146,7 @@ import {
   harbourPopulationForV7,
   rewardCandidatesForLevelV7,
   roadPopulationReaderV7,
+  underTheIceForV7,
 } from "./economy";
 import {
   compareCoordsV7,
@@ -2872,28 +2875,26 @@ function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
  * The naval branch, the frozen sea
  * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3): the ice list,
  * strictly ascending by (y, x) (so no tile holds two). The frozen sea
- * redesign (RULESET_7_ICE_REDESIGN.md section 2.3): each entry is
- * `{ at, ownerId, cracked }` (no countdown: `turnsLeft` is refused). The
- * tiles, owners, and cracks are checked with the cross references
- * (`iceValid`).
+ * redesign (RULESET_7_ICE_REDESIGN.md section 2.3): no countdown
+ * (`turnsLeft` is refused). The naval branch rebuilt (`pulp_wars-tzk6`,
+ * 7r137): each entry is `{ at, ownerId }` (`cracked` is refused). The
+ * tiles and owners are checked with the cross references (`iceValid`).
  */
 function parseIce(input: unknown): readonly IceTileV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: IceTileV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["at", "cracked", "ownerId"])) return null;
+    if (!hasExactKeysV7(candidate, ["at", "ownerId"])) return null;
     const at = parseCoordV7(candidate.at);
     const ownerId = parsePlayerIdV7(candidate.ownerId);
-    const cracked = candidate.cracked;
     if (
       at === null ||
       ownerId === null ||
-      typeof cracked !== "boolean" ||
       (values.length > 0 &&
         compareCoordsV7((values.at(-1) as IceTileV7).at, at) >= 0)
     )
       return null;
-    values.push({ at, ownerId, cracked });
+    values.push({ at, ownerId });
   }
   return values;
 }
@@ -2903,9 +2904,9 @@ function parseIce(input: unknown): readonly IceTileV7[] | null {
  * match without an Ice Folk seat; every entry lies on a water tile of the
  * board and is owned by a player of the match; no unit of the Ice Folk kind
  * is afloat, and no Ice Folk seat owns a ship. The frozen sea redesign
- * (RULESET_7_ICE_REDESIGN.md sections 2.3 and 2.6): an entry is `cracked`
- * only when its owner has thick ice; a building on water stands on ice,
- * except a Port or Shipyard on open Shallow Water.
+ * (RULESET_7_ICE_REDESIGN.md section 2.6): a building on water stands on
+ * ice, except a Port or Shipyard on open Shallow Water. The naval branch
+ * rebuilt (`pulp_wars-tzk6`, 7r137): no dock stands on ice.
  */
 /**
  * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
@@ -2954,10 +2955,8 @@ function iceValid(
       tile.biome !== null ||
       (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER") ||
       owner === undefined ||
-      (entry.cracked &&
-        (owner.status === "ELIMINATED" ||
-          !technologyCapabilitiesV7(owner.researchedTechs, owner.faction)
-            .thickIce))
+      tile.improvement === "PORT" ||
+      tile.improvement === "SHIPYARD"
     )
       return false;
   }
@@ -3359,13 +3358,19 @@ function validateCrossReferences(value: CrossInput): boolean {
       // may stand on any water tile (it is in the air, never afloat).
       // Ice Folk freeze rework (`pulp_wars-s55m.1`): no unit afloat is ever
       // on ice (there is no Icebound).
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a land-form
+      // swimmer (the Walrus) may stand on open water that is no dock. Deep
+      // Water needs Navigation to enter, not to stand on: a Walrus a Brain
+      // swam out to Deep Water and then released to an owner without Pack
+      // Ice stays there and may swim back to Shallow Water.
       (isAfloatFormV7(unit.form)
         ? tile.biome !== null || iceKeys.has(key(unit.at))
         : tile.biome === null &&
           !(
             unit.form === "LAND" &&
             (iceKeys.has(key(unit.at)) ||
-              roleMechanicsV7(unit.role, kind).movementMode === "FLY")
+              roleMechanicsV7(unit.role, kind).movementMode === "FLY" ||
+              (roleMechanicsV7(unit.role, kind).swims && swimEntryV7(tile)))
           )) ||
       (isAfloatFormV7(unit.form) &&
         tile.terrain === "DEEP_WATER" &&
@@ -4235,7 +4240,6 @@ function populationLedgerValid(
     humanPlayerId,
     ice,
   };
-  const iceKeys = new Set(ice.map((entry) => key(entry.at)));
   const cityById = new Map(cities.map((city) => [city.id, city]));
   const liveByCoord = new Map<string, PopulationContributionV7>();
   const permanent = new Set<string>();
@@ -4259,12 +4263,10 @@ function populationLedgerValid(
                 (units.some(
                   (unit) =>
                     unit.hp > 0 &&
-                    // The frozen sea redesign (section 2.6): a dock on ice
-                    // is blockaded by a land-form unit, one on water by a
+                    // A dock (always on open water since the naval branch
+                    // rebuilt, `pulp_wars-tzk6`, 7r137) is blockaded by a
                     // unit afloat.
-                    (iceKeys.has(key(tile.at))
-                      ? unit.form === "LAND"
-                      : isAfloatFormV7(unit.form)) &&
+                    isAfloatFormV7(unit.form) &&
                     sameCoordV7(unit.at, tile.at) &&
                     unit.ownerId !== city.ownerId &&
                     !cooperativeAlliesV7(
@@ -4280,7 +4282,16 @@ function populationLedgerValid(
                       tile.improvement,
                       harbourPopulationForV7(players, city.ownerId),
                     ))
-              : contribution.amount !== liveValue(board, cities, tile))
+              : // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): a
+                // Fishing Hole or an Ice Fortress, 1 more with its owner's
+                // Under the Ice.
+                isFishingHoleImprovementV7(tile.improvement)
+                ? contribution.amount !==
+                  holePopulationV7(
+                    tile.improvement,
+                    underTheIceForV7(players, city.ownerId),
+                  )
+                : contribution.amount !== liveValue(board, cities, tile))
           : tile.improvement !== "MONUMENT" ||
             contribution.amount !== MONUMENT_POPULATION_V7)
       )
@@ -4470,11 +4481,13 @@ function basicImprovementMatchesTerrain(
       ? terrain === "FOREST"
       : improvement === "MINE"
         ? terrain === "MOUNTAIN"
-        : // The frozen sea redesign (section 2.6): an Ice Harbour may stand
-          // on Deep ice (`iceValid`), a Fishing Hole only on ice.
+        : // The frozen sea redesign (section 2.6): a Fishing Hole (and the
+          // Ice Fortress on one, `pulp_wars-tzk6`, 7r137) stands only on
+          // ice (`iceValid`), a dock only on open water.
           improvement === "PORT" ||
             improvement === "SHIPYARD" ||
-            improvement === "FISHING_HOLE"
+            improvement === "FISHING_HOLE" ||
+            improvement === "ICE_FORTRESS"
           ? terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER"
           : true;
 }

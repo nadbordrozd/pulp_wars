@@ -54,12 +54,11 @@ const FACTION_BUILDINGS: Readonly<
     building("FARM", "Hydroponic Farm", "Earth vegetables, under glass."),
     building("WINDMILL", "Solar Array", "Drinks the light of a lesser star."),
   ]),
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk build
+  // no dock, and one they capture stays a plain Port or Shipyard (the Ice
+  // Harbour and the Great Harbour are gone).
   ICE_FOLK: new Map([
     building("FARM", "Frost Garden", "Frost flowers that like the cold."),
-    // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6, bead
-    // pulp_wars-5ti.27): the Ice Folk dock stands on their ice.
-    building("PORT", "Ice Harbour", "A boathouse on the ice; no ship docks."),
-    building("SHIPYARD", "Great Harbour", "An ice hall for a frozen bay."),
   ]),
   DWARF: new Map([
     building("FARM", "Mushroom Farm", "Grown in the dark, eaten with ale."),

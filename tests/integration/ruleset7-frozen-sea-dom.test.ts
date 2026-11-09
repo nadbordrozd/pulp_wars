@@ -9,8 +9,9 @@ import {
 import {
   FREEZE_DEEP_UNLOCK_V7,
   FREEZE_SHALLOW_UNLOCK_V7,
-  glacierUnlockTextV7,
-  ICE_COVER_TOOLTIP_V7,
+  HARPOONS_UNLOCK_V7,
+  ICE_FORTRESS_UNLOCK_V7,
+  UNDER_THE_ICE_UNLOCK_V7,
   ICE_FOR_SHIPS_HELP_V7,
   ICE_MOVE_TEXT_V7,
   ICE_HELP_RULES_V7,
@@ -222,11 +223,11 @@ describe("moving on ice", () => {
       ),
     ).toBeNull();
     host.callbacks?.onSelection({ kind: "TILE", at: moved.at });
-    const cover = requiredElement<HTMLElement>(
-      '.v7-selection-dock [data-ground-bonus="snow"]',
-    );
-    expect(cover.textContent).toBe("Ice cover +25% Defense");
-    expect(cover.title).toBe(`${ICE_COVER_TOOLTIP_V7}.`);
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): no cover on ice
+    // (Glacier's "Ice cover" is gone).
+    expect(
+      document.querySelector('.v7-selection-dock [data-ground-bonus="snow"]'),
+    ).toBeNull();
     expect(
       requiredElement<HTMLElement>('.v7-selection-dock [data-winter="ice"]')
         .title,
@@ -317,39 +318,28 @@ describe("a Frozen ship", () => {
 });
 
 describe("the ice chip of a tile", () => {
-  it("shows whether the ice is thick or cracked, never a countdown", () => {
-    // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent; with
-    // Glacier it is thick, and the last tile of the row is cracked.
+  it("shows plain ice, never a countdown, a thickness or a crack", () => {
+    // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent. The
+    // naval branch rebuilt (`pulp_wars-tzk6`, 7r137): no ice is thick or
+    // cracked, whatever its owner researched.
     const { host, app } = rig(frozenShipUiFixtureV7());
     const chip = (): HTMLElement =>
       requiredElement<HTMLElement>('.v7-selection-dock [data-winter="ice"]');
-    for (const [index, kind] of ["thick", "thick", "cracked"].entries()) {
-      host.callbacks?.onSelection({
-        kind: "TILE",
-        at: required(FROZEN_UI_V7.melting[index]),
-      });
-      expect(chip().dataset.ice).toBe(kind);
-      expect(chip().textContent).toBe(`Ice · ${kind}`);
+    for (const tile of [...FROZEN_UI_V7.melting, FROZEN_UI_V7.permanent]) {
+      host.callbacks?.onSelection({ kind: "TILE", at: tile });
+      expect(chip().dataset.ice).toBe("sound");
+      expect(chip().textContent).toBe("Ice");
       expect(chip().querySelector('[data-icon="snowflake"]')).not.toBeNull();
       expect(chip().title).not.toMatch(COORDINATE);
-      expect(chip().title).not.toMatch(/melt|turns/i);
+      expect(chip().title).not.toMatch(/melt|turns|thick|crack once/i);
     }
-    host.callbacks?.onSelection({ kind: "TILE", at: FROZEN_UI_V7.permanent });
-    expect(chip().dataset.ice).toBe("thick");
-    expect(chip().title).toContain("Thick: two Cracks break it.");
-    // The plan draws snow on thick ice and cracks on the cracked tile.
     const cells = new Map(
       boardPlan(host)
         .entries.filter((entry) => entry.seaIce !== undefined)
         .map((entry) => [at(entry.at), entry.seaIce]),
     );
-    expect(cells.get(at(FROZEN_UI_V7.permanent))).toMatchObject({
-      permanent: true,
-      stage: 0,
-    });
-    expect(
-      FROZEN_UI_V7.melting.map((tile) => cells.get(at(tile))?.stage),
-    ).toEqual([0, 0, 2]);
+    for (const tile of [...FROZEN_UI_V7.melting, FROZEN_UI_V7.permanent])
+      expect(cells.get(at(tile))).not.toHaveProperty("stage");
     app.destroy();
   });
 });
@@ -382,7 +372,13 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
         "seamanship",
         "submersibles",
       ].map(name),
-    ).toEqual(["Rime", "Pack Ice", "Hoarfrost", "Black Ice", "Glacier"]);
+    ).toEqual([
+      "Rime",
+      "Pack Ice",
+      "Ice Fortress",
+      "Harpoons",
+      "Under the Ice",
+    ]);
     const rime = lines("shorecraft");
     // The one Freeze effect (`pulp_wars-xv0t`): the freezes are the Cold
     // Snap and the Cold Wake; the technologies say what water they reach.
@@ -391,28 +387,33 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
       "Ice: your freezes make ice on shallow water, and the water inside your borders freezes now and whenever they grow",
     );
     expect(rime).toContain("The Ice Folk build no ships");
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Rime trains the
+    // Walrus.
+    expect(rime.join(" ")).toContain("Walrus");
     expect(rime.join(" ")).not.toMatch(/embark|Patrol Boat/i);
     expect(lines("navigation")).toContain(FREEZE_DEEP_UNLOCK_V7);
     expect(lines("navigation").join(" ")).not.toContain("Ships can sail");
-    // Hoarfrost's longer Freeze line went with the line Freeze; the node
-    // has nothing until the Ice Folk redesign's later beads.
-    const hoarfrost = lines("naval_engineering");
-    expect(hoarfrost.join(" ")).not.toMatch(/three tiles|Battleship/);
-    expect(lines("seamanship")).toEqual([
-      "Black Ice: an enemy that steps onto your ice is Frozen",
-    ]);
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress,
+    // Harpoons and Under the Ice (Hoarfrost, Black Ice and Glacier before).
+    const fortress = lines("naval_engineering");
+    expect(fortress).toContain(ICE_FORTRESS_UNLOCK_V7);
+    expect(fortress.join(" ")).not.toMatch(/three tiles|Battleship/);
+    expect(lines("seamanship")).toEqual([HARPOONS_UNLOCK_V7]);
+    expect(HARPOONS_UNLOCK_V7).toBe(
+      "Harpoons: +1 Attack against ships and boats",
+    );
     // The border freeze (`pulp_wars-5ti.31`): the Ice Folk Land Grant.
     expect(lines("planning")).toContain(
       "Land Grant: with Rime, the water inside the city's borders, old and new, freezes",
     );
-    const glacier = lines("submersibles");
-    expect(glacier).toContain(glacierUnlockTextV7());
-    expect(glacier.join(" ")).not.toContain("Submarine");
+    const under = lines("submersibles");
+    expect(under).toContain(UNDER_THE_ICE_UNLOCK_V7);
+    expect(under.join(" ")).not.toContain("Submarine");
     expect(
       requiredElement<HTMLElement>(".v7-tech-detail").getAttribute(
         "aria-label",
       ),
-    ).toBe("Glacier details");
+    ).toBe("Under the Ice details");
     app.destroy();
   });
 

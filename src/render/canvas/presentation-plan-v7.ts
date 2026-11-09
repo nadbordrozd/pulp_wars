@@ -1567,7 +1567,6 @@ export function corePresentationPlanV7(
           cells,
           ...(source === undefined ||
           !isExplored(source.at) ||
-          event.source === "BLACK_ICE" ||
           event.source === "FROSTBITE"
             ? {}
             : { from: source.at }),
@@ -1653,12 +1652,13 @@ export function corePresentationPlanV7(
         });
     } else if (event.kind === "ICE_CRACKED") {
       // The frozen sea redesign (bead pulp_wars-5ti.27): a crack flashes
-      // across the tile; a break then gives way into floes.
+      // across the tile and gives way into floes (every Crack breaks its
+      // tile since `pulp_wars-tzk6`, 7r137).
       if (isExplored(event.at)) {
         const source =
           event.unitId === null ? undefined : unitAnywhere(event.unitId);
         pushIceFolk({
-          effect: event.broken ? "ICE_BREAK" : "ICE_CRACK",
+          effect: "ICE_BREAK",
           cells: [event.at],
           ...(source === undefined || !isExplored(source.at)
             ? {}

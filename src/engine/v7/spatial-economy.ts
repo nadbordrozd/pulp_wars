@@ -83,13 +83,23 @@ const PROCESSORS = ["WINDMILL", "SAWMILL", "FORGE"] as const;
 /**
  * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the
  * Fishing Hole counts as a Farm wherever a mill, a Workshop, or a Market
- * counts Farms; it is the Farm type and the agriculture family.
+ * counts Farms; it is the Farm type and the agriculture family. The naval
+ * branch rebuilt (`pulp_wars-tzk6`, 7r137): so is the Ice Fortress built on
+ * one.
  */
-const CONTRIBUTORS = ["FARM", "LUMBER_CAMP", "MINE", "FISHING_HOLE"] as const;
+const CONTRIBUTORS = [
+  "FARM",
+  "LUMBER_CAMP",
+  "MINE",
+  "FISHING_HOLE",
+  "ICE_FORTRESS",
+] as const;
 function basicTypeOfV7(
   improvement: ImprovementIdV7 | null,
 ): ImprovementIdV7 | null {
-  return improvement === "FISHING_HOLE" ? "FARM" : improvement;
+  return improvement === "FISHING_HOLE" || improvement === "ICE_FORTRESS"
+    ? "FARM"
+    : improvement;
 }
 
 export function spatialContributionAtV7(
@@ -120,6 +130,8 @@ function calculateSpatialContributionAtV7(
   if (improvement === "FARM") return fixed(2, at, improvement);
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
   if (improvement === "FISHING_HOLE") return fixed(1, at, improvement);
+  // The live economy adds Under the Ice to both (`holePopulationV7`).
+  if (improvement === "ICE_FORTRESS") return fixed(2, at, improvement);
   if (improvement === "MINE") return fixed(2, at, improvement);
   if (improvement === "MONUMENT")
     return fixed(MONUMENT_POPULATION_V7, at, improvement);
@@ -228,7 +240,7 @@ function spatialPlacementSupportV7(
       graph,
       at,
       city.ownerId,
-      type === "FARM" ? ["FARM", "FISHING_HOLE"] : [type],
+      type === "FARM" ? ["FARM", "FISHING_HOLE", "ICE_FORTRESS"] : [type],
       cityById,
     );
     return {
@@ -399,7 +411,12 @@ function orderedTypes<T extends ImprovementIdV7>(
   );
 }
 function familyFor(value: ImprovementIdV7 | null): EconomicFamilyV7 | null {
-  if (value === "FARM" || value === "FISHING_HOLE" || value === "WINDMILL")
+  if (
+    value === "FARM" ||
+    value === "FISHING_HOLE" ||
+    value === "ICE_FORTRESS" ||
+    value === "WINDMILL"
+  )
     return "AGRICULTURE";
   if (value === "LUMBER_CAMP" || value === "SAWMILL") return "TIMBER";
   if (value === "MINE" || value === "FORGE") return "METAL";

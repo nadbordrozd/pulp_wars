@@ -112,8 +112,8 @@ const dive = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
 describe("the identity", () => {
   // The Ice Folk roster rework (`pulp_wars-s55m.4`) took 7r125 after it.
   it("was 7r124 after 7r123, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r124");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r123");
@@ -270,13 +270,11 @@ describe("the Fishing Hole dive (pulp_wars-s55m.2)", () => {
 });
 
 describe("no docks for the Ice Folk (pulp_wars-s55m.2)", () => {
-  it("their tree unlocks no Port, Shipyard, Harbours, or naval discount, and only Hoarfrost is empty", () => {
+  it("their tree unlocks no Port, Shipyard, Harbours, or naval discount, and no node is empty", () => {
     for (const node of ICE_FOLK_BASELINE_V1_NODES) {
-      // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Hoarfrost's long
-      // Freeze line went with `FREEZE`; the node is empty until the naval
-      // branch is rebuilt (docs/product/ICE_FOLK_REDESIGN_2026-11.md).
-      if (node.id !== "NAVAL_ENGINEERING")
-        expect(node.unlocks.length, node.id).toBeGreaterThan(0);
+      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Naval
+      // Engineering is the Ice Fortress (empty from 7r133 to 7r136).
+      expect(node.unlocks.length, node.id).toBeGreaterThan(0);
       for (const unlock of node.unlocks) {
         expect(unlock.kind, node.id).not.toBe("HARBOURS");
         expect(unlock.kind, node.id).not.toBe("NAVAL_TRAINING_DISCOUNT");
@@ -294,9 +292,12 @@ describe("no docks for the Ice Folk (pulp_wars-s55m.2)", () => {
         { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
       ]),
     );
-    // Glacier keeps its thick ice.
-    expect(unlocks("NAVAL_ENGINEERING")).toEqual([]);
-    expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "GLACIER" }]);
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
+    // and Under the Ice (Glacier's thick ice before).
+    expect(unlocks("NAVAL_ENGINEERING")).toEqual([
+      { kind: "COMMAND", command: "BUILD_ICE_FORTRESS" },
+    ]);
+    expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "UNDER_THE_ICE" }]);
   });
 
   it("an Ice Folk seat is offered a Fishing Hole on its ice and never a Port or a Shipyard", () => {

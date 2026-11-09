@@ -478,6 +478,7 @@
     {
       "id": "chibi-direction-icon-tech-icebound",
       "subject": "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
+      "subjectKey": "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING/ICE_FORTRESS",
       "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
@@ -489,6 +490,7 @@
     {
       "id": "chibi-direction-icon-tech-black-ice",
       "subject": "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+      "subjectKey": "ICON:TECH:ICE_FOLK:SEAMANSHIP/HARPOONS",
       "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
@@ -500,6 +502,7 @@
     {
       "id": "chibi-direction-icon-tech-glacier",
       "subject": "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+      "subjectKey": "ICON:TECH:ICE_FOLK:SUBMERSIBLES/UNDER_THE_ICE",
       "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
@@ -1807,6 +1810,68 @@
       },
       "editInstruction": "Redraw it as a different object in the same style: one thick pointed icicle spear of bright pale blue ice with a white shine, flying to the right, with three short white speed lines behind it and one small white frost sparkle at its tip; drawn large, filling the square. Nothing else: no tusk, no snowflake, no face. Thick dark navy outline, flat colours, on a transparent background.",
       "notes": "icon-frost-bolt-a reads as an ice bolt but is a thin outline-less streak like a comet; asks for a thick outlined icicle spear, drawn large."
+    },
+    {
+      "id": "icon-tech-ice-fortress-a",
+      "asset": "chibi-direction-icon-tech-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 76061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, platform, person, character, hand, fire, orange, purple, red, boat, ship, sail, water waves, castle on land, brick, stone wall",
+      "notes": "Bead pulp_wars-tzk6 (the naval branch rebuilt, 7r137): Naval Engineering is the Ice Fortress (Hoarfrost and Icebound before); the asset keeps its id, the subject key gives the new text."
+    },
+    {
+      "id": "icon-tech-harpoons-a",
+      "asset": "chibi-direction-icon-tech-black-ice",
+      "endpoint": "create-image-pixen",
+      "seed": 76071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, metal, steel, iron, gun, fish, water, boat",
+      "notes": "Bead pulp_wars-tzk6 (the naval branch rebuilt, 7r137): Seamanship is Harpoons (Black Ice before); the asset keeps its id, the subject key gives the new text."
+    },
+    {
+      "id": "icon-tech-under-the-ice-a",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "endpoint": "create-image-pixen",
+      "seed": 76081,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, platform, person, character, hand, fire, orange, purple, red, boat, ship, submarine, metal, fish, seal without tusks, mountain rock",
+      "notes": "Bead pulp_wars-tzk6 (the naval branch rebuilt, 7r137): Submersibles is Under the Ice, the dive between Fishing Holes (Glacier before); the asset keeps its id, the subject key gives the new text."
+    },
+    {
+      "id": "icon-tech-ice-fortress-b",
+      "asset": "chibi-direction-icon-tech-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 76062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain building, not a living thing: no face, no eyes, no animal and no fur anywhere. Only the small ice tower on its ice slab, drawn large, filling the square.",
+      "negativeAddendum": "grass, ground, dirt, platform, person, character, hand, fire, orange, purple, red, boat, ship, sail, water waves, brick, stone wall, face, eyes, animal, yeti, ape, fur, head",
+      "notes": "icon-tech-ice-fortress-a drew a yeti's face under an ice cap (the faction layer's beasts): a second creation that says no living thing, as icon-freeze-b did."
+    },
+    {
+      "id": "icon-tech-harpoons-b",
+      "asset": "chibi-direction-icon-tech-black-ice",
+      "endpoint": "create-image-pixen",
+      "seed": 76072,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "They are plain objects, not a living thing: no face, no eyes, no animal, no hair and no fur anywhere. Only the two crossed harpoons, drawn large, filling the square.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, metal, steel, iron, gun, fish, water, boat, face, eyes, animal, yeti, ape, fur, hair, head",
+      "notes": "icon-tech-harpoons-a drew a yeti's head over the crossed harpoons: a second creation that says no living thing, as icon-freeze-b did."
     }
   ]
 }

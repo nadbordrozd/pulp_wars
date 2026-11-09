@@ -22,10 +22,12 @@
  *   the Submarine of the seven seafaring factions, each beside the free
  *   ship;
  * - `ice-buildings-{1x,x3}.png` (the frozen sea redesign, bead
- *   pulp_wars-5ti.27): the Ice Harbour, the Great Harbour, a Workshop on
- *   the packed-snow pad and the Fishing Hole in its own slab, on plain and
- *   thick ice over both waters, beside Snow on Grass, and the Crack Ice
- *   icon on the dock's dark disc;
+ *   pulp_wars-5ti.27; the naval branch rebuilt, `pulp_wars-tzk6`, 7r137):
+ *   the Ice Fortress and a Workshop on the packed-snow pad and the Fishing
+ *   Hole in its own slab, on the ice over both waters, a captured Port on
+ *   open Shallow Water (a plain dock: the Ice Harbour and the Great
+ *   Harbour are gone, and so is thick ice), beside Snow on Grass, and the
+ *   Crack Ice icon on the dock's dark disc;
  * - `readability.json`: how far each ice is from both waters, from Grass,
  *   from Snow on Grass and from the other ice (CIE76), and the seam
  *   mismatch of each tile against every tile of its ice;
@@ -706,23 +708,22 @@ function hexRgb(value: string): Rgb {
 }
 
 /**
- * `ice-buildings-{1x,x3}.png`: the Ice Harbour, the Great Harbour, a
- * Workshop on its snow pad and the Fishing Hole in its own slab, on plain
- * and thick ice over both waters, beside Snow on Grass; and the Crack Ice
- * icon on the dock's dark disc.
+ * `ice-buildings-{1x,x3}.png`: the Ice Fortress and a Workshop on their
+ * snow pad and the Fishing Hole in its own slab, on the ice over both
+ * waters, and a captured Port on the open water (the naval branch rebuilt,
+ * `pulp_wars-tzk6`, 7r137: no dock is on ice, and there is no thick ice);
+ * beside Snow on Grass; and the Crack Ice icon on the dock's dark disc.
  */
 async function iceBuildingsSheet(scale: number, name: string): Promise<void> {
   const pieces = [
-    ["Ice Harbour", "buildings/chibi-ice-folk-port", true],
-    ["Great Harbour", "buildings/chibi-ice-folk-shipyard", true],
+    ["Ice Fortress", "buildings/chibi-ice-folk-ice-fortress", true],
     ["Workshop", "buildings/chibi-ice-folk-workshop", true],
     ["Fishing Hole", "buildings/chibi-ice-folk-fishing-hole", false],
+    ["Captured Port", "buildings/chibi-port", null],
   ] as const;
   const rows = [
-    ["Shallow, plain", "SHALLOW", false],
-    ["Shallow, thick", "SHALLOW", true],
-    ["Deep, plain", "DEEP", false],
-    ["Deep, thick", "DEEP", true],
+    ["Shallow", "SHALLOW", false],
+    ["Deep", "DEEP", false],
   ] as const;
   const gap = 8;
   const head = 18;
@@ -740,8 +741,16 @@ async function iceBuildingsSheet(scale: number, name: string): Promise<void> {
     labels.push({ text: title, left: gap, top: top - head + 2, size: 11 });
     for (const [column, [label, file, onPad]] of pieces.entries()) {
       const left = gap + column * cell;
-      blit(canvas, await iceTile(depth, 0, 0, thick), left, top);
-      if (onPad) pad(canvas, left, top);
+      // A dock stands on the open water (the captured Port column).
+      blit(
+        canvas,
+        onPad === null
+          ? await chibi(`${WATER_FILE[depth]}-1`)
+          : await iceTile(depth, 0, 0, thick),
+        left,
+        top,
+      );
+      if (onPad === true) pad(canvas, left, top);
       const sprite = await chibi(file);
       blit(
         canvas,
@@ -830,7 +839,7 @@ async function main(): Promise<void> {
         bead: "pulp_wars-5ti.6",
         batch: "naval-branch",
         command: "npm run art:naval-branch-ice-review",
-        note: "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). Since bead pulp_wars-5ti.27 the dusting marks thick ice (Glacier), and ice-buildings-* shows the Ice Folk buildings on ice with the snow pad of ICE_BUILDING_PAD_V7 and the Crack Ice icon.",
+        note: "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). Since bead pulp_wars-5ti.27 the dusting marked thick ice (Glacier), which the naval branch rebuilt (pulp_wars-tzk6, 7r137) removed; ice-buildings-* shows the Ice Fortress, a Workshop and the Fishing Hole on ice with the snow pad of ICE_BUILDING_PAD_V7, a captured Port on open water, and the Crack Ice icon.",
         files,
       },
       null,

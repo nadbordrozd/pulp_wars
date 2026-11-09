@@ -44,6 +44,9 @@ import {
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
+  FISHING_HOLE_POPULATION_V7,
+  ICE_FORTRESS_COST_V7,
+  ICE_FORTRESS_POPULATION_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
@@ -110,15 +113,11 @@ import { hasExactKeysV7 } from "./schema";
 import { rewardArrivalV7, rewardUnitRoleV7 } from "./reward-arrival";
 import {
   canonicalFreezeTileFactsV7,
-  crackIceResultV7,
   freezeChangesAnythingV7,
   freezeRingTilesV7,
   freezeTilesV7,
   iceAtV7,
   iceBuildableV7,
-  iceIsThickV7,
-  releaseEliminatedIceV7,
-  resolveBlackIceOnEntryV7,
   resolveColdWakeV7,
   territoryFreezeV7,
   territoryFrozenEventsV7,
@@ -164,6 +163,7 @@ import {
   harbourPopulationForV7,
   isCityBesiegedV7,
   isTileEnemyOccupiedV7,
+  isActiveFishingHoleV7,
   isActivePortV7,
   combinedNetworkCityIdsV7,
   marketCoinsV7,
@@ -2005,30 +2005,8 @@ function revealReleasedUnitsV7(
   return next;
 }
 
-/**
- * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.8): after an
- * accepted `MOVE`, `DISEMBARK`, or `BEAM_DOWN` of `unitId` (the passenger
- * for a Beam Down), Black Ice freezes it when it ended on the ice of a seat
- * with Black Ice, having started off that seat's ice (`before` is the state
- * before the command). Returns `result` itself otherwise.
- */
-function withBlackIceResultV7(
-  before: GameStateV7,
-  unitId: UnitStateV7["id"],
-  result: ApplyCommandResultV7,
-): ApplyCommandResultV7 {
-  if (!result.accepted || result.state.ice.length === 0) return result;
-  const from =
-    before.units.find((unit) => unit.id === unitId && unit.hp > 0)?.at ?? null;
-  const black = resolveBlackIceOnEntryV7(result.state, unitId, from);
-  if (black.events.length === 0) return result;
-  const next = accepted(checked(black.state), [
-    ...result.events,
-    ...black.events,
-  ]);
-  if (!next.accepted) throw new RangeError("INVALID_STATE");
-  return next;
-}
+// (`withBlackIceResultV7`, Black Ice on entry, retired with the naval
+// branch rebuilt, `pulp_wars-tzk6`, 7r137.)
 
 /**
  * The one Freeze effect (`pulp_wars-xv0t`, 7r133): after an accepted `MOVE`
@@ -2093,12 +2071,10 @@ function navalFactsMayChangeV7(
     "DISEMBARK",
     "MOVE",
     "REDEVELOP",
-    // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md sections 2.4 and
-    // 2.6): a Pillage may remove an Ice Harbour and a Crack may open a dock
-    // iced over before. (A freeze never ices a dock since the one Freeze
-    // effect, `pulp_wars-xv0t`, 7r133, so `COLD_SNAP` and the retired
-    // `FREEZE` left this list.)
-    "CRACK_ICE",
+    // A Pillage may remove a dock. (A freeze never ices a dock since the
+    // one Freeze effect, `pulp_wars-xv0t`, 7r133, and no dock stands on ice
+    // since the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, so
+    // `COLD_SNAP`, the retired `FREEZE`, and `CRACK_ICE` left this list.)
     "PILLAGE",
     "WAIL",
     // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl can kill an
@@ -2227,12 +2203,11 @@ function applyCommandCoreV7(
     return applyPort(stateInput, state, actor, command.at);
   if (command.kind === "BUILD_SHIPYARD")
     return applyShipyard(stateInput, state, actor, command.at);
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress.
+  if (command.kind === "BUILD_ICE_FORTRESS")
+    return applyIceFortress(stateInput, state, actor, command.at);
   if (command.kind === "DISEMBARK")
-    return withBlackIceResultV7(
-      state,
-      command.unitId,
-      applyDisembark(stateInput, state, actor, command),
-    );
+    return applyDisembark(stateInput, state, actor, command);
   if (command.kind === "CHOOSE_CITY_REWARD")
     return applyReward(stateInput, state, actor, command);
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): a Frost Giant that
@@ -2241,11 +2216,7 @@ function applyCommandCoreV7(
   if (command.kind === "MOVE")
     return withColdWakeResultV7(
       command.unitId,
-      withBlackIceResultV7(
-        state,
-        command.unitId,
-        applyMove(stateInput, state, actor, command),
-      ),
+      applyMove(stateInput, state, actor, command),
     );
   if (command.kind === "ATTACK")
     return huntedAfterAttackV7(
@@ -2294,18 +2265,9 @@ function applyCommandCoreV7(
   if (command.kind === "HATCH")
     return applyHatch(stateInput, state, actor, command);
   if (command.kind === "BEAM_DOWN")
-    return withBlackIceResultV7(
-      state,
-      command.passengerUnitId,
-      applyBeamDown(stateInput, state, actor, command),
-    );
+    return applyBeamDown(stateInput, state, actor, command);
   if (command.kind === "MASS_BEAM_DOWN")
-    // The frozen sea redesign: Black Ice reads each passenger's landing.
-    return command.passengerUnitIds.reduce(
-      (result, passengerUnitId) =>
-        withBlackIceResultV7(state, passengerUnitId, result),
-      applyMassBeamDown(stateInput, state, actor, command),
-    );
+    return applyMassBeamDown(stateInput, state, actor, command);
   if (command.kind === "MIND_CONTROL")
     return applyMindControl(stateInput, state, actor, command);
   if (command.kind === "TRACTOR_BEAM")
@@ -3650,6 +3612,110 @@ function applyShipyard(
           "SHIPYARD",
           harbourPopulationForV7(state.players, actor),
         ) as 2 | 3,
+      },
+      ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
+    ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4):
+ * `BUILD_ICE_FORTRESS`, the Shipyard's twin. An Ice Folk seat with Naval
+ * Engineering (the Ice Fortress) upgrades an active own Fishing Hole in its
+ * territory in place, one per city, for `ICE_FORTRESS_COST_V7`. The
+ * Fortress keeps everything the hole does (a Farm for the mills, a dive
+ * node, a sea-link endpoint) and gives one more population.
+ */
+function applyIceFortress(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  at: CoordV7,
+): ApplyCommandResultV7 {
+  const player = requirePlayer(state, actor);
+  const tile = tileAtV7(state.board, at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, at)) return rejected(original, "TILE_UNEXPLORED");
+  if (!player.researchedTechs.includes("NAVAL_ENGINEERING"))
+    return rejected(original, "TECH_REQUIRED", { tech: "NAVAL_ENGINEERING" });
+  if (
+    !technologyCapabilitiesV7(
+      player.researchedTechs,
+      player.faction,
+    ).commands.includes("BUILD_ICE_FORTRESS")
+  )
+    return rejected(original, "INVALID_TILE", {
+      action: "BUILD_ICE_FORTRESS",
+    });
+  const city = state.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (city?.ownerId !== actor) return rejected(original, "TERRITORY_NOT_OWNED");
+  if (
+    tile.improvement !== "FISHING_HOLE" ||
+    !iceBuildableV7(player.faction, actor, iceAtV7(state, at)) ||
+    !isActiveFishingHoleV7(state, at, actor)
+  )
+    return rejected(original, "INVALID_TILE", {
+      action: "BUILD_ICE_FORTRESS",
+    });
+  if (
+    state.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === city.id &&
+        candidate.improvement === "ICE_FORTRESS",
+    )
+  )
+    return rejected(original, "CITY_BUILDING_LIMIT");
+  if (hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING");
+  if (player.coins < ICE_FORTRESS_COST_V7)
+    return rejected(original, "INSUFFICIENT_COINS", {
+      cost: ICE_FORTRESS_COST_V7,
+    });
+  try {
+    const board = replaceTile(state, at, {
+      ...tile,
+      improvement: "ICE_FORTRESS",
+    });
+    const contributions = state.populationContributions.map((entry) =>
+      entry.source.kind === "IMPROVEMENT" && same(entry.source.at, at)
+        ? {
+            ...entry,
+            source: { ...entry.source, improvement: "ICE_FORTRESS" as const },
+          }
+        : entry,
+    );
+    const recalculation = recomputeLiveEconomyV7(
+      state,
+      { board, cities: state.cities },
+      contributions,
+    );
+    const staged: GameStateV7 = {
+      ...state,
+      board,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      players: debit(state.players, actor, ICE_FORTRESS_COST_V7),
+      commandIndex: nextSafe(state.commandIndex),
+    };
+    const settlement = settleCityRewardsV7(staged, actor);
+    return accepted(checked(settlement.state), [
+      {
+        kind: "ECONOMIC_BUILDING_BUILT",
+        playerId: actor,
+        cityId: city.id,
+        at,
+        improvement: "ICE_FORTRESS",
+        cost: ICE_FORTRESS_COST_V7,
+        // The population the upgrade adds to the hole's.
+        populationContribution:
+          ICE_FORTRESS_POPULATION_V7 - FISHING_HOLE_POPULATION_V7,
+        marketIncome: 0,
       },
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
@@ -5225,36 +5291,15 @@ function applyColdSnap(
 }
 
 /**
- * Ice Folk freeze rework (`pulp_wars-s55m.1`): whether `actor` may Crack
- * the ice on a built tile: a dock (Port or Shipyard, any form) whose owner
- * (the owner of the city whose territory it is in) is the actor or an
- * ally, iced over by a hostile Freeze. Every other building on ice is
- * refused (`BUILT`; Pillage it instead).
- */
-export function crackIceOnDockAllowedV7(
-  state: Pick<GameStateV7, "cities" | "setup" | "humanPlayerId">,
-  actor: PlayerId,
-  tile: Pick<TileStateV7, "improvement" | "territoryCityId">,
-): boolean {
-  if (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD")
-    return false;
-  const owner = state.cities.find(
-    (city) => city.id === tile.territoryCityId,
-  )?.ownerId;
-  return (
-    owner !== undefined &&
-    (owner === actor || arePlayersAlliedV7(state, actor, owner))
-  );
-}
-
-/**
  * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md section
  * 2.9): `CRACK_ICE`. A unit or ship of any kind but the Ice Folk breaks the
- * ice on one of the eight tiles around it back into open water, or, on
- * thick ice that is not cracked yet, cracks it. Rejections in the order of
- * the section's table; a primary action, not an attack, free. Since
- * `pulp_wars-s55m.1` the owner of a dock (and its allies) may crack hostile
- * ice on it, so a Port iced over by the Ice Folk can be opened again.
+ * ice on one of the eight tiles around it back into open water. Rejections
+ * in the order of the section's table; a primary action, not an attack,
+ * free. The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+ * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.2): one Crack breaks
+ * any ice (no thick ice, no cracked state), and a building on ice (a
+ * Fishing Hole, an Ice Fortress, a mill) is never cracked (`BUILT`; Pillage
+ * it instead): no dock stands on ice any more.
  */
 function applyCrackIce(
   original: GameStateV7,
@@ -5298,21 +5343,13 @@ function applyCrackIce(
     )
   )
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "OCCUPIED" });
-  if (tile.improvement !== null && !crackIceOnDockAllowedV7(state, actor, tile))
+  if (tile.improvement !== null)
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "BUILT" });
-  const { broken } = crackIceResultV7(
-    entry,
-    iceIsThickV7(state.players, entry.ownerId),
-  );
   try {
     const cracked: GameStateV7 = {
       ...state,
       commandIndex: nextSafe(state.commandIndex),
-      ice: broken
-        ? withoutIceV7(state.ice, [command.at])
-        : state.ice.map((item) =>
-            same(item.at, command.at) ? { ...item, cracked: true } : item,
-          ),
+      ice: withoutIceV7(state.ice, [command.at]),
       units: state.units.map((candidate) =>
         candidate.id === unit.id
           ? {
@@ -5331,25 +5368,9 @@ function applyCrackIce(
       playerId: actor,
       unitId: unit.id,
       at: { x: command.at.x, y: command.at.y },
-      broken,
     };
-    // A dock opened again is no longer an iced-over dock: its blockade rule
-    // changes, so the live economy is recomputed.
-    if (!broken || tile.improvement === null)
-      return accepted(checked(cracked), [event]);
-    const recalculation = recomputeLiveEconomyV7(
-      cracked,
-      { board: cracked.board, cities: cracked.cities },
-      cracked.populationContributions,
-    );
-    return accepted(
-      checked({
-        ...cracked,
-        cities: recalculation.cities,
-        populationContributions: recalculation.populationContributions,
-      }),
-      [event, ...economyAndGrowth(recalculation.changes)],
-    );
+    // An unbuilt tile carries no population, so the live economy stands.
+    return accepted(checked(cracked), [event]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -6303,7 +6324,7 @@ function applyAttack(
       attackMaximumRangeV7(
         state,
         attacker,
-        tileAtV7(state.board, attacker.at)?.terrain,
+        tileAtV7(state.board, attacker.at),
       ) ||
     (distance > 1 && unitIsSubmergedV7(state, defender))
   )
@@ -8566,17 +8587,15 @@ function applyCapture(
     }
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.3): the
     // former owner's ice in the captured city's territory passes to the
-    // captor, sound; an eliminated seat's ice stays (its cracks are gone).
+    // captor; an eliminated seat's ice stays.
     let ice = state.ice;
-    if (formerOwner !== null && ice.length > 0) {
+    if (formerOwner !== null && ice.length > 0)
       ice = ice.map((entry) =>
         entry.ownerId === formerOwner &&
         tileAtV7(board, entry.at)?.territoryCityId === captured.id
-          ? { ...entry, ownerId: actor, cracked: false }
+          ? { ...entry, ownerId: actor }
           : entry,
       );
-      if (eliminatesFormerOwner) ice = releaseEliminatedIceV7(ice, formerOwner);
-    }
     const events: DomainEventV7[] = [
       {
         kind: "CITY_CAPTURED",

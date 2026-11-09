@@ -321,12 +321,13 @@ export interface CombatPreviewV7 {
    */
   readonly torpedo: boolean;
   /**
-   * The frozen sea (section 8.10): the defender is an Ice Folk land unit on
-   * ice with Glacier and no fortification of its own; its cover is the Snow
-   * cover (`SNOW_COVER_V7`, in `defenseBonusNumerator` and
-   * `defenseBonusDenominator`).
+   * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
+   * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): Harpoons. The
+   * attacker's controller has Harpoons and the defender is afloat (naval
+   * or embarked form); its bonus (`HARPOON_ATTACK2_V7`) is in `attack2`.
+   * (Glacier's `iceCover` before, in its place.)
    */
-  readonly iceCover: boolean;
+  readonly harpoon: boolean;
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55): Shock Field. What the Shock
    * Field of a Shielded Shock Trooper attacked from the next tile took from
@@ -1176,12 +1177,7 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly sourceUnitId: UnitId | null;
       readonly source:
-        | "COLD_SNAP"
-        | "COLD_WAKE"
-        | "BLACK_ICE"
-        | "FROSTBITE"
-        | "FROST_BREATH"
-        | "SNOWBALL";
+        "COLD_SNAP" | "COLD_WAKE" | "FROSTBITE" | "FROST_BREATH" | "SNOWBALL";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly turnsLeft: 1 | 2;
@@ -1212,18 +1208,17 @@ export type DomainEventV7 =
   | {
       /**
        * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md
-       * section 2.9): the unit `unitId` of `playerId` cracked the ice on
-       * `at`. `broken`: the ice broke (the tile is open water again);
-       * otherwise thick ice took its first crack. A projection keeps the
-       * event for a viewer that explored `at`, with `unitId` null when it
-       * cannot see the unit.
+       * section 2.9): the unit `unitId` of `playerId` broke the ice on `at`
+       * (the tile is open water again; one Crack breaks any ice since
+       * `pulp_wars-tzk6`, 7r137, which retired thick ice and `broken`). A
+       * projection keeps the event for a viewer that explored `at`, with
+       * `unitId` null when it cannot see the unit.
        */
       readonly kind: "ICE_CRACKED";
       readonly playerId: PlayerId;
       /** Null only in a projection to a viewer that cannot see the unit. */
       readonly unitId: UnitId | null;
       readonly at: CoordV7;
-      readonly broken: boolean;
     }
   | {
       readonly kind: "WOUNDED_TENDED";

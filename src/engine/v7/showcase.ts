@@ -556,7 +556,6 @@ export function createShowcaseEntitiesV7(
         ice.push({
           at: { x: (centers[seat] as number) + template.dx, y: template.y },
           ownerId: player.id,
-          cracked: false,
         });
         continue;
       }

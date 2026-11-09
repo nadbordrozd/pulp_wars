@@ -27,6 +27,7 @@ import {
   isResourceRevealedV7,
   unitRoleRuleV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  ICE_FORTRESS_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import { favourOfV7 } from "./cult";
 import {
@@ -44,7 +45,6 @@ import {
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
-import { iceIsThickV7 } from "./ice";
 import { crumbsBiteV7 } from "./candy";
 import type {
   BoardSizeV7,
@@ -640,14 +640,10 @@ export interface PublicCrumbsV7 extends CrumbsV7 {
 
 /**
  * The frozen sea (naval branch section 8.3): an ice tile in a player's
- * view. The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.3):
- * `cracked` as stored, and `thick`: its owner has Glacier (two Crack Ice
- * break it), public like the `iceCover` unit stat, so every Crack preview
- * is exact.
+ * view, as stored (its place and owner). The naval branch rebuilt
+ * (`pulp_wars-tzk6`, 7r137) retired `thick` and `cracked` with Glacier.
  */
-export interface PublicIceTileV7 extends IceTileV7 {
-  readonly thick: boolean;
-}
+export type PublicIceTileV7 = IceTileV7;
 
 /** The Dwarf revision (section 5.2): a mound in a player's view. */
 export interface PublicBurrowedEntryV7 {
@@ -1177,16 +1173,10 @@ export function viewForV7(
         }
       }),
     // The frozen sea (naval branch section 8.3): ice is public on an
-    // explored tile, with its owner; the redesign (section 2.3): with its
-    // crack and whether it is thick.
+    // explored tile, with its owner.
     ice: state.ice
       .filter((entry) => explored.has(key(entry.at)))
-      .map((entry) => ({
-        at: entry.at,
-        ownerId: entry.ownerId,
-        cracked: entry.cracked,
-        thick: iceIsThickV7(state.players, entry.ownerId),
-      })),
+      .map((entry) => ({ at: entry.at, ownerId: entry.ownerId })),
     monsters: state.monsters
       .filter((entry) => visibleUnitIds.has(entry.unitId))
       .map((entry) => ({
@@ -1643,6 +1633,7 @@ const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
   "CITY_WALLS",
   "CITY_FORTIFICATION",
   "FIELD_DEFENSE",
+  "ICE_FORTRESS",
   "MOUNTAIN",
   "FOREST",
   "HIGH_GROUND",
@@ -1807,8 +1798,13 @@ function tileFortificationLevel(
   territory: GameStateV7["cities"][number],
 ): number {
   const tile = state.board.tiles[at.y * state.board.width + at.x];
-  // Tuning 4: a Field Defense is two levels.
-  let level = tile?.fieldDefense ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 : 0;
+  // Tuning 4: a Field Defense is two levels. The naval branch rebuilt
+  // (`pulp_wars-tzk6`, 7r137): an Ice Fortress gives its owner's unit one.
+  let level = tile?.fieldDefense
+    ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7
+    : tile?.improvement === "ICE_FORTRESS"
+      ? ICE_FORTRESS_FORTIFICATION_LEVELS_V7
+      : 0;
   if (same(territory.at, at)) {
     // The giants' signatures (RULESET_7_GIANTS.md section 6.7): razed
     // Walls give nothing.

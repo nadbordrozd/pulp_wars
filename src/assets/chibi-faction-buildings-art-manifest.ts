@@ -87,7 +87,15 @@ const FOREST_BUILDINGS: readonly (readonly [
 const FOREST_BUILDING_ASSETS: readonly ChibiArtAssetV7[] =
   FOREST_BUILDINGS.flatMap(([slug, faction]) =>
     SHARED_CANVAS_IMPROVEMENTS.filter(
-      (improvement) => !(faction === "DINOSAUR" && improvement === "SAWMILL"),
+      (improvement) =>
+        !(faction === "DINOSAUR" && improvement === "SAWMILL") &&
+        // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): an Ice Folk
+        // dock (a captured one) keeps the shared look; their Ice Harbour and
+        // Great Harbour masters are no longer drawn.
+        !(
+          faction === "ICE_FOLK" &&
+          (improvement === "PORT" || improvement === "SHIPYARD")
+        ),
     ).map((improvement): ChibiArtAssetV7 => {
       const id = `chibi-${slug}-${improvement.toLowerCase().replace("_", "-")}`;
       return {
@@ -187,8 +195,7 @@ export const CHIBI_FACTION_BUILDING_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
     // The frozen sea redesign (bead pulp_wars-5ti.27, batch
     // `buildings-ice-folk`): the Fishing Hole, a building only the Ice Folk
     // cut in their ice; another faction's (a captor's) falls back to it
-    // (chibiFallbackSubjectV7). The batch's new Ice Harbour and Great
-    // Harbour masters replace the Ice Folk Port and Shipyard above in place.
+    // (chibiFallbackSubjectV7).
     {
       id: "chibi-ice-folk-fishing-hole",
       subject: "IMPROVEMENT:ICE_FOLK:FISHING_HOLE",
@@ -197,6 +204,19 @@ export const CHIBI_FACTION_BUILDING_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       height: 72,
       url: chibiArtUrl(
         "assets/chibi/buildings/chibi-ice-folk-fishing-hole.png",
+      ),
+    },
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137, batch
+    // `buildings-ice-folk`): the Ice Fortress raised on a Fishing Hole;
+    // another faction's (a captor's) falls back to it too.
+    {
+      id: "chibi-ice-folk-ice-fortress",
+      subject: "IMPROVEMENT:ICE_FOLK:ICE_FORTRESS",
+      assetClass: "BUILDING",
+      width: 72,
+      height: 72,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-ice-folk-ice-fortress.png",
       ),
     },
   ];

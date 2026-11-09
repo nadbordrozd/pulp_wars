@@ -29,6 +29,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::chokepointClaimedSlotsV7": "BOARD",
     "src/ai/v7.ts::chokepointSiegeShortfallV7": "BOARD",
     "src/ai/v7.ts::chokepointSlotV7": "BOARD",
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the hostile ships
+    // and transports near an Ice Fortress site (a burrowed unit is none).
+    "src/ai/v7.ts::iceFortressSiteValueV7": "BOARD",
     // Bead pulp_wars-ic8: the Gallery's demo board, a fresh authored
     // state on which nothing is burrowed before its cue plays.
     "src/render/gallery-demo-v7.ts::buildGalleryDemoSceneV7": "BOARD",
@@ -1018,11 +1021,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry
     // freezes the unit that stepped on; Crack Ice and its preview read who
     // stands on the ice; an Ice Harbour on open water needs no unit there.
-    "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "BOARD",
     // The border freeze (`pulp_wars-5ti.31`): the units afloat on a
     // territory's water; nothing burrowed is ever on water.
     "src/engine/v7/ice.ts::territoryFreezeV7": "BOARD",
-    "src/engine/v7/reducer.ts::withBlackIceResultV7": "BOARD",
     "src/engine/v7/query.ts::publicCrackIceTargetsV7": "BOARD",
     "src/engine/v7/reducer.ts::applyCrackIce": "BOARD",
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Freeze (and a Cold

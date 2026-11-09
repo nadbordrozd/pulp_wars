@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  SNOW_COVER_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
   estimateCombatV7,
@@ -40,7 +39,8 @@ import {
 // docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3, 8.10, 8.11, and 10):
 // ice is ground for a land-form unit of every faction (a landing, a Push, a
 // Knockback, a Charge!, a pull, an advance, a Beam Down, a bombing-run
-// landing), a death on ice is a water death, Glacier shelters, and the Sea
+// landing), a death on ice is a water death, no cover on ice (Glacier's went
+// with `pulp_wars-tzk6`, 7r137), and the Sea
 // Dog of an Ice Folk seat counts its units on ice.
 
 const ALL: readonly TechnologyIdV7[] = [
@@ -365,7 +365,7 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
     );
   });
 
-  it("no Port of another faction is built on ice (the redesign: only an Ice Folk Ice Harbour)", () => {
+  it("no Port is built on ice (and the Ice Folk build none: their Ice Harbour went with 7r137)", () => {
     const build = (ice: readonly CoordV7[]) =>
       frozenArenaV7({
         factions: ["ORIGINAL", "ICE_FOLK"],
@@ -389,8 +389,8 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
   });
 });
 
-describe("Glacier (section 8.10)", () => {
-  it("gives an Ice Folk unit on ice the Snow cover, exactly in the public preview", () => {
+describe("ice and the Ice Folk units on it (section 8.10; Glacier until 7r137)", () => {
+  it("gives an Ice Folk unit on ice no cover, whatever its owner researched (Glacier's cover went with 7r137)", () => {
     const build = (technologies: readonly TechnologyIdV7[], target: CoordV7) =>
       scene(
         "ORIGINAL",
@@ -401,55 +401,31 @@ describe("Glacier (section 8.10)", () => {
         [ICE1],
         technologies,
       );
-    const sheltered = build(ALL, ICE1);
-    const archer = navalUnitAtV7(sheltered, { x: 2, y: 1 });
-    const yeti = navalUnitAtV7(sheltered, ICE1);
-    const view = viewForV7(sheltered, seatV7(sheltered, 0).id);
-    // The opponent reads it from the unit's public stats.
-    expect(queryUnitStatsV7(view, yeti.id)?.iceFolk).toMatchObject({
-      onIce: true,
-      glides: true,
-      iceCover: true,
-      onSnow: false,
-    });
-    const preview = queryCombatPreviewV7(view, archer.id, yeti.id);
-    expect(preview).toMatchObject({
-      iceCover: true,
-      snowCover: false,
-      defenseBonusNumerator: SNOW_COVER_V7.numerator,
-      defenseBonusDenominator: SNOW_COVER_V7.denominator,
-    });
-    const result = acceptV7(
-      sheltered,
-      0,
-      attack(sheltered, { x: 2, y: 1 }, ICE1),
-    );
-    const resolved = result.events.find(
-      (event) => event.kind === "COMBAT_RESOLVED",
-    );
-    if (resolved?.kind !== "COMBAT_RESOLVED") throw new Error("no combat");
-    expect(resolved.preview.iceCover).toBe(true);
-    expect(resolved.preview.damageToDefender).toBe(preview?.damageToDefender);
-    // Without Glacier there is no cover on ice.
-    const bare = build(NO_GLACIER, ICE1);
-    const bareView = viewForV7(bare, seatV7(bare, 0).id);
-    const bareYeti = navalUnitAtV7(bare, ICE1);
-    const bareArcher = navalUnitAtV7(bare, { x: 2, y: 1 });
-    expect(queryUnitStatsV7(bareView, bareYeti.id)?.iceFolk).toMatchObject({
-      onIce: true,
-      iceCover: false,
-    });
-    const without = queryCombatPreviewV7(bareView, bareArcher.id, bareYeti.id);
-    expect(without).toMatchObject({
-      iceCover: false,
-      defenseBonusNumerator: 1,
-      defenseBonusDenominator: 1,
-    });
-    expect(without?.damageToDefender).toBeGreaterThanOrEqual(
-      preview?.damageToDefender ?? 0,
-    );
+    for (const technologies of [ALL, NO_GLACIER]) {
+      const state = build(technologies, ICE1);
+      const archer = navalUnitAtV7(state, { x: 2, y: 1 });
+      const yeti = navalUnitAtV7(state, ICE1);
+      const view = viewForV7(state, seatV7(state, 0).id);
+      expect(queryUnitStatsV7(view, yeti.id)?.iceFolk).toMatchObject({
+        onIce: true,
+        glides: true,
+        onSnow: false,
+      });
+      const preview = queryCombatPreviewV7(view, archer.id, yeti.id);
+      expect(preview).toMatchObject({
+        harpoon: false,
+        snowCover: false,
+        defenseBonusNumerator: 1,
+        defenseBonusDenominator: 1,
+      });
+      const result = acceptV7(state, 0, attack(state, { x: 2, y: 1 }, ICE1));
+      const resolved = result.events.find(
+        (event) => event.kind === "COMBAT_RESOLVED",
+      );
+      if (resolved?.kind !== "COMBAT_RESOLVED") throw new Error("no combat");
+      expect(resolved.preview.damageToDefender).toBe(preview?.damageToDefender);
+    }
   });
-
   it("adds no Move on ice since Ice Folk movement (`pulp_wars-s55m.2`; +1 before)", () => {
     // Seat 0 is the Ice Folk: a Yeti (Move 1) on (1, 1); (1, 2) is land
     // outside its territory, (1, 3) is its ice, and (1, 4) open Deep Water.
