@@ -94,11 +94,11 @@ const snowAt = (view: PlayerViewV7, at: CoordV7): boolean =>
 describe("the identity (pulp_wars-ecnj)", () => {
   // The Ice Folk stat pass (`pulp_wars-px48`) took 7r136 after it.
   it("was 7r135 after 7r134, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
-    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r134");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
+    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r134");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
       "pulpWars.save.v7r134.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

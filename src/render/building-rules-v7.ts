@@ -156,7 +156,7 @@ export function buildingRuleTextV7(
     case "SHIPYARD":
       return `${name}: one per city, upgrades one of your active Ports; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
     case "FISHING_HOLE":
-      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; links cities like a ${NAMES.PORT}`;
+      return `${name}: on your own ice; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}; links cities along your ice`;
     // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137).
     case "ICE_FORTRESS":
       return ICE_FORTRESS_UNLOCK_V7;

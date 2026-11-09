@@ -34,7 +34,42 @@
 >   +1 population per hole and Harbours. Black Ice, Hoarfrost, Glacier,
 >   thick and half-cracked ice, the ice cover, the Ice Harbour and the
 >   Great Harbour are gone; one Crack breaks any ice; a captured dock stays
->   a plain dock on open water. Beads 5 and 6 are not built.
+>   a plain dock on open water.
+> - **Bead 5 is done** in `pulp-wars-poc-7r138` (`pulp_wars-dy2b`): sea
+>   routes over own ice only (3.5). An Ice Folk link between two endpoints
+>   of two different own cities runs only along an unbroken eight-way
+>   chain of the seat's own ice, with no length limit; open water, foreign
+>   ice or a Crack breaks it. Other factions' links are unchanged. Bead 6
+>   is not built.
+> - **Decisions taken in bead 5** (the user, 2026-11-08: "trade routes
+>   over water should only go over ice. if there is no ice connection
+>   there is no route"): (1) **Units on the chain never matter**: an own or
+>   hostile unit on a chain tile changes nothing, and a Walrus swimming in
+>   a gap does not bridge it (the gap is open water); only a hostile unit
+>   on an endpoint breaks its links, as before. (2) The endpoints
+>   themselves are excepted from "own ice" (a captured dock links through
+>   the ice beside it; two endpoints side by side link directly), and a
+>   dock is never a chain tile (it is open water). (3) Pack Ice is not
+>   needed to use deep ice, so an Ice Folk endpoint on Deep Water needs no
+>   Pack Ice either. (4) A Cold Snap, a Cold Wake, a Snowball and a Crack
+>   now read the live economy again (they change only the ice, which may
+>   link or unlink cities); the network cache of an Ice Folk seat includes
+>   the ice. (5) The view's route `path` is the shortest chain over the
+>   viewer's explored own ice; the public economic graph carries the
+>   viewer's own ice (public in `ice`), so the preview is never ambiguous
+>   for an Ice Folk viewer. (6) **The Normal AI** values a Cold Snap whose
+>   new ice adds link population (`LINK`, 1106, eight per point, from
+>   `publicIceLinkPopulationGainV7`), and every other seat values a Crack
+>   of a chain tile that unlinks two hostile Ice Folk cities (`LINK`,
+>   1106, eight per city pair, `iceCrackUnlinkedPairsV7`; added to a
+>   Bridge Crack's value). A Witch does not yet walk to a gap on purpose
+>   (only a Cold Snap she can cast is valued). (7) The dashed sea link was
+>   hard to see on pale ice, so every sea link's dashes now have a dark
+>   casing. (8) Texts: Rime's card "Fishing Holes joined by an unbroken
+>   line of your ice link cities: +1 population for each city joined to
+>   your capital"; Pack Ice's note "Hole links can run over deep-water
+>   ice"; the Fishing Hole line "links cities along your ice"; the Help row
+>   "Hole links" (one number).
 > - **Decisions taken in bead 4** (the user, 2026-11-09: "the naval branch
 >   should give the ice folk equivalent advantages to what it gives to the
 >   other factions - a way to move over water, attack land and ships and
@@ -880,7 +915,8 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
   crack that breaks an Ice Folk link above one that does not.
 - **Focused tests:** the sea-link tests in `ruleset-v7-naval-branch-*` and
   `ruleset-v7-frozen-sea-*` (not `*.sim.test.ts`), `naval-presentation-render-v7`,
-  plus a new `ruleset-v7-ice-sea-routes-fofr.test.ts`.
+  plus a new `ruleset-v7-ice-sea-routes-fofr.test.ts`. **Done** in
+  `7r138` (`pulp_wars-dy2b`).
 
 ### Bead 6: Ice Folk campaign after the redesign (no ruleset bump)
 

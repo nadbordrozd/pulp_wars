@@ -170,6 +170,7 @@ import {
   marketIncomeForCityV7,
   playerIncomeV7,
   recomputeLiveEconomyV7,
+  seaLinksOverOwnIceV7,
   rewardCandidatesForLevelV7,
   seaTradeCityIdsV7,
   startTurnEconomyV7,
@@ -2025,12 +2026,53 @@ function withColdWakeResultV7(
     isUnitVisibleToPlayerV7(result.state, actor, unit),
   );
   if (wake.events.length === 0) return result;
-  const next = accepted(checked(wake.state), [
+  const linked = withIceLinkEconomyV7(wake.state, actor);
+  const next = accepted(checked(linked.state), [
     ...result.events,
     ...wake.events,
+    ...linked.events,
   ]);
   if (!next.accepted) throw new RangeError("INVALID_STATE");
   return next;
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk seat's
+ * sea links run only along its own ice, so a step that changes the ice and
+ * nothing else of the economy (a Cold Snap, a Cold Wake, a Crack) may link
+ * or unlink its cities. The live economy is read again on `state`, and
+ * `actor`'s city rewards settled as after any growth. Returns `state`
+ * itself in a match without such a seat or when nothing changed.
+ */
+function withIceLinkEconomyV7(
+  state: GameStateV7,
+  actor: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  if (!state.players.some((player) => seaLinksOverOwnIceV7(player.faction)))
+    return { state, events: [] };
+  const economy = recomputeLiveEconomyV7(
+    state,
+    { board: state.board, cities: state.cities, units: state.units },
+    state.populationContributions,
+  );
+  if (economy.changes.length === 0) return { state, events: [] };
+  const settlement = settleCityRewardsV7(
+    {
+      ...state,
+      cities: economy.cities,
+      populationContributions: economy.populationContributions,
+    },
+    actor,
+  );
+  const achievements = evaluateAchievementsV7(settlement.state, actor);
+  return {
+    state: achievements.state,
+    events: [
+      ...economyAndGrowth(economy.changes),
+      ...settlement.events,
+      ...achievements.events,
+    ],
+  };
 }
 
 function navalFactsMayChangeV7(
@@ -5266,8 +5308,10 @@ function applyColdSnap(
       "COLD_SNAP",
       freeze,
     );
-    return accepted(
-      checked({
+    // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the new ice may
+    // close a gap in a chain between two Fishing Holes.
+    const linked = withIceLinkEconomyV7(
+      {
         ...applied.state,
         commandIndex: nextSafe(state.commandIndex),
         units: applied.state.units.map((candidate) =>
@@ -5282,9 +5326,13 @@ function applyColdSnap(
               }
             : candidate,
         ),
-      }),
-      applied.events,
+      },
+      actor,
     );
+    return accepted(checked(linked.state), [
+      ...applied.events,
+      ...linked.events,
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -5369,8 +5417,11 @@ function applyCrackIce(
       unitId: unit.id,
       at: { x: command.at.x, y: command.at.y },
     };
-    // An unbuilt tile carries no population, so the live economy stands.
-    return accepted(checked(cracked), [event]);
+    // An unbuilt tile carries no population, but (sea routes over ice
+    // only, `pulp_wars-dy2b`, 7r138) a Crack in an Ice Folk chain of ice
+    // unlinks its cities: the live economy is read again.
+    const linked = withIceLinkEconomyV7(cracked, actor);
+    return accepted(checked(linked.state), [event, ...linked.events]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -7498,8 +7549,10 @@ function resolveAttackExchangeV7(
         tiles: reveal.revealed,
       });
   }
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the ice a
+  // Snowball made may link Ice Folk cities, so the economy reads it.
   const economy = recomputeLiveEconomyV7(
-    state,
+    snowballIce === state.ice ? state : { ...state, ice: snowballIce },
     { board, cities: exchangeCities, units },
     state.populationContributions,
   );

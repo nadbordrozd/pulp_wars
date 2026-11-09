@@ -91,6 +91,10 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // Fishing Hole links (`pulp_wars-vg5l`): the owner of a city's Fishing
   // Hole (a seat); an owner that is no player has no hole node (false).
   "src/engine/v7/economy.ts::isActiveFishingHoleV7": "NEUTRAL_SAFE",
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the owner of the
+  // ice a Crack would break; an owner that is no player has no record and
+  // no links (0).
+  "src/ai/v7-frozen-sea.ts::iceCrackUnlinkedPairsV7": "NEUTRAL_SAFE",
   "src/engine/v7/eggs.ts::isNestTileV7": "PLAYER_ONLY",
   // The killing Zombie's seat (the Spider has no Infect).
   "src/engine/v7/infect.ts::recordInfectionV7": "PLAYER_ONLY",

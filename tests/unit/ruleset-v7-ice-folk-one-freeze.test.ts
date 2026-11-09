@@ -575,11 +575,11 @@ describe("the glossary", () => {
 
 describe("the identity (pulp_wars-xv0t)", () => {
   it("was 7r133 after 7r132, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
-    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r132");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
+    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r132");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
       "pulpWars.save.v7r132.current",
     );
   });

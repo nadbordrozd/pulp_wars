@@ -9,8 +9,9 @@ import {
   type MissionDefinitionV7,
   type MissionImprovementV7,
   type TechnologyIdV7,
+  type UnitRoleIdV7,
 } from "../../src/engine/index";
-import { withFishingHolesV7 } from "./v7-frozen-sea";
+import { frozenStateV7, withFishingHolesV7 } from "./v7-frozen-sea";
 
 /**
  * Fishing Hole links (`pulp_wars-vg5l`, `pulp-wars-poc-7r129`): an authored
@@ -23,15 +24,34 @@ import { withFishingHolesV7 } from "./v7-frozen-sea";
  * eight-way steps apart when `east` is 8 and six when it is 9. Seat 1
  * (Humans) has its capital on (5, 8). Seat 0 knows Rime (Shorecraft) by
  * default, so its border water starts as ice (the starting border freeze).
+ *
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk link
+ * needs an unbroken chain of the seat's own ice, so `iceLane` freezes the
+ * whole lane for seat 0 (save the `gaps`), and `size` widens the board (a
+ * 14 x 14 board with `east` 13 puts the holes ten steps apart).
  */
 export const HOLE_LINK_CAPITAL_V7: CoordV7 = { x: 1, y: 1 };
 export const HOLE_LINK_CAPITAL_HOLE_V7: CoordV7 = { x: 2, y: 1 };
 export const HOLE_LINK_RIVAL_CAPITAL_V7: CoordV7 = { x: 5, y: 8 };
 
 export interface HoleLinkWorldOptionsV7 {
+  /** The board size (11 by default). */
+  readonly size?: 11 | 14 | 16 | 20;
+  /** Freeze the whole lane as seat 0's ice (7r138: the link needs it). */
+  readonly iceLane?: boolean;
+  /** Lane tiles left open water when `iceLane` is set. */
+  readonly gaps?: readonly CoordV7[];
+  /** More units on land tiles, for either seat (7r138). */
+  readonly extraUnits?: readonly {
+    readonly seat: 0 | 1;
+    readonly role: UnitRoleIdV7;
+    readonly at: CoordV7;
+  }[];
   /** The second city's x (8 by default: the holes are five steps apart). */
   readonly east?: number;
   readonly faction?: FactionIdV7;
+  /** Seat 1's faction (Humans by default). */
+  readonly rivalFaction?: FactionIdV7;
   /** Seat 0's technologies; Rime (Shorecraft) by default. */
   readonly technologies?: readonly TechnologyIdV7[];
   /** Extra water: a tile above the second city's lane end (same city). */
@@ -53,8 +73,9 @@ export function holeLinkWorldV7(
   options: HoleLinkWorldOptionsV7 = {},
 ): GameStateV7 {
   const east = options.east ?? 8;
+  const size = options.size ?? 11;
   const row = (cells: (x: number) => boolean): string =>
-    Array.from({ length: 11 }, (_, x) => (cells(x) ? "~" : ".")).join("");
+    Array.from({ length: size }, (_, x) => (cells(x) ? "~" : ".")).join("");
   const terrain = [
     row(
       (x) =>
@@ -62,16 +83,16 @@ export function holeLinkWorldV7(
         (options.secondCityPool === true && x === east - 1),
     ),
     row((x) => x >= 2 && x <= east - 1),
-    ...Array.from({ length: 9 }, () => row(() => false)),
+    ...Array.from({ length: size - 2 }, () => row(() => false)),
   ];
   const mission: MissionDefinitionV7 = {
     id: "FISHING_HOLE_LINK_ARENA",
     revision: 1,
     hidden: true,
-    size: 11,
+    size,
     seed: 1,
     terrain,
-    resources: terrain.map(() => ".".repeat(11)),
+    resources: terrain.map(() => ".".repeat(size)),
     biome: "PLAINS",
     villages: [],
     improvements: [...(options.improvements ?? [])],
@@ -85,16 +106,32 @@ export function holeLinkWorldV7(
           { at: HOLE_LINK_CAPITAL_V7, level: 1, rewards: [] },
           { at: holeLinkSecondCityV7(east), level: 1, rewards: [] },
         ],
-        units: [{ role: "FIGHTER", at: HOLE_LINK_CAPITAL_V7 }],
-        reveal: { radius: 0, rects: [{ x0: 0, y0: 0, x1: 10, y1: 10 }] },
+        units: [
+          { role: "FIGHTER", at: HOLE_LINK_CAPITAL_V7 },
+          ...(options.extraUnits ?? [])
+            .filter((unit) => unit.seat === 0)
+            .map((unit) => ({ role: unit.role, at: unit.at })),
+        ],
+        reveal: {
+          radius: 0,
+          rects: [{ x0: 0, y0: 0, x1: size - 1, y1: size - 1 }],
+        },
       },
       {
-        faction: "ORIGINAL",
+        faction: options.rivalFaction ?? "ORIGINAL",
         coins: 0,
         technologies: [],
         cities: [{ at: HOLE_LINK_RIVAL_CAPITAL_V7, level: 1, rewards: [] }],
-        units: [{ role: "FIGHTER", at: HOLE_LINK_RIVAL_CAPITAL_V7 }],
-        reveal: { radius: 0, rects: [{ x0: 0, y0: 0, x1: 10, y1: 10 }] },
+        units: [
+          { role: "FIGHTER", at: HOLE_LINK_RIVAL_CAPITAL_V7 },
+          ...(options.extraUnits ?? [])
+            .filter((unit) => unit.seat === 1)
+            .map((unit) => ({ role: unit.role, at: unit.at })),
+        ],
+        reveal: {
+          radius: 0,
+          rects: [{ x0: 0, y0: 0, x1: size - 1, y1: size - 1 }],
+        },
       },
     ],
     forbiddenTechnologies: [],
@@ -103,13 +140,16 @@ export function holeLinkWorldV7(
   const built = buildMissionStateV7(mission, {
     rulesetId: RULESET_7_ID,
     seed: 1,
-    width: 11,
-    height: 11,
+    width: size,
+    height: size,
     aiCount: 1,
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: [options.faction ?? "ICE_FOLK", "ORIGINAL"],
+    factions: [
+      options.faction ?? "ICE_FOLK",
+      options.rivalFaction ?? "ORIGINAL",
+    ],
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
@@ -122,15 +162,25 @@ export function holeLinkWorldV7(
   if (!started.ok) throw new Error("the Fishing Hole arena did not start");
   if (parseGameStateV7(started.state) === null)
     throw new Error("the Fishing Hole arena is not a valid state");
-  return started.state;
+  if (options.iceLane !== true) return started.state;
+  const gaps = options.gaps ?? [];
+  return frozenStateV7(
+    started.state,
+    Array.from({ length: east - 2 }, (_, index) => ({ x: index + 2, y: 1 }))
+      .filter((at) => !gaps.some((gap) => gap.x === at.x && gap.y === at.y))
+      .map((at) => ({ at })),
+  );
 }
 
 /**
  * The review board: the two Ice Folk cities five steps apart, each with a
- * Fishing Hole at its end of the lane (built by the real command), linked.
+ * Fishing Hole at its end of the lane (built by the real command), linked
+ * by the lane frozen whole (7r138), or not when `gaps` leaves water in it.
  */
-export function holeLinkReviewBoardV7(): GameStateV7 {
-  return withFishingHolesV7(holeLinkWorldV7(), [
+export function holeLinkReviewBoardV7(
+  gaps: readonly CoordV7[] = [],
+): GameStateV7 {
+  return withFishingHolesV7(holeLinkWorldV7({ iceLane: true, gaps }), [
     HOLE_LINK_CAPITAL_HOLE_V7,
     holeLinkSecondHoleV7(),
   ]);

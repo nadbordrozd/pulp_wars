@@ -122,7 +122,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Ice Folk Fishing
       // Hole, with its dive since Ice Folk movement (`pulp_wars-s55m.2`).
       // Fishing Hole links (`pulp_wars-vg5l`, 7r127): it links cities.
-      "Fishing Hole: on your own ice; +1 population; links cities like a Port",
+      "Fishing Hole: on your own ice; +1 population; links cities along your ice",
       // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the dive moved
       // to Under the Ice; the Ice Fortress upgrades a hole.
       "Ice Fortress: fortify a Fishing Hole: a unit on it is fortified and shoots 1 further",
@@ -153,7 +153,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Workshop: one per city, land or ice, by a Frost Garden, Fishing Hole, Lumber Camp or Mine",
       "Market: one per city, land or ice, by a farm, Fishing Hole, camp, mine or mill; 1–3 Coins",
       "Monument: on land or your ice, built with an achievement, any number per city; +3 population",
-      "Fishing Hole: on your own ice; +1 population; links cities like a Port",
+      "Fishing Hole: on your own ice; +1 population; links cities along your ice",
       // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the dive moved
       // to Under the Ice; the Ice Fortress upgrades a hole.
       "Ice Fortress: fortify a Fishing Hole: a unit on it is fortified and shoots 1 further",
@@ -479,7 +479,7 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
     // The Fishing Hole says what it gives and its dive, plainly (the mill
     // lines name the Fishing Holes they count).
     expect(buildingRuleTextV7("FISHING_HOLE", "ICE_FOLK")).toBe(
-      "Fishing Hole: on your own ice; +1 population; links cities like a Port",
+      "Fishing Hole: on your own ice; +1 population; links cities along your ice",
     );
   });
 });

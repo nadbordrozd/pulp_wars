@@ -28,7 +28,7 @@ import {
   holeLinkWorldV7,
   type HoleLinkWorldOptionsV7,
 } from "../fixtures/v7-fishing-hole-links";
-import { frozenStateV7, withFishingHolesV7 } from "../fixtures/v7-frozen-sea";
+import { withFishingHolesV7 } from "../fixtures/v7-frozen-sea";
 import { seatV7 } from "../fixtures/v7-naval-branch";
 
 // Fishing Hole links (`pulp_wars-vg5l`, `pulp-wars-poc-7r129`; the user,
@@ -38,7 +38,11 @@ import { seatV7 } from "../fixtures/v7-naval-branch";
 // a node of its connection network, joined to its city's center, and two
 // holes (or a hole and an own dock) of two different own cities within
 // five eight-way steps of water or ice are sea-linked. Small hand-built
-// states on the authored lane of `v7-fishing-hole-links.ts`.
+// states on the authored lane of `v7-fishing-hole-links.ts`. Sea routes over
+// ice only (`pulp_wars-dy2b`, 7r138): the link needs an unbroken chain of
+// the seat's own ice and has no length limit, so the linking states freeze
+// the lane (`iceLane`); `ruleset-v7-ice-sea-routes-fofr.test.ts` holds the
+// rest.
 
 const SECOND_HOLE = holeLinkSecondHoleV7();
 
@@ -46,7 +50,10 @@ function holes(
   options: HoleLinkWorldOptionsV7,
   tiles: readonly CoordV7[],
 ): GameStateV7 {
-  return withFishingHolesV7(holeLinkWorldV7(options), tiles);
+  return withFishingHolesV7(
+    holeLinkWorldV7({ iceLane: true, ...options }),
+    tiles,
+  );
 }
 
 function cityAt(state: GameStateV7, at: CoordV7): CityId {
@@ -105,8 +112,8 @@ describe("the identity", () => {
   // The Mammoth's 2- or 3-tile Stampede (`pulp_wars-57lq`) took 7r128
   // after it.
   it("was 7r127 after 7r126, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r127");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r126");
@@ -122,7 +129,7 @@ describe("the identity", () => {
 });
 
 describe("Fishing Holes link Ice Folk cities over water (pulp_wars-vg5l)", () => {
-  it("links two cities whose holes are five steps apart: +1 population each, and Commerce's trade", () => {
+  it("links two cities whose holes a lane of own ice joins: +1 population each, and Commerce's trade", () => {
     const techs: TechnologyIdV7[] = [
       "SCOUTING",
       "ROADS",
@@ -181,39 +188,46 @@ describe("Fishing Holes link Ice Folk cities over water (pulp_wars-vg5l)", () =>
     ).toEqual([1, 1]);
   });
 
-  it("does not link holes six steps apart", () => {
+  it("links holes six steps apart along own ice (7r138: no length limit)", () => {
     const state = holes({ east: 9 }, [
       HOLE_LINK_CAPITAL_HOLE_V7,
       holeLinkSecondHoleV7(9),
     ]);
-    expect(seaLinksV7(state, seatV7(state, 0).id)).toEqual([]);
-    expect(linkPopulation(state, 9)).toEqual([0, 0]);
-    expect(viewForV7(state, seatV7(state, 0).id).naval.seaRoutes).toEqual([]);
+    expect(seaLinksV7(state, seatV7(state, 0).id)).toHaveLength(1);
+    expect(linkPopulation(state, 9)).toEqual([1, 1]);
+    expect(
+      viewForV7(state, seatV7(state, 0).id).naval.seaRoutes[0]?.path,
+    ).toHaveLength(7);
   });
 
-  it("links across ice, and across Deep Water only with Pack Ice", () => {
-    const open = holes({}, [HOLE_LINK_CAPITAL_HOLE_V7, SECOND_HOLE]);
-    // The whole lane frozen: ice counts as water.
-    const iced = frozenStateV7(
-      open,
-      [3, 4, 5, 6].map((x) => ({ at: { x, y: 1 } })),
-    );
+  it("links only along own ice (7r138), over Deep Water ice without Pack Ice", () => {
+    // The lane left as water (only the border ice at its two ends): no link,
+    // five steps apart or not.
+    const open = holes({ iceLane: false }, [
+      HOLE_LINK_CAPITAL_HOLE_V7,
+      SECOND_HOLE,
+    ]);
+    expect(open.ice).toHaveLength(2);
+    expect(linkPopulation(open)).toEqual([0, 0]);
+    // The whole lane frozen (before the holes are built, so the stored
+    // population the state check reads carries the link).
+    const iced = holes({}, [HOLE_LINK_CAPITAL_HOLE_V7, SECOND_HOLE]);
     expect(iced.ice).toHaveLength(6);
     expect(linkPopulation(iced)).toEqual([1, 1]);
-    // Deep Water in the lane needs Pack Ice (the Ice Folk Navigation), as
-    // for a dock.
+    // Deep Water under the ice: Pack Ice is needed to make that ice, not to
+    // use it.
     const deep: GameStateV7 = {
-      ...open,
+      ...iced,
       board: {
-        ...open.board,
-        tiles: open.board.tiles.map((tile) =>
+        ...iced.board,
+        tiles: iced.board.tiles.map((tile) =>
           tile.at.y === 1 && tile.at.x >= 3 && tile.at.x <= 6
             ? { ...tile, terrain: "DEEP_WATER" as const }
             : tile,
         ),
       },
     };
-    expect(linkPopulation(deep)).toEqual([0, 0]);
+    expect(linkPopulation(deep)).toEqual([1, 1]);
     expect(
       linkPopulation(withTechnologies(deep, ["SHORECRAFT", "NAVIGATION"])),
     ).toEqual([1, 1]);
@@ -229,8 +243,12 @@ describe("Fishing Holes link Ice Folk cities over water (pulp_wars-vg5l)", () =>
   });
 
   it("links a hole to an own dock of another city (a captured Port)", () => {
+    // The dock stays open water; the lane's ice reaches the tile beside it.
     const state = holes(
-      { improvements: [{ at: SECOND_HOLE, improvement: "PORT" }] },
+      {
+        improvements: [{ at: SECOND_HOLE, improvement: "PORT" }],
+        gaps: [SECOND_HOLE],
+      },
       [HOLE_LINK_CAPITAL_HOLE_V7],
     );
     const owner = seatV7(state, 0).id;

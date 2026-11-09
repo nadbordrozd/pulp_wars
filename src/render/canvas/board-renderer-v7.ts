@@ -7519,12 +7519,20 @@ function drawPublicLink(
   const toX = camera.offsetX + entry.linkTo.x * TILE_WIDTH * camera.zoom;
   const toY = camera.offsetY + entry.linkTo.y * TILE_HEIGHT * camera.zoom;
   context.save();
-  context.strokeStyle = entry.label === "ARMED" ? "#ffd34e" : "#71cfef";
-  context.lineWidth = 3 * camera.zoom;
   context.setLineDash([7 * camera.zoom, 5 * camera.zoom]);
   context.beginPath();
   context.moveTo(x, y - 22 * camera.zoom);
   context.lineTo(toX, toY - 22 * camera.zoom);
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk sea
+  // link runs over pale ice, where the light dash alone was hard to see,
+  // so a sea link's dashes get a dark casing (readable on ice and water).
+  if (entry.label === "SEA_ROUTE") {
+    context.strokeStyle = "#0b2e4a";
+    context.lineWidth = 7 * camera.zoom;
+    context.stroke();
+  }
+  context.strokeStyle = entry.label === "ARMED" ? "#ffd34e" : "#71cfef";
+  context.lineWidth = 3 * camera.zoom;
   context.stroke();
   context.restore();
 }

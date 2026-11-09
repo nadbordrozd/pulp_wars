@@ -79,10 +79,12 @@ export const ICE_FORTRESS_RULE_V7 = `An upgraded Fishing Hole, one per city: you
 export const UNDER_THE_ICE_RULE_V7 = `Each Fishing Hole, Ice Fortress and captured dock of yours gives +${UNDER_THE_ICE_POPULATION_V7} population.`;
 /**
  * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk sea link.
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): only along an
+ * unbroken chain of your own ice, of any length (one number at most).
  */
 export const HOLE_LINKS_LABEL_V7 = "Hole links";
 export const HOLE_LINKS_RULE_V7 =
-  "With Rime, Fishing Holes of two of your cities up to five tiles of water or ice apart link them as Ports do: a city joined to your capital gets +1 population, the capital +1 for each. An enemy on a hole breaks its links.";
+  "With Rime, an unbroken line of your own ice, of any length, between Fishing Holes of two of your cities links them like a Road: a city joined to your capital gets +1 population. Open water, enemy ice, a Crack or an enemy on a hole breaks the link.";
 /**
  * Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132; the slip, "Any
  * other unit may walk onto ice, but its Move ends there", before).

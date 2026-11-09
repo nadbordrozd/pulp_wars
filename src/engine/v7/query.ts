@@ -161,6 +161,8 @@ import {
   cityUnitCapacityV7,
   cooperativeAlliesV7,
   fishingHolesLinkV7,
+  ownIceChainPairsV7,
+  seaLinksOverOwnIceV7,
   marketCoinsV7,
   rewardCandidatesForLevelV7,
 } from "./economy";
@@ -8722,6 +8724,12 @@ type PublicEconomyGraphV7 = {
    * hostile unit on them), nodes of its connection network.
    */
   readonly activeFishingHoleKeys: ReadonlySet<string>;
+  /**
+   * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the viewer's own
+   * ice (public on explored tiles), along which an Ice Folk viewer's sea
+   * links run; empty for every other faction.
+   */
+  readonly ownIceKeys: ReadonlySet<string>;
   readonly resolvedPendingCityIds: ReadonlySet<CityId>;
   readonly remainingMonumentEntitlements: number;
   /** Exact predecessor when this graph mutation cannot alter trade connectivity. */
@@ -8888,6 +8896,8 @@ function* createPublicPlanningFactKeyWorkV7(
     naval: {
       ownedPorts: view.naval.ownedPorts,
     },
+    // Sea routes over ice only (`pulp_wars-dy2b`, 7r138).
+    ownIce: [...publicOwnIceKeysV7(view)],
     besiegingUnits,
     hostileNavalUnits,
   });
@@ -8976,6 +8986,7 @@ function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
         .map((port) => coordKeyV7(port.at)),
     ),
     activeFishingHoleKeys: publicActiveFishingHoleKeysV7(view),
+    ownIceKeys: publicOwnIceKeysV7(view),
     resolvedPendingCityIds: new Set(),
     remainingMonumentEntitlements: view.viewer.achievementEntitlements.filter(
       (entitlement) => entitlement.unlocked && !entitlement.spent,
@@ -9011,6 +9022,51 @@ function publicActiveFishingHoleKeysV7(
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the viewer's own ice
+ * in its view, when its sea links run along it (an Ice Folk viewer).
+ */
+function publicOwnIceKeysV7(view: PlayerViewV7): ReadonlySet<string> {
+  if (!seaLinksOverOwnIceV7(view.viewer.faction)) return new Set();
+  return new Set(
+    view.ice
+      .filter((entry) => entry.ownerId === view.viewer.id)
+      .map((entry) => coordKeyV7(entry.at)),
+  );
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the link population
+ * (section 9.3) the viewer's cities gain in all when the water tiles `at`
+ * become its own ice (a freeze that fills a gap in an ice chain between two
+ * Fishing Holes), on the public economic graph; 0 for a viewer whose links
+ * do not run along ice. The Normal AI values a freeze by it.
+ */
+export function publicIceLinkPopulationGainV7(
+  view: PlayerViewV7,
+  at: readonly CoordV7[],
+): number {
+  if (!seaLinksOverOwnIceV7(view.viewer.faction)) return 0;
+  const graph = publicEconomyGraph(view);
+  const added = at
+    .map((tile) => coordKeyV7(tile))
+    .filter((tile) => !graph.ownIceKeys.has(tile));
+  if (added.length === 0) return 0;
+  const frozen: PublicEconomyGraphV7 = {
+    ...graph,
+    ownIceKeys: new Set([...graph.ownIceKeys, ...added]),
+    connectivitySource: undefined,
+  };
+  const total = (candidate: PublicEconomyGraphV7): number =>
+    candidate.cities
+      .filter((city) => city.ownerId === candidate.ownerId)
+      .reduce(
+        (sum, city) => sum + linkPopulationForCityV7(candidate, city.id),
+        0,
+      );
+  return total(frozen) - total(graph);
 }
 
 function replacePublicGraphTileV7(
@@ -9319,6 +9375,10 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk
+  // viewer's endpoints link along its own ice, with no length limit and no
+  // Pack Ice needed to use deep ice.
+  const overIce = seaLinksOverOwnIceV7(graph.faction);
   // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): a sea link needs only the
   // technology that builds Ports; the engine's rule is `seaLinksV7`.
   const ports = technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
@@ -9332,7 +9392,11 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
               graph.activeFishingHoleKeys.has(coordKeyV7(tile.at)))) &&
           tile.territoryCityId !== null &&
           ownedIds.has(tile.territoryCityId) &&
-          legalWater.has(coordKeyV7(tile.at)),
+          (legalWater.has(coordKeyV7(tile.at)) ||
+            (overIce &&
+              tile.explored &&
+              (tile.terrain === "SHALLOW_WATER" ||
+                tile.terrain === "DEEP_WATER"))),
       )
     : [];
   const seaEdges: (readonly [string, string])[] = [];
@@ -9356,7 +9420,33 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   for (const tile of graph.board.tiles)
     if (!tile.explored) maybeWater.add(coordKeyV7(tile.at));
   let possibleLinks = 0;
-  if (maybeWater.size > legalWater.size)
+  if (overIce) {
+    // The own ice is public on explored tiles, so the chain is known.
+    const width = graph.board.width;
+    const ownIce = new Set<number>();
+    for (const at of graph.ownIceKeys) {
+      const [y, x] = at.split(",").map(Number);
+      if (x !== undefined && y !== undefined) ownIce.add(y * width + x);
+    }
+    for (const [left, right] of ownIceChainPairsV7(
+      width,
+      graph.board.height,
+      ownIce,
+      ports.map((port) => port.at),
+    )) {
+      const from = ports[left];
+      const to = ports[right];
+      if (
+        from === undefined ||
+        to === undefined ||
+        from.territoryCityId === to.territoryCityId
+      )
+        continue;
+      seaEdges.push([coordKeyV7(from.at), coordKeyV7(to.at)]);
+      seaEdges.push([coordKeyV7(to.at), coordKeyV7(from.at)]);
+    }
+  }
+  if (!overIce && maybeWater.size > legalWater.size)
     for (const from of ports) {
       const queue = [from.at];
       const distance = new Map<string, number>([[coordKeyV7(from.at), 0]]);
@@ -9380,7 +9470,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
         }
       }
     }
-  for (const from of ports) {
+  for (const from of overIce ? [] : ports) {
     const fromCityId = from.territoryCityId;
     if (fromCityId === null) continue;
     const queue = [from.at];
@@ -9423,7 +9513,9 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       .map((tile) => coordKeyV7(tile.at)),
   );
   const ambiguous =
-    maybeWater.size > legalWater.size && possibleLinks !== seaEdges.length;
+    !overIce &&
+    maybeWater.size > legalWater.size &&
+    possibleLinks !== seaEdges.length;
   // 7r76: every own city center and every own active Port or Shipyard is a
   // node as if a Road lay on it, with or without the Roads technology.
   for (const at of cityAt.keys()) roads.add(at);
@@ -10270,6 +10362,7 @@ class IncrementalPublicRedevelopmentPossibilityWorkV7 implements PublicRedevelop
           faction: this.view.viewer.faction,
           activePortKeys: new Set(),
           activeFishingHoleKeys: new Set(),
+          ownIceKeys: new Set(),
           resolvedPendingCityIds: new Set(),
           remainingMonumentEntitlements: this.remainingMonumentEntitlements,
         };

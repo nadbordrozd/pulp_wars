@@ -147,11 +147,11 @@ describe("the identity", () => {
   // seat may be forbidden technologies of its own, a mission may bring
   // reinforcements (a new event kind) and name teams: 7r82.
   it("was 7r82 after 7r81, both save keys obsolete now", () => {
-    expect(PRIOR_RULESET_7_IDS.slice(-56, -54)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-57, -55)).toEqual([
       "pulp-wars-poc-7r81",
       "pulp-wars-poc-7r82",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -54)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-57, -55)).toEqual([
       "pulpWars.save.v7r81.current",
       "pulpWars.save.v7r82.current",
     ]);
@@ -162,12 +162,12 @@ describe("the identity", () => {
   // (`pulp_wars-v642.5`): 7r83, a prior identity since 7r84
   // (`pulp_wars-5ti.13`).
   it("was 7r83 after 7r82, its save key obsolete now", () => {
-    expect(PRIOR_RULESET_7_IDS.at(-54)).toBe("pulp-wars-poc-7r83");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-54)).toBe(
+    expect(PRIOR_RULESET_7_IDS.at(-55)).toBe("pulp-wars-poc-7r83");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-55)).toBe(
       "pulpWars.save.v7r83.current",
     );
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
   });
 });
 

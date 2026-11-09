@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r137");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r137.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-122, -82)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-123, -83)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -259,8 +259,9 @@ describe("ruleset-7 prior identities", () => {
     // Snow and ice, no Runners, a zone of control stops a Sled on the ice
     // (`pulp_wars-ecnj`): 7r135. The Ice Folk stat pass against the Human
     // roster, the Sled 11 HP (`pulp_wars-px48`): 7r136. The naval branch
-    // rebuilt (`pulp_wars-tzk6`): 7r137.
-    expect(revision).toBe(137);
+    // rebuilt (`pulp_wars-tzk6`): 7r137. Sea routes over ice only
+    // (`pulp_wars-dy2b`): 7r138.
+    expect(revision).toBe(138);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -295,7 +296,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r138", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r139", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

@@ -263,6 +263,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-frozen-sea.ts::iceCrackedOpenTilesV7": "BOARD",
     "src/ai/v7-frozen-sea.ts::iceBuildSiteV7": "BOARD",
     "src/ai/v7-frozen-sea.ts::iceCrackScoreV7": "BOARD",
+    // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): a unit of another
+    // seat on an Ice Folk hole breaks its links (what stands on the board),
+    // and the live economy read after a change of the ice (the board's
+    // units besiege and blockade).
+    "src/ai/v7-frozen-sea.ts::iceCrackUnlinkedPairsV7": "BOARD",
+    "src/engine/v7/reducer.ts::withIceLinkEconomyV7": "BOARD",
     // The exploration plan (`pulp_wars-nc6`): the reach of the hostile units
     // on the board (a burrowed unit threatens nobody).
     "src/ai/v7-exploration.ts::explorationSurveyV7": "BOARD",

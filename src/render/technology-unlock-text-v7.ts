@@ -226,12 +226,17 @@ export const SEA_LINK_DEEP_WATER_NOTE_V7 = "Port links can cross deep water";
 /**
  * Fishing Hole links (`pulp_wars-vg5l`, 7r127): Rime's line. The Ice Folk
  * build no dock; their Fishing Holes (and a Port they capture) link cities.
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): only along an
+ * unbroken line of their own ice (one number).
  */
 export const ICE_SEA_LINK_UNLOCK_TEXT_V7 =
-  "Fishing Holes link cities like Ports: +1 population for each city joined to your capital, and +1 to the capital for each";
-/** Pack Ice: a Fishing Hole link may cross Deep Water. */
+  "Fishing Holes joined by an unbroken line of your ice link cities: +1 population for each city joined to your capital";
+/**
+ * Pack Ice: the ice of a Fishing Hole link may lie on Deep Water (7r138:
+ * Pack Ice makes that ice; using it needs nothing).
+ */
 export const ICE_SEA_LINK_DEEP_WATER_NOTE_V7 =
-  "Fishing Hole links can cross deep water";
+  "Hole links can run over deep-water ice";
 /**
  * Bead pulp_wars-5ti.29: the Roads card's line for the network effect
  * (`LAND_ROAD_POPULATION`). Roads do not grant the link population; Road

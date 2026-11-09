@@ -65,6 +65,18 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/economy.ts::isActiveFishingHoleV7": "SEAT",
   "src/engine/v7/query.ts::publicActiveFishingHoleKeysV7": "SEAT",
   "src/engine/v7/query.ts::graphAfterTileCommandV7": "SEAT",
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): whether a seat's
+  // sea links run along its own ice is the seat's faction (an economy
+  // rule), in the network facts, the view's routes, the public economy
+  // graph, the live economy after a change of the ice, and the Normal AI's
+  // reading of a hostile seat's links.
+  "src/engine/v7/economy.ts::networkFactsV7": "SEAT",
+  "src/engine/v7/economy.ts::networkFactsMatchV7": "SEAT",
+  "src/engine/v7/query.ts::publicOwnIceKeysV7": "SEAT",
+  "src/engine/v7/query.ts::publicIceLinkPopulationGainV7": "SEAT",
+  "src/engine/v7/reducer.ts::withIceLinkEconomyV7": "SEAT",
+  "src/engine/v7/view.ts::publicSeaRoutes": "SEAT",
+  "src/ai/v7-frozen-sea.ts::iceCrackUnlinkedPairsV7": "SEAT",
   // Tuning 2 (`pulp_wars-w49.3`): the land trade line reads the viewer's
   // own Commerce capability (a seat-level economy rule).
   "src/render/technology-unlock-text-v7.ts::landTradeStatusV7": "SEAT",

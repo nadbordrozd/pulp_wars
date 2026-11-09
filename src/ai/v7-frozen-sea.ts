@@ -9,12 +9,14 @@ import {
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { ownIceChainPairsV7, seaLinksOverOwnIceV7 } from "../engine/v7/economy";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import { iceAtV7, unitIsIceFolkGroundV7 } from "../engine/v7/ice";
 import {
   previewColdSnapV7,
   previewColdWakeV7,
   previewCrackIceV7,
+  publicIceLinkPopulationGainV7,
   queryCombatPreviewV7,
   type CrackIcePreviewV7,
 } from "../engine/v7/query";
@@ -121,6 +123,23 @@ export const ICE_EXPOSED_TARGET_VALUE_V7 = 3;
 export const ICE_CRACK_HOME_PRIORITY_V7 = 1108;
 /** A ship's Crack of the ice that is the next step of its route. */
 export const ICE_CRACK_LANE_PRIORITY_V7 = 1107;
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): a Cold Snap that
+ * fills a gap in the seat's own ice chain between two Fishing Holes, so
+ * that a sea link (its link population) forms: below the crossing's
+ * freezes, above home ice and routine Moves.
+ */
+export const ICE_LINK_FREEZE_PRIORITY_V7 = 1106;
+/** The strategic value of each point of link population a freeze makes. */
+export const ICE_LINK_FREEZE_VALUE_V7 = 8;
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): a Crack of a chain
+ * tile that breaks a hostile Ice Folk sea link (below the bridge and lane
+ * Cracks).
+ */
+export const ICE_CRACK_LINK_PRIORITY_V7 = 1106;
+/** The strategic value of each hostile city pair a Crack unlinks. */
+export const ICE_CRACK_LINK_VALUE_V7 = 8;
 /** Hostile ice this close to an own city center is a bridge worth breaking. */
 export const ICE_CRACK_HOME_RADIUS_V7 = 3;
 /** ...when a hostile Ice Folk unit is visible this close to that center. */
@@ -1009,7 +1028,7 @@ export function iceSeaCrossingTechV7(
 // --- Freeze ----------------------------------------------------------------------
 
 export interface IceFreezeScoreV7 {
-  readonly reason: "BRIDGE" | "MEND" | "HOME";
+  readonly reason: "BRIDGE" | "MEND" | "LINK" | "HOME";
   readonly priority: number;
   readonly strategic: number;
   readonly immediate: number;
@@ -1130,6 +1149,21 @@ function iceWaterFreezeScoreV7(
         preview,
       };
   }
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): new own ice that
+  // closes a gap in a chain between two Fishing Holes makes a sea link; the
+  // public economic graph says what link population it adds.
+  const linkGain = publicIceLinkPopulationGainV7(view, [
+    ...fresh,
+    ...preview.taken,
+  ]);
+  if (linkGain > 0)
+    return {
+      reason: "LINK",
+      priority: ICE_LINK_FREEZE_PRIORITY_V7,
+      strategic: ICE_LINK_FREEZE_VALUE_V7 * linkGain,
+      immediate: 0,
+      preview,
+    };
   // Home ice (section 3.1): never by the builder, whom the crossing needs.
   if (plan?.builders.includes(actor.id) === true) return null;
   const pressed = view.cities.filter(
@@ -1497,12 +1531,70 @@ export function iceRouteStepCostV7(
 }
 
 export interface IceCrackScoreV7 {
-  readonly reason: "BRIDGE" | "LANE";
+  readonly reason: "BRIDGE" | "LINK" | "LANE";
   readonly priority: number;
   readonly strategic: number;
   readonly immediate: number;
   /** The engine's preview of the Crack (the score is read from it). */
   readonly preview: CrackIcePreviewV7;
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): how many pairs of
+ * cities of the Ice Folk seat `ownerId` a chain of its own ice sea-links
+ * now and no longer would with the ice on `at` cracked, on public facts:
+ * its Fishing Holes, Ice Fortresses and docks on explored tiles of its
+ * territory with no unit of another seat on them, and its ice in the view.
+ */
+export function iceCrackUnlinkedPairsV7(
+  view: PlayerViewV7,
+  ownerId: PlayerId,
+  at: CoordV7,
+): number {
+  const owner = view.players.find((player) => player.id === ownerId);
+  if (owner === undefined || !seaLinksOverOwnIceV7(owner.faction)) return 0;
+  const endpoints: { readonly at: CoordV7; readonly cityId: number }[] = [];
+  for (const tile of view.board.tiles)
+    if (
+      tile.explored &&
+      (tile.improvement === "FISHING_HOLE" ||
+        tile.improvement === "ICE_FORTRESS" ||
+        tile.improvement === "PORT" ||
+        tile.improvement === "SHIPYARD") &&
+      tile.territoryOwnerId === ownerId &&
+      tile.territoryCityId !== null &&
+      !view.units.some(
+        (unit) =>
+          unit.hp > 0 && unit.ownerId !== ownerId && same(unit.at, tile.at),
+      )
+    )
+      endpoints.push({ at: tile.at, cityId: tile.territoryCityId });
+  if (endpoints.length < 2) return 0;
+  const width = view.board.width;
+  const ice = new Set<number>();
+  for (const entry of view.ice)
+    if (entry.ownerId === ownerId) ice.add(entry.at.y * width + entry.at.x);
+  const cityPairs = (ownIce: ReadonlySet<number>): ReadonlySet<string> => {
+    const pairs = new Set<string>();
+    for (const [left, right] of ownIceChainPairsV7(
+      width,
+      view.board.height,
+      ownIce,
+      endpoints.map((endpoint) => endpoint.at),
+    )) {
+      const a = endpoints[left]?.cityId;
+      const b = endpoints[right]?.cityId;
+      if (a === undefined || b === undefined || a === b) continue;
+      pairs.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+    }
+    return pairs;
+  };
+  const before = cityPairs(ice);
+  if (before.size === 0) return 0;
+  const cracked = new Set(ice);
+  cracked.delete(at.y * width + at.x);
+  const after = cityPairs(cracked);
+  return [...before].filter((pair) => !after.has(pair)).length;
 }
 
 /** Whether the ice tile `at` is joined, over ice, to a tile beside one of `sliders`. */
@@ -1544,6 +1636,11 @@ function iceJoinsV7(
  * - **Lane** (1107): the cracker is afloat and the tile is the next step of
  *   its public water route (`route`, where ice costs `iceRouteStepCostV7`):
  *   no tile around it leads on as cheaply.
+ * - **Link** (1106, sea routes over ice only, `pulp_wars-dy2b`, 7r138): the
+ *   tile is a link of a hostile Ice Folk seat's chain of ice between two of
+ *   its cities' Fishing Holes, and the Crack unlinks them
+ *   (`iceCrackUnlinkedPairsV7`; eight for each pair of cities). A Bridge
+ *   Crack that also unlinks adds the same.
  */
 export function iceCrackScoreV7(
   view: PlayerViewV7,
@@ -1584,6 +1681,7 @@ export function iceCrackScoreV7(
         (unit) => chebyshev(unit.at, city.at) <= ICE_CRACK_SLIDER_RADIUS_V7,
       ),
   );
+  const unlinked = iceCrackUnlinkedPairsV7(view, entry.ownerId, command.at);
   if (centers.length > 0) {
     const near = Math.min(
       ...centers.map((city) => chebyshev(city.at, command.at)),
@@ -1598,11 +1696,20 @@ export function iceCrackScoreV7(
       priority: ICE_CRACK_HOME_PRIORITY_V7,
       strategic:
         10 * (ICE_CRACK_HOME_RADIUS_V7 + 1 - near) +
-        (iceJoinsV7(view, command.at, threats) ? 5 : 0),
+        (iceJoinsV7(view, command.at, threats) ? 5 : 0) +
+        ICE_CRACK_LINK_VALUE_V7 * unlinked,
       immediate: 0,
       preview,
     };
   }
+  if (unlinked > 0)
+    return {
+      reason: "LINK",
+      priority: ICE_CRACK_LINK_PRIORITY_V7,
+      strategic: ICE_CRACK_LINK_VALUE_V7 * unlinked,
+      immediate: 0,
+      preview,
+    };
   if (!afloat(actor)) return null;
   const route = tools.route(actor);
   const here = route?.(actor.at);

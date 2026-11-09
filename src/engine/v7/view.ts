@@ -15,6 +15,8 @@ import {
   combinedNetworkCityIdsV7,
   combinedNetworkRoadKeysV7,
   networkNodeComponentsV7,
+  ownIceChainPathV7,
+  seaLinksOverOwnIceV7,
   seaLinksV7,
   isActivePortV7,
   landTradeCityIdsV7,
@@ -1532,6 +1534,15 @@ function publicSeaRoutes(
   };
   const best = new Map<string, PublicNavalFactsV7["seaRoutes"][number]>();
   const parentsByPort = new Map<string, ReadonlyMap<string, CoordV7 | null>>();
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk link
+  // is drawn along the chain of the viewer's own ice it runs on (explored
+  // tiles only, like the water of every other link).
+  const overIce = seaLinksOverOwnIceV7(viewer.faction);
+  const ownIce = new Set<number>();
+  if (overIce)
+    for (const entry of state.ice)
+      if (entry.ownerId === viewer.id && explored.has(key(entry.at)))
+        ownIce.add(entry.at.y * state.board.width + entry.at.x);
   for (const link of seaLinksV7(state, viewer.id)) {
     const [from, to] =
       link.fromCityId < link.toCityId
@@ -1544,20 +1555,33 @@ function publicSeaRoutes(
             { at: link.from, cityId: link.fromCityId },
           ] as const);
     if (!carries(from.at, from.cityId) || !carries(to.at, to.cityId)) continue;
-    let parents = parentsByPort.get(key(from.at));
-    if (parents === undefined) {
-      parents = waterParents(
-        state.board.width,
-        state.board.height,
-        water,
-        from.at,
-        5,
-      );
-      parentsByPort.set(key(from.at), parents);
+    let path: CoordV7[];
+    if (overIce)
+      path = (
+        ownIceChainPathV7(
+          state.board.width,
+          state.board.height,
+          ownIce,
+          from.at,
+          to.at,
+        ) ?? [from.at, to.at]
+      ).map((at) => ({ x: at.x, y: at.y }));
+    else {
+      let parents = parentsByPort.get(key(from.at));
+      if (parents === undefined) {
+        parents = waterParents(
+          state.board.width,
+          state.board.height,
+          water,
+          from.at,
+          5,
+        );
+        parentsByPort.set(key(from.at), parents);
+      }
+      // A link counts whether or not its water is explored; a crossing the
+      // viewer has not explored is published as its two docks only.
+      path = reconstructWaterPath(parents, to.at) ?? [from.at, to.at];
     }
-    // A link counts whether or not its water is explored; a crossing the
-    // viewer has not explored is published as its two docks only.
-    const path = reconstructWaterPath(parents, to.at) ?? [from.at, to.at];
     const candidate = { fromCityId: from.cityId, toCityId: to.cityId, path };
     const routeKey = `${from.cityId}:${to.cityId}`;
     const existing = best.get(routeKey);

@@ -81,6 +81,136 @@ export function fishingHolesLinkV7(faction: PlayerStateV7["faction"]): boolean {
 }
 
 /**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138; the user, 2026-11-08:
+ * "trade routes over water should only go over ice. if there is no ice
+ * connection there is no route"): whether a seat of `faction` links its
+ * sea-link endpoints only along its own ice (the Ice Folk), with no length
+ * limit, instead of through at most five steps of water (every other
+ * faction, unchanged).
+ */
+export function seaLinksOverOwnIceV7(
+  faction: PlayerStateV7["faction"],
+): boolean {
+  return faction === "ICE_FOLK";
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the pairs of
+ * `endpoints` (indexes into it, the lower first, in index order) that an
+ * eight-way chain of tiles, every one of them `ownIce`, joins, the two
+ * endpoints themselves excepted: an endpoint on open water (a captured
+ * dock) links through the ice beside it, and two endpoints side by side
+ * link directly. There is no length limit. Endpoints of one city are
+ * paired too; the caller skips them. Units on the chain never matter. A
+ * pure board function, shared by the engine (`seaLinksV7`), the view's
+ * `naval.seaRoutes`, the public economic preview and the Normal AI.
+ */
+export function ownIceChainPairsV7(
+  width: number,
+  height: number,
+  ownIce: ReadonlySet<number>,
+  endpoints: readonly { readonly x: number; readonly y: number }[],
+): readonly (readonly [number, number])[] {
+  // The eight-way components of the own ice.
+  const component = new Map<number, number>();
+  let components = 0;
+  for (const start of ownIce) {
+    if (component.has(start)) continue;
+    const label = components;
+    components += 1;
+    component.set(start, label);
+    const queue = [start];
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const index = queue[cursor] as number;
+      const x = index % width;
+      const y = (index - x) / width;
+      for (let dy = -1; dy <= 1; dy += 1)
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+          const near = ny * width + nx;
+          if (!ownIce.has(near) || component.has(near)) continue;
+          component.set(near, label);
+          queue.push(near);
+        }
+    }
+  }
+  // The components each endpoint touches: its own tile's and its eight
+  // neighbours'.
+  const touched = endpoints.map((at) => {
+    const labels = new Set<number>();
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        const nx = at.x + dx;
+        const ny = at.y + dy;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        const label = component.get(ny * width + nx);
+        if (label !== undefined) labels.add(label);
+      }
+    return labels;
+  });
+  const pairs: (readonly [number, number])[] = [];
+  for (let left = 0; left < endpoints.length; left += 1)
+    for (let right = left + 1; right < endpoints.length; right += 1) {
+      const a = endpoints[left];
+      const b = endpoints[right];
+      if (a === undefined || b === undefined) continue;
+      const adjacent = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) <= 1;
+      const leftLabels = touched[left] ?? new Set<number>();
+      if (
+        adjacent ||
+        [...(touched[right] ?? [])].some((label) => leftLabels.has(label))
+      )
+        pairs.push([left, right]);
+    }
+  return pairs;
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the shortest chain
+ * of `ownIce` tiles from the endpoint `from` to the endpoint `to`, both
+ * ends included (the first eight-way step in board order breaks ties), or
+ * null when no chain joins them ({@link ownIceChainPairsV7}).
+ */
+export function ownIceChainPathV7(
+  width: number,
+  height: number,
+  ownIce: ReadonlySet<number>,
+  from: { readonly x: number; readonly y: number },
+  to: { readonly x: number; readonly y: number },
+): readonly { readonly x: number; readonly y: number }[] | null {
+  const start = from.y * width + from.x;
+  const finish = to.y * width + to.x;
+  const prior = new Map<number, number>([[start, -1]]);
+  const queue = [start];
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const index = queue[cursor] as number;
+    const x = index % width;
+    const y = (index - x) / width;
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        const near = ny * width + nx;
+        if (prior.has(near)) continue;
+        if (near === finish) {
+          prior.set(near, index);
+          const path: { x: number; y: number }[] = [];
+          for (let step = near; step !== -1; step = prior.get(step) ?? -1)
+            path.push({ x: step % width, y: Math.floor(step / width) });
+          return path.reverse();
+        }
+        if (!ownIce.has(near)) continue;
+        prior.set(near, index);
+        queue.push(near);
+      }
+  }
+  return null;
+}
+
+/**
  * Fishing Hole links (`pulp_wars-vg5l`, 7r127): whether the Fishing Hole on
  * `at` is an **active** node of `ownerId`'s connection network: the tile is
  * a Fishing Hole in the territory of a city `ownerId` owns, `ownerId` is an
@@ -830,7 +960,11 @@ export function combinedNetworkRoadKeysV7(
  * eight-way steps of water the owner may sail (Shallow Water, and Deep
  * Water with Navigation), explored or not, in board order of their docks.
  * An active Fishing Hole of an Ice Folk seat is such an endpoint too
- * (`pulp_wars-vg5l`, 7r127), to another hole or to a dock.
+ * (`pulp_wars-vg5l`, 7r127), to another hole or to a dock. Sea routes over
+ * ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk seat's endpoints are
+ * linked only by an unbroken eight-way chain of its own ice, of any length
+ * ({@link ownIceChainPairsV7}); open water, another seat's ice or land
+ * breaks it.
  */
 export function seaLinksV7(
   state: NetworkStateV7,
@@ -910,6 +1044,11 @@ export function seaTradeCityIdsV7(
     return empty;
   }
   const navigation = player.researchedTechs.includes("NAVIGATION");
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk seat's
+  // endpoints link only along its own ice, with no length limit, so its
+  // endpoints need no Pack Ice (it is needed to make deep ice, not to use
+  // it).
+  const overIce = seaLinksOverOwnIceV7(player.faction);
   // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): a sea link needs only the
   // technology that builds Ports (Shorecraft); Navigation adds Deep Water to
   // the water a route may cross. Exploration is no longer a condition: the
@@ -928,11 +1067,13 @@ export function seaTradeCityIdsV7(
             tile.improvement === "SHIPYARD" ||
             (holeLinks && isFishingHoleImprovementV7(tile.improvement))) &&
           tile.biome === null &&
-          (tile.terrain !== "DEEP_WATER" || navigation),
+          (tile.terrain !== "DEEP_WATER" || navigation || overIce),
       )
     : [];
   const seaLinks: SeaLinkV7[] = [];
-  const geometry = seaRouteGeometryV7(state, navigation, portCandidates);
+  const geometry = overIce
+    ? ownIceGeometryV7(state, playerId, portCandidates)
+    : seaRouteGeometryV7(state, navigation, portCandidates);
   if (geometry !== null) {
     const active = new Set<number>();
     portCandidates.forEach((port, index) => {
@@ -1177,7 +1318,8 @@ function setNetworkCacheSignatureV7(
  * fields): the board size, the mode and human seat, the owner's first
  * capital, technologies and explored tiles, every tile's place, biome,
  * terrain, improvement, Road and territory, every city's id, owner and
- * place, and every unit's owner, place, hit points and form. List lengths
+ * place, and every unit's owner, place, hit points and form, and (an Ice
+ * Folk owner, `pulp_wars-dy2b`, 7r138) every ice entry. List lengths
  * delimit the lists; a missing owner reads `"~"` for both of its lists.
  * {@link networkFactsV7} writes the list and {@link networkFactsMatchV7}
  * compares a state with one in place; the two read the same fields in the
@@ -1221,6 +1363,13 @@ function networkFactsV7(
   facts.push(state.units.length);
   for (const unit of state.units)
     facts.push(unit.ownerId, unit.at.y, unit.at.x, unit.hp, unit.form);
+  // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk seat's
+  // links follow its own ice.
+  if (player !== undefined && seaLinksOverOwnIceV7(player.faction)) {
+    facts.push(state.ice.length);
+    for (const entry of state.ice)
+      facts.push(entry.at.y, entry.at.x, entry.ownerId);
+  }
   return facts;
 }
 
@@ -1283,7 +1432,45 @@ function networkFactsMatchV7(
       facts[index++] !== unit.form
     )
       return false;
+  if (player !== undefined && seaLinksOverOwnIceV7(player.faction)) {
+    if (facts[index++] !== state.ice.length) return false;
+    for (const entry of state.ice)
+      if (
+        facts[index++] !== entry.at.y ||
+        facts[index++] !== entry.at.x ||
+        facts[index++] !== entry.ownerId
+      )
+        return false;
+  }
   return index === facts.length;
+}
+
+/**
+ * Sea routes over ice only (`pulp_wars-dy2b`, 7r138): the endpoints of an
+ * Ice Folk seat joined by a chain of its own ice
+ * ({@link ownIceChainPairsV7}), in the shape of {@link seaRouteGeometryV7}
+ * (each endpoint's later partners). Not cached across states: the ice
+ * changes in the middle of a turn.
+ */
+function ownIceGeometryV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+  ports: readonly GameStateV7["board"]["tiles"][number][],
+): SeaRouteGeometryV7 | null {
+  if (ports.length < 2) return null;
+  const width = state.board.width;
+  const ownIce = new Set<number>();
+  for (const entry of state.ice)
+    if (entry.ownerId === playerId) ownIce.add(entry.at.y * width + entry.at.x);
+  const reachablePortIndexes: number[][] = ports.map(() => []);
+  for (const [left, right] of ownIceChainPairsV7(
+    width,
+    state.board.height,
+    ownIce,
+    ports.map((port) => port.at),
+  ))
+    reachablePortIndexes[left]?.push(right);
+  return { reachablePortIndexes };
 }
 
 function seaRouteGeometryV7(
