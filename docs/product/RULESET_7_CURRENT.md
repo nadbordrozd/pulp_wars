@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r135`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r136`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,31 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r136` (`pulp_wars-px48`, **the Ice Folk stat pass
+against the Human roster**; the user, 2026-11-08: "compare units with
+equivalent human units and if they seem across the board better (same
+stats but extra frost-related abilities) then let's nerf them a bit. lower
+their hp or defence or higher cost. just a bit. Doesn't have to be exact
+equivalence; one unit can be plain better than another but let's avoid
+total dominance on every axis";
+[the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md), section 7). Each
+Ice Folk unit was set against the Human unit of its role on Coins, HP,
+Attack, Defense, Move, range and attack after moving (Glide, Mountain-born
+and every other rule count as abilities). Only the **Sled** was the
+Raider's equal on every one of them, with Glide in place of the Raider's
+Prowl: it has **11 HP** (12 before;
+[section 11](#11-unit-roster)). Every other Ice Folk unit already gives
+way somewhere (the Yeti on HP and Defense, the Snow Hunter on HP, the
+Walrus on Coins, HP and Defense, the Ice Witch and the Snow Golem on
+Coins, the Frost Wyrm on Attack, the Mammoth on Coins, Attack and Defense,
+the Frost Giant on HP) and is unchanged; the Ice Folk train no ship. A
+treasure Sled, a trained one and the mission Sleds start at 11 HP, so the
+initial-state pins of the missions that place a Sled (`ICE_FOLK_2`,
+`ICE_FOLK_3`, `ICE_FOLK_5`, `ICE_FOLK_6`, `LAB_ICE_FOLK_MID`, `UNDEAD_6`
+and `CULT_5`) moved; no mission revision changed. No command, event or
+ordinal changed. A save, replay, or setup of `7r135` is rejected, and the
+browser autosave has a new key.
 
 `pulp-wars-poc-7r135` (`pulp_wars-ecnj`, **skating is plain movement**;
 the user, 2026-11-08: "skating UI is strange with the arrows and also
@@ -2328,10 +2353,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r135`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r136`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r135.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r136.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7650,17 +7675,17 @@ The Ice Folk (`ICE_FOLK`) roster, by mechanical role, with the
 units cross Mountains without Engineering and without stopping
 ([section 21.8](#218-mountain-born-and-rockfall)):
 
-| Unit        | Role         | Tech           | Cost |  HP |  Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                         |
-| ----------- | ------------ | -------------- | ---: | --: | ------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------------------------------------- |
-| Yeti        | `FIGHTER`    | start          |    2 |  9⁸ |   2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                         |
-| Sled        | `RAIDER`     | Scouting       |    4 |  12 |   2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                    |
-| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |   8 |   2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
-| Walrus      | `GUARD`      | Fortification  |    4 |  16 | 1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                              |
-| Mammoth     | `SWORDSMAN`  | Metallurgy     |    8 |  20 |   3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
-| Ice Witch   | `CAPTAIN`    | Administration |    6 |  10 |   1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); no Rally; no Tend Wounded                                |
-| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |  10 |   3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                    |
-| Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |  14 |   3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
-| Frost Giant | `JUGGERNAUT` | reward only    |    — |  36 |   4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                 |
+| Unit        | Role         | Tech           | Cost |   HP |  Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                         |
+| ----------- | ------------ | -------------- | ---: | ---: | ------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| Yeti        | `FIGHTER`    | start          |    2 |   9⁸ |   2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                         |
+| Sled        | `RAIDER`     | Scouting       |    4 | 11¹¹ |   2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                    |
+| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |    8 |   2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
+| Walrus      | `GUARD`      | Fortification  |    4 |   16 | 1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                              |
+| Mammoth     | `SWORDSMAN`  | Metallurgy     |    8 |   20 |   3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
+| Ice Witch   | `CAPTAIN`    | Administration |    6 |   10 |   1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); no Rally; no Tend Wounded                                |
+| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |   10 |   3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                    |
+| Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |   14 |   3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
+| Frost Giant | `JUGGERNAUT` | reward only    |    — |   36 |   4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                 |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -7675,6 +7700,10 @@ the tier-3 review A, `7r113`, [section 11.2](#112-tier-3-review-2026-10-25))
 at its cost, HP, Attack, Defense, and Move, with Sight 2; Chivalry grants
 no Overrun in the Ice Folk tree. The Walrus was the Walrus and the Snow
 Golem the Snow Golem, with the same numbers.
+¹¹ The stat pass against the Human roster (`pulp-wars-poc-7r136`,
+`pulp_wars-px48`, [the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md)
+section 7): 11 HP (12 since `7r133`), so the Sled is no longer the
+Raider's equal on every number with Glide on top of them.
 
 - **Yeti** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion, the advance after a melee kill) and the Fighter's
@@ -7683,8 +7712,9 @@ Golem the Snow Golem, with the same numbers.
 - **Sled** (a dog sled and its driver) has Raider parity for Sight 2,
   capture, Pillage, the advance, Fieldcraft Forest freedom, Charge with
   Raiding, and **Escape** (since `7r133`, with 12 HP: its Bolas went with
-  the one Freeze effect; [section 21.9](#219-cold-blood)). Its primary
-  action is Attack.
+  the one Freeze effect; [section 21.9](#219-cold-blood)); it has 11 HP
+  since `7r136` and lacks the Raider's Prowl. Its primary action is
+  Attack.
 - **Snow Hunter** has Marksman parity (range 1–2, minimum range 1, capture,
   Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
   tuning 2, `7r47`) and Cold Blood
@@ -14296,7 +14326,8 @@ reach. Example: a Rockfall deals a full-HP Fighter 3 and a Marksman 4.
 
 The Sled's `THROW_BOLAS` (a freeze of one unit exactly 2 tiles away) is
 gone since `7r133` (the one Freeze effect, `pulp_wars-xv0t`): the Sled has
-12 HP (10 before) and the Raider's **Escape** (a Move after its attack,
+12 HP (10 before; 11 since the stat pass of `7r136`) and the Raider's
+**Escape** (a Move after its attack,
 [section 12.2](#122-activation)) instead.
 
 **Cold Blood** (the Snow Hunter; the Sabretooth had it from `7r113` to
@@ -15605,19 +15636,20 @@ of 8 HP or more (a Goblin or an Egg, 6 HP, dies to one bomb).
 HP left after one bomb on a fresh target (Shield absorbed in brackets; the
 `7r102` bomb of 6, and 7 with Dive):
 
-| Target (HP)                                                                                                                          | Bomb 6 | Dive 7 |
-| ------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| Fighter, Marksman, Raptor (12)                                                                                                       | 6      | 5      |
-| Guard (17)                                                                                                                           | 11     | 10     |
-| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 4      | 3      |
-| Gyrocopter (10, since `7r122`; 8 before: 2 and 1)                                                                                    | 4      | 3      |
-| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 2      | 1      |
-| Goblin (6), Egg (6)                                                                                                                  | killed | killed |
-| Ankylosaurus (20, Armoured)                                                                                                          | 15     | 14     |
-| Grunt (8, Shield 2)                                                                                                                  | 4 (2)  | 3 (2)  |
-| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 4 (2)  | 3 (2)  |
-| Grunt in a Force Field (8, Shield 4)                                                                                                 | 6 (4)  | 5 (4)  |
-| Yeti (9)                                                                                                                             | 3      | 2      |
+| Target (HP)                                                                                                                    | Bomb 6 | Dive 7 |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
+| Fighter, Marksman, Raptor (12)                                                                                                 | 6      | 5      |
+| Guard (17)                                                                                                                     | 11     | 10     |
+| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman (10) | 4      | 3      |
+| Sled (11, since `7r136`; 12 from `7r133`)                                                                                      | 5      | 4      |
+| Gyrocopter (10, since `7r122`; 8 before: 2 and 1)                                                                              | 4      | 3      |
+| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                            | 2      | 1      |
+| Goblin (6), Egg (6)                                                                                                            | killed | killed |
+| Ankylosaurus (20, Armoured)                                                                                                    | 15     | 14     |
+| Grunt (8, Shield 2)                                                                                                            | 4 (2)  | 3 (2)  |
+| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                        | 4 (2)  | 3 (2)  |
+| Grunt in a Force Field (8, Shield 4)                                                                                           | 6 (4)  | 5 (4)  |
+| Yeti (9)                                                                                                                       | 3      | 2      |
 
 **The exchange** (the Gyrocopter pass, `pulp_wars-w49.44`). A fresh Human
 Fighter (12 HP, Defense 2) bombed for 6 is at 6, and one fresh Hammerer hit

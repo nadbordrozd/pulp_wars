@@ -49,8 +49,8 @@ import { at } from "../fixtures/v7-revision20";
 describe("the identity", () => {
   // Ice Folk movement (`pulp_wars-s55m.2`) took 7r124 after it.
   it("was 7r123 after 7r122, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r123");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r122");

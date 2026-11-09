@@ -475,9 +475,10 @@ describe("the retired freezes", () => {
     expect(acceptV7(ownTurn, 1, { kind: "END_TURN" }).state.frozen).toEqual([]);
   });
 
-  it("gives the Sled 12 HP and the Raider's Escape after an attack", () => {
+  it("gives the Sled the Raider's Escape after an attack (11 HP since the stat pass)", () => {
+    // 12 HP with `pulp_wars-xv0t`; 11 since the stat pass (`pulp_wars-px48`).
     expect(effectiveRoleRuleV7("RAIDER", "ICE_FOLK")).toMatchObject({
-      maxHp: 12,
+      maxHp: 11,
       abilities: ["ATTACK", "CAPTURE", "CHARGE", "ESCAPE"],
     });
     const state = arena({
@@ -574,11 +575,11 @@ describe("the glossary", () => {
 
 describe("the identity (pulp_wars-xv0t)", () => {
   it("was 7r133 after 7r132, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
-    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r132");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r132");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
       "pulpWars.save.v7r132.current",
     );
   });

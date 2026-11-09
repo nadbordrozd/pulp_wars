@@ -159,13 +159,13 @@ describe("natural water: the identity (7r87)", () => {
   // (`mch9.32`, `mch9.33`) 7r89, and its Imp (`mch9.36`) 7r90, and its
   // Gibbering Mass (`mch9.37`) 7r91.
   it("was 7r87 after 7r86, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-50, -48)).toEqual([
       "pulp-wars-poc-7r86",
       "pulp-wars-poc-7r87",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -47)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-50, -48)).toEqual([
       "pulpWars.save.v7r86.current",
       "pulpWars.save.v7r87.current",
     ]);

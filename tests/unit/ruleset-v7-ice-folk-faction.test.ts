@@ -599,9 +599,10 @@ const ROSTER = [
     "RAIDER",
     "SCOUTING",
     // Ice Folk Freeze (`pulp_wars-w49.37`): 4 Coins (3 before). The one
-    // Freeze effect (`pulp_wars-xv0t`): 12 HP (10 before).
+    // Freeze effect (`pulp_wars-xv0t`): 12 HP (10 before). The stat pass
+    // (`pulp_wars-px48`, 7r136): 11 HP.
     4,
-    12,
+    11,
     4,
     2,
     2,
@@ -1422,8 +1423,9 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
       });
       const created = newUnitsV7(before, after);
       expect(created).toHaveLength(1);
-      // The one Freeze effect (`pulp_wars-xv0t`): a Sled has 12 HP.
-      expect(created[0]).toMatchObject({ role: "RAIDER", hp: 12, maxHp: 12 });
+      // The one Freeze effect (`pulp_wars-xv0t`): a Sled had 12 HP; the
+      // stat pass (`pulp_wars-px48`, 7r136): 11.
+      expect(created[0]).toMatchObject({ role: "RAIDER", hp: 11, maxHp: 11 });
       expect(unitRoleRuleV7(after, must(created[0])).label).toBe("Sled");
     });
 

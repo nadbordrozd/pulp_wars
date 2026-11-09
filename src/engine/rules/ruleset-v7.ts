@@ -3451,9 +3451,14 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     tacticalRole: "SKIRMISHER",
     // Ice Folk Freeze (`pulp_wars-w49.37`): 3 Coins before. The one Freeze
     // effect (`pulp_wars-xv0t`, 7r133): 12 HP (10 before), the Raider's
-    // Escape instead of the Bolas.
+    // Escape instead of the Bolas. The stat pass against the Human roster
+    // (`pulp_wars-px48`, 7r136, docs/product/ICE_FOLK_REDESIGN_2026-11.md
+    // section 7): 11 HP, so the Sled is no longer the Raider's equal on
+    // every number with Glide on top (it trades the Raider's Prowl for
+    // Glide; the one HP is the price of the four-tile dash over Snow and
+    // ice).
     cost: 4,
-    maxHp: 12,
+    maxHp: 11,
     attack2: 4,
     defense2: 2,
     move: 2,

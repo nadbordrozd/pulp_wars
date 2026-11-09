@@ -19,7 +19,13 @@
 >   is plain movement (3.6). Glide covers Snow and ice; Skate, Runners, the
 >   Sled's glide through zones of control, `glideDirection`, the skate
 >   trail, its arrows and the "Skate:" and "Runners" labels are gone.
->   Beads 4 to 6 are not built.
+> - **The stat pass is done** in `pulp-wars-poc-7r136` (`pulp_wars-px48`,
+>   [section 7](#7-stat-pass-against-the-human-roster-7r136)): every Ice
+>   Folk unit against the Human unit of its role. Only the Sled was the
+>   Raider's equal on every number (with Glide for Prowl); it has 11 HP
+>   (12 before). Every other unit already gave way somewhere and is
+>   unchanged. The pass took `7r136`, so beads 4 and 5 below move to
+>   `7r137` and `7r138`. Beads 4 to 6 are not built.
 > - **Decisions taken in bead 3:** (1) **Glide and a Road:** a step that
 >   leaves a usable Road node and also Glides costs one half-point, never
 >   less (the two never add up; a Road is never on ice, so they meet only
@@ -97,7 +103,8 @@ and have the ice folks have interesting, powerful abilities and synergies."
 
 This document lists what exists today (section 2), proposes one design
 (sections 3 and 4), says what it disturbs (section 5), and splits the work
-into beads (section 6).
+into beads (section 6); section 7 records the stat pass against the Human
+roster that followed bead 3.
 
 ## 1. The design in one page
 
@@ -781,7 +788,7 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
   `ruleset-v7-skating-plain-move-ecnj.test.ts`. **Done** in `7r135`
   (`pulp_wars-ecnj`).
 
-### Bead 4: the naval branch rebuilt (`7r136`)
+### Bead 4: the naval branch rebuilt (`7r137`)
 
 - **Scope:** section 3.4: the Walrus to Rime; Harpoons replaces Black Ice;
   Ice Fortress replaces Hoarfrost (improvement, command, build rules,
@@ -807,7 +814,7 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
   `chibi-ice-folk-rework-assets`, `chibi-naval-branch-assets`, plus a new
   `ruleset-v7-ice-naval-branch-fofr.test.ts`.
 
-### Bead 5: sea routes over ice only (`7r137`)
+### Bead 5: sea routes over ice only (`7r138`)
 
 - **Scope:** section 3.5 for Ice Folk seats (endpoints, own-ice chain, no
   length limit, Cracks and endpoint occupants break links); other
@@ -827,7 +834,7 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
 ### Bead 6: Ice Folk campaign after the redesign (no ruleset bump)
 
 - **Scope:** mission data only, as in CAMPAIGN.md section 27: replay the
-  six Ice Folk missions under `7r137` and retune enemy starts (I3 first:
+  six Ice Folk missions under `7r138` and retune enemy starts (I3 first:
   the walking bridge replaces Freeze lines); record the results as a new
   CAMPAIGN.md section; re-pin the mission tables.
 - **Needs the user's authorisation** for the `play-text` games (a whole-game
@@ -835,3 +842,71 @@ Conditional final gates: npm run format:check, npm run lint, npm run typecheck, 
   what was not played.
 - **Validation profile:** `ai/map/persistence` without simulations unless
   authorised; focused `campaign-ice-folk-v7` and `ruleset-v7-missions`.
+
+## 7. Stat pass against the Human roster (`7r136`)
+
+`pulp_wars-px48`, after bead 3. The user, 2026-11-08: "compare units with
+equivalent human units and if they seem across the board better (same
+stats but extra frost-related abilities) then let's nerf them a bit. lower
+their hp or defence or higher cost. just a bit. Doesn't have to be exact
+equivalence; one unit can be plain better than another but let's avoid
+total dominance on every axis".
+
+**Method.** Each Ice Folk unit is paired with the Human unit of the same
+mechanical role (`ICE_FOLK_ROLE_RULES_V7` against `ORIGINAL_ROLE_RULES_V7`):
+the slot both factions train, the Frost Giant against the Human reward
+giant. The numeric axes are Coins (fewer is better), maximum HP, Attack,
+Defense, Move, maximum range, and attack after moving. Glide over Snow and
+ice, Mountain-born, cover on Snow and every other rule are abilities, not
+axes. A unit **dominates** when it is at least its pair's equal on every
+axis and has an ability on top; a dominating unit takes one small step
+down (−1 or −2 HP, −0.5 Defense, or +1 Coin), a unit already worse on some
+axis is left alone, and the 7r134 Snow Golem and Mammoth keep their
+numbers unless they dominate (they do not).
+
+**The table** (`7r135` values; Attack and Defense in whole points; range
+is minimum–maximum; "AaM" is attack after moving; **bold** marks the axes
+where the Ice Folk unit is worse):
+
+| Role         | Human unit | Coins | HP  | Atk | Def                 | Move | Range | AaM | Human abilities                                        | Ice Folk unit | Coins | HP     | Atk   | Def     | Move | Range | AaM | Ice Folk abilities                                                            | Verdict                                       |
+| ------------ | ---------- | ----- | --- | --- | ------------------- | ---- | ----- | --- | ------------------------------------------------------ | ------------- | ----- | ------ | ----- | ------- | ---- | ----- | --- | ----------------------------------------------------------------------------- | --------------------------------------------- |
+| `FIGHTER`    | Fighter    | 2     | 12  | 2   | 2                   | 1    | 1     | yes | Field Defense (Fortification)                          | Yeti          | 2     | **9**  | 2     | **1.5** | 1    | 1     | yes | Mountain-born; Rockfall (range 2 from a Mountain); Glide; no Field Defense    | worse on HP and Defense: unchanged            |
+| `RAIDER`     | Raider     | 4     | 12  | 2   | 1                   | 2    | 1     | yes | Charge; Escape; Prowl (zones of control never stop it) | Sled          | 4     | 12     | 2     | 1       | 2    | 1     | yes | Charge; Escape; Glide (four frozen tiles a turn); no Prowl                    | **ties on every axis: 11 HP**                 |
+| `MARKSMAN`   | Marksman   | 4     | 12  | 2   | 1                   | 1    | 1–2   | yes | none                                                   | Snow Hunter   | 3     | **8**  | 2     | 1       | 1    | 1–2   | yes | Cold Blood (+0.5 Attack on a Frozen target); Glide                            | cheaper but worse on HP: unchanged            |
+| `GUARD`      | Guard      | 3     | 17  | 1.5 | 3 (1 against shots) | 1    | 1     | no  | Field Defense (Fortification)                          | Walrus        | **4** | **16** | 1.5   | **2**   | 1    | 1     | no  | Frostbite; Glide; no Field Defense                                            | worse on Coins, HP and Defense: unchanged     |
+| `CAPTAIN`    | Captain    | 5     | 10  | 1   | 1                   | 1    | 1     | yes | Rally; Tend Wounded                                    | Ice Witch     | **6** | 10     | 1     | 1       | 1    | 1     | yes | Blizzard; Cold Snap; Glide; no Rally; no Tend Wounded                         | worse on Coins: unchanged                     |
+| `CATAPULT`   | Catapult   | 8     | 10  | 3   | 0.5                 | 1    | 2–3   | no  | demolishes Field Defense                               | Snow Golem    | **9** | 10     | 3     | 1       | 1    | 2–3   | no  | Snowball; Mountain-born; Glide; demolishes Field Defense                      | worse on Coins: unchanged (the 7r134 numbers) |
+| `KNIGHT`     | Knight     | 9     | 13  | 4   | 1                   | 3    | 1     | yes | Overrun (Chivalry)                                     | Frost Wyrm    | 9     | 14     | **3** | 1       | 3    | 1     | yes | Flies (Deep Water without Navigation); Frost Breath; Sight 2; never advances  | worse on Attack: unchanged                    |
+| `SWORDSMAN`  | Champion   | 6     | 15  | 3.5 | 2.5                 | 1    | 1     | yes | none                                                   | Mammoth       | **8** | 20     | **3** | **2**   | 1    | 1     | yes | Sweep; Trample; Stampede; Glide                                               | worse on Coins, Attack and Defense: unchanged |
+| `JUGGERNAUT` | Juggernaut | —     | 40  | 4   | 4                   | 1    | 1     | yes | Push; Crushing Shove (reward giant)                    | Frost Giant   | —     | **36** | 4     | 4       | 1    | 1     | yes | Cold Wake; Glacial Smash; Mountain-born; Glide; never advances (reward giant) | worse on HP: unchanged                        |
+
+- **Ships:** none to pair. The Ice Folk tree unlocks no Patrol Boat,
+  Battleship or Submarine (the frozen sea; bead 4 rebuilds the branch
+  without ships), so the Human boats in `ICE_FOLK_ROLE_RULES_V7` are never
+  trained, found or rewarded.
+- **Other sources:** the treasure unit is a Sled (the Raider row), the
+  starting unit and Militia a Yeti (the Fighter row), and the level-5+
+  reward a Frost Giant (the Juggernaut row). No Ice Folk unit is hired,
+  summoned or unlocked outside these nine rows.
+
+**The one change: the Sled has 11 HP (12 before).** It was the only unit at
+its pair's equal on every axis: since `7r133` (Escape for the Bolas, 12 HP)
+it has the Raider's Coins, HP, Attack, Defense, Move, range and Sight, and
+since `7r135` its Glide makes it a four-tile dash over Snow and ice. It
+trades the Raider's Prowl for that Glide, so it was never strictly better,
+but the numbers alone read "a Raider with frost on top", which is what the
+user asked to avoid. One HP is the smallest step on the table: Coins +1
+(25%) or Defense −0.5 (half its Defense) would change its role, while one
+HP changes no common kill. A Human Knight (14 in the open) and two
+Marksman shots (6 each) still kill it at full HP as before; a Charging
+Raider (10) now leaves it 1 HP (2 before); a Gyrocopter bomb (6) leaves 5
+(6 before). Promoted, it has 16 HP (17 before).
+
+**Decisions.** (1) Range is compared by its maximum (the Golem's and the
+Catapult's 2–3 tie; the Yeti's Rockfall reach from a Mountain is an
+ability). (2) The Human Guard's Defense 1 against shots, Sight, cover and
+the reward giants' missing cost are not axes; the giants tie on cost. (3)
+`tests/unit/ruleset-v7-ice-folk-stat-pass-px48.test.ts` pins, for each pair,
+the axes on which the Ice Folk unit gives way, and fails when an Ice Folk
+unit is at its pair's equal on every axis unless the test lists the pair
+as an exception with a reason; it lists none.

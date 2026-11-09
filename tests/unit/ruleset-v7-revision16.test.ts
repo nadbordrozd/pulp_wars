@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-120, -80)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-121, -81)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -257,8 +257,9 @@ describe("ruleset-7 prior identities", () => {
     // Catapult's reach, and the Mammoth's Attack 3 and full-damage Sweep
     // (`pulp_wars-3qtp`): 7r134. Skating is plain movement: Glide over
     // Snow and ice, no Runners, a zone of control stops a Sled on the ice
-    // (`pulp_wars-ecnj`): 7r135.
-    expect(revision).toBe(135);
+    // (`pulp_wars-ecnj`): 7r135. The Ice Folk stat pass against the Human
+    // roster, the Sled 11 HP (`pulp_wars-px48`): 7r136.
+    expect(revision).toBe(136);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -293,7 +294,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r136", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r137", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

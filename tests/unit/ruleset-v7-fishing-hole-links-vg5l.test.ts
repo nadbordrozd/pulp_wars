@@ -105,8 +105,8 @@ describe("the identity", () => {
   // The Mammoth's 2- or 3-tile Stampede (`pulp_wars-57lq`) took 7r128
   // after it.
   it("was 7r127 after 7r126, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r127");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r126");

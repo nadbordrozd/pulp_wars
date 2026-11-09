@@ -122,8 +122,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "647077de58471f0e087ae69bef071c363c34b3ff6580544215e01e637b38aff4",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was b47c5f077890f2ab…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 772d4440aa11fb4f…).
   "UNDEAD_6@4:UNDEAD":
-    "772d4440aa11fb4f7f3942a3be3c59938f48ec26bf280e00625bc1cc3dd1b5a0",
+    "802dfffb1776f715db83ffadd42c036c7de23d4eb050f43152a571eb61f2ddf8",
   // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`).
   "DINOSAUR_1@4:DINOSAUR":
     "f81e7f75739e33618c6c39b32f6182f4ef90d8ff24b47db9035991cc5e8cb41c",
@@ -205,30 +207,38 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Revision 5 (`pulp_wars-s55m.9`): the Frost Giant wakes in round 12.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 7fe2ee3d0c4e7077…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 5624ceddda4cf802…).
   "ICE_FOLK_2@5:ICE_FOLK":
-    "5624ceddda4cf802388821029297cd5ab189c90f378ae567873064a65fd0dc06",
+    "ef2ec27f0e81d21286d85d69f7869c9f2e0de7d18e93e07835525f45f3daf725",
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
   // Revision 6 (`pulp_wars-s55m.7`): the second Steam Launch is back.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 695397ca57dc51b8…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 064a10525acbc82c…).
   "ICE_FOLK_3@6:ICE_FOLK":
-    "064a10525acbc82c3f8267ff9c2b7720dc6eb695b6158b4882412396e97d34e9",
+    "0b9136c000bcc64de86ac254779703d3f606598cfd6be33de6c592423a86d047",
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_4@4:ICE_FOLK":
     "63ec93d147e64e737b439d86a1441966b333fdc658af3e7f870ea84acd81140a",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was b7d24543b2fdd782…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 01c79ce830eab67e…).
   "ICE_FOLK_5@4:ICE_FOLK":
-    "01c79ce830eab67e00281301dfee31518f62756ebacac2883df5fa041507c3b0",
+    "d2f8284134d161b4b447aeaafe1034943e1c27a3d61eaf711b187f548943cbea",
   // Revision 5 (`pulp_wars-s55m.7`): the Lodge has Favour 5 and holds
   // with six.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 5fb2825e0b469d3f…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 06b2157121f3e1dd…).
   "ICE_FOLK_6@5:ICE_FOLK":
-    "06b2157121f3e1ddab9cf0782884ec126af41755b18efd6d6abb14eda71732a1",
+    "d9c29e21f0840cfc5048fadc2b071251552221f2ca7f1b56b98c7af27a33682b",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
   "CULT_1@4:CULT":
     "520e53094ca20029c5929a970ecd963eff74be1554c427b0491d725553e4dc72",
@@ -240,8 +250,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6d1e600c97de82e5e5efc73a89c221f8628a08aca4a965229a4aa66ec7802ae8",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 357a7f34194eefbc…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was d236817511c2123c…).
   "CULT_5@4:CULT":
-    "d236817511c2123c4369370428b671e501ac05225290d0797a0dfb236832fe70",
+    "fcd631058ad9c0746f448d3b0b42bcfc99c1621e26c558fd5bfeb4d5610851be",
   "CULT_6@3:CULT":
     "590aceb5bf3689a138078614af3f206dca8b4094f3cc8c349be6e51dbc2e604e",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
@@ -306,8 +318,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Ice Folk Freeze (`pulp_wars-w49.37`): revision 2.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was b82c78fa2a4a0ac1…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 5fa83e225efd0c2c…).
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
-    "5fa83e225efd0c2c64f6de606127a39361e984ad019fab7a3ea05ef68e29629a",
+    "65460987794854f718eef6aabd57e1a76c456da0f57a42e419dc2d21b8432013",
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Dwarf roster in
   // the same middle game, the hand player as the Dwarves. Its Whirligig has
   // 18 HP (was 4b894f5fc0011e42…: pulp_wars-befg), and its Gyrocopter 10
@@ -533,8 +547,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "31b71946de12471600651b36736873231d6a294836a98107207d4525fd099def",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was a2afe3ddc9ffce74…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was ffc496fc480ef08e…).
   "UNDEAD_6@4:UNDEAD":
-    "ffc496fc480ef08e83cd374ee07da2af5c1778106fdb1554d324222040be306e",
+    "d446fab09b852163a6453259389188dff00d500c85d8b4bb5ec9911e8f95060b",
   // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`); the Sea
   // Road (`DINOSAUR_3`) places the Sea Serpent and has no pin here.
   "DINOSAUR_1@4:DINOSAUR":
@@ -604,30 +620,38 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Revision 5 (`pulp_wars-s55m.9`): the Frost Giant wakes in round 12.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 6c61ee8d1e6fc2c3…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 9466ca29d6f6446e…).
   "ICE_FOLK_2@5:ICE_FOLK":
-    "9466ca29d6f6446ef54651f3cca2904fd247f5e98a61616681238303905a616e",
+    "b13d1c37858d4ddcd48f3848ace5621a4463d6ce7f0d87893a5dc78d7396b743",
   // Revision 5 (`pulp_wars-s55m.5`): one Steam Launch.
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
   // Revision 6 (`pulp_wars-s55m.7`): the second Steam Launch is back.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 6fe99a458bffb948…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 38e1efb34e695f44…).
   "ICE_FOLK_3@6:ICE_FOLK":
-    "38e1efb34e695f447a27bffafed43d67a06bd750a893b2153c6a4356cb884fac",
+    "7d3ad5ad97fbd253b22230d26721e3c2cd25963c2426ad0ecd1bed5f47b0eb08",
   // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
   // seat starts with Rime, so one tile of its border water is ice.
   "ICE_FOLK_4@4:ICE_FOLK":
     "b58ead6a097fcb3236d8b01fff4872d22eb4f563e46a1265d9417db4262bd485",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was d9c9447f508ba191…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 90ada2420152b4dc…).
   "ICE_FOLK_5@4:ICE_FOLK":
-    "90ada2420152b4dc6bcd64244b7d2a56b798c6b798906a2eee1d93c543deadad",
+    "b0496162ff7e9f897fccc162663411fd2dc9d842342c05adc8667f5460b43893",
   // Revision 5 (`pulp_wars-s55m.7`): the Lodge has Favour 5 and holds
   // with six.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was 30d3a5c626f23fe3…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 5f35573a2c8ab810…).
   "ICE_FOLK_6@5:ICE_FOLK":
-    "5f35573a2c8ab81074dee919f7bef14c754c06c5dd68fc319013421c23b00577",
+    "7009a422e662b3e467cbf7f66f02526541c418a239497842270d6d38b7f1adab",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
   "CULT_1@4:CULT":
     "d3b84ca2491f2f7a450a12683b961667837cc6ee0ecb2d1fa4e81083b5da803c",
@@ -639,8 +663,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "7d2c7d04314de4a518d5edbfd7e5783f948a4dfa580e0b7b8938b731bdd8e2a4",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was eddbf53f42af24ec…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was c28f07bb43c2419e…).
   "CULT_5@4:CULT":
-    "c28f07bb43c2419efda68baa6ca1f8b43fdf6b641b012d9c55892f9178576144",
+    "c27f3a68f0d6fa802afa14646595953cb35f5bb1cb3deec1785892cacc660c71",
   "CULT_6@3:CULT":
     "5f59bed58561eba8bdce48f3c4275a5e140c025834a60feffe590481ca507f0a",
 
@@ -694,8 +720,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Ice Folk Freeze (`pulp_wars-w49.37`): revision 2.
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was ebd63e3819669af5…).
+  // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
+  // 11 HP (was 392e81b064f8b34e…).
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
-    "392e81b064f8b34e24e0cce1293ae2028bc3e170df70f70e7ef09372ccd1a8f8",
+    "b28adb3f9bb4026f6a57022be1b436afe956bad18fe468c12923d7fb5a4d050b",
   // Its Whirligig has 18 HP (was 8a17c1c43532dc6a…: pulp_wars-befg), and
   // its Gyrocopter 10 (was 85a9ee43c70b9fe5…: pulp_wars-o2g8).
   "LAB_DWARF_MID@1:DWARF":

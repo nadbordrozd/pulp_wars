@@ -37,7 +37,7 @@ import {
   seatV7,
 } from "../fixtures/v7-naval-branch";
 
-// Skating is plain movement (`pulp_wars-ecnj`, `pulp-wars-poc-7r135`;
+// Skating is plain movement (`pulp_wars-ecnj`, `pulp-wars-poc-7r136`;
 // docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.6, Bead 3; the user,
 // 2026-11-08: "the sled can skate the entire length of the map ... I don't
 // want extra UI for skating. its just movement."). One Glide rule over Snow
@@ -92,12 +92,13 @@ const snowAt = (view: PlayerViewV7, at: CoordV7): boolean =>
   );
 
 describe("the identity (pulp_wars-ecnj)", () => {
-  it("is 7r135 after 7r134, whose save key is obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r135");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r135.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r134");
+  // The Ice Folk stat pass (`pulp_wars-px48`) took 7r136 after it.
+  it("was 7r135 after 7r134, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r136");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r136.current");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r134");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r134.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
