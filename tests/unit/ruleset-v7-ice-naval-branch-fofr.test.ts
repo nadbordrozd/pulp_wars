@@ -128,7 +128,7 @@ const offered = (state: GameStateV7, seat: 0 | 1 = 0) =>
 
 describe("the rebuilt branch: each node's unlocks, in the tree and on its card", () => {
   it("is ruleset 7r137", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
   });
 
   it("Rime trains the Walrus; Pack Ice, the Ice Fortress, Harpoons and Under the Ice", () => {

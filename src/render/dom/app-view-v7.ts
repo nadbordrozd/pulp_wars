@@ -486,6 +486,8 @@ import {
   tendPreviewPresentationV7,
   cureCaptainPhraseV7,
   PESTILENCE_UNLOCK_TEXT_V7,
+  WHOLE_SKELETONS_UNLOCK_TEXT_V7,
+  WHOLE_ZOMBIES_UNLOCK_TEXT_V7,
   undeadBoundaryNoticeV7,
   undeadCommandLabelV7,
   unitAfflictionsV7,
@@ -19852,7 +19854,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r138",
+    rulesetId: "pulp-wars-poc-7r139",
     seed,
     width,
     height: width,
@@ -20136,6 +20138,11 @@ function effectDescription(
       return WALLBREAKER_UNLOCK_TEXT_V7;
     case "PESTILENCE":
       return PESTILENCE_UNLOCK_TEXT_V7;
+    // Full-strength risings (`pulp_wars-1uof`, 7r139).
+    case "WHOLE_SKELETONS":
+      return WHOLE_SKELETONS_UNLOCK_TEXT_V7;
+    case "WHOLE_ZOMBIES":
+      return WHOLE_ZOMBIES_UNLOCK_TEXT_V7;
     // The Martian revision (section 4).
     case "BRAIN_SUPPORT":
       return BRAIN_SUPPORT_UNLOCK_TEXT_V7;
@@ -20424,6 +20431,8 @@ function technologyEffectGroupIdV7(
     case "NESTING":
     case "WALLBREAKER":
     case "PESTILENCE":
+    case "WHOLE_SKELETONS":
+    case "WHOLE_ZOMBIES":
     case "BRAIN_SUPPORT":
     case "FORCE_FIELDS":
     case "HEAT_SINKS":

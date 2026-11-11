@@ -158,13 +158,13 @@ describe("the Gibbering Mass: the identity (7r91)", () => {
   // (`pulp_wars-5ti.16`) took 7r92 after it, the Undead Drowned Fleet
   // (`pulp_wars-5ti.17`) 7r93.
   it("was 7r91 after 7r90, both save keys obsolete now, a 7r90 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-48, -46)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
       "pulp-wars-poc-7r90",
       "pulp-wars-poc-7r91",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-48, -46)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -47)).toEqual([
       "pulpWars.save.v7r90.current",
       "pulpWars.save.v7r91.current",
     ]);
@@ -211,9 +211,10 @@ describe("the Gibbering Mass: its registration (sections 4.1 and 7.4)", () => {
       1,
     ]);
     const mechanics = summonedUnitRoleMechanicsV7("MASS");
-    // A daemon: no living thing, it strides; immovable, it never advances
-    // after a kill, and it is not the Human Guard (no Open to ranged).
-    expect(mechanics.construct).toBe(true);
+    // A daemon: it strides; immovable, it never advances after a kill, and
+    // it is not the Human Guard (no Open to ranged). No construct since
+    // `pulp_wars-1uof` (7r139): it is living for death and infection.
+    expect(mechanics.construct).toBe(false);
     expect(mechanics.movementMode).toBe("STRIDE");
     expect(mechanics.advancesAfterKill).toBe(false);
     expect(mechanics.immovable).toBe(true);

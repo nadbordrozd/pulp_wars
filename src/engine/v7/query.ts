@@ -167,10 +167,9 @@ import {
   rewardCandidatesForLevelV7,
 } from "./economy";
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
-import { raiseDeadGravesV7 } from "./graves";
+import { raiseDeadGravesV7, raisedSkeletonHpV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
 import {
-  BITTEN_RISING_HP_V7,
   afflictionCombatEffectsV7,
   unitIsConstructV7,
   unitTakesStatusV7,
@@ -194,7 +193,11 @@ import {
   type BlastUnitV7,
   type ExplosionCauseV7,
 } from "./explosions";
-import { INFECT_RISING_HP_V7 } from "./infect";
+import {
+  INFECT_RISING_HP_V7,
+  wholeZombiesV7,
+  zombieRisingHpV7,
+} from "./infect";
 import {
   attackFeastsV7,
   feastHealV7,
@@ -6641,11 +6644,8 @@ export function previewWailV7(
   const banshee = view.units.find((unit) => unit.id === unitId);
   if (banshee === undefined) return null;
   const targets = publicWailTargetsV7(view, banshee);
-  const terrified = wailTerrifiedIdsV7(
-    view,
-    banshee,
-    targets,
-    (targetId) => view.units.find((unit) => unit.id === targetId)?.ownerId,
+  const terrified = wailTerrifiedIdsV7(view, banshee, targets, (targetId) =>
+    view.units.find((unit) => unit.id === targetId),
   );
   return {
     unitId,
@@ -7689,9 +7689,45 @@ export function previewAttackExplosionsV7(
   return { attackerId, targetUnitId, ...chain.preview };
 }
 
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP the viewer's Raise
+ * Dead Skeletons rise with: 5, or whole with Grave Rites (its own tree and
+ * research).
+ */
+export function viewerRaisedSkeletonHpV7(view: PlayerViewV7): number {
+  return raisedSkeletonHpV7(
+    technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
+      .wholeSkeletons,
+    effectiveRoleRuleV7("FIGHTER", view.viewer.faction).maxHp,
+  );
+}
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP a new Zombie of
+ * `ownerId` rises with as far as the viewer knows: the viewer's own (12, or
+ * whole with Pestilence); another seat's research is hidden, so its base
+ * {@link INFECT_RISING_HP_V7} (12). The Normal AI's values read it.
+ */
+export function knownZombieRisingHpV7(
+  view: PlayerViewV7,
+  ownerId: PlayerId,
+): number {
+  return ownerId === view.viewer.id
+    ? zombieRisingHpV7(
+        wholeZombiesV7([view.viewer], ownerId),
+        seatRoleRuleV7(view, ownerId, "GUARD").maxHp,
+      )
+    : INFECT_RISING_HP_V7;
+}
+
 /** Revision 13 Raise Dead preview: the Graves that rise, in (y, x) order. */
 export interface RaiseDeadPreviewV7 {
   readonly graves: readonly CoordV7[];
+  /**
+   * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP each Skeleton
+   * rises with (5, or its whole 10 with Grave Rites).
+   */
+  readonly hp: number;
 }
 
 /**
@@ -7723,6 +7759,8 @@ export function previewRaiseDeadV7(
     ? null
     : {
         graves: raiseDeadGravesV7(view.graves, allOwnedUnitsV7(view), unit.at),
+        // The raiser is the viewer: its own technologies decide.
+        hp: viewerRaisedSkeletonHpV7(view),
       };
 }
 
@@ -11679,7 +11717,8 @@ function publicRecoveryFactsV7(
     hp: unit.hp,
     maxHp: unit.maxHp,
     activation: unit.activation,
-    construct: unitIsConstructV7(view, unit),
+    // A daemon never heals (`pulp_wars-1uof`, 7r139: no construct now).
+    construct: unitIsConstructV7(view, unit) || unitIsSummonedV7(unit),
     restless: factionRulesV7(unitFactionV7(view, unit)).restless,
     inOwnTerritory,
     byOwnActivePort:
@@ -13404,6 +13443,24 @@ function createPublicChainSimulationV7(
   const owners = new Map<UnitId, PlayerId>(
     view.units.map((unit) => [unit.id, unit.ownerId] as const),
   );
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): a Zombie rising is
+  // whole with its seat's Pestilence. The viewer's own research is known;
+  // another seat's is not, so its rising is taken as whole when its tree
+  // can make it so (the worst case, as `publicDrownedCrewV7` takes a hostile
+  // ship's Drowned Crews).
+  const zombieHp = (ownerId: PlayerId): number => {
+    const maxHp = seatRoleRuleV7(view, ownerId, "GUARD").maxHp;
+    if (ownerId === view.viewer.id)
+      return zombieRisingHpV7(wholeZombiesV7([view.viewer], ownerId), maxHp);
+    const faction = view.players.find(
+      (player) => player.id === ownerId,
+    )?.faction;
+    return zombieRisingHpV7(
+      faction !== undefined &&
+        technologyCapabilitiesV7(TECHNOLOGY_IDS_V7, faction).wholeZombies,
+      maxHp,
+    );
+  };
   const rising = (
     at: CoordV7,
     ownerId: PlayerId,
@@ -13430,7 +13487,7 @@ function createPublicChainSimulationV7(
     const biterId = bites.get(victim.id);
     return biterId === undefined || victim.form !== "LAND"
       ? null
-      : rising(victim.at, biterId, BITTEN_RISING_HP_V7);
+      : rising(victim.at, biterId, zombieHp(biterId));
   };
   // The controlled units the viewer sees with their Brain (one whose Brain
   // is hidden cannot be seen to be released): each goes back to a living
@@ -13491,7 +13548,7 @@ function createPublicChainSimulationV7(
     infect: (victim, killerId) =>
       victim.form === "NAVAL"
         ? rising(victim.at, killerId, DROWNED_CREW_HP_V7, true)
-        : rising(victim.at, killerId, INFECT_RISING_HP_V7),
+        : rising(victim.at, killerId, zombieHp(killerId)),
     run: (
       units,
       initial,

@@ -98,6 +98,12 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/eggs.ts::isNestTileV7": "PLAYER_ONLY",
   // The killing Zombie's seat (the Spider has no Infect).
   "src/engine/v7/infect.ts::recordInfectionV7": "PLAYER_ONLY",
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): the seat of a new
+  // Zombie (an owner that is no player has no record: not whole), and the
+  // seat whose rising the viewer values: its own, or another seat's base
+  // (never a neutral owner: a neutral unit never rises).
+  "src/engine/v7/infect.ts::wholeZombiesV7": "NEUTRAL_SAFE",
+  "src/engine/v7/query.ts::knownZombieRisingHpV7": "PLAYER_ONLY",
   // A released unit goes back to its original owner's seat.
   "src/engine/v7/martian.ts::releaseControlledV7": "PLAYER_ONLY",
   // Mission definition checks of the mode (no alliance test).

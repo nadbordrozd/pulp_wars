@@ -115,8 +115,8 @@ function play(state: GameStateV7, command: CommandV7) {
 describe("the identity", () => {
   // The starting border freeze (`pulp_wars-s55m.6`) took 7r126 after it.
   it("was 7r125 after 7r124, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r125");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r124");

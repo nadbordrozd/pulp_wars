@@ -674,11 +674,13 @@ describe("the Cult's channel: the Horror is a unit of its own (section 4.2)", ()
     const mechanics = unitRoleMechanicsV7(state, horror);
     expect(mechanics).toMatchObject({
       movementMode: "STRIDE",
-      construct: true,
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): no construct, and
+      // living for death and infection (a construct before).
+      construct: false,
       robed: false,
       capacitySlots: 1,
     });
-    expect(isLivingUnitV7(state, horror)).toBe(false);
+    expect(isLivingUnitV7(state, horror)).toBe(true);
     expect(daemonControlV7(horror)).toBe(1);
     // Its value is 6 (the Score's Army and what a kill of it is worth).
     expect(unitFavourValueV7(state, horror)).toBe(6);
@@ -868,7 +870,7 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
       targetUnitId: unitAtV7(state, at(5, 4)).id,
     }) as CommandV7;
 
-  it("is no target of Mind Control, a Tractor Beam, or a Swallow, however hurt", () => {
+  it("is no target of Mind Control or a Tractor Beam, and since 7r139 a hurt one is Swallowed", () => {
     const martian = withHorrorV7(
       martianFieldV7(
         [
@@ -892,38 +894,46 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
       { factions: ["CULT", "UNDEAD"], activeSeat: 1 },
       { hp: 3 },
     );
-    // `pulp_wars-3u8d` (7r131): the Abomination's attack on it is a blow.
+    // `pulp_wars-3u8d` (7r131): the Abomination's attack on it was a blow;
+    // full-strength risings (`pulp_wars-1uof`, 7r139): a daemon is ordinary
+    // for death and infection, so the Abomination swallows a hurt Horror.
     expect(
       previewSwallowV7(
         viewForV7(undead, seatIdV7(undead, 1)),
         unitAtV7(undead, at(5, 5)).id,
         unitAtV7(undead, at(5, 4)).id,
       ),
-    ).toBeNull();
+    ).not.toBeNull();
   });
 
-  it("takes no Plague and no bite, hears no Wail, and leaves no Grave", () => {
-    // A Lich's shot hurts it and plagues nobody.
+  it("is plagued and bitten, hears the Wail, and leaves a Grave (7r139)", () => {
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): a daemon is ordinary
+    // for death and infection (it took none of these before).
+    // A Lich's shot (all technologies, Pestilence among them) plagues it.
     const lich = horrorField([{ seat: 1, role: "CATAPULT", at: at(5, 6) }], {
       factions: ["CULT", "UNDEAD"],
       activeSeat: 1,
     });
     const shot = attackV7(lich, at(5, 6), at(5, 4));
     expect(shot.combat.damageToDefender).toBeGreaterThan(0);
-    expect(shot.state.plagued).toEqual([]);
-    // A Zombie's bite hurts it and marks nobody.
+    expect(shot.state.plagued).toEqual([
+      expect.objectContaining({ unitId: unitAtV7(lich, at(5, 4)).id }),
+    ]);
+    // A Zombie's bite hurts it and marks it.
     const zombie = horrorField([{ seat: 1, role: "GUARD", at: at(5, 5) }], {
       factions: ["CULT", "UNDEAD"],
       activeSeat: 1,
     });
-    expect(attackV7(zombie, at(5, 5), at(5, 4)).state.bitten).toEqual([]);
-    // A Banshee beside it has nobody to Wail at.
+    expect(attackV7(zombie, at(5, 5), at(5, 4)).state.bitten).toEqual([
+      expect.objectContaining({ unitId: unitAtV7(zombie, at(5, 4)).id }),
+    ]);
+    // A Banshee beside it Wails at it.
     const banshee = horrorField([{ seat: 1, role: "MARKSMAN", at: at(5, 5) }], {
       factions: ["CULT", "UNDEAD"],
       activeSeat: 1,
     });
-    expect(offeredV7(banshee, "WAIL")).toEqual([]);
-    // Killed, it leaves no Grave for the Undead.
+    expect(offeredV7(banshee, "WAIL")).toHaveLength(1);
+    // Killed, it leaves a Grave for the Undead.
     const dying = horrorField(
       [{ seat: 1, role: "KNIGHT", at: at(5, 5) }],
       { factions: ["CULT", "UNDEAD"], activeSeat: 1 },
@@ -931,8 +941,8 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
     );
     const killed = attackV7(dying, at(5, 5), at(5, 4));
     expect(killed.target).toBeUndefined();
-    expect(killed.state.graves).toEqual([]);
-    expect(kindsV7(killed.events)).not.toContain("GRAVE_CREATED");
+    expect(killed.state.graves).toEqual([at(5, 4)]);
+    expect(kindsV7(killed.events)).toContain("GRAVE_CREATED");
   });
 
   it("can be Frozen and pushed while bound", () => {

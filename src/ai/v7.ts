@@ -741,7 +741,6 @@ import {
   SIEGE_HAMMER_WALLS_VALUE_V7,
   SWALLOW_ESCAPE_PRIORITY_V7,
   SWALLOW_MINIMUM_HP_V7,
-  SWALLOW_ZOMBIE_VALUE_V7,
   TOSS_ESCORT_GOBLINS_V7,
   TOSS_ESCORT_RADIUS_V7,
   TOSS_ESCORT_VALUE_V7,
@@ -850,14 +849,17 @@ import {
 } from "./v7-opening";
 import {
   BITE_VALUE_V7,
-  BITTEN_RISING_VALUE_V7,
   DEVOUR_MINIMUM_HEAL_V7,
   PLAGUE_EXPOSURE_COST_V7,
   PLAGUE_DURATION_TURNS_V7,
   PLAGUE_SOURCE_TARGET_VALUE_V7,
   PLAGUE_TURNS_WORTH_CURING_V7,
-  RAISE_DEAD_SKELETON_VALUE_V7,
   TEND_BITTEN_CURE_VALUE_V7,
+  raiseDeadSkeletonValueForPolicyV7,
+  raisedSkeletonHpForPolicyV7,
+  undeadRisingsResearchValueV7,
+  zombieRisingHpForPolicyV7,
+  zombieRisingValueV7,
   TEND_PLAGUE_TURN_CURE_VALUE_V7,
   devourHealV7,
   healthyLivingNeighboursV7,
@@ -13439,20 +13441,22 @@ function undeadAttackValueV7(
   // Themed naval branches (`pulp_wars-5ti.17`): a ship's rising is a
   // 5-HP Ghost Ship, worth what `drownedCrewRisingTenthsV7` says (a
   // Zombie's rising keeps its value).
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): an own rising is
+  // worth its HP (whole with Pestilence); a hostile seat's at the base.
   if (preview.defenderInfected)
     value +=
       target.form === "NAVAL"
         ? drownedCrewRisingStrategicV7(context, actor, preview)
-        : INFECT_RISING_VALUE_V7;
+        : zombieRisingValueV7(view, actor.ownerId);
   if (preview.attackerInfected)
     value -=
       actor.form === "NAVAL"
         ? DROWNED_CREW_RISING_COST_V7
-        : INFECT_RISING_VALUE_V7;
+        : zombieRisingValueV7(view, target.ownerId);
   if (isZombieV7(view, target) && distance(actor.at, target.at) >= 2)
     value += 6;
   if (zombieChipExposureV7(context, actor, target, preview))
-    value -= INFECT_RISING_VALUE_V7;
+    value -= zombieRisingValueV7(view, target.ownerId);
   const undeadViewer = view.viewer.faction === "UNDEAD";
   const afflictions = context.afflictions;
   // Revision 14 Bitten: a new bite on a hostile unit may later rise for us;
@@ -13525,9 +13529,9 @@ function bittenRisingValueV7(
   biter: PlayerId | undefined,
 ): number {
   if (biter === undefined) return 0;
-  return isHostile(context.view, biter)
-    ? -BITTEN_RISING_VALUE_V7
-    : BITTEN_RISING_VALUE_V7;
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): by the rising's HP.
+  const value = zombieRisingValueV7(context.view, biter);
+  return isHostile(context.view, biter) ? -value : value;
 }
 
 /**
@@ -13579,8 +13583,6 @@ function biteHarmAdjustmentV7(
   return adjustment;
 }
 
-/** A 12-HP Zombie rising: Zombie cost 3 x 4 + 12 HP (10 HP and 22 until 7r56). */
-const INFECT_RISING_VALUE_V7 = 24;
 /**
  * Themed naval branches (`pulp_wars-5ti.17`): a 5-HP Ghost Ship rising for
  * the enemy (Ghost Ship cost 5 x 4 + 5 HP), the cost of an own ship that
@@ -16157,7 +16159,9 @@ function scoreCommandWithContext(
     ).length;
     const safe = risen - doomed;
     priority = safe > 0 ? 1237 : -1;
-    strategicValue = safe * RAISE_DEAD_SKELETON_VALUE_V7 - doomed * 6;
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): by the Skeleton's HP.
+    strategicValue =
+      safe * raiseDeadSkeletonValueForPolicyV7(view) - doomed * 6;
     immediateValue = risen * 5;
   }
 
@@ -17303,7 +17307,7 @@ function undeadMoveValueV7(
         (there >= 2 ? danger() < actor.hp : danger() * 2 < actor.hp)
       ) {
         priority = Math.max(priority, there >= 2 ? 1238 : 1160);
-        strategic += there * RAISE_DEAD_SKELETON_VALUE_V7;
+        strategic += there * raiseDeadSkeletonValueForPolicyV7(view);
       } else if (here === 0 && there === 0 && danger() * 2 < actor.hp) {
         // Drift toward the nearest open Grave cluster behind the front.
         const open = view.graves.filter(
@@ -17467,7 +17471,9 @@ function raisedSkeletonDoomedV7(
     ...necromancer,
     role: "FIGHTER",
     at: grave,
-    hp: Math.min(RAISED_SKELETON_HP_V7, rule.maxHp),
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): 5, or whole with
+    // Grave Rites.
+    hp: Math.min(raisedSkeletonHpForPolicyV7(view), rule.maxHp),
     maxHp: rule.maxHp,
     kills: 0,
   };
@@ -17514,9 +17520,6 @@ function freshUnitInLethalReachV7(
   };
   return visibleImmediateDamage(view, fresh, city.at, context) >= fresh.hp;
 }
-
-/** Raise Dead creates 5-HP Skeletons (revision 13 section 6.2). */
-const RAISED_SKELETON_HP_V7 = 5;
 
 /**
  * Revision 12 Raider Escape. While the Raider stands where visible enemies can
@@ -19066,7 +19069,10 @@ function curiosityErrandsV7(
     view,
     facts,
     move: (unit) => publicCombatFacts(view, unit, context.lookup).move,
-    construct: (unit) => unitRoleMechanicsV7(view, unit).construct,
+    // A daemon never heals either (`pulp_wars-1uof`, 7r139: no construct
+    // now), so the Fountain errand passes it by.
+    construct: (unit) =>
+      unitRoleMechanicsV7(view, unit).construct || unit.summoned !== undefined,
     grows: (unit) => unitRoleRuleV7(view, unit).abilities.includes("GROW"),
     captures: (unit) => canCaptureV7(view, unit),
     danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
@@ -21015,7 +21021,7 @@ function kaboomScoreV7(
   if (crash) exploder = 0;
   const biter = context.afflictions.bitten.get(actor.id);
   if (biter !== undefined && isHostile(view, biter))
-    exploder += BITTEN_RISING_VALUE_V7;
+    exploder += zombieRisingValueV7(view, biter);
   const excluded = new Set<UnitId>([actor.id, ...chain.friendlyKilledIds]);
   let capture = false;
   let siege = 0;
@@ -25802,7 +25808,10 @@ function giantSwallowScoreV7(
   let priority = giantKillTierV7(context, target.id);
   let strategic =
     targetStrategicValue(view, target.id, context.lookup) +
-    SWALLOW_ZOMBIE_VALUE_V7;
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): one point per HP
+    // of the Zombie spat out (`SWALLOW_ZOMBIE_VALUE_V7`, 12, or whole with
+    // Pestilence).
+    zombieRisingHpForPolicyV7(view, view.viewer.id);
   const center = context.lookup.citiesByKey.get(coordKey(target.at));
   if (center !== undefined && isHostile(view, center.ownerId)) {
     priority = Math.max(priority, 1350);
@@ -26899,7 +26908,13 @@ function researchValue(
       ? (context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0)
       : 0;
   if (branch !== null) return { ...branch, cost: node.cost };
-  return { priority: 1040, strategic: fortification, cost: node.cost };
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): a small bump for the
+  // Undead technology that makes its Skeletons or Zombies rise whole.
+  return {
+    priority: 1040,
+    strategic: fortification + undeadRisingsResearchValueV7(context.view, tech),
+    cost: node.cost,
+  };
 }
 
 /**

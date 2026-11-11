@@ -200,8 +200,8 @@ import {
   withEggV7,
 } from "./eggs";
 import {
-  RAISE_DEAD_SKELETON_HP_V7,
   raiseDeadGravesV7,
+  raisedSkeletonHpV7,
   recordCombatDeathV7,
   recordCrumbsV7,
   withoutGravesV7,
@@ -7868,8 +7868,9 @@ function graveActionTail(
 /**
  * Revision 13 Raise Dead (section 6.2): every eligible Grave within
  * `RAISE_DEAD_RADIUS_V7` (the Undead pass, correction: 2 tiles, 1 before)
- * becomes an exhausted 5-HP Skeleton rising with no home city (it fills no
- * unit slot), in (y, x) order with consecutive unit IDs.
+ * becomes an exhausted 5-HP Skeleton rising (a whole one with Grave Rites,
+ * `pulp_wars-1uof`, 7r139) with no home city (it fills no unit slot), in
+ * (y, x) order with consecutive unit IDs.
  */
 function applyRaiseDead(
   original: GameStateV7,
@@ -7895,9 +7896,13 @@ function applyRaiseDead(
   if (graves.length === 0)
     return rejected(original, "RAISE_DEAD_NOT_LEGAL", { reason: "NO_GRAVE" });
   try {
-    const rule = effectiveRoleRuleV7(
-      "FIGHTER",
-      requirePlayer(state, actor).faction,
+    const rule = effectiveRoleRuleV7("FIGHTER", raiser.faction);
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): whole with Grave
+    // Rites (the raiser's own tree).
+    const hp = raisedSkeletonHpV7(
+      technologyCapabilitiesV7(raiser.researchedTechs, raiser.faction)
+        .wholeSkeletons,
+      rule.maxHp,
     );
     let nextEntityId = state.nextEntityId;
     const risen: UnitStateV7[] = [];
@@ -7913,7 +7918,7 @@ function applyRaiseDead(
         role: "FIGHTER",
         form: "LAND",
         at: { x: at.x, y: at.y },
-        hp: Math.min(RAISE_DEAD_SKELETON_HP_V7, rule.maxHp),
+        hp,
         maxHp: rule.maxHp,
         kills: 0,
         veteran: false,
@@ -9696,11 +9701,8 @@ function applyWail(
     // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror. Every
     // surviving target the Wail wounded does not strike back this turn.
     const terrified = [
-      ...wailTerrifiedIdsV7(
-        state,
-        banshee,
-        targets,
-        (targetId) => state.units.find((unit) => unit.id === targetId)?.ownerId,
+      ...wailTerrifiedIdsV7(state, banshee, targets, (targetId) =>
+        state.units.find((unit) => unit.id === targetId),
       ),
     ].sort((left, right) => left - right);
     const events: DomainEventV7[] = [
@@ -10304,7 +10306,8 @@ function recoveryFacts(state: GameStateV7, unit: UnitStateV7): RecoveryFactsV7 {
     hp: unit.hp,
     maxHp: unit.maxHp,
     activation: unit.activation,
-    construct: unitIsConstructV7(state, unit),
+    // A daemon never heals (`pulp_wars-1uof`, 7r139: no construct now).
+    construct: unitIsConstructV7(state, unit) || unitIsSummonedV7(unit),
     restless: factionRulesV7(unitFactionV7(state, unit)).restless,
     inOwnTerritory: ownTerritory,
     byOwnActivePort:

@@ -1795,6 +1795,39 @@ audits (one land-form test in `src/engine/v7/martian.ts`; three readers
 classified). The list is in
 [section 14.8](../product/RULESET_7_TUNING_MARTIAN.md#148-tests).
 
+## Full-strength risings (`pulp_wars-1uof`, `7r139`)
+
+Grave Rites (the Undead Planning) raises whole Skeletons and Pestilence
+(the Undead Explosives) makes every new Zombie of its seat whole
+([the rules, section 17](../product/RULESET_7_CURRENT.md#17-undead-faction-rules)),
+and the Cult's daemons are ordinary for death and infection. The policy
+follows from public facts and its own research only:
+
+- **A rising is valued by its HP.** A Zombie rising is worth its cost 3 x 4
+  plus its HP (`zombieRisingValueV7`): 24 at 12 HP (`BITTEN_RISING_VALUE_V7`),
+  30 for the viewer's whole one with Pestilence. Infect, a bite that rises,
+  a Wail death that rises, a bitten Goblin's Kaboom, and the Zombie a
+  Swallow spits out (one point per HP, 12 or 18) read it. Another seat's
+  research is hidden, so its risings keep the base value
+  (`knownZombieRisingHpV7`). A Raise Dead Skeleton is worth 14 at 5 HP and
+  one more per HP (`raiseDeadSkeletonValueForPolicyV7`, 19 when whole), and
+  the doomed-Skeleton test reads the HP it rises with
+  (`viewerRaisedSkeletonHpV7`).
+- **A small research bump** (`undeadRisingsResearchValueV7`, in
+  `researchValue`'s default branch): an Undead seat adds
+  `GRAVE_RITES_NECROMANCER_VALUE_V7` (5) per own Necromancer to Grave Rites
+  and `WHOLE_ZOMBIES_RISER_VALUE_V7` (3) per own Zombie, Abomination, or
+  other unit with Infect, Bite, or Swallow to Pestilence. The priority tier
+  (1040) and the army research order are unchanged.
+- **Daemons.** Every Zombie, Lich, Banshee, and Abomination score already
+  read the previews, which now infect, bite, plague, wail, and swallow a
+  daemon (never the Herald's statuses, never a Gibbering Mass's Swallow); a
+  Cult seat's daemon that would die to a Zombie scores the rising it gives
+  away like any unit. The Fountain errand passes a daemon by (it never
+  heals).
+
+Not measured in matches (no simulation was run for this bead).
+
 ## Step two of the Undead pass (`pulp_wars-w49.24`)
 
 [Step two of the Undead pass](../product/RULESET_7_TUNING_UNDEAD.md#15-step-two)

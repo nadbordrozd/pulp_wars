@@ -233,7 +233,9 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
       );
       expect(rule.sightRadius).toBe(0);
       const mechanics = NEUTRAL_ROLE_MECHANICS_V7[breed];
-      expect(mechanics.construct).toBe(true);
+      // No construct since `pulp_wars-1uof` (7r139): it is wailed and leaves
+      // a Grave like any neutral unit (and, neutral, takes no status).
+      expect(mechanics.construct).toBe(false);
       // The Cult redesign (`pulp_wars-mch9.35`, section 9.1): an Unbound
       // daemon advances after a kill (it never did before), but for the
       // Gibbering Mass (`pulp_wars-mch9.37`).
@@ -356,7 +358,7 @@ describe("Unbound: the failed check (section 6.4)", () => {
       "ATTACK",
       "STRIDE",
     ]);
-    expect(unitRoleMechanicsV7(round.state, loose).construct).toBe(true);
+    expect(unitRoleMechanicsV7(round.state, loose).construct).toBe(false);
     // The state and every event round-trip their schemas.
     expect(parseGameStateV7(JSON.parse(JSON.stringify(round.state)))).toEqual(
       round.state,

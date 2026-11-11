@@ -1,16 +1,19 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   factionRulesV7,
+  factionTreeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import {
+  knownZombieRisingHpV7,
   previewDevourV7,
   previewRaiseDeadV7,
   previewWailV7,
+  viewerRaisedSkeletonHpV7,
 } from "../engine/v7/query";
 import { PLAGUE_DURATION_TURNS_V7 } from "../engine/v7/afflictions";
-import type { CoordV7 } from "../engine/v7/types";
+import type { CoordV7, TechnologyIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import {
   publicWailLeavesGraveV7,
@@ -35,6 +38,109 @@ export const NECROMANCER_GRAVE_REACH_V7 = 3;
 export const DEVOUR_MINIMUM_HEAL_V7 = 3;
 /** A 12-HP Zombie rising (Infect or Bitten): Zombie cost 3 x 4 + 12 HP (10 HP and 22 until 7r56). */
 export const BITTEN_RISING_VALUE_V7 = 24;
+/** The HP of the Zombie rising {@link BITTEN_RISING_VALUE_V7} counts. */
+const BASE_ZOMBIE_RISING_HP_V7 = 12;
+/** The HP of the Skeleton {@link RAISE_DEAD_SKELETON_VALUE_V7} counts. */
+const BASE_RAISED_SKELETON_HP_V7 = 5;
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP of a new Zombie
+ * of `ownerId` as the policy reads it (`knownZombieRisingHpV7`): the
+ * viewer's own research is known (whole with Pestilence); another seat's is
+ * hidden, so its rising is taken at the base 12 (the value it had before).
+ */
+export function zombieRisingHpForPolicyV7(
+  view: PlayerViewV7,
+  ownerId: PlayerId,
+): number {
+  return knownZombieRisingHpV7(view, ownerId);
+}
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): a Zombie rising for
+ * `ownerId` is worth the Zombie's cost 3 x 4 plus its HP:
+ * {@link BITTEN_RISING_VALUE_V7} (24) at 12 HP, 30 for a whole one of the
+ * viewer's with Pestilence.
+ */
+export function zombieRisingValueV7(
+  view: PlayerViewV7,
+  ownerId: PlayerId,
+): number {
+  return (
+    BITTEN_RISING_VALUE_V7 -
+    BASE_ZOMBIE_RISING_HP_V7 +
+    zombieRisingHpForPolicyV7(view, ownerId)
+  );
+}
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP the viewer's Raise
+ * Dead Skeletons rise with (5, or whole with Grave Rites).
+ */
+export function raisedSkeletonHpForPolicyV7(view: PlayerViewV7): number {
+  return viewerRaisedSkeletonHpV7(view);
+}
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): each raised Skeleton is
+ * worth {@link RAISE_DEAD_SKELETON_VALUE_V7} (14) at 5 HP and one more per
+ * HP above it (19 for a whole one with Grave Rites).
+ */
+export function raiseDeadSkeletonValueForPolicyV7(view: PlayerViewV7): number {
+  return (
+    RAISE_DEAD_SKELETON_VALUE_V7 +
+    raisedSkeletonHpForPolicyV7(view) -
+    BASE_RAISED_SKELETON_HP_V7
+  );
+}
+
+/** `pulp_wars-1uof`: Grave Rites' research value per own Necromancer. */
+export const GRAVE_RITES_NECROMANCER_VALUE_V7 = 5;
+/**
+ * `pulp_wars-1uof`: Pestilence's research value per own unit whose new
+ * Zombies it makes whole (one with Infect, Bite, or Swallow).
+ */
+export const WHOLE_ZOMBIES_RISER_VALUE_V7 = 3;
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): a small research bump,
+ * the strategic value an Undead seat adds to the technology that makes its
+ * risings whole: Grave Rites by its Necromancers, Pestilence by its units
+ * that make Zombies. 0 for every other seat and technology (and for a
+ * technology already researched, which is never offered).
+ */
+export function undeadRisingsResearchValueV7(
+  view: PlayerViewV7,
+  tech: TechnologyIdV7,
+): number {
+  if (view.viewer.faction !== "UNDEAD") return 0;
+  const unlocks =
+    factionTreeV7(view.viewer.faction).nodes.find((node) => node.id === tech)
+      ?.unlocks ?? [];
+  const own = view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id && unit.hp > 0 && unit.form === "LAND",
+  );
+  let value = 0;
+  if (unlocks.some((unlock) => unlock.kind === "WHOLE_SKELETONS"))
+    value +=
+      GRAVE_RITES_NECROMANCER_VALUE_V7 *
+      own.filter((unit) =>
+        unitRoleRuleV7(view, unit).abilities.includes("RAISE_DEAD"),
+      ).length;
+  if (unlocks.some((unlock) => unlock.kind === "WHOLE_ZOMBIES"))
+    value +=
+      WHOLE_ZOMBIES_RISER_VALUE_V7 *
+      own.filter((unit) => {
+        const abilities = unitRoleRuleV7(view, unit).abilities;
+        return (
+          abilities.includes("INFECT") ||
+          abilities.includes("BITE") ||
+          abilities.includes("SWALLOW")
+        );
+      }).length;
+  return value;
+}
 
 /** True when any seat is Undead; every Undead heuristic is gated on it. */
 export function undeadMatchForPolicyV7(view: PlayerViewV7): boolean {
@@ -367,7 +473,7 @@ function summarizeWail(
           entry.biterPlayerId === view.viewer.id,
       )
     )
-      value += BITTEN_RISING_VALUE_V7;
+      value += zombieRisingValueV7(view, view.viewer.id);
     if (unit !== undefined && unit.hp > 0)
       value += target.dies
         ? unitValue(unit)

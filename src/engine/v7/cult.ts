@@ -455,7 +455,10 @@ export function seizeRejectionV7(
     isNeutralOwnerV7(victim.ownerId) ||
     victim.role === "JUGGERNAUT" ||
     unitCapacitySlotsV7(lookup, victim) !== 1 ||
-    !isLivingUnitV7(lookup, victim)
+    !isLivingUnitV7(lookup, victim) ||
+    // `pulp_wars-1uof` (7r139): a daemon is living for death and infection
+    // now, but the Ancient Ones never take one of their own.
+    unitIsSummonedV7(victim)
   )
     return { code: "SEIZE_NOT_LEGAL", reason: "IMMUNE" };
   if (!unitIsSeizableV7(lookup, victim))

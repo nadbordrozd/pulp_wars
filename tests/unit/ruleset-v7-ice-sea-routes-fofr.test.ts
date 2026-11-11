@@ -104,7 +104,7 @@ function offered(state: GameStateV7, seat: 0 | 1): readonly CommandV7[] {
 
 describe("the identity", () => {
   it("is 7r138", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
   });
 });
 

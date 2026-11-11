@@ -669,6 +669,9 @@ export function summoningMarkOutcomeV7<U extends RitualUnitFactsV7>(
     unit.role !== "JUGGERNAUT" &&
     unitCapacitySlotsV7(lookup, unit) === 1 &&
     isLivingUnitV7(lookup, unit) &&
+    // `pulp_wars-1uof` (7r139): a daemon is living now, but the Ancient
+    // Ones never take one (as a Seizure never does).
+    !unitIsSummonedV7(unit) &&
     unitIsBrokenV7(unit)
     ? {
         kind: "CONSUMES",

@@ -271,7 +271,9 @@ describe("Revision 13 Undead DOM", () => {
     expect(actionLabels()).toEqual(["Rally", "Raise Dead", "Disband", "Wait"]);
     expect(
       requiredButton("command-raise_dead").getAttribute("aria-label"),
-    ).toBe("Raise Dead · 3 Skeletons rise from adjacent Graves at 5 HP");
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): the preview's HP,
+      // whole with Grave Rites (the fixture has every technology).
+    ).toBe("Raise Dead · 3 Skeletons rise from Graves within 2 tiles at 10 HP");
     requiredButton("unit-help").click();
     const help = requiredElement<HTMLElement>(".v7-unit-help-dialog");
     // The unit glossary's lines (bead pulp_wars-2yc.39).
@@ -281,7 +283,7 @@ describe("Revision 13 Undead DOM", () => {
       ),
     ).toEqual([
       "RallyFriendly units next to it hit harder on their next attack this turn.",
-      "Raise DeadRaises a Skeleton from every free Grave within 2 tiles.",
+      "Raise DeadRaises a Skeleton from every free Grave within 2 tiles, at full health once you have a technology.",
       "RestlessHeals only inside your own borders.",
     ]);
     expect(help.textContent).not.toContain("Frenzy");

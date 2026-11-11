@@ -97,6 +97,9 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
           { x: 2, y: 3 },
           { x: 3, y: 3 },
         ],
+        // Full-strength risings (`pulp_wars-1uof`, 7r139): without Grave
+        // Rites (Planning) a Skeleton rises at 5 HP.
+        withoutTechs: { 0: ["PLANNING"] },
         ...options,
       },
     );
@@ -182,7 +185,8 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [{ seat: 0, role: "CAPTAIN", at: NECROMANCER_AT }],
-      { graves: around },
+      // Without Grave Rites: 5 HP (`pulp_wars-1uof`, 7r139).
+      { graves: around, withoutTechs: { 0: ["PLANNING"] } },
     );
     const necromancer = unitAt(state, NECROMANCER_AT);
     const result = apply(state, state.humanPlayerId, {
@@ -340,7 +344,13 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
     const state = arena(
       factions,
       [{ seat: 1, role: "CAPTAIN", at: necromancerAt }],
-      { aiMode: "COOPERATIVE", activeSeat: 1, graves: [grave] },
+      {
+        aiMode: "COOPERATIVE",
+        activeSeat: 1,
+        graves: [grave],
+        // Without Grave Rites: 5 HP (`pulp_wars-1uof`, 7r139).
+        withoutTechs: { 1: ["PLANNING"] },
+      },
     );
     const necromancer = unitAt(state, necromancerAt);
     expect(
@@ -836,11 +846,14 @@ describe("ruleset-7 revision-13 Grave actions: queries and previews", () => {
     const necromancer = unitAt(state, NECROMANCER_AT);
     const ghoul = unitAt(state, { x: 4, y: 4 });
     const raisePreview = previewRaiseDeadV7(state, actor, necromancer.id);
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): every technology,
+    // Grave Rites among them, so the Skeletons rise whole.
     expect(raisePreview).toEqual({
       graves: [
         { x: 1, y: 1 },
         { x: 2, y: 3 },
       ],
+      hp: 10,
     });
     expect(previewRaiseDeadV7(viewForV7(state, actor), necromancer.id)).toEqual(
       raisePreview,

@@ -490,7 +490,8 @@ const FRESH_ACTIVATION_V7: UnitActivationV7 = Object.freeze({
  * neutral unit of its own breed in `monsters`, with the seat that commanded
  * it as its summoner. It keeps its role, its `summoned` field, its Hit
  * Points, and its kills, and loses every status (Frozen, Stuck, Toothache,
- * and the marks of a hit this turn), as no status sticks to a neutral unit.
+ * and the marks of a hit this turn; since `pulp_wars-1uof`, 7r139, also a
+ * Plague and a bite), as no status sticks to a neutral unit.
  * Its activation is fresh (the rampage that follows a check uses it).
  */
 export function withDaemonUnboundV7(
@@ -541,6 +542,8 @@ export function withDaemonUnboundV7(
     frozen: without(state.frozen),
     stuck: without(state.stuck),
     toothache: without(state.toothache),
+    plagued: without(state.plagued),
+    bitten: without(state.bitten),
     splattedThisTurn: withoutId(state.splattedThisTurn),
     terrorThisTurn: withoutId(state.terrorThisTurn),
     huntedThisTurn: withoutId(state.huntedThisTurn),

@@ -1,6 +1,7 @@
 import {
   FACTION_DISPLAY_NAMES_V7,
   PLAGUE_DURATION_TURNS_V7,
+  RAISE_DEAD_SKELETON_HP_V7,
   DROWNED_CREW_HP_V7,
   batEscapeTilesV7,
   cooperativeAlliesV7,
@@ -179,13 +180,15 @@ export function undeadAbilityDescriptionV7(
     case "RAISE_DEAD":
       // The Undead pass, correction: two tiles; a raised unit fills no
       // unit slot.
-      return "Raises a 5 HP Skeleton from every free Grave within 2 tiles. They fill no unit slot.";
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): whole with Grave
+      // Rites.
+      return `Raises a Skeleton from every free Grave within 2 tiles, at ${RAISE_DEAD_SKELETON_HP_V7} HP or at full HP with ${technologyDisplayNameV7("PLANNING", "UNDEAD")}. They fill no unit slot.`;
     case "DEVOUR":
       return "Eats the Grave under it to heal fully. Ends its turn.";
     case "WAIL":
       return "Damages every visible living enemy within 2 tiles. It can't attack.";
     case "INFECT":
-      return "A land unit it kills rises as your Zombie. It fills no unit slot.";
+      return `A land unit it kills rises as your Zombie, at full HP with ${technologyDisplayNameV7("EXPLOSIVES", "UNDEAD")}. It fills no unit slot.`;
     // Themed naval branches (`pulp_wars-5ti.17`, section 4.3 U1).
     case "DROWNED_CREW":
       return `With ${technologyDisplayNameV7("SEAMANSHIP", "UNDEAD")}: a ship it sinks rises as your ${effectiveRoleRuleV7("PATROL_BOAT", "UNDEAD").label} with ${DROWNED_CREW_HP_V7} HP. It fills no unit slot.`;
@@ -199,7 +202,7 @@ export function undeadAbilityDescriptionV7(
           : "Lich"
       } dies${cureCaptain === null ? "." : ` or ${cureCaptain} tends them.`}`;
     case "BITE":
-      return "Living land units it damages are bitten and rise as your Zombies when they die.";
+      return `Living land units it damages are bitten and rise as your Zombies when they die, at full HP with ${technologyDisplayNameV7("EXPLOSIVES", "UNDEAD")}.`;
     case "UNANSWERED":
       return "Units it attacks never strike back.";
     // The Vampire and Banshee rework (`pulp_wars-ty6i`).
@@ -218,6 +221,20 @@ export function undeadAbilityDescriptionV7(
 
 /** The Undead pass, correction: the Pestilence unlock (Undead Explosives). */
 export const PESTILENCE_UNLOCK_TEXT_V7 = "Liches plague the units they hit";
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): Pestilence's second
+ * unlock, whole Zombies.
+ */
+export const WHOLE_ZOMBIES_UNLOCK_TEXT_V7 =
+  "New Zombies rise at full HP (Infect, bites, Swallow)";
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): Grave Rites (the Undead
+ * Planning), whole Skeletons.
+ */
+export const WHOLE_SKELETONS_UNLOCK_TEXT_V7 =
+  "Raise Dead Skeletons rise at full HP";
 
 /**
  * Undead command labels; Human commands keep their revision-12 labels.
@@ -899,7 +916,9 @@ export function raiseDeadPreviewDescriptionV7(
   preview: RaiseDeadPreviewV7,
 ): string {
   const count = preview.graves.length;
-  return `${count} ${count === 1 ? "Skeleton rises" : "Skeletons rise"} from adjacent Graves at 5 HP`;
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): the preview's HP (5,
+  // or whole with Grave Rites).
+  return `${count} ${count === 1 ? "Skeleton rises" : "Skeletons rise"} from Graves within 2 tiles at ${preview.hp} HP`;
 }
 
 export function devourPreviewDescriptionV7(preview: DevourPreviewV7): string {

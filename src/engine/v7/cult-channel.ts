@@ -15,6 +15,7 @@ import {
   unitCapabilitiesV7,
   unitCapacitySlotsV7,
   unitIsFrozenV7,
+  unitIsSummonedV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
@@ -615,8 +616,10 @@ export type BooRejectionV7 =
 /**
  * Section 8.5: whether a Horror's Boo! scares `unit`: a living land-form
  * unit of any owner that is not a reward giant, a two-slot unit, an Egg
- * (not in land form), or a neutral unit. Undead units, constructs, and
- * daemons are not living.
+ * (not in land form), or a neutral unit. Undead units and constructs are not
+ * living, and no daemon is scared: since `pulp_wars-1uof` (7r139) a daemon is
+ * living for death and infection, but a Boo! still passes it by (a daemon is
+ * what scares; and "friend or foe" would scatter the seat's own daemons).
  */
 export function booScaresV7(
   roster: FactionRosterV7,
@@ -628,7 +631,8 @@ export function booScaresV7(
     !isNeutralOwnerV7(unit.ownerId) &&
     unit.role !== "JUGGERNAUT" &&
     unitCapacitySlotsV7(roster, unit) === 1 &&
-    isLivingUnitV7(roster, unit)
+    isLivingUnitV7(roster, unit) &&
+    !unitIsSummonedV7(unit)
   );
 }
 

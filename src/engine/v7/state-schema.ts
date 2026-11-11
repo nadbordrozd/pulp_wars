@@ -22,6 +22,7 @@ import {
   SUMMONED_MECHANICAL_ROLES_V7,
   summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   cityRewardCandidatesV7,
@@ -3629,12 +3630,15 @@ function validateCrossReferences(value: CrossInput): boolean {
   // The Dwarf revision section 2.3: the per-unit living test (a construct is
   // never plagued or bitten).
   // Map curiosities (section 8.6): a Monster takes no status.
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): a daemon may be
+  // plagued or bitten, the Unstoppable Herald never.
   const living = (unit: UnitStateV7 | undefined): boolean =>
     unit !== undefined &&
     unit.hp > 0 &&
     !isNeutralOwnerV7(unit.ownerId) &&
     unit.form !== "EGG" &&
     kindOf(unit) !== "UNDEAD" &&
+    !unitIsUnstoppableV7(unit) &&
     !roleMechanicsV7(unit.role, kindOf(unit) ?? "ORIGINAL").construct;
   for (const entry of plagued) {
     const source = unitById.get(entry.sourceUnitId);

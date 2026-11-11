@@ -44,7 +44,7 @@ import {
 } from "./explosions";
 import { recordCombatDeathV7 } from "./graves";
 import { grownUnitV7 } from "./growth";
-import { INFECT_RISING_HP_V7 } from "./infect";
+import { wholeZombiesV7, zombieRisingHpV7 } from "./infect";
 import {
   absorbHitV7,
   releaseControlledV7,
@@ -1652,7 +1652,12 @@ export function resolveStartTurnDigestV7(
       role: "GUARD",
       form: "LAND",
       at,
-      hp: Math.min(INFECT_RISING_HP_V7, rule.maxHp),
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): whole with the
+      // seat's Pestilence.
+      hp: zombieRisingHpV7(
+        wholeZombiesV7(current.players, playerId),
+        rule.maxHp,
+      ),
       maxHp: rule.maxHp,
       kills: 0,
       veteran: false,

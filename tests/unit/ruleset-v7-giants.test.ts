@@ -162,14 +162,14 @@ describe("the giants' signatures: the identity", () => {
   // Monument skin rule (`pulp_wars-eu3r.3`) 7r69, and the Vampire and
   // Banshee rework (`pulp_wars-ty6i`) 7r70.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(PRIOR_RULESET_7_IDS.slice(-77, -75)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(PRIOR_RULESET_7_IDS.slice(-78, -76)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-77, -75)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-78, -76)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -817,7 +817,10 @@ describe("Swallow (section 6.2): the Abomination's attack on a unit it may swall
     expect(zombie).toMatchObject({
       ownerId: undead,
       role: "GUARD",
-      hp: 12,
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): the seat has every
+      // technology, Pestilence among them, so the Zombie is whole (12
+      // without it).
+      hp: 18,
       homeCityId: null,
       at: at(4, 2),
     });

@@ -163,13 +163,13 @@ describe("tuning 5 identity", () => {
   // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
   // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(PRIOR_RULESET_7_IDS.slice(-91, -89)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(PRIOR_RULESET_7_IDS.slice(-92, -90)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-91, -89)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-92, -90)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);

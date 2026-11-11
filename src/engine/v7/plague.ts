@@ -3,8 +3,7 @@ import {
   PLAGUE_DAMAGE_V7,
   PLAGUE_DURATION_TURNS_V7,
   biteOfV7,
-  isLivingUnitV7,
-  unitTakesStatusV7,
+  unitTakesAfflictionV7,
   recordBittenRisingV7,
   withPlaguedV7,
 } from "./afflictions";
@@ -162,10 +161,11 @@ export function resolveStartTurnPlagueV7(
         unit.form !== "EGG" &&
         chebyshev(unit.at, spreader.at) === 1 &&
         !alreadyPlagued.has(unit.id) &&
-        // The Dwarf revision section 2.3: the per-unit living test.
-        isLivingUnitV7(state, unit) &&
-        // Map curiosities section 8.6: the Monster takes no status.
-        unitTakesStatusV7(unit)
+        // The Dwarf revision section 2.3: the per-unit living test. Map
+        // curiosities section 8.6: the Monster takes no status. And
+        // (`pulp_wars-1uof`, 7r139) a daemon is living, the Unstoppable
+        // Herald still takes no status.
+        unitTakesAfflictionV7(state, unit)
       ) {
         alreadyPlagued.add(unit.id);
         spread.push({ unitId: unit.id, sourceUnitId });

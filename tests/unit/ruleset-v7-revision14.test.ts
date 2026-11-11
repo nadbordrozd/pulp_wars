@@ -95,9 +95,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-125, -83)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-126, -84)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -650,7 +650,10 @@ describe("ruleset-7 revision-14 Bitten", () => {
       role: "GUARD",
       form: "LAND",
       at: victim.at,
-      hp: BITTEN_RISING_HP_V7,
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): the biter seat has
+      // every technology, Pestilence among them, so the rising is whole
+      // (`BITTEN_RISING_HP_V7`, 12, without it).
+      hp: effectiveRoleRuleV7("GUARD", "UNDEAD").maxHp,
       // Revision 15: the Zombie's maximum HP (18, was 20).
       maxHp: effectiveRoleRuleV7("GUARD", "UNDEAD").maxHp,
       kills: 0,
@@ -755,8 +758,10 @@ describe("ruleset-7 revision-14 Bitten", () => {
     expect(unitAt(ended.state, { x: 3, y: 2 })).toMatchObject({
       ownerId: seatPlayer(plagued, 0),
       role: "GUARD",
-      hp: BITTEN_RISING_HP_V7,
+      // Whole with the biter seat's Pestilence (`pulp_wars-1uof`, 7r139).
+      hp: effectiveRoleRuleV7("GUARD", "UNDEAD").maxHp,
     });
+    expect(BITTEN_RISING_HP_V7).toBe(12);
     expect(ended.state.plagued).toEqual([]);
     expect(ended.state.bitten).toEqual([]);
   });

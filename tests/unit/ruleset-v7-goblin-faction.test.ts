@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(PRIOR_RULESET_7_IDS.at(-122)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(137);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-122)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(PRIOR_RULESET_7_IDS.at(-123)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(138);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-123)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -804,6 +804,8 @@ describe("ruleset-7 Goblin technology", () => {
       ORIGINAL: {},
       UNDEAD: {
         EXPLOSIVES: "Pestilence",
+        // Full-strength risings (`pulp_wars-1uof`, 7r139).
+        PLANNING: "Grave Rites",
         MILLING: "Bone Mills",
         MARKSMANSHIP: "Banshees",
         SAWMILLING: "Liches",

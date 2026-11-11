@@ -67,9 +67,9 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-15 identity", () => {
   it("keeps rejecting r14 after the r54 identity and cleans the r14 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-124, -83)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-125, -84)).toEqual([
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
@@ -156,13 +156,24 @@ describe("ruleset-7 revision-15 Zombie fragility", () => {
     expect(effectiveRoleRuleV7("GUARD", "ORIGINAL").maxHp).toBe(17);
     // Step two of the Undead pass (`pulp_wars-w49.24`, 7r57): 12 (10 before).
     expect([INFECT_RISING_HP_V7, BITTEN_RISING_HP_V7]).toEqual([12, 12]);
-    const state = arena(
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): 12 for a seat
+    // without Pestilence (the arena's every technology loses it).
+    const all = arena(
       ["UNDEAD", "ORIGINAL"],
       [
         { seat: 0, role: "GUARD", at: { x: 2, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 }, hp: 1 },
       ],
     );
+    const state: GameStateV7 = {
+      ...all,
+      players: all.players.map((player) => ({
+        ...player,
+        researchedTechs: player.researchedTechs.filter(
+          (tech) => tech !== "EXPLOSIVES",
+        ),
+      })),
+    };
     const risingId = unitId(state.nextEntityId);
     const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
     expect(unitById(result.state, risingId)).toMatchObject({

@@ -257,13 +257,13 @@ describe("rituals: identity", () => {
   // took 7r89 after it, and its Imp (`pulp_wars-mch9.36`) 7r90, and its
   // Gibbering Mass (`pulp_wars-mch9.37`) 7r91.
   it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-51, -49)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-52, -50)).toEqual([
       "pulp-wars-poc-7r87",
       "pulp-wars-poc-7r88",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-51, -49)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-52, -50)).toEqual([
       "pulpWars.save.v7r87.current",
       "pulpWars.save.v7r88.current",
     ]);
@@ -443,7 +443,8 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
         advancesAfterKill: true, // since the Cult redesign, `pulp_wars-mch9.35`
         ignoresFortification: true,
         immovable: true,
-        construct: true,
+        // No construct since `pulp_wars-1uof` (7r139).
+        construct: false,
         movementMode: "STRIDE",
         capacitySlots: 1,
         // None of the giants' signatures.
@@ -2422,9 +2423,11 @@ describe("the Herald: Unstoppable (section 4.2)", () => {
       false,
     );
     // (Frostbite went with the one Freeze effect, `pulp_wars-xv0t`.)
-    // Not living: no Plague, bite, Seizure, or Boo!; a daemon heals by no
-    // source and leaves no Grave.
-    expect(unitRoleMechanicsV7(state, herald).construct).toBe(true);
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): no construct (it is
+    // wailed, Infected, and leaves a Grave), but Unstoppable still keeps
+    // Plague, a bite, and Terror off it, and a daemon still heals by no
+    // source.
+    expect(unitRoleMechanicsV7(state, herald).construct).toBe(false);
   });
 
   it("is frozen by no Cold Snap and pulled by no Tractor Beam", () => {

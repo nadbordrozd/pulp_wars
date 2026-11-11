@@ -78,8 +78,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -139,10 +139,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-73)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-74)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(137);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(138);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -737,7 +737,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
     ]);
   });
 
-  it("differs from the Human graph only in the Administration, Chivalry, and Explosives unlocks", () => {
+  it("differs from the Human graph only in the Administration, Chivalry, Explosives, Planning, and Seamanship unlocks", () => {
     expect(UNDEAD_BASELINE_V1_NODES).toHaveLength(
       SHARED_BASELINE_NODES_V7.length,
     );
@@ -763,11 +763,19 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         expect(undead.unlocks).toEqual(
           human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
-      // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
+      // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence; and
+      // (`pulp_wars-1uof`, 7r139) its whole Zombies.
       else if (human.id === "EXPLOSIVES")
         expect(undead.unlocks).toEqual([
           ...human.unlocks,
           { kind: "PESTILENCE" },
+          { kind: "WHOLE_ZOMBIES" },
+        ]);
+      // Full-strength risings (`pulp_wars-1uof`, 7r139): Grave Rites.
+      else if (human.id === "PLANNING")
+        expect(undead.unlocks).toEqual([
+          ...human.unlocks,
+          { kind: "WHOLE_SKELETONS" },
         ]);
       // Themed naval branches (`pulp_wars-5ti.17`): Drowned Crews, the Ram
       // and the rising instead of Board.

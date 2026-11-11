@@ -1,16 +1,60 @@
-import type { UnitId } from "../model/ids";
-import { DROWNED_CREW_HP_V7, seatRoleRuleV7 } from "../rules/ruleset-v7";
+import type { PlayerId, UnitId } from "../model/ids";
+import {
+  DROWNED_CREW_HP_V7,
+  seatRoleRuleV7,
+  technologyCapabilitiesV7,
+} from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
-import type { GameStateV7, UnitStateV7 } from "./types";
+import type {
+  FactionIdV7,
+  GameStateV7,
+  TechnologyIdV7,
+  UnitStateV7,
+} from "./types";
 
 /**
  * An Infect rising has 12 of the Zombie's 18 HP. It had 10 from revision 13
  * (section 6.4) to `pulp-wars-poc-7r56`; step two of the Undead pass
  * (`pulp_wars-w49.24`, 7r57, docs/product/RULESET_7_TUNING_UNDEAD.md section
  * 15) made it 12: at 10 a rising was dead after two ordinary hits, or one
- * Gang Up blow, before its owner's next turn.
+ * Gang Up blow, before its owner's next turn. Since `pulp_wars-1uof` (7r139)
+ * it is the HP of a seat without Pestilence ({@link zombieRisingHpV7}).
  */
 export const INFECT_RISING_HP_V7 = 12;
+
+/** The seat facts a full-strength rising reads (state or the viewer). */
+export interface RisingSeatV7 {
+  readonly id: PlayerId;
+  readonly faction: FactionIdV7;
+  readonly researchedTechs: readonly TechnologyIdV7[];
+}
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): whether the new Zombies
+ * of the seat `ownerId` rise at full HP: its own tree's `wholeZombies`
+ * (Pestilence, the Undead `EXPLOSIVES`). False for an unknown seat.
+ */
+export function wholeZombiesV7(
+  players: readonly RisingSeatV7[],
+  ownerId: PlayerId,
+): boolean {
+  const player = players.find((candidate) => candidate.id === ownerId);
+  return (
+    player !== undefined &&
+    technologyCapabilitiesV7(player.researchedTechs, player.faction)
+      .wholeZombies
+  );
+}
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP of a new Zombie
+ * (an Infect, a Bitten rising, a digested victim spat out) of a seat whose
+ * Zombie has `maxHp`: all of it with Pestilence, else
+ * {@link INFECT_RISING_HP_V7} (12; `BITTEN_RISING_HP_V7` is the same).
+ */
+export function zombieRisingHpV7(wholeZombies: boolean, maxHp: number): number {
+  return wholeZombies ? maxHp : Math.min(INFECT_RISING_HP_V7, maxHp);
+}
 
 /**
  * Records one death converted by Infect (revision 13 sections 5.4 and 6.4):
@@ -70,7 +114,12 @@ export function recordInfectionV7(
     role: "GUARD",
     form: "LAND",
     at: { x: victim.at.x, y: victim.at.y },
-    hp: Math.min(INFECT_RISING_HP_V7, rule.maxHp),
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): whole with
+    // Pestilence.
+    hp: zombieRisingHpV7(
+      wholeZombiesV7(state.players, source.ownerId),
+      rule.maxHp,
+    ),
     maxHp: rule.maxHp,
     kills: 0,
     veteran: false,

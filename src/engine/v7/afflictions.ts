@@ -4,6 +4,7 @@ import {
   playerFactionV7,
   seatRoleRuleV7,
   unitFactionV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
@@ -21,6 +22,7 @@ import {
   type UnitStateV7,
 } from "./types";
 import { allOwnedUnitsV7 } from "./units";
+import { wholeZombiesV7 } from "./infect";
 
 /**
  * Revision 14 afflictions: Plague (applied by a Lich attack, spreading at
@@ -41,7 +43,9 @@ export const PLAGUE_DURATION_TURNS_V7 = 3;
 /**
  * A bitten victim rises as a Zombie with 12 of its 18 HP (10 from revision
  * 14, section 4.3, to `pulp-wars-poc-7r56`; 12 since step two of the Undead
- * pass, `pulp_wars-w49.24`, 7r57: the same as an Infect rising).
+ * pass, `pulp_wars-w49.24`, 7r57: the same as an Infect rising). Since
+ * `pulp_wars-1uof` (7r139) it is the HP of a biter seat without Pestilence;
+ * with it the rising is whole (`zombieRisingHpV7`).
  */
 export const BITTEN_RISING_HP_V7 = 12;
 
@@ -64,7 +68,10 @@ export function isLivingOwnerV7(
  * is not a construct under its kind (the Clockwork Gunner, the Brass
  * Titan). Plague, Bitten, the Wail, and their previews read this test; with
  * no Dwarf seat and no controlled unit it returns exactly what
- * {@link isLivingOwnerV7} returns.
+ * {@link isLivingOwnerV7} returns. Full-strength risings (`pulp_wars-1uof`,
+ * 7r139): a Cult daemon is living too (it was a construct until then); the
+ * Cult's own rites that pass a daemon by (Seize, Boo!, the consumption)
+ * name it themselves.
  */
 export function isLivingUnitV7(
   roster: FactionRosterV7,
@@ -93,6 +100,29 @@ export function unitTakesStatusV7(unit: {
   return !isNeutralOwnerV7(unit.ownerId);
 }
 
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): whether Plague and a bite
+ * can stick to the unit: a status may stick to it
+ * ({@link unitTakesStatusV7}), it is living ({@link isLivingUnitV7}), and it
+ * is not Unstoppable (the Herald: no status sticks to it, while the other
+ * daemons became living).
+ */
+export function unitTakesAfflictionV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitStateV7["role"];
+    readonly summoned?: UnitStateV7["summoned"] | undefined;
+  },
+): boolean {
+  return (
+    unitTakesStatusV7(unit) &&
+    isLivingUnitV7(roster, unit) &&
+    !unitIsUnstoppableV7(unit)
+  );
+}
+
 /** The Dwarf revision (section 7): whether the unit's role is a construct. */
 export function unitIsConstructV7(
   roster: FactionRosterV7,
@@ -112,6 +142,8 @@ export interface AfflictionCombatantV7 {
   readonly ownerId: PlayerId;
   readonly role: UnitStateV7["role"];
   readonly form: UnitStateV7["form"];
+  /** A summoned unit's role (the Herald is Unstoppable). */
+  readonly summoned?: UnitStateV7["summoned"] | undefined;
 }
 
 /**
@@ -157,6 +189,7 @@ export function afflictionCombatEffectsV7(input: {
         readonly id: UnitId;
         readonly ownerId: PlayerId;
         readonly role: UnitStateV7["role"];
+        readonly summoned?: UnitStateV7["summoned"] | undefined;
       }
     | undefined;
   readonly plaguedUnitIds: ReadonlySet<UnitId>;
@@ -176,18 +209,18 @@ export function afflictionCombatEffectsV7(input: {
 > {
   // The Dwarf revision section 2.3: the per-unit living test (a construct
   // is never plagued or bitten).
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): a daemon is living,
+  // and the Unstoppable Herald still takes no status.
   const living = (
     unit:
       | {
           readonly id: UnitId;
           readonly ownerId: PlayerId;
           readonly role: UnitStateV7["role"];
+          readonly summoned?: UnitStateV7["summoned"] | undefined;
         }
       | undefined,
-  ): boolean =>
-    unit !== undefined &&
-    unitTakesStatusV7(unit) &&
-    isLivingUnitV7(input.roster, unit);
+  ): boolean => unit !== undefined && unitTakesAfflictionV7(input.roster, unit);
   const plagued: UnitId[] = [];
   if (input.attackerPlagues && !input.attackerDies) {
     // The Martian revision section 5.3: a Lich plagues only targets that
@@ -400,7 +433,11 @@ export function recordBittenRisingV7(
     role: "GUARD",
     form: "LAND",
     at: { x: victim.at.x, y: victim.at.y },
-    hp: Math.min(BITTEN_RISING_HP_V7, rule.maxHp),
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): whole with the
+    // biter seat's Pestilence.
+    hp: wholeZombiesV7(lookup.players, bite.biterPlayerId)
+      ? rule.maxHp
+      : Math.min(BITTEN_RISING_HP_V7, rule.maxHp),
     maxHp: rule.maxHp,
     kills: 0,
     veteran: false,

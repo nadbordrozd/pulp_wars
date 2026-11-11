@@ -44,7 +44,11 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 /** An Abomination below this HP never Swallows (section 9). */
 export const SWALLOW_MINIMUM_HP_V7 = 16;
-/** A Swallow's value over the victim's: the Zombie it is spat out as. */
+/**
+ * A Swallow's value over the victim's: the Zombie it is spat out as, one
+ * point per HP (12; since `pulp_wars-1uof`, 7r139, the policy reads the HP
+ * itself, whole with Pestilence).
+ */
 export const SWALLOW_ZOMBIE_VALUE_V7 = 12;
 /** A Toss needs a kill, or this much hostile damage net of friendly. */
 export const TOSS_MINIMUM_NET_DAMAGE_V7 = 8;

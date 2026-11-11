@@ -133,6 +133,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/query.ts::IncrementalPublicRedevelopmentPossibilityWorkV7.advanceOne":
     "SEAT",
   "src/engine/v7/query.ts::createPublicChainSimulationV7": "SEAT",
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): whole risings are a
+  // seat's research, read in the seat's own tree (the viewer's for its
+  // Raise Dead and its research bump).
+  "src/engine/v7/infect.ts::wholeZombiesV7": "SEAT",
+  "src/engine/v7/query.ts::viewerRaisedSkeletonHpV7": "SEAT",
+  "src/ai/v7-undead.ts::undeadRisingsResearchValueV7": "SEAT",
   "src/engine/v7/reducer.ts::applyTrainNaval": "SEAT",
   "src/engine/v7/reducer.ts::applyTrain": "SEAT",
   "src/engine/v7/reducer.ts::applyLayEgg": "SEAT",

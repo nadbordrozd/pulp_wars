@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r138`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r139`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,47 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r139` (`pulp_wars-1uof`, **full-strength risings, and
+daemons ordinary for death and infection**; the user, 2026-11-10: "I want
+the summoned demons to be vulnerable to zombiism and other such things
+same as everyone else", "i want the raised skeletons to be raised at full
+health depending on a technology - land grants but i'd consider renaming
+it", and "i want new zombies to also spawn at full health depending on a
+tech"). (1) **Grave Rites**: the Undead `PLANNING` (Land Grants to every
+other seat) is shown to an Undead viewer as Grave Rites and keeps its city
+slot and Land Grant; with it a Raise Dead Skeleton rises whole, 10 of 10
+HP (5 without; the unlock `WHOLE_SKELETONS`, the capability
+`wholeSkeletons`, and the new `hp` of `previewRaiseDeadV7`)
+([section 17.2](#172-raise-dead-and-devour)). (2) **Pestilence** (the
+Undead `EXPLOSIVES`) also makes every new Zombie of its seat whole, 18 of
+18 HP (12 without): an Infect, a Bitten rising, and a digested victim
+spat out (`WHOLE_ZOMBIES`, `wholeZombies`)
+([section 17.6](#176-infect), [section 17.7](#177-bitten)). The two are
+separate research choices, on two branches. (3) **The daemons are
+ordinary for death and infection**: the Imp, the Horror, the Gibbering
+Mass, and the Herald are no constructs any more, so a Zombie's kill of one
+rises as a Zombie, a Zombie's hit bites it, a Lich plagues it, a Banshee
+wails it, the Abomination swallows a hurt Imp or Horror, and it leaves a
+Grave that Raise Dead and Devour use. An Unbound daemon is wailed and
+leaves a Grave like the Giant Spider, takes no status, and loses its
+Plague and bite when it breaks loose. Kept, each for its unit's own
+identity: the Herald's Unstoppable (never Plagued, Bitten, or terrified;
+Infect is a death, not a status, so a Zombie that kills it still raises
+it), the Gibbering Mass's immovability (never Swallowed), the Tentacle (a
+limb of the Deep, still no living thing: no Grave), the Cult's own rites (no
+Seizure, Boo!, or consumption of a daemon, and no Sacrifice), and "a
+daemon never heals" (no Recover, Windmill, Fountain, or Wishing Well: the
+Cult's recorded trade-off, "daemons are spent, not kept")
+([section 26.4](#264-daemons-and-summon),
+[section 26.14](#2614-interactions-with-other-rules)). (4) The Normal AI
+values its own risings by their HP, counts a hidden seat's at the base,
+and adds a small research value to Grave Rites and Pestilence
+([section 16](#16-normal-ai-summary)). An explosion chain preview takes
+another seat's Zombie rising as whole when that seat's tree can make it so
+(its research is hidden; the worst case, as for a hostile ship's Drowned
+Crews). No state shape, command, or event changed. A save, replay, or setup
+of `7r138` is rejected, and the browser autosave has a new key.
 
 `pulp-wars-poc-7r138` (`pulp_wars-dy2b`, **Ice Folk sea routes over
 ice only**; the user, 2026-11-08: "trade routes over water should only go
@@ -2415,10 +2456,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r138`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r139`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r138.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r139.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6043,7 +6084,7 @@ names every player sees (a cell in bold is the faction's own):
 | `FARMING`           | Farming       | Farming             | Farming            | Farming          | Farming            | Farming           | Farming              | Farming                 | **Harvest Rites**         |
 | `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**     | **Solar Arrays**   | Milling           | **Steam Pumps**      | Milling                 | Milling                   |
 | `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership       | Leadership         | Leadership        | Leadership           | Leadership              | Leadership                |
-| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants        | Land Grants       | Land Grants          | Land Grants             | Land Grants               |
+| `PLANNING`          | Land Grants   | **Grave Rites**     | Land Grants        | Land Grants      | Land Grants        | Land Grants       | Land Grants          | Land Grants             | Land Grants               |
 | `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting            | Hunting           | Hunting              | Hunting                 | Hunting                   |
 | `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry           | Forestry          | Forestry             | Forestry                | Forestry                  |
 | `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**        | **Snow Golems**   | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**            |
@@ -6110,25 +6151,32 @@ unlock differences: Administration grants Necromancer support (Frenzy and
 Raise Dead) instead of Captain support, Chivalry grants no Overrun, and
 Explosives, shown to an Undead viewer as **Pestilence**, also grants
 `PESTILENCE` (the owner's Liches plague,
-[section 17.8](#178-plague); capability `plague`). Every
-other unlock is the same mechanical value, so role unlocks, the Fieldcraft
+[section 17.8](#178-plague); capability `plague`). Since `7r139`
+(`pulp_wars-1uof`) Pestilence also grants `WHOLE_ZOMBIES` (the owner's new
+Zombies rise whole, [section 17.6](#176-infect); capability
+`wholeZombies`), and Planning, shown to an Undead viewer as **Grave
+Rites**, keeps its city slot and Land Grant and grants `WHOLE_SKELETONS`
+(the owner's Raise Dead Skeletons rise whole,
+[section 17.2](#172-raise-dead-and-devour); capability `wholeSkeletons`).
+Every other unlock is the same mechanical value, so role unlocks, the Fieldcraft
 Forest freedom, and the Sight entries apply to the Undead role of the same
 mechanical role. The tree, research offers, and Help describe each unlock
 with the **viewer's** faction labels, so the Undead unlocks that differ from
 the table above are:
 
-| Technology     | Undead unlocks                                                                  |
-| -------------- | ------------------------------------------------------------------------------- |
-| Administration | Necromancer (Frenzy, Raise Dead); Market; Disband                               |
-| Sawmilling     | Sawmill; Lich                                                                   |
-| Marksmanship   | Banshee                                                                         |
-| Fieldcraft     | Replant Forest; Ghoul and Banshee ignore Forest movement stops; Banshee Sight 2 |
-| Scouting       | Ghoul; Ghoul Sight 2                                                            |
-| Raiding        | Pillage for all trainable land roles; Ghoul Charge                              |
-| Chivalry       | Vampire; Cultivate Forest                                                       |
-| Pestilence     | (Explosives) Blast Mountain; Breach; Liches plague the units they hit           |
-| Drill          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                    |
-| Fortification  | Zombie (`7r56`); Skeleton/Zombie Build Field Defense                            |
+| Technology     | Undead unlocks                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Administration | Necromancer (Frenzy, Raise Dead); Market; Disband                                                            |
+| Sawmilling     | Sawmill; Lich                                                                                                |
+| Marksmanship   | Banshee                                                                                                      |
+| Fieldcraft     | Replant Forest; Ghoul and Banshee ignore Forest movement stops; Banshee Sight 2                              |
+| Scouting       | Ghoul; Ghoul Sight 2                                                                                         |
+| Raiding        | Pillage for all trainable land roles; Ghoul Charge                                                           |
+| Chivalry       | Vampire; Cultivate Forest                                                                                    |
+| Grave Rites    | (Planning) +1 capacity in every owned city; Land Grant; Raise Dead Skeletons rise at full HP (`7r139`)       |
+| Pestilence     | (Explosives) Blast Mountain; Breach; Liches plague the units they hit; new Zombies rise at full HP (`7r139`) |
+| Drill          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                 |
+| Fortification  | Zombie (`7r56`); Skeleton/Zombie Build Field Defense                                                         |
 
 The Goblin tree (`GOBLIN_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -8182,7 +8230,8 @@ came with `pulp_wars-mch9.36` (`7r90`) and the Mass with
   advance, no Pillage, no Disband) with Defense 3.5 and no Push. Its
   signature is **Anchor**.
 - **Imp, Horror, Gibbering Mass, and Herald** are daemons
-  ([section 26.4](#264-daemons-and-summon)): not living, never healed,
+  ([section 26.4](#264-daemons-and-summon)): ordinary for death and
+  infection since `7r139` (the Herald keeps Unstoppable), never healed,
   homeless, striding, never fortified or in cover. Unbound, each is a
   neutral unit with the same numbers and Attack only (the Unbound Herald
   stays Unstoppable and the Unbound Mass keeps its Drag): "Unbound Imp", "Unbound Horror", "Unbound Gibbering
@@ -10939,8 +10988,13 @@ Harbours from it.
   transports, Vampires attacking only when they survive, and against the
   Undead: avoiding infecting retaliation and costly bites, prioritizing
   Necromancers and plaguing Liches, Tend Wounded cures, spread discipline
-  around spreading Plague, and Wail and splash in threat evaluation. Details
-  and priorities:
+  around spreading Plague, and Wail and splash in threat evaluation. Since
+  `7r139` its own risings are valued by their HP (whole Skeletons with
+  Grave Rites, whole Zombies with Pestilence; a hidden seat's at the base),
+  and Grave Rites and Pestilence get a small research value per own
+  Necromancer and Zombie-maker
+  ([Normal AI, full-strength risings](../architecture/NORMAL_AI.md#full-strength-risings-pulp_wars-1uof-7r139)).
+  Details and priorities:
   [Normal AI revision 13](../architecture/NORMAL_AI.md#revision-13-undead-play-pulp_wars-vkq9),
   [14](../architecture/NORMAL_AI.md#revision-14-plague-bitten-and-vampire-play-pulp_wars-vkq18),
   [15](../architecture/NORMAL_AI.md#revision-15-plague-duration-pulp_wars-vkq20),
@@ -11410,7 +11464,15 @@ constructs is living and leaves Graves, is plagued, bitten, infected, and
 wailed, and the Engineer's Repair cures Plague and bites, while the
 Clockwork Gunner and Brass Titan are not living: never wailed, plagued,
 bitten, or infected, and they leave no Grave
-([section 22.13](#2213-interactions-with-other-rules)).
+([section 22.13](#2213-interactions-with-other-rules)). Since `7r139`
+(`pulp_wars-1uof`) the Cult's daemons are living for these rules: they
+leave Graves, are plagued, bitten, infected, wailed, and swallowed like any
+unit, except the Herald, to which no status sticks (it is still wailed and
+infected), and the Gibbering Mass, which is never swallowed; a Tentacle is
+no living thing and leaves no Grave
+([section 26.4](#264-daemons-and-summon)). Grave Rites and Pestilence make
+the Undead's Skeletons and Zombies rise whole (sections
+[17.2](#172-raise-dead-and-devour) and [17.6](#176-infect)).
 Specifications and exact event shapes:
 [revision 13](RULESET_7_REVISION_13_UNDEAD.md),
 [revision 14](RULESET_7_REVISION_14_BALANCE.md), and
@@ -11423,7 +11485,8 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
 
 - **Creation.** When a unit dies, one Grave is created on its death tile when
   all of these hold: the unit was in land form (not embarked or naval), of
-  any owner and faction but not a Dwarf construct; it died with cause
+  any owner and faction but not a Dwarf construct or a Tentacle (a Cult
+  daemon leaves one since `7r139`); it died with cause
   `ATTACK`, `RETALIATION`, `SPLASH` (Battleship, Lich, or Bomb Chucker),
   `WAIL`, `PLAGUE`, `KABOOM` (its own Kaboom), `EXPLOSION` (hit by a blast),
   `BOMB`, or `ERUPTION` (a Dwarf bomb or eruption); the tile is land and is
@@ -11434,7 +11497,7 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
   to `7r110`), elimination removal,
   the destruction of Eggs with a captured city, a `BRAIN_LOST` removal, a
   Shatter (`SHATTER`), the death of a Dwarf
-  construct, or a death that rises. A
+  construct or a Tentacle, or a death that rises. A
   chest
   is consumed by the unit that enters its tile, so no Grave shares a tile
   with a chest.
@@ -11462,9 +11525,12 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
   and no Dwarf mound on it (no cap, no terrain or territory filter; the
   Necromancer's own tile is not one). In `(y, x)` order each
   eligible Grave is removed and replaced by a Skeleton rising at 5 of 10 HP,
-  taking consecutive new unit IDs. The Necromancer is then handled. With no
+  or at its whole 10 when the raiser owns **Grave Rites** (the Undead
+  `PLANNING`, capability `wholeSkeletons`, `7r139`), taking consecutive new
+  unit IDs. The Necromancer is then handled. With no
   eligible Grave the command is rejected with `RAISE_DEAD_NOT_LEGAL`
   (`NO_GRAVE`). Event `DEAD_RAISED`; the public preview `previewRaiseDeadV7`
+  (its Graves and, since `7r139`, the `hp` each Skeleton rises with)
   equals the result.
 - **Devour** (`DEVOUR { unitId }`, Ghoul terminal action). Legal for an own
   land-form Ghoul that has not used its primary action (it may have moved)
@@ -11515,7 +11581,12 @@ Undead land-form units recover only in their owner's territory
 A land-form unit killed by a Zombie, by the Zombie's attack or by its
 retaliation, dies normally (the Zombie keeps the kill) and then rises as a
 Zombie of the Zombie's owner at 12 of 18 HP (10 until `7r57`) on its tile,
-with no Grave.
+with no Grave. Since `7r139` (`pulp_wars-1uof`) the rising is whole, 18 of
+18, when its owner owns **Pestilence** (the Undead `EXPLOSIVES`,
+capability `wholeZombies`); the same holds for every new Zombie of the
+seat: a Bitten rising ([section 17.7](#177-bitten)) and a digested victim
+spat out (below). A Cult daemon is a victim like any unit since `7r139`
+(the Herald too: Infect is a death, not a status).
 Since `7r51` the **Abomination** has Infect too (the role ability
 `INFECT`): what it kills by its attack or its retaliation rises in the same
 way, and like the Zombie it never advances after a kill. It has no Bite, so
@@ -11533,7 +11604,8 @@ Since `pulp_wars-w49.30` the Abomination keeps Infect and has **Swallow**
 instead of Push ([section 11.1](#111-the-giants-signatures)): it takes an
 adjacent hostile one-slot land unit of 12 HP or fewer off the board, digests
 4 HP of it at each of its owner's Start Turns (healing that much), and spits
-out a 12-HP Zombie of its own seat when the victim dies inside. A digested
+out a 12-HP Zombie of its own seat (whole with Pestilence, `7r139`) when
+the victim dies inside. A digested
 victim (cause `DIGESTED`) leaves no Grave and never rises; Infect is a rule
 of the Abomination's kills in combat only.
 
@@ -11544,12 +11616,16 @@ of the Abomination's kills in combat only.
   retaliation, to a **living land-form** unit that survives, that unit
   becomes Bitten, recording the biter player and Zombie; the last biter wins.
   Embarked and naval units are never bitten; splash, Wail, and explosions are
-  not Zombie damage.
+  not Zombie damage. A Cult daemon is bitten like any unit since `7r139`,
+  the Herald never (Unstoppable); an Unbound daemon, like every neutral
+  unit, takes no bite, and a daemon that breaks loose loses its bite and
+  its Plague.
 - **Rising.** When a Bitten unit dies in land form from `ATTACK`,
   `RETALIATION`, `SPLASH`, `WAIL`, `PLAGUE`, `KABOOM`, `EXPLOSION`,
   `SHATTER`, `BOMB`, or `ERUPTION`,
   whoever killed it, it rises
-  on its tile as a Zombie owned by the biter player at 12 of 18 HP
+  on its tile as a Zombie owned by the biter player at 12 of 18 HP (whole
+  with the biter seat's Pestilence since `7r139`)
   ([section 17.3](#173-risings)), with no Grave; the killer keeps the kill.
   Infect takes precedence when a Zombie is the killer. A melee attacker whose
   defender rises does not advance (so an Overrun ends there). A Bitten unit
@@ -11580,6 +11656,9 @@ of the Abomination's kills in combat only.
   controller with its Explosives, the Disintegrator). Since `7r93` the
   Undead **Plague Galleon** (the Undead Battleship, `PLAGUE`) plagues in
   the same way with Pestilence; what is said of a Lich here holds for it.
+  Since `7r139` Pestilence also makes the seat's new Zombies whole
+  ([section 17.6](#176-infect)), and a Cult daemon is plagued like any
+  living unit (never the Herald).
 - **Application.** When such a Lich attacks and survives the exchange, the
   primary target and every surviving splash target that is living become
   plagued unless already plagued; units of any form qualify, except a target
@@ -11640,7 +11719,8 @@ of the Abomination's kills in combat only.
 - **Targets.** Every unit that is on the board, hostile, living, visible to
   the Banshee's owner, and within Chebyshev 2 of the Banshee, in any form;
   allies never (nor a Dwarf construct, which is not living, nor a mound,
-  which is off the board).
+  which is off the board). A Cult daemon is a target since `7r139`; the
+  Herald takes its damage but no Terror (no status sticks to it).
 - **Damage.** Per target, the ordinary damage formula
   ([section 13.2](#132-damage)) with the Banshee attacking at Attack 1.5
   (1 before the Vampire and Banshee rework) at its current HP (no Charge or Inspired/Frenzied bonus) against the target's own
@@ -18417,10 +18497,22 @@ never repeats. What a city gave up stays with the city through a capture.
 
 A daemon is a land unit of a Cult seat with these rules of its own:
 
-- **Not living.** No Plague, bite, Infect, Wail, Seizure, or Boo! takes it;
-  it is immune to Swallow (a Brain takes it since `7r99`); it leaves no Grave.
+- **Ordinary for death and infection** (since `7r139`, `pulp_wars-1uof`;
+  "not living" before). A Zombie's kill of it rises as a Zombie (Infect), a
+  Zombie's hit bites it, a Lich plagues it, a Banshee wails it, the
+  Abomination may swallow it, and it leaves a Grave that Raise Dead and
+  Devour use, like any unit. Kept for the unit's own identity: the Herald is
+  Unstoppable (no Plague, bite, or Terror, never Swallowed; a Zombie that
+  kills it still raises it, as Infect is a death), the Gibbering Mass is
+  immovable (never Swallowed), and the Cult's own rites pass a daemon by
+  (no Seizure, no Boo!, no consumption on the Great Summoning's mark, no
+  Sacrifice). A Brain takes it since `7r99`. An Unbound daemon, a neutral
+  unit, takes no status and never rises, and loses its Plague and bite
+  when it breaks loose; it is wailed and leaves a Grave like the Giant
+  Spider.
 - **It never heals:** no recovery, Windmill, Fountain of Youth, or Wishing
-  Well, and it tosses no Coin.
+  Well, and it tosses no Coin (kept at `7r139`: the faction's trade-off,
+  "daemons are spent, not kept").
 - **It belongs to no city.** It has no home city and fills no unit slot,
   also after a capture it makes. It is never promoted (also not at a
   Shrine), disbanded, or Sacrificed, and it is never a veteran.
@@ -19110,8 +19202,8 @@ seat.
 | Other rule                                            | Ruling                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Freeze                                                | A Frozen cultist is disrupted and cannot channel, help a summoning, or chant. A bound Horror can be Frozen; the Herald never; an Unbound daemon takes no status. A Cold Snap on a circle breaks every chanter it freezes. A Frozen Thing's grip fails.                                                                                                                                                                                                                                               |
-| Plague and Bitten                                     | Plague damage at the Cult's Start Turn comes before the check and breaks every plagued channeller, and a Plagued Idol Bearer's idol is down. A Plagued or Bitten own unit cannot be Sacrificed or consumed. A Bitten enemy can be Seized; it does not rise. No daemon is ever Plagued or bitten.                                                                                                                                                                                                     |
-| Graves and risings                                    | A Sacrifice, a Seizure, and a consumption leave no Grave and no rising; a daemon and a Tentacle leave none either. Every other death of a Cult unit, and the victims of a star, a rampage, and a Tentacle, leave Graves as any death.                                                                                                                                                                                                                                                                |
+| Plague and Bitten                                     | Plague damage at the Cult's Start Turn comes before the check and breaks every plagued channeller, and a Plagued Idol Bearer's idol is down. A Plagued or Bitten own unit cannot be Sacrificed or consumed. A Bitten enemy can be Seized; it does not rise. Since `7r139` a daemon is Plagued and bitten like any unit (never the Herald), and one that breaks loose loses both.                                                                                                                     |
+| Graves and risings                                    | A Sacrifice, a Seizure, and a consumption leave no Grave and no rising; a Tentacle leaves none either. Every other death of a Cult unit (a daemon's too since `7r139`, bound or Unbound, and a Zombie's kill of one rises), and the victims of a star, a rampage, and a Tentacle, leave Graves as any death.                                                                                                                                                                                         |
 | Eggs                                                  | An Egg is never Sacrificed, Seized, frogged, swapped, scared, or consumed; one on the mark blocks the Herald's arrival. Star-fall, a rampage, and a Tentacle's slap hit Eggs as units.                                                                                                                                                                                                                                                                                                               |
 | Barricades and mounds                                 | No Horror, Herald, or Tentacle appears on one, and one on the Great Summoning's mark blocks the arrival. Star-fall removes every Barricade in its area. A rampage walks round them.                                                                                                                                                                                                                                                                                                                  |
 | Area hits (Whirl, Thump, Stomp, Sweep, blasts, bombs) | Each hit is a loss of Hit Points and disrupts every cultist it reaches.                                                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -19119,7 +19211,7 @@ seat.
 | Kaboom and death blasts                               | A Sacrificed, Seized, or consumed exploding unit is removed and never explodes; one a daemon or a star kills explodes as usual. A frog cannot Kaboom.                                                                                                                                                                                                                                                                                                                                                |
 | Candy statuses, Crumbs, Bounce                        | Splat, Stuck, and Toothache disrupt a cultist. A Sacrifice, a Seizure, and a consumption leave no Crumbs. The Herald is never Stuck, Splatted, given Toothache, or bounced; a bound Horror may be. A Top-Up cures a frog. A Jawbreaker is never swapped.                                                                                                                                                                                                                                             |
 | Mind Control and the Tractor Beam                     | A mind-controlled cultist has changed owner and a pulled one is moved: both are disrupted. No summoned unit is mind-controlled or pulled. A Brain may be Seized, and its controlled unit is released. A mind-controlled Cult unit keeps only its unit's tricks ([section 26.1](#261-roles-robed-cultists-and-labels)).                                                                                                                                                                               |
-| Giants' signatures                                    | A swallowed cultist is off the board (disrupted); no daemon is Swallowed. A Thunder Stomp and a trample disrupt the cultists they hit. A Crushing Shove crushes a Herald or a Gibbering Mass (`pulp_wars-mch9.37`), which does not yield. A status from the Thing's own attack fails its grip.                                                                                                                                                                                                       |
+| Giants' signatures                                    | A swallowed cultist is off the board (disrupted); since `7r139` a hurt Imp or Horror is Swallowed like any unit (its strands end), never the Gibbering Mass or the Herald. A Thunder Stomp and a trample disrupt the cultists they hit. A Crushing Shove crushes a Herald or a Gibbering Mass (`pulp_wars-mch9.37`), which does not yield. A status from the Thing's own attack fails its grip.                                                                                                      |
 | Curiosities                                           | An Unbound daemon and a Tentacle act in the neutral turn and are monsters to every seat's previews (`previewMonsterV7`). A daemon never heals at a Fountain or a Wishing Well and is never promoted at a Shrine. A rampage never steps onto a curiosity tile or through a gate; a unit that would come through a gate onto the Herald is blocked. A bound daemon's kill of the Spider, a guard, or Bigfoot pays its bounty in Favour and in Coins.                                                   |
 | Score and play modes                                  | Favour is not scored (nor what the cap or Hunger takes). A daemon counts in its seat's Army while commanded. A Sacrifice and a consumed own unit are no Loss and end a flawless game; so does a daemon that breaks loose. A Seizure and a consumed enemy are kills. The kills of an Unbound daemon and of a Tentacle are nobody's.                                                                                                                                                                   |
 | Achievements                                          | Slayer counts a Summoner's Seizures and a daemon's kills like any unit's. Muster counts the Cult's trained kinds; a daemon has no price and is not counted.                                                                                                                                                                                                                                                                                                                                          |

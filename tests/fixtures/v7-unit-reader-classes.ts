@@ -315,6 +315,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-undead.ts::plagueApplicationValueV7": "BOARD",
     "src/ai/v7-undead.ts::plagueSourceVictimsV7": "BOARD",
     "src/ai/v7-undead.ts::plaguedNeighboursV7": "BOARD",
+    // `pulp_wars-1uof` (7r139): the own Necromancers and Zombie-makers.
+    "src/ai/v7-undead.ts::undeadRisingsResearchValueV7": "BOARD",
     "src/ai/v7-undead.ts::plaguingLichesV7": "BOARD",
     "src/ai/v7-undead.ts::projectedWailSummaryV7": "BOARD",
     "src/ai/v7-undead.ts::publicTendValueV7": "BOARD",

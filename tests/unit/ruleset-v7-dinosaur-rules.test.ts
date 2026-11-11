@@ -930,8 +930,10 @@ describe("ruleset-7 Dinosaur Grow", () => {
       role: "GUARD",
       form: "LAND",
       at: { x: 5, y: 3 },
-      // (12 since step two of the Undead pass, 7r57; 10 before.)
-      hp: 12,
+      // (12 since step two of the Undead pass, 7r57; 10 before. Whole since
+      // `pulp_wars-1uof`, 7r139, with Pestilence, which the fixture's every
+      // technology includes.)
+      hp: 18,
       maxHp: 18,
       kills: 0,
       veteran: false,

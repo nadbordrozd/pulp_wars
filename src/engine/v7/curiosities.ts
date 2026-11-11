@@ -10,6 +10,7 @@ import {
   unitGrowsV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
+  unitIsSummonedV7,
   unitRoleMechanicsV7,
   type FactionRosterV7,
   type IceLookupV7,
@@ -2153,7 +2154,12 @@ export function resolveFountainHealingV7(
         candidate.form === "LAND" &&
         sameCoordV7(candidate.at, fountain.at),
     );
-    if (unit === undefined || unitRoleMechanicsV7(state, unit).construct)
+    // A daemon never heals (`pulp_wars-1uof`, 7r139: no construct now).
+    if (
+      unit === undefined ||
+      unitRoleMechanicsV7(state, unit).construct ||
+      unitIsSummonedV7(unit)
+    )
       continue;
     const amount = Math.min(FOUNTAIN_HEAL_V7, unit.maxHp - unit.hp);
     if (amount <= 0) continue;

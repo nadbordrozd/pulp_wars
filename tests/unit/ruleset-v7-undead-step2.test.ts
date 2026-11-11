@@ -184,14 +184,14 @@ describe("step two of the Undead pass: the identity", () => {
   it("was 7r57 after 7r56, with both save keys obsolete now", () => {
     // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58, and
     // step two of the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-82, -80)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-83, -81)).toEqual([
       "pulp-wars-poc-7r56",
       "pulp-wars-poc-7r57",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-82, -80)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-83, -81)).toEqual([
       "pulpWars.save.v7r56.current",
       "pulpWars.save.v7r57.current",
     ]);
@@ -232,11 +232,24 @@ describe("step two of the Undead pass: a Zombie that rises has 12 HP", () => {
     expect(INFECT_RISING_HP_V7).toBe(12);
     expect(BITTEN_RISING_HP_V7).toBe(12);
     expect(effectiveRoleRuleV7("GUARD", "UNDEAD").maxHp).toBe(18);
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): 12 for a seat
+    // without Pestilence, so the fixture's every technology loses it.
+    const noPestilence = (state: GameStateV7): GameStateV7 => ({
+      ...state,
+      players: state.players.map((player) => ({
+        ...player,
+        researchedTechs: player.researchedTechs.filter(
+          (tech) => tech !== "EXPLOSIVES",
+        ),
+      })),
+    });
     // Infect: a Zombie kills a Fighter beside it.
-    const infect = field(UNDEAD, [
-      { seat: 0, role: "GUARD", at: at(5, 4) },
-      { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
-    ]);
+    const infect = noPestilence(
+      field(UNDEAD, [
+        { seat: 0, role: "GUARD", at: at(5, 4) },
+        { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
+      ]),
+    );
     const zombie = unitAtV7(infect, at(5, 4));
     const preview = queryCombatPreviewV7(
       viewOf(infect),
@@ -260,11 +273,13 @@ describe("step two of the Undead pass: a Zombie that rises has 12 HP", () => {
       homeCityId: null,
     });
     // Bitten: a Skeleton kills a Fighter a Zombie has bitten.
-    const base = field(UNDEAD, [
-      { seat: 0, role: "FIGHTER", at: at(5, 4) },
-      { seat: 0, role: "GUARD", at: at(7, 7) },
-      { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
-    ]);
+    const base = noPestilence(
+      field(UNDEAD, [
+        { seat: 0, role: "FIGHTER", at: at(5, 4) },
+        { seat: 0, role: "GUARD", at: at(7, 7) },
+        { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
+      ]),
+    );
     const bitten: GameStateV7 = {
       ...base,
       bitten: [

@@ -191,13 +191,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-88, -86)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-89, -87)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-88, -86)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-89, -87)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -577,8 +577,10 @@ describe("the Undead pass: the Abomination's Infect", () => {
     expect(unitAtV7(result.state, at(5, 2))).toMatchObject({
       ownerId: actor,
       role: "GUARD",
-      // (12 since step two of the Undead pass, 7r57; 10 before.)
-      hp: 12,
+      // (12 since step two of the Undead pass, 7r57; 10 before. Whole since
+      // `pulp_wars-1uof`, 7r139, with Pestilence, which the arena's every
+      // technology includes.)
+      hp: 18,
       maxHp: 18,
     });
     expect(result.state.graves).toEqual([]);
@@ -609,7 +611,7 @@ describe("the Undead pass: the Abomination's Infect", () => {
     expect(
       recruitmentRolePresentationV7("JUGGERNAUT", "UNDEAD").abilities,
     ).toContain(
-      "Infect: A land unit it kills rises as your Zombie. It fills no unit slot.",
+      "Infect: A land unit it kills rises as your Zombie, at full HP with Pestilence. It fills no unit slot.",
     );
   });
 });
@@ -1442,7 +1444,8 @@ describe("the correction: a risen unit fills no unit slot", () => {
       expect(
         [rising.role, rising.ownerId, rising.hp, rising.homeCityId],
         killer,
-      ).toEqual(["GUARD", seatIdV7(state, 0), 12, null]);
+        // (Whole with Pestilence since `pulp_wars-1uof`, 7r139.)
+      ).toEqual(["GUARD", seatIdV7(state, 0), 18, null]);
       // It took a slot of the killer's home city until this correction.
       expect(assignedUnitCountV7(result.state, capital.id)).toBe(before);
       expect(
@@ -1548,12 +1551,12 @@ describe("the correction: a risen unit fills no unit slot", () => {
     expect(
       recruitmentRolePresentationV7("GUARD", "UNDEAD").abilities,
     ).toContain(
-      "Infect: A land unit it kills rises as your Zombie. It fills no unit slot.",
+      "Infect: A land unit it kills rises as your Zombie, at full HP with Pestilence. It fills no unit slot.",
     );
     expect(
       recruitmentRolePresentationV7("CAPTAIN", "UNDEAD").abilities,
     ).toContain(
-      "Raise Dead: Raises a 5 HP Skeleton from every free Grave within 2 tiles. They fill no unit slot.",
+      "Raise Dead: Raises a Skeleton from every free Grave within 2 tiles, at 5 HP or at full HP with Grave Rites. They fill no unit slot.",
     );
   });
 });
@@ -1582,6 +1585,8 @@ describe("the correction: Plague needs Pestilence", () => {
       { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
       { kind: "MELEE_FIELD_DEMOLITION" },
       { kind: "PESTILENCE" },
+      // Full-strength risings (`pulp_wars-1uof`, 7r139).
+      { kind: "WHOLE_ZOMBIES" },
     ]);
     expect(technologyNameV7("EXPLOSIVES", "UNDEAD")).toBe("Pestilence");
     expect(technologyNameV7("EXPLOSIVES", "ORIGINAL")).toBe("Explosives");
@@ -1707,7 +1712,9 @@ describe("the correction: Raise Dead reaches two tiles", () => {
     for (const where of [at(4, 1), at(6, 3), at(2, 5)])
       expect(unitAtV7(raised.state, where)).toMatchObject({
         role: "FIGHTER",
-        hp: 5,
+        // Whole with Grave Rites (`pulp_wars-1uof`, 7r139), which the
+        // arena's every technology includes; 5 HP without it.
+        hp: 10,
         homeCityId: null,
       });
     // A Grave on a tile its owner has not explored is not raised, and the

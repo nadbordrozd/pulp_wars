@@ -124,7 +124,7 @@ const ENTRIES = {
   ],
   SWALLOW: [
     "Swallow",
-    "Swallows a weakened enemy next to it whole. Each of your turns it digests some, healing itself, then spits it out as your Zombie.",
+    "Swallows a weakened enemy next to it whole, digests some each turn to heal, then spits it out as your Zombie, at full health once you have a technology.",
   ],
   TOSS: [
     "Goblin Toss",
@@ -237,7 +237,7 @@ const ENTRIES = {
   ],
   DAEMON: [
     "Daemon",
-    "Summoned, never trained: it stays yours only while enough cultists channel it each turn. It never heals and fills no city slot.",
+    "Summoned, never trained: it stays yours only while cultists channel it each turn. It never heals or fills a city slot, and Zombies take it like anyone.",
   ],
   // Unbound (`pulp_wars-mch9.6`, sections 6.4, 6.5, and 8.3).
   DAEMONS_FEED: [
@@ -427,14 +427,19 @@ const ENTRIES = {
     "Wail",
     "Hurts every living enemy within 2 tiles at once. It has no ordinary attack.",
   ],
-  INFECT: ["Infect", "A land unit it kills rises again as your Zombie."],
+  // Full-strength risings (`pulp_wars-1uof`, 7r139): whole with Pestilence
+  // (Infect, Bite, and Swallow) or Grave Rites (Raise Dead).
+  INFECT: [
+    "Infect",
+    "A land unit it kills rises again as your Zombie, at full health once you have a technology.",
+  ],
   BITE: [
     "Bite",
-    "Units it wounds are Bitten: when they die, they rise as your Zombies.",
+    "Units it wounds are Bitten: when they die, they rise as your Zombies, at full health once you have a technology.",
   ],
   RAISE_DEAD: [
     "Raise Dead",
-    "Raises a Skeleton from every free Grave within 2 tiles.",
+    "Raises a Skeleton from every free Grave within 2 tiles, at full health once you have a technology.",
   ],
   PLAGUE: [
     "Plague",

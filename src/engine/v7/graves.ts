@@ -114,8 +114,25 @@ export function withGraveV7(
   return [...graves, { x: at.x, y: at.y }].sort(compareCoordsV7);
 }
 
-/** Revision 13 Raise Dead rising HP: a Skeleton rises at 5 HP (section 6.2). */
+/**
+ * Revision 13 Raise Dead rising HP: a Skeleton rises at 5 HP (section 6.2).
+ * Since `pulp_wars-1uof` (7r139) only for a raiser without Grave Rites
+ * ({@link raisedSkeletonHpV7}).
+ */
 export const RAISE_DEAD_SKELETON_HP_V7 = 5;
+
+/**
+ * Full-strength risings (`pulp_wars-1uof`, 7r139): the HP of a Raise Dead
+ * Skeleton whose Skeleton has `maxHp`: all of it when the raiser's tree
+ * grants `wholeSkeletons` (Grave Rites, the Undead `PLANNING`), else
+ * {@link RAISE_DEAD_SKELETON_HP_V7}.
+ */
+export function raisedSkeletonHpV7(
+  wholeSkeletons: boolean,
+  maxHp: number,
+): number {
+  return wholeSkeletons ? maxHp : Math.min(RAISE_DEAD_SKELETON_HP_V7, maxHp);
+}
 
 /**
  * Revision 13 Raise Dead eligibility (section 6.2): every Grave within

@@ -1,9 +1,11 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   canEnterTerrainV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
+  type SummonedUnitRefV7,
 } from "../rules/ruleset-v7";
 import { unitTakesStatusV7 } from "./afflictions";
 import type { TerrainIdV7, UnitFormV7, UnitRoleIdV7 } from "./types";
@@ -69,7 +71,9 @@ export function wailTerrifiesV7(
 /**
  * Terror: the IDs of the Wail targets the Wail terrifies, in the targets'
  * order: HP damage above 0, a survivor, and not neutral (no status sticks
- * to a neutral unit). Empty for a Banshee without `TERROR`.
+ * to a neutral unit) or Unstoppable (the Herald, wailed since
+ * `pulp_wars-1uof`, 7r139, takes no status). Empty for a Banshee without
+ * `TERROR`.
  */
 export function wailTerrifiedIdsV7(
   roster: FactionRosterV7,
@@ -79,17 +83,20 @@ export function wailTerrifiedIdsV7(
     readonly damage: number;
     readonly dies: boolean;
   }[],
-  ownerOf: (unitId: UnitId) => PlayerId | undefined,
+  unitOf: (
+    unitId: UnitId,
+  ) => (SummonedUnitRefV7 & { readonly ownerId: PlayerId }) | undefined,
 ): readonly UnitId[] {
   if (!wailTerrifiesV7(roster, banshee)) return [];
   return targets
     .filter((target) => {
-      const ownerId = ownerOf(target.unitId);
+      const unit = unitOf(target.unitId);
       return (
         target.damage > 0 &&
         !target.dies &&
-        ownerId !== undefined &&
-        unitTakesStatusV7({ ownerId })
+        unit !== undefined &&
+        unitTakesStatusV7(unit) &&
+        !unitIsUnstoppableV7(unit)
       );
     })
     .map((target) => target.unitId);

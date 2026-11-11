@@ -936,10 +936,12 @@ describe("ruleset-7 Goblin chains and attacks", () => {
       },
     ]);
     // (A rising has 12 HP since step two of the Undead pass, 7r57; 10 and
-    // 8 here before. The blast is 5 since `pulp_wars-w49.35`, 2 before.)
+    // 8 here before. The blast is 5 since `pulp_wars-w49.35`, 2 before.
+    // Full-strength risings, `pulp_wars-1uof`, 7r139: the Undead seat has
+    // every technology, Pestilence among them, so it rises whole at 18.)
     expect(
       result.state.units.find((unit) => unit.id === rising.unitId)?.hp,
-    ).toBe(7);
+    ).toBe(13);
   });
 });
 

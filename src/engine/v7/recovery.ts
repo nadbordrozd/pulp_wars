@@ -20,7 +20,11 @@ export interface RecoveryFactsV7 {
     UnitActivationV7,
     "moved" | "attacked" | "recovered" | "captured" | "specialActed"
   >;
-  /** A Dwarf construct: clockwork never mends itself. */
+  /**
+   * A Dwarf construct (clockwork never mends itself), or a Cult daemon (it
+   * never heals; `pulp_wars-1uof`, 7r139, keeps it so after it stopped
+   * being a construct).
+   */
   readonly construct: boolean;
   /** The unit's kind is Restless (Undead). */
   readonly restless: boolean;

@@ -303,10 +303,12 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
       { kind: "MELEE_FIELD_DEMOLITION" },
     ]);
-    // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
+    // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence; and its
+    // whole Zombies (`pulp_wars-1uof`, 7r139).
     expect(explosives(UNDEAD_BASELINE_V1_NODES)).toEqual([
       ...human,
       { kind: "PESTILENCE" },
+      { kind: "WHOLE_ZOMBIES" },
     ]);
     expect(explosives(GOBLIN_BASELINE_V1_NODES)).toEqual(human);
     expect(explosives(DINOSAUR_BASELINE_V1_NODES)).toEqual([

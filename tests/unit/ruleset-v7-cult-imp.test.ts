@@ -134,13 +134,13 @@ describe("the Imp: the identity (7r90)", () => {
   // the warden of `pulp_wars-mch9.32` and `pulp_wars-mch9.33` (7r89); the
   // Gibbering Mass (`pulp_wars-mch9.37`) took 7r91 after it.
   it("was 7r90 after 7r89, both save keys obsolete now, a 7r89 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r138");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r138.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-50, -48)).toEqual([
       "pulp-wars-poc-7r89",
       "pulp-wars-poc-7r90",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -47)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-50, -48)).toEqual([
       "pulpWars.save.v7r89.current",
       "pulpWars.save.v7r90.current",
     ]);
@@ -189,9 +189,10 @@ describe("the Imp: its registration (sections 4.1 and 7.3)", () => {
       1,
     ]);
     const mechanics = summonedUnitRoleMechanicsV7("IMP");
-    // A daemon: no living thing, it strides, and it advances after a kill
-    // (no zone-of-control slip, no Field Defense).
-    expect(mechanics.construct).toBe(true);
+    // A daemon: it strides, and it advances after a kill (no zone-of-control
+    // slip, no Field Defense). No construct since `pulp_wars-1uof` (7r139):
+    // it is living for death and infection.
+    expect(mechanics.construct).toBe(false);
     expect(mechanics.movementMode).toBe("STRIDE");
     expect(mechanics.advancesAfterKill).toBe(true);
     expect(mechanics.ignoresZocStops).toBe(false);

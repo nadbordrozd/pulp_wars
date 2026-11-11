@@ -134,7 +134,10 @@ describe("ruleset-7 revision-13 Infect", () => {
         role: "GUARD",
         form: "LAND",
         at: { x: 3, y: 3 },
-        hp: INFECT_RISING_HP_V7,
+        // Full-strength risings (`pulp_wars-1uof`, 7r139): the fixture's
+        // seat has every technology, Pestilence among them, so the rising is
+        // whole (`INFECT_RISING_HP_V7`, 12, without it).
+        hp: 18,
         maxHp: 18,
         kills: 0,
         veteran: false,
@@ -188,7 +191,8 @@ describe("ruleset-7 revision-13 Infect", () => {
       homeCityId: null,
       role: "GUARD",
       at: { x: 2, y: 3 },
-      hp: 12,
+      // Whole with Pestilence (`pulp_wars-1uof`, 7r139; 12 without).
+      hp: 18,
       maxHp: 18,
       activation: EXHAUSTED,
       captureEligible: false,
@@ -301,7 +305,8 @@ describe("ruleset-7 revision-13 Infect", () => {
     expect(isCityBesiegedV7(state, capital)).toBe(false);
     const result = attack(state, { x: 8, y: 7 }, SEAT0_CAPITAL);
     const risen = unitAt(result.state, SEAT0_CAPITAL);
-    expect(risen).toMatchObject({ ownerId: undead, role: "GUARD", hp: 12 });
+    // Whole with Pestilence (`pulp_wars-1uof`, 7r139; 12 without).
+    expect(risen).toMatchObject({ ownerId: undead, role: "GUARD", hp: 18 });
     expect(result.state.graves).toEqual([]);
     expect(
       isCityBesiegedV7(result.state, cityAt(result.state, SEAT0_CAPITAL)),

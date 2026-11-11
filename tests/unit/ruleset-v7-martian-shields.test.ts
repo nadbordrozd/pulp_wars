@@ -377,11 +377,12 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
     const run = attackV7(state, at(5, 3), at(5, 2));
     expect(run.combat.defenderInfected).toBe(true);
     const rising = unitAtV7(run.state, at(5, 2));
-    // (12 HP since step two of the Undead pass, 7r57; 10 before.)
+    // (12 HP since step two of the Undead pass, 7r57; 10 before. Whole since
+    // `pulp_wars-1uof`, 7r139, with the Undead seat's Pestilence.)
     expect(rising).toMatchObject({
       role: "GUARD",
       ownerId: seatIdV7(state, 1),
-      hp: 12,
+      hp: 18,
       maxHp: 18,
     });
     expect(run.state.shields).toEqual([]);

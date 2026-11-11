@@ -158,6 +158,19 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "PESTILENCE" }
   /**
+   * Full-strength risings (`pulp_wars-1uof`, 7r139): Grave Rites (the Undead
+   * `PLANNING`): the owner's Raise Dead Skeletons rise at full HP (at
+   * `RAISE_DEAD_SKELETON_HP_V7`, 5, without it).
+   */
+  | { readonly kind: "WHOLE_SKELETONS" }
+  /**
+   * Full-strength risings (`pulp_wars-1uof`, 7r139): Pestilence (the Undead
+   * `EXPLOSIVES`) also makes every new Zombie of the owner (an Infect, a
+   * Bitten rising, a digested victim spat out) rise at full HP (at 12
+   * without it).
+   */
+  | { readonly kind: "WHOLE_ZOMBIES" }
+  /**
    * The Martian revision: the Brain's Psychic Command (Rally) and Mind
    * Control (the Martian `ADMINISTRATION`).
    */
@@ -2265,9 +2278,19 @@ export const UNDEAD_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
                 : [unlock],
           ),
           // The Undead pass, correction: Explosives (shown as Pestilence)
-          // keeps both Human unlocks and adds `PESTILENCE`.
+          // keeps both Human unlocks and adds `PESTILENCE`. Full-strength
+          // risings (`pulp_wars-1uof`, 7r139): and `WHOLE_ZOMBIES`.
           ...(original.id === "EXPLOSIVES"
-            ? [{ kind: "PESTILENCE" } as const]
+            ? [
+                { kind: "PESTILENCE" } as const,
+                { kind: "WHOLE_ZOMBIES" } as const,
+              ]
+            : []),
+          // Full-strength risings (`pulp_wars-1uof`, 7r139): Planning (shown
+          // as Grave Rites) keeps its Land Grant and city slot and adds
+          // `WHOLE_SKELETONS`.
+          ...(original.id === "PLANNING"
+            ? [{ kind: "WHOLE_SKELETONS" } as const]
             : []),
         ],
       ),
@@ -5183,8 +5206,11 @@ export function unitIsSummonedV7(unit: SummonedUnitRefV7): boolean {
  * Toothache, Splatted, Cracked. Nothing shoves it: no Push, Charge! push,
  * Knockback, Tractor Beam, Bounce, Boo!, or gate shove moves it (its
  * registration is `immovable`), and a Crushing Shove it does not yield to
- * crushes it, as damage. Plague, a bite, Infect, Mind Control, and Swallow
- * never take a daemon. Damage of every kind hurts it.
+ * crushes it, as damage. Since `pulp_wars-1uof` (7r139), when the other
+ * daemons became ordinary for death and infection, it is still never
+ * Plagued, Bitten, or terrified (statuses), never mind-controlled or
+ * Swallowed; a Zombie that kills it still Infects it, and it leaves a Grave.
+ * Damage of every kind hurts it.
  */
 export function unitIsUnstoppableV7(unit: SummonedUnitRefV7): boolean {
   return (
@@ -5288,16 +5314,18 @@ const SUMMONED_UNIT_ROLE_RULES_V7: Readonly<
  * The Cult redesign (`pulp_wars-mch9.37`, section 7.4): the Gibbering
  * Mass's mechanics, a seat's or nobody's: the ordinary land unit's (the
  * Human Fighter's, never the Guard's Open to ranged) that never advances
- * after a kill, a construct that strides like every daemon, and immovable:
- * nothing shoves, swaps, pulls, bounces, Boos, or knocks it back (a
+ * after a kill, strides like every daemon, and is immovable: nothing
+ * shoves, swaps, pulls, bounces, Boos, swallows, or knocks it back (a
  * Crushing Shove crushes it, as damage: `defenderCrushableV7`). Statuses
- * stick to it (it is not Unstoppable).
+ * stick to it (it is not Unstoppable). Full-strength risings
+ * (`pulp_wars-1uof`, 7r139): no construct any more (a daemon is ordinary for
+ * death and infection: Plague, bites, Infect, the Wail, and its Grave).
  */
 const MASS_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
   ...ORIGINAL_ROLE_MECHANICS_V7.FIGHTER,
   advancesAfterKill: false,
   buildsFieldDefense: false,
-  construct: true,
+  construct: false,
   immovable: true,
   movementMode: CULT_SUMMONED_ROLE_RULES_V7.MASS.movementMode,
 });
@@ -5305,13 +5333,13 @@ const MASS_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
 /**
  * The Cult redesign (`pulp_wars-mch9.36`, section 7.3): the Imp's
  * mechanics, a seat's or nobody's: the ordinary land unit's (the Human
- * Fighter's: it advances after a kill, no zone-of-control slip), a construct
- * that strides like every daemon.
+ * Fighter's: it advances after a kill, no zone-of-control slip) that
+ * strides like every daemon (a construct until `pulp_wars-1uof`, 7r139).
  */
 const IMP_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
   ...ORIGINAL_ROLE_MECHANICS_V7.FIGHTER,
   buildsFieldDefense: false,
-  construct: true,
+  construct: false,
   movementMode: CULT_SUMMONED_ROLE_RULES_V7.IMP.movementMode,
 });
 
@@ -5320,13 +5348,15 @@ const IMP_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
  * seat's or nobody's: Ravage and Unstoppable are the body's rules. The Cult
  * redesign (`pulp_wars-mch9.35`, section 9.1): it advances after a kill,
  * bound or Unbound (never before), and its second attack is made from the
- * victim's tile.
+ * victim's tile. No construct since `pulp_wars-1uof` (7r139): it is wailed,
+ * rises to Infect, and leaves a Grave; Unstoppable still keeps every status
+ * (Plague, a bite, Terror) off it.
  */
 const HERALD_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
   ...ORIGINAL_ROLE_MECHANICS_V7.JUGGERNAUT,
   advancesAfterKill: true,
   buildsFieldDefense: false,
-  construct: true,
+  construct: false,
   movementMode: CULT_SUMMONED_ROLE_RULES_V7.HERALD.movementMode,
   ignoresFortification: true,
   immovable: true,
@@ -5343,17 +5373,20 @@ const HERALD_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
 
 /**
  * The Cultists (section 4.2): the engine mechanics of a summoned unit on
- * the board. A daemon is not living, in the engine's sense of a construct:
- * no Plague, bite, Infect, Wail, or Seizure, immune to Mind Control and
- * Swallow, no Grave, and it never mends (no Recover, Windmill, Fountain, or
- * Wishing Well heal). It moves like a Martian walker (`STRIDE`).
+ * the board. It moves like a Martian walker (`STRIDE`). Full-strength
+ * risings (`pulp_wars-1uof`, 7r139): a daemon is no construct any more; it
+ * is ordinary for death and infection (Plague, a bite, Infect, the Wail,
+ * Swallow, and its Grave, with Unstoppable and immovable kept). It still
+ * never mends (`unitIsSummonedV7` keeps Recover, the Windmill, the
+ * Fountain, and the Wishing Well off it), and the Cult's own rites (Seize,
+ * Boo!, the Great Summoning's consumption) still pass it by.
  */
 const SUMMONED_UNIT_ROLE_MECHANICS_V7: Readonly<
   Partial<Record<SummonedRoleIdV7, RoleMechanicsV7>>
 > = deepFreeze({
   HORROR: {
     ...ORIGINAL_ROLE_MECHANICS_V7.KNIGHT,
-    construct: true,
+    construct: false,
     movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
   },
   // The Herald (`pulp_wars-mch9.7`, section 4.2). Ravage: two attacks a
@@ -5460,6 +5493,10 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   // (7r55): the nodes named for their building or unit.
   UNDEAD: {
     EXPLOSIVES: "Pestilence",
+    // Full-strength risings (`pulp_wars-1uof`, 7r139): Planning is Grave
+    // Rites to an Undead seat (its Land Grant and city slot stay, and its
+    // Necromancers' Skeletons rise whole).
+    PLANNING: "Grave Rites",
     MILLING: "Bone Mills",
     MARKSMANSHIP: "Banshees",
     SAWMILLING: "Liches",
@@ -6060,16 +6097,17 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
     ...ORIGINAL_ROLE_MECHANICS_V7.RAIDER,
     ...NEUTRAL_GUARD_MECHANICS_V7,
   },
-  // The Cultists (section 6.4): an Unbound daemon is still no living thing
-  // (a construct: no Plague, bite, Infect, Wail, Seizure, Boo!, Mind
-  // Control, Swallow, healing, or Grave) and still strides. The Cult
-  // redesign (`pulp_wars-mch9.35`, section 9.1): it advances after a kill
-  // (never before), onto a tile the rampage walk enters.
+  // The Cultists (section 6.4): an Unbound daemon still strides, and like
+  // every neutral unit takes no status and never rises. The Cult redesign
+  // (`pulp_wars-mch9.35`, section 9.1): it advances after a kill (never
+  // before), onto a tile the rampage walk enters. Full-strength risings
+  // (`pulp_wars-1uof`, 7r139): no construct (it was until then): it is
+  // wailed and leaves a Grave like the Giant Spider.
   HORROR: {
     ...ORIGINAL_ROLE_MECHANICS_V7.KNIGHT,
     ...NEUTRAL_GUARD_MECHANICS_V7,
     advancesAfterKill: true,
-    construct: true,
+    construct: false,
     movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
   },
   // `pulp_wars-mch9.7`: the Herald's own mechanics (it has no Shield as it
@@ -6077,7 +6115,9 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
   // counts its attacks itself.
   HERALD: HERALD_ROLE_MECHANICS_V7,
   // `pulp_wars-mch9.8` (section 9.3): the Tentacle is no living thing (a
-  // construct, like a daemon) and is rooted: nothing shoves it.
+  // construct: a limb of the Deep rather than a body, so it leaves no Grave;
+  // the daemons stopped being constructs at 7r139, `pulp_wars-1uof`) and is
+  // rooted: nothing shoves it.
   TENTACLE: {
     ...NEUTRAL_MONSTER_ROLE_MECHANICS_V7,
     construct: true,
@@ -8445,6 +8485,16 @@ export interface TechnologyCapabilitiesV7 {
   /** The Undead pass, correction: Pestilence, the player's Liches plague. */
   readonly plague: boolean;
   /**
+   * Full-strength risings (`pulp_wars-1uof`, 7r139): Grave Rites, the
+   * player's Raise Dead Skeletons rise at full HP.
+   */
+  readonly wholeSkeletons: boolean;
+  /**
+   * Full-strength risings (`pulp_wars-1uof`, 7r139): Pestilence, the
+   * player's new Zombies (Infect, Bitten, Swallow) rise at full HP.
+   */
+  readonly wholeZombies: boolean;
+  /**
    * The Martian revision, Force Fields: the player's Shields also recharge
    * at the end of its turn.
    */
@@ -8672,6 +8722,8 @@ export function technologyCapabilitiesV7(
   let ignoresCityWalls = false;
   let runUpTiles: number = RUN_UP_BASE_TILES_V7;
   let plague = false;
+  let wholeSkeletons = false;
+  let wholeZombies = false;
   let shieldsRechargeAtEndTurn = false;
   let projectsForceField = false;
   let heatSinks = false;
@@ -8777,6 +8829,12 @@ export function technologyCapabilitiesV7(
         break;
       case "PESTILENCE":
         plague = true;
+        break;
+      case "WHOLE_SKELETONS":
+        wholeSkeletons = true;
+        break;
+      case "WHOLE_ZOMBIES":
+        wholeZombies = true;
         break;
       case "FORCE_FIELDS":
         shieldsRechargeAtEndTurn = true;
@@ -8927,6 +8985,8 @@ export function technologyCapabilitiesV7(
     ignoresCityWalls,
     runUpTiles,
     plague,
+    wholeSkeletons,
+    wholeZombies,
     shieldsRechargeAtEndTurn,
     projectsForceField,
     heatSinks,
