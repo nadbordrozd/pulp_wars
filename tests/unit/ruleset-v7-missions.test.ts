@@ -118,8 +118,11 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // pulp_wars-o2g8); the board is unchanged.
   "UNDEAD_4@4:UNDEAD":
     "60e3a6e9bc762b272c94203cd277f4b80c3808404d423136b9bf69b2bb423e53",
-  "UNDEAD_5@4:UNDEAD":
-    "647077de58471f0e087ae69bef071c363c34b3ff6580544215e01e637b38aff4",
+  // Revision 5 (`pulp_wars-37uu`): Mallory must die by round 19 (was 16).
+  // The objective is not in the initial state, so only the revision moves
+  // the hash (revision 4 with round 19 still hashes as the old pin).
+  "UNDEAD_5@5:UNDEAD":
+    "877ee63624bd3524de5967fc6a154ab00b3f60233f26fad5eef7ed2159bcef6a",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was b47c5f077890f2ab…).
   // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
@@ -552,8 +555,11 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // pulp_wars-o2g8).
   "UNDEAD_4@4:UNDEAD":
     "a711c10a1086848893d6064e28da9effd613368cdef5ea062ed4c385e665d98f",
-  "UNDEAD_5@4:UNDEAD":
-    "31b71946de12471600651b36736873231d6a294836a98107207d4525fd099def",
+  // Revision 5 (`pulp_wars-37uu`): Mallory must die by round 19 (was 16).
+  // The objective is not in the initial state, so only the revision moves
+  // the hash (revision 4 with round 19 still hashes as the old pin).
+  "UNDEAD_5@5:UNDEAD":
+    "f0d49228fa1ff1222ffcaab62e63bba096e73d4e29b209c8771d4766dd53a855",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was a2afe3ddc9ffce74…).
   // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have

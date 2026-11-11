@@ -137,8 +137,9 @@ describe("The Long Sleep", () => {
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
       {
+        // U5: round 19 since revision 5 (`pulp_wars-37uu`, was 16).
         kind: "KILL",
-        byRound: 16,
+        byRound: 19,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -149,6 +150,21 @@ describe("The Long Sleep", () => {
         bonus: ["UNIT_ALIVE", "KEEP_CITIES"],
       },
     ]);
+    // U5's deadline moved three turns later (`pulp_wars-37uu`, the user
+    // 2026-11-10); its star stays a fixed round 13 and the objective names
+    // the new turn.
+    const bedtime = mission("UNDEAD_5");
+    expect(bedtime.revision).toBe(5);
+    expect(bedtime.objective).toMatchObject({
+      kind: "KILL",
+      units: ["MALLORY"],
+      byRound: 19,
+      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
+    });
+    expect(
+      CHAPTER_UNDEAD_V7.missions.find((entry) => entry.missionId === "UNDEAD_5")
+        ?.objective,
+    ).toBe("Kill Brother Mallory by turn 19.");
   });
 
   it("builds the missions as hand play left them", () => {

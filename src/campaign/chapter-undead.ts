@@ -102,7 +102,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "The Grey Lodge has worked out who the Marquis was before he was ashen. Brother Mallory, its Hierophant, a corn merchant in a very good robe, has stolen the Marquis's diary and reads it aloud to his Summoners to learn which pages to burn. Stop his reading for good, before he gets to the end. The Marquis would like his diary back.",
-      objective: "Kill Brother Mallory by turn 16.",
+      objective: "Kill Brother Mallory by turn 19.",
       hints: Object.freeze([
         "Beside a raised idol you may hit only the Bearer.",
         "A Wail hurts only the living: daemons shrug it off.",

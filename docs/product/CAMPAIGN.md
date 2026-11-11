@@ -4416,12 +4416,13 @@ factions are empty: it unlocks nothing for the prologue's faction choices.
 | U2 The Drowned Library    | Lakes 14, seed 22       | 20261302   | Undead; Goblins                                      | Hold Saint Ashes and keep Crane alive for 14 rounds | no city lost; the Marquis lives |
 | U3 The Ship of the Dead   | Continents 16, seed 15  | 20261303   | Undead; Martians                                     | Capture Chapel Rock by round 22                     | by round 16; no city lost       |
 | U4 The Hall of the Thanes | Dry Land 16, seed 3     | 20261304   | Undead; Dwarves                                      | Escort Crane to the Summit Stair by round 22        | by round 18; no city lost       |
-| U5 Bedtime Reading        | Lakes 16, seed 9        | 20261305   | Undead; Cult and Humans (teamed)                     | Kill Brother Mallory by round 16                    | by round 13; no city lost       |
+| U5 Bedtime Reading        | Lakes 16, seed 9        | 20261305   | Undead; Cult and Humans (teamed)                     | Kill Brother Mallory by round 19                    | by round 13; no city lost       |
 | U6 The Founder's Tomb     | Dry Land 16, seed 23    | 20261306   | Undead and Humans (ally); Cult and Ice Folk (teamed) | Hold the Rangers' Lodge for 16 rounds               | Crane lives; no city lost       |
 
 The clocks are retune 4's (section 16.5): U3 went from 20 to 22 and U5
-from 20 (16) to 16 (13); the rest are retune 2's (section 16.4). U1 had
-none, U2 held 12 rounds and U3 had 22 (18) before retune 2.
+from 20 (16) to 16 (13), and U5's deadline has since moved to 19 (section
+16.6); the rest are retune 2's (section 16.4). U1 had none, U2 held 12
+rounds and U3 had 22 (18) before retune 2.
 
 ### 16.2 Hand play
 
@@ -4774,6 +4775,16 @@ useful for the capture. U4's Clockwork Gunner's twin shots dominate the
 plateau fights. U6's Frost Giant heals in full on each promotion, which
 makes it hard to finish; if U6 proves too hard, start it further back
 rather than removing it, and if too easy, two coins more for the clan.
+
+### 16.6 U5's deadline three turns later (`pulp_wars-37uu`)
+
+The user, 2026-11-10: "extend the deadline in the undead mission 'bedtime
+reading' by 3 turns". U5 revision 5 moves the clock from round 16 to round
+19: Brother Mallory must now die by round 19, and the objective text says
+"turn 19". The star stays at round 13, because it is a fixed round of its
+own (retune 4 set it from good wins in rounds 13 and 14), not one set
+relative to the deadline; no city lost is unchanged. Nothing else in the
+mission changed, and it was not replayed.
 
 ## 17. The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`)
 

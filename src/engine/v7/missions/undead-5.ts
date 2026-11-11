@@ -4,7 +4,7 @@ import type { MissionDefinitionV7 } from "./types";
  * `UNDEAD_5` "Bedtime Reading" (docs/product/SAGA.md section 3.2, U5; the
  * Undead campaign, `pulp_wars-hmyk.5`). Brother Mallory, Hierophant of the
  * Grey Lodge (a tagged Summoner), is reading the Marquis's diary aloud at
- * Greyhood; you must kill him by round 16. Step 5 of 6: a hunt for a target
+ * Greyhood; you must kill him by round 19. Step 5 of 6: a hunt for a target
  * behind a shield wall. A unit beside a raised idol may attack only an
  * Idol Bearer, and shots at cultists beside it do half; break the Bearers
  * first, then send the Vampire in: its kill heals it and lets it strike
@@ -31,6 +31,11 @@ import type { MissionDefinitionV7 } from "./types";
  * southern end), the Lodge five coins and 14 Favour; the toll-men have six
  * coins, two Champions, a second Marksman and a Knight. A hunt keeps a
  * meaningful clock: 16 rounds (good wins took 13 and 14), the star 13.
+ *
+ * Revision 5 (`pulp_wars-37uu`, CAMPAIGN.md section 16.6): the user asked
+ * for the deadline three turns later, so Mallory must die by round 19 (was
+ * 16). The star stays at round 13: it is a fixed round, not set relative
+ * to the clock.
  *
  * ```text
  *      x 0123456789012345
@@ -59,7 +64,8 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
   // technologies, a second Summoner and more Favour.
   // Revision 4 (`pulp_wars-hmyk.26`, retune 4): a stronger ring and toll,
   // 16 rounds.
-  revision: 4,
+  // Revision 5 (`pulp_wars-37uu`): the deadline is round 19 (was 16).
+  revision: 5,
   seed: 20261305,
   // <map>
   size: 16,
@@ -319,12 +325,12 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Kill Brother Mallory by round 16. The stars: by round 13, and no city
-  // lost.
+  // Kill Brother Mallory by round 19 (16 until revision 5). The stars: by
+  // round 13, and no city lost.
   objective: {
     kind: "KILL",
     units: ["MALLORY"],
-    byRound: 16,
+    byRound: 19,
     bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
   },
 };
