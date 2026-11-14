@@ -17,7 +17,9 @@ import {
   unitIsIceFolkGroundV7,
   isNeutralOwnerV7,
   previewColdWakeV7,
+  previewFrostBreathV7,
   previewStampedeV7,
+  SNOW_BALM_HEAL_V7,
   unitFactionV7,
   roleMechanicsV7,
   tileOccupiedV7,
@@ -157,12 +159,62 @@ export const SWEEP_SHATTERS_V7 = "shatters";
 export const COLD_BLOOD_PREVIEW_V7 = `Cold Blood: +${half(COLD_BLOOD_BONUS2_V7)} Attack`;
 /**
  * The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost Wyrm's
- * attack Freezes the target it leaves alive.
+ * attack Freezes the target it leaves alive. The Witch and the Wyrm
+ * (`pulp_wars-xt9c`, 7r140): it reaches 2 tiles and freezes the 3x3 square
+ * round its target; the preview names how many units it Freezes.
  */
 export const FROST_BREATH_LABEL_V7 = "Frost Breath";
 export const FROST_BREATH_PREVIEW_V7 = `${FROST_BREATH_LABEL_V7}: target Frozen`;
 export const FROST_BREATH_TOOLTIP_V7 =
-  "Every enemy its attack leaves alive is Frozen, ships too; its next blow from the next tile can shatter it.";
+  "Its attack reaches 2 tiles and freezes the target's tile and every tile around it: every enemy there is Frozen, ships too.";
+/** "Frost Breath: freezes 3 units" (or "freezes the ground" with none). */
+export function frostBreathPreviewNoteV7(units: number): string {
+  return units === 0
+    ? `${FROST_BREATH_LABEL_V7}: freezes the ground`
+    : `${FROST_BREATH_LABEL_V7}: freezes ${plural(units, "unit")}`;
+}
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's Snow
+ * Balm, her other action beside Cold Snap.
+ */
+export const SNOW_BALM_LABEL_V7 = "Snow Balm";
+export const SNOW_BALM_TOOLTIP_V7 = `Heals each of your units around her ${SNOW_BALM_HEAL_V7} and thaws it.`;
+/** The board mark of one unit a Snow Balm helps: "+3 HP", "Thaw", "+3 · Thaw". */
+export function snowBalmTargetLabelV7(result: {
+  readonly amount: number;
+  readonly curedFrozen: boolean;
+}): string {
+  if (result.amount > 0 && result.curedFrozen)
+    return `+${result.amount} · Thaw`;
+  return result.curedFrozen ? "Thaw" : `+${result.amount} HP`;
+}
+/**
+ * The Snow Balm button's chip and sentence: "+5 HP · thaws 1" and "Snow
+ * Balm heals 2 units for 5 HP and thaws 1".
+ */
+export function snowBalmSummaryV7(
+  results: readonly {
+    readonly amount: number;
+    readonly curedFrozen: boolean;
+  }[],
+): { readonly chip: string; readonly description: string } {
+  const healed = results.filter((result) => result.amount > 0);
+  const hp = healed.reduce((total, result) => total + result.amount, 0);
+  const thawed = results.filter((result) => result.curedFrozen).length;
+  const parts = [
+    ...(healed.length === 0
+      ? []
+      : [`heals ${plural(healed.length, "unit")} for ${hp} HP`]),
+    ...(thawed === 0 ? [] : [`thaws ${thawed}`]),
+  ];
+  return {
+    chip: [
+      ...(hp === 0 ? [] : [`+${hp} HP`]),
+      ...(thawed === 0 ? [] : [`thaws ${thawed}`]),
+    ].join(" · "),
+    description: `${SNOW_BALM_LABEL_V7} ${parts.join(" and ")}`,
+  };
+}
 /** The Frost Wyrm's flight over the sea, in words. */
 export const SEA_WINGS_TOOLTIP_V7 =
   "Flies over Shallow and Deep Water without Navigation.";
@@ -386,6 +438,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
   const snowballers = iceFolkRolesWith("SNOWBALL").map(label);
   const breathers = iceFolkRolesWith("FROST_BREATH").map(label);
   const wakers = iceFolkRolesWith("COLD_WAKE").map(label);
+  const balmers = iceFolkRolesWith("SNOW_BALM").map(label);
   const stampeders = iceFolkRolesWith("STAMPEDE").map(label);
   return [
     [
@@ -417,6 +470,10 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       `an ${joinOr(witches)} freezes every tile around her, as her action.`,
     ],
     [
+      SNOW_BALM_LABEL_V7,
+      `instead of a ${COLD_SNAP_LABEL_V7}, an ${joinOr(balmers)} can heal each of her own units around her ${SNOW_BALM_HEAL_V7} and thaw it, as her action.`,
+    ],
+    [
       COLD_WAKE_LABEL_V7,
       `a ${joinOr(wakers)} freezes every tile around it each time it ends its own Move.`,
     ],
@@ -442,7 +499,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       FROST_BREATH_LABEL_V7,
-      `a ${joinOr(breathers)} flies over any ground and over Shallow and Deep Water without Navigation, and every enemy its attack leaves alive is Frozen, ships too.`,
+      `a ${joinOr(breathers)} flies over any ground and over Shallow and Deep Water without Navigation; its attack reaches two tiles and freezes the target's tile and every tile around it, so every enemy there is Frozen, ships too.`,
     ],
     [
       STAMPEDE_LABEL_V7,
@@ -484,6 +541,8 @@ export function iceFolkAbilityNameV7(
       return BLIZZARD_LABEL_V7;
     case "COLD_SNAP":
       return COLD_SNAP_LABEL_V7;
+    case "SNOW_BALM":
+      return SNOW_BALM_LABEL_V7;
     case "STAMPEDE":
       return STAMPEDE_LABEL_V7;
     case "SNOWBALL":
@@ -521,6 +580,8 @@ export function iceFolkAbilityDescriptionV7(
       return "Ranged hits on your units next to her are halved.";
     case "COLD_SNAP":
       return COLD_SNAP_TOOLTIP_V7;
+    case "SNOW_BALM":
+      return SNOW_BALM_TOOLTIP_V7;
     case "STAMPEDE":
       return STAMPEDE_TOOLTIP_V7;
     case "SNOWBALL":
@@ -537,9 +598,10 @@ export function iceFolkAbilityDescriptionV7(
   }
 }
 
-/** Ice Folk command labels: Cold Snap and Stampede, for every viewer. */
+/** Ice Folk command labels: Cold Snap, Snow Balm and Stampede. */
 export function iceFolkCommandLabelV7(kind: CommandV7["kind"]): string | null {
   if (kind === "COLD_SNAP") return COLD_SNAP_LABEL_V7;
+  if (kind === "SNOW_BALM") return SNOW_BALM_LABEL_V7;
   if (kind === "STAMPEDE") return STAMPEDE_LABEL_V7;
   return null;
 }
@@ -565,6 +627,7 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
   const notes = [
     ...(abilities.includes("BLIZZARD") ? [BLIZZARD_LABEL_V7] : []),
     ...(abilities.includes("COLD_SNAP") ? [COLD_SNAP_LABEL_V7] : []),
+    ...(abilities.includes("SNOW_BALM") ? [SNOW_BALM_LABEL_V7] : []),
     ...(abilities.includes("COLD_WAKE") ? [COLD_WAKE_LABEL_V7] : []),
     ...(abilities.includes("COLD_BLOOD") ? ["Cold Blood"] : []),
     ...(abilities.includes("SWEEP") ? ["Sweep"] : []),
@@ -580,7 +643,7 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
 }
 
 /** The Ice Folk technology unlock texts of section 4. */
-export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7}: every tile around them freezes`;
+export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7} (every tile around them freezes) or ${SNOW_BALM_LABEL_V7} (the units around them heal and thaw)`;
 // (`pulp_wars-3u8d`, 7r131: no Recover command; an idle unit recovers.)
 export const DEEP_WINTER_UNLOCK_TEXT_V7 = `Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from your city centers; an idle unit recovers ${DEEP_WINTER_RECOVER_V7} in your territory`;
 export const BRITTLE_UNLOCK_TEXT_V7 = `Shatter at ${BRITTLE_SHATTER_HP_V7} HP or less`;
@@ -699,6 +762,16 @@ export interface IceFolkCombatLinesV7 {
   readonly shatters: boolean;
   /** Notes of this target, in the order of section 13.2. */
   readonly notes: readonly string[];
+  /**
+   * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): what an own Frost
+   * Wyrm's breath freezes (`previewFrostBreathV7`): the tiles of the units
+   * it Freezes other than the target (the note names the target), and the
+   * tiles it ices or snows; null for every other attack.
+   */
+  readonly frostBreath: {
+    readonly units: readonly CoordV7[];
+    readonly ring: readonly CoordV7[];
+  } | null;
   /** One entry per Sweep flank victim, from the preview's `splash`. */
   readonly sweep: readonly {
     readonly unitId: number;
@@ -738,8 +811,30 @@ export function iceFolkCombatLinesV7(
     notes.push(FROZEN_LABEL_V7);
   if (preview.rockfallApplied) notes.push(ROCKFALL_PREVIEW_V7);
   if (preview.coldBloodApplied) notes.push(COLD_BLOOD_PREVIEW_V7);
-  // The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Breath.
-  if (preview.frostBreathApplied) notes.push(FROST_BREATH_PREVIEW_V7);
+  // The Ice Folk roster rework (`pulp_wars-s55m.4`): Frost Breath. The
+  // Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): an own Wyrm's breath
+  // names the units its square Freezes (the target included).
+  const breath =
+    attacker !== undefined && attacker.ownerId === view.viewer.id
+      ? previewFrostBreathV7(view, attacker.id, preview.targetUnitId, preview)
+      : null;
+  const breathChanges =
+    breath !== null &&
+    breath.targets.length + breath.tiles.length + breath.snow.length > 0;
+  if (breathChanges)
+    notes.push(frostBreathPreviewNoteV7(breath.targets.length));
+  else if (preview.frostBreathApplied) notes.push(FROST_BREATH_PREVIEW_V7);
+  const frostBreath =
+    breath === null || !breathChanges
+      ? null
+      : {
+          units: breath.targets.flatMap((unitId) => {
+            if (unitId === preview.targetUnitId) return [];
+            const unit = view.units.find((other) => other.id === unitId);
+            return unit === undefined ? [] : [unit.at];
+          }),
+          ring: [...breath.tiles, ...breath.snow],
+        };
   // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134): Snowball.
   if (preview.snowball)
     notes.push(
@@ -780,7 +875,7 @@ export function iceFolkCombatLinesV7(
     }
   }
   if (preview.hiddenBlizzardPossible) notes.push(HIDDEN_BLIZZARD_PREVIEW_V7);
-  return { shatters: preview.shatters, notes, sweep };
+  return { shatters: preview.shatters, notes, frostBreath, sweep };
 }
 
 // -------------------------------------------------------- ability previews

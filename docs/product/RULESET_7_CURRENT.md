@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r139`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r140`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,47 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r140` (`pulp_wars-xt9c`, **the Ice Witch's Snow Balm and
+the Frost Wyrm's freezing breath**; the user, 2026-11-14: "the ice witch
+needs some extra action. otherwise it doesn't make sense to just no use
+her ability every time ... maybe her alt ability should be healing", and
+"the ice wyrm is weak sauce ... it should be comparable to knight,
+vampire, t rex ... let's not do [unlimited kills] ... but something else
+for crowd control. e.g. ranged attack that also freezes everything in 3x3
+square"). (1) **Snow Balm** (`SNOW_BALM { kind, unitId }`, appended last
+to the command order, so no earlier ordinal moved): the Ice Witch's
+second primary action. Every own land-form unit on the eight tiles around
+her (not herself, not a daemon, not one tended this turn) that is wounded
+or Frozen heals **3** (`SNOW_BALM_HEAL_V7`, capped at its maximum) and
+thaws; it is offered only when it heals or thaws someone
+(`HEAL_TARGET_NOT_FOUND` otherwise), and it and the Cold Snap exclude each
+other (one primary action a turn). One `WOUNDED_TENDED` (the Witch as
+`captainId`), so the heal ring, the thaw toast and the projection are
+Tend Wounded's ([section 21.6](#216-the-blizzard-and-cold-snap)). (2)
+**The Frost Wyrm** costs **10** Coins and has **16 HP**, **Attack 3.5** and
+**range 1 to 2** (9, 14, 3 and 1 before), and its **Frost Breath** freezes
+the **3x3 square** round its target by the one Freeze rule after the
+exchange, whether the target lives or not: water to its owner's ice (with
+Rime; Deep Water with Pack Ice), open neutral land to Snow, and every
+hostile unit there its owner sees Frozen for a turn (the target too if it
+lives; own units never). It still flies and never advances; a melee
+defender does not strike back at range 2 (the ordinary range rule), and
+only its blow from the next tile Shatters. It gives way to the Knight on
+Coins and Attack (the stat pass, [the Ice Folk
+redesign](ICE_FOLK_REDESIGN_2026-11.md) section 7)
+([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake),
+[section 11](#11-unit-roster)). The public `previewSnowBalmV7` and
+`previewFrostBreathV7` give the exact results; the board marks the Balm's
+heals and thaws on the Witch's units and, while a Wyrm's target is
+focused, the square's tiles and the units it Freezes. (3) The Normal AI
+casts whichever of the Witch's two actions is worth more (a Balm by the HP
+it restores, double on a unit in danger, and its thaws) and values each
+extra hostile unit a breath Freezes (more on a ship, on a threat, and on a
+Shatter setup) ([section 16](#16-normal-ai-summary)). The initial-state
+pin of `LAB_ICE_FOLK_MID` (it places a Frost Wyrm) moved; no mission
+revision changed. A save, replay, or setup of `7r139` is rejected, and
+the browser autosave has a new key.
 
 `pulp-wars-poc-7r139` (`pulp_wars-1uof`, **full-strength risings, and
 daemons ordinary for death and infection**; the user, 2026-11-10: "I want
@@ -2456,10 +2497,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r139`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r140`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r139.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r140.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7814,17 +7855,17 @@ The Ice Folk (`ICE_FOLK`) roster, by mechanical role, with the
 units cross Mountains without Engineering and without stopping
 ([section 21.8](#218-mountain-born-and-rockfall)):
 
-| Unit        | Role         | Tech           | Cost |   HP |  Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                         |
-| ----------- | ------------ | -------------- | ---: | ---: | ------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------------------------------------- |
-| Yeti        | `FIGHTER`    | start          |    2 |   9⁸ |   2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                         |
-| Sled        | `RAIDER`     | Scouting       |    4 | 11¹¹ |   2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                    |
-| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |    8 |   2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                        |
-| Walrus      | `GUARD`      | Shorecraft     |    4 |   16 | 1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense; swims (`7r137`)                                             |
-| Mammoth     | `SWORDSMAN`  | Metallurgy     |    8 |   20 |   3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
-| Ice Witch   | `CAPTAIN`    | Administration |    6 |   10 |   1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); no Rally; no Tend Wounded                                |
-| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |   10 |   3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                    |
-| Frost Wyrm  | `KNIGHT`     | Chivalry       |    9 |   14 |   3 (6) |    1 (2) |    3 |     1 |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath; never advances (`7r125`¹⁰)                   |
-| Frost Giant | `JUGGERNAUT` | reward only    |    — |   36 |   4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                 |
+| Unit        | Role         | Tech           | Cost |   HP |    Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                                 |
+| ----------- | ------------ | -------------- | ---: | ---: | --------: | -------: | ---: | ----: | ----: | ----------------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| Yeti        | `FIGHTER`    | start          |    2 |   9⁸ |     2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                                 |
+| Sled        | `RAIDER`     | Scouting       |    4 | 11¹¹ |     2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                            |
+| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |    8 |     2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                                |
+| Walrus      | `GUARD`      | Shorecraft     |    4 |   16 |   1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense; swims (`7r137`)                                                     |
+| Mammoth     | `SWORDSMAN`  | Metallurgy     |    8 |   20 |     3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before)         |
+| Ice Witch   | `CAPTAIN`    | Administration |    6 |   10 |     1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); Snow Balm (`7r140`); no Rally; no Tend Wounded                   |
+| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |   10 |     3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                            |
+| Frost Wyrm  | `KNIGHT`     | Chivalry       | 10¹² | 16¹² | 3.5 (7)¹² |    1 (2) |    3 | 1–2¹² |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath (the 3x3 freeze, `7r140`); never advances (`7r125`¹⁰) |
+| Frost Giant | `JUGGERNAUT` | reward only    |    — |   36 |     4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                         |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -7843,6 +7884,10 @@ Golem the Snow Golem, with the same numbers.
 `pulp_wars-px48`, [the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md)
 section 7): 11 HP (12 since `7r133`), so the Sled is no longer the
 Raider's equal on every number with Glide on top of them.
+¹² The Witch and the Wyrm (`pulp-wars-poc-7r140`, `pulp_wars-xt9c`): 10
+Coins, 16 HP, Attack 3.5 and range 1–2 (9, 14, 3 and 1 before), in the
+Knight's, Vampire's and T-Rex's class; it gives way to the Knight on Coins
+and Attack.
 
 - **Yeti** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion, the advance after a melee kill) and the Fighter's
@@ -7867,9 +7912,11 @@ Raider's equal on every number with Glide on top of them.
 - **Ice Witch** has Captain parity for capture and nothing else: no
   Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED` are never offered
   and are rejected with `UNIT_ROLE_INVALID`). She carries the Blizzard; her
-  primary actions are Attack and Cold Snap
+  primary actions are Attack, Cold Snap
   ([section 21.6](#216-the-blizzard-and-cold-snap)), which freezes the
-  ring of eight tiles round her (since `7r133`; her Frost Bolt is gone).
+  ring of eight tiles round her (since `7r133`; her Frost Bolt is gone),
+  and Snow Balm (since `7r140`), which heals each own unit round her 3 and
+  thaws it.
 - **Snow Golem** (since `7r134`) has the Catapult's Attack 3, range 2–3
   with minimum range 2, Move 1, and no attack after moving; like it, it
   captures, never advances, keeps the `SIEGE` label, and every attack it
@@ -7882,10 +7929,13 @@ Raider's equal on every number with Glide on top of them.
 - **Frost Wyrm** (`7r125`; the Sabretooth before) has Knight parity for
   `CAPTURE` only: it flies, over Shallow and Deep Water without
   Navigation, never advances after a kill, has no Charge and no Overrun,
-  and its **Frost Breath** Freezes every target its attack leaves alive,
-  ships included ([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)):
-  the Ice Folk answer to a navy, and the blow that sets up the next one's
-  Shatter. Since `pulp_wars-ke95` it ends a Move on any settlement center
+  and its attack reaches 2 tiles (since `7r140`). Its **Frost Breath**
+  freezes the 3x3 square round its target, so every hostile unit there is
+  Frozen, ships included, the water ices and open neutral land snows
+  (since `7r140`; the target alone before)
+  ([section 21.12](#2112-the-frost-wyrm-and-the-cold-wake)): the Ice Folk
+  answer to a navy and to a massed line, and the blow that sets up the
+  next one's Shatter. Since `pulp_wars-ke95` it ends a Move on any settlement center
   like any land unit, so it captures.
 - **Frost Giant** has Juggernaut parity (reward only, capture, no
   Pillage, no Disband) and the Juggernaut's numbers but 36 HP (40 before
@@ -7905,12 +7955,13 @@ Raider's equal on every number with Glide on top of them.
   ship: rewards and treasure units are land units, it cannot Board without
   a ship, and the state schema refuses an Ice Folk seat that owns one.
 - Ice Folk Disband refunds: Yeti and Snow Hunter 1; Sled and Walrus 2;
-  Ice Witch 3; Mammoth, Snow Golem and Frost Wyrm 4. The Frost Giant cannot Disband.
+  Ice Witch 3; Mammoth and Snow Golem 4; Frost Wyrm 5 (`7r140`). The Frost Giant cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Yeti `ATTACK`,
   `CAPTURE`, `MOUNTAIN_BORN`, `ROCKFALL`; Sled `ATTACK`, `CAPTURE`, `CHARGE`,
   `ESCAPE`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Walrus `ATTACK`,
   `CAPTURE`; Mammoth `ATTACK`, `CAPTURE`, `SWEEP`, `TRAMPLE`, `STAMPEDE`;
-  Ice Witch `ATTACK`, `CAPTURE`, `BLIZZARD`, `COLD_SNAP`; Snow Golem
+  Ice Witch `ATTACK`, `CAPTURE`, `BLIZZARD`, `COLD_SNAP`, `SNOW_BALM`
+  (`7r140`); Snow Golem
   `ATTACK`, `CAPTURE`, `SNOWBALL`, `MOUNTAIN_BORN` (`BOULDERS` before
   `7r134`); Frost Wyrm `ATTACK`,
   `CAPTURE`, `FLY`, `FROST_BREATH` (`7r125`); Frost Giant `ATTACK`,
@@ -14033,17 +14084,17 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 
 ### 21.1 Roles, Mountain-born, and labels
 
-| Mechanical role | Ice Folk unit | Kind                                                         |
-| --------------- | ------------- | ------------------------------------------------------------ |
-| `FIGHTER`       | Yeti          | Mountain-born; Rockfall                                      |
-| `RAIDER`        | Sled          | Charge; Escape (the Bolas until `7r133`)                     |
-| `MARKSMAN`      | Snow Hunter   | Cold Blood                                                   |
-| `GUARD`         | Walrus        | Freeze source (Frostbite, `7r55`; the Walrus before `7r125`) |
-| `CAPTAIN`       | Ice Witch     | Blizzard; Freeze source (Cold Snap)                          |
-| `CATAPULT`      | Snow Golem    | Freeze source (Snowball, `7r134`); Mountain-born             |
-| `KNIGHT`        | Frost Wyrm    | Flyer over Deep Water; Frost Breath (`7r125`); no Glide      |
-| `SWORDSMAN`     | Mammoth       | Sweep, Trample, and Stampede (`GUARD` before `7r55`)         |
-| `JUGGERNAUT`    | Frost Giant   | Freeze source (Cold Wake); Glacial Smash; Mountain-born      |
+| Mechanical role | Ice Folk unit | Kind                                                          |
+| --------------- | ------------- | ------------------------------------------------------------- |
+| `FIGHTER`       | Yeti          | Mountain-born; Rockfall                                       |
+| `RAIDER`        | Sled          | Charge; Escape (the Bolas until `7r133`)                      |
+| `MARKSMAN`      | Snow Hunter   | Cold Blood                                                    |
+| `GUARD`         | Walrus        | Freeze source (Frostbite, `7r55`; the Walrus before `7r125`)  |
+| `CAPTAIN`       | Ice Witch     | Blizzard; Freeze source (Cold Snap); Snow Balm (`7r140`)      |
+| `CATAPULT`      | Snow Golem    | Freeze source (Snowball, `7r134`); Mountain-born              |
+| `KNIGHT`        | Frost Wyrm    | Flyer over Deep Water; Freeze source (Frost Breath); no Glide |
+| `SWORDSMAN`     | Mammoth       | Sweep, Trample, and Stampede (`GUARD` before `7r55`)          |
+| `JUGGERNAUT`    | Frost Giant   | Freeze source (Cold Wake); Glacial Smash; Mountain-born       |
 
 - **Ice Folk units** are the eight land roles in land form. The Ice Folk
   have no boat and never embark ([section 21.16](#2116-the-frozen-sea)), so
@@ -14055,8 +14106,10 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   the Ice Witch's **Cold Snap** and the Frost Giant's **Cold Wake** freeze
   every tile of a ring ([section 21.16](#2116-the-frozen-sea): water to
   ice, open neutral land to Snow, a hostile unit Frozen), and the Snow
-  Golem's **Snowball** (`7r134`) the one tile its shot hits; the Frost Wyrm's
-  **Frost Breath** and the Walrus's **Frostbite** Freeze a unit only; and,
+  Golem's **Snowball** (`7r134`) the one tile its shot hits, and the Frost
+  Wyrm's **Frost Breath** (`7r140`) the 3x3 square round its target; the
+  Walrus's **Frostbite** Freezes a unit only (the Frost Breath did too
+  until `7r140`); and,
   with Black Ice, the seat's ice ([section 21.16](#2116-the-frozen-sea)).
   No other attack freezes. Every source Freezes ships, embarked units, and
   units on docks exactly like land units. (The Sled's Bolas, the Witch's
@@ -14066,10 +14119,12 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   Mammoth is `DEFENDER`, the Ice Witch `SUPPORT`, and the Snow Golem
   `SIEGE`. They have no rule effect for the Ice Folk (the faction has no
   Rally).
-- **No Field Defense, no healer:** no Ice Folk unit builds Field Defense,
-  and the Witch has no Tend Wounded, so an Ice Folk seat cures neither
-  Plague, Bitten, nor Frozen; it heals by idle recovery, Windmills, and Promotion
-  only. City Walls are unchanged: an Ice Folk city may choose the Walls
+- **No Field Defense, no Tend Wounded:** no Ice Folk unit builds Field
+  Defense, and the Witch has no Tend Wounded, so an Ice Folk seat cures
+  neither Plague nor Bitten. Since `7r140` her **Snow Balm** heals the own
+  units round her 3 and thaws them
+  ([section 21.6](#216-the-blizzard-and-cold-snap)); otherwise it heals by
+  idle recovery, Windmills, and Promotion. City Walls are unchanged: an Ice Folk city may choose the Walls
   reward, and Walls fortify an Ice Folk unit on its own center, which then
   has no Snow cover.
 - **Treasure unit:** a Sled (`treasureUnitRole` `RAIDER`). **Starting
@@ -14241,23 +14296,24 @@ does not advance.
 Worked examples (engine formula, open Grass, threshold 3, the target Frozen and at full HP unless stated; a Yeti has 9 HP, Attack 2, and
 Defense 1.5):
 
-| Target                           | Hits, in order                         | Result                                                                 |
-| -------------------------------- | -------------------------------------- | ---------------------------------------------------------------------- |
-| Fighter (12 HP)                  | Yeti 5 (takes 0); Yeti                 | the second hit, 6, would leave 1: **shatters**                         |
-| Fighter on Field Defense         | Yeti 4 (takes 0); Yeti                 | the second hit, 5, would leave 3: **shatters**                         |
-| Caveman or Skeleton (10 HP)      | Sled with Charge, or Frost Wyrm        | 8 would leave 2: **shatters** at full HP, no retaliation               |
-| Fighter (12 HP)                  | Sled with Charge, or Frost Wyrm        | 8 would leave 4: shatters only with Brittle                            |
-| Grunt (8 HP, Shield 2)           | Yeti 5 (Shield 2, HP 3; takes 0); Yeti | the second hit takes the 5 HP left: plain damage, no Shatter           |
-| Zombie (18 HP)                   | Yeti 5; Yeti 5; Yeti                   | the third hit, 6, would leave 2: **shatters**, no Grave                |
-| Triceratops (20 HP)              | Mammoth 8; Mammoth                     | the second blow would leave 3 or less: **shatters**                    |
-| T-Rex (28 HP)                    | Mammoth 8; Yeti 5; Yeti 6; Yeti        | the fourth hit would leave 3 or less: **shatters**                     |
-| Knight (13 HP)                   | Mammoth                                | 10 would leave 3: **shatters** at full HP                              |
-| Spitter or Captain (10 HP)       | Mammoth                                | 10: dead by plain damage                                               |
-| Bomb Chucker (8 HP)              | Yeti                                   | 6 would leave 2: **shatters**, and no bomb goes off                    |
-| Rocket Cart (8 HP)               | Yeti                                   | 7 would leave 1: **shatters**; the Yeti advances and takes no blast    |
-| Guard at 3 HP on a Walled center | Ice Witch                              | 2 would leave 1: **shatters** (not Frozen, the Witch takes 11: dead)   |
-| Goblin (6 HP)                    | any Ice Folk hit                       | dead by plain damage; Shatter never happens against Goblins at full HP |
-| a `JUGGERNAUT`-role unit at 3 HP | Yeti                                   | never shatters; the hit is ordinary, and a Frozen one does not reply   |
+| Target                           | Hits, in order                          | Result                                                                 |
+| -------------------------------- | --------------------------------------- | ---------------------------------------------------------------------- |
+| Fighter (12 HP)                  | Yeti 5 (takes 0); Yeti                  | the second hit, 6, would leave 1: **shatters**                         |
+| Fighter on Field Defense         | Yeti 4 (takes 0); Yeti                  | the second hit, 5, would leave 3: **shatters**                         |
+| Caveman or Skeleton (10 HP)      | Sled with Charge                        | 8 would leave 2: **shatters** at full HP, no retaliation               |
+| Fighter (12 HP)                  | Sled with Charge                        | 8 would leave 4: shatters only with Brittle                            |
+| Fighter (12 HP)                  | Frost Wyrm from the next tile (`7r140`) | 10 would leave 2: **shatters** at full HP, no retaliation              |
+| Grunt (8 HP, Shield 2)           | Yeti 5 (Shield 2, HP 3; takes 0); Yeti  | the second hit takes the 5 HP left: plain damage, no Shatter           |
+| Zombie (18 HP)                   | Yeti 5; Yeti 5; Yeti                    | the third hit, 6, would leave 2: **shatters**, no Grave                |
+| Triceratops (20 HP)              | Mammoth 8; Mammoth                      | the second blow would leave 3 or less: **shatters**                    |
+| T-Rex (28 HP)                    | Mammoth 8; Yeti 5; Yeti 6; Yeti         | the fourth hit would leave 3 or less: **shatters**                     |
+| Knight (13 HP)                   | Mammoth                                 | 10 would leave 3: **shatters** at full HP                              |
+| Spitter or Captain (10 HP)       | Mammoth                                 | 10: dead by plain damage                                               |
+| Bomb Chucker (8 HP)              | Yeti                                    | 6 would leave 2: **shatters**, and no bomb goes off                    |
+| Rocket Cart (8 HP)               | Yeti                                    | 7 would leave 1: **shatters**; the Yeti advances and takes no blast    |
+| Guard at 3 HP on a Walled center | Ice Witch                               | 2 would leave 1: **shatters** (not Frozen, the Witch takes 11: dead)   |
+| Goblin (6 HP)                    | any Ice Folk hit                        | dead by plain damage; Shatter never happens against Goblins at full HP |
+| a `JUGGERNAUT`-role unit at 3 HP | Yeti                                    | never shatters; the hit is ordinary, and a Frozen one does not reply   |
 
 **Glacial Smash** (`pulp_wars-w49.30`,
 [section 11.1](#111-the-giants-signatures)): a land-form Frost Giant's
@@ -14460,6 +14516,43 @@ tiles, snow }` when a tile froze. Only visible units and explored tiles
   from her. The Sled's Bolas, the same freeze, is gone too
   ([section 21.9](#219-cold-blood)).
 
+`SNOW_BALM { kind, unitId }` (`pulp_wars-xt9c`, `7r140`; the user,
+2026-11-14: "the ice witch needs some extra action. otherwise it doesn't
+make sense to just no use her ability every time ... maybe her alt
+ability should be healing") is the Ice Witch's **other primary action**:
+a cast round her, like the Cold Snap, with no tile to choose.
+
+- **The Balm.** Every unit of her owner (her controller, for a
+  mind-controlled Witch) on the eight tiles around her, in land form, that
+  is not a summoned daemon (a daemon never heals), has not been tended
+  this turn, and is wounded or Frozen, **heals 3** (`SNOW_BALM_HEAL_V7`,
+  capped at its maximum HP) and **thaws** (its Frozen entry is removed).
+  She does not heal herself. It cures no Plague or bite, and it is no
+  Tend Wounded: Ice Folk seats still have neither Rally nor Tend Wounded.
+- **Legality.** An own land-form Witch with `SNOW_BALM` that has not used a
+  primary action and has not landed this turn (she may have moved), whose
+  Balm would heal or thaw someone. Rejections, atomic, in this order: the
+  ordinary unit errors (a Frozen Witch → `UNIT_FROZEN`); not land form or
+  no `SNOW_BALM` → `UNIT_ROLE_INVALID { role }`; a primary action used or
+  a pending continuation → `UNIT_ALREADY_ACTED`; nobody to heal or thaw →
+  `HEAL_TARGET_NOT_FOUND` (no pointless actions, as Tend Wounded).
+- **One or the other.** The Balm and the Cold Snap are both her primary
+  action, so she casts one of them a turn (or attacks): freeze the enemy
+  line, or patch up her own.
+- **Result.** Each unit healed or thawed is marked tended this turn; the
+  Witch has used her primary action and is handled. One `WOUNDED_TENDED`
+  with the Witch as `captainId` and a result per unit (`amount`,
+  `hpAfter`, `curedFrozen`; `curedPlague` and `curedBitten` false), so the
+  heal ring, the cure sparkle, the thaw toast another seat sees, and the
+  event projection are Tend Wounded's.
+- **Preview.** `previewSnowBalmV7(view, unitId)` is null unless the
+  command is offered, otherwise `{ unitId, results: [{ unitId, amount,
+hpAfter, curedFrozen }] }` in unit-ID order; it reads the viewer's own
+  units, so it equals the result. The dock shows **Snow Balm** beside
+  **Cold Snap** (the heal action icon; its chip "+5 HP · thaws 1"), and
+  the board marks each unit it helps ("+3 HP", "Thaw") quietly while she
+  is selected and prominently while the button is hovered.
+
 ### 21.7 Deep Winter and Brittle
 
 - **Deep Winter** (the Ice Folk `FORTIFICATION`, Industry tier 2, requires
@@ -14597,23 +14690,53 @@ no cover (a flyer), but it has Snow cover's absence and the Blizzard's
 protection like any land-form Ice Folk unit. Since `pulp_wars-ke95` it
 ends a Move on any settlement center, so it captures.
 
+**The numbers** (`pulp_wars-xt9c`, `7r140`; the user, 2026-11-14: "the
+ice wyrm is weak sauce. not worth it at all, unlike knight ... it should
+be comparable to knight, vampire, t rex which are all strong"): 10 Coins,
+16 HP, Attack 3.5, Defense 1, Move 3, **range 1 to 2** (9, 14, 3 and 1
+before). Against the Knight (9, 13, 4, 1, 3, range 1) it has more HP and
+reach and gives way on Coins and Attack; the Vampire has 9, 13, 3, 1, 3
+and Lifesteal and Feast, the T-Rex 11, 28, 4, 2, 2 and Overrun and Grow.
+The range is the ordinary rule: a defender strikes back only from its own
+range, so a melee unit hit from 2 tiles does not; an Ice Fortress adds 1
+to it like any unit with range 2 or more.
+
 **Frost Breath** (the Frost Wyrm, ability `FROST_BREATH`, role mechanic
-`frostBreath`; `attackFrostBreathV7`). Every `ATTACK` the land-form Wyrm
-makes that leaves its target alive Freezes the target
-([section 21.2](#212-frozen)): any form but an Egg, a ship or an embarked
-unit included; never the neutral Monster or the Herald (whatever its
-owner can freeze). The exchange resolves first (the target strikes back
-if it may), and the freeze is applied after the deaths, as one
-`UNITS_FROZEN` (source `FROST_BREATH`, the Wyrm as its source unit; the
-target, another seat's unit, gets `turnsLeft` 1 and thaws at the end of
-its owner's next turn), before a Frostbite the same attack causes. A
-retaliation is no attack of the Wyrm's and never breathes frost; a kill
-freezes nobody. The combat preview says `frostBreathApplied` ("Frost
-Breath: target Frozen"), from the public facts, so it is exact. The
-Wyrm's blow from the next tile **Shatters** a Frozen unit in the window
-like every Ice Folk blow ([section 21.4](#214-shatter)): what its breath
-froze, the next blow (its own next turn, or any other Ice Folk unit's
-now) breaks. Mind-controlled, it breathes for its controller.
+`frostBreath`; `attackBreathesFrostV7`). Since `7r140` (the user: "Maybe
+the unlimited kills trait is overused let's not do that. but something
+else for crowd control. e.g. ranged attack that also freezes everything
+in 3x3 square") every `ATTACK` the land-form Wyrm makes, from 1 or 2
+tiles, **freezes the 3x3 square round its target** (`freezeSquareTilesV7`,
+`FROST_BREATH_FREEZE_RADIUS_V7` 1: the target's tile and the eight around
+it) by the one Freeze rule of
+[section 21.16](#2116-the-frozen-sea), with its owner's Rime for the
+water: water becomes its owner's ice (Deep Water with Pack Ice), another
+seat's ice is taken, open neutral land becomes Snow, and **every hostile
+unit there its owner sees and can freeze is Frozen** (any form but an
+Egg, ships and embarked units included; never the neutral Monster or the
+Herald; own and allied units never). The exchange resolves first (the
+target strikes back if it may), and the square is read after the deaths,
+whether the target lives or not: a target that lives is Frozen with the
+rest, a sunk ship leaves open water that ices. One `UNITS_FROZEN` (source
+`FROST_BREATH`, the Wyrm as its source unit; another seat's unit gets
+`turnsLeft` 1 and thaws at the end of its owner's next turn) when a unit
+was Frozen, then one `TILES_FROZEN` when a tile froze, before a Frostbite
+the same attack causes; the ice it makes reads the live economy (sea
+routes over ice). A retaliation is no attack of the Wyrm's and never
+breathes frost. There is no multi-kill: the breath freezes, it does not
+strike the units round the target. (Until `7r140` it Froze the surviving
+target alone and left the tiles as they were.) The combat preview keeps
+`frostBreathApplied` (the target lives and can be Frozen), and
+**`previewFrostBreathV7(view, attackerId, targetUnitId, combat?)`** gives
+the viewer's own Wyrm's square (`{ unitId, targetUnitId, at, targets,
+tiles, snow }`) after the previewed deaths; it reads the public view, so
+it equals the result. The board tints the square's tiles and marks each
+unit it Freezes while the target is focused, and the attack note reads
+"Frost Breath: freezes 3 units". The Wyrm's blow from the next tile
+**Shatters** a Frozen unit in the window like every Ice Folk blow
+([section 21.4](#214-shatter)); a blow from 2 tiles never does. What its
+breath froze, the next blow (its own next turn, or any other Ice Folk
+unit's now) breaks. Mind-controlled, it breathes for its controller.
 
 **Cold Wake** (the Frost Giant; the one Freeze effect, `pulp_wars-xv0t`,
 `7r133`; its Cold Aura, which Froze only the units around it, before; the
@@ -14700,7 +14823,9 @@ tail.
 ### 21.15 Commands, events, errors, and queries
 
 - **Commands:** `COLD_SNAP { kind, unitId }` right after `TRACTOR_BEAM` in
-  `COMMAND_KIND_ORDER_V7`, and `STAMPEDE { kind, unitId, at }`
+  `COMMAND_KIND_ORDER_V7`, `SNOW_BALM { kind, unitId }` (`7r140`, appended
+  last after `BUILD_ICE_FORTRESS`, so no ordinal moved), and
+  `STAMPEDE { kind, unitId, at }`
   (`pulp_wars-w49.37`) right after `BREAK_OFF` (`THROW_BOLAS`, before
   `COLD_SNAP`, and `FROST_BOLT`, before `STAMPEDE`, are gone since
   `7r133`, so every later kind's ordinal moved back). `MOVE` accepts the Glide costs, the Mountain-born
@@ -14743,7 +14868,8 @@ tail.
   display name "Ice Folk"; unlock kinds `WITCH_SUPPORT`, `DEEP_WINTER`, and
   `BRITTLE`; capabilities `deepWinter` and `shatterThreshold`; abilities
   `MOUNTAIN_BORN`, `ROCKFALL`, `COLD_BLOOD`, `SWEEP`, `TRAMPLE`,
-  `BLIZZARD`, `COLD_SNAP`, `SNOWBALL` (`BOULDERS` until `7r134`),
+  `BLIZZARD`, `COLD_SNAP`, `SNOW_BALM` (`7r140`), `SNOWBALL` (`BOULDERS`
+  until `7r134`),
   `FROST_BREATH` (`PROWL` until
   `7r124`), `COLD_WAKE` (`7r133`; `COLD_AURA` before), and `STAMPEDE`
   (`BOLAS` and `FROST_BOLT` are gone since `7r133`); role
@@ -14757,7 +14883,8 @@ tail.
   ring of the Cold Snap and the Cold Wake), `STAMPEDE_RANGE_V7` 3,
   `STAMPEDE_DAMAGE_V7` 3, `BLIZZARD_RADIUS_V7` 1,
   `DEEP_WINTER_RADIUS_V7` 2, `DEEP_WINTER_RECOVER_V7` 6,
-  `ROCKFALL_ATTACK2_V7` 3, and `COLD_BLOOD_BONUS2_V7` 1
+  `ROCKFALL_ATTACK2_V7` 3, `COLD_BLOOD_BONUS2_V7` 1, and (`7r140`)
+  `SNOW_BALM_HEAL_V7` 3 and `FROST_BREATH_FREEZE_RADIUS_V7` 1
   (`SWEEP_DAMAGE_V7` 2 and `PLANTED_BONUS2_V7` 2 went with `7r134`).
 - **Derived queries** for a state and a view: `isSnowV7` and `isBlizzardV7`
   (on a view, the public `snow` and `blizzard` tile flags, which the UI
@@ -14767,7 +14894,8 @@ tail.
   that follow Glide (over Snow and ice), Mountain-born, and the Frost Wyrm's flight;
   `ATTACK` at distance 2 for a
   Yeti on a Mountain; `COLD_SNAP` for every Witch whose ring would change
-  something; and `STAMPEDE` for
+  something; `SNOW_BALM` for every Witch whose Balm would heal or thaw an
+  own unit (`7r140`); and `STAMPEDE` for
   every open end of every line of an unmoved Mammoth. For every seat it
   withholds every command naming a Frozen unit (but Promote, Disband, and
   Wait) and offers no `MOVE` through a known Snow stop. It never offers an

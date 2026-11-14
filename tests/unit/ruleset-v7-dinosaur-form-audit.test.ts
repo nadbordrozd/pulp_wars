@@ -593,8 +593,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // land-form Mothership's (`MASS_BEAM_DOWN_NOT_LEGAL { reason:
     // "EMBARKED" }`, as for BEAM_DOWN).
     // (18: the one Freeze effect, `pulp_wars-xv0t`, 7r133, took the Bolas's
-    // and the Frost Bolt's land-form tests.)
-    "src/engine/v7/reducer.ts": 18,
+    // and the Frost Bolt's land-form tests.) The Witch and the Wyrm
+    // (`pulp_wars-xt9c`, 7r140): a Snow Balm needs a land-form Witch
+    // (`UNIT_ROLE_INVALID` otherwise, as for Tend Wounded): 19.
+    "src/engine/v7/reducer.ts": 19,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat
@@ -681,8 +683,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/ice.ts": 1,
     // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
     // and the Yeti's Rockfall lengthen only a land-form unit's range (a
-    // boat or an embarked unit on the tile shoots as afloat).
-    "src/engine/v7/ice-folk.ts": 1,
+    // boat or an embarked unit on the tile shoots as afloat). The Witch and
+    // the Wyrm (`pulp_wars-xt9c`, 7r140): a Snow Balm heals land-form own
+    // units only (an Egg is never healed, an embarked unit is aboard): 2.
+    "src/engine/v7/ice-folk.ts": 2,
     "src/engine/v7/stampede.ts": 1,
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
@@ -754,8 +758,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // The Ice Folk freeze rework (`pulp_wars-s55m.1`): a Cold Snap counts
     // every target but an Egg (one test fewer).
     // (5: the one Freeze effect, `pulp_wars-xv0t`, 7r133, took the Bolas's
-    // score; the Cold Snap reads its public preview.)
-    "src/ai/v7-ice-folk.ts": 5,
+    // score; the Cold Snap reads its public preview.) The Witch and the
+    // Wyrm (`pulp_wars-xt9c`, 7r140): a ship or an embarked unit the Frost
+    // Breath's square Freezes is worth more, as the target: 6.
+    "src/ai/v7-ice-folk.ts": 6,
     // Bolder abilities (`pulp_wars-w49.42`): the legacy Mind Control
     // exposure test (land form only) went with the HP limit (2 before).
     "src/ai/v7-martian.ts": 1,

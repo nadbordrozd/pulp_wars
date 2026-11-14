@@ -206,9 +206,11 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // RECOVER and SWALLOW.)
     // (81: the one Freeze effect, `pulp_wars-xv0t`, 7r133, removes
     // THROW_BOLAS, FREEZE and FROST_BOLT; 82: the naval branch rebuilt,
-    // `pulp_wars-tzk6`, 7r137, appends BUILD_ICE_FORTRESS.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(82);
-    expect(COMMAND_KIND_ORDER_V7.at(-1)).toBe("BUILD_ICE_FORTRESS");
+    // `pulp_wars-tzk6`, 7r137, appends BUILD_ICE_FORTRESS; 83: the Witch
+    // and the Wyrm, `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    expect(COMMAND_KIND_ORDER_V7.at(-2)).toBe("BUILD_ICE_FORTRESS");
+    expect(COMMAND_KIND_ORDER_V7.at(-1)).toBe("SNOW_BALM");
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
     expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
       "BREAK_OFF",
@@ -667,7 +669,8 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP"],
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): Snow Balm.
+    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "SNOW_BALM"],
     true,
   ],
   [
@@ -695,16 +698,18 @@ const ROSTER = [
     // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
     // Wyrm, a flyer with Frost Breath, replaced the Sabretooth (Prowl,
     // Overrun and Cold Blood) at the same numbers; a flyer never advances.
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): 10 Coins, 16 HP,
+    // Attack 3.5 and range 1 to 2 (9, 14, 3 and 1 before).
     "Frost Wyrm",
     "KNIGHT",
     "CHIVALRY",
-    9,
-    14,
-    6,
+    10,
+    16,
+    7,
     2,
     3,
     1,
-    1,
+    2,
     // Sight 2, as every flyer (1 for the Sabretooth).
     2,
     true,
@@ -1034,7 +1039,8 @@ describe("Ice Folk roster (section 3)", () => {
       ["GUARD", 2],
       ["CAPTAIN", 3],
       ["CATAPULT", 4],
-      ["KNIGHT", 4],
+      // (`pulp_wars-xt9c`, 7r140: the Frost Wyrm, half of 10.)
+      ["KNIGHT", 5],
       ["SWORDSMAN", 4],
     ] as const) {
       const state = iceFieldV7([

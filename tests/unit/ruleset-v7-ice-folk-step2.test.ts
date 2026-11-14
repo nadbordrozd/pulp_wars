@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
-    expect(PRIOR_RULESET_7_IDS.slice(-81, -79)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
+    expect(PRIOR_RULESET_7_IDS.slice(-82, -80)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -79)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-82, -80)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -427,7 +427,9 @@ describe("step two of the Ice Folk pass: the Ice Folk Normal AI's army", () => {
       (role) =>
         effectiveRoleRuleV7(role, "ICE_FOLK").maxHp >= ARMY_ICE_FOLK_STURDY_V7,
     );
-    expect(sturdy).toEqual(["GUARD", "SWORDSMAN"]);
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Frost Wyrm has
+    // 16 HP, so a Knight's hit (14) no longer kills it at full HP.
+    expect(sturdy).toEqual(["GUARD", "SWORDSMAN", "KNIGHT"]);
   });
 
   it("caps its Walruses at one a city and a third of the army", () => {

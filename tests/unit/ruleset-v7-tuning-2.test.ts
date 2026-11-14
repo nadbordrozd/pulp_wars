@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
-    expect(PRIOR_RULESET_7_IDS.at(-93)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(138);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
+    expect(PRIOR_RULESET_7_IDS.at(-94)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(139);
   });
 });
 
@@ -181,7 +181,10 @@ describe("1: who moves after a kill", () => {
       "MARTIAN Colossus",
       "ICE_FOLK Snow Hunter",
       // (The Snow Golem shoots from 2 or 3 tiles only since
-      // (`pulp_wars-3qtp`, 7r134).)
+      // (`pulp_wars-3qtp`, 7r134).) The Witch and the Wyrm
+      // (`pulp_wars-xt9c`, 7r140): the Frost Wyrm's breath reaches 2 tiles
+      // (it never advanced anyway).
+      "ICE_FOLK Frost Wyrm",
       "DWARF Clockwork Gunner",
       "CANDY Gumball Gunner",
       "CULT Hexer",
@@ -207,8 +210,8 @@ describe("1: who moves after a kill", () => {
       "UNDEAD Abomination",
       "MARTIAN Saucer",
       "MARTIAN Mothership",
-      // The Ice Folk roster rework (`pulp_wars-s55m.4`): a flyer.
-      "ICE_FOLK Frost Wyrm",
+      // (The Frost Wyrm, a flyer since `pulp_wars-s55m.4`, is a ranged unit
+      // since `pulp_wars-xt9c`, 7r140.)
       // The giants' signatures (`pulp_wars-w49.30`): the Frost Giant never
       // advances (it anchors the Ice Folk line).
       "ICE_FOLK Frost Giant",

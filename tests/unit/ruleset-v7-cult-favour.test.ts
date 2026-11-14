@@ -153,14 +153,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
-    expect(PRIOR_RULESET_7_IDS.slice(-68, -66)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
+    expect(PRIOR_RULESET_7_IDS.slice(-69, -67)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-68, -66)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-69, -67)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -430,9 +430,11 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
     // after End Turn, so no earlier kind moved.
     // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137) appended Build Ice
     // Fortress after it.
-    expect(order.at(-3)).toBe("END_TURN");
-    expect(order.at(-2)).toBe("MASS_BEAM_DOWN");
-    expect(order.at(-1)).toBe("BUILD_ICE_FORTRESS");
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140) appended Snow Balm.
+    expect(order.at(-4)).toBe("END_TURN");
+    expect(order.at(-3)).toBe("MASS_BEAM_DOWN");
+    expect(order.at(-2)).toBe("BUILD_ICE_FORTRESS");
+    expect(order.at(-1)).toBe("SNOW_BALM");
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     expect(
       events.slice(

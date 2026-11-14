@@ -92,6 +92,7 @@ import {
   previewBombRunV7,
   previewBuildBarricadeV7,
   previewColdSnapV7,
+  previewSnowBalmV7,
   previewStampedeV7,
   previewDevourV7,
   previewEconomicV7,
@@ -1141,6 +1142,8 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.devour`;
     case "COLD_SNAP":
       return `u${command.unitId}.coldsnap`;
+    case "SNOW_BALM":
+      return `u${command.unitId}.snowbalm`;
     case "SUGAR_RUSH":
       return `u${command.unitId}.rush`;
     case "CAPTURE":
@@ -2005,6 +2008,9 @@ function describeCommandV7(
     // The one Freeze effect (`pulp_wars-xv0t`, 7r133).
     case "COLD_SNAP":
       return `cold snap: freeze every tile around her${generic(previewColdSnapV7(view, command.unitId))}`;
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140).
+    case "SNOW_BALM":
+      return `snow balm: heal own units around her 3 and thaw them${generic(previewSnowBalmV7(view, command.unitId))}`;
     case "STAMPEDE": {
       const preview = previewStampedeV7(view, command.unitId, command.at);
       const hits =

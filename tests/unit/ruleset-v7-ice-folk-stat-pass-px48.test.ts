@@ -95,18 +95,20 @@ const EXPECTED_WORSE_AXES: Readonly<
   GUARD: ["cost", "maxHp", "defense"], // Walrus 4, 16, 2 / Guard 3, 17, 3
   CAPTAIN: ["cost"], // Ice Witch 6 / Captain 5
   CATAPULT: ["cost"], // Snow Golem 9 / Catapult 8
-  KNIGHT: ["attack"], // Frost Wyrm Attack 3 / Knight 4
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Wyrm has 16 HP
+  // and range 2 for 10 Coins and Attack 3.5 (14, 1, 9 and 3 before).
+  KNIGHT: ["cost", "attack"], // Frost Wyrm 10, Attack 3.5 / Knight 9, 4
   SWORDSMAN: ["cost", "attack", "defense"], // Mammoth 8, 3, 2 / Champion 6, 3.5, 2.5
   JUGGERNAUT: ["maxHp"], // Frost Giant 36 HP / Juggernaut 40
 };
 
 describe("the identity (pulp_wars-px48)", () => {
   it("is 7r136 after 7r135, whose save key is obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
-    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r135");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
+    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r135");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
       "pulpWars.save.v7r135.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

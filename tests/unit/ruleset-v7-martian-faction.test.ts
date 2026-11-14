@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 139;
+const REVISION = 140;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -297,8 +297,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // (81: the one Freeze effect, `pulp_wars-xv0t`, 7r133, removes
     // THROW_BOLAS, FREEZE and FROST_BOLT.)
     // (82: the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, appends
-    // BUILD_ICE_FORTRESS last.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(82);
+    // BUILD_ICE_FORTRESS last; 83: the Witch and the Wyrm,
+    // `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",

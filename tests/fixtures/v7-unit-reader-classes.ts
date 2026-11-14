@@ -269,6 +269,17 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // units besiege and blockade).
     "src/ai/v7-frozen-sea.ts::iceCrackUnlinkedPairsV7": "BOARD",
     "src/engine/v7/reducer.ts::withIceLinkEconomyV7": "BOARD",
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): a Snow Balm heals
+    // the own units on the eight tiles around the Witch (a burrowed unit is
+    // under no tile), and the Normal AI reads the hostile units on the
+    // board that threaten them; a Frost Breath's square and the AI's value
+    // of it read the units standing on the board.
+    "src/engine/v7/ice-folk.ts::snowBalmResultsV7": "BOARD",
+    "src/engine/v7/reducer.ts::applySnowBalm": "BOARD",
+    "src/engine/v7/query.ts::previewSnowBalmV7": "BOARD",
+    "src/engine/v7/query.ts::previewFrostBreathV7": "BOARD",
+    "src/ai/v7-ice-folk.ts::snowBalmScoreV7": "BOARD",
+    "src/ai/v7.ts::iceFolkAttackAdjustmentV7": "BOARD",
     // The exploration plan (`pulp_wars-nc6`): the reach of the hostile units
     // on the board (a burrowed unit threatens nobody).
     "src/ai/v7-exploration.ts::explorationSurveyV7": "BOARD",

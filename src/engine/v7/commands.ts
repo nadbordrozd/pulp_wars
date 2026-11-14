@@ -148,6 +148,15 @@ export type CommandV7 =
     }
   | {
       /**
+       * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): an Ice Witch
+       * heals every own unit on the eight tiles around her 3 and thaws it
+       * (her other primary action beside Cold Snap).
+       */
+      readonly kind: "SNOW_BALM";
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
        * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md
        * section 2.9): a unit or ship of any kind but the Ice Folk breaks
        * (or, thick ice, cracks) the ice on `at`, one of the eight tiles
@@ -867,6 +876,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "RALLY" ||
     kind === "TEND_WOUNDED" ||
     kind === "COLD_SNAP" ||
+    kind === "SNOW_BALM" ||
     kind === "SUGAR_RUSH" ||
     kind === "WHIRL" ||
     kind === "STOMP"

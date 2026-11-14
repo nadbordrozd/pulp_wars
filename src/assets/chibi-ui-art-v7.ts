@@ -450,6 +450,10 @@ export function commandSubjectV7(
         : faction === "CANDY"
           ? "ICON:ACTION:CANDY:TEND_WOUNDED"
           : "ICON:ACTION:TEND_WOUNDED";
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's
+    // Snow Balm heals, so it shows the heal action icon (no new art).
+    case "SNOW_BALM":
+      return "ICON:ACTION:TEND_WOUNDED";
     default:
       break;
   }

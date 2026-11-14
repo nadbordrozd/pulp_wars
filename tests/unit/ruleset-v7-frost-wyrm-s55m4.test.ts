@@ -20,6 +20,7 @@ import {
 } from "../../src/engine/index";
 import {
   FROST_BREATH_PREVIEW_V7,
+  frostBreathPreviewNoteV7,
   iceFolkAbilityDescriptionV7,
   iceFolkAbilityNameV7,
   iceFolkBoundaryNoticeV7,
@@ -115,8 +116,8 @@ function play(state: GameStateV7, command: CommandV7) {
 describe("the identity", () => {
   // The starting border freeze (`pulp_wars-s55m.6`) took 7r126 after it.
   it("was 7r125 after 7r124, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r125");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r124");
@@ -132,16 +133,19 @@ describe("the identity", () => {
 });
 
 describe("the Frost Wyrm (the KNIGHT slot)", () => {
-  it("is a 9-Coin flyer with Frost Breath, at the Sabretooth's numbers", () => {
+  it("is a 10-Coin flyer with Frost Breath, at Knight-class numbers (7r140)", () => {
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): 10 Coins, 16 HP,
+    // Attack 3.5 and range 1 to 2 (9, 14, 3 and 1 before: the Sabretooth's
+    // numbers).
     expect(effectiveRoleRuleV7("KNIGHT", "ICE_FOLK")).toMatchObject({
       label: "Frost Wyrm",
       tacticalRole: "BREAKTHROUGH",
-      cost: 9,
-      maxHp: 14,
-      attack2: 6,
+      cost: 10,
+      maxHp: 16,
+      attack2: 7,
       defense2: 2,
       move: 3,
-      range: 1,
+      range: 2,
       minimumRange: 1,
       // Sight 2, as every flyer.
       sightRadius: 2,
@@ -271,9 +275,13 @@ describe("Frost Breath", () => {
       shatters: false,
     });
     const view = viewForV7(state, activeIdV7(state));
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): an own Wyrm's
+    // preview names the units its square Freezes ("target Frozen" is left
+    // for another seat's Wyrm, whose breath the viewer cannot compute).
     expect(iceFolkCombatLinesV7(view, combat).notes).toContain(
-      FROST_BREATH_PREVIEW_V7,
+      frostBreathPreviewNoteV7(1),
     );
+    expect(frostBreathPreviewNoteV7(1)).toBe("Frost Breath: freezes 1 unit");
     expect(FROST_BREATH_PREVIEW_V7).toBe("Frost Breath: target Frozen");
     const run = play(state, attack(state, at(2, 2), at(3, 2)));
     const wyrm = unitAtV7(state, at(2, 2));
@@ -345,9 +353,9 @@ describe("Frost Breath", () => {
   });
 
   it("its blow from the next tile Shatters a Frozen unit, as every Ice Folk blow does", () => {
-    // A full-HP Frozen Fighter: Attack 3 deals 8 of 12, and the 4 left are
-    // inside the Shatter window of 4. Unfrozen, the same blow leaves it at 4
-    // and Frozen for the next blow.
+    // A full-HP Frozen Fighter: Attack 3.5 (7r140) deals 10 of 12, and the
+    // 2 left are inside the Shatter window. Unfrozen, the same blow leaves
+    // it at 2 and Frozen for the next blow.
     const frozen = iceFieldV7([
       own("KNIGHT", at(4, 3)),
       foe("FIGHTER", at(5, 3), { frozen: { turnsLeft: 1 } }),
@@ -365,7 +373,7 @@ describe("Frost Breath", () => {
       FAR,
     ]);
     expect(preview(fresh, at(4, 3), at(5, 3))).toMatchObject({
-      damageToDefender: 8,
+      damageToDefender: 10,
       defenderDies: false,
       frostBreathApplied: true,
     });
@@ -406,17 +414,23 @@ describe("the Normal AI and the Frost Wyrm", () => {
     const best = unitCandidatesV7(state, at(2, 2), "MOVE")[0]?.command;
     if (best?.kind !== "MOVE") throw new Error("no Move");
     const to = best.path.at(-1) as CoordV7;
-    // It ends over the water, next to the boat.
-    expect(Math.max(Math.abs(to.x - 4), Math.abs(to.y - 2))).toBe(1);
-    expect(to.x).toBeGreaterThanOrEqual(3);
+    // It ends within its breath's reach of the boat (2 tiles since
+    // `pulp_wars-xt9c`, 7r140; next to it before).
+    expect(
+      Math.max(Math.abs(to.x - 4), Math.abs(to.y - 2)),
+    ).toBeLessThanOrEqual(2);
     const flown = play(state, best).state;
     expect(unitAtV7(flown, to).form).toBe("LAND");
     const strike = unitCandidatesV7(flown, to, "ATTACK")[0]?.command;
     expect(strike).toEqual(attack(flown, to, at(4, 2)));
+    // Attack 3.5 (`pulp_wars-xt9c`, 7r140) may sink the boat outright;
+    // a boat it leaves afloat is Frozen.
+    const boat = unitAtV7(state, at(4, 2)).id;
+    const sinks = preview(flown, to, at(4, 2)).defenderDies;
     const struck = play(flown, strike as CommandV7).state;
-    expect(struck.frozen).toEqual([
-      { unitId: unitAtV7(state, at(4, 2)).id, turnsLeft: 1 },
-    ]);
+    if (sinks)
+      expect(struck.units.some((unit) => unit.id === boat)).toBe(false);
+    else expect(struck.frozen).toEqual([{ unitId: boat, turnsLeft: 1 }]);
   });
 
   it("strikes a ship beside it: the blow freezes and hurts", () => {

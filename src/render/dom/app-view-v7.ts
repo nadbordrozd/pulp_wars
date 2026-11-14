@@ -130,6 +130,7 @@ import {
   previewDevourV7,
   previewRaiseDeadV7,
   previewTendWoundedV7,
+  previewSnowBalmV7,
   previewWailV7,
   previewEconomicV7,
   isEggLaidRoleV7,
@@ -640,6 +641,8 @@ import {
   COLD_SNAP_CAST_V7,
   COLD_SNAP_LABEL_V7,
   COLD_SNAP_TOOLTIP_V7,
+  SNOW_BALM_TOOLTIP_V7,
+  snowBalmSummaryV7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
   SNOW_LABEL_V7,
   STAMPEDE_CHARGE_V7,
@@ -10118,11 +10121,20 @@ export class Ruleset7DomAppView {
     for (const { command, blocked } of dockCommandsV7(
       this.#snapshot.view,
       this.#snapshot.offeredCommands,
-    ).filter(
-      (candidate) =>
-        predicate(candidate.command) &&
-        !NON_BUTTON_COMMANDS.has(candidate.command.kind),
-    )) {
+    )
+      .filter(
+        (candidate) =>
+          predicate(candidate.command) &&
+          !NON_BUTTON_COMMANDS.has(candidate.command.kind),
+      )
+      // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Witch's Snow
+      // Balm sits right after her Cold Snap (drawn before these buttons),
+      // though its kind is last in the command order.
+      .sort(
+        (left, right) =>
+          Number(right.command.kind === "SNOW_BALM") -
+          Number(left.command.kind === "SNOW_BALM"),
+      )) {
       // A blocked action is priced and previewed with no shortage of Coins.
       const previewView =
         blocked === null || this.#snapshot.view === null
@@ -10179,7 +10191,12 @@ export class Ruleset7DomAppView {
       action.title = released ? `${label} · ${RELEASE_TOOLTIP_V7}` : label;
       // Bead pulp_wars-621: an area support's one button helps every
       // marked unit; hovering or focusing it makes their marks prominent.
-      if (command.kind === "TEND_WOUNDED" || command.kind === "RALLY")
+      if (
+        command.kind === "TEND_WOUNDED" ||
+        command.kind === "RALLY" ||
+        // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): Snow Balm.
+        command.kind === "SNOW_BALM"
+      )
         this.#linkAreaSupportButton(action, command.unitId, command.kind);
       // Faction building looks (epic pulp_wars-xdh): the tooltip adds the
       // faction's flavour line.
@@ -10395,6 +10412,29 @@ export class Ruleset7DomAppView {
             `${commandLabel(command, this.#viewerFaction())} · ${summary.description}`,
           );
           action.title = summary.description;
+          if (summary.chip !== "")
+            action.append(
+              text(
+                this.#document,
+                "span",
+                summary.chip,
+                "v7-undead-preview-chip",
+              ),
+            );
+        }
+      } else if (command.kind === "SNOW_BALM" && this.#snapshot.view !== null) {
+        // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the exact heals
+        // and thaws of her Snow Balm, beside her Cold Snap.
+        const preview = previewSnowBalmV7(this.#snapshot.view, command.unitId);
+        action.title = `${label} · ${SNOW_BALM_TOOLTIP_V7}`;
+        action.setAttribute("aria-description", SNOW_BALM_TOOLTIP_V7);
+        action.dataset.iceFolk = "snow-balm";
+        if (preview !== null) {
+          const summary = snowBalmSummaryV7(preview.results);
+          action.setAttribute(
+            "aria-label",
+            `${label} · ${summary.description}`,
+          );
           if (summary.chip !== "")
             action.append(
               text(
@@ -19854,7 +19894,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r139",
+    rulesetId: "pulp-wars-poc-7r140",
     seed,
     width,
     height: width,

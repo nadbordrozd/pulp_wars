@@ -206,6 +206,9 @@ const STATIC_COMMAND_ART_KEYS: Readonly<
 > = {
   RALLY: ACTION_ART_KEYS_V7.RALLY,
   TEND_WOUNDED: "ui-action-heal",
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's Snow
+  // Balm reuses the heal action art (no new art).
+  SNOW_BALM: "ui-action-heal",
   CAPTURE: "building-village",
   PROMOTE: "ui-action-promote",
   PILLAGE: ACTION_ART_KEYS_V7.PILLAGE,

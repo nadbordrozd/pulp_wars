@@ -338,6 +338,12 @@ export interface IceFolkAttackTargetExtrasV7 {
   readonly notes: readonly string[];
   /** The Sweep flank victims, drawn while the target is focused. */
   readonly sweep: MapCommandTargetV7["sweep"];
+  /**
+   * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): a Frost Breath's
+   * square (the units it Freezes beside the target, the tiles it ices or
+   * snows), drawn while the target is focused like a Cold Wake.
+   */
+  readonly freeze: MapCommandTargetV7["coldWake"];
   /** The sentence the cursor description adds. */
   readonly semantic: string | null;
 }
@@ -366,6 +372,7 @@ export function iceFolkAttackTargetExtrasV7(
   return {
     shatters: lines.shatters,
     notes: lines.notes,
+    freeze: lines.frostBreath ?? undefined,
     sweep:
       lines.sweep.length === 0
         ? undefined

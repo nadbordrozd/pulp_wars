@@ -148,6 +148,8 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   TOSS_COIN: "BAR_ONLY",
   KABOOM: "BAR_ONLY",
   COLD_SNAP: "BAR_ONLY",
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): Snow Balm, one button.
+  SNOW_BALM: "BAR_ONLY",
   WHIRL: "BAR_ONLY",
   STOMP: "BAR_ONLY",
   BOO: "BAR_ONLY",

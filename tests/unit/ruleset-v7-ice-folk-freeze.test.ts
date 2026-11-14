@@ -707,13 +707,17 @@ describe("the fairness numbers (`pulp_wars-w49.37`)", () => {
     // Unchanged.
     expect(rule("FIGHTER")).toMatchObject({ cost: 2, maxHp: 9 });
     expect(rule("MARKSMAN")).toMatchObject({ cost: 3, maxHp: 8 });
-    expect(rule("KNIGHT")).toMatchObject({ cost: 9, maxHp: 14 });
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): 10 Coins, 16 HP
+    // (9 and 14 before).
+    expect(rule("KNIGHT")).toMatchObject({ cost: 10, maxHp: 16 });
     expect(rule("CAPTAIN").abilities).toEqual([
       "ATTACK",
       // Any unit can capture (`pulp_wars-ke95`).
       "CAPTURE",
       "BLIZZARD",
       "COLD_SNAP",
+      // Her other action (`pulp_wars-xt9c`, 7r140).
+      "SNOW_BALM",
       // The one Freeze effect (`pulp_wars-xv0t`): her Frost Bolt is gone;
       // her Cold Snap freezes every tile around her.
     ]);

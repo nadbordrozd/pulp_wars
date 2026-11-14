@@ -5,6 +5,32 @@
 > revision each; the rules in force are
 > [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) section 21.
 >
+> - **The Witch and the Wyrm, `pulp-wars-poc-7r140`** (`pulp_wars-xt9c`,
+>   after the five beads; the user, 2026-11-14: "the ice witch needs some
+>   extra action ... maybe her alt ability should be healing", and "the
+>   ice wyrm is weak sauce ... it should be comparable to knight, vampire,
+>   t rex ... let's not do [unlimited kills] ... but something else for
+>   crowd control. e.g. ranged attack that also freezes everything in 3x3
+>   square"). (1) **Snow Balm**: the Ice Witch's second primary action
+>   (`SNOW_BALM`, appended last to the command order), a cast round her
+>   like the Cold Snap: every own unit on the eight tiles round her (not
+>   herself, not a daemon) that is wounded or Frozen heals 3 and thaws;
+>   offered only when it heals or thaws someone; one `WOUNDED_TENDED`. She
+>   casts one of the two a turn: freeze the enemy line or patch up her
+>   own. Her Attack is unchanged (a support unit). (2) **The Frost Wyrm**
+>   costs 10 Coins and has 16 HP, Attack 3.5 and range 1 to 2 (9, 14, 3
+>   and 1 before), and its **Frost Breath freezes the 3x3 square** round
+>   its target by the one Freeze rule after the exchange, whether the
+>   target lives or not: every hostile unit there Frozen (the target too if
+>   it lives), water to ice with Rime, open neutral land to Snow. **The
+>   Wyrm is no longer a unit-only freeze**: of the five freezes only the
+>   Walrus's Frostbite leaves the ground as it was (sections 1 and 3.3
+>   below are updated). No multi-kill: the breath freezes, it does not hit
+>   the units round the target. In the stat pass of section 7 it gives way
+>   to the Knight on Coins and Attack. (3) **The Normal AI** casts
+>   whichever of the Witch's actions is worth more and values each extra
+>   hostile unit a breath Freezes. Mission pins: only `LAB_ICE_FOLK_MID`
+>   (its Frost Wyrm has 16 HP) moved.
 > - **Bead 1 is done** in `pulp-wars-poc-7r133` (`pulp_wars-xv0t`): the one
 >   Freeze rule, stored Snow, docks never frozen, the Witch's Cold Snap
 >   ring, the Frost Giant's Cold Wake; `FREEZE`, `FROST_BOLT`,
@@ -196,18 +222,20 @@ roster that followed bead 3.
 - **One freeze effect, Freeze.** Freezing a tile turns water into ice,
   turns open land into Snow, and Freezes a hostile unit standing there for
   one turn. Every ability that freezes a tile uses this one rule.
-- **Three tile freezers, one each way:**
+- **Four tile freezers, one each way** (the Frost Wyrm's breath joined
+  them in `7r140`, `pulp_wars-xt9c`):
   - the **Frost Giant** (the reward unit) freezes every tile around it
     each time it moves (**Cold Wake**; decided during bead 1: the user
     gave it to "the special giant unit", not the Walrus);
   - the **Ice Witch** freezes every tile around her on command (**Cold
     Snap**);
-  - the **Snow Golem**'s shot freezes the one tile it hits (**Snowball**).
-- **Two unit-only freezes:** the Frost Wyrm's **Frost Breath** (its attack
-  Freezes the survivor; no tile changes), a clearly different verb: a blow,
-  not a spell; and the Walrus's **Frostbite** (a unit that strikes it from
-  the next tile and survives is Frozen), kept at the user's word "walrus
-  freezing units that hit it is fine".
+  - the **Snow Golem**'s shot freezes the one tile it hits (**Snowball**);
+  - the **Frost Wyrm**'s attack, from 1 or 2 tiles, freezes the 3x3 square
+    round its target (**Frost Breath**, `7r140`; until then it Froze the
+    survivor only and changed no tile).
+- **One unit-only freeze:** the Walrus's **Frostbite** (a unit that
+  strikes it from the next tile and survives is Frozen), kept at the
+  user's word "walrus freezing units that hit it is fine".
 - **Everyone else loses their freezing powers:** the `FREEZE` command of
   seven roles, the Frost Bolt, the Sled's Bolas, Glacial Smash's shards,
   Black Ice, and the Blizzard's Snow are removed.
@@ -394,13 +422,13 @@ land to Snow; an enemy on it is Frozen for a turn."
 
 ### 3.3 Who freezes
 
-| Unit        | Ability (new or kept)                          | Kind          | Rule                                                                                                                                                    |
-| ----------- | ---------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frost Giant | **Cold Wake** (replaces Cold Aura and shards)  | tile, passive | when it completes its own `MOVE`, it freezes every tile of the 8 around its new tile; Glacial Smash (Shatter threshold 8) stays                         |
-| Ice Witch   | **Cold Snap** (kept, widened)                  | tile, active  | primary action: freezes every tile of the 8 around her; offered only when it changes something (a unit Frozen, a tile frozen); one tap, no confirmation |
-| Snow Golem  | **Snowball** (new; replaces Boulders, Planted) | tile, attack  | every attack it makes freezes the target's tile after the exchange (a surviving target is Frozen)                                                       |
-| Frost Wyrm  | **Frost Breath** (kept)                        | unit only     | its attack Freezes the target it leaves alive; the tile is untouched                                                                                    |
-| Walrus      | **Frostbite** (kept; the user, during bead 1)  | unit only     | a unit that strikes it from the next tile and survives is Frozen (its own turn: `turnsLeft` 2); no tile changes; no Cold Wake                           |
+| Unit        | Ability (new or kept)                          | Kind          | Rule                                                                                                                                                     |
+| ----------- | ---------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frost Giant | **Cold Wake** (replaces Cold Aura and shards)  | tile, passive | when it completes its own `MOVE`, it freezes every tile of the 8 around its new tile; Glacial Smash (Shatter threshold 8) stays                          |
+| Ice Witch   | **Cold Snap** (kept, widened)                  | tile, active  | primary action: freezes every tile of the 8 around her; offered only when it changes something (a unit Frozen, a tile frozen); one tap, no confirmation  |
+| Snow Golem  | **Snowball** (new; replaces Boulders, Planted) | tile, attack  | every attack it makes freezes the target's tile after the exchange (a surviving target is Frozen)                                                        |
+| Frost Wyrm  | **Frost Breath** (the square since `7r140`)    | tile, attack  | its attack (range 1 to 2) freezes the 3x3 square round its target after the exchange: every hostile unit there Frozen (until `7r140`: the survivor only) |
+| Walrus      | **Frostbite** (kept; the user, during bead 1)  | unit only     | a unit that strikes it from the next tile and survives is Frozen (its own turn: `turnsLeft` 2); no tile changes; no Cold Wake                            |
 
 **Removed:** `FREEZE` (the command, the ability on seven roles, the line,
 Hoarfrost's long line); `FROST_BOLT`; `THROW_BOLAS`; Cold Aura's
@@ -427,9 +455,10 @@ Why these carriers:
   spells (Frost Bolt, the moving Blizzard Snow) go.
 - **The Snow Golem is the single tile at range**, which is also its answer
   to the Catapult (section 3.7).
-- **The Wyrm's breath is the one unit-only freeze**: a blow that leaves
-  frost on the victim, the "units are sometimes frozen without the ground"
-  the user allowed for.
+- **The Wyrm's breath** was the unit-only freeze until `7r140` (a blow
+  that left frost on the victim); since `pulp_wars-xt9c` it is the
+  crowd-control freeze at range, the square round its target (the user:
+  "ranged attack that also freezes everything in 3x3 square").
 
 So four of the nine Ice Folk units freeze (the Witch, the Golem, the Wyrm,
 the Walrus), plus the reward Giant's wake, each in a different way, and
@@ -437,14 +466,15 @@ the Yeti, Sled, Snow Hunter and Mammoth do not.
 
 Glossary lines:
 
-| Entry        | Line                                                |
-| ------------ | --------------------------------------------------- |
-| Cold Wake    | "After each Move, it freezes every tile around it." |
-| Frostbite    | "A unit that strikes it up close is Frozen."        |
-| Cold Snap    | "Freezes every tile around the Witch."              |
-| Snowball     | "Its shot freezes the tile it hits."                |
-| Frost Breath | "Its attack leaves the target Frozen."              |
-| Blizzard     | "Ranged hits on your units next to her are halved." |
+| Entry        | Line                                                                       |
+| ------------ | -------------------------------------------------------------------------- |
+| Cold Wake    | "After each Move, it freezes every tile around it."                        |
+| Frostbite    | "A unit that strikes it up close is Frozen."                               |
+| Cold Snap    | "Freezes every tile around the Witch."                                     |
+| Snowball     | "Its shot freezes the tile it hits."                                       |
+| Frost Breath | "Its attack freezes the target's tile and every tile around it." (`7r140`) |
+| Snow Balm    | "Heals each of your units around the Witch 3 and thaws it." (`7r140`)      |
+| Blizzard     | "Ranged hits on your units next to her are halved."                        |
 
 ### 3.4 The naval branch rebuilt
 
@@ -963,7 +993,7 @@ where the Ice Folk unit is worse):
 | `GUARD`      | Guard      | 3     | 17  | 1.5 | 3 (1 against shots) | 1    | 1     | no  | Field Defense (Fortification)                          | Walrus        | **4** | **16** | 1.5   | **2**   | 1    | 1     | no  | Frostbite; Glide; no Field Defense                                            | worse on Coins, HP and Defense: unchanged     |
 | `CAPTAIN`    | Captain    | 5     | 10  | 1   | 1                   | 1    | 1     | yes | Rally; Tend Wounded                                    | Ice Witch     | **6** | 10     | 1     | 1       | 1    | 1     | yes | Blizzard; Cold Snap; Glide; no Rally; no Tend Wounded                         | worse on Coins: unchanged                     |
 | `CATAPULT`   | Catapult   | 8     | 10  | 3   | 0.5                 | 1    | 2–3   | no  | demolishes Field Defense                               | Snow Golem    | **9** | 10     | 3     | 1       | 1    | 2–3   | no  | Snowball; Mountain-born; Glide; demolishes Field Defense                      | worse on Coins: unchanged (the 7r134 numbers) |
-| `KNIGHT`     | Knight     | 9     | 13  | 4   | 1                   | 3    | 1     | yes | Overrun (Chivalry)                                     | Frost Wyrm    | 9     | 14     | **3** | 1       | 3    | 1     | yes | Flies (Deep Water without Navigation); Frost Breath; Sight 2; never advances  | worse on Attack: unchanged                    |
+| `KNIGHT`     | Knight     | 9     | 13  | 4   | 1                   | 3    | 1     | yes | Overrun (Chivalry)                                     | Frost Wyrm    | 9     | 14     | **3** | 1       | 3    | 1     | yes | Flies (Deep Water without Navigation); Frost Breath; Sight 2; never advances  | worse on Attack: unchanged (see below, 7r140) |
 | `SWORDSMAN`  | Champion   | 6     | 15  | 3.5 | 2.5                 | 1    | 1     | yes | none                                                   | Mammoth       | **8** | 20     | **3** | **2**   | 1    | 1     | yes | Sweep; Trample; Stampede; Glide                                               | worse on Coins, Attack and Defense: unchanged |
 | `JUGGERNAUT` | Juggernaut | —     | 40  | 4   | 4                   | 1    | 1     | yes | Push; Crushing Shove (reward giant)                    | Frost Giant   | —     | **36** | 4     | 4       | 1    | 1     | yes | Cold Wake; Glacial Smash; Mountain-born; Glide; never advances (reward giant) | worse on HP: unchanged                        |
 
@@ -988,6 +1018,14 @@ HP changes no common kill. A Human Knight (14 in the open) and two
 Marksman shots (6 each) still kill it at full HP as before; a Charging
 Raider (10) now leaves it 1 HP (2 before); a Gyrocopter bomb (6) leaves 5
 (6 before). Promoted, it has 16 HP (17 before).
+
+**The Frost Wyrm after `7r140`** (`pulp_wars-xt9c`): 10 Coins, 16 HP,
+Attack 3.5, Defense 1, Move 3, range 1–2, an attack after moving. Against
+the Knight (9, 13, 4, 1, 3, 1) it is **worse on Coins and Attack** and
+better on HP and range; the test's expected axes for `KNIGHT` are
+`cost` and `attack`. For the user's comparison: the Vampire has 9 Coins,
+13 HP, Attack 3, Defense 1, Move 3 (Lifesteal, Feast) and the T-Rex 11, 28,
+4, 2, 2 (Overrun, Grow).
 
 **Decisions.** (1) Range is compared by its maximum (the Golem's and the
 Catapult's 2–3 tie; the Yeti's Rockfall reach from a Mountain is an

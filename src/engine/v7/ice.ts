@@ -1,6 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   COLD_SNAP_RANGE_V7,
+  FROST_BREATH_FREEZE_RADIUS_V7,
   iceEntryIndexV7,
   iceTileKeyV7,
   technologyCapabilitiesV7,
@@ -308,6 +309,28 @@ export function freezeRingTilesV7(center: CoordV7): readonly CoordV7[] {
 }
 
 /**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the square a Frost
+ * Breath freezes: `center` (the target's tile) and the eight tiles around
+ * it (`FROST_BREATH_FREEZE_RADIUS_V7`), in (y, x) order. Off-board tiles
+ * are included; {@link freezeTilesV7} skips them.
+ */
+export function freezeSquareTilesV7(center: CoordV7): readonly CoordV7[] {
+  const square: CoordV7[] = [];
+  for (
+    let y = center.y - FROST_BREATH_FREEZE_RADIUS_V7;
+    y <= center.y + FROST_BREATH_FREEZE_RADIUS_V7;
+    y += 1
+  )
+    for (
+      let x = center.x - FROST_BREATH_FREEZE_RADIUS_V7;
+      x <= center.x + FROST_BREATH_FREEZE_RADIUS_V7;
+      x += 1
+    )
+      square.push({ x, y });
+  return square;
+}
+
+/**
  * The one Freeze effect: what a freeze by `actor` reads of one tile of the
  * canonical state (`freezeTilesV7`). A unit on the tile is Frozen when the
  * actor sees it, can Freeze it, and it is not Frozen already.
@@ -370,7 +393,7 @@ export function withFreezeAppliedV7(
   state: GameStateV7,
   actor: PlayerId,
   sourceUnitId: UnitId | null,
-  source: "COLD_SNAP" | "COLD_WAKE" | "SNOWBALL",
+  source: "COLD_SNAP" | "COLD_WAKE" | "SNOWBALL" | "FROST_BREATH",
   freeze: FreezeSetV7,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   if (!freezeChangesAnythingV7(freeze)) return { state, events: [] };

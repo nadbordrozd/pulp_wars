@@ -242,12 +242,16 @@ import {
   isFrozenV7,
   isIceFolkLandUnitV7,
   matchHasIceFolkV7,
+  snowBalmResultsV7,
+  attackBreathesFrostV7,
   sweepFlankTilesV7,
   unitOwnerIsIceFolkV7,
+  type SnowBalmResultV7,
 } from "./ice-folk";
 import {
   freezeChangesAnythingV7,
   freezeRingTilesV7,
+  freezeSquareTilesV7,
   freezeTilesV7,
   iceAtV7,
   iceBuildableV7,
@@ -1442,6 +1446,14 @@ function appendPublicUnitCommandsV7(
       freezeChangesAnythingV7(publicRingFreezeV7(view, unit, unit.at))
     )
       candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): her Snow Balm, only
+    // when it heals or thaws an own unit around her.
+    if (
+      rule.abilities.includes("SNOW_BALM") &&
+      unit.ownerId === view.viewer.id &&
+      snowBalmResultsV7(view, view.viewer.id, unit).length > 0
+    )
+      candidates.push({ kind: "SNOW_BALM", unitId: unit.id });
     if (stampedeActorRejectionV7(view, unit) === null)
       for (const at of publicStampedeTargetsV7(view, unit))
         candidates.push({ kind: "STAMPEDE", unitId: unit.id, at });
@@ -4763,6 +4775,35 @@ export function previewColdSnapV7(
 }
 
 /**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the exact result of an
+ * offered `SNOW_BALM`: each own unit around the Witch it heals (the HP
+ * restored, up to `SNOW_BALM_HEAL_V7`) or thaws, in unit-ID order.
+ */
+export interface SnowBalmPreviewV7 {
+  readonly unitId: UnitId;
+  readonly results: readonly SnowBalmResultV7[];
+}
+
+/** Null unless that `SNOW_BALM` is offered; otherwise exact (own units). */
+export function previewSnowBalmV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): SnowBalmPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "SNOW_BALM" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const witch = view.units.find((unit) => unit.id === unitId);
+  if (witch === undefined) return null;
+  return {
+    unitId,
+    results: snowBalmResultsV7(view, view.viewer.id, witch),
+  };
+}
+
+/**
  * The one Freeze effect (`pulp_wars-xv0t`, 7r133): what the Cold Wake of
  * the viewer's own Walrus or Frost Giant would freeze if its Move ended on
  * `at` (the ring around `at`, as the view knows it now). The board draws it
@@ -4804,6 +4845,85 @@ export function previewColdWakeV7(
   return {
     unitId,
     at: { x: at.x, y: at.y },
+    targets: freeze.units,
+    tiles: freeze.tiles,
+    snow: freeze.snow,
+  };
+}
+
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): what the Frost Breath
+ * of the viewer's own Frost Wyrm attacking `targetUnitId` would freeze: the
+ * 3x3 square round the target, read after the exchange's deaths (a target
+ * the hit kills, or a Wyrm the strike back kills, no longer holds its
+ * tile), by the one Freeze rule: the hostile units it Freezes (the target
+ * too if it lives), the water it ices and the neutral land it snows. From
+ * the public view, so it equals the result (a unit the viewer cannot see is
+ * neither Frozen in the result nor here).
+ */
+export interface FrostBreathPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  /** The target's tile, the centre of the square. */
+  readonly at: CoordV7;
+  /** The units the breath Freezes, in unit-ID order. */
+  readonly targets: readonly UnitId[];
+  /** The water tiles that become the viewer's ice, in (y, x) order. */
+  readonly tiles: readonly CoordV7[];
+  /** The open neutral land tiles that become Snow, in (y, x) order. */
+  readonly snow: readonly CoordV7[];
+}
+
+/**
+ * The Frost Breath preview of an offered `ATTACK` by the viewer's own Frost
+ * Wyrm, or null (another unit, no such attack). `combat` is that attack's
+ * combat preview when the caller has it already.
+ */
+export function previewFrostBreathV7(
+  view: PlayerViewV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+  combat?: CombatPreviewV7 | null,
+): FrostBreathPreviewV7 | null {
+  const attacker = view.units.find(
+    (unit) => unit.id === attackerId && unit.hp > 0,
+  );
+  const target = view.units.find(
+    (unit) => unit.id === targetUnitId && unit.hp > 0,
+  );
+  if (
+    attacker === undefined ||
+    target === undefined ||
+    attacker.ownerId !== view.viewer.id ||
+    !attackBreathesFrostV7(view, attacker)
+  )
+    return null;
+  const preview =
+    combat === undefined
+      ? queryCombatPreviewV7(view, attackerId, targetUnitId)
+      : combat;
+  if (preview === null) return null;
+  const dead = new Set<UnitId>([
+    ...(preview.defenderDies ? [target.id] : []),
+    ...(preview.attackerDies ? [attacker.id] : []),
+    ...preview.splash
+      .filter((entry) => entry.dies)
+      .map((entry) => entry.unitId),
+  ]);
+  const after: PlayerViewV7 =
+    dead.size === 0
+      ? view
+      : { ...view, units: view.units.filter((unit) => !dead.has(unit.id)) };
+  const freeze = freezeTilesV7({
+    tiles: freezeSquareTilesV7(target.at),
+    freezeWater: unitCapabilitiesV7(view, attacker, view.viewer.researchedTechs)
+      .freezeWater,
+    tileAt: publicFreezeTileFactsV7(after),
+  });
+  return {
+    unitId: attackerId,
+    targetUnitId,
+    at: { x: target.at.x, y: target.at.y },
     targets: freeze.units,
     tiles: freeze.tiles,
     snow: freeze.snow,

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r139" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r140" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -150,8 +150,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r136",
   "pulp-wars-poc-7r137",
   "pulp-wars-poc-7r138",
+  "pulp-wars-poc-7r139",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r139.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r140.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -513,6 +514,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk Ice
   // Fortress, appended for the same reason.
   "BUILD_ICE_FORTRESS",
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's Snow
+  // Balm, appended for the same reason.
+  "SNOW_BALM",
 ] as const);
 export const REWARD_IDS_V7 = Object.freeze([
   "SURVEY",

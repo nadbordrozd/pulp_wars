@@ -328,8 +328,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Sleds have 12 HP (was b82c78fa2a4a0ac1…).
   // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
   // 11 HP (was 5fa83e225efd0c2c…).
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): its Frost Wyrm has
+  // 16 HP (was 65460987794854f7…; with 14 HP the hash is unchanged).
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
-    "65460987794854f718eef6aabd57e1a76c456da0f57a42e419dc2d21b8432013",
+    "d7fd19d8ffcb0c4ea683aec44a5bd0376808087f331c5205e70f13c0c7db6598",
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Dwarf roster in
   // the same middle game, the hand player as the Dwarves. Its Whirligig has
   // 18 HP (was 4b894f5fc0011e42…: pulp_wars-befg), and its Gyrocopter 10
@@ -741,8 +743,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Sleds have 12 HP (was ebd63e3819669af5…).
   // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
   // 11 HP (was 392e81b064f8b34e…).
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): its Frost Wyrm has
+  // 16 HP (was b28adb3f9bb4026f…; with 14 HP the hash is unchanged).
   "LAB_ICE_FOLK_MID@2:ICE_FOLK":
-    "b28adb3f9bb4026f6a57022be1b436afe956bad18fe468c12923d7fb5a4d050b",
+    "db48e87a9ce89aac44dc9dd983f5ee4e365b0f706c757949d6452a6a2e46d5af",
   // Its Whirligig has 18 HP (was 8a17c1c43532dc6a…: pulp_wars-befg), and
   // its Gyrocopter 10 (was 85a9ee43c70b9fe5…: pulp_wars-o2g8).
   "LAB_DWARF_MID@1:DWARF":

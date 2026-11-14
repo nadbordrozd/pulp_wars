@@ -1150,9 +1150,10 @@ export function armyCandyHeavyCappedV7(
  * Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit
  * whose maximum HP is below this is a weak link of a kill chain at any HP:
  * a Human Knight's hit (9 on a Yeti, 10 on a Sled, 8 on a Snow Hunter, 12
- * on an Ice Witch or a Snow Golem, 14 on a Frost Wyrm) kills it at full
- * HP and rides on. A Walrus (16 HP: 11, and the Knight is Chilled) and a
- * Mammoth (20 HP: 12) are not. (In the lab one Knight killed a wounded
+ * on an Ice Witch or a Snow Golem) kills it at full HP and rides on. A
+ * Walrus (16 HP: 11, and the Knight is Chilled), a Mammoth (20 HP: 12) and
+ * since `pulp_wars-xt9c` (7r140) a Frost Wyrm (16 HP: 14) are not. (In the
+ * lab, at 14 HP, one Knight killed a wounded
  * Mammoth, a Snow Hunter, the Ice Witch, a Snow Golem, and the Frost Wyrm
  * in one turn: they stood side by side.)
  */

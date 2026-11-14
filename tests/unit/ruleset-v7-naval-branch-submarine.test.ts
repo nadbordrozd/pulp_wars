@@ -4,6 +4,7 @@ import {
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
   estimateCombatV7,
+  roleMechanicsV7,
   isNavalRoleV7,
   parseGameStateV7,
   projectEventsV7,
@@ -355,7 +356,12 @@ describe("Submerged", () => {
           label,
         ).toBeNull();
         expect(estimateCombatV7(state, shooter.id, ship.id), label).toBeNull();
-        expect(threatened, label).toBe(false);
+        // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Frost Wyrm
+        // (range 2) flies over the water, so it can close in and strike the
+        // Submarine from the next tile; every other ranged unit cannot.
+        expect(threatened, label).toBe(
+          roleMechanicsV7(role, faction).movementMode === "FLY",
+        );
       }
     }
   });

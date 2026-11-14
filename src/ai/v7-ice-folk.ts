@@ -10,7 +10,12 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
-import { previewColdSnapV7 } from "../engine/v7/query";
+import {
+  previewColdSnapV7,
+  previewFrostBreathV7,
+  previewSnowBalmV7,
+} from "../engine/v7/query";
+import type { CombatPreviewV7 } from "../engine/v7/events";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import { policyUnitFactionV7 } from "./v7-martian";
@@ -111,6 +116,19 @@ export const FLANK_SETUP_VALUE_V7 = 6;
 export const FROST_BREATH_FREEZE_VALUE_V7 = 6;
 export const FROST_BREATH_SHIP_VALUE_V7 = 6;
 export const FROST_BREATH_THREAT_VALUE_V7 = 4;
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): a Snow Balm is worth 1
+ * per HP it restores, 2 per HP on a unit a visible enemy can strike next
+ * turn, and 6 per own unit it thaws (a Cold Snap's freeze the other way
+ * round). A Witch casts whichever of her two actions is worth more (the
+ * Cold Snap on a tie); a Balm that saves a unit in danger or thaws one goes
+ * at the Tend tier for a threatened city (1270), any other at 650.
+ */
+export const SNOW_BALM_HP_VALUE_V7 = 1;
+export const SNOW_BALM_DANGER_HP_VALUE_V7 = 2;
+export const SNOW_BALM_THAW_VALUE_V7 = 6;
+export const SNOW_BALM_URGENT_PRIORITY_V7 = 1270;
+export const SNOW_BALM_PRIORITY_V7 = 650;
 /**
  * Route tie-breaks: an Ice Folk unit's Move objective (its route progress)
  * is scaled by 8, and these add less than one step, so they decide only at
@@ -692,6 +710,81 @@ export function coldSnapScoreV7(
     strategic: COLD_SNAP_FREEZE_VALUE_V7 * targets,
     immediate: targets,
   };
+}
+
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): `SNOW_BALM` by what it
+ * heals and thaws (`SNOW_BALM_*_VALUE_V7`, from the exact
+ * `previewSnowBalmV7`); `urgent` when it heals a unit in danger or thaws
+ * one. Not a candidate when it is not offered. The policy weighs it against
+ * the same Witch's Cold Snap.
+ */
+export function snowBalmScoreV7(
+  tools: IceFolkPolicyToolsV7,
+  command: Extract<CommandV7, { kind: "SNOW_BALM" }>,
+): IceFolkScoreV7 & { readonly urgent: boolean } {
+  const preview = previewSnowBalmV7(tools.view, command.unitId);
+  if (preview === null || preview.results.length === 0)
+    return { ...NOT_A_CANDIDATE_V7, urgent: false };
+  const hostiles = tools.view.units.filter(
+    (unit) => unit.hp > 0 && tools.isHostile(unit.ownerId),
+  );
+  let strategic = 0;
+  let healed = 0;
+  let urgent = false;
+  for (const result of preview.results) {
+    const unit = tools.unit(result.unitId);
+    if (unit === undefined) continue;
+    const danger = hostiles.some((hostile) =>
+      tools.threatens(hostile, unit.at),
+    );
+    strategic +=
+      result.amount *
+      (danger ? SNOW_BALM_DANGER_HP_VALUE_V7 : SNOW_BALM_HP_VALUE_V7);
+    if (result.curedFrozen) strategic += SNOW_BALM_THAW_VALUE_V7;
+    healed += result.amount;
+    if (result.curedFrozen || (danger && result.amount > 0)) urgent = true;
+  }
+  return {
+    priority: urgent ? SNOW_BALM_URGENT_PRIORITY_V7 : SNOW_BALM_PRIORITY_V7,
+    strategic,
+    immediate: healed,
+    urgent,
+  };
+}
+
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): what a Frost Breath is
+ * worth beyond its target, from the exact `previewFrostBreathV7`: each
+ * other hostile unit the square Freezes is worth a breath on a target
+ * (`FROST_BREATH_FREEZE_VALUE_V7`, more on a ship and on a unit that can
+ * strike an own unit next turn), and one an own unit's offered attack then
+ * shatters is a Shatter setup (`FLANK_SETUP_VALUE_V7`). `frozen` is how many
+ * hostile units it Freezes, the target included.
+ */
+export function frostBreathSquareValueV7(
+  tools: IceFolkPolicyToolsV7,
+  actorId: UnitId,
+  targetId: UnitId,
+  combat: CombatPreviewV7,
+  threatened: (unit: PublicUnitV7) => boolean,
+): { readonly strategic: number; readonly frozen: number } {
+  const breath = previewFrostBreathV7(tools.view, actorId, targetId, combat);
+  if (breath === null) return { strategic: 0, frozen: 0 };
+  let strategic = 0;
+  let frozen = 0;
+  for (const unitId of breath.targets) {
+    const unit = tools.unit(unitId);
+    if (unit === undefined || !tools.isHostile(unit.ownerId)) continue;
+    frozen += 1;
+    if (unitId === targetId) continue;
+    strategic += FROST_BREATH_FREEZE_VALUE_V7;
+    if (unit.form !== "LAND") strategic += FROST_BREATH_SHIP_VALUE_V7;
+    if (threatened(unit)) strategic += FROST_BREATH_THREAT_VALUE_V7;
+    if (tools.shatterSetups(unitId, actorId).length > 0)
+      strategic += FLANK_SETUP_VALUE_V7;
+  }
+  return { strategic, frozen };
 }
 
 /**

@@ -1795,6 +1795,38 @@ audits (one land-form test in `src/engine/v7/martian.ts`; three readers
 classified). The list is in
 [section 14.8](../product/RULESET_7_TUNING_MARTIAN.md#148-tests).
 
+## The Witch and the Wyrm (`pulp_wars-xt9c`, `7r140`)
+
+The Ice Witch has a second primary action, Snow Balm (heal each own unit
+round her 3 and thaw it), and the Frost Wyrm's breath reaches 2 tiles and
+freezes the 3x3 square round its target
+([the rules, section 21](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules)).
+The policy reads only the public previews:
+
+- **One of the Witch's two actions** (`witchActionChoiceV7`). Her Cold
+  Snap is worth what it was (`coldSnapScoreV7`: 6 per hostile unit it
+  Freezes, plus its water by the frozen-sea rules); her Snow Balm
+  (`snowBalmScoreV7`, from `previewSnowBalmV7`) is worth 1 per HP it
+  restores, 2 per HP on a unit a visible enemy can strike next turn, and 6
+  per own unit it thaws. The one worth more is a candidate, the other is
+  not (the Cold Snap on a tie); neither is when it changes nothing worth a
+  turn (a Cold Snap that freezes no enemy and no useful water). A Balm
+  goes at the Cold Snap's tier when the Cold Snap is on offer, otherwise
+  at 1270 when it saves a unit in danger or thaws one and at 650 (Tend
+  Wounded's quiet tier) when it only heals.
+- **The breath's square** (`frostBreathSquareValueV7`, from
+  `previewFrostBreathV7`, after the attack's previewed deaths). On top of
+  the target's own value (unchanged), each other hostile unit the square
+  Freezes adds `FROST_BREATH_FREEZE_VALUE_V7` (6), 6 more for a ship or an
+  embarked unit, 4 more when it can strike an own unit next turn, and 6
+  (`FLANK_SETUP_VALUE_V7`) when an own unit's offered attack then shatters
+  it. A breath that kills its target still counts the rest of the square.
+  So of two equal hits the Wyrm breathes on the one standing in a group.
+- **Sturdiness.** With 16 HP the Wyrm is no longer a weak link of a kill
+  chain (`ARMY_ICE_FOLK_STURDY_V7`, 15: a Knight's 14 leaves it alive).
+
+Not measured in matches (no simulation was run for this bead).
+
 ## Full-strength risings (`pulp_wars-1uof`, `7r139`)
 
 Grave Rites (the Undead Planning) raises whole Skeletons and Pestilence

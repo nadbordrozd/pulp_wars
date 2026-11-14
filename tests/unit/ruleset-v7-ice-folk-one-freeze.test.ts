@@ -557,8 +557,10 @@ describe("the glossary", () => {
     expect(glossaryEntryV7("COLD_SNAP").text).toBe(
       "Freezes every tile around the Witch.",
     );
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the breath freezes
+    // the square round its target ("leaves the target Frozen" before).
     expect(glossaryEntryV7("FROST_BREATH").text).toBe(
-      "Its attack leaves the target Frozen.",
+      "Its attack freezes the target's tile and every tile around it.",
     );
     expect(glossaryEntryV7("BLIZZARD").text).toBe(
       "Ranged hits on your units next to her are halved.",
@@ -575,11 +577,11 @@ describe("the glossary", () => {
 
 describe("the identity (pulp_wars-xv0t)", () => {
   it("was 7r133 after 7r132, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r139");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r139.current");
-    expect(PRIOR_RULESET_7_IDS.at(-7)).toBe("pulp-wars-poc-7r132");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
+    expect(PRIOR_RULESET_7_IDS.at(-8)).toBe("pulp-wars-poc-7r132");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-7)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-8)).toBe(
       "pulpWars.save.v7r132.current",
     );
   });

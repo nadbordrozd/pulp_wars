@@ -201,7 +201,9 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Yeti", "5 / 5"],
       // Tuning 3 (`pulp_wars-w49.3`): the Human Knight has Attack 4.
       ["Knight", "10, kill"],
-      ["Sabretooth", "8 / 4"],
+      // The Ice Folk KNIGHT (the Frost Wyrm since `pulp_wars-s55m.4`) has
+      // Attack 3.5 since `pulp_wars-xt9c` (7r140): it kills like a Knight.
+      ["Sabretooth", "10, kill"],
       ["Scrap Buggy", "8 / 4"],
       ["Raider", "8 / 4", { attackerExtra: CHARGE }],
       ["Wolf Rider", "8 / 4", { attackerExtra: CHARGE }],

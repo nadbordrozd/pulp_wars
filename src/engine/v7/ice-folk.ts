@@ -3,11 +3,13 @@ import {
   BLIZZARD_RADIUS_V7,
   DEEP_WINTER_RADIUS_V7,
   ICE_FORTRESS_RANGE_BONUS_V7,
+  SNOW_BALM_HEAL_V7,
   factionRulesV7,
   ownerResearchedTechsV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitFactionV7,
+  unitIsSummonedV7,
   unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -96,6 +98,74 @@ export function isFrozenV7(
 }
 
 /**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): one unit a Snow Balm
+ * helps, with the HP it restores and whether it thaws.
+ */
+export interface SnowBalmResultV7 {
+  readonly unitId: UnitId;
+  /** `min(SNOW_BALM_HEAL_V7, maxHp - hp)`; 0 for a unthawed unit at full HP. */
+  readonly amount: number;
+  readonly hpAfter: number;
+  /** The unit was Frozen and thaws. */
+  readonly curedFrozen: boolean;
+}
+
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): what an Ice Witch's
+ * Snow Balm does, read from the canonical state or a view (an own unit's
+ * facts are exact there): every unit of `actor` on the eight tiles around
+ * the Witch (never herself), in land form (no Egg, no embarked unit), not a
+ * summoned daemon (a daemon never heals), not tended this turn already, that
+ * is wounded or Frozen. Each heals `SNOW_BALM_HEAL_V7` (capped at its
+ * maximum) and thaws. In unit-ID order; empty when the Balm changes
+ * nothing (then it is neither offered nor accepted).
+ */
+export function snowBalmResultsV7(
+  input: {
+    readonly units: readonly (Pick<
+      UnitStateV7,
+      "id" | "ownerId" | "form" | "hp" | "maxHp" | "at"
+    > &
+      SummonedUnitRefV7 & {
+        readonly activation: { readonly tendedThisTurn: boolean };
+      })[];
+    readonly frozen: readonly FrozenStatusV7[];
+  },
+  actor: PlayerId,
+  witch: Pick<UnitStateV7, "id" | "at">,
+): readonly SnowBalmResultV7[] {
+  const results: SnowBalmResultV7[] = [];
+  for (const unit of input.units) {
+    if (
+      unit.hp <= 0 ||
+      unit.id === witch.id ||
+      unit.ownerId !== actor ||
+      unit.form !== "LAND" ||
+      unitIsSummonedV7(unit) ||
+      unit.activation.tendedThisTurn ||
+      Math.max(
+        Math.abs(unit.at.x - witch.at.x),
+        Math.abs(unit.at.y - witch.at.y),
+      ) !== 1
+    )
+      continue;
+    const curedFrozen = isFrozenV7(input.frozen, unit.id);
+    const amount = Math.max(
+      0,
+      Math.min(SNOW_BALM_HEAL_V7, unit.maxHp - unit.hp),
+    );
+    if (amount === 0 && !curedFrozen) continue;
+    results.push({
+      unitId: unit.id,
+      amount,
+      hpAfter: unit.hp + amount,
+      curedFrozen,
+    });
+  }
+  return results.sort((left, right) => left.unitId - right.unitId);
+}
+
+/**
  * Section 21.2: whether `target` can be Frozen by a source owned by
  * `sourceOwnerId`: a living unit hostile to the source's owner, in land,
  * naval, or embarked form (since `pulp_wars-s55m.1` ships, embarked units,
@@ -146,6 +216,24 @@ export function attackFrostBreathV7(
     attacker.form === "LAND" &&
     unitRoleMechanicsV7(state, attacker).frostBreath &&
     canBeFrozenV7(state, attacker.ownerId, defender)
+  );
+}
+
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): whether an `ATTACK` by
+ * `attacker` is a Frost Breath that freezes the 3x3 square round its
+ * target (the one Freeze rule): a land-form attacker whose role under its
+ * kind has `frostBreath` (the Frost Wyrm; a mind-controlled one breathes
+ * for its controller). Every such attack freezes the square after the
+ * exchange, whether the target lives or not.
+ */
+export function attackBreathesFrostV7(
+  roster: FactionRosterV7,
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
+): boolean {
+  return (
+    attacker.form === "LAND" &&
+    unitRoleMechanicsV7(roster, attacker).frostBreath
   );
 }
 

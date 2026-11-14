@@ -470,6 +470,10 @@ export type UnitRoleAbilityV7 =
   | "SNOWBALL"
   | "FROST_BREATH"
   | "COLD_WAKE"
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's Snow
+  // Balm (heal and thaw the own units around her; her other primary
+  // action beside Cold Snap).
+  | "SNOW_BALM"
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede.
   | "STAMPEDE"
   // The Dwarf revision (section 3): the Hammerer rides the tunnel and digs
@@ -3588,8 +3592,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     // The one Freeze effect (`pulp_wars-xv0t`, 7r133): Cold Snap freezes
     // every tile around her (water to ice, open neutral land to Snow, a
-    // hostile unit Frozen); her Frost Bolt retired.
-    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP"],
+    // hostile unit Frozen); her Frost Bolt retired. The Witch and the Wyrm
+    // (`pulp_wars-xt9c`, 7r140): Snow Balm, her other primary action, heals
+    // the own units around her 3 and thaws them (one or the other a turn).
+    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "SNOW_BALM"],
   }),
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Snow Golem
   // (the Boulder Yeti before; the same rules).
@@ -3625,16 +3631,22 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   // Breath Freezes every target its attack leaves alive, ships included:
   // the Ice Folk answer to a battleship. Its next blow from the next tile
   // Shatters what it froze.
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140; the user: "the ice
+  // wyrm is weak sauce ... it should be comparable to knight, vampire, t
+  // rex"): 10 Coins, 16 HP and Attack 3.5 (9, 14 and 3 before), and its
+  // breath reaches 2 tiles (range 1 to 2) and freezes the 3x3 square round
+  // its target (the one Freeze rule). It gives way to the Knight on Coins
+  // and Attack.
   KNIGHT: role({
     role: "KNIGHT",
     label: "Frost Wyrm",
     tacticalRole: "BREAKTHROUGH",
-    cost: 9,
-    maxHp: 14,
-    attack2: 6,
+    cost: 10,
+    maxHp: 16,
+    attack2: 7,
     defense2: 2,
     move: 3,
-    range: 1,
+    range: 2,
     minimumRange: 1,
     // Sight 2, as every flyer (the Saucer, the Mothership, the Gyrocopter).
     sightRadius: 2,
@@ -7369,6 +7381,16 @@ export const BRITTLE_SHATTER_HP_V7 = 4;
  * excepted). (The Bolas and Frost Bolt reaches retired with them.)
  */
 export const COLD_SNAP_RANGE_V7 = 1;
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the HP an Ice Witch's
+ * Snow Balm restores to each own unit around her (capped at its maximum).
+ */
+export const SNOW_BALM_HEAL_V7 = 3;
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the reach of a Frost
+ * Breath's freeze (Chebyshev) round its target: the 3x3 square.
+ */
+export const FROST_BREATH_FREEZE_RADIUS_V7 = 1;
 /** Ice Folk Freeze: the farthest a Mammoth's Stampede goes (tiles). */
 export const STAMPEDE_RANGE_V7 = 3;
 /**

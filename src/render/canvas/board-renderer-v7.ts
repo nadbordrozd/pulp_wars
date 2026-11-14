@@ -44,6 +44,7 @@ import {
   previewDevourV7,
   previewRaiseDeadV7,
   previewTendWoundedV7,
+  previewSnowBalmV7,
   previewWailV7,
   queryCombatPreviewV7,
   queryCuriosityMoveEffectV7,
@@ -374,6 +375,7 @@ import {
   moveIsDiveV7,
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
+  snowBalmTargetLabelV7,
 } from "../ice-folk-presentation-v7";
 import {
   BERSERK_REACH_LABEL_V7,
@@ -579,7 +581,8 @@ export type BoardSelectionV7 =
 /** The hovered or focused area support button of an own unit. */
 export interface AreaSupportFocusV7 {
   readonly unitId: number;
-  readonly kind: "TEND_WOUNDED" | "RALLY";
+  /** The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): or a Snow Balm. */
+  readonly kind: "TEND_WOUNDED" | "RALLY" | "SNOW_BALM";
 }
 
 export interface BoardRenderInteractionV7 {
@@ -7696,6 +7699,27 @@ function addAbilityPreviews(
         areaSupport,
       });
   }
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): an Ice Witch's Snow
+  // Balm marks every own unit it heals or thaws like Tend Wounded: quiet
+  // while she is selected, prominent while its button is hovered.
+  if (offered("SNOW_BALM") && areaSupportFocus !== "RALLY") {
+    const areaSupport: AreaSupportWeightV7 =
+      areaSupportFocus === "SNOW_BALM" ? "PROMINENT" : "QUIET";
+    const preview = previewSnowBalmV7(view, unitId);
+    for (const result of preview?.results ?? []) {
+      const target = view.units.find((unit) => unit.id === result.unitId);
+      if (target === undefined) continue;
+      entries.push({
+        key: `ability-target:SNOW_BALM:${result.unitId}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at: target.at,
+        abilityStyle: "TEND",
+        label: snowBalmTargetLabelV7(result),
+        areaSupport,
+      });
+    }
+  }
   // Rally (Frenzy, Berserk, War Drums) is nearly always on offer and has
   // no amount to read, so its recipients are marked only while its button
   // is hovered or focused: the units the engine's own eligibility rule
@@ -8390,6 +8414,11 @@ function commandMapTargets(
             ? {}
             : { previewSkullBefore: skullBefore }),
           ...(hpLoss.length === 0 ? {} : { hpLoss }),
+          // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): a Frost
+          // Breath's square, drawn like a Cold Wake while focused.
+          ...(iceFolk?.freeze === undefined
+            ? {}
+            : { coldWake: iceFolk.freeze }),
           ...(preview === null
             ? {}
             : {

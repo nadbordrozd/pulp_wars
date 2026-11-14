@@ -75,6 +75,7 @@ import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   blizzardHalvedDamageV7,
+  attackBreathesFrostV7,
   blizzardProtectsV7,
   canBeFrozenV7,
   deepSnowStopsUnitV7,
@@ -570,6 +571,8 @@ import {
   WITCH_MOVE_PRIORITY_V7,
   frozenForPolicyV7,
   coldSnapScoreV7,
+  frostBreathSquareValueV7,
+  snowBalmScoreV7,
   compareKeysV7,
   fragileOnSnowV7,
   hasAbilityForIceV7,
@@ -15938,20 +15941,29 @@ function scoreCommandWithContext(
     }
   }
 
-  if (command.kind === "COLD_SNAP" && context.iceFolk) {
-    const snap = coldSnapScoreV7(iceFolkCacheV7(context).tools, command);
-    // Ice Folk freeze rework (`pulp_wars-s55m.1`): the cast also freezes
-    // the water around the Witch (the one Freeze effect, `pulp_wars-xv0t`:
-    // the crossing's next tile, a tile to keep, home ice).
-    const water = iceColdSnapTilesScoreV7(
-      view,
-      frozenSeaToolsV7(context),
-      icePlanV7(context),
-      command,
-    );
-    priority = Math.max(snap.priority, water?.priority ?? -1);
-    strategicValue = Math.max(snap.strategic, 0) + (water?.strategic ?? 0);
-    immediateValue = Math.max(snap.immediate, 0) + (water?.immediate ?? 0);
+  if (
+    (command.kind === "COLD_SNAP" || command.kind === "SNOW_BALM") &&
+    context.iceFolk
+  ) {
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): a Witch has two
+    // primary actions and casts the one worth more (the Cold Snap on a tie;
+    // neither when it changes nothing worth a turn).
+    const choice = witchActionChoiceV7(context, command.unitId);
+    const pick =
+      command.kind === "COLD_SNAP"
+        ? choice.balm !== null &&
+          choice.balm.strategic > (choice.snap?.strategic ?? 0)
+          ? null
+          : choice.snap
+        : choice.snap !== null &&
+            choice.snap.strategic >= (choice.balm?.strategic ?? 0)
+          ? null
+          : choice.balm;
+    if (pick !== null) {
+      priority = pick.priority;
+      strategicValue = pick.strategic;
+      immediateValue = pick.immediate;
+    }
   }
 
   // Ice Folk Freeze (`pulp_wars-w49.37`): basic scoring, not tuned. A
@@ -24161,6 +24173,80 @@ function iceFolkCacheV7(context: PolicyContextV7): IceFolkContextCacheV7 {
   return cache;
 }
 
+/**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): what each of a Witch's
+ * two primary actions is worth now: her Cold Snap (the units it Freezes,
+ * `coldSnapScoreV7`, and its water, `iceColdSnapTilesScoreV7`; the Ice Folk
+ * freeze rework, `pulp_wars-s55m.1`) and her Snow Balm (`snowBalmScoreV7`),
+ * each null when it is not offered or is no candidate. A Balm offered
+ * beside a Cold Snap worth casting goes at the Cold Snap's tier.
+ */
+function witchActionChoiceV7(
+  context: PolicyContextV7,
+  witchId: UnitId,
+): {
+  readonly snap: {
+    readonly priority: number;
+    readonly strategic: number;
+    readonly immediate: number;
+  } | null;
+  readonly balm: {
+    readonly priority: number;
+    readonly strategic: number;
+    readonly immediate: number;
+  } | null;
+} {
+  const view = context.view;
+  const tools = iceFolkCacheV7(context).tools;
+  const snapCommand = context.commands.find(
+    (candidate): candidate is Extract<CommandV7, { kind: "COLD_SNAP" }> =>
+      candidate.kind === "COLD_SNAP" && candidate.unitId === witchId,
+  );
+  const balmCommand = context.commands.find(
+    (candidate): candidate is Extract<CommandV7, { kind: "SNOW_BALM" }> =>
+      candidate.kind === "SNOW_BALM" && candidate.unitId === witchId,
+  );
+  let snap: {
+    readonly priority: number;
+    readonly strategic: number;
+    readonly immediate: number;
+  } | null = null;
+  if (snapCommand !== undefined) {
+    const freeze = coldSnapScoreV7(tools, snapCommand);
+    const water = iceColdSnapTilesScoreV7(
+      view,
+      frozenSeaToolsV7(context),
+      icePlanV7(context),
+      snapCommand,
+    );
+    const priority = Math.max(freeze.priority, water?.priority ?? -1);
+    if (priority >= 0)
+      snap = {
+        priority,
+        strategic: Math.max(freeze.strategic, 0) + (water?.strategic ?? 0),
+        immediate: Math.max(freeze.immediate, 0) + (water?.immediate ?? 0),
+      };
+  }
+  let balm: {
+    readonly priority: number;
+    readonly strategic: number;
+    readonly immediate: number;
+  } | null = null;
+  if (balmCommand !== undefined) {
+    const score = snowBalmScoreV7(tools, balmCommand);
+    if (score.priority >= 0)
+      balm = {
+        priority:
+          snap === null
+            ? score.priority
+            : Math.max(score.priority, snap.priority),
+        strategic: score.strategic,
+        immediate: score.immediate,
+      };
+  }
+  return { snap, balm };
+}
+
 /** The own offered attack previews on `targetId` (best per attacker). */
 function iceFolkAttacksOnTargetV7(
   context: PolicyContextV7,
@@ -24495,6 +24581,31 @@ function iceFolkAttackAdjustmentV7(
       strategic += wyrm.strategic;
       if (wyrm.shatterSetup && next < SHATTER_SETUP_PRIORITY_V7)
         next = SHATTER_SETUP_PRIORITY_V7;
+    }
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): a Frost Breath
+    // freezes the 3x3 square round its target, so every other hostile unit
+    // it Freezes there counts too (whether the target lives or not).
+    if (attackBreathesFrostV7(view, actor)) {
+      const square = frostBreathSquareValueV7(
+        cache.tools,
+        actor.id,
+        target.id,
+        preview,
+        (unit) => {
+          const reach = context.threatenedTiles.get(unit.id);
+          return (
+            reach !== undefined &&
+            view.units.some(
+              (other) =>
+                other.ownerId === view.viewer.id &&
+                other.id !== actor.id &&
+                other.hp > 0 &&
+                reach.has(coordKey(other.at)),
+            )
+          );
+        },
+      );
+      strategic += square.strategic;
     }
   }
   if (isHostile(view, target.ownerId)) {

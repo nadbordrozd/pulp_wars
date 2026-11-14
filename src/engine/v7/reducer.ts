@@ -118,6 +118,7 @@ import {
   freezeTilesV7,
   iceAtV7,
   iceBuildableV7,
+  freezeSquareTilesV7,
   resolveColdWakeV7,
   territoryFreezeV7,
   territoryFrozenEventsV7,
@@ -135,6 +136,8 @@ import {
   unitsFrozenEventV7,
   withFrozenAppliedV7,
   withFrozenCuredV7,
+  snowBalmResultsV7,
+  attackBreathesFrostV7,
   frozenUnitNamedV7,
   winterV7,
 } from "./ice-folk";
@@ -2316,6 +2319,9 @@ function applyCommandCoreV7(
     return applyTractorBeam(stateInput, state, actor, command);
   if (command.kind === "COLD_SNAP")
     return applyColdSnap(stateInput, state, actor, command.unitId);
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Witch's Snow Balm.
+  if (command.kind === "SNOW_BALM")
+    return applySnowBalm(stateInput, state, actor, command.unitId);
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede.
   if (command.kind === "STAMPEDE")
     return applyStampedeV7(DWARF_KIT_V7, stateInput, state, actor, command);
@@ -5339,6 +5345,88 @@ function applyColdSnap(
 }
 
 /**
+ * The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140, section 21.6): an Ice
+ * Witch's `SNOW_BALM`, her other primary action beside Cold Snap. Every own
+ * land-form unit on the eight tiles around her (not herself, not a daemon,
+ * not one tended this turn) that is wounded or Frozen heals
+ * `SNOW_BALM_HEAL_V7` (capped at its maximum) and thaws
+ * (`snowBalmResultsV7`); she has used her primary action. Legal only when
+ * it heals or thaws someone (`HEAL_TARGET_NOT_FOUND` otherwise, like Tend
+ * Wounded). One `WOUNDED_TENDED` (the Witch as `captainId`; it cures no
+ * Plague or bite).
+ */
+function applySnowBalm(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const witch = actorCheck.unit;
+  if (
+    witch.form !== "LAND" ||
+    !unitRoleRuleV7(state, witch).abilities.includes("SNOW_BALM")
+  )
+    return rejected(original, "UNIT_ROLE_INVALID", { role: witch.role });
+  if (
+    witch.activation.overrunActive ||
+    primaryUsed(witch) ||
+    primaryActionBlockedAfterMoveV7(state, witch)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: witch.id });
+  const results = snowBalmResultsV7(state, actor, witch);
+  if (results.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  const byId = new Map(results.map((result) => [result.unitId, result]));
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      frozen: results.reduce(
+        (frozen, result) => withFrozenCuredV7(frozen, result.unitId),
+        state.frozen,
+      ),
+      units: state.units.map((unit) => {
+        if (unit.id === witch.id)
+          return {
+            ...unit,
+            activation: {
+              ...unit.activation,
+              specialActed: true,
+              handled: true,
+            },
+          };
+        const result = byId.get(unit.id);
+        return result === undefined
+          ? unit
+          : {
+              ...unit,
+              hp: result.hpAfter,
+              activation: { ...unit.activation, tendedThisTurn: true },
+            };
+      }),
+    }),
+    [
+      {
+        kind: "WOUNDED_TENDED",
+        captainId: witch.id,
+        results: results.map((result) => ({
+          unitId: result.unitId,
+          amount: result.amount,
+          hpAfter: result.hpAfter,
+          curedPlague: false,
+          curedBitten: false,
+          curedFrozen: result.curedFrozen,
+        })),
+      },
+    ],
+  );
+}
+
+/**
  * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md section
  * 2.9): `CRACK_ICE`. A unit or ship of any kind but the Ice Folk breaks the
  * ice on one of the eight tiles around it back into open water. Rejections
@@ -7232,30 +7320,24 @@ function resolveAttackExchangeV7(
   // Ice Folk Freeze (`pulp_wars-w49.37`): Frostbite freezes the attacker
   // during its own turn, so it stays Frozen through its next turn.
   let frozen = state.frozen;
-  // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): Frost Breath
-  // Freezes the Frost Wyrm's surviving target (another seat's unit, so it
-  // thaws at the end of its owner's next turn), after the deaths.
-  if (preview.frostBreathApplied) {
-    const applied = withFrozenAppliedV7({ ...state, units }, frozen, [
-      defender.id,
-    ]);
-    frozen = applied.frozen;
-    events.push(
-      unitsFrozenEventV7(actor, attacker.id, "FROST_BREATH", applied.results),
-    );
-  }
   // The Snow Golem and the Mammoth (`pulp_wars-3qtp`, 7r134,
   // ICE_FOLK_REDESIGN_2026-11.md section 3.7): a Snowball freezes the
   // target's tile after the exchange (the one Freeze rule): a surviving
   // target is Frozen (`turnsLeft` 1), open neutral land under it becomes
   // Snow, and open water a sunk ship leaves becomes the Golem's ice with
-  // Rime. It reads the board after the deaths.
+  // Rime. It reads the board after the deaths. The Witch and the Wyrm
+  // (`pulp_wars-xt9c`, 7r140): a Frost Breath freezes the 3x3 square round
+  // the target the same way (every hostile unit there it sees Frozen, the
+  // target too if it lives; water to ice, neutral land to Snow), whether
+  // the target lives or not (the Frost Breath of `pulp_wars-s55m.4`, 7r125,
+  // Froze the surviving target only).
   let snowballIce = state.ice;
   let snowballSnow = state.snow;
-  if (preview.snowball) {
+  const breath = attackBreathesFrostV7(state, attacker);
+  if (preview.snowball || breath) {
     const afterExchange = { ...state, board, units, frozen } as GameStateV7;
     const freeze = freezeTilesV7({
-      tiles: [defender.at],
+      tiles: breath ? freezeSquareTilesV7(defender.at) : [defender.at],
       freezeWater: unitCapabilitiesV7(
         state,
         attacker,
@@ -7269,7 +7351,7 @@ function resolveAttackExchangeV7(
       afterExchange,
       actor,
       attacker.id,
-      "SNOWBALL",
+      breath ? "FROST_BREATH" : "SNOWBALL",
       freeze,
     );
     frozen = applied.state.frozen;

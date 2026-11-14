@@ -603,6 +603,11 @@ const ENTRIES = {
   COLD_BLOOD: ["Cold Blood", "Hits a Frozen unit harder."],
   BLIZZARD: ["Blizzard", "Ranged hits on your units next to her are halved."],
   COLD_SNAP: ["Cold Snap", "Freezes every tile around the Witch."],
+  // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): her other action.
+  SNOW_BALM: [
+    "Snow Balm",
+    "Heals each of your units around the Witch 3 and thaws it.",
+  ],
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's Stampede. (The
   // Witch's and the Sled's Frost Bolt went with `pulp_wars-xv0t`, 7r133.)
   STAMPEDE: [
@@ -628,8 +633,13 @@ const ENTRIES = {
     "An enemy that hits it from the next tile and survives is Frozen.",
   ],
   // The Ice Folk roster rework (`pulp_wars-s55m.4`, 7r125): the Frost
-  // Wyrm's breath and its flight over the open sea.
-  FROST_BREATH: ["Frost Breath", "Its attack leaves the target Frozen."],
+  // Wyrm's breath and its flight over the open sea. The Witch and the Wyrm
+  // (`pulp_wars-xt9c`, 7r140): the breath freezes the square round the
+  // target ("leaves the target Frozen" before).
+  FROST_BREATH: [
+    "Frost Breath",
+    "Its attack freezes the target's tile and every tile around it.",
+  ],
   SEA_WINGS: [
     "Sea wings",
     "Flies over shallow and deep water with no technology needed.",
@@ -1146,7 +1156,9 @@ export function roleTraitGlossaryIdsV7(
   if (
     rule.abilities.includes("COLD_SNAP") ||
     rule.abilities.includes("COLD_WAKE") ||
-    rule.abilities.includes("SNOWBALL")
+    rule.abilities.includes("SNOWBALL") ||
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Frost Breath.
+    rule.abilities.includes("FROST_BREATH")
   )
     traits.push("FREEZE");
   // `pulp_wars-befg`: the Whirligig's Whirl is its attack, not an ability.

@@ -226,17 +226,24 @@ describe("a Cold Snap, Frost Breath, and a Cold Wake: landed, embarked, and on a
     (_, source) => {
       let state = scene();
       const hammerer = unitAtV7(state, LANDED);
+      const afloat = unitAtV7(state, AFLOAT);
       const frozen = playV7(
         state,
         source === "COLD_SNAP"
           ? coldSnap(state, WITCH_EAST)
           : attack(state, WYRM, LANDED),
       );
+      // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the breath
+      // freezes the 3x3 square round its target, so the embarked Hammerer
+      // beside it is Frozen too.
       expect(frozen.events).toContainEqual(
         expect.objectContaining({
           kind: "UNITS_FROZEN",
           source,
-          results: [{ unitId: hammerer.id, turnsLeft: 1 }],
+          results: (source === "COLD_SNAP"
+            ? [hammerer.id]
+            : [hammerer.id, afloat.id].sort((left, right) => left - right)
+          ).map((unitId) => ({ unitId, turnsLeft: 1 })),
         }),
       );
       // Healed by hand to full HP, so the Witch's probe neither kills nor

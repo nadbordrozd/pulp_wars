@@ -210,6 +210,8 @@ describe("Ice Folk unit dock", () => {
     ).toEqual([
       "Blizzard",
       "Cold Snap",
+      // Her other action (`pulp_wars-xt9c`, 7r140).
+      "Snow Balm",
       // (Her Frost Bolt went with the one Freeze effect, `pulp_wars-xv0t`.)
       // Glide covers Snow and ice (`pulp_wars-ecnj`, 7r135; "Skates" before).
       "Glide",

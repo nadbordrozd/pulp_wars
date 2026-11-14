@@ -168,7 +168,7 @@ describe("Ice Folk texts (section 13.2)", () => {
     ]);
     expect(iceFolkRewardLabelV7("JUGGERNAUT")?.[0]).toBe(label("JUGGERNAUT"));
     expect(iceFolkRoleUnlockTextV7("CAPTAIN")).toBe(
-      `Train ${label("CAPTAIN")} (Blizzard, Cold Snap)`,
+      `Train ${label("CAPTAIN")} (Blizzard, Cold Snap, Snow Balm)`,
     );
     // The Walrus's Frostbite is a role mechanic (its recruit notes), not an
     // ability: the one Freeze effect (`pulp_wars-xv0t`) took its `FREEZE`.
@@ -641,6 +641,8 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Snow",
       "Blizzard",
       "Cold Snap",
+      // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): her other action.
+      "Snow Balm",
       // The Frost Giant's (its Cold Aura before); the Frost Bolt is gone.
       "Cold Wake",
       "Cold Blood",
@@ -685,8 +687,13 @@ describe("Ice Folk Help (section 13.3)", () => {
     expect(rule("Blizzard")).not.toContain("Snow");
     expect(rule("Frozen")).toContain("It can be frozen again at once.");
     expect(rule("Stampede")).toContain(`takes ${STAMPEDE_DAMAGE_V7}`);
+    // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the breath reaches
+    // two tiles and freezes the square round its target.
     expect(rule("Frost Breath")).toBe(
-      `a ${label("KNIGHT")} flies over any ground and over Shallow and Deep Water without Navigation, and every enemy its attack leaves alive is Frozen, ships too.`,
+      `a ${label("KNIGHT")} flies over any ground and over Shallow and Deep Water without Navigation; its attack reaches two tiles and freezes the target's tile and every tile around it, so every enemy there is Frozen, ships too.`,
+    );
+    expect(rule("Snow Balm")).toBe(
+      `instead of a Cold Snap, an ${label("CAPTAIN")} can heal each of her own units around her 3 and thaw it, as her action.`,
     );
     expect(rule("Frozen")).toContain(`a ${label("KNIGHT")}'s Frost Breath`);
     for (const [name, text] of ICE_FOLK_HELP_RULES_V7)
