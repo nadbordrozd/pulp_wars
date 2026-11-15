@@ -684,9 +684,11 @@ end.
 | I1  | The Warm Mountain     | Goblins (the Frostbite Boys)                                           | none                | Conquest     |
 | I2  | Waking the Giants     | Undead (the Frozen Abbot's ice-bound dead)                             | none                | Hunt         |
 | I3  | The Frozen Strait     | Dwarves (the Anvil Bay iron fleet)                                     | none                | Capture, ice |
-| I4  | A Year Without Summer | Humans (the Crown's Harvest Wardens), Candy (Sugarcrest's frost-march) | none                | Hold out     |
+| I4  | A Year Without Summer | Humans (the Crown's Harvest Wardens), Candy (Sugarcrest's frost-march) | none                | Hold out (1) |
 | I5  | The Ember Lodge       | Cult (the Grey Lodge), Goblins (the Redcaps)                           | none                | Capture      |
 | I6  | The Winter Crown      | Cult (the Grey Lodge), Undead (the Unquiet)                            | Dwarves (the Thane) | Escort       |
+
+(1) Since revision 5 (`pulp_wars-vdgh`, [CAMPAIGN.md section 28](CAMPAIGN.md#28-i4-the-expansion-war-pulp_wars-vdgh)) I4 is an expansion war against the Wardens alone: both sides start small on an open board and the Crown starts ahead; Sugarcrest only signs the Frost Treaty at the end.
 
 - **Arc.** A goblin gang has put a stove in the caves under Rime's glacier,
   and the Whitefang clan comes home to see how it is done (I1). The Frost

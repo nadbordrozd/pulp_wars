@@ -85,21 +85,21 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       missionId: "ICE_FOLK_4",
       number: 4,
       name: "A Year Without Summer",
-      format: "SURVIVE",
+      // Revision 5 (`pulp_wars-vdgh`, CAMPAIGN.md section 28): the
+      // expansion war against a head-started Crown.
+      format: "CONQUEST",
       briefing:
-        "Winter is coming down off the mountains three months early, and the lowlands are not grateful. The Crown's Harvest Wardens are riding out to burn the snow-shrines, and Sugarcrest, whose people crack in a frost, has marched to stop the snowline at the river. Rime does not want to fight them. She has no choice, and they come from both sides, in waves. Hold the Snow Line until the winter has settled.",
-      objective: "Hold Whitewater and Frostford for 13 turns.",
+        "Winter is coming down off the mountains three months early, and the lowlands are not grateful. The Crown's Harvest Wardens already hold two towns south of the lake, with more soldiers and more learning than you, and they are settling every village before the snow can. Rime has one town. Spread the winter faster than they spread their fields, or they will ride north and burn the snow-shrines.",
+      objective: "Take every Warden town by turn 50.",
       hints: Object.freeze([
-        "A Crashed sweet cannot attack on its next turn.",
+        "Claim villages fast: the Wardens settle every one.",
         "Walruses freeze whoever strikes them up close.",
-        "Knights Overrun anyone left alone in the open.",
+        "Frost Wyrms fly over the lake and freeze where they breathe.",
       ]),
       closing:
-        "The snow settles. Under a white flag Queen Praline and Mother Rime meet on the frozen river and sign the Frost Treaty: no frost on Sugarcrest, and Sugarcrest's soldiers beside the Ice Folk until the Long Night is over.",
+        "The last Warden town falls under the snow. Queen Praline of Sugarcrest, who watched from across the river, comes under a white flag and signs the Frost Treaty: no frost on Sugarcrest, and her soldiers beside the Ice Folk until the Long Night is over.",
       names: Object.freeze({
         RIME: "Mother Rime",
-        WHITEWATER: "Whitewater",
-        FROSTFORD: "Frostford",
       }),
     }),
     Object.freeze({

@@ -83,7 +83,8 @@ describe("The Long Winter", () => {
       "CONQUEST",
       "KILL",
       "CAPTURE",
-      "SURVIVE",
+      // I4 is the expansion war since revision 5 (`pulp_wars-vdgh`).
+      "CONQUEST",
       "CAPTURE",
       "ESCORT",
     ]);
@@ -111,13 +112,12 @@ describe("The Long Winter", () => {
       ["ICE_FOLK", "GOBLIN"],
       ["ICE_FOLK", "UNDEAD"],
       ["ICE_FOLK", "DWARF"],
-      ["ICE_FOLK", "ORIGINAL", "CANDY"],
+      ["ICE_FOLK", "ORIGINAL"],
       ["ICE_FOLK", "CULT", "GOBLIN"],
       ["ICE_FOLK", "CULT", "UNDEAD", "DWARF"],
     ]);
-    for (const id of ["ICE_FOLK_1", "ICE_FOLK_2", "ICE_FOLK_3"])
+    for (const id of ["ICE_FOLK_1", "ICE_FOLK_2", "ICE_FOLK_3", "ICE_FOLK_4"])
       expect(mission(id).teams, id).toBeUndefined();
-    expect(mission("ICE_FOLK_4").teams).toEqual([0, 1, 1]);
     expect(mission("ICE_FOLK_5").teams).toEqual([0, 1, 1]);
     // At the summit the Thane's dwarves are yours.
     expect(mission("ICE_FOLK_6").teams).toEqual([0, 1, 1, 0]);
@@ -151,10 +151,12 @@ describe("The Long Winter", () => {
         byRound: 22,
         bonus: ["WITHIN_ROUNDS 16", "KEEP_CITIES"],
       },
+      // I4, the expansion war (`pulp_wars-vdgh`): a clock that only stops
+      // a stalemate, a star for a win by round 32 and one for Whitewater.
       {
-        kind: "SURVIVE",
-        byRound: undefined,
-        bonus: ["KEEP_CITIES", "UNIT_ALIVE"],
+        kind: "DOMINATION",
+        byRound: 50,
+        bonus: ["WITHIN_ROUNDS 32", "KEEP_CITIES"],
       },
       {
         kind: "CAPTURE",
@@ -174,10 +176,10 @@ describe("The Long Winter", () => {
       places: ["ANVIL_BAY"],
     });
     expect(mission("ICE_FOLK_4").objective).toMatchObject({
-      kind: "SURVIVE",
-      rounds: 13,
-      protect: [{ place: "WHITEWATER" }, { place: "FROSTFORD" }],
+      kind: "DOMINATION",
+      byRound: 50,
     });
+    expect(mission("ICE_FOLK_4").objective.protect).toBeUndefined();
     expect(mission("ICE_FOLK_5").objective).toMatchObject({
       places: ["EMBER_LODGE"],
     });
@@ -189,7 +191,6 @@ describe("The Long Winter", () => {
     const alive = (id: string) =>
       mission(id).objective.bonus?.find((bonus) => bonus.kind === "UNIT_ALIVE");
     expect(alive("ICE_FOLK_1")).toEqual({ kind: "UNIT_ALIVE", unit: "RIME" });
-    expect(alive("ICE_FOLK_4")).toEqual({ kind: "UNIT_ALIVE", unit: "RIME" });
     // Every chapter objective names its mission's clock.
     for (const entry of CHAPTER_ICE_FOLK_V7.missions) {
       const { objective } = mission(entry.missionId);
@@ -238,8 +239,10 @@ describe("The Long Winter", () => {
     }
     // Some economy is back: every start has technology, at least 5 Coins
     // and a town of level 2 or more, and every mission has neutral
-    // villages to take.
+    // villages to take. I4 is the exception since revision 5
+    // (`pulp_wars-vdgh`): the expansion war starts from nothing (below).
     for (const id of ORDER) {
+      if (id === "ICE_FOLK_4") continue;
       const start = seat(id, 0);
       expect(start.technologies.length, id).toBeGreaterThan(0);
       expect(start.coins, id).toBeGreaterThanOrEqual(5);
@@ -314,25 +317,38 @@ describe("The Long Winter", () => {
     expect((mission("ICE_FOLK_3").reinforcements ?? [])[0]?.units).toEqual([
       expect.objectContaining({ role: "BATTLESHIP" }),
     ]);
-    // I4: both Snow Line towns, six units; the Wardens ride with Chivalry
-    // and rifles and the sweets march; two waves, the sweets in round 6 and
-    // the Wardens in round 8.
-    expect(seat("ICE_FOLK_4", 0).cities).toHaveLength(2);
-    expect(seat("ICE_FOLK_4", 0).units).toHaveLength(6);
-    expect(seat("ICE_FOLK_4", 1).technologies).toContain("CHIVALRY");
+    // I4 (`pulp_wars-vdgh`, CAMPAIGN.md section 28): the expansion war.
+    // You start as in a skirmish: one level 1 town, a Yeti and Mother
+    // Rime, no technology, the skirmish's 3 Coins, and the whole Ice Folk
+    // tree open. The Crown starts ahead: two towns (the capital at level
+    // 2), four soldiers, 8 Coins and three technologies; it plays the
+    // Normal AI's own expansion until round 8, then holds two at home and
+    // rushes the nearest snow town. No waves; free villages for both.
+    expect(seat("ICE_FOLK_4", 0)).toMatchObject({
+      coins: 3,
+      technologies: [],
+      cities: [{ name: "Whitewater", level: 1, rewards: [] }],
+    });
     expect(
-      seat("ICE_FOLK_4", 1).units.filter((unit) => unit.role === "MARKSMAN"),
-    ).toHaveLength(3);
-    expect(seat("ICE_FOLK_4", 1).directive).toMatchObject({
-      kind: "ASSAULT",
-    });
-    expect(seat("ICE_FOLK_4", 2).directive).toMatchObject({
-      kind: "ASSAULT",
-    });
-    expect(rounds("ICE_FOLK_4")).toEqual([
-      [2, 6],
-      [1, 8],
+      seat("ICE_FOLK_4", 0)
+        .units.map((unit) => unit.role)
+        .sort(),
+    ).toEqual(["CAPTAIN", "FIGHTER"]);
+    expect(mission("ICE_FOLK_4").forbiddenTechnologies).toEqual([]);
+    expect(seat("ICE_FOLK_4", 0).forbiddenTechnologies).toBeUndefined();
+    const crown = seat("ICE_FOLK_4", 1);
+    expect(crown.faction).toBe("ORIGINAL");
+    expect(crown.cities.map((city) => city.level)).toEqual([2, 1]);
+    expect(crown.units).toHaveLength(4);
+    expect(crown.coins).toBe(8);
+    expect(crown.technologies).toEqual(["HUNTING", "SCOUTING", "RAIDING"]);
+    expect(crown.forbiddenTechnologies).toBeUndefined();
+    expect(crown.directive).toMatchObject([
+      { kind: "NORMAL", untilRound: 8 },
+      { kind: "GUARD", garrison: 2, others: { kind: "RUSH" }, fromRound: 8 },
     ]);
+    expect(rounds("ICE_FOLK_4")).toEqual([]);
+    expect(mission("ICE_FOLK_4").villages.length).toBeGreaterThanOrEqual(8);
     // I5: Hoarfrost Camp at level 3 behind walls (a Frost Giant a few
     // rounds of growth away); the Lodge has ten keepers and Favour 1, holds
     // eight and sends two from round 1; the Redcaps rush; no waves.

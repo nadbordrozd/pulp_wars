@@ -8050,3 +8050,96 @@ round-12 wake. SAGA.md's I2 keeps the saga bible's tenth day (its clock,
   workshop, Population Boom and a mine on the ore peak at (7, 9), so the
   player can have a Frost Giant of their own before the tomb's wakes; the
   EXPLORER monument then adds 3 more population.
+
+## 28. I4, the expansion war (`pulp_wars-vdgh`)
+
+The user, 2026-11-14: "all the ice folks missions were races against time
+and the difficulty came from this. the typical pulp wars experience
+outside of the campaign is that the threat comes from being overrun by a
+superior enemy. you try to expand and level up quickly to avoid that
+fate. if you don't, eventually if find yourself against an enemy with
+many more cities, unit and technologies and you get eventually overrun.
+none of the campaign missions at least for the ice folks play like this.
+your superiority is never in doubt and the enemy is asleep at the wheel
+and youre just racing against time. at least one of the missions should
+be like this - youre starting with nothing and expanding and so is the
+enemy and if you snooze you lose. the time limit should be very very
+generous so the game is decided by good old conquest. Since the AI player
+is not very good, to make it a challenge, it might be necessary to give
+the AI a head start in terms of controlled cities or units or money or
+tech. modify one of the missions to be like that".
+
+`ICE_FOLK_4` "A Year Without Summer" is rebuilt as that mission (revision
+5). Only mission data and its chapter text changed; no rule was touched.
+
+### 28.1 Why I4
+
+- I1 stays the campaign's easy first mission (the standing rule).
+- I2 (the Abbot and the Giant's wake), I3 (the ice road across the
+  strait), I5 (the Lodge's fire) and I6 (Rime carried to the Summit) each
+  hang their story on one place or one unit; an open war would lose it.
+- I4's story is already a war for land: the winter coming down on the
+  lowlands, and the Crown's Harvest Wardens riding out to stop it. As a
+  hold-out it was the most clock-driven mission of all (survive 13 rounds).
+- The enemy is the Crown alone (the Humans), not fodder: Knights (a Knight
+  hits a Frost Wyrm for 14), Champions, Marksmen, City Walls and Field
+  Defense, a Juggernaut from each level 5 town, and Battleships on the
+  lake. Sugarcrest leaves the board and only signs the Frost Treaty in the
+  closing, so the chapter's story (Sugarcrest beside the Ice Folk until
+  the Long Night) is unchanged.
+
+### 28.2 The definition
+
+| Field     | Revision 4 (the hold-out)                                                        | Revision 5 (the expansion war)                                                                                                                                                                                                  |
+| --------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Board     | Lakes 16, three seats, seed 3; nine villages removed                             | Lakes 14, two seats, seed 12: a lake in the middle, land round it in the western woods and the eastern plain, the Wardens' hills in the south; one edit (Reaper's Cross stands on a village); nine free villages and two chests |
+| You       | Whitewater L3 walled and Frostford L2, six units, six technologies, 5 Coins      | Whitewater L1, a Yeti and Mother Rime, no technology, 3 Coins (the skirmish start, with Rime); every Ice Folk technology open (the mission forbids nothing: Rime, Pack Ice, the Ice Fortress, Harpoons, Frost Wyrms, Mammoths)  |
+| The Crown | Wardens' Camp L2, eight riders and rifles, four technologies, 4 Coins; and Candy | Kingsfield L2 (a Lumber Camp and a Mine: its land is forest and peaks) and Reaper's Cross L1, two Fighters, a Marksman and a Raider, Hunting, Scouting and Raiding, 8 Coins; nothing forbidden                                  |
+| Its play  | `ASSAULT` Whitewater (and the sweets Frostford) from round 1; two waves          | the Normal AI's own play until round 8 (it expands like a skirmish AI), then `GUARD` its home with two and `RUSH` the nearest snow town with the rest; no waves                                                                 |
+| Objective | `SURVIVE` 13 rounds holding both towns                                           | `DOMINATION`: take every Warden town, by round 50 (a clock that only stops a stalemate)                                                                                                                                         |
+| Stars     | no city lost; Rime lives                                                         | a win by round 32; Whitewater never lost (`KEEP_CITIES`)                                                                                                                                                                        |
+| Text      | "Hold Whitewater and Frostford for 13 turns."                                    | "Take every Warden town by turn 50."; the briefing says the Wardens start ahead and settle every village; the hints: claim villages fast, the Walrus's Frostbite, Frost Wyrms over the lake                                     |
+
+### 28.3 Hand play
+
+Two `play-text` games as the Ice Folk against the Normal AI on
+`pulp-wars-poc-7r140`, user-authorised for this calibration (the session
+files stayed in the bead's scratchpad).
+
+| Game | Definition                                  | Result                                   | Stars               | What decided it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---- | ------------------------------------------- | ---------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | the draft (revision 5 with a round-30 star) | win, round 32; the first, thoughtful try | 2 (round 30 missed) | Hunts and Militia rewards gave five towns by round 8, but the Crown had four towns and 12 units by then, and its rush from round 8 came along both shores. Rime, sent to claim the south-west village, died to Raiders in round 11; Raiders and Marksmen killed a Yeti or a Sled a turn, and the eastern village town fell in round 17, when I had eight units to its 23. Walrus Frostbite and Rime's Cold Snaps froze attackers for the Yetis to shatter. Chivalry (round 16) and a Frost Wyrm a turn turned it: a Wyrm's breath freezes the 3 x 3 round its target and its shot takes a Guard at Defense 1, so three to ten Wyrms killed four or five units a turn. Kingsfield fell in round 28 and Fallowmere, behind a Juggernaut, last. Lost: Rime, five Yetis, three Sleds, three Walruses, four Wyrms |
+| 2    | the same (the planned replay)               | win, round 35                            | 2 (round 30 missed) | Raiding in round 6, Chivalry in round 8, a Wyrm a turn from round 9, Rime kept home to Cold Snap. Still behind in units (7 to 25 in round 13) but no town lost; the Wyrms kept two tiles off and killed forward from round 13, took the south-west village town in round 18 and led in towns from round 22. Closing was slow: the Crown re-manned every town centre each turn, got a Juggernaut (40 HP, Defense 6) in each level 5 town and launched a Battleship (a 12-damage shot with splash), and my towns had no free slot for more Wyrms (193 Coins unspent at the end). Lost: four Yetis, a Sled, eight Wyrms                                                                                                                                                                                         |
+
+The first, thoughtful attempt was a narrow win in the sense of the method:
+the Crown was ahead in towns, units and score until round 21, it took a
+town and killed Rime, and a player who had not reached the Wyrms would have
+been overrun. The planned replay won. So the head start stands as drafted;
+the one change is the time star, moved from round 30 (missed in both
+games) to round 32 (the better game), so that it rewards a fast, clean
+conquest rather than an impossible one. The clock (50) was never near.
+
+### 28.4 Observations (no rule changed)
+
+- **The Frost Wyrm decides the war.** The Normal AI answers a Wyrm kept two
+  tiles from its units only with Knights and Battleships, and each Wyrm
+  shot also freezes the enemies round its target, so the next Wyrm's shot
+  draws no strike back. A player who never researches Chivalry would
+  likely lose this mission; the combo is strong, and kept as the user
+  wants such combos kept.
+- **Slots, not Coins, limit the late game.** Level 1 and 2 towns fill up
+  (Rime and a Militia unit take a level 1 town's two slots), so Coins piled
+  up in both games; Land Grants or town growth would have closed the war
+  faster.
+- **The AI re-mans a town centre every turn**, and a level 5 or 6 town's
+  Juggernaut reward makes the last towns slow to take: a capture needs a
+  kill and a Wyrm landing on the centre in the same turn.
+- **Rime is the Crown's favourite target.** A Raider's Charge kills her
+  from 4 HP; she belongs behind the front, freezing attackers.
+
+The pins of `ICE_FOLK_4` moved to revision 5 in both tables of
+`tests/unit/ruleset-v7-missions.test.ts` (the new board, seats and units;
+no other mission's pin moved), and `tests/unit/campaign-ice-folk-v7.test.ts`
+now asserts the skirmish start, the Crown's head start, its directive
+schedule, the 50-round clock and the stars, and exempts I4 from retune 4's
+"every start has technology, 5 Coins and a level 2 town".

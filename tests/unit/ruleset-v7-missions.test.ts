@@ -227,12 +227,12 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // `cracked: false` put back on the entry).
   "ICE_FOLK_3@6:ICE_FOLK":
     "939017a18ffcf7eb7f83809243d90523467854920f13ce98730a67c722508ce0",
-  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
-  // seat starts with Rime, so one tile of its border water is ice.
-  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): its ice entry has
-  // no `cracked` key (was 63ec93d147e64e73…).
-  "ICE_FOLK_4@4:ICE_FOLK":
-    "6fe0366606b2d2080413ea661ae0358d7f496a310e5ca98f004aebe07eabf0a4",
+  // Revision 5 (`pulp_wars-vdgh`): the expansion war on a new board
+  // (Lakes 14, two seats, seed 12), a level 1 Whitewater with a Yeti and
+  // Rime and no technology, and a head-started Crown (was 6fe0366606b2d208…
+  // at revision 4, the hold-out).
+  "ICE_FOLK_4@5:ICE_FOLK":
+    "38d6705640fe7bd69c1c6fadbc107037a4b9697c13a3418cc4f5e9377c72115d",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was b7d24543b2fdd782…).
   // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
@@ -653,12 +653,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // no `cracked` key (was 7d3ad5ad97fbd253…).
   "ICE_FOLK_3@6:ICE_FOLK":
     "5d971754641a4f2b05d88daf4b4926520d8de8bdfe488d3da19e00a51d31ed31",
-  // The starting border freeze (`pulp_wars-s55m.6`, 7r126): the Ice Folk
-  // seat starts with Rime, so one tile of its border water is ice.
-  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): its ice entry has
-  // no `cracked` key (was b58ead6a097fcb32…).
-  "ICE_FOLK_4@4:ICE_FOLK":
-    "0046c926c0c9d7fe36741a49df943771d2f8d2c6445ae82b5a0095e59ff2a467",
+  // Revision 5 (`pulp_wars-vdgh`): the expansion war (was 0046c926c0c9d7fe…
+  // at revision 4, the hold-out).
+  "ICE_FOLK_4@5:ICE_FOLK":
+    "b126142f14c3505016f1b1bba3433c4ee74bba3f208e9e476ef2d40af8f63cd6",
   // The one Freeze effect (`pulp_wars-xv0t`, 7r133): its Ice Folk
   // Sleds have 12 HP (was d9c9447f508ba191…).
   // The stat pass (`pulp_wars-px48`, 7r136): its Ice Folk Sleds have
