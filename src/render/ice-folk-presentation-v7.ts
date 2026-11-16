@@ -443,7 +443,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
   return [
     [
       FREEZE_LABEL_V7,
-      `${FREEZE_RULE_V7} Ice needs Rime (deep water Pack Ice); docks never freeze, and Snow melts when its tile joins any territory.`,
+      `${FREEZE_RULE_V7} Ice needs Rime (deep water Pack Ice); an enemy's empty Port or Shipyard freezes too and is shut until the ice is cracked, and Snow melts when its tile joins any territory.`,
     ],
     [
       FROZEN_LABEL_V7,

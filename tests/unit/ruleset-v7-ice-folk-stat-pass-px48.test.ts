@@ -104,11 +104,11 @@ const EXPECTED_WORSE_AXES: Readonly<
 
 describe("the identity (pulp_wars-px48)", () => {
   it("is 7r136 after 7r135, whose save key is obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
-    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r135");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
+    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r135");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
       "pulpWars.save.v7r135.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

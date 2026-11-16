@@ -7,6 +7,7 @@ import {
   dockPopulationV7,
   holePopulationV7,
   isFishingHoleImprovementV7,
+  isIceAtV7,
   unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
@@ -55,10 +56,10 @@ export function isActivePortV7(
     (candidate) => candidate.id === tile.territoryCityId,
   );
   if (city?.ownerId !== ownerId) return false;
-  // A dock (always on open water: no dock is iced since the one Freeze
-  // effect, `pulp_wars-xv0t`, 7r133, and none stands on ice since the naval
-  // branch rebuilt, `pulp_wars-tzk6`, 7r137) is blockaded by a hostile unit
-  // afloat on it. Never an Egg (revision 19).
+  // A dock is blockaded by a hostile unit afloat on it. Never an Egg
+  // (revision 19). A dock iced over (`pulp_wars-jjzz`, 7r141) holds no unit
+  // afloat, so it is never blockaded; it is shut instead
+  // (`isDockShutV7`), which keeps its population.
   return !state.units.some(
     (unit) =>
       unit.hp > 0 &&
@@ -68,6 +69,44 @@ export function isActivePortV7(
       arePlayersHostileV7(state, unit.ownerId, ownerId) &&
       isAfloatFormV7(unit.form),
   );
+}
+
+/**
+ * Freezes ice docks (`pulp_wars-jjzz`, 7r141; the user, 2026-11-16: "I want
+ * the freezing effect to freeze water tiles even if they have a port on
+ * them"): whether the Port or Shipyard on `at` is iced over. Such a dock is
+ * **shut**: no ship is trained there, no unit embarks there, and it is no
+ * node of its owner's connection network (no sea link ends there). It
+ * keeps the population it gives, and works again once the ice is cracked.
+ */
+export function isDockShutV7(
+  state: Pick<GameStateV7, "board" | "ice">,
+  at: { readonly x: number; readonly y: number },
+): boolean {
+  if (state.ice.length === 0) return false;
+  const tile = state.board.tiles[at.y * state.board.width + at.x];
+  return (
+    tile?.at.x === at.x &&
+    tile.at.y === at.y &&
+    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+    isIceAtV7(state, at)
+  );
+}
+
+/**
+ * Freezes ice docks (`pulp_wars-jjzz`, 7r141): an active dock of `ownerId`
+ * ({@link isActivePortV7}) that is not shut by ice ({@link isDockShutV7}):
+ * a node of the owner's connection network and a sea-link endpoint.
+ */
+export function isOpenPortV7(
+  state: Pick<
+    GameStateV7,
+    "board" | "cities" | "units" | "setup" | "humanPlayerId" | "ice"
+  >,
+  at: { readonly x: number; readonly y: number },
+  ownerId: PlayerId,
+): boolean {
+  return isActivePortV7(state, at, ownerId) && !isDockShutV7(state, at);
 }
 
 /**
@@ -1080,7 +1119,9 @@ export function seaTradeCityIdsV7(
       if (
         isFishingHoleImprovementV7(port.improvement)
           ? isActiveFishingHoleV7(state, port.at, playerId)
-          : isActivePortV7(state, port.at, playerId)
+          : // Freezes ice docks (`pulp_wars-jjzz`, 7r141): a shut dock
+            // ends no sea link.
+            isOpenPortV7(state, port.at, playerId)
       )
         active.add(index);
     });
@@ -1136,12 +1177,13 @@ export function seaTradeCityIdsV7(
       .map((tile) => coordKey(tile.at)),
   );
   // 7r76: every own city center and every own active Port or Shipyard is a
-  // node as if a Road lay on it, with or without the Roads technology.
+  // node as if a Road lay on it, with or without the Roads technology (not
+  // one shut by ice, `pulp_wars-jjzz`, 7r141).
   for (const key of ownedCityAt.keys()) roadKeys.add(key);
   for (const tile of state.board.tiles)
     if (
       (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
-      isActivePortV7(state, tile.at, playerId)
+      isOpenPortV7(state, tile.at, playerId)
     )
       roadKeys.add(coordKey(tile.at));
   // Fishing Hole links (`pulp_wars-vg5l`, 7r127): an active Fishing Hole of
@@ -1318,8 +1360,9 @@ function setNetworkCacheSignatureV7(
  * fields): the board size, the mode and human seat, the owner's first
  * capital, technologies and explored tiles, every tile's place, biome,
  * terrain, improvement, Road and territory, every city's id, owner and
- * place, and every unit's owner, place, hit points and form, and (an Ice
- * Folk owner, `pulp_wars-dy2b`, 7r138) every ice entry. List lengths
+ * place, and every unit's owner, place, hit points and form, and every ice
+ * entry (an Ice Folk owner's since `pulp_wars-dy2b`, 7r138; every owner's
+ * since `pulp_wars-jjzz`, 7r141, as ice shuts a dock). List lengths
  * delimit the lists; a missing owner reads `"~"` for both of its lists.
  * {@link networkFactsV7} writes the list and {@link networkFactsMatchV7}
  * compares a state with one in place; the two read the same fields in the
@@ -1364,12 +1407,11 @@ function networkFactsV7(
   for (const unit of state.units)
     facts.push(unit.ownerId, unit.at.y, unit.at.x, unit.hp, unit.form);
   // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): an Ice Folk seat's
-  // links follow its own ice.
-  if (player !== undefined && seaLinksOverOwnIceV7(player.faction)) {
-    facts.push(state.ice.length);
-    for (const entry of state.ice)
-      facts.push(entry.at.y, entry.at.x, entry.ownerId);
-  }
+  // links follow its own ice. Freezes ice docks (`pulp_wars-jjzz`, 7r141):
+  // ice over a dock shuts it, so every seat's network reads the ice.
+  facts.push(state.ice.length);
+  for (const entry of state.ice)
+    facts.push(entry.at.y, entry.at.x, entry.ownerId);
   return facts;
 }
 
@@ -1432,16 +1474,14 @@ function networkFactsMatchV7(
       facts[index++] !== unit.form
     )
       return false;
-  if (player !== undefined && seaLinksOverOwnIceV7(player.faction)) {
-    if (facts[index++] !== state.ice.length) return false;
-    for (const entry of state.ice)
-      if (
-        facts[index++] !== entry.at.y ||
-        facts[index++] !== entry.at.x ||
-        facts[index++] !== entry.ownerId
-      )
-        return false;
-  }
+  if (facts[index++] !== state.ice.length) return false;
+  for (const entry of state.ice)
+    if (
+      facts[index++] !== entry.at.y ||
+      facts[index++] !== entry.at.x ||
+      facts[index++] !== entry.ownerId
+    )
+      return false;
   return index === facts.length;
 }
 

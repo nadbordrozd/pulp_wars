@@ -612,6 +612,8 @@ describe("frozen-sea words", () => {
       // The border freeze (`pulp_wars-5ti.31`).
       "Border ice",
       "Crack Ice",
+      // Freezes ice docks (`pulp_wars-jjzz`, 7r141).
+      "Iced docks",
       "Build",
       "No ships",
       // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the swimming

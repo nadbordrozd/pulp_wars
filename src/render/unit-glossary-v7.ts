@@ -656,7 +656,7 @@ const ENTRIES = {
   ],
   CRACK_ICE: [
     "Crack Ice",
-    "Breaks the ice next to it back into water, unless a unit stands on it or it is built on. Only Ice Folk and units that fly or stride go onto ice.",
+    "Breaks adjacent ice back into water unless a unit or a non-dock building is on it (an iced dock opens again). Only Ice Folk, fliers and striders walk on ice.",
   ],
 
   // ----------------------------------------------------------------- Dwarves

@@ -97,10 +97,10 @@ const unitById = (state: GameStateV7, id: number): UnitStateV7 | undefined =>
 
 describe("full-strength risings: the identity", () => {
   it("is 7r139 after 7r138, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r138");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
+    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r138");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
       "pulpWars.save.v7r138.current",
     );
   });

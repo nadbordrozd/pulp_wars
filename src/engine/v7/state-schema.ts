@@ -2907,7 +2907,9 @@ function parseIce(input: unknown): readonly IceTileV7[] | null {
  * is afloat, and no Ice Folk seat owns a ship. The frozen sea redesign
  * (RULESET_7_ICE_REDESIGN.md section 2.6): a building on water stands on
  * ice, except a Port or Shipyard on open Shallow Water. The naval branch
- * rebuilt (`pulp_wars-tzk6`, 7r137): no dock stands on ice.
+ * rebuilt (`pulp_wars-tzk6`, 7r137): no dock stands on ice. Freezes ice
+ * docks (`pulp_wars-jjzz`, 7r141): a dock may be iced over again (shut;
+ * no unit afloat stands on ice, so none is in it).
  */
 /**
  * The one Freeze effect (`pulp_wars-xv0t`, 7r133,
@@ -2955,9 +2957,7 @@ function iceValid(
       tile === undefined ||
       tile.biome !== null ||
       (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER") ||
-      owner === undefined ||
-      tile.improvement === "PORT" ||
-      tile.improvement === "SHIPYARD"
+      owner === undefined
     )
       return false;
   }

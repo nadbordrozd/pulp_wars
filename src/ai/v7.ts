@@ -908,6 +908,18 @@ import {
   scaleModeV7,
 } from "./v7-scale";
 
+/**
+ * Freezes ice docks (`pulp_wars-jjzz`, 7r141): an own dock the naval plans
+ * may board at: active (not blockaded) and not shut by ice (no unit embarks
+ * at a dock iced over).
+ */
+function openOwnedPortV7(
+  view: PlayerViewV7,
+  port: PlayerViewV7["naval"]["ownedPorts"][number],
+): boolean {
+  return port.status === "ACTIVE" && !isIceAtV7(view, port.at);
+}
+
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7 = 128;
 
 const PRESERVED_REDEVELOPMENT_IMPROVEMENTS_V7 = new Set<ImprovementIdV7>([
@@ -3170,7 +3182,7 @@ function* navalPlanWorkV7(
   });
   const starts = [
     ...view.naval.ownedPorts
-      .filter((port) => port.status === "ACTIVE")
+      .filter((port) => openOwnedPortV7(view, port))
       .map((port) => port.at),
     ...commands.flatMap((command) =>
       command.kind === "BUILD_PORT" ? [command.at] : [],
@@ -3449,7 +3461,7 @@ function* navalPlanWorkV7(
     shallowDistance === null;
   // pulp_wars-9s0.14: the Port that serves the landing coast.
   const activePorts = view.naval.ownedPorts
-    .filter((port) => port.status === "ACTIVE")
+    .filter((port) => openOwnedPortV7(view, port))
     .map((port) => port.at);
   const servingPortKeys = new Set(
     activePorts
@@ -3949,7 +3961,7 @@ export function inspectNormalNavalPlanV7(view: PlayerViewV7): {
     servingPorts: view.naval.ownedPorts
       .filter(
         (port) =>
-          port.status === "ACTIVE" &&
+          openOwnedPortV7(view, port) &&
           plan.servingPortKeys.has(coordKey(port.at)),
       )
       .map((port) => port.at),
@@ -14764,7 +14776,7 @@ function isAutoembarkMoveV7(
       tile.improvement === "PORT" &&
       tile.territoryOwnerId === view.viewer.id &&
       view.naval.ownedPorts.some(
-        (port) => port.status === "ACTIVE" && same(port.at, destination),
+        (port) => openOwnedPortV7(view, port) && same(port.at, destination),
       )) ||
     // Themed naval branches (`pulp_wars-5ti.19`): a hover launch boards
     // from the beach, under every rule of boarding at a Port.
@@ -19738,7 +19750,7 @@ function navalBoardingPortsV7(
       : [];
   const ports = [
     ...context.view.naval.ownedPorts
-      .filter((port) => port.status === "ACTIVE")
+      .filter((port) => openOwnedPortV7(context.view, port))
       .map((port) => port.at),
     ...launches,
   ];

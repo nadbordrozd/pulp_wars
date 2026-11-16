@@ -78,11 +78,13 @@ const patched = (
 };
 
 describe("the identity (pulp_wars-xt9c)", () => {
-  it("is 7r140 after 7r139, whose save key is obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r139");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // Freezes ice docks (`pulp_wars-jjzz`) took 7r141 after it.
+  it("was 7r140 after 7r139, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r140");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r139");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r139.current",
     );
   });

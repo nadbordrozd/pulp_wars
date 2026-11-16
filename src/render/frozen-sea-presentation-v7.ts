@@ -102,7 +102,15 @@ export const BORDER_ICE_RULE_V7 =
   "With Rime, the water inside your borders turns to ice, and again whenever a city's borders grow.";
 export const CRACK_ICE_LABEL_V7 = "Crack Ice";
 export const CRACK_ICE_RULE_V7 =
-  "Any other land unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on. Units that fly or stride cross ice instead.";
+  "Any other land unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on (a Port or Shipyard under ice can be cracked open). Units that fly or stride cross ice instead.";
+/**
+ * Freezes ice docks (`pulp_wars-jjzz`, 7r141): an enemy's Port or Shipyard a
+ * freeze ices over is shut until the ice is cracked; it keeps its
+ * population. A freeze never ices the freezer's own dock.
+ */
+export const ICED_DOCK_LABEL_V7 = "Iced docks";
+export const ICED_DOCK_RULE_V7 =
+  "A freeze ices over an enemy's empty Port or Shipyard too (never your own). While iced it is shut: no ship is trained there, nobody boards there and it links no city, though it keeps its population. Cracking the ice opens it again.";
 export const ICE_BUILD_RULE_V7 =
   "The Ice Folk build Fishing Holes, Ice Fortresses, mills, Workshop, Market and Monument on their own ice. They build no harbours; one they capture stays a plain dock.";
 
@@ -116,6 +124,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   ["Ice stays", ICE_STAYS_RULE_V7],
   [BORDER_ICE_LABEL_V7, BORDER_ICE_RULE_V7],
   [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],
+  [ICED_DOCK_LABEL_V7, ICED_DOCK_RULE_V7],
   ["Build", ICE_BUILD_RULE_V7],
   ["No ships", NO_SHIPS_RULE_V7],
   [SWIM_LABEL_V7, SWIM_RULE_V7],
@@ -127,7 +136,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
 /** Help "At sea", one line for every other faction in a match with ice. */
 export const ICE_FOR_SHIPS_HELP_V7: readonly [string, string] = [
   ICE_LABEL_V7,
-  "The Ice Folk freeze the sea. Only their units and units that fly or stride go onto ice; ships and other land units cannot, and may crack it open from beside it.",
+  "The Ice Folk freeze the sea, your empty Ports and Shipyards too (an iced dock trains, boards and links nothing until cracked). Only their units and units that fly or stride go onto ice; ships and other land units cannot, and may crack it open from beside it.",
 ];
 
 /**
@@ -271,13 +280,17 @@ export function crackIceUnavailableTextV7(
       (other) => other.hp > 0 && other.at.x === at.x && other.at.y === at.y,
     );
   if (beside.some((entry) => occupied(entry.at))) return CRACK_ICE_OCCUPIED_V7;
+  // Freezes ice docks (`pulp_wars-jjzz`, 7r141): the ice over a dock is
+  // cracked like any.
   const built = (at: CoordV7): boolean =>
     view.board.tiles.some(
       (tile) =>
         tile.at.x === at.x &&
         tile.at.y === at.y &&
         tile.explored &&
-        tile.improvement !== null,
+        tile.improvement !== null &&
+        tile.improvement !== "PORT" &&
+        tile.improvement !== "SHIPYARD",
     );
   if (beside.some((entry) => built(entry.at))) return CRACK_ICE_BUILT_V7;
   return CRACK_ICE_ALREADY_ACTED_V7;
@@ -285,8 +298,9 @@ export function crackIceUnavailableTextV7(
 
 /**
  * The board label of a Crack Ice: "Break" (one Crack breaks any ice since
- * the naval branch rebuilt, `pulp_wars-tzk6`, 7r137: no thick ice, no
- * iced-over dock, so every offered Crack Ice has the same outcome).
+ * the naval branch rebuilt, `pulp_wars-tzk6`, 7r137: no thick ice, so every
+ * offered Crack Ice has the same outcome; the ice over a dock, again since
+ * `pulp_wars-jjzz`, 7r141, breaks the same way and opens the dock).
  */
 export function crackIceTargetLabelV7(): string {
   return CRACK_ICE_BREAK_LABEL_V7;

@@ -2215,7 +2215,7 @@ function publicFreezeTileFactsV7(
         terrain: "GRASS",
         land: true,
         territory: false,
-        dock: false,
+        ownDock: false,
         snow: false,
         ice: null,
         occupied: false,
@@ -2230,7 +2230,11 @@ function publicFreezeTileFactsV7(
       terrain: tile.terrain,
       land: tile.biome !== null,
       territory: tile.territoryCityId !== null,
-      dock: tile.improvement === "PORT" || tile.improvement === "SHIPYARD",
+      // Freezes ice docks (`pulp_wars-jjzz`, 7r141): the viewer's own dock
+      // is never iced.
+      ownDock:
+        (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+        tile.territoryOwnerId === view.viewer.id,
       snow: tile.snow === true,
       ice:
         entry === undefined ? null : { own: entry.ownerId === view.viewer.id },
@@ -2271,8 +2275,10 @@ function publicRingFreezeV7(
  * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): the `at`
  * of every `CRACK_ICE` the viewer's unit may make now, in (y, x) order:
  * each of the eight tiles around it that is explored ice not of an ally of
- * the viewer, with no visible unit on it and no improvement on it (but an
- * iced-over dock of the viewer or an ally, `pulp_wars-s55m.1`). The actor
+ * the viewer, with no visible unit on it and no improvement on it but a
+ * dock (an iced-over dock, whoever's, since freezes ice docks,
+ * `pulp_wars-jjzz`, 7r141; the viewer's or an ally's from
+ * `pulp_wars-s55m.1`, though none was iced then). The actor
  * rows: a unit of any kind but the Ice Folk, in land, naval, or embarked
  * form. The caller has checked that the unit may use a primary action (and
  * the generic Frozen filter drops a Frozen unit).
@@ -2292,12 +2298,8 @@ function publicCrackIceTargetsV7(
       if (!tile.explored) return false;
       if (
         tile.improvement !== null &&
-        !(
-          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
-          tile.territoryOwnerId !== null &&
-          (tile.territoryOwnerId === view.viewer.id ||
-            publicAllied(view, view.viewer.id, tile.territoryOwnerId))
-        )
+        tile.improvement !== "PORT" &&
+        tile.improvement !== "SHIPYARD"
       )
         return false;
       const entry = iceAtV7(view, tile.at);
@@ -6521,9 +6523,11 @@ function publicActiveOwnedPort(
   tile: PlayerTileViewV7,
   ownerId: PlayerId,
 ): boolean {
-  // The frozen sea redesign (section 2.6): a dock on ice is blockaded by a
-  // hostile land-form unit, one on water by a hostile unit afloat.
-  const onIce = isIceAtV7(view, tile.at);
+  // The public copy of `isActivePortV7`: a dock is blockaded by a hostile
+  // unit afloat on it. (A dock on ice, an Ice Harbour, was blockaded by a
+  // hostile land-form unit until `pulp_wars-tzk6`, 7r137; a dock iced over
+  // since `pulp_wars-jjzz`, 7r141, is never blockaded but shut, which
+  // keeps its population.)
   return (
     tile.explored &&
     (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -6531,7 +6535,7 @@ function publicActiveOwnedPort(
     !view.units.some(
       (unit) =>
         same(unit.at, tile.at) &&
-        (onIce ? unit.form === "LAND" : isAfloatFormV7(unit.form)) &&
+        isAfloatFormV7(unit.form) &&
         publicHostile(view, ownerId, unit.ownerId),
     )
   );
@@ -8888,6 +8892,13 @@ type PublicEconomyGraphV7 = {
    * links run; empty for every other faction.
    */
   readonly ownIceKeys: ReadonlySet<string>;
+  /**
+   * Freezes ice docks (`pulp_wars-jjzz`, 7r141): the viewer's docks iced
+   * over (the ice is public on explored tiles), which are shut: no node of
+   * its network and no sea-link endpoint, though they keep their
+   * population.
+   */
+  readonly shutDockKeys: ReadonlySet<string>;
   readonly resolvedPendingCityIds: ReadonlySet<CityId>;
   readonly remainingMonumentEntitlements: number;
   /** Exact predecessor when this graph mutation cannot alter trade connectivity. */
@@ -9145,6 +9156,11 @@ function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
     ),
     activeFishingHoleKeys: publicActiveFishingHoleKeysV7(view),
     ownIceKeys: publicOwnIceKeysV7(view),
+    shutDockKeys: new Set(
+      view.naval.ownedPorts
+        .filter((port) => isIceAtV7(view, port.at))
+        .map((port) => coordKeyV7(port.at)),
+    ),
     resolvedPendingCityIds: new Set(),
     remainingMonumentEntitlements: view.viewer.achievementEntitlements.filter(
       (entitlement) => entitlement.unlocked && !entitlement.spent,
@@ -9212,6 +9228,8 @@ export function publicIceLinkPopulationGainV7(
     .map((tile) => coordKeyV7(tile))
     .filter((tile) => !graph.ownIceKeys.has(tile));
   if (added.length === 0) return 0;
+  // (A freeze never ices the viewer's own dock, `pulp_wars-jjzz`, 7r141,
+  // so no dock of the graph is shut by it.)
   const frozen: PublicEconomyGraphV7 = {
     ...graph,
     ownIceKeys: new Set([...graph.ownIceKeys, ...added]),
@@ -9544,7 +9562,10 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
     ? graph.board.tiles.filter(
         (tile) =>
           (((tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
-            graph.activePortKeys.has(coordKeyV7(tile.at))) ||
+            graph.activePortKeys.has(coordKeyV7(tile.at)) &&
+            // Freezes ice docks (`pulp_wars-jjzz`, 7r141): a shut dock ends
+            // no sea link.
+            !graph.shutDockKeys.has(coordKeyV7(tile.at))) ||
             // Fishing Hole links (`pulp_wars-vg5l`, 7r127).
             (isFishingHoleImprovementV7(tile.improvement) &&
               graph.activeFishingHoleKeys.has(coordKeyV7(tile.at)))) &&
@@ -9675,14 +9696,16 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
     maybeWater.size > legalWater.size &&
     possibleLinks !== seaEdges.length;
   // 7r76: every own city center and every own active Port or Shipyard is a
-  // node as if a Road lay on it, with or without the Roads technology.
+  // node as if a Road lay on it, with or without the Roads technology (not
+  // one shut by ice, `pulp_wars-jjzz`, 7r141).
   for (const at of cityAt.keys()) roads.add(at);
   for (const tile of graph.board.tiles)
     if (
       (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
       tile.territoryCityId !== null &&
       ownedIds.has(tile.territoryCityId) &&
-      graph.activePortKeys.has(coordKeyV7(tile.at))
+      graph.activePortKeys.has(coordKeyV7(tile.at)) &&
+      !graph.shutDockKeys.has(coordKeyV7(tile.at))
     )
       roads.add(coordKeyV7(tile.at));
   // Fishing Hole links (`pulp_wars-vg5l`, 7r127): an active Fishing Hole is
@@ -10521,6 +10544,7 @@ class IncrementalPublicRedevelopmentPossibilityWorkV7 implements PublicRedevelop
           activePortKeys: new Set(),
           activeFishingHoleKeys: new Set(),
           ownIceKeys: new Set(),
+          shutDockKeys: new Set(),
           resolvedPendingCityIds: new Set(),
           remainingMonumentEntitlements: this.remainingMonumentEntitlements,
         };

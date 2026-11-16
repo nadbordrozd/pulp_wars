@@ -251,7 +251,9 @@ describe("the Frost Giant's Cold Wake (section 3.3)", () => {
     ];
     for (const at of made)
       expect(iceEntryV7(after, at)?.ownerId).toBe(seatV7(after, 0).id);
-    // The dock never freezes; the ship on it is Frozen on its water.
+    // A dock with a ship in it is open water: the ship is Frozen on its
+    // water (an enemy's empty dock is iced over since `pulp_wars-jjzz`,
+    // 7r141).
     expect(iceEntryV7(after, { x: 6, y: 7 })).toBeUndefined();
     expect(tileAtV7(after.board, { x: 6, y: 7 })?.improvement).toBe("PORT");
     expect(after.frozen).toEqual([{ unitId: boat.id, turnsLeft: 1 }]);
@@ -577,11 +579,11 @@ describe("the glossary", () => {
 
 describe("the identity (pulp_wars-xv0t)", () => {
   it("was 7r133 after 7r132, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
-    expect(PRIOR_RULESET_7_IDS.at(-8)).toBe("pulp-wars-poc-7r132");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
+    expect(PRIOR_RULESET_7_IDS.at(-9)).toBe("pulp-wars-poc-7r132");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-8)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-9)).toBe(
       "pulpWars.save.v7r132.current",
     );
   });

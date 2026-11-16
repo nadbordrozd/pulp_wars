@@ -1992,16 +1992,25 @@ export function buildBoardRenderPlanV7(
   for (const port of view.naval.ownedPorts) {
     const slot = attachmentSlots.get(coordKey(port.at)) ?? 0;
     attachmentSlots.set(coordKey(port.at), slot + 1);
+    // Freezes ice docks (`pulp_wars-jjzz`, 7r141): a dock under ice is shut
+    // (the blockaded symbol), though still active.
+    const iced = view.ice.some(
+      (entry) => entry.at.x === port.at.x && entry.at.y === port.at.y,
+    );
     entries.push({
       key: `naval-port:${port.at.x},${port.at.y}`,
       kind: "STATUS",
       layer: 6,
       at: port.at,
       statusId:
-        port.status === "ACTIVE"
+        port.status === "ACTIVE" && !iced
           ? "ui-status-port-active"
           : "ui-status-port-blockaded",
-      label: port.status === "ACTIVE" ? "Active Port" : "Blockaded Port",
+      label: iced
+        ? "Iced Port"
+        : port.status === "ACTIVE"
+          ? "Active Port"
+          : "Blockaded Port",
       attachmentSlot: slot,
     });
   }

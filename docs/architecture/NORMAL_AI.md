@@ -1795,6 +1795,22 @@ audits (one land-form test in `src/engine/v7/martian.ts`; three readers
 classified). The list is in
 [section 14.8](../product/RULESET_7_TUNING_MARTIAN.md#148-tests).
 
+## Freezes ice docks (`pulp_wars-jjzz`, `7r141`)
+
+A freeze now ices an enemy's empty Port or Shipyard (never the freezer's
+own), which is shut (no training, no boarding, no network node or sea
+link) until its ice is cracked
+([the rules, section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea)).
+The policy changed only where a shut dock would mislead it: the naval
+plans (the landing starts, the Port that serves the landing coast, the
+boarding tiles, and the boarding Move check) count an own dock only when
+it is active **and not under ice** (`openOwnedPortV7`), so no unit walks to
+a shut dock to board. Training is chosen from the offered commands, which
+never offer a shut dock. Not done: no seat yet cracks its own iced dock on
+purpose (an ordinary Crack Ice is scored as before), no Ice Folk seat
+values icing an enemy's Port to cut its links, and the Ice Folk freeze
+heuristics (the crossing, a Land Grant's ice count) still pass over docks. Not measured in matches (no simulation was run for this bead).
+
 ## The Witch and the Wyrm (`pulp_wars-xt9c`, `7r140`)
 
 The Ice Witch has a second primary action, Snow Balm (heal each own unit

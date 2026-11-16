@@ -294,6 +294,10 @@ function capturedView(): PlayerViewV7 {
     units: captured.units,
     pendingChoices: captured.pendingChoices,
     treasureChests: captured.treasureChests,
+    // Freezes ice docks (`pulp_wars-jjzz`, 7r141): the public economy
+    // graph reads the ice over the viewer's docks (a shut dock), so the view
+    // names it (no ice in this match).
+    ice: [],
     naval: {
       ownedPorts: captured.activePorts.map((at) => ({
         at,

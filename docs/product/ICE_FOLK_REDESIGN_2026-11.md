@@ -5,6 +5,25 @@
 > revision each; the rules in force are
 > [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) section 21.
 >
+> - **Freezes ice docks, `pulp-wars-poc-7r141`** (`pulp_wars-jjzz`; the
+>   user, 2026-11-16: "I want the freezing effect to freeze water tiles
+>   even if they have a port on them"). Reverses bead 1's "docks are never
+>   frozen" (section 3.1 below is kept as the record) for an enemy's
+>   dock: every freeze treats a Port or Shipyard of any other seat
+>   (hostile, neutral, or an ally's) as the water it stands on, and never
+>   ices a dock of the freezer's own seat. An enemy's empty dock becomes
+>   the freezer's ice under the same Rime and Pack Ice rules; a ship in a
+>   dock is Frozen and its tile stays open. The
+>   dock is not destroyed and not blockaded: while iced it is **shut** (no
+>   ship trained there, nobody boards there, no node of its owner's
+>   network and no sea-link endpoint) and **keeps its population**. A
+>   Crack of its ice (any other faction's unit beside it) opens it again;
+>   nothing else removes ice. There is still no Ice Harbour: an Ice Folk
+>   seat's own captured docks are never iced by its freezes (the border
+>   freeze included), so they stay open endpoints of its links (decision
+>   2 of bead 5 kept). The port chip reads "Iced" and the board status
+>   "Iced Port" for a shut dock. The Normal AI plans no boarding at a shut
+>   dock; mission pins and the Showcase start are unchanged.
 > - **The Witch and the Wyrm, `pulp-wars-poc-7r140`** (`pulp_wars-xt9c`,
 >   after the five beads; the user, 2026-11-14: "the ice witch needs some
 >   extra action ... maybe her alt ability should be healing", and "the
@@ -390,7 +409,10 @@ What the branch gives, by need:
   it only makes no ice. The border freeze (Rime) stays as it is, minus
   docks.
 - **Docks are never frozen.** No Ice Harbour or Great Harbour, no dock iced
-  shut. A ship on a dock is Frozen like any ship.
+  shut. A ship on a dock is Frozen like any ship. (Reversed in `7r141`,
+  `pulp_wars-jjzz`: an enemy's empty dock freezes like any water and is
+  shut while iced; the freezer's own dock never freezes; see the status
+  block.)
 - Events: one `UNITS_FROZEN` (sources `COLD_SNAP`, `COLD_WAKE`, `SNOWBALL`,
   `FROST_BREATH`, `FROSTBITE`, and `BLACK_ICE` until bead 4) and one
   `TILES_FROZEN` (the renamed `WATER_FROZEN`, listing ice and Snow tiles).

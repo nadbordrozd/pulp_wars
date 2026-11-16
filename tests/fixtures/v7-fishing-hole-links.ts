@@ -59,6 +59,12 @@ export interface HoleLinkWorldOptionsV7 {
   /** Extra water: the capital's isolated corner (0, 0), no lane to it. */
   readonly capitalPool?: boolean;
   readonly improvements?: readonly MissionImprovementV7[];
+  /**
+   * Freezes ice docks (`pulp_wars-jjzz`, 7r141): seat 0's two cities at
+   * level 2 (Survey taken), so a Port and its sea link fit; level 1 by
+   * default.
+   */
+  readonly levelTwo?: boolean;
 }
 
 export function holeLinkSecondCityV7(east = 8): CoordV7 {
@@ -102,10 +108,20 @@ export function holeLinkWorldV7(
         faction: options.faction ?? "ICE_FOLK",
         coins: 60,
         technologies: [...(options.technologies ?? ["SHORECRAFT"])],
-        cities: [
-          { at: HOLE_LINK_CAPITAL_V7, level: 1, rewards: [] },
-          { at: holeLinkSecondCityV7(east), level: 1, rewards: [] },
-        ],
+        cities:
+          options.levelTwo === true
+            ? [
+                { at: HOLE_LINK_CAPITAL_V7, level: 2, rewards: ["SURVEY"] },
+                {
+                  at: holeLinkSecondCityV7(east),
+                  level: 2,
+                  rewards: ["SURVEY"],
+                },
+              ]
+            : [
+                { at: HOLE_LINK_CAPITAL_V7, level: 1, rewards: [] },
+                { at: holeLinkSecondCityV7(east), level: 1, rewards: [] },
+              ],
         units: [
           { role: "FIGHTER", at: HOLE_LINK_CAPITAL_V7 },
           ...(options.extraUnits ?? [])

@@ -9860,12 +9860,19 @@ export class Ruleset7DomAppView {
             same(candidate.at, tile.at),
           );
           if (port !== undefined) {
+            // Freezes ice docks (`pulp_wars-jjzz`, 7r141): a dock under ice
+            // is shut (drawn like a blockaded one), though still active.
+            const iced = view.ice.some((entry) => same(entry.at, tile.at));
             details.append(
               text(
                 this.#document,
                 "p",
-                port.status === "ACTIVE" ? "Active" : "Blockaded",
-                `v7-chip v7-port-state state-${port.status.toLowerCase()}`,
+                iced
+                  ? "Iced"
+                  : port.status === "ACTIVE"
+                    ? "Active"
+                    : "Blockaded",
+                `v7-chip v7-port-state state-${iced ? "blockaded" : port.status.toLowerCase()}`,
               ),
             );
             // The naval branch interface (section 5.4): an own Port's
@@ -19894,7 +19901,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r140",
+    rulesetId: "pulp-wars-poc-7r141",
     seed,
     width,
     height: width,

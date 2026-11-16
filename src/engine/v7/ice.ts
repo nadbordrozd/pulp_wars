@@ -167,8 +167,12 @@ export interface FreezeTileFactsV7 {
   readonly land: boolean;
   /** The tile lies in some player's territory. */
   readonly territory: boolean;
-  /** A dock (Port or Shipyard) stands on it: docks are never frozen. */
-  readonly dock: boolean;
+  /**
+   * Freezes ice docks (`pulp_wars-jjzz`, 7r141): a dock (Port or Shipyard)
+   * of the actor's own seat stands on it (in a territory the actor owns).
+   * A freeze never ices an own dock; any other dock freezes as water.
+   */
+  readonly ownDock: boolean;
   /**
    * The tile is Snow already (territory, Deep Winter, or stored Snow: all
    * public since the Blizzard lays none, so the view's `snow` flag equals
@@ -224,11 +228,16 @@ type FreezeTileResultV7 = "MAKE" | "TAKE" | "SNOW" | "NONE";
  * freezing one tile does to the tile itself (the units on it are read
  * separately). Water (Shallow, or Deep with `DEEP`, Pack Ice): open water
  * with no unit is made the actor's ice; another player's ice is taken; the
- * actor's own ice, a tile holding any unit (afloat, over the water, or a
- * swimming Walrus), and any dock are unchanged. Land: open land that is no
- * player's territory and not a Rift becomes stored Snow; territory land, a
- * Rift, and a tile that is Snow already are unchanged. An unexplored tile is
- * unchanged.
+ * actor's own ice and a tile holding any unit (afloat, over the water, or a
+ * swimming Walrus) are unchanged. Land: open land that is no player's
+ * territory and not a Rift becomes stored Snow; territory land, a Rift, and
+ * a tile that is Snow already are unchanged. An unexplored tile is
+ * unchanged. Freezes ice docks (`pulp_wars-jjzz`, 7r141): an enemy's dock
+ * (a Port or a Shipyard of any seat but the actor's: hostile, neutral or an
+ * ally's) is water like any other (no dock froze from 7r133): an empty one
+ * is iced over, which shuts it (`isDockShutV7`) until the ice is cracked;
+ * one with a ship in it stays open water. A dock of the actor's own seat
+ * (an Ice Folk seat's captured one) is never iced.
  */
 function freezeTileV7(
   tile: FreezeTileFactsV7,
@@ -240,7 +249,7 @@ function freezeTileV7(
       ? "NONE"
       : "SNOW";
   if (
-    tile.dock ||
+    tile.ownDock ||
     freezeWater === "NONE" ||
     (tile.terrain !== "SHALLOW_WATER" &&
       !(tile.terrain === "DEEP_WATER" && freezeWater === "DEEP"))
@@ -345,6 +354,11 @@ export function canonicalFreezeTileFactsV7(
     (player?.explored ?? []).map((at) => iceTileKeyV7(at)),
   );
   const snow = winterV7(state).snow;
+  const ownCities = new Set(
+    state.cities
+      .filter((city) => city.ownerId === actor)
+      .map((city) => city.id),
+  );
   return (at) => {
     if (
       at.x < 0 ||
@@ -365,7 +379,10 @@ export function canonicalFreezeTileFactsV7(
       terrain: tile.terrain,
       land: tile.biome !== null,
       territory: tile.territoryCityId !== null,
-      dock: tile.improvement === "PORT" || tile.improvement === "SHIPYARD",
+      ownDock:
+        (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+        tile.territoryCityId !== null &&
+        ownCities.has(tile.territoryCityId),
       snow: snow.has(at.y * state.board.width + at.x),
       ice: entry === undefined ? null : { own: entry.ownerId === actor },
       occupied: occupants.length > 0,
@@ -386,8 +403,10 @@ export function canonicalFreezeTileFactsV7(
  * The one Freeze effect: the state after `actor` froze `freeze` (the ice
  * entries made or taken; the Snow laid; the units Frozen), with
  * its events: one `UNITS_FROZEN` of `source` when a unit was Frozen, then
- * one `TILES_FROZEN` when a tile froze. A freeze makes no ice on a dock, so
- * no blockade changes and the live economy needs no recomputation.
+ * one `TILES_FROZEN` when a tile froze. Every caller reads the live economy
+ * again after it: new ice may link an Ice Folk seat's cities (`7r138`), and
+ * (`pulp_wars-jjzz`, 7r141) ice over an enemy's empty dock shuts it, which
+ * takes it out of its owner's connection network (its population stays).
  */
 export function withFreezeAppliedV7(
   state: GameStateV7,
@@ -475,11 +494,11 @@ export function resolveColdWakeV7(
  * put through the freeze of one tile (`freezeTileV7`, section 3.1) with the
  * seat's own `freezeWater`: open water with no unit is made ice, another
  * player's ice is taken, and own ice, unexplored tiles, deep water without
- * Pack Ice, a tile holding any unit, and (since `pulp_wars-xv0t`, 7r133)
- * every dock are left (no unit
- * acts, so nobody is Frozen; territory land is never Snow). `cityIds` null:
- * every city of `actor`. A seat without Rime (every seat of another
- * faction) freezes nothing.
+ * Pack Ice, and a tile holding any unit are left (no unit acts, so nobody
+ * is Frozen; territory land is never Snow), and so is every dock: the
+ * territory is the actor's, so its docks (a captured one) are its own,
+ * which no freeze ices (`pulp_wars-jjzz`, 7r141). `cityIds` null: every city of `actor`. A seat without Rime (every seat of
+ * another faction) freezes nothing.
  */
 export function territoryFreezeV7(
   state: Pick<
@@ -536,7 +555,9 @@ export function territoryFreezeV7(
         terrain: tile.terrain,
         land: false,
         territory: true,
-        dock: tile.improvement === "PORT" || tile.improvement === "SHIPYARD",
+        // Freezes ice docks (`pulp_wars-jjzz`, 7r141): a dock in the
+        // actor's own territory is its own and is never iced.
+        ownDock: tile.improvement === "PORT" || tile.improvement === "SHIPYARD",
         snow: false,
         ice: entry === undefined ? null : { own: entry.ownerId === actor },
         occupied: occupied.has(iceTileKeyV7(at)),

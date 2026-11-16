@@ -67,11 +67,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/query.ts::graphAfterTileCommandV7": "SEAT",
   // Sea routes over ice only (`pulp_wars-dy2b`, 7r138): whether a seat's
   // sea links run along its own ice is the seat's faction (an economy
-  // rule), in the network facts, the view's routes, the public economy
-  // graph, the live economy after a change of the ice, and the Normal AI's
-  // reading of a hostile seat's links.
-  "src/engine/v7/economy.ts::networkFactsV7": "SEAT",
-  "src/engine/v7/economy.ts::networkFactsMatchV7": "SEAT",
+  // rule), in the view's routes, the public economy graph, the live economy
+  // after a change of the ice, and the Normal AI's reading of a hostile
+  // seat's links. (The network facts read it until freezes ice docks,
+  // `pulp_wars-jjzz`, 7r141: every seat's facts carry the ice since.)
   "src/engine/v7/query.ts::publicOwnIceKeysV7": "SEAT",
   "src/engine/v7/query.ts::publicIceLinkPopulationGainV7": "SEAT",
   "src/engine/v7/reducer.ts::withIceLinkEconomyV7": "SEAT",

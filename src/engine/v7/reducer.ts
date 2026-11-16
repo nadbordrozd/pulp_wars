@@ -2116,10 +2116,10 @@ function navalFactsMayChangeV7(
     "DISEMBARK",
     "MOVE",
     "REDEVELOP",
-    // A Pillage may remove a dock. (A freeze never ices a dock since the
-    // one Freeze effect, `pulp_wars-xv0t`, 7r133, and no dock stands on ice
-    // since the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, so
-    // `COLD_SNAP`, the retired `FREEZE`, and `CRACK_ICE` left this list.)
+    // A Pillage may remove a dock. (Ice over a dock never blockades it:
+    // since `pulp_wars-jjzz`, 7r141, it shuts it and keeps its population,
+    // so `COLD_SNAP` and `CRACK_ICE` stay off this list; the ice reads the
+    // live economy itself.)
     "PILLAGE",
     "WAIL",
     // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl can kill an
@@ -3796,7 +3796,8 @@ function applyTrainNaval(
   if (
     tile?.territoryCityId !== city.id ||
     !isActivePortV7(state, command.at, actor) ||
-    // The frozen sea redesign (section 2.6): no ship trains at a dock on ice.
+    // No ship trains at a dock on ice: a shut dock (`isDockShutV7`; again
+    // since freezes ice docks, `pulp_wars-jjzz`, 7r141).
     isIceAtV7(state, command.at)
   )
     return rejected(original, "INVALID_TILE", { action: "TRAIN_NAVAL" });
@@ -5435,7 +5436,9 @@ function applySnowBalm(
  * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.2): one Crack breaks
  * any ice (no thick ice, no cracked state), and a building on ice (a
  * Fishing Hole, an Ice Fortress, a mill) is never cracked (`BUILT`; Pillage
- * it instead): no dock stands on ice any more.
+ * it instead). Freezes ice docks (`pulp_wars-jjzz`, 7r141): the ice over a
+ * dock is no building on ice; a Crack breaks it like any ice, which opens
+ * the dock again.
  */
 function applyCrackIce(
   original: GameStateV7,
@@ -5479,7 +5482,11 @@ function applyCrackIce(
     )
   )
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "OCCUPIED" });
-  if (tile.improvement !== null)
+  if (
+    tile.improvement !== null &&
+    tile.improvement !== "PORT" &&
+    tile.improvement !== "SHIPYARD"
+  )
     return rejected(original, "CRACK_ICE_NOT_LEGAL", { reason: "BUILT" });
   try {
     const cracked: GameStateV7 = {
@@ -5507,7 +5514,8 @@ function applyCrackIce(
     };
     // An unbuilt tile carries no population, but (sea routes over ice
     // only, `pulp_wars-dy2b`, 7r138) a Crack in an Ice Folk chain of ice
-    // unlinks its cities: the live economy is read again.
+    // unlinks its cities, and (`pulp_wars-jjzz`, 7r141) a Crack of a shut
+    // dock opens it again: the live economy is read again.
     const linked = withIceLinkEconomyV7(cracked, actor);
     return accepted(checked(linked.state), [event, ...linked.events]);
   } catch (cause) {
@@ -5888,7 +5896,8 @@ function applyMove(
     ) &&
     isActivePortV7(state, validation.destination, actor) &&
     // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6):
-    // nothing embarks at a dock on ice; a unit walks onto it.
+    // nothing embarks at a dock on ice; a unit walks onto it (a shut dock
+    // again since `pulp_wars-jjzz`, 7r141).
     !isIceAtV7(state, validation.destination);
   // The Martian revision section 7.3: a land-form walker whose Move ends
   // (or is stopped or interrupted) on a water tile self-launches: it embarks

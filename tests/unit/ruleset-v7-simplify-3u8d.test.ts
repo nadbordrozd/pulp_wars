@@ -156,11 +156,11 @@ function policyTurn(start: GameStateV7): {
 
 describe("the identity (pulp_wars-3u8d)", () => {
   it("was 7r131 after 7r130, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r140");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r140.current");
-    expect(PRIOR_RULESET_7_IDS.at(-10)).toBe("pulp-wars-poc-7r130");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
+    expect(PRIOR_RULESET_7_IDS.at(-11)).toBe("pulp-wars-poc-7r130");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-10)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-11)).toBe(
       "pulpWars.save.v7r130.current",
     );
   });
