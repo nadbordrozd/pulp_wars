@@ -448,54 +448,54 @@
       "ships": [
         {
           "role": "PATROL_BOAT",
-          "opaquePixels": 2666,
-          "outlineShare": 20.3,
-          "bodyMean": "#96a3a2",
+          "opaquePixels": 2006,
+          "outlineShare": 21.7,
+          "bodyMean": "#c8b17d",
           "mainColours": [
-            "#feffe6 17.3%",
-            "#dcd4b6 14%",
-            "#fefefe 9.2%",
-            "#3a2a2a 7%",
-            "#0da8fa 5.3%"
+            "#fee89a 53%",
+            "#4c3b3d 11.4%",
+            "#d6b376 9.2%",
+            "#5f4b42 3.3%",
+            "#36282b 2.7%"
           ],
           "water": {
             "shallow": {
-              "bodyMeanDeltaE": 22.7,
-              "bodyMeanContrast": 1.6,
-              "nearestSwatchDeltaE": 23,
+              "bodyMeanDeltaE": 46,
+              "bodyMeanContrast": 1.2,
+              "nearestSwatchDeltaE": 51.1,
               "bodyShareWithin12": 0
             },
             "deep": {
-              "bodyMeanDeltaE": 34.1,
-              "bodyMeanContrast": 1.8,
-              "nearestSwatchDeltaE": 9.5,
-              "bodyShareWithin12": 3.2
+              "bodyMeanDeltaE": 64.9,
+              "bodyMeanContrast": 2.3,
+              "nearestSwatchDeltaE": 40.1,
+              "bodyShareWithin12": 0
             }
           }
         },
         {
           "role": "BATTLESHIP",
-          "opaquePixels": 3648,
-          "outlineShare": 21.4,
-          "bodyMean": "#a79b87",
+          "opaquePixels": 4198,
+          "outlineShare": 7.4,
+          "bodyMean": "#93c5e5",
           "mainColours": [
-            "#fef5d1 11.5%",
-            "#e4cba1 9.8%",
-            "#fef5cf 8.3%",
-            "#554040 4%",
-            "#e1c69d 3.7%"
+            "#ffffff 41.2%",
+            "#5fbbf5 15.5%",
+            "#62bdf6 9.5%",
+            "#0c91e8 7.5%",
+            "#53c0fa 5.9%"
           ],
           "water": {
             "shallow": {
-              "bodyMeanDeltaE": 34.8,
-              "bodyMeanContrast": 1.6,
-              "nearestSwatchDeltaE": 23.3,
+              "bodyMeanDeltaE": 14.6,
+              "bodyMeanContrast": 1.1,
+              "nearestSwatchDeltaE": 27.5,
               "bodyShareWithin12": 0
             },
             "deep": {
-              "bodyMeanDeltaE": 45.5,
-              "bodyMeanContrast": 1.7,
-              "nearestSwatchDeltaE": 18.8,
+              "bodyMeanDeltaE": 30.8,
+              "bodyMeanContrast": 2.6,
+              "nearestSwatchDeltaE": 12.1,
               "bodyShareWithin12": 0
             }
           }
@@ -550,8 +550,8 @@
           "deuteranopia": 39.6
         },
         "Ice Folk": {
-          "normal": 37.5,
-          "deuteranopia": 32.8
+          "normal": 23.2,
+          "deuteranopia": 16.7
         }
       },
       "Undead": {
@@ -572,8 +572,8 @@
           "deuteranopia": 23.4
         },
         "Ice Folk": {
-          "normal": 19.8,
-          "deuteranopia": 18
+          "normal": 9.1,
+          "deuteranopia": 6.8
         }
       },
       "Goblin": {
@@ -594,8 +594,8 @@
           "deuteranopia": 27.5
         },
         "Ice Folk": {
-          "normal": 20.8,
-          "deuteranopia": 19.1
+          "normal": 20.9,
+          "deuteranopia": 16.3
         }
       },
       "Dinosaur": {
@@ -616,8 +616,8 @@
           "deuteranopia": 39.9
         },
         "Ice Folk": {
-          "normal": 29.1,
-          "deuteranopia": 27.2
+          "normal": 16.6,
+          "deuteranopia": 12.8
         }
       },
       "Martian": {
@@ -638,30 +638,30 @@
           "deuteranopia": 39.9
         },
         "Ice Folk": {
-          "normal": 17.6,
-          "deuteranopia": 16.6
+          "normal": 34.9,
+          "deuteranopia": 34
         }
       },
       "Ice Folk": {
         "Human": {
-          "normal": 37.5,
-          "deuteranopia": 32.8
+          "normal": 23.2,
+          "deuteranopia": 16.7
         },
         "Undead": {
-          "normal": 19.8,
-          "deuteranopia": 18
+          "normal": 9.1,
+          "deuteranopia": 6.8
         },
         "Goblin": {
-          "normal": 20.8,
-          "deuteranopia": 19.1
+          "normal": 20.9,
+          "deuteranopia": 16.3
         },
         "Dinosaur": {
-          "normal": 29.1,
-          "deuteranopia": 27.2
+          "normal": 16.6,
+          "deuteranopia": 12.8
         },
         "Martian": {
-          "normal": 17.6,
-          "deuteranopia": 16.6
+          "normal": 34.9,
+          "deuteranopia": 34
         }
       }
     },
@@ -684,8 +684,8 @@
           "deuteranopia": 25.2
         },
         "Ice Folk": {
-          "normal": 22.7,
-          "deuteranopia": 18.7
+          "normal": 40.6,
+          "deuteranopia": 38.1
         }
       },
       "Undead": {
@@ -706,8 +706,8 @@
           "deuteranopia": 19
         },
         "Ice Folk": {
-          "normal": 12.4,
-          "deuteranopia": 9.9
+          "normal": 28.2,
+          "deuteranopia": 26.8
         }
       },
       "Goblin": {
@@ -728,8 +728,8 @@
           "deuteranopia": 20.2
         },
         "Ice Folk": {
-          "normal": 10.1,
-          "deuteranopia": 8.4
+          "normal": 31.7,
+          "deuteranopia": 31.1
         }
       },
       "Dinosaur": {
@@ -750,8 +750,8 @@
           "deuteranopia": 32.3
         },
         "Ice Folk": {
-          "normal": 13.7,
-          "deuteranopia": 12.2
+          "normal": 39.7,
+          "deuteranopia": 39.2
         }
       },
       "Martian": {
@@ -772,30 +772,30 @@
           "deuteranopia": 32.3
         },
         "Ice Folk": {
-          "normal": 15.7,
-          "deuteranopia": 15.2
+          "normal": 18.4,
+          "deuteranopia": 18.7
         }
       },
       "Ice Folk": {
         "Human": {
-          "normal": 22.7,
-          "deuteranopia": 18.7
+          "normal": 40.6,
+          "deuteranopia": 38.1
         },
         "Undead": {
-          "normal": 12.4,
-          "deuteranopia": 9.9
+          "normal": 28.2,
+          "deuteranopia": 26.8
         },
         "Goblin": {
-          "normal": 10.1,
-          "deuteranopia": 8.4
+          "normal": 31.7,
+          "deuteranopia": 31.1
         },
         "Dinosaur": {
-          "normal": 13.7,
-          "deuteranopia": 12.2
+          "normal": 39.7,
+          "deuteranopia": 39.2
         },
         "Martian": {
-          "normal": 15.7,
-          "deuteranopia": 15.2
+          "normal": 18.4,
+          "deuteranopia": 18.7
         }
       }
     },
@@ -935,10 +935,10 @@
     }
   },
   "weakestPair": {
-    "pair": "Goblin / Ice Folk",
-    "role": "BATTLESHIP",
-    "normal": 10.1,
-    "deuteranopia": 8.4
+    "pair": "Ice Folk / Undead",
+    "role": "PATROL_BOAT",
+    "normal": 9.1,
+    "deuteranopia": 6.8
   },
   "submarines": {
     "bead": "pulp_wars-5ti.6",
@@ -1199,6 +1199,38 @@
             "bodyShareWithin12": 2.9
           }
         }
+      },
+      {
+        "faction": "ICE_FOLK",
+        "label": "Ice Folk",
+        "opaquePixels": 1720,
+        "outlineShare": 14.8,
+        "bodyMean": "#565f68",
+        "mainColours": [
+          "#2b3e5e 17.5%",
+          "#fee49b 15.7%",
+          "#19213b 15.3%",
+          "#2c3f60 11.1%",
+          "#2d4060 10.6%"
+        ],
+        "size": "69 x 49",
+        "patrolBoatSize": "66 x 56",
+        "heightShareOfPatrolBoat": 87.5,
+        "waterlineRow": 79,
+        "patrolBoatWaterlineRow": 79,
+        "paletteDistanceToPatrolBoat": 12.8,
+        "water": {
+          "shallow": {
+            "bodyMeanDeltaE": 44.5,
+            "bodyMeanContrast": 3.9,
+            "bodyShareWithin12": 0
+          },
+          "deep": {
+            "bodyMeanDeltaE": 25.5,
+            "bodyMeanContrast": 1.4,
+            "bodyShareWithin12": 0
+          }
+        }
       }
     ],
     "distinguishability": {
@@ -1230,6 +1262,10 @@
         "Cult": {
           "normal": 31.4,
           "deuteranopia": 19.7
+        },
+        "Ice Folk": {
+          "normal": 23.7,
+          "deuteranopia": 20.6
         }
       },
       "Undead": {
@@ -1260,6 +1296,10 @@
         "Cult": {
           "normal": 16.6,
           "deuteranopia": 15
+        },
+        "Ice Folk": {
+          "normal": 22.5,
+          "deuteranopia": 15.9
         }
       },
       "Goblin": {
@@ -1290,6 +1330,10 @@
         "Cult": {
           "normal": 32.8,
           "deuteranopia": 23.7
+        },
+        "Ice Folk": {
+          "normal": 24.8,
+          "deuteranopia": 24.2
         }
       },
       "Dinosaur": {
@@ -1320,6 +1364,10 @@
         "Cult": {
           "normal": 28.3,
           "deuteranopia": 15
+        },
+        "Ice Folk": {
+          "normal": 4.8,
+          "deuteranopia": 3.2
         }
       },
       "Martian": {
@@ -1350,6 +1398,10 @@
         "Cult": {
           "normal": 40.4,
           "deuteranopia": 30.6
+        },
+        "Ice Folk": {
+          "normal": 22.1,
+          "deuteranopia": 21.4
         }
       },
       "Dwarf": {
@@ -1380,6 +1432,10 @@
         "Cult": {
           "normal": 39.9,
           "deuteranopia": 29.5
+        },
+        "Ice Folk": {
+          "normal": 26.8,
+          "deuteranopia": 22.9
         }
       },
       "Candy": {
@@ -1410,6 +1466,10 @@
         "Cult": {
           "normal": 39.1,
           "deuteranopia": 34.7
+        },
+        "Ice Folk": {
+          "normal": 33.5,
+          "deuteranopia": 31.5
         }
       },
       "Cult": {
@@ -1440,13 +1500,51 @@
         "Candy": {
           "normal": 39.1,
           "deuteranopia": 34.7
+        },
+        "Ice Folk": {
+          "normal": 27.2,
+          "deuteranopia": 14.9
+        }
+      },
+      "Ice Folk": {
+        "Human": {
+          "normal": 23.7,
+          "deuteranopia": 20.6
+        },
+        "Undead": {
+          "normal": 22.5,
+          "deuteranopia": 15.9
+        },
+        "Goblin": {
+          "normal": 24.8,
+          "deuteranopia": 24.2
+        },
+        "Dinosaur": {
+          "normal": 4.8,
+          "deuteranopia": 3.2
+        },
+        "Martian": {
+          "normal": 22.1,
+          "deuteranopia": 21.4
+        },
+        "Dwarf": {
+          "normal": 26.8,
+          "deuteranopia": 22.9
+        },
+        "Candy": {
+          "normal": 33.5,
+          "deuteranopia": 31.5
+        },
+        "Cult": {
+          "normal": 27.2,
+          "deuteranopia": 14.9
         }
       }
     },
     "weakestPair": {
-      "pair": "Dwarf / Goblin",
-      "normal": 14.1,
-      "deuteranopia": 8.6
+      "pair": "Dinosaur / Ice Folk",
+      "normal": 4.8,
+      "deuteranopia": 3.2
     }
   }
 }

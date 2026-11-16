@@ -547,10 +547,12 @@ export function iceFolkResearchV7(
   if (view.viewer.faction !== "ICE_FOLK") return null;
   const owned = new Set(view.viewer.researchedTechs);
   const tree = factionTreeV7(view.viewer.faction);
-  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Walrus is
+  // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137) made the Walrus
   // Rime's, a Naval technology no seat may research on Dry Land (or where a
   // mission forbids it), so a chain through a forbidden technology is
-  // passed by.
+  // passed by. The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the
+  // Walrus is Deep Winter's again (the root, then Deep Winter), so the early
+  // plan is Scouting (the Sled), the root and Deep Winter, as in 7r56.
   const forbidden = forbiddenTechnologiesV7(view.setup, view.viewer.seat);
   const chainTo = (target: TechnologyIdV7): readonly TechnologyIdV7[] => {
     const result: TechnologyIdV7[] = [];

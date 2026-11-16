@@ -373,10 +373,9 @@ export function buildMissionStateV7(
       )
         fail(`a unit blockades another seat's dock at ${coordText(at)}`);
       const naval = NAVAL_ROLES_V7.has(written.role);
-      // The frozen sea (naval branch section 8.11): the Ice Folk have no
-      // ships.
-      if (naval && player.faction === "ICE_FOLK")
-        fail(`an Ice Folk seat has no ships (at ${coordText(at)})`);
+      // The frozen sea (naval branch section 8.11) gave the Ice Folk no
+      // ships; their sea beasts (`pulp_wars-lf1r`, 7r142) stand on the
+      // water as ships do (a mission places them on open water).
       const mechanics = roleMechanicsV7(written.role, player.faction);
       const navigation = player.researchedTechs.includes("NAVIGATION");
       const standable = naval

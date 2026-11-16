@@ -3,6 +3,7 @@ import {
   BASIC_ECONOMIC_ACTIONS_V7,
   COLD_SNAP_RANGE_V7,
   isIceAtV7,
+  seatKindWalksIceV7,
   technologyCapabilitiesV7,
   unitIsFrozenV7,
   unitMayActAfterMoveV7,
@@ -907,9 +908,9 @@ function nextOf(
  * In this order, the first want whose next technology is offered:
  *
  * - **Rime** when a crossing exists, or a visible hostile ship is within 3
- *   of an own city center (Rime makes the home ice and, since the naval
- *   branch rebuilt, `pulp_wars-tzk6`, 7r137, trains the Walrus; the army
- *   growth also asks for it as the Walrus's technology);
+ *   of an own city center (Rime makes the home ice and, since the Ice
+ *   Folk sea beasts, `pulp_wars-lf1r`, 7r142, trains the Narwhal Riders;
+ *   the Walrus is Deep Winter's again, Rime's from 7r137);
  * - **Pack Ice** when the crossing needs Deep Water;
  * - **Harpoons** (Black Ice before 7r137) at the due 1170 once a hostile
  *   unit afloat (a ship or a transport) is visible within 3 of own
@@ -1514,7 +1515,9 @@ export function iceTargetBonusV7(
  * Ice it may Crack (its own, a hostile seat's, an eliminated seat's, with
  * no building on it) is passable at `ICE_LANE_EXTRA_STEPS_V7` more (one
  * Crack breaks any ice since `pulp_wars-tzk6`, 7r137); an ally's ice and
- * built ice are closed (undefined).
+ * built ice are closed (undefined). The Ice Folk sea beasts
+ * (`pulp_wars-lf1r`, 7r142): for an Ice Folk viewer every ice tile is a
+ * step of 1, built or not (its units afloat swim on ice as on water).
  */
 export function iceRouteStepCostV7(
   view: PlayerViewV7,
@@ -1522,7 +1525,7 @@ export function iceRouteStepCostV7(
   at: CoordV7,
 ): number | undefined {
   const entry = iceEntry(view, at);
-  if (entry === undefined) return 1;
+  if (entry === undefined || seatKindWalksIceV7(view, view.viewer.id)) return 1;
   if (entry.ownerId !== view.viewer.id && isAllied(entry.ownerId))
     return undefined;
   const tile = exploredTile(view, at);

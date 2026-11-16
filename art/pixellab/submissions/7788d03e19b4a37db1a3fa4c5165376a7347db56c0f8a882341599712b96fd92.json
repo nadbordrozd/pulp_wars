@@ -1,0 +1,36 @@
+{
+  "id": "iceberg-b",
+  "jobId": "55538eb7-c440-4804-88fd-310dabdf2f11",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-battleship",
+    "subject": "UNIT:ICE_FOLK:BATTLESHIP",
+    "faction": "ICE_FOLK",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96662,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, waterline, thick black outline and style, nothing under the body."
+      }
+    ],
+    "prompt": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "negativePrompt": "",
+    "description": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "editInstruction": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "source": {
+      "recipe": "ice-folk-battleship-pennant-edit-a",
+      "candidate": 0,
+      "sha256": "a7d95365c29bc62b8fb75fa62ccb8da63764a6e2c47acc5778a1e4e194e02de8"
+    }
+  }
+}

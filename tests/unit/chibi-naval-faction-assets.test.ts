@@ -79,13 +79,12 @@ const SPRITES: readonly (readonly [
   ["UNIT", "SUBMARINE", "submarine", "chibi-submarine"],
   ["PORTRAIT", "SUBMARINE", "portrait-submarine", "chibi-portrait-submarine"],
 ];
-/** The Ice Folk have no Submarine raster (RULESET_7_NAVAL_BRANCH.md, 14.3). */
 /**
  * The Cult has its four map sprites (bead pulp_wars-mch9.15) and its three
- * ship portraits (bead pulp_wars-mch9.23).
+ * ship portraits (bead pulp_wars-mch9.23). The Ice Folk have their Orca and
+ * its portrait since the Ice Folk sea beasts (pulp_wars-lf1r, 7r142; no
+ * Submarine raster before), so every fleet has every sprite.
  */
-const hasSprite = (faction: FactionIdV7, role: NavalArtRoleV7): boolean =>
-  !(faction === "ICE_FOLK" && role === "SUBMARINE");
 
 const masterFile = (asset: { readonly url: string }): string =>
   path.join(ROOT, "public", asset.url.replace(/^.*?assets\//, "assets/"));
@@ -117,7 +116,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
       ["CULT", "cult"] as const,
     ]
       .flatMap(([faction, slug]) =>
-        SPRITES.filter(([, role]) => hasSprite(faction, role)).map(
+        SPRITES.map(
           ([kind, role, suffix]) =>
             `${faction} ${kind} ${role} chibi-naval-${slug}-${suffix} ${navalFactionArtSubjectV7(faction, kind, role)}`,
         ),
@@ -131,8 +130,9 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
     ).toEqual(expected);
     // 40 rasters of the eight fleets, and the Submarine and its portrait of
     // the seven seafaring factions (bead pulp_wars-5ti.6); the Cult's four
-    // map sprites and (bead pulp_wars-mch9.23) its three ship portraits.
-    expect(expected).toHaveLength(61);
+    // map sprites and (bead pulp_wars-mch9.23) its three ship portraits;
+    // the Ice Folk Orca and its portrait (pulp_wars-lf1r).
+    expect(expected).toHaveLength(63);
     // The Humans keep the shared subjects; the others get their own.
     expect(navalFactionArtSubjectV7("ORIGINAL", "UNIT", "PATROL_BOAT")).toBe(
       "UNIT:PATROL_BOAT",
@@ -314,11 +314,16 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
           [shared.width, shared.height, shared.assetClass],
         );
         // The Plesiosaur (`pulp_wars-5ti.18`): a sea reptile whose front
-        // flipper reaches further left than a hull, drawn 2 px further right.
+        // flipper reaches further left than a hull, drawn 2 px further right;
+        // the Orca and the Narwhal Riders (`pulp_wars-lf1r`), whose head and
+        // tusk reach further still, 4 px.
         expect(chibiAnchorV7(asRegistered(asset)), asset.id).toEqual(
           asset.id === "chibi-naval-dinosaur-submarine"
             ? { x: chibiAnchorV7(shared).x - 2, y: chibiAnchorV7(shared).y }
-            : chibiAnchorV7(shared),
+            : asset.id === "chibi-naval-ice-folk-submarine" ||
+                asset.id === "chibi-naval-ice-folk-patrol-boat"
+              ? { x: chibiAnchorV7(shared).x - 4, y: chibiAnchorV7(shared).y }
+              : chibiAnchorV7(shared),
         );
         const master = await readRaster(masterFile(asset));
         expect([master.width, master.height], asset.id).toEqual([

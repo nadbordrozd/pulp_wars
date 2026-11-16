@@ -436,6 +436,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::martianProjectedKillersV7": "BOARD",
     "src/ai/v7.ts::martianSoleDefenderBesideV7": "BOARD",
     "src/ai/v7.ts::navalPlanWorkV7": "BOARD",
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the fleet-only plan
+    // of a seat that never embarks reads the hostile units afloat on the
+    // board in the public view (a burrowed unit is never afloat).
+    "src/ai/v7.ts::fleetOnlyNavalPlanV7": "BOARD",
     // The third pass (`pulp_wars-9s0.14`): the sailors gathered at a Port
     // and the transports of a wave are units on the board in the public
     // view (a burrowed unit neither boards nor lands); so are the units a

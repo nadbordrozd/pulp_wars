@@ -1,5 +1,6 @@
 import {
   HARPOON_ATTACK2_V7,
+  effectiveRoleRuleV7,
   ICE_FORTRESS_RANGE_BONUS_V7,
   ICE_SEA_DOG_UNITS_V7,
   UNDER_THE_ICE_POPULATION_V7,
@@ -94,8 +95,13 @@ export const ICE_WALKERS_RULE_V7 =
   "Only Ice Folk units and units that fly or stride go onto ice. Every other land unit stops at its edge and may crack it instead.";
 export const ICE_STAYS_RULE_V7 =
   "Ice never melts; it is gone only when someone cracks it.";
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the Help row that said
+ * "No ships" ("Ships cannot enter ice; the Ice Folk have no ships at all").
+ */
+export const SEA_BEASTS_LABEL_V7 = "Sea beasts";
 export const NO_SHIPS_RULE_V7 =
-  "Ships cannot enter ice; the Ice Folk have no ships at all.";
+  "Ships cannot enter ice. The Ice Folk train sea beasts at a Fishing Hole instead: they swim on ice as on water and never go on land.";
 /** The border freeze (`pulp_wars-5ti.31`). */
 export const BORDER_ICE_LABEL_V7 = "Border ice";
 export const BORDER_ICE_RULE_V7 =
@@ -126,7 +132,7 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],
   [ICED_DOCK_LABEL_V7, ICED_DOCK_RULE_V7],
   ["Build", ICE_BUILD_RULE_V7],
-  ["No ships", NO_SHIPS_RULE_V7],
+  [SEA_BEASTS_LABEL_V7, NO_SHIPS_RULE_V7],
   [SWIM_LABEL_V7, SWIM_RULE_V7],
   [HARPOONS_LABEL_V7, HARPOONS_RULE_V7],
   [ICE_FORTRESS_LABEL_V7, ICE_FORTRESS_RULE_V7],
@@ -149,7 +155,7 @@ export const FREEZE_SHALLOW_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice 
 /** The border freeze (`pulp_wars-5ti.31`): the Ice Folk Land Grant line. */
 export const ICE_LAND_GRANT_UNLOCK_V7 =
   "Land Grant: with Rime, the water inside the city's borders, old and new, freezes";
-export const FREEZE_DEEP_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on deep water too, and Walruses swim there`;
+export const FREEZE_DEEP_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on deep water too, and Walruses and sea beasts go there`;
 /**
  * The naval branch rebuilt (`pulp_wars-tzk6`, 7r137,
  * docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): the card lines of
@@ -159,7 +165,16 @@ export const FREEZE_DEEP_UNLOCK_V7 = `${ICE_LABEL_V7}: your freezes make ice on 
 export const HARPOONS_UNLOCK_V7 = `${HARPOONS_LABEL_V7}: +${HARPOON_ATTACK2_V7 / 2} Attack against ships and boats`;
 export const ICE_FORTRESS_UNLOCK_V7 = `${ICE_FORTRESS_LABEL_V7}: fortify a Fishing Hole: a unit on it is fortified and shoots ${ICE_FORTRESS_RANGE_BONUS_V7} further`;
 export const UNDER_THE_ICE_UNLOCK_V7 = `${UNDER_THE_ICE_LABEL_V7}: dive between your Fishing Holes; each hole gives +${UNDER_THE_ICE_POPULATION_V7} population`;
-export const ICE_NO_SHIPS_NOTE_V7 = "The Ice Folk build no ships";
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): Rime's card note ("The
+ * Ice Folk build no ships" before), and the Ice Fortress card's discount
+ * line (the Shipyard's "Shipyards discount naval training by 2 Coins").
+ */
+export function iceSeaBeastNoteV7(): string {
+  return `${effectiveRoleRuleV7("PATROL_BOAT", "ICE_FOLK").label}: sea beasts trained at a Fishing Hole; they swim on ice as on water`;
+}
+export const ICE_FORTRESS_DISCOUNT_NOTE_V7 =
+  "Ice Fortresses discount sea beast training by 2 Coins";
 
 /**
  * The reasons a unit cannot act (Crack Ice's; the `FREEZE` button and its

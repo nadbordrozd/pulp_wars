@@ -2338,3 +2338,39 @@ What PixelLab did, added to the prompt notes of the earlier batches:
   back the same size; a fresh creation whose subject line names a huge
   head, a thick body and huge wings drew the bigger drake, and recolour
   edits brought it to the accepted look.
+
+## The Ice Folk sea beasts (bead `pulp_wars-lf1r`)
+
+The Ice Folk Patrol Boat, Battleship and Submarine became the Narwhal
+Riders, the Iceberg and the Orca (ruleset `7r142`), redrawn in batch
+`naval-ice-folk` with new `subjectKey` lines (`…/NARWHAL`, `…/ICEBERG`,
+`…/ORCA`) and two new assets, the Orca and its portrait. Every accepted
+recipe is an `edit-image-pixen` edit, so canvases and waterlines are the
+fleet's:
+
+- **The Narwhal Riders and the Orca are edits of the Dinosaur Plesiosaur**
+  (a cross-batch source, `"batch": "naval-dinosaur"`), a sea beast already
+  low in the water on the Submarine canvas; "Turn the plesiosaur into …"
+  kept the waterline. The Narwhal's tusk came out as a stub on one seed
+  (rejected) and as a long spiral tusk on the other.
+- **Edits of a sea animal drew water under it**: both Orca seeds sat in a
+  puddle; one "erase the water puddle" edit (as `goblin-submarine-a-dry`)
+  removed it in both candidates.
+- **The Iceberg is an edit of the war longship**; one seed drew a block
+  house of ice with windows (rejected), the other a jagged berg on a navy
+  slab, and an edit removed the slab.
+- **Seating and anchors.** The Plesiosaur source sits 8 px above the Patrol
+  Boat's waterline, so the Narwhal Riders take `bottomMargin` 8 and the
+  Iceberg 11 (the shared ships' bottoms, 79 and 84); the Narwhal's tusk and
+  the Orca's head reach further left than a hull, so they are anchored 4 px
+  right of the shared ship, at (32, 48) and (28, 48), clear of the HP bar
+  and seat badge strips. A re-seat or re-anchor is `accept` of the same
+  candidate again (no PixelLab call).
+- The submerged Orca is derived by `scripts/art/naval-branch/submerged.ts`
+  (its id appended to `SUBMARINE_ASSET_IDS`), and the unit shadow table
+  was re-measured (`art:unit-shadows-measure`).
+
+`npm run art:naval-branch-ice-review` draws the three on the ice scene
+(the Narwhal Riders on permanent ice, the Orca submerged under it, the
+Iceberg on deep water), and `npm run art:chibi-naval-faction-review` has
+the Orca as the ninth Submarine column.

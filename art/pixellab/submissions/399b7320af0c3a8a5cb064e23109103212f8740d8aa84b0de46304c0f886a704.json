@@ -1,0 +1,36 @@
+{
+  "id": "iceberg-b-base-edit",
+  "jobId": "98ab13aa-bcc0-4611-beb1-db91d296afb1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-battleship",
+    "subject": "UNIT:ICE_FOLK:BATTLESHIP",
+    "faction": "ICE_FOLK",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96663,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the dark navy blue slab along the bottom of the iceberg, so the white snow and pale ice at the bottom edge of the iceberg is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the iceberg, its peaks, ice crystals, the hide tent, the banner, the hunters, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the dark navy blue slab along the bottom of the iceberg, so the white snow and pale ice at the bottom edge of the iceberg is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the iceberg, its peaks, ice crystals, the hide tent, the banner, the hunters, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the dark navy blue slab along the bottom of the iceberg, so the white snow and pale ice at the bottom edge of the iceberg is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the iceberg, its peaks, ice crystals, the hide tent, the banner, the hunters, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the dark navy blue slab along the bottom of the iceberg, so the white snow and pale ice at the bottom edge of the iceberg is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the iceberg, its peaks, ice crystals, the hide tent, the banner, the hunters, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "iceberg-b",
+      "candidate": 0,
+      "sha256": "2408300b38ce6513504e95127becf26cc484881e2b7168b39d1bde8f442cef17"
+    }
+  }
+}

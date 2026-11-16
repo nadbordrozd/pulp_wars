@@ -9,6 +9,7 @@ import {
 import {
   FREEZE_DEEP_UNLOCK_V7,
   FREEZE_SHALLOW_UNLOCK_V7,
+  iceSeaBeastNoteV7,
   HARPOONS_UNLOCK_V7,
   ICE_FORTRESS_UNLOCK_V7,
   UNDER_THE_ICE_UNLOCK_V7,
@@ -386,10 +387,12 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     expect(FREEZE_SHALLOW_UNLOCK_V7).toBe(
       "Ice: your freezes make ice on shallow water, and the water inside your borders freezes now and whenever they grow",
     );
-    expect(rime).toContain("The Ice Folk build no ships");
-    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Rime trains the
-    // Walrus.
-    expect(rime.join(" ")).toContain("Walrus");
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): Rime trains the
+    // Narwhal Riders (the Walrus from 7r137 to 7r141, "The Ice Folk build
+    // no ships" before).
+    expect(rime).toContain(iceSeaBeastNoteV7());
+    expect(rime.join(" ")).toContain("Narwhal Riders");
+    expect(rime.join(" ")).not.toContain("Walrus");
     expect(rime.join(" ")).not.toMatch(/embark|Patrol Boat/i);
     expect(lines("navigation")).toContain(FREEZE_DEEP_UNLOCK_V7);
     expect(lines("navigation").join(" ")).not.toContain("Ships can sail");

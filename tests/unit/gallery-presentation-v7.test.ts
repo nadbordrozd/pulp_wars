@@ -9,7 +9,6 @@ import {
   OFFERED_FACTION_IDS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
-  isNavalRoleV7,
 } from "../../src/engine/index";
 import {
   DEFAULT_GALLERY_FILTERS_V7,
@@ -66,13 +65,12 @@ describe("Gallery presentation", () => {
     for (const faction of OFFERED_FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         const cell = galleryUnitCellV7(role, faction);
-        // The frozen sea: the Ice Folk have no ships (an empty cell).
-        // The ninth unit (`pulp_wars-w49.17`, 7r55): every faction has
+        // The frozen sea gave the Ice Folk no ships (an empty cell) until
+        // their sea beasts (`pulp_wars-lf1r`, 7r142). The ninth unit (`pulp_wars-w49.17`, 7r55): every faction has
         // a heavy line unit. The Cult redesign (`pulp_wars-mch9.31`): but
         // the Cult's `KNIGHT` and `SWORDSMAN` slots are vacant (empty).
         expect(cell.kind, `${faction} ${role}`).toBe(
-          (faction === "ICE_FOLK" && isNavalRoleV7(role)) ||
-            (faction === "CULT" && (role === "KNIGHT" || role === "SWORDSMAN"))
+          faction === "CULT" && (role === "KNIGHT" || role === "SWORDSMAN")
             ? "EMPTY"
             : "UNIT",
         );

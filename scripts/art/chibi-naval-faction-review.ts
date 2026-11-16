@@ -81,9 +81,9 @@ const FACTIONS: readonly (readonly [FactionIdV7, string, string])[] = [
 ];
 /**
  * The seafaring factions of the Submarine sheet (bead pulp_wars-5ti.6): the
- * Ice Folk have no Submarine, the Dwarves and the Candy do, and (themed
- * naval branches, `pulp_wars-5ti.22`) the Cult's Kraken joins as the eighth
- * row.
+ * Dwarves and the Candy have one, (themed naval branches, `pulp_wars-5ti.22`)
+ * the Cult's Kraken joins as the eighth row, and (the Ice Folk sea beasts,
+ * `pulp_wars-lf1r`, 7r142) the Ice Folk Orca as the ninth.
  */
 const SUBMARINE_FACTIONS: readonly (readonly [FactionIdV7, string, string])[] =
   [
@@ -95,6 +95,7 @@ const SUBMARINE_FACTIONS: readonly (readonly [FactionIdV7, string, string])[] =
     ["DWARF", "Dwarf", "dwarf"],
     ["CANDY", "Candy", "candy"],
     ["CULT", "Cult", "cult"],
+    ["ICE_FOLK", "Ice Folk", "ice-folk"],
   ];
 const ROLE_KEY: Readonly<Record<NavalArtRoleV7, string>> = {
   PATROL_BOAT: "patrol-boat",

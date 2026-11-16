@@ -41,6 +41,7 @@ import { ninthUnitRecruitNotesV7 } from "./ninth-unit-presentation-v7";
 import {
   navalRamDescriptionV7,
   SEA_BEAST_RULE_V7,
+  ICE_SWIMMER_RULE_V7,
   SUBMERGED_RULE_V7,
   TORPEDO_RULE_V7,
   navalAbilityNameV7,
@@ -266,6 +267,9 @@ export function roleAbilityDescriptionV7(
     // Plesiosaur.
     case "SEA_BEAST":
       return SEA_BEAST_RULE_V7;
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142).
+    case "ICE_SWIMMER":
+      return ICE_SWIMMER_RULE_V7;
     default:
       return null;
   }

@@ -22,6 +22,7 @@ import {
   HUMAN_ONLY_ROLES_V7,
   factionFieldsRoleV7,
   factionUnlocksRoleV7,
+  factionRulesV7,
   isEggLaidRoleV7,
   isNavalRoleV7,
   roleMechanicsV7,
@@ -445,7 +446,7 @@ export type GalleryUnitCellV7 =
 /** The Gallery's words for a faction with no ship in a naval row. */
 export const GALLERY_NO_SHIPS_LABEL_V7 = "Ice";
 export const GALLERY_NO_SHIPS_TEXT_V7 =
-  "No ships: the Ice Folk freeze the sea and walk across it";
+  "No transports: the Ice Folk freeze the sea and walk across it";
 
 /** A faction lays Eggs when one of its roles is egg-laid (the Dinosaurs). */
 export function factionLaysEggsV7(faction: FactionIdV7): boolean {
@@ -457,9 +458,13 @@ export function galleryUnitCellV7(
   faction: FactionIdV7,
 ): GalleryUnitCellV7 {
   // The frozen sea (naval branch section 8.11): a faction whose tree unlocks
-  // no ship (the Ice Folk) has no ship and no transport.
+  // no ship has no ship and no transport. The Ice Folk sea beasts
+  // (`pulp_wars-lf1r`, 7r142): the Ice Folk have sea beasts but never
+  // embark, so they have no transport.
   if (
-    (row === "TRANSPORT" && !factionUnlocksRoleV7(faction, "PATROL_BOAT")) ||
+    (row === "TRANSPORT" &&
+      (!factionUnlocksRoleV7(faction, "PATROL_BOAT") ||
+        factionRulesV7(faction).snow)) ||
     (row !== "TRANSPORT" &&
       row !== "EGG" &&
       isNavalRoleV7(row) &&

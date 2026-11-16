@@ -195,11 +195,13 @@ describe("Ruleset 7 Gallery", () => {
     // The Cultists' column (pulp_wars-mch9.20) adds thirteen units and one
     // empty Egg cell (101 and 11 before). The Cult redesign
     // (`pulp_wars-mch9.31`): its Knight and Swordsman cells are empty (the
-    // Caller and the Chosen retired; 114 and 12 before).
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(112);
+    // Caller and the Chosen retired; 114 and 12 before). The Ice Folk sea
+    // beasts (`pulp_wars-lf1r`, 7r142) fill three of the Ice Folk cells
+    // (112 and 14 before).
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(115);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(14);
+    ).toHaveLength(11);
     expect(
       [
         ...document.querySelectorAll<HTMLElement>(
@@ -249,20 +251,22 @@ describe("Ruleset 7 Gallery", () => {
         ),
         faction,
       ).toHaveLength(9);
-    // The frozen sea (`pulp_wars-5ti.7`): the four Ice Folk cells are empty
-    // on purpose and say why; the seven Egg cells keep their dash, and so
-    // do the seven Swordsman cells of the other factions (tuning 5).
+    // The frozen sea (`pulp_wars-5ti.7`): the four Ice Folk cells were empty
+    // on purpose and said why; since the Ice Folk sea beasts
+    // (`pulp_wars-lf1r`, 7r142) only the transport cell is (they never
+    // embark). The seven Egg cells keep their dash, and so do the seven
+    // Swordsman cells of the other factions (tuning 5).
     const frozen = [
       ...document.querySelectorAll<HTMLElement>(
         ".v7-gallery-cell-wrap.is-frozen",
       ),
     ];
-    expect(frozen).toHaveLength(4);
+    expect(frozen).toHaveLength(1);
     for (const cell of frozen) {
       expect(cell.dataset.faction).toBe("ICE_FOLK");
       expect(cell.dataset.emptyReason).toBe("no-ships");
       expect(cell.getAttribute("aria-label")).toBe(
-        "No ships: the Ice Folk freeze the sea and walk across it",
+        "No transports: the Ice Folk freeze the sea and walk across it",
       );
       expect(cell.textContent).toBe("Ice");
       expect(cell.querySelector('[data-icon="snowflake"]')).not.toBeNull();
@@ -345,8 +349,9 @@ describe("Ruleset 7 Gallery", () => {
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
     // (94 before the ninth unit, 7r55; 101 before the Cultists' column;
-    // 114 before the Cult redesign's vacant slots, `pulp_wars-mch9.31`.)
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(112);
+    // 114 before the Cult redesign's vacant slots, `pulp_wars-mch9.31`;
+    // 112 before the Ice Folk sea beasts, `pulp_wars-lf1r`.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(115);
   });
 
   it("shows every Monument to a browser that stored its filters before they had rows", () => {

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-narwhal-riders-a",
+  "jobId": "979d1526-de93-4a9e-9b80-89d5145430b0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-portrait-patrol-boat",
+    "subject": "PORTRAIT:ICE_FOLK:PATROL_BOAT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96681,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, black outline and style; no water, transparent background."
+      }
+    ],
+    "prompt": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, black outline and style; no water, transparent background.",
+    "negativePrompt": "",
+    "description": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, black outline and style; no water, transparent background.",
+    "editInstruction": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, black outline and style; no water, transparent background.",
+    "source": {
+      "batch": "naval-dinosaur",
+      "recipe": "portrait-plesiosaur-a",
+      "candidate": 0,
+      "sha256": "d7207eaad3c8d2c06f48e7cd120164af202f6f2a9f367c4c5de8fb2223d5c7b8"
+    }
+  }
+}

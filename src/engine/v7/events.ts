@@ -1054,8 +1054,13 @@ export type DomainEventV7 =
       readonly role: NavalRoleIdV7;
       readonly cost: number;
       readonly at: CoordV7;
-      readonly dock: "PORT" | "SHIPYARD";
-      readonly discountSource: "SHIPYARD" | null;
+      /**
+       * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk seat
+       * trains at a Fishing Hole or an Ice Fortress (2 Coins less, as a
+       * Shipyard) as well as at a captured dock.
+       */
+      readonly dock: "PORT" | "SHIPYARD" | "FISHING_HOLE" | "ICE_FORTRESS";
+      readonly discountSource: "SHIPYARD" | "ICE_FORTRESS" | null;
     }
   | {
       /**

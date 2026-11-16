@@ -80,6 +80,15 @@ import type { MissionDefinitionV7 } from "./types";
  * Engineering (Hoarfrost before, which unlocked nothing) builds the Ice
  * Fortress on a Fishing Hole. The board and the seats are unchanged; the
  * retune for the new kit is the campaign bead's.
+ *
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142, CAMPAIGN.md section
+ * 29): Rime trains the Narwhal Riders instead of the Walrus (Deep Winter's
+ * again, which this seat does not know: its one Walrus is the one Guard
+ * nobody can train, as before 7r137), so the swimmers sent at the boats are
+ * the Narwhal Riders; Naval Engineering would train the Iceberg, a
+ * Battleship that shells the shore from the strait (the reason Anvil Bay
+ * may not build its own Ironclad), so it is no longer known and is
+ * forbidden: the road across the ice stays the way over. Revision 7.
  */
 export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_3",
@@ -92,7 +101,9 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   // Launch, since a Freeze no longer locks a boat in for good.
   // Revision 6 (`pulp_wars-s55m.7`, iteration 2): the second Steam Launch
   // is back (a comfortable 3-star win in round 12 with the Frost Wyrm).
-  revision: 6,
+  // Revision 7 (`pulp_wars-lf1r`, 7r142): Naval Engineering (the Iceberg
+  // since the Ice Folk sea beasts) is no longer known and is forbidden.
+  revision: 7,
   seed: 20261603,
   // <map>
   size: 16,
@@ -190,15 +201,12 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
       // Retune 3: Rime (freeze the shallows) and Pack Ice (the deep water)
       // are all the learning there is; Icebound is a research away. Retune
       // 4: Gathering, Scouting and Icebound (Hoarfrost since
-      // `pulp_wars-s55m.1`) known, 6 Coins.
+      // `pulp_wars-s55m.1`) known, 6 Coins. Revision 7 (`pulp_wars-lf1r`,
+      // 7r142): Naval Engineering is the Iceberg now, so it is forgotten and
+      // forbidden (below); Rime trains the Narwhal Riders.
       coins: 6,
-      technologies: [
-        "GATHERING",
-        "SCOUTING",
-        "SHORECRAFT",
-        "NAVIGATION",
-        "NAVAL_ENGINEERING",
-      ],
+      technologies: ["GATHERING", "SCOUTING", "SHORECRAFT", "NAVIGATION"],
+      forbiddenTechnologies: ["NAVAL_ENGINEERING"],
       cities: [
         {
           name: "Coldharbour",
@@ -213,7 +221,8 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 6, y: 11 } },
         { role: "FIGHTER", at: { x: 4, y: 11 } },
         // A Walrus (the one Guard nobody could train before 7r137; Rime
-        // trains it since the naval branch rebuilt, `pulp_wars-tzk6`).
+        // trained it from the naval branch rebuilt, `pulp_wars-tzk6`, to
+        // 7r141; Deep Winter's again, unknown here, since `pulp_wars-lf1r`).
         { role: "GUARD", at: { x: 5, y: 12 } },
         // Retune 4: a Sled.
         { role: "RAIDER", at: { x: 4, y: 12 } },

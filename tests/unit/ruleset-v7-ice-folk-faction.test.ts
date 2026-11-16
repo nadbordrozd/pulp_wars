@@ -640,8 +640,9 @@ const ROSTER = [
   [
     "Walrus",
     "GUARD",
-    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Rime's.
-    "SHORECRAFT",
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): Rime's; the Ice
+    // Folk sea beasts (`pulp_wars-lf1r`, 7r142): Deep Winter's again.
+    "FORTIFICATION",
     4,
     16,
     3,
@@ -855,14 +856,25 @@ describe("Ice Folk roster (section 3)", () => {
     });
     expect(mechanics("FIGHTER").rockfallAttack2).toBe(ROCKFALL_ATTACK2_V7);
     expect(mechanics("MARKSMAN").coldBloodBonus2).toBe(COLD_BLOOD_BONUS2_V7);
-    // The boats are the Human boats.
-    for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
-      expect(effectiveRoleRuleV7(role, "ICE_FOLK")).toEqual(
-        effectiveRoleRuleV7(role, "ORIGINAL"),
-      );
-      expect(roleMechanicsV7(role, "ICE_FOLK")).toEqual(
-        roleMechanicsV7(role, "ORIGINAL"),
-      );
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the boats have the
+    // Human boats' numbers, their own names, the Ice swimmer line and no
+    // Ram, and are never boarded.
+    for (const role of ["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"] as const) {
+      const ice = effectiveRoleRuleV7(role, "ICE_FOLK");
+      const human = effectiveRoleRuleV7(role, "ORIGINAL");
+      expect({ ...ice, label: "", abilities: [] }).toEqual({
+        ...human,
+        label: "",
+        abilities: [],
+      });
+      expect(ice.abilities).toEqual([
+        ...human.abilities.filter((ability) => ability !== "RAM"),
+        "ICE_SWIMMER",
+      ]);
+      expect(roleMechanicsV7(role, "ICE_FOLK")).toEqual({
+        ...roleMechanicsV7(role, "ORIGINAL"),
+        seaBeast: true,
+      });
     }
   });
 
@@ -1118,20 +1130,16 @@ describe("Ice Folk technology (section 4)", () => {
         human.branch,
         human.tier,
         human.prerequisites,
-        // The frozen sea (naval branch sections 2.2 and 8.11): no ship. The
-        // naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Walrus is
-        // Rime's, not Fortification's.
-        human.id === "SHORECRAFT"
-          ? ["GUARD"]
-          : human.unlockedRoles.filter(
-              (role) => !isNavalRoleV7(role) && role !== "GUARD",
-            ),
+        // The frozen sea (naval branch sections 2.2 and 8.11) had no ship,
+        // and the naval branch rebuilt (`pulp_wars-tzk6`, 7r137) the Walrus
+        // at Rime. The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): every
+        // role where the Humans have it (the ships are the sea beasts).
+        human.unlockedRoles,
       ]);
       const ICE_NAVAL: Readonly<Record<string, readonly unknown[]>> = {
         // The frozen sea redesign (`pulp_wars-5ti.25`): Rime unlocks the
         // Fishing Hole; Glacier is thick ice (no turns).
         SHORECRAFT: [
-          { kind: "UNIT_ROLE", role: "GUARD" },
           { kind: "FREEZE", depth: "SHALLOW" },
           { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
         ],
@@ -1144,14 +1152,14 @@ describe("Ice Folk technology (section 4)", () => {
         SUBMERSIBLES: [{ kind: "UNDER_THE_ICE" }],
       };
       if (human.branch === "NAVAL") {
-        // The five Naval nodes keep their economic unlocks, lose every
-        // ship, the Ram, and Board, and gain the ice unlocks. Ice Folk
-        // movement (`pulp_wars-s55m.2`): they lose the docks, Harbours,
-        // and the naval training discount too.
+        // The five Naval nodes keep their economic unlocks, lose the Ram
+        // and Board, and gain the ice unlocks. Ice Folk movement
+        // (`pulp_wars-s55m.2`): they lose the docks, Harbours, and the naval
+        // training discount too. The Ice Folk sea beasts (`pulp_wars-lf1r`,
+        // 7r142): they keep their ships (the sea beasts).
         expect(ice.unlocks, human.id).toEqual([
           ...human.unlocks.filter(
             (unlock) =>
-              !(unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) &&
               unlock.kind !== "RAM" &&
               unlock.kind !== "BOARDING" &&
               unlock.kind !== "HARBOURS" &&
@@ -1176,8 +1184,12 @@ describe("Ice Folk technology (section 4)", () => {
         );
       else if (human.id === "FORTIFICATION")
         // (The Industry reshuffle, 7r56, put the defender here; the naval
-        // branch rebuilt, `pulp_wars-tzk6`, 7r137, moved the Walrus to Rime.)
-        expect(ice.unlocks).toEqual([{ kind: "DEEP_WINTER" }]);
+        // branch rebuilt, `pulp_wars-tzk6`, 7r137, moved the Walrus to Rime;
+        // the Ice Folk sea beasts, `pulp_wars-lf1r`, 7r142, moved it back.)
+        expect(ice.unlocks).toEqual([
+          { kind: "DEEP_WINTER" },
+          { kind: "UNIT_ROLE", role: "GUARD" },
+        ]);
       else if (human.id === "EXPLOSIVES")
         expect(ice.unlocks).toEqual([...human.unlocks, { kind: "BRITTLE" }]);
       // The Ice Folk roster rework (`pulp_wars-s55m.4`): Chivalry grants no
@@ -1242,11 +1254,10 @@ describe("Ice Folk technology (section 4)", () => {
     });
     const ice = technologyCapabilitiesV7(all, "ICE_FOLK");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    // The frozen sea (naval branch section 8.11): no ship and no Board.
-    // (The ninth unit, 7r55: every faction has the heavy line role.)
-    expect(ice.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => !isNavalRoleV7(role)),
-    );
+    // The frozen sea (naval branch section 8.11): no Board. (The ninth
+    // unit, 7r55: every faction has the heavy line role; the Ice Folk sea
+    // beasts, `pulp_wars-lf1r`, 7r142: the ship roles too.)
+    expect(ice.trainableRoles).toEqual(human.trainableRoles);
     // The frozen sea redesign (`pulp_wars-5ti.25`): and the Fishing Hole
     // (and the Ice Fortress, `pulp_wars-tzk6`, 7r137).
     expect(
@@ -1283,10 +1294,10 @@ describe("Ice Folk technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "ICE_FOLK").label);
     expect(role("SCOUTING")).toEqual(["Sled"]);
     expect(role("MARKSMANSHIP")).toEqual(["Snow Hunter"]);
-    expect(role("FORTIFICATION")).toEqual([]);
-    // (The Patrol Boat of the roster table is never trained by an Ice Folk
-    // seat: no tree of theirs unlocks a ship.)
-    expect(role("SHORECRAFT")).toEqual(["Walrus", "Patrol Boat"]);
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the Walrus is Deep
+    // Winter's again, and Rime trains the Narwhal Riders.
+    expect(role("FORTIFICATION")).toEqual(["Walrus"]);
+    expect(role("SHORECRAFT")).toEqual(["Narwhal Riders"]);
     expect(role("METALLURGY")).toEqual(["Mammoth"]);
     expect(role("ADMINISTRATION")).toEqual(["Ice Witch"]);
     expect(role("SAWMILLING")).toEqual(["Snow Golem"]);

@@ -177,13 +177,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(PRIOR_RULESET_7_IDS.slice(-93, -91)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(PRIOR_RULESET_7_IDS.slice(-94, -92)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-93, -91)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-94, -92)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);

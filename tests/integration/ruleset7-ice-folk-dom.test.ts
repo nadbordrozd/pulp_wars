@@ -692,9 +692,14 @@ describe("Ice Folk Help and technology", () => {
     ).toBe("Deep Winter");
     // (The Industry reshuffle, 7r56, trained the defender with it; the
     // naval branch rebuilt, `pulp_wars-tzk6`, 7r137, moved the Walrus to
-    // Rime.)
-    expect(unlocks("fortification")).toEqual([DEEP_WINTER_UNLOCK_TEXT_V7]);
-    expect(unlocks("shorecraft")).toContain("Train Walrus");
+    // Rime; the Ice Folk sea beasts, `pulp_wars-lf1r`, 7r142, moved it back
+    // and gave Rime the Narwhal Riders.)
+    expect(unlocks("fortification")).toEqual([
+      "Train Walrus",
+      DEEP_WINTER_UNLOCK_TEXT_V7,
+    ]);
+    expect(unlocks("shorecraft")).toContain("Train Narwhal Riders");
+    expect(unlocks("shorecraft")).not.toContain("Train Walrus");
     expect(
       requiredButton("tech-explosives").querySelector(".v7-tech-name")
         ?.textContent,

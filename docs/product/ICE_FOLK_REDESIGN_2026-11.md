@@ -1,10 +1,38 @@
 # Ice Folk redesign: one freeze, a real naval branch (2026-11)
 
-> **Status** (2026-11-08, `pulp_wars-fofr`). A design proposal, being
+> **Status** (2026-11-08, `pulp_wars-fofr`; last change 2026-11-16, `pulp_wars-lf1r`). A design proposal, being
 > built in the beads of [section 6](#6-implementation-plan), one ruleset
 > revision each; the rules in force are
 > [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) section 21.
 >
+> - **The sea beasts, `pulp-wars-poc-7r142`** (`pulp_wars-lf1r`; the user,
+>   2026-11-16: "I would prefer that the deep winter ... unlocked the
+>   defensive unit like with all the other factions and we find something
+>   else for the naval techs to do ... some sort of unit(s) that live on
+>   the frozen water and perform the same function as ships"). Reverses
+>   bead 4's "the Walrus moves to Rime" (section 3.4 below is kept as the
+>   record): **Deep Winter trains the Walrus** again, which keeps
+>   Frostbite and its swimming. The naval nodes now unlock the ship roles
+>   as **sea beasts**, with the Human ships' numbers: Rime the **Narwhal
+>   Riders** (`PATROL_BOAT`, no Ram), the Ice Fortress the **Iceberg**
+>   (`BATTLESHIP`, a drifting ice fortress crewed by Snow Hunters; 2 Coins
+>   less at an Ice Fortress, as at a Shipyard) and Under the Ice the
+>   **Orca** (`SUBMARINE`, Submerged and Torpedo). They are trained at an
+>   active own Fishing Hole or Ice Fortress (or an own open dock), are
+>   never boarded, and **ice is water to them**: they move onto and
+>   through any ice (the ice stays), Deep Water open or iced needs Pack
+>   Ice, they never go on land, never Glide, never dive (a sea beast on a
+>   hole blocks a dive there, one unit a tile), never Crack and freeze
+>   nothing; the Orca stays Submerged under ice. Harpoons, Pack Ice, the
+>   Ice Fortress building and the dive keep what they give. The Normal AI
+>   trains them through its naval training scores and moves them on a
+>   fleet-only plan (it has no transport); its research order is the
+>   Sled, the Snow Hunter, Drill and Deep Winter (the Walrus), then the
+>   Ice Witch. `ICE_FOLK_3` (revision 7) forgets and forbids Naval
+>   Engineering (the Iceberg would shell Anvil Bay from the strait); every
+>   other Ice Folk seat that knows or may research Deep Winter trains
+>   Walruses again (CAMPAIGN.md section 29). The stat pass of section 7
+>   lists the three as ties with the Human ships by design.
 > - **Freezes ice docks, `pulp-wars-poc-7r141`** (`pulp_wars-jjzz`; the
 >   user, 2026-11-16: "I want the freezing effect to freeze water tiles
 >   even if they have a port on them"). Reverses bead 1's "docks are never
@@ -1022,7 +1050,12 @@ where the Ice Folk unit is worse):
 - **Ships:** none to pair. The Ice Folk tree unlocks no Patrol Boat,
   Battleship or Submarine (the frozen sea; bead 4 rebuilds the branch
   without ships), so the Human boats in `ICE_FOLK_ROLE_RULES_V7` are never
-  trained, found or rewarded.
+  trained, found or rewarded. **Since `7r142`** (`pulp_wars-lf1r`) the
+  Ice Folk ships are the sea beasts, the Narwhal Riders, the Iceberg and
+  the Orca, with the Human ships' numbers by design (every faction's
+  ships keep the role's numbers): each ties its Human ship on every axis
+  and is a listed exception in the test (no Ram, no transport, trained
+  only at a Fishing Hole or a dock; they swim on ice).
 - **Other sources:** the treasure unit is a Sled (the Raider row), the
   starting unit and Militia a Yeti (the Fighter row), and the level-5+
   reward a Frost Giant (the Juggernaut row). No Ice Folk unit is hired,

@@ -354,6 +354,11 @@ const ENTRIES = {
     "When it sinks it blows up and hurts every unit next to it, yours too. A boarded ship does not.",
   ],
   SEA_BEAST: ["Sea beast", "A living beast: it cannot be boarded."],
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142).
+  ICE_SWIMMER: [
+    "Ice swimmer",
+    "Swims on ice as on water, never on land; it cannot be boarded.",
+  ],
   // Themed naval branches (section 4.3 U1, `pulp_wars-5ti.17`): the
   // Undead ships (the Plague Galleon's Plague is the Lich's Plague line).
   DROWNED_CREW: [

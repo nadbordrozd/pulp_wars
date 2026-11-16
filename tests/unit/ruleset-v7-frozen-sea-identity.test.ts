@@ -68,17 +68,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(PRIOR_RULESET_7_IDS.slice(-98, -94)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(PRIOR_RULESET_7_IDS.slice(-99, -95)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(140);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(141);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-97, -94)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-98, -95)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -91,7 +91,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r141");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r142");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -204,13 +204,14 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       tree.nodes.find((node) => node.id === tech)?.unlocks;
     // Ice Folk movement (`pulp_wars-s55m.2`, 7r124): no dock unlock (no Ice
     // Harbour, no Great Harbour), no Harbours, no naval training discount.
-    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Walrus is
-    // Rime's.
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137) made the Walrus
+    // Rime's; the Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142) give Rime
+    // the Narwhal Riders (the Patrol Boat role) and Deep Winter the Walrus.
     expect(unlocks("SHORECRAFT")).toEqual([
       { kind: "COMMAND", command: "HARVEST_FISH" },
+      { kind: "UNIT_ROLE", role: "PATROL_BOAT" },
       // 7r76 (`pulp_wars-5ti.12`): the sea link (a captured dock's).
       { kind: "SEA_LINK" },
-      { kind: "UNIT_ROLE", role: "GUARD" },
       { kind: "FREEZE", depth: "SHALLOW" },
       // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
       { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
@@ -221,16 +222,27 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     ]);
     // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress,
     // Harpoons, and Under the Ice (Hoarfrost, Black Ice, Glacier before).
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`): the Iceberg and the Orca.
     expect(unlocks("NAVAL_ENGINEERING")).toEqual([
+      { kind: "UNIT_ROLE", role: "BATTLESHIP" },
       { kind: "COMMAND", command: "BUILD_ICE_FORTRESS" },
     ]);
     expect(unlocks("SEAMANSHIP")).toEqual([{ kind: "HARPOONS" }]);
-    expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "UNDER_THE_ICE" }]);
+    expect(unlocks("SUBMERSIBLES")).toEqual([
+      { kind: "UNIT_ROLE", role: "SUBMARINE" },
+      { kind: "UNDER_THE_ICE" },
+    ]);
     for (const tech of NAVAL_BRANCH) {
       const node = tree.nodes.find((entry) => entry.id === tech);
       const reference = human.nodes.find((entry) => entry.id === tech);
       expect(node?.unlockedRoles, tech).toEqual(
-        tech === "SHORECRAFT" ? ["GUARD"] : [],
+        tech === "SHORECRAFT"
+          ? ["PATROL_BOAT"]
+          : tech === "NAVAL_ENGINEERING"
+            ? ["BATTLESHIP"]
+            : tech === "SUBMERSIBLES"
+              ? ["SUBMARINE"]
+              : [],
       );
       expect([node?.tier, node?.branch, node?.prerequisites], tech).toEqual([
         reference?.tier,
@@ -300,9 +312,14 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       1,
       false,
     ]);
-    // No ship, no Ram, and no Board, whatever the seat researched.
+    // No Ram and no Board, whatever the seat researched; the sea beasts
+    // (`pulp_wars-lf1r`, 7r142) are the three ship roles.
     const all = of(NAVAL_BRANCH);
-    expect(all.trainableRoles.some((role) => isNavalRoleV7(role))).toBe(false);
+    expect(all.trainableRoles.filter((role) => isNavalRoleV7(role))).toEqual([
+      "PATROL_BOAT",
+      "BATTLESHIP",
+      "SUBMARINE",
+    ]);
     expect([all.ram, all.boarding]).toEqual([false, false]);
     expect(all.commands).not.toContain("BOARD");
     expect(all.commands).toEqual(
@@ -317,7 +334,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     expect(all.commands).not.toContain("BUILD_PORT");
     expect(all.commands).not.toContain("BUILD_SHIPYARD");
     for (const role of NAVAL_ROLE_IDS_V7) {
-      expect(factionUnlocksRoleV7("ICE_FOLK", role), role).toBe(false);
+      expect(factionUnlocksRoleV7("ICE_FOLK", role), role).toBe(true);
       for (const faction of SEAFARERS)
         expect(factionUnlocksRoleV7(faction, role), faction).toBe(true);
     }
@@ -375,10 +392,12 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     const tree = queryTechnologyTreeV7(state, state.humanPlayerId);
     const naval = tree.nodes.filter((node) => node.branch === "NAVAL");
     expect(naval.map((node) => node.id)).toEqual(NAVAL_BRANCH);
-    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): only the Walrus.
+    // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): only the Walrus;
+    // the Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the three sea
+    // beasts (the Walrus is Deep Winter's again).
     expect(
       naval.flatMap((node) => node.unlockedRoleRules).map((rule) => rule.label),
-    ).toEqual(["Walrus"]);
+    ).toEqual(["Narwhal Riders", "Iceberg", "Orca"]);
     expect(tree.nodes.find((node) => node.id === "SEAMANSHIP")).toMatchObject({
       state: "AVAILABLE",
       cost: 6,
@@ -462,7 +481,7 @@ describe("the ice list of a state (section 8.3)", () => {
     ).toBeNull();
   });
 
-  it("rejects an Ice Folk unit afloat and a ship of an Ice Folk seat", () => {
+  it("rejects an embarked Ice Folk unit, and takes an Ice Folk unit afloat as a sea beast", () => {
     const state = base();
     const yeti = state.units.find((unit) => unit.at.x === 2 && unit.at.y === 3);
     const boat = state.units.find((unit) => unit.role === "PATROL_BOAT");
@@ -475,17 +494,25 @@ describe("the ice list of a state (section 8.3)", () => {
       ),
     });
     expect(parseGameStateV7(patched(yeti.id, { form: "EMBARKED" }))).toBeNull();
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk unit
+    // afloat is a sea beast, on open water or on ice (the Yeti's tile).
     expect(
       parseGameStateV7(
-        patched(yeti.id, { form: "NAVAL", role: "PATROL_BOAT" }),
+        patched(yeti.id, {
+          form: "NAVAL",
+          role: "PATROL_BOAT",
+          hp: 10,
+          maxHp: 10,
+        }),
       ),
-    ).toBeNull();
-    // The Human boat handed to the Ice Folk seat.
+    ).not.toBeNull();
+    // The Human boat handed to the Ice Folk seat is of the Ice Folk kind (a
+    // unit's kind is its seat's), so it is one of its sea beasts.
     expect(
       parseGameStateV7(
         patched(boat.id, { ownerId: owner(state), homeCityId: null }),
       ),
-    ).toBeNull();
+    ).not.toBeNull();
   });
 
   it("lists the ice a viewer has explored, with its owner", () => {
@@ -571,23 +598,22 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
         .filter((unit) => unit.ownerId !== seatV7(reference.state, 0).id)
         .map((unit) => unit.id),
     );
-    // No ship can be trained on the first turn; with the Yeti on the Coast
-    // center (a walk of the first turns) a Move onto the home ice is on
-    // offer (its Freeze went with the one Freeze effect, `pulp_wars-xv0t`).
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): its sea beasts are
+    // on offer at its own Coast docks from the first turn (no ship before;
+    // the Showcase start is unchanged); with the Yeti on the Coast center (a
+    // walk of the first turns) a Move onto the home ice is on offer (its
+    // Freeze went with the one Freeze effect, `pulp_wars-xv0t`).
     expect(
       queryPlayerCommandsV7(viewForV7(state, ice.id)).some(
         (command) => command.kind === "TRAIN_NAVAL",
       ),
-    ).toBe(false);
+    ).toBe(true);
     const yeti = own.find((unit) => unit.role === "FIGHTER");
     if (yeti === undefined) throw new Error("no Yeti");
     const ashore = patchFrozenUnitV7(state, yeti.id, {
       at: { x: cx, y: 11 },
     });
     const commands = queryPlayerCommandsV7(viewForV7(ashore, ice.id));
-    expect(commands.some((command) => command.kind === "TRAIN_NAVAL")).toBe(
-      false,
-    );
     // A Move onto the home ice is on offer on the first turn.
     expect(
       commands.some(

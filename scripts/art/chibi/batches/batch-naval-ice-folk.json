@@ -17,7 +17,13 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "ice-folk-blue"
+      "accent": "ice-folk-blue",
+      "subjectKey": "UNIT:ICE_FOLK:PATROL_BOAT/NARWHAL",
+      "bottomMargin": 8,
+      "anchor": {
+        "x": 32,
+        "y": 48
+      }
     },
     {
       "id": "chibi-naval-ice-folk-battleship",
@@ -29,7 +35,9 @@
         "height": 96
       },
       "ownerColour": false,
-      "accent": "ice-folk-blue"
+      "accent": "ice-folk-blue",
+      "subjectKey": "UNIT:ICE_FOLK:BATTLESHIP/ICEBERG",
+      "bottomMargin": 11
     },
     {
       "id": "chibi-naval-ice-folk-transport",
@@ -53,7 +61,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "ice-folk-blue"
+      "accent": "ice-folk-blue",
+      "subjectKey": "PORTRAIT:ICE_FOLK:PATROL_BOAT/NARWHAL"
     },
     {
       "id": "chibi-naval-ice-folk-portrait-battleship",
@@ -65,7 +74,39 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "ice-folk-blue"
+      "accent": "ice-folk-blue",
+      "subjectKey": "PORTRAIT:ICE_FOLK:BATTLESHIP/ICEBERG"
+    },
+    {
+      "id": "chibi-naval-ice-folk-submarine",
+      "subject": "UNIT:ICE_FOLK:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 28,
+        "y": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue",
+      "bottomMargin": 8,
+      "subjectKey": "UNIT:ICE_FOLK:SUBMARINE/ORCA"
+    },
+    {
+      "id": "chibi-naval-ice-folk-portrait-submarine",
+      "subject": "PORTRAIT:ICE_FOLK:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue",
+      "subjectKey": "PORTRAIT:ICE_FOLK:SUBMARINE/ORCA"
     }
   ],
   "recipes": [
@@ -183,6 +224,204 @@
       "editInstruction": "Recolour only the three small red pennants at the mast tops: they become shaggy warm white fur tails, with no red anywhere. Keep everything else, the white sails, ice shields, crystal figurehead, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
       "notes": "ice-folk-battleship-frost-a is right (hide hull, ice shields, white sails, crystal figurehead) but kept the three red pennants: the owner key colour.",
       "asset": "chibi-naval-ice-folk-battleship"
+    },
+    {
+      "id": "narwhal-riders-a",
+      "asset": "chibi-naval-ice-folk-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 96651,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "naval-dinosaur",
+        "recipe": "plesiosaur-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "Bead pulp_wars-lf1r (docs/product/RULESET_7_CURRENT.md, 7r142): the Ice Folk Patrol Boat is the Narwhal Riders, a hunter riding a narwhal; an edit of the accepted Dinosaur Plesiosaur, a sea beast on the same canvas and waterline. Subject UNIT:ICE_FOLK:PATROL_BOAT/NARWHAL."
+    },
+    {
+      "id": "narwhal-riders-b",
+      "asset": "chibi-naval-ice-folk-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 96652,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "naval-dinosaur",
+        "recipe": "plesiosaur-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "The request of narwhal-riders-a on another seed."
+    },
+    {
+      "id": "iceberg-a",
+      "asset": "chibi-naval-ice-folk-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 96661,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-battleship-pennant-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "Bead pulp_wars-lf1r (docs/product/RULESET_7_CURRENT.md, 7r142): the Ice Folk Battleship is the Iceberg, a drifting ice fortress crewed by Snow Hunters; an edit of the accepted Ice Folk war longship so the canvas and waterline stay. Subject UNIT:ICE_FOLK:BATTLESHIP/ICEBERG."
+    },
+    {
+      "id": "iceberg-b",
+      "asset": "chibi-naval-ice-folk-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 96662,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-battleship-pennant-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "The request of iceberg-a on another seed."
+    },
+    {
+      "id": "orca-a",
+      "asset": "chibi-naval-ice-folk-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 96671,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "naval-dinosaur",
+        "recipe": "plesiosaur-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "Bead pulp_wars-lf1r (docs/product/RULESET_7_CURRENT.md, 7r142): the Ice Folk Submarine is the Orca; an edit of the accepted Dinosaur Plesiosaur, a sea beast on the Submarine canvas and waterline. Subject UNIT:ICE_FOLK:SUBMARINE/ORCA."
+    },
+    {
+      "id": "orca-b",
+      "asset": "chibi-naval-ice-folk-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 96672,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "naval-dinosaur",
+        "recipe": "plesiosaur-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "The request of orca-a on another seed."
+    },
+    {
+      "id": "portrait-narwhal-riders-a",
+      "asset": "chibi-naval-ice-folk-portrait-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 96681,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "naval-dinosaur",
+        "recipe": "portrait-plesiosaur-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the plesiosaur into a chunky cute narwhal swimming at the surface: a fat round whale body, no long neck, one long straight spiral pale ivory tusk pointing forward from its head, small flippers and a tail fluke; warm cream-white skin with dark brown-grey spots on its back; a small Ice Folk rider in a dark brown-grey fur parka with a cream fur hood sits on its back holding a bone spear with an ice-blue tip. Keep the size, black outline and style; no water, transparent background.",
+      "notes": "Bead pulp_wars-lf1r (docs/product/RULESET_7_CURRENT.md, 7r142): the Narwhal Riders portrait, the map sprite's request from the accepted Plesiosaur portrait. Subject PORTRAIT:ICE_FOLK:PATROL_BOAT/NARWHAL."
+    },
+    {
+      "id": "portrait-iceberg-a",
+      "asset": "chibi-naval-ice-folk-portrait-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 96691,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "ice-folk-portrait-battleship-frost-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the ship into a floating iceberg fortress: hull, masts and sails become one chunky jagged iceberg of packed white snow and pale ice with bright ice-blue crystal faces, wide at the waterline, rising to two peaks; on top a small dark brown-grey hide tent with a white fur banner, and two tiny hunters in cream fur hoods peeking over an ice wall. No wood, no sails. Keep the size, black outline and style; no water, transparent background.",
+      "notes": "Bead pulp_wars-lf1r (docs/product/RULESET_7_CURRENT.md, 7r142): the Iceberg portrait, the map sprite's request from the accepted war longship portrait. Subject PORTRAIT:ICE_FOLK:BATTLESHIP/ICEBERG."
+    },
+    {
+      "id": "portrait-orca-a",
+      "asset": "chibi-naval-ice-folk-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 96701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "naval-dinosaur",
+        "recipe": "portrait-plesiosaur-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, black outline and style; no water, transparent background.",
+      "notes": "Bead pulp_wars-lf1r (docs/product/RULESET_7_CURRENT.md, 7r142): the Orca portrait, the map sprite's request from the accepted Plesiosaur portrait. Subject PORTRAIT:ICE_FOLK:SUBMARINE/ORCA."
+    },
+    {
+      "id": "orca-a-dry",
+      "asset": "chibi-naval-ice-folk-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 96673,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "orca-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the blue water puddle and the wave lines under the orca, so the bottom of the orca's body is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the orca, its fin, flippers, tail, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "orca-a candidate 0 is a clear friendly orca with frost on the fin, but it sits in a puddle of water; this edit removes the water, as goblin-submarine-a-dry did."
+    },
+    {
+      "id": "orca-b-dry",
+      "asset": "chibi-naval-ice-folk-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 96674,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "orca-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the blue water puddle and the wave lines under the orca, so the bottom of the orca's body is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the orca, its fin, flippers, tail, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The request of orca-a-dry for orca-b candidate 0 (frost crystals along the back)."
+    },
+    {
+      "id": "iceberg-b-base-edit",
+      "asset": "chibi-naval-ice-folk-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 96663,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "iceberg-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the dark navy blue slab along the bottom of the iceberg, so the white snow and pale ice at the bottom edge of the iceberg is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the iceberg, its peaks, ice crystals, the hide tent, the banner, the hunters, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "iceberg-b candidate 0 reads as a jagged iceberg with a hide tent and crystal faces (iceberg-a is a block house with windows), but it stands on a dark navy slab like a ground plate; this edit removes the slab."
     }
   ]
 }

@@ -9,7 +9,6 @@ import {
   showcaseUnitRoleV7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
-  isNavalRoleV7,
   appendReplayCommandV7,
   applyCommandV7,
   arePlayersHostileV7,
@@ -1008,7 +1007,9 @@ describe("ruleset-7 revision-18 Showcase play", () => {
       const own = state.units.filter(
         (unit) => unit.ownerId === state.humanPlayerId,
       );
-      // The frozen sea (`pulp_wars-5ti.3`): an Ice Folk seat has no ships.
+      // The frozen sea (`pulp_wars-5ti.3`): an Ice Folk seat starts with no
+      // ships (the Ice Folk sea beasts, `pulp_wars-lf1r`, 7r142, left the
+      // Showcase start as it was), but it trains its sea beasts at its docks.
       // The Cult redesign (`pulp_wars-mch9.31`): a Cult seat has no Caller
       // and no Chosen (its vacant slots).
       const shipless = faction === "ICE_FOLK";
@@ -1042,7 +1043,6 @@ describe("ruleset-7 revision-18 Showcase play", () => {
           (role) =>
             role !== "JUGGERNAUT" &&
             // (The ninth unit, 7r55: every seat trains its heavy.)
-            !(shipless && isNavalRoleV7(role)) &&
             !vacant.includes(role),
         ).sort(),
       );

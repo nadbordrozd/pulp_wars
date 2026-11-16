@@ -615,7 +615,8 @@ describe("frozen-sea words", () => {
       // Freezes ice docks (`pulp_wars-jjzz`, 7r141).
       "Iced docks",
       "Build",
-      "No ships",
+      // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142; "No ships" before).
+      "Sea beasts",
       // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the swimming
       // Walrus, Harpoons, the Ice Fortress and Under the Ice (Black Ice and
       // Glacier before; Hoarfrost's line went with `FREEZE`).
@@ -641,7 +642,7 @@ describe("frozen-sea words", () => {
     ]);
   });
 
-  it("shows ice on the Ice Folk Naval cards and no ship in their Gallery", () => {
+  it("shows ice on the Ice Folk Naval cards, and their sea beasts but no transport in their Gallery", () => {
     // Its own icon since `pulp_wars-5ti.10` (the pack-ice overlay before).
     expect(technologySubjectV7("NAVAL_ENGINEERING", "ICE_FOLK")).toBe(
       "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
@@ -649,20 +650,20 @@ describe("frozen-sea words", () => {
     expect(technologySubjectV7("NAVAL_ENGINEERING", "ORIGINAL")).toBe(
       "UNIT:BATTLESHIP",
     );
-    for (const row of [
-      "PATROL_BOAT",
-      "BATTLESHIP",
-      "SUBMARINE",
-      "TRANSPORT",
-    ] as const) {
-      expect(galleryUnitCellV7(row, "ICE_FOLK")).toEqual({
-        kind: "EMPTY",
-        row,
-        faction: "ICE_FOLK",
-        reason: "NO_SHIPS",
-      });
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the three ship
+    // rows hold the Narwhal Riders, the Iceberg and the Orca; the Ice Folk
+    // still never embark, so the transport cell is the ice mark.
+    for (const row of ["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"] as const) {
+      expect(galleryUnitCellV7(row, "ICE_FOLK").kind).toBe("UNIT");
       expect(galleryUnitCellV7(row, "ORIGINAL").kind).toBe("UNIT");
     }
+    expect(galleryUnitCellV7("TRANSPORT", "ICE_FOLK")).toEqual({
+      kind: "EMPTY",
+      row: "TRANSPORT",
+      faction: "ICE_FOLK",
+      reason: "NO_SHIPS",
+    });
+    expect(galleryUnitCellV7("TRANSPORT", "ORIGINAL").kind).toBe("UNIT");
     // An Egg of a faction that lays none is a plain empty cell.
     expect(galleryUnitCellV7("EGG", "ICE_FOLK")).toEqual({
       kind: "EMPTY",

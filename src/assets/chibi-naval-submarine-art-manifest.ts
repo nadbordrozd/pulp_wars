@@ -18,6 +18,13 @@ export const SUBMARINE_ANCHOR_V7 = { x: 32, y: 48 } as const;
 export const PLESIOSAUR_ANCHOR_V7 = { x: 30, y: 48 } as const;
 
 /**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the Orca's round head
+ * reaches further left still, so it is drawn 4 px right of the other
+ * Submarines, clear of the HP bar and seat badge strips surfaced and sunk.
+ */
+export const ORCA_ANCHOR_V7 = { x: 28, y: 48 } as const;
+
+/**
  * The Submarines of the naval branch (bead pulp_wars-5ti.6, batches
  * `naval-human`, `naval-undead`, `naval-goblin`, `naval-dinosaur`,
  * `naval-martian`, `naval-dwarf` and `naval-candy`; see
@@ -27,11 +34,9 @@ export const PLESIOSAUR_ANCHOR_V7 = { x: 30, y: 48 } as const;
  * edit of that faction's accepted Patrol Boat (the Human one of the shared
  * Submarine), so the materials are the fleet's.
  *
- * The Ice Folk have none: they lose their ships in engine step II of the
- * naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8). Until
- * then an Ice Folk Submarine falls back to the shared Submarine in the
- * owner's colour, like any faction naval subject without a raster
- * (chibiFallbackSubjectV7).
+ * The Ice Folk Orca (`pulp_wars-lf1r`, 7r142) is last: a sea beast, an edit
+ * of the Dinosaur Plesiosaur rather than of a Patrol Boat (the Ice Folk had
+ * no Submarine before).
  *
  * CHIBI_NAVAL_FACTION_ART_ASSETS_V7 ends with these entries, so the live
  * registry holds them and the generic naval wiring draws them; the Classic
@@ -293,6 +298,41 @@ export const CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7: readonly ChibiNavalFactionArtV
         fixedColours: true,
       },
     },
+    // The Ice Folk Orca (`pulp_wars-lf1r`, 7r142): a sea beast, an edit of
+    // the Dinosaur Plesiosaur (batch `naval-ice-folk`).
+    {
+      faction: "ICE_FOLK",
+      role: "SUBMARINE",
+      kind: "UNIT",
+      asset: {
+        id: "chibi-naval-ice-folk-submarine",
+        subject: "UNIT:ICE_FOLK:SUBMARINE",
+        assetClass: "LARGE_UNIT",
+        width: 72,
+        height: 88,
+        anchor: ORCA_ANCHOR_V7,
+        url: chibiArtUrl(
+          "assets/chibi/units/chibi-naval-ice-folk-submarine.png",
+        ),
+        fixedColours: true,
+      },
+    },
+    {
+      faction: "ICE_FOLK",
+      role: "SUBMARINE",
+      kind: "PORTRAIT",
+      asset: {
+        id: "chibi-naval-ice-folk-portrait-submarine",
+        subject: "PORTRAIT:ICE_FOLK:SUBMARINE",
+        assetClass: "PORTRAIT",
+        width: 48,
+        height: 48,
+        url: chibiArtUrl(
+          "assets/chibi/portraits/chibi-naval-ice-folk-portrait-submarine.png",
+        ),
+        fixedColours: true,
+      },
+    },
   ];
 
 /**
@@ -441,6 +481,24 @@ export const CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7: readonly ChibiNavalFaction
         anchor: SUBMARINE_ANCHOR_V7,
         url: chibiArtUrl(
           "assets/chibi/units/chibi-naval-cult-submarine-submerged.png",
+        ),
+        fixedColours: true,
+      },
+    },
+    // The Ice Folk Orca (`pulp_wars-lf1r`, 7r142).
+    {
+      faction: "ICE_FOLK",
+      role: "SUBMARINE_SUBMERGED",
+      kind: "UNIT",
+      asset: {
+        id: "chibi-naval-ice-folk-submarine-submerged",
+        subject: "UNIT:ICE_FOLK:SUBMARINE_SUBMERGED",
+        assetClass: "LARGE_UNIT",
+        width: 72,
+        height: 88,
+        anchor: ORCA_ANCHOR_V7,
+        url: chibiArtUrl(
+          "assets/chibi/units/chibi-naval-ice-folk-submarine-submerged.png",
         ),
         fixedColours: true,
       },

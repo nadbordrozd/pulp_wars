@@ -704,7 +704,8 @@ import {
   ICE_LAND_GRANT_UNLOCK_V7,
   DIVE_MOVE_LABEL_V7,
   ICE_MOVE_TEXT_V7,
-  ICE_NO_SHIPS_NOTE_V7,
+  ICE_FORTRESS_DISCOUNT_NOTE_V7,
+  iceSeaBeastNoteV7,
   ICE_SEA_DOG_GOAL_V7,
   frozenSeaBoundaryNoticeV7,
   HARPOONS_UNLOCK_V7,
@@ -19901,7 +19902,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r141",
+    rulesetId: "pulp-wars-poc-7r142",
     seed,
     width,
     height: width,
@@ -20263,13 +20264,16 @@ function navalTechnologyNotesV7(
   technology: PublicTechnologyNodeV7["id"],
   faction: FactionIdV7,
 ): readonly string[] {
-  // The frozen sea: the Ice Folk have no ships, so the notes about
-  // embarking, sailing and warships are not theirs.
+  // The frozen sea: the Ice Folk never embark, so the notes about
+  // embarking and sailing are not theirs. The Ice Folk sea beasts
+  // (`pulp_wars-lf1r`, 7r142): their warships are sea beasts trained at a
+  // Fishing Hole.
   if (faction === "ICE_FOLK") {
-    if (technology === "SHORECRAFT") return [ICE_NO_SHIPS_NOTE_V7];
+    if (technology === "SHORECRAFT") return [iceSeaBeastNoteV7()];
     if (technology === "NAVIGATION") return [ICE_SEA_LINK_DEEP_WATER_NOTE_V7];
-    if (technology === "NAVAL_ENGINEERING" || technology === "SUBMERSIBLES")
-      return [];
+    if (technology === "NAVAL_ENGINEERING")
+      return [battleshipUnlockNoteV7(faction), ICE_FORTRESS_DISCOUNT_NOTE_V7];
+    if (technology === "SUBMERSIBLES") return [submarineUnlockNoteV7(faction)];
   }
   // "Board" now names the capture of a ship (Seamanship), so putting a
   // unit to sea is "embark".

@@ -54,6 +54,7 @@ import {
   GATHER_PEARLS_GAIN_V7,
   SEIZE_BROKEN_HP_V7,
   unitWalksOnIceV7,
+  seatKindWalksIceV7,
 } from "../engine/rules/ruleset-v7";
 import {
   attack2AfterToothacheV7,
@@ -2921,6 +2922,12 @@ function* navalPlanWorkV7(
     )
   )
     return NO_NAVAL_PLAN_V7;
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): a seat that never
+  // embarks (the Ice Folk) has sea beasts but no transport, so it has no
+  // invasion plan; its sea beasts follow the fleet route alone
+  // (`fleetOnlyNavalPlanV7`).
+  if (seatKindWalksIceV7(view, view.viewer.id))
+    return yield* fleetOnlyNavalPlanV7(view, pathWork);
   const tilesByKey = new Map(
     view.board.tiles.map((tile) => [coordKey(tile.at), tile]),
   );
@@ -3608,6 +3615,76 @@ function publicFuturePortSurfaceV7(
       );
     })
   );
+}
+
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the naval plan of a
+ * seat that never embarks (the Ice Folk). It has no invasion (no target,
+ * no transport, no landing, inactive), only the fleet route its sea beasts
+ * follow (`fleetDistanceByKey`, over water and ice alike: for this seat
+ * every ice tile is a step of 1, `iceRouteStepCostV7`) and the warship
+ * facts its training reads. The goals are the ordinary fleet's (a
+ * blockader of an own dock or Fishing Hole, then any hostile unit afloat),
+ * then a hostile Port, then the water beside a hostile city centre, where
+ * an Iceberg bombards the shore.
+ */
+function* fleetOnlyNavalPlanV7(
+  view: PlayerViewV7,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+): Generator<void, NavalPlanV7> {
+  const hostileAfloat = view.units.filter(
+    (unit) => isHostile(view, unit.ownerId) && isAfloatV7(unit),
+  );
+  const ownDockKeys = new Set(
+    view.board.tiles.flatMap((tile) =>
+      tile.explored &&
+      tile.territoryOwnerId === view.viewer.id &&
+      (tile.improvement === "PORT" ||
+        tile.improvement === "SHIPYARD" ||
+        tile.improvement === "FISHING_HOLE" ||
+        tile.improvement === "ICE_FORTRESS")
+        ? [coordKey(tile.at)]
+        : [],
+    ),
+  );
+  const goals = navalFleetGoalsV7({
+    blockaders: hostileAfloat
+      .filter((unit) => ownDockKeys.has(coordKey(unit.at)))
+      .map((unit) => unit.at),
+    ownTransports: [],
+    hostileAfloat: hostileAfloat.map((unit) => unit.at),
+  });
+  if (goals.length === 0)
+    goals.push(
+      ...view.board.tiles.flatMap((tile) =>
+        tile.explored &&
+        tile.improvement === "PORT" &&
+        tile.territoryOwnerId !== null &&
+        isHostile(view, tile.territoryOwnerId)
+          ? [tile.at]
+          : [],
+      ),
+    );
+  if (goals.length === 0)
+    for (const city of view.cities) {
+      if (city.ownerId === null || !isHostile(view, city.ownerId)) continue;
+      for (const at of neighbors8V7(view, city.at)) {
+        const tile = view.board.tiles[at.y * view.board.width + at.x];
+        if (tile?.explored === true && tile.biome === null) goals.push(at);
+      }
+    }
+  const fleetDistanceByKey = yield* publicWaterRouteDistancesV7(
+    view,
+    goals,
+    view.viewer.researchedTechs.includes("NAVIGATION"),
+    pathWork,
+  );
+  return {
+    ...NO_NAVAL_PLAN_V7,
+    visibleNavalDanger: hostileAfloat.length > 0,
+    visibleHostileWarship: hostileAfloat.some((unit) => unit.form === "NAVAL"),
+    fleetDistanceByKey,
+  };
 }
 
 function* publicWaterRouteDistancesV7(
@@ -16451,7 +16528,12 @@ function scoreCommandWithContext(
         priority = -1;
         strategicValue = 0;
       }
-      if (context.naval.active) {
+      // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an inactive plan
+      // with a fleet route (`fleetOnlyNavalPlanV7`) still moves the ships.
+      if (
+        context.naval.active ||
+        (actor.form === "NAVAL" && context.naval.fleetDistanceByKey.size > 0)
+      ) {
         const navalValue = navalMovementObjectiveValueV7(
           context,
           actor,
@@ -28959,7 +29041,12 @@ function trainingCostV7(
     return Math.max(
       1,
       base -
-        (tile?.explored === true && tile.improvement === "SHIPYARD" ? 2 : 0),
+        // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice
+        // Fortress takes 2 off, as a Shipyard does.
+        (tile?.explored === true &&
+        (tile.improvement === "SHIPYARD" || tile.improvement === "ICE_FORTRESS")
+          ? 2
+          : 0),
     );
   }
   const forge = view.improvementValues.some((value) => {

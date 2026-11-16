@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r141`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r142`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,59 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r142` (`pulp_wars-lf1r`, **the Ice Folk sea beasts**;
+the user, 2026-11-16: "I would prefer that the deep winter ... unlocked
+the defensive unit like with all the other factions and we find something
+else for the naval techs to do ... some sort of unit(s) that live on the
+frozen water and perform the same function as ships"). (1) **Deep Winter
+trains the Walrus again** (Ice Folk `FORTIFICATION`, like every faction's
+defender; Rime's from `7r137`); it keeps Frostbite and swims as before,
+and Deep Winter keeps its Snow spread and recovery. (2) **The Ice Folk
+ships are sea beasts**, the three ship roles with the Human ships' numbers
+([section 11](#11-unit-roster)): Rime trains the **Narwhal Riders**
+(`PATROL_BOAT`, a hunter on a narwhal; no Ram: the Ice Folk Seamanship is
+Harpoons), the Ice Fortress the **Iceberg** (`BATTLESHIP`, a drifting ice
+fortress crewed by Snow Hunters: splash, range 3) and Under the Ice the
+**Orca** (`SUBMARINE`: Submerged and Torpedo). None is ever boarded (the
+role mechanic `seaBeast`), and their one ability line is **Ice swimmer**.
+(3) **Training:** `TRAIN_NAVAL` of an Ice Folk seat is accepted at an
+active own **Fishing Hole or Ice Fortress** (`isActiveFishingHoleV7`) as
+well as at an own open dock (`isNavalTrainingTileV7`), with the city's
+action, as a ship is; an **Ice Fortress takes 2 Coins off**, as a
+Shipyard does (the Iceberg 14). `NAVAL_UNIT_TRAINED.dock` may be
+`FISHING_HOLE` or `ICE_FORTRESS` and `discountSource` `ICE_FORTRESS`. A sea
+beast recovers on or beside an active own hole as a ship does by its dock.
+(4) **Ice is water to them** (`unitSailsIceV7`: an Ice Folk unit in
+`NAVAL` form; `canEnterTerrainV7` with `afloat` and `iceFolk`): they move
+onto and through any ice, the ice stays, and Deep Water, open or iced,
+needs Pack Ice (the Ice Folk Navigation), so the border freeze never locks
+them in. A step costs a full point (they never Glide), they never go on
+land, never dive (the dive is a land-form unit's; a sea beast on a hole is
+a unit there, so nobody dives onto it), never Crack ice and freeze
+nothing (the one Freeze rule is unchanged: a freeze over own units afloat
+leaves the water as it is). One unit a tile as ever: a sea beast on ice
+blocks an ice walker's step and a Crack of that tile. **The Orca stays
+Submerged under ice.** A sea beast on an enemy's dock, iced or open,
+blockades it like any hostile unit afloat. Harpoons stay a land-form
+unit's bonus, and the Ice Fortress's fortification and range a land-form
+unit's. (5) **State:** a unit of the Ice Folk kind may be in `NAVAL` form
+(on open water or ice); it is never `EMBARKED`. The Sea Dog of an Ice
+Folk seat counts its sea beasts too. (6) **The Normal AI** trains them
+through the ordinary naval training scores (an Ice Fortress's discount
+read like a Shipyard's) and, having no transport, keeps a fleet-only plan
+(`fleetOnlyNavalPlanV7`): its sea beasts go after hostile units afloat,
+then hostile Ports, then the water beside hostile cities, over its ice at
+one step a tile; it researches Deep Winter for the Walrus again (Scouting,
+Hunting, Marksmanship, Drill, Deep Winter, then the Ice Witch). (7)
+**Missions:** `ICE_FOLK_3` revision 7 forgets and forbids Naval
+Engineering (the Iceberg) for the player, and its hint names the Narwhal
+Riders; every other Ice Folk seat that knows or may research Deep Winter
+trains Walruses again ([CAMPAIGN.md](CAMPAIGN.md) section 29). The
+Showcase starts as before. (8) **Art:** the Narwhal Riders, the Iceberg
+and the Orca with their portraits are new PixelLab takes in batch
+`naval-ice-folk` (the Orca also submerged). A save, replay, or setup of
+`7r141` is rejected, and the browser autosave has a new key.
 
 `pulp-wars-poc-7r141` (`pulp_wars-jjzz`, **freezes ice docks**; the user,
 2026-11-16: "I want the freezing effect to freeze water tiles even if they
@@ -2528,10 +2581,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r141`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r142`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r141.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r142.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6397,24 +6450,24 @@ movement of ships, and Naval Engineering's `NAVAL_TRAINING_DISCOUNT`, which
 its tree keeps and which does nothing). The Ice Folk unlocks that read
 differently from the Human table are:
 
-| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                                                                                                                                             |
-| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Administration    | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                                                                                                                                                                                             |
-| Sawmilling        | same          | Sawmill; Snow Golem (Snowball)                                                                                                                                                                                                                               |
-| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                                                                                                                                                     |
-| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                                                                                                                       |
-| Scouting          | same          | Sled (Escape; `7r133`, Bolas before); Sled Sight 2                                                                                                                                                                                                           |
-| Raiding           | same          | Pillage; Sled Charge                                                                                                                                                                                                                                         |
-| Chivalry          | Frost Wyrms   | Frost Wyrm (flies, Frost Breath; `7r125`; no Overrun); Cultivate Forest                                                                                                                                                                                      |
-| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                                                                                                                 |
-| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                                                                                                                            |
-| Fortification     | Deep Winter   | Snow spreads two tiles from your city centers; an idle unit recovers 6 in your territory (the Walrus, here from `7r56`, is on Rime since `7r137`)                                                                                                            |
-| Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                                                                                                              |
-| Shorecraft        | Rime          | Walrus (Frostbite, swims Shallow Water; `7r137`); Harvest Fish; your freezes ice Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole; your units Glide on ice; no Port, no Patrol Boat, and no embarking (`pulp_wars-s55m.2`) |
-| Navigation        | Pack Ice      | your freezes ice Deep Water and the Walrus swims there (`7r137`); Gather Pearls; sea links may run over deep-water ice                                                                                                                                       |
-| Naval Engineering | Ice Fortress  | Ice Fortress (`7r137`: upgrade a Fishing Hole, 5 Coins, +2 population, its unit fortified and ranged units +1 range; Hoarfrost and nothing before); no Shipyard and no training discount (`pulp_wars-s55m.2`)                                                |
-| Seamanship        | Harpoons      | +1 Attack against ships and boats (`7r137`; Black Ice before)                                                                                                                                                                                                |
-| Submersibles      | Under the Ice | dive between your Fishing Holes; +1 population per Fishing Hole; Harbours (`7r137`; Glacier's thick ice and Snow cover before)                                                                                                                               |
+| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                                                                                                                                                     |
+| ----------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Administration    | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                                                                                                                                                                                                     |
+| Sawmilling        | same          | Sawmill; Snow Golem (Snowball)                                                                                                                                                                                                                                       |
+| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                                                                                                                                                             |
+| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                                                                                                                                                               |
+| Scouting          | same          | Sled (Escape; `7r133`, Bolas before); Sled Sight 2                                                                                                                                                                                                                   |
+| Raiding           | same          | Pillage; Sled Charge                                                                                                                                                                                                                                                 |
+| Chivalry          | Frost Wyrms   | Frost Wyrm (flies, Frost Breath; `7r125`; no Overrun); Cultivate Forest                                                                                                                                                                                              |
+| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                                                                                                                                                         |
+| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                                                                                                                                                                    |
+| Fortification     | Deep Winter   | Walrus (Frostbite, swims; back here since `7r142`, on Rime from `7r137`); Snow spreads two tiles from your city centers; an idle unit recovers 6 in your territory                                                                                                   |
+| Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                                                                                                                                                      |
+| Shorecraft        | Rime          | Narwhal Riders (a sea beast, `7r142`; the Walrus from `7r137` to `7r141`); Harvest Fish; your freezes ice Shallow Water; the water in your borders freezes (the border freeze); Fishing Hole; your units Glide on ice; no Port and no embarking (`pulp_wars-s55m.2`) |
+| Navigation        | Pack Ice      | your freezes ice Deep Water, and the Walrus (`7r137`) and the sea beasts (`7r142`) go there; Gather Pearls; sea links may run over deep-water ice                                                                                                                    |
+| Naval Engineering | Ice Fortress  | Iceberg (a sea beast, `7r142`); Ice Fortress (`7r137`: upgrade a Fishing Hole, 5 Coins, +2 population, its unit fortified and ranged units +1 range, sea beasts 2 Coins less there; Hoarfrost and nothing before); no Shipyard (`pulp_wars-s55m.2`)                  |
+| Seamanship        | Harpoons      | +1 Attack against ships and boats (`7r137`; Black Ice before)                                                                                                                                                                                                        |
+| Submersibles      | Under the Ice | Orca (a sea beast, `7r142`); dive between your Fishing Holes; +1 population per Fishing Hole; Harbours (`7r137`; Glacier's thick ice and Snow cover before)                                                                                                          |
 
 The Dwarf tree (`DWARF_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -7886,17 +7939,20 @@ The Ice Folk (`ICE_FOLK`) roster, by mechanical role, with the
 units cross Mountains without Engineering and without stopping
 ([section 21.8](#218-mountain-born-and-rockfall)):
 
-| Unit        | Role         | Tech           | Cost |   HP |    Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                                 |
-| ----------- | ------------ | -------------- | ---: | ---: | --------: | -------: | ---: | ----: | ----: | ----------------- | ------- | --------------------------------------------------------------------------------------------------------- |
-| Yeti        | `FIGHTER`    | start          |    2 |   9⁸ |     2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                                 |
-| Sled        | `RAIDER`     | Scouting       |    4 | 11¹¹ |     2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                            |
-| Snow Hunter | `MARKSMAN`   | Marksmanship   |    3 |    8 |     2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                                |
-| Walrus      | `GUARD`      | Shorecraft     |    4 |   16 |   1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense; swims (`7r137`)                                                     |
-| Mammoth     | `SWORDSMAN`  | Metallurgy     |    8 |   20 |     3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before)         |
-| Ice Witch   | `CAPTAIN`    | Administration |    6 |   10 |     1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); Snow Balm (`7r140`); no Rally; no Tend Wounded                   |
-| Snow Golem  | `CATAPULT`   | Sawmilling     |    9 |   10 |     3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                            |
-| Frost Wyrm  | `KNIGHT`     | Chivalry       | 10¹² | 16¹² | 3.5 (7)¹² |    1 (2) |    3 | 1–2¹² |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath (the 3x3 freeze, `7r140`); never advances (`7r125`¹⁰) |
-| Frost Giant | `JUGGERNAUT` | reward only    |    — |   36 |     4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                         |
+| Unit             | Role          | Tech              | Cost |   HP |    Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                                                                 |
+| ---------------- | ------------- | ----------------- | ---: | ---: | --------: | -------: | ---: | ----: | ----: | ----------------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| Yeti             | `FIGHTER`     | start             |    2 |   9⁸ |     2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                                                 |
+| Sled             | `RAIDER`      | Scouting          |    4 | 11¹¹ |     2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Escape; Charge (Raiding) (`7r133`: 10 HP and the Bolas before)                                            |
+| Snow Hunter      | `MARKSMAN`    | Marksmanship      |    3 |    8 |     2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                                                |
+| Walrus           | `GUARD`       | Fortification     |    4 |   16 |   1.5 (3) |    2 (4) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense; swims (`7r137`); Deep Winter's again (`7r142`; Rime's from `7r137`) |
+| Mammoth          | `SWORDSMAN`   | Metallurgy        |    8 |   20 |     3 (6) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; Stampede; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before)         |
+| Ice Witch        | `CAPTAIN`     | Administration    |    6 |   10 |     1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap (the ring, `7r133`); Snow Balm (`7r140`); no Rally; no Tend Wounded                   |
+| Snow Golem       | `CATAPULT`    | Sawmilling        |    9 |   10 |     3 (6) |    1 (2) |    1 |   2–3 |     1 | no                | yes     | Snowball (`7r134`; Boulders and Planted before); Mountain-born; never advances                            |
+| Frost Wyrm       | `KNIGHT`      | Chivalry          | 10¹² | 16¹² | 3.5 (7)¹² |    1 (2) |    3 | 1–2¹² |     2 | yes               | yes     | Flies (Deep Water without Navigation); Frost Breath (the 3x3 freeze, `7r140`); never advances (`7r125`¹⁰) |
+| Frost Giant      | `JUGGERNAUT`  | reward only       |    — |   36 |     4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Wake (`7r133`); Mountain-born; never advances                                         |
+| Narwhal Riders¹³ | `PATROL_BOAT` | Shorecraft        |    5 |   10 |     2 (4) |    2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ice swimmer; never boarded; no Ram (`7r142`)                                                       |
+| Iceberg¹³        | `BATTLESHIP`  | Naval Engineering |   16 |   25 |     4 (8) |    3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Ice swimmer; never boarded; 14 at an Ice Fortress (`7r142`)                                |
+| Orca¹³           | `SUBMARINE`   | Submersibles      |    9 |   12 |     4 (8) |    2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Ice swimmer; never boarded (`7r142`)                                           |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -7919,6 +7975,11 @@ Raider's equal on every number with Glide on top of them.
 Coins, 16 HP, Attack 3.5 and range 1–2 (9, 14, 3 and 1 before), in the
 Knight's, Vampire's and T-Rex's class; it gives way to the Knight on Coins
 and Attack.
+¹³ The Ice Folk sea beasts (`pulp-wars-poc-7r142`, `pulp_wars-lf1r`): the
+Ice Folk ships, with the Human ships' numbers, trained at a Fishing Hole
+or an Ice Fortress (or an own dock) and swimming on ice as on water
+([section 21.16](#2116-the-frozen-sea)). Before `7r142` the Ice Folk
+had no ship.
 
 - **Yeti** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion, the advance after a melee kill) and the Fighter's
@@ -14986,7 +15047,9 @@ option to crack ice around them"), and **rebuilt** by `pulp_wars-tzk6` at
 `pulp-wars-poc-7r137` (Bead 4 of
 [the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md), section 3.4). An
 Ice Folk seat never builds a ship; its **Walrus** swims instead
-([section 21.17](#2117-the-walrus-frostbite)).
+([section 21.17](#2117-the-walrus-frostbite)), and since `7r142`
+(`pulp_wars-lf1r`) its ships are **sea beasts** that swim on ice as on
+water (the Narwhal Riders, the Iceberg and the Orca, below).
 With **Rime** the Ice Witch's Cold Snap and the Frost Giant's Cold Wake
 freeze the water round them (the one Freeze effect, `pulp_wars-xv0t`,
 `7r133`; a line Freeze of seven roles before), and **the ice stays**. Their
@@ -15022,7 +15085,7 @@ always empty.
 | Who walks     | Only Ice Folk units and units that fly or stride go onto ice. Every other land unit stops at its edge and may crack it instead.    |
 | Crack Ice     | Any other land unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.    |
 | Build         | The Ice Folk build Fishing Holes, Ice Fortresses, mills, Workshop, Market and Monument on their own ice. They build no harbours.   |
-| No ships      | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                         |
+| Sea beasts    | Ships cannot enter ice; the Ice Folk sea beasts (`7r142`), trained at a Fishing Hole, swim on ice as on water.                     |
 | Walrus        | Swims on Shallow Water (Deep with Pack Ice) and attacks land units and ships from the water.                                       |
 | Harpoons      | Ice Folk units get +1 Attack against ships and boats.                                                                              |
 | Ice Fortress  | Built on a Fishing Hole: a unit on it is fortified and shoots one tile further.                                                    |
@@ -15143,7 +15206,14 @@ always empty.
 - **Ships cannot enter ice.** A unit afloat (`NAVAL` or `EMBARKED`) never
   enters, passes, or is pushed, shoved, or pulled onto an ice tile, and a
   naval unit projects no ZOC onto ice. No afloat unit is ever on ice
-  (`pulp_wars-s55m.1`: Icebound is gone).
+  (`pulp_wars-s55m.1`: Icebound is gone), **but an Ice Folk sea beast**
+  (`pulp_wars-lf1r`, `7r142`): an Ice Folk unit in `NAVAL` form treats
+  ice as the water under it (Deep with Pack Ice), may be moved, pushed or
+  pulled onto it, stands on it, and stays Submerged there (the Orca). It
+  never goes on land, never Glides, never dives, never Cracks and freezes
+  nothing; it is trained at an active own Fishing Hole or Ice Fortress
+  (2 Coins less there, as at a Shipyard) or an own open dock, and
+  recovers on or beside one.
 
 **Freezing a tile: the one Freeze effect** (`pulp_wars-xv0t`, `7r133`;
 Bead 1 of [the Ice Folk redesign](ICE_FOLK_REDESIGN_2026-11.md); the
@@ -15305,13 +15375,13 @@ equivalent advantages to what it gives to the other factions - a way to
 move over water, attack land and ships and exploit resources"). The Ice
 Folk naval nodes:
 
-| Node                       | Ice Folk name | Unlocks                                                                                                           |
-| -------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Shorecraft (tier 1)        | Rime          | the **Walrus** (4 Coins); freezes ice Shallow Water; the Fishing Hole; Harvest Fish; the border freeze; sea links |
-| Navigation (tier 2)        | Pack Ice      | freezes ice Deep Water, and the Walrus swims there; Gather Pearls                                                 |
-| Naval Engineering (tier 3) | Ice Fortress  | `BUILD_ICE_FORTRESS`                                                                                              |
-| Seamanship (tier 2)        | Harpoons      | +1 Attack against ships and boats (`harpoons`)                                                                    |
-| Submersibles (tier 3)      | Under the Ice | the dive between Fishing Holes; +1 population per hole and Harbours (`underTheIce`, `harbourPopulation`)          |
+| Node                       | Ice Folk name | Unlocks                                                                                                                                                                 |
+| -------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shorecraft (tier 1)        | Rime          | the **Narwhal Riders** (`7r142`; the Walrus, 4 Coins, from `7r137` to `7r141`); freezes ice Shallow Water; the Fishing Hole; Harvest Fish; the border freeze; sea links |
+| Navigation (tier 2)        | Pack Ice      | freezes ice Deep Water, and the Walrus and the sea beasts go there; Gather Pearls                                                                                       |
+| Naval Engineering (tier 3) | Ice Fortress  | the **Iceberg** (`7r142`); `BUILD_ICE_FORTRESS` (sea beasts 2 Coins less there)                                                                                         |
+| Seamanship (tier 2)        | Harpoons      | +1 Attack against ships and boats (`harpoons`)                                                                                                                          |
+| Submersibles (tier 3)      | Under the Ice | the **Orca** (`7r142`); the dive between Fishing Holes; +1 population per hole and Harbours (`underTheIce`, `harbourPopulation`)                                        |
 
 - **Harpoons** (capability `harpoons`, `HARPOON_ATTACK2_V7` 2 half-points):
   a land-form unit of an Ice Folk seat with Seamanship has **+1 Attack**

@@ -168,6 +168,7 @@ import {
   isTileEnemyOccupiedV7,
   isActiveFishingHoleV7,
   isActivePortV7,
+  isNavalTrainingTileV7,
   combinedNetworkCityIdsV7,
   marketCoinsV7,
   marketIncomeForCityV7,
@@ -3788,17 +3789,19 @@ function applyTrainNaval(
     return rejected(original, "CITY_ACTION_SPENT", { cityId: city.id });
   const player = requirePlayer(state, actor);
   // The frozen sea (naval branch section 8.11): a tree that unlocks no ship
-  // (the Ice Folk's) never trains one, whatever the seat researched.
+  // never trains one, whatever the seat researched (the Ice Folk tree
+  // unlocks the sea beasts since `pulp_wars-lf1r`, 7r142).
   if (!factionUnlocksRoleV7(player.faction, command.role))
     return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
   const rule = effectiveRoleRuleV7(command.role, player.faction);
   const tile = tileAtV7(state.board, command.at);
+  // No ship trains at a dock on ice: a shut dock (`isDockShutV7`; again
+  // since freezes ice docks, `pulp_wars-jjzz`, 7r141). The Ice Folk sea
+  // beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk seat trains at an active
+  // own Fishing Hole or Ice Fortress (on its ice) too.
   if (
     tile?.territoryCityId !== city.id ||
-    !isActivePortV7(state, command.at, actor) ||
-    // No ship trains at a dock on ice: a shut dock (`isDockShutV7`; again
-    // since freezes ice docks, `pulp_wars-jjzz`, 7r141).
-    isIceAtV7(state, command.at)
+    !isNavalTrainingTileV7(state, command.at, actor)
   )
     return rejected(original, "INVALID_TILE", { action: "TRAIN_NAVAL" });
   if (state.units.some((unit) => unit.hp > 0 && same(unit.at, command.at)))
@@ -3818,10 +3821,16 @@ function applyTrainNaval(
     cityUnitCapacityV7(state, city)
   )
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Fortress
+  // takes 2 Coins off, as a Shipyard does.
+  const discountSource =
+    tile.improvement === "SHIPYARD" || tile.improvement === "ICE_FORTRESS"
+      ? tile.improvement
+      : null;
   const cost =
     rule.cost === null
       ? null
-      : Math.max(1, rule.cost - (tile?.improvement === "SHIPYARD" ? 2 : 0));
+      : Math.max(1, rule.cost - (discountSource === null ? 0 : 2));
   if (cost === null || player.coins < cost)
     return rejected(original, "INSUFFICIENT_COINS", { cost: cost ?? 0 });
   try {
@@ -3865,8 +3874,13 @@ function applyTrainNaval(
           role: command.role,
           cost,
           at: command.at,
-          dock: tile.improvement === "SHIPYARD" ? "SHIPYARD" : "PORT",
-          discountSource: tile.improvement === "SHIPYARD" ? "SHIPYARD" : null,
+          dock:
+            tile.improvement === "SHIPYARD" ||
+            tile.improvement === "FISHING_HOLE" ||
+            tile.improvement === "ICE_FORTRESS"
+              ? tile.improvement
+              : "PORT",
+          discountSource,
         },
       ],
     );
@@ -10425,6 +10439,9 @@ function recoveryFacts(state: GameStateV7, unit: UnitStateV7): RecoveryFactsV7 {
  * on its tile or next to it. The frozen sea redesign
  * (RULESET_7_ICE_REDESIGN.md section 2.6): nothing recovers on a dock on
  * ice (no ship is ever on ice); beside one a ship recovers as beside any.
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk unit
+ * afloat recovers on or beside an active own Fishing Hole or Ice Fortress,
+ * its dock.
  */
 function shipRecoversAtDockV7(
   state: GameStateV7,
@@ -10432,8 +10449,9 @@ function shipRecoversAtDockV7(
   at: CoordV7,
 ): boolean {
   return (
-    isActivePortV7(state, at, unit.ownerId) &&
-    !(same(at, unit.at) && isIceAtV7(state, at))
+    (isActivePortV7(state, at, unit.ownerId) &&
+      !(same(at, unit.at) && isIceAtV7(state, at))) ||
+    isActiveFishingHoleV7(state, at, unit.ownerId)
   );
 }
 

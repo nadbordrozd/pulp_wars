@@ -1,0 +1,37 @@
+{
+  "id": "orca-b",
+  "jobId": "968db15b-a5cf-4549-a028-18494c4227db",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-submarine",
+    "subject": "UNIT:ICE_FOLK:SUBMARINE",
+    "faction": "ICE_FOLK",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96672,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, waterline, thick black outline and style, nothing under the body."
+      }
+    ],
+    "prompt": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "negativePrompt": "",
+    "description": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "editInstruction": "Turn the plesiosaur into a chunky cute orca killer whale swimming at the surface: a fat round body low in the water, no long neck, a big round head with a friendly smile, a tall black dorsal fin, two paddle flippers and a tail fluke; glossy charcoal black back, cream-white belly and a white oval patch behind the eye; small ice-blue frost crystals on the fin tip. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "source": {
+      "batch": "naval-dinosaur",
+      "recipe": "plesiosaur-a",
+      "candidate": 0,
+      "sha256": "75af9d6d5189d63c2986f75c7585f5c8def530d35872953af0e65517c4460a61"
+    }
+  }
+}

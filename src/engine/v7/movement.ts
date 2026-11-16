@@ -8,6 +8,7 @@ import {
   isFishingHoleImprovementV7,
   swimEntryV7,
   unitSwimsV7,
+  unitSailsIceV7,
   hoverLaunchAllowedV7,
   flyerMayStandOnSiteV7,
   isIceAtV7,
@@ -559,7 +560,9 @@ function validateMovementPathCoreV7(
               ice: stepIce,
               iceFolk: iceFolkKind,
             })
-        : !canEnterTerrainV7({
+        : // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk
+          // unit afloat swims on ice as on water (Deep with Pack Ice).
+          !canEnterTerrainV7({
             terrain: tile.terrain,
             movementMode: "GROUND",
             afloat: true,
@@ -567,7 +570,7 @@ function validateMovementPathCoreV7(
             navigation,
             mountainBorn: false,
             ice: stepIce,
-            iceFolk: false,
+            iceFolk: iceFolkKind,
           });
     // Only the Ice Folk walk on ice (`pulp_wars-y242`, 7r132): a ground
     // unit of another kind never enters ice (the slip before). Known ice
@@ -1388,9 +1391,11 @@ function validatePlayerMovementPathCoreV7(
         embarks: !iceFolkKind && !summoned && !batEscape,
       });
     if (tile.explored) {
+      // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an ice tile is
+      // water to an Ice Folk unit afloat (`unitSailsIceV7`).
       const water =
         (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
-        !stepIce;
+        (!stepIce || unitSailsIceV7(view, unit));
       // Flyers over water (`pulp_wars-7pi5`): a flyer never embarks.
       const autoEmbark =
         unit.form === "LAND" &&

@@ -128,30 +128,36 @@ const offered = (state: GameStateV7, seat: 0 | 1 = 0) =>
 
 describe("the rebuilt branch: each node's unlocks, in the tree and on its card", () => {
   it("is ruleset 7r137", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
   });
 
-  it("Rime trains the Walrus; Pack Ice, the Ice Fortress, Harpoons and Under the Ice", () => {
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): Rime trained the
+  // Walrus from this bead until 7r141; Deep Winter trains it again, and Rime
+  // the Narwhal Riders.
+  it("Deep Winter trains the Walrus; Pack Ice, the Ice Fortress, Harpoons and Under the Ice", () => {
     const tree = factionTreeV7("ICE_FOLK");
     const node = (tech: TechnologyIdV7) =>
       tree.nodes.find((entry) => entry.id === tech);
-    expect(node("SHORECRAFT")?.unlockedRoles).toEqual(["GUARD"]);
+    expect(node("SHORECRAFT")?.unlockedRoles).toEqual(["PATROL_BOAT"]);
     expect(tree.roleRules.GUARD).toMatchObject({
       label: "Walrus",
-      technology: "SHORECRAFT",
+      technology: "FORTIFICATION",
       cost: 4,
     });
-    // Deep Winter (the Ice Folk Fortification) no longer trains it.
-    expect(node("FORTIFICATION")?.unlockedRoles).toEqual([]);
+    expect(node("FORTIFICATION")?.unlockedRoles).toEqual(["GUARD"]);
     expect(node("NAVIGATION")?.unlocks).toContainEqual({
       kind: "FREEZE",
       depth: "DEEP",
     });
     expect(node("NAVAL_ENGINEERING")?.unlocks).toEqual([
+      { kind: "UNIT_ROLE", role: "BATTLESHIP" },
       { kind: "COMMAND", command: "BUILD_ICE_FORTRESS" },
     ]);
     expect(node("SEAMANSHIP")?.unlocks).toEqual([{ kind: "HARPOONS" }]);
-    expect(node("SUBMERSIBLES")?.unlocks).toEqual([{ kind: "UNDER_THE_ICE" }]);
+    expect(node("SUBMERSIBLES")?.unlocks).toEqual([
+      { kind: "UNIT_ROLE", role: "SUBMARINE" },
+      { kind: "UNDER_THE_ICE" },
+    ]);
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.ICE_FOLK).toMatchObject({
       SHORECRAFT: "Rime",
       NAVIGATION: "Pack Ice",
@@ -161,7 +167,7 @@ describe("the rebuilt branch: each node's unlocks, in the tree and on its card",
     });
     // The card lines (section 3.4), one number each at most.
     expect(FREEZE_DEEP_UNLOCK_V7).toBe(
-      "Ice: your freezes make ice on deep water too, and Walruses swim there",
+      "Ice: your freezes make ice on deep water too, and Walruses and sea beasts go there",
     );
     expect(HARPOONS_UNLOCK_V7).toBe(
       "Harpoons: +1 Attack against ships and boats",

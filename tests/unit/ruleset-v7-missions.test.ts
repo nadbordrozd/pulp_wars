@@ -225,8 +225,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): its ice entry has
   // no `cracked` key (was 0b9136c000bcc64d…; the old hash comes back with
   // `cracked: false` put back on the entry).
-  "ICE_FOLK_3@6:ICE_FOLK":
-    "939017a18ffcf7eb7f83809243d90523467854920f13ce98730a67c722508ce0",
+  // Revision 7 (`pulp_wars-lf1r`, 7r142): Naval Engineering is no longer
+  // known (was 939017a18ffcf7eb… at revision 6).
+  "ICE_FOLK_3@7:ICE_FOLK":
+    "2d2d551fff410cd19047c7d4990d4f2ae0a881860608429a2c73f978eedad86a",
   // Revision 5 (`pulp_wars-vdgh`): the expansion war on a new board
   // (Lakes 14, two seats, seed 12), a level 1 Whitewater with a Yeti and
   // Rime and no technology, and a head-started Crown (was 6fe0366606b2d208…
@@ -651,8 +653,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // 11 HP (was 38e1efb34e695f44…).
   // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): its ice entry has
   // no `cracked` key (was 7d3ad5ad97fbd253…).
-  "ICE_FOLK_3@6:ICE_FOLK":
-    "5d971754641a4f2b05d88daf4b4926520d8de8bdfe488d3da19e00a51d31ed31",
+  // Revision 7 (`pulp_wars-lf1r`, 7r142): Naval Engineering is no longer
+  // known (was 5d971754641a4f2b… at revision 6).
+  "ICE_FOLK_3@7:ICE_FOLK":
+    "61c611e0b25851ed34f372500986951d4b54bd6ac06f8b5dca28f2a9500ac1f4",
   // Revision 5 (`pulp_wars-vdgh`): the expansion war (was 0046c926c0c9d7fe…
   // at revision 4, the hold-out).
   "ICE_FOLK_4@5:ICE_FOLK":

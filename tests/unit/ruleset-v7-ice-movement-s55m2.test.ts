@@ -112,8 +112,8 @@ const dive = (state: GameStateV7, from: CoordV7, to: CoordV7): CommandV7 => ({
 describe("the identity", () => {
   // The Ice Folk roster rework (`pulp_wars-s55m.4`) took 7r125 after it.
   it("was 7r124 after 7r123, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
     const at = PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r124");
     expect(at).toBeGreaterThan(0);
     expect(PRIOR_RULESET_7_IDS[at - 1]).toBe("pulp-wars-poc-7r123");
@@ -293,11 +293,16 @@ describe("no docks for the Ice Folk (pulp_wars-s55m.2)", () => {
       ]),
     );
     // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
-    // and Under the Ice (Glacier's thick ice before).
+    // and Under the Ice (Glacier's thick ice before); the Ice Folk sea
+    // beasts (`pulp_wars-lf1r`, 7r142): and the Iceberg and the Orca.
     expect(unlocks("NAVAL_ENGINEERING")).toEqual([
+      { kind: "UNIT_ROLE", role: "BATTLESHIP" },
       { kind: "COMMAND", command: "BUILD_ICE_FORTRESS" },
     ]);
-    expect(unlocks("SUBMERSIBLES")).toEqual([{ kind: "UNDER_THE_ICE" }]);
+    expect(unlocks("SUBMERSIBLES")).toEqual([
+      { kind: "UNIT_ROLE", role: "SUBMARINE" },
+      { kind: "UNDER_THE_ICE" },
+    ]);
   });
 
   it("an Ice Folk seat is offered a Fishing Hole on its ice and never a Port or a Shipyard", () => {

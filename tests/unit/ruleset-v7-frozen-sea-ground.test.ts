@@ -590,24 +590,27 @@ describe("ice and the Ice Folk units on it (section 8.10; Glacier until 7r137)",
 });
 
 describe("no ships, Sea Dog (section 8.11)", () => {
-  it("never offers or accepts a ship for an Ice Folk seat, whatever it researched", () => {
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk seat
+  // trains its sea beasts (the Narwhal Riders, the Iceberg, the Orca) at its
+  // own open dock as at a Fishing Hole; it never trained a ship before.
+  it("trains an Ice Folk seat's sea beasts at its own dock, as a seafaring seat trains its ships", () => {
     const state = frozenArenaV7({ units: [] });
     const player = seatV7(state, 0);
     const commands = queryPlayerCommandsV7(viewForV7(state, player.id));
-    expect(commands.some((command) => command.kind === "TRAIN_NAVAL")).toBe(
-      false,
-    );
+    expect(
+      commands
+        .filter((command) => command.kind === "TRAIN_NAVAL")
+        .map((command) => (command.kind === "TRAIN_NAVAL" ? command.role : "")),
+    ).toEqual(["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"]);
     const capital = state.cities.find((city) => city.ownerId === player.id);
     if (capital === undefined) throw new Error("no capital");
-    for (const role of ["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"] as const)
-      expect(
-        rejectV7(state, 0, {
-          kind: "TRAIN_NAVAL",
-          cityId: capital.id,
-          at: { x: 4, y: 3 },
-          role,
-        }),
-      ).toEqual({ code: "UNIT_ROLE_INVALID", params: { role } });
+    const trained = acceptV7(state, 0, {
+      kind: "TRAIN_NAVAL",
+      cityId: capital.id,
+      at: { x: 4, y: 3 },
+      role: "PATROL_BOAT",
+    }).state.units.find((unit) => unit.at.x === 4 && unit.at.y === 3);
+    expect(trained).toMatchObject({ role: "PATROL_BOAT", form: "NAVAL" });
     // The Human seat with the same technologies trains them.
     const human = frozenArenaV7({
       factions: ["ORIGINAL", "ICE_FOLK"],

@@ -309,9 +309,12 @@ describe("who walks on ice", () => {
     expect(enter("GROUND", true)).toBe(true);
     expect(enter("STRIDE", false)).toBe(true);
     expect(enter("FLY", false)).toBe(true);
-    for (const mode of ["GROUND", "STRIDE", "FLY"] as const)
-      for (const iceFolk of [false, true])
-        expect(enter(mode, iceFolk, true)).toBe(false);
+    // Afloat: only an Ice Folk sea beast (`pulp_wars-lf1r`, 7r142) swims
+    // on ice; every other unit afloat never enters it.
+    for (const mode of ["GROUND", "STRIDE", "FLY"] as const) {
+      expect(enter(mode, false, true)).toBe(false);
+      expect(enter(mode, true, true)).toBe(true);
+    }
   });
 });
 
@@ -369,11 +372,11 @@ describe("the Steam Mole and the Normal AI", () => {
 
 describe("the identity (pulp_wars-y242)", () => {
   it("was 7r132 after 7r131, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
-    expect(PRIOR_RULESET_7_IDS.at(-10)).toBe("pulp-wars-poc-7r131");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
+    expect(PRIOR_RULESET_7_IDS.at(-11)).toBe("pulp-wars-poc-7r131");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-10)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-11)).toBe(
       "pulpWars.save.v7r131.current",
     );
   });

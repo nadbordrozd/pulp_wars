@@ -20,6 +20,7 @@ import {
   CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7,
   CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7,
   PLESIOSAUR_ANCHOR_V7,
+  ORCA_ANCHOR_V7,
   SUBMARINE_ANCHOR_V7,
 } from "../../src/assets/chibi-naval-submarine-art-manifest";
 import {
@@ -68,13 +69,12 @@ const ROOT = process.cwd();
 const BATCH = "naval-branch";
 
 /**
- * The seafaring factions: every faction but the Ice Folk. The Cult (offered
- * since pulp_wars-mch9.20) has its map sprite since bead pulp_wars-mch9.15
- * and its portrait since pulp_wars-mch9.23.
+ * The factions with a Submarine: every faction. The Cult (offered since
+ * pulp_wars-mch9.20) has its map sprite since bead pulp_wars-mch9.15 and
+ * its portrait since pulp_wars-mch9.23; the Ice Folk Orca since the Ice Folk
+ * sea beasts (pulp_wars-lf1r, 7r142; the Ice Folk had none before).
  */
-const SEAFARERS = OFFERED_FACTION_IDS_V7.filter(
-  (faction) => faction !== "ICE_FOLK",
-);
+const SEAFARERS = OFFERED_FACTION_IDS_V7;
 
 const masterFile = (asset: { readonly url: string }): string =>
   path.join(ROOT, "public", asset.url.replace(/^.*?assets\//, "assets/"));
@@ -211,12 +211,17 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       expect(live.variants(portrait), portrait).toHaveLength(1);
       expect(chibiAnchorV7(live.variants(unit)[0] as ChibiArtAssetV7)).toEqual(
         // The Plesiosaur (`pulp_wars-5ti.18`) is drawn 2 px further right.
-        faction === "DINOSAUR" ? PLESIOSAUR_ANCHOR_V7 : SUBMARINE_ANCHOR_V7,
+        // The Orca (`pulp_wars-lf1r`) 4 px.
+        faction === "DINOSAUR"
+          ? PLESIOSAUR_ANCHOR_V7
+          : faction === "ICE_FOLK"
+            ? ORCA_ANCHOR_V7
+            : SUBMARINE_ANCHOR_V7,
       );
     }
   });
 
-  it("draws an Ice Folk Submarine as the shared one: they have no Submarine raster", () => {
+  it("draws the Ice Folk Orca from its own raster (pulp_wars-lf1r), and the Classic look the shared Submarine", () => {
     const live = chibiDirectionArtRegistryV7();
     const unit = unitArtSubjectV7({
       role: "SUBMARINE",
@@ -224,7 +229,9 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       faction: "ICE_FOLK",
     });
     expect(unit).toBe("UNIT:ICE_FOLK:SUBMARINE");
-    expect(live.variants(unit)).toEqual([]);
+    expect(live.variants(unit).map((asset) => asset.id)).toEqual([
+      "chibi-naval-ice-folk-submarine",
+    ]);
     expect(chibiFallbackSubjectV7(unit)).toBe("UNIT:SUBMARINE");
     expect(
       chibiFallbackSubjectV7(portraitSubjectV7("SUBMARINE", "ICE_FOLK")),
@@ -379,15 +386,6 @@ describe("submerged Submarines (pulp_wars-5ti.6)", () => {
       expect(classic.variants(subject), subject).toEqual([]);
       expect(chibiFallbackSubjectV7(subject)).toBe("UNIT:SUBMARINE");
     }
-    // The Ice Folk have none either.
-    const iceFolk = unitArtSubjectV7({
-      role: "SUBMARINE",
-      form: "NAVAL",
-      faction: "ICE_FOLK",
-      submerged: true,
-    });
-    expect(live.variants(iceFolk)).toEqual([]);
-    expect(chibiFallbackSubjectV7(iceFolk)).toBe("UNIT:SUBMARINE");
   });
 
   it("asks for the submerged sprite only for a Submarine afloat, and only when asked", () => {

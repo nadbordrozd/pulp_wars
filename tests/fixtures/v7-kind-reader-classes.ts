@@ -624,6 +624,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // estimate's most a hostile Ram adds reads a role of a faction.
   "src/render/naval-presentation-v7.ts::hornedProwRuleV7": "SEAT",
   "src/render/naval-presentation-v7.ts::plesiosaurRuleV7": "SEAT",
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): Rime's card note
+  // names the Ice Folk registration's Patrol Boat (the Narwhal Riders).
+  "src/render/frozen-sea-presentation-v7.ts::iceSeaBeastNoteV7": "SEAT",
   "src/render/naval-presentation-v7.ts::navalRamDescriptionV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::roleRamBonus2MaximumV7": "SEAT",
   // The Martian Hover Fleet (`pulp_wars-5ti.19`): whether the viewer's own

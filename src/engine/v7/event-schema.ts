@@ -1584,14 +1584,22 @@ function validPayload(
         id(e.cityId) &&
         id(e.unitId) &&
         isNavalRoleV7(e.role) &&
-        (e.dock === "PORT" || e.dock === "SHIPYARD") &&
-        e.discountSource === (e.dock === "SHIPYARD" ? "SHIPYARD" : null) &&
+        // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): a Fishing Hole
+        // or an Ice Fortress (2 Coins less, as a Shipyard) is a dock too.
+        (e.dock === "PORT" ||
+          e.dock === "SHIPYARD" ||
+          e.dock === "FISHING_HOLE" ||
+          e.dock === "ICE_FORTRESS") &&
+        e.discountSource ===
+          (e.dock === "SHIPYARD" || e.dock === "ICE_FORTRESS"
+            ? e.dock
+            : null) &&
         // The themed naval branches (`pulp_wars-5ti.19`) price a hull by
         // faction, which context-free parsing cannot see: any registered
         // faction's price, less the Shipyard discount, is accepted.
         trainingCosts(e.role).some(
           (cost) =>
-            e.cost === Math.max(1, cost - (e.dock === "SHIPYARD" ? 2 : 0)),
+            e.cost === Math.max(1, cost - (e.discountSource === null ? 0 : 2)),
         ) &&
         parseCoordV7(e.at) !== null
       );

@@ -1066,26 +1066,38 @@ function appendPublicCityCommandsV7(
     )
       candidates.push({ kind: "TRAIN", cityId: city.id, role });
   }
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk seat
+  // trains them at its active Fishing Holes and Ice Fortresses too.
+  const holes = publicActiveFishingHoleKeysV7(view);
   for (const role of NAVAL_ROLE_IDS_V7) {
     const rule = effectiveRoleRuleV7(role, player.faction);
     if (
       fits(role) &&
       rule.cost !== null &&
       // The frozen sea (naval branch section 8.11): a tree that unlocks no
-      // ship (the Ice Folk's) is never offered one.
+      // ship is never offered one.
       factionUnlocksRoleV7(player.faction, role) &&
       (rule.technology === null ||
         player.researchedTechs.includes(rule.technology))
     )
       for (const port of view.board.tiles)
         if (
-          publicActiveOwnedPort(view, port, player.id) &&
+          ((publicActiveOwnedPort(view, port, player.id) &&
+            // The frozen sea redesign (section 2.6): never at a dock on ice.
+            !isIceAtV7(view, port.at)) ||
+            holes.has(coordKeyV7(port.at))) &&
           port.explored &&
           port.territoryCityId === city.id &&
-          // The frozen sea redesign (section 2.6): never at a dock on ice.
-          !isIceAtV7(view, port.at) &&
           !view.units.some((unit) => same(unit.at, port.at)) &&
-          rule.cost - (port.improvement === "SHIPYARD" ? 2 : 0) <= player.coins
+          // A Shipyard, and an Ice Fortress (`pulp_wars-lf1r`), take 2 off.
+          Math.max(
+            1,
+            rule.cost -
+              (port.improvement === "SHIPYARD" ||
+              port.improvement === "ICE_FORTRESS"
+                ? 2
+                : 0),
+          ) <= player.coins
         )
           candidates.push({
             kind: "TRAIN_NAVAL",
@@ -11870,10 +11882,16 @@ function publicRecoveryFactsV7(
       [tile, ...adjacentPublicTiles(view, unit.at)].some(
         (candidate) =>
           candidate !== undefined &&
-          publicActiveOwnedPort(view, candidate, unit.ownerId) &&
-          // The frozen sea redesign (section 2.6): nothing recovers on a
-          // dock on ice.
-          !(candidate === tile && isIceAtV7(view, unit.at)),
+          ((publicActiveOwnedPort(view, candidate, unit.ownerId) &&
+            // The frozen sea redesign (section 2.6): nothing recovers on a
+            // dock on ice.
+            !(candidate === tile && isIceAtV7(view, unit.at))) ||
+            // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the
+            // viewer's own active Fishing Hole is its dock.
+            (unit.ownerId === view.viewer.id &&
+              publicActiveFishingHoleKeysV7(view).has(
+                coordKeyV7(candidate.at),
+              ))),
       ),
     deepWinter:
       inOwnTerritory &&

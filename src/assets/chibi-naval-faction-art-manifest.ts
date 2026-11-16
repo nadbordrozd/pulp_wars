@@ -38,6 +38,14 @@ export type {
  * return by faction.
  */
 
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the Narwhal Riders'
+ * anchor, 4 px left of the Patrol Boat class placement (36, 48), so the
+ * sprite is drawn 4 px right and its tusk and tail stay clear of the HP bar
+ * and seat badge strips.
+ */
+export const NARWHAL_RIDERS_ANCHOR_V7 = { x: 32, y: 48 } as const;
+
 export interface ChibiNavalFactionArtV7 {
   readonly faction: FactionIdV7;
   readonly role: NavalArtRoleV7;
@@ -472,6 +480,9 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
         assetClass: "LARGE_UNIT",
         width: 72,
         height: 88,
+        // The Narwhal Riders (`pulp_wars-lf1r`, 7r142): the tusk and the tail
+        // reach further left than a hull, so they are drawn 4 px right.
+        anchor: NARWHAL_RIDERS_ANCHOR_V7,
         url: chibiArtUrl(
           "assets/chibi/units/chibi-naval-ice-folk-patrol-boat.png",
         ),

@@ -14,7 +14,6 @@ import {
   type SummonedRoleIdV7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
-  isNavalRoleV7,
   type CommandKindV7,
   type FactionIdV7,
   type FactionTreeIdV7,
@@ -526,6 +525,10 @@ export type UnitRoleAbilityV7 =
   // `seaBeast`) is never boarded: the Dinosaur Plesiosaur
   // (`pulp_wars-5ti.18`), and the Cult Kraken from its bead.
   | "SEA_BEAST"
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk unit
+  // afloat (the Narwhal Riders, the Iceberg, the Orca) swims on ice as on
+  // water and never goes on land (`unitSailsIceV7`).
+  | "ICE_SWIMMER"
   // Themed naval branches (section 4.3 U1, `pulp_wars-5ti.17`): an Undead
   // ship's Drowned Crew (with Drowned Crews, a hostile ship it sinks rises
   // as the owner's Ghost Ship).
@@ -3413,7 +3416,11 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * 7r137, docs/product/ICE_FOLK_REDESIGN_2026-11.md section 3.4): they
  * display as Rime, Pack Ice, Ice Fortress, Harpoons, and Under the Ice
  * (Hoarfrost, Black Ice, and Glacier before), and the Walrus (the `GUARD`
- * role) is Rime's, not Fortification's.
+ * role) is Rime's, not Fortification's. The Ice Folk sea beasts
+ * (`pulp_wars-lf1r`, 7r142): the Walrus is Fortification's (Deep Winter)
+ * again, like every faction's defender, and the three ship roles are back
+ * as sea beasts (Rime the Narwhal Riders, Ice Fortress the Iceberg, Under
+ * the Ice the Orca), trained at a Fishing Hole.
  */
 const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
   Partial<Record<TechnologyIdV7, readonly TechnologyUnlockV7[]>>
@@ -3422,13 +3429,15 @@ const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
   // also unlocks the Fishing Hole (since `pulp_wars-s55m.2` the one Ice
   // Folk ice building: no Ice Harbour). The naval branch rebuilt
   // (`pulp_wars-tzk6`, 7r137): and the Walrus, the amphibious defender (the
-  // Patrol Boat's twin), moved here from Fortification.
+  // Patrol Boat's twin), moved here from Fortification. The Ice Folk sea
+  // beasts (`pulp_wars-lf1r`, 7r142): the Walrus is Fortification's again;
+  // Rime keeps the shared Patrol Boat role (the Narwhal Riders).
   SHORECRAFT: [
-    { kind: "UNIT_ROLE", role: "GUARD" },
     { kind: "FREEZE", depth: "SHALLOW" },
     { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
   ],
-  // Pack Ice: ice on Deep Water, and (Navigation) a Walrus swims there.
+  // Pack Ice: ice on Deep Water, and (Navigation) a Walrus swims there, and
+  // a sea beast goes there (`pulp_wars-lf1r`, 7r142).
   NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
   // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Fortress
   // (Hoarfrost before: the Freeze line, then nothing after 7r133), Harpoons
@@ -3459,17 +3468,17 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
                     unlock.command === "BUILD_FIELD_DEFENSE"
                   ? [{ kind: "DEEP_WINTER" }]
                   : // The frozen sea (naval branch sections 2.2 and 8.11):
-                    // the Ice Folk tree unlocks no ship, no Ram, and no
-                    // Board. Ice Folk movement (`pulp_wars-s55m.2`, 7r124):
-                    // nor a dock (no Port, no Shipyard), nor Harbours (Under
-                    // the Ice gives its bonus) or the naval training
-                    // discount: the Fishing Hole is their ice building. The
-                    // naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the
-                    // Walrus (`GUARD`) is Rime's, not Fortification's.
-                    (unlock.kind === "UNIT_ROLE" &&
-                        (isNavalRoleV7(unlock.role) ||
-                          unlock.role === "GUARD")) ||
-                      unlock.kind === "RAM" ||
+                    // the Ice Folk tree unlocks no Ram and no Board. Ice
+                    // Folk movement (`pulp_wars-s55m.2`, 7r124): nor a dock
+                    // (no Port, no Shipyard), nor Harbours (Under the Ice
+                    // gives its bonus) or the naval training discount (an
+                    // Ice Fortress gives its own): the Fishing Hole is
+                    // their ice building. The Ice Folk sea beasts
+                    // (`pulp_wars-lf1r`, 7r142): the three ship roles stay
+                    // (the Narwhal Riders, the Iceberg, the Orca), and the
+                    // Walrus (`GUARD`) is Fortification's again (Rime's
+                    // from 7r137).
+                    unlock.kind === "RAM" ||
                       unlock.kind === "BOARDING" ||
                       unlock.kind === "HARBOURS" ||
                       unlock.kind === "NAVAL_TRAINING_DISCOUNT" ||
@@ -3556,7 +3565,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   // Wake (the Frost Giant alone carries that). The naval branch rebuilt
   // (`pulp_wars-tzk6`, 7r137, docs/product/ICE_FOLK_REDESIGN_2026-11.md
   // section 3.4): Rime's unit (Fortification's before), amphibious (the
-  // role mechanic `swims`), with its stats and 4 Coins unchanged.
+  // role mechanic `swims`), with its stats and 4 Coins unchanged. The Ice
+  // Folk sea beasts (`pulp_wars-lf1r`, 7r142; the user: "I would prefer that
+  // the deep winter ... unlocked the defensive unit like with all the other
+  // factions"): Fortification's (Deep Winter) again; it still swims.
   GUARD: role({
     role: "GUARD",
     label: "Walrus",
@@ -3570,7 +3582,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "SHORECRAFT",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
@@ -3681,9 +3693,32 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
       "GLACIAL_SMASH",
     ],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142; the user: "ice folks
+  // don't build ships but that doesn't mean they can't build something water
+  // based. some sort of unit(s) that live on the frozen water and perform
+  // the same function as ships"): the three ship roles with the Human
+  // ships' numbers, trained at a Fishing Hole, swimming on ice as on water
+  // and never boarded (`ICE_SWIMMER`: `unitSailsIceV7` and the mechanic
+  // `seaBeast`). The
+  // Narwhal Riders are the Patrol Boat without its Ram (the Ice Folk
+  // Seamanship is Harpoons), the Iceberg the Battleship (a drifting ice
+  // fortress crewed by Snow Hunters), the Orca the Submarine (Submerged and
+  // Torpedo).
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Narwhal Riders",
+    abilities: ["ATTACK", "ICE_SWIMMER"],
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Iceberg",
+    abilities: ["ATTACK", "ICE_SWIMMER"],
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Orca",
+    abilities: [...ORIGINAL_ROLE_RULES_V7.SUBMARINE.abilities, "ICE_SWIMMER"],
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth is the Ice
   // Folk heavy line unit (Metallurgy; it was the `GUARD` role at Drill).
   // Ice Folk Freeze (`pulp_wars-w49.37`): 7 Coins (6 before) and Stampede.
@@ -3764,7 +3799,11 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     advancesAfterKill: false,
     glacialSmashHp: GLACIAL_SMASH_HP_V7,
   },
-  BATTLESHIP: { splash: true },
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): living (or, the
+  // Iceberg, a mountain of ice with no deck to seize): never boarded.
+  PATROL_BOAT: { seaBeast: true },
+  BATTLESHIP: { splash: true, seaBeast: true },
+  SUBMARINE: { seaBeast: true },
   // The ninth unit (7r55): the Mammoth in the heavy slot keeps Glide, Sweep,
   // and Trample.
   SWORDSMAN: { glides: true, sweeps: true, tramplesFieldDefense: true },
@@ -7760,7 +7799,8 @@ export interface NavalBranchUnitFactsV7 {
  * The naval branch (section 5.2): whether the unit is submerged (a
  * `NAVAL`-form unit whose role has `SUBMERGED`: the Submarine). An `ATTACK`
  * on it is legal only from Chebyshev distance 1. A Frozen Submarine stays
- * submerged (`pulp_wars-s55m.1`: no ship is ever on ice).
+ * submerged, and an Ice Folk Orca stays submerged under ice (`pulp_wars-lf1r`,
+ * 7r142).
  */
 export function unitIsSubmergedV7(
   roster: FactionRosterV7,
@@ -8029,7 +8069,10 @@ export function halfPowerAttack2V7(attack2: number): number {
  *   enter it, so for it ice is the water it is (it Cracks it instead). A
  *   caller that places something that may not stand on ice (an Egg, a
  *   reward or treasure unit, a rising, a mound) passes `ice: false`, so the
- *   tile stays water for it.
+ *   tile stays water for it. The Ice Folk sea beasts (`pulp_wars-lf1r`,
+ *   7r142): an afloat unit of the Ice Folk kind (`iceFolk`) swims on ice as
+ *   on the water under it: Shallow ice always, Deep ice with Navigation
+ *   (the Ice Folk Pack Ice), as for open water ({@link unitSailsIceV7}).
  *
  * Occupancy, settlement sites, territory, and exploration are not terrain
  * and stay with each caller.
@@ -8052,7 +8095,9 @@ export function canEnterTerrainV7(input: {
     input.ice &&
     (input.terrain === "SHALLOW_WATER" || input.terrain === "DEEP_WATER")
   )
-    return !input.afloat && (input.iceFolk || input.movementMode !== "GROUND");
+    return input.afloat
+      ? input.iceFolk && (input.terrain === "SHALLOW_WATER" || input.navigation)
+      : input.iceFolk || input.movementMode !== "GROUND";
   switch (input.terrain) {
     case "GRASS":
     case "FOREST":
@@ -8102,6 +8147,21 @@ export function unitWalksOnIceV7(
     unitKindWalksIceV7(roster, unit) ||
     unitRoleMechanicsV7(roster, unit).movementMode !== "GROUND"
   );
+}
+
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): whether the unit is an
+ * Ice Folk unit afloat (the Narwhal Riders, the Iceberg, the Orca; a body
+ * rule of its kind, so a mind-controlled one keeps it). It swims on ice as
+ * on open water ({@link canEnterTerrainV7} with `afloat` and `iceFolk`),
+ * never goes on land, never Glides, never dives, and never Cracks ice. No
+ * other unit afloat ever enters ice.
+ */
+export function unitSailsIceV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly form: UnitFormV7 },
+): boolean {
+  return unit.form === "NAVAL" && unitKindWalksIceV7(roster, unit);
 }
 
 /**

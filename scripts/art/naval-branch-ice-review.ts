@@ -355,6 +355,25 @@ const SCENE_PIECES: readonly ScenePiece[] = [
     file: "units/chibi-direction-fighter",
     label: "Human Fighter on melting ice",
   },
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): they swim on ice as
+  // on water, the Orca submerged under it.
+  {
+    at: [3, 2],
+    file: "units/chibi-naval-ice-folk-patrol-boat",
+    anchor: [32, 48],
+    label: "Narwhal Riders on permanent ice",
+  },
+  {
+    at: [3, 3],
+    file: "units/chibi-naval-ice-folk-submarine-submerged",
+    anchor: [28, 48],
+    label: "Orca submerged under permanent ice",
+  },
+  {
+    at: [8, 4],
+    file: "units/chibi-naval-ice-folk-battleship",
+    label: "Iceberg on deep water",
+  },
 ];
 
 function terrainAt(x: number, y: number): string {

@@ -2904,7 +2904,9 @@ function parseIce(input: unknown): readonly IceTileV7[] | null {
  * The frozen sea (section 8.3) cross references: the list is empty in a
  * match without an Ice Folk seat; every entry lies on a water tile of the
  * board and is owned by a player of the match; no unit of the Ice Folk kind
- * is afloat, and no Ice Folk seat owns a ship. The frozen sea redesign
+ * is embarked, and an Ice Folk seat's units afloat are its own sea beasts
+ * (`pulp_wars-lf1r`, 7r142; no Ice Folk unit was afloat before). The
+ * frozen sea redesign
  * (RULESET_7_ICE_REDESIGN.md section 2.6): a building on water stands on
  * ice, except a Port or Shipyard on open Shallow Water. The naval branch
  * rebuilt (`pulp_wars-tzk6`, 7r137): no dock stands on ice. Freezes ice
@@ -2966,10 +2968,15 @@ function iceValid(
     ...value.burrowed.map((entry) => entry.unit),
   ]) {
     if (isNeutralOwnerV7(unit.ownerId)) continue;
-    if (isAfloatFormV7(unit.form) && kindOf(unit) === "ICE_FOLK") return false;
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): a unit of the Ice
+    // Folk kind may be in `NAVAL` form (a sea beast) but never embarks, and
+    // an Ice Folk seat's units afloat are its own sea beasts (it never
+    // boards a ship).
+    if (unit.form === "EMBARKED" && kindOf(unit) === "ICE_FOLK") return false;
     if (
       unit.form === "NAVAL" &&
-      playerById.get(unit.ownerId)?.faction === "ICE_FOLK"
+      playerById.get(unit.ownerId)?.faction === "ICE_FOLK" &&
+      kindOf(unit) !== "ICE_FOLK"
     )
       return false;
   }
@@ -3363,9 +3370,12 @@ function validateCrossReferences(value: CrossInput): boolean {
       // swimmer (the Walrus) may stand on open water that is no dock. Deep
       // Water needs Navigation to enter, not to stand on: a Walrus a Brain
       // swam out to Deep Water and then released to an owner without Pack
-      // Ice stays there and may swim back to Shallow Water.
+      // Ice stays there and may swim back to Shallow Water. The Ice Folk sea
+      // beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk unit afloat may stand
+      // on ice.
       (isAfloatFormV7(unit.form)
-        ? tile.biome !== null || iceKeys.has(key(unit.at))
+        ? tile.biome !== null ||
+          (iceKeys.has(key(unit.at)) && kind !== "ICE_FOLK")
         : tile.biome === null &&
           !(
             unit.form === "LAND" &&

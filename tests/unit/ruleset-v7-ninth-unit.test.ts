@@ -403,11 +403,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
-    expect(PRIOR_RULESET_7_IDS.at(-87)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
+    expect(PRIOR_RULESET_7_IDS.at(-88)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-87)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-88)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -498,13 +498,8 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         expect(rule.tacticalRole, `${faction} ${job}`).toBe(
           TACTICAL_OF_JOB[job],
         );
-        // The Walrus is on Rime (the naval branch rebuilt, `pulp_wars-tzk6`,
-        // 7r137).
-        expect(rule.technology, `${faction} ${job}`).toBe(
-          faction === "ICE_FOLK" && role === "GUARD"
-            ? "SHORECRAFT"
-            : TECH_OF_JOB[job],
-        );
+        // (The Walrus was on Rime from 7r137 to 7r141.)
+        expect(rule.technology, `${faction} ${job}`).toBe(TECH_OF_JOB[job]);
         // Every unit but the reward giant has a price; the giant has none.
         expect(rule.cost === null, `${faction} ${job}`).toBe(
           job === "REWARD_GIANT",
@@ -801,9 +796,11 @@ describe("the ninth unit: production", () => {
       number,
     ])[] = [
       ["DINOSAUR", "CATAPULT", "SAWMILLING", 7],
-      // (The Walrus went on to Deep Winter with every defender at 7r56, and
-      // to Rime with the naval branch rebuilt, `pulp_wars-tzk6`, 7r137.)
-      ["ICE_FOLK", "GUARD", "SHORECRAFT", 4],
+      // (The Walrus went on to Deep Winter with every defender at 7r56, to
+      // Rime with the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, and
+      // back to Deep Winter with the Ice Folk sea beasts, `pulp_wars-lf1r`,
+      // 7r142.)
+      ["ICE_FOLK", "GUARD", "FORTIFICATION", 4],
       ["DWARF", "KNIGHT", "CHIVALRY", 9],
     ];
     for (const [faction, role, tech, cost] of cases) {

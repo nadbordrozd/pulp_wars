@@ -860,18 +860,23 @@ describe("a prize under its new flag (section 2 rule 5)", () => {
 });
 
 describe("sea beasts are never boarded (section 2 rule 6)", () => {
-  it("has the Dinosaur Plesiosaur and the Cult Kraken as its only sea beasts, and the shared rule refuses one as TARGET_IMMUNE", () => {
+  it("has the Dinosaur Plesiosaur, the Cult Kraken and the Ice Folk ships as its only sea beasts, and the shared rule refuses one as TARGET_IMMUNE", () => {
     // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`): the first
     // sea beast (RULESET_7_NAVAL_FACTIONS.md section 5.3 D2); the Kraken
-    // the second (`pulp_wars-5ti.22`, section 9.3 K2).
+    // the second (`pulp_wars-5ti.22`, section 9.3 K2); the Ice Folk Narwhal
+    // Riders, Iceberg and Orca (`pulp_wars-lf1r`, 7r142) the rest.
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7)
         expect(
           roleMechanicsV7(role, faction).seaBeast,
           `${faction} ${role}`,
         ).toBe(
-          (faction === "DINOSAUR" || faction === "CULT") &&
-            role === "SUBMARINE",
+          ((faction === "DINOSAUR" || faction === "CULT") &&
+            role === "SUBMARINE") ||
+            (faction === "ICE_FOLK" &&
+              (role === "PATROL_BOAT" ||
+                role === "BATTLESHIP" ||
+                role === "SUBMARINE")),
         );
     const state = strait(
       ["ORIGINAL", "GOBLIN"],

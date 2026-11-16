@@ -110,6 +110,27 @@ export function isOpenPortV7(
 }
 
 /**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): whether `ownerId` may
+ * train a unit afloat on `at` (the tile rule of `TRAIN_NAVAL`): an open
+ * dock of its own ({@link isOpenPortV7}: active and not shut by ice), and
+ * for an Ice Folk seat also an active own Fishing Hole or Ice Fortress
+ * ({@link isActiveFishingHoleV7}), the Ice Folk dock.
+ */
+export function isNavalTrainingTileV7(
+  state: Pick<
+    GameStateV7,
+    "board" | "cities" | "players" | "units" | "setup" | "humanPlayerId" | "ice"
+  >,
+  at: { readonly x: number; readonly y: number },
+  ownerId: PlayerId,
+): boolean {
+  return (
+    isOpenPortV7(state, at, ownerId) ||
+    isActiveFishingHoleV7(state, at, ownerId)
+  );
+}
+
+/**
  * Fishing Hole links (`pulp_wars-vg5l`, 7r127): the Ice Folk build no dock,
  * so a Fishing Hole of an Ice Folk seat is the seat's dock for the
  * connection network (section 9.5). Another faction's seat that holds a

@@ -296,8 +296,17 @@ describe("The Long Winter", () => {
     // or Diving Bells, holds five and sends the rest; no landing parties,
     // and its Ironclad comes home in round 11.
     expect(seat("ICE_FOLK_3", 0).technologies).toEqual(
-      expect.arrayContaining(["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"]),
+      expect.arrayContaining(["SHORECRAFT", "NAVIGATION"]),
     );
+    // Revision 7 (`pulp_wars-lf1r`, 7r142): Naval Engineering, the Iceberg
+    // since the Ice Folk sea beasts, is unknown and forbidden; Rime trains
+    // the Narwhal Riders.
+    expect(seat("ICE_FOLK_3", 0).technologies).not.toContain(
+      "NAVAL_ENGINEERING",
+    );
+    expect(seat("ICE_FOLK_3", 0).forbiddenTechnologies).toEqual([
+      "NAVAL_ENGINEERING",
+    ]);
     for (const tech of ["NAVAL_ENGINEERING", "SUBMERSIBLES"])
       expect(seat("ICE_FOLK_3", 1).forbiddenTechnologies, tech).toContain(tech);
     expect(seat("ICE_FOLK_3", 1).directive).toMatchObject({

@@ -93,7 +93,8 @@ export const REVISION_21_ACHIEVEMENT_REQUIRED_V7 = Object.freeze({
  * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.11): an Ice Folk seat
  * has no ships, so its Sea Dog counts its land-form units standing on ice
  * instead (a land-form unit stands on a water tile only on ice), against
- * the same number (`ICE_SEA_DOG_UNITS_V7`).
+ * the same number (`ICE_SEA_DOG_UNITS_V7`); since the Ice Folk sea beasts
+ * (`pulp_wars-lf1r`, 7r142) its sea beasts as well.
  */
 export function revision21AchievementCountsV7(
   state: Pick<GameStateV7, "players" | "cities" | "units" | "board">,
@@ -107,12 +108,14 @@ export function revision21AchievementCountsV7(
   let kills = 0;
   for (const unit of state.units) {
     if (unit.ownerId !== playerId || unit.hp <= 0) continue;
+    // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): an Ice Folk seat's
+    // sea beasts count too, on ice or open water.
     if (
-      iceFolk
-        ? unit.form === "LAND" &&
-          state.board.tiles[unit.at.y * state.board.width + unit.at.x]
-            ?.biome === null
-        : unit.form === "NAVAL"
+      unit.form === "NAVAL" ||
+      (iceFolk &&
+        unit.form === "LAND" &&
+        state.board.tiles[unit.at.y * state.board.width + unit.at.x]?.biome ===
+          null)
     )
       ships += 1;
     if (unit.kills > kills) kills = unit.kills;

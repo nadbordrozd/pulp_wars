@@ -85,6 +85,22 @@ const ICE_FOLK_LAND_ROLES = [
 const JUSTIFIED_EXCEPTIONS: Readonly<Partial<Record<UnitRoleIdV7, string>>> =
   {};
 
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the ships of every
+ * faction keep the role's numbers (the Dugout, the War Raft, the Steam
+ * Launch ...), so each sea beast ties its Human ship on every axis. They
+ * swim on ice, but they never carry a unit (the Ice Folk never embark), the
+ * Narwhal Riders have no Ram (the Ice Folk Seamanship is Harpoons), and an
+ * Ice Folk seat trains them only at its Fishing Holes and docks.
+ */
+const SEA_BEAST_EXCEPTIONS: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {
+  PATROL_BOAT: "the Patrol Boat's numbers; no Ram, no transport",
+  BATTLESHIP:
+    "the Battleship's numbers; 2 off at an Ice Fortress as at a Shipyard",
+  SUBMARINE:
+    "the Submarine's numbers; Submerged and Torpedo as every Submarine",
+};
+
 /** Where each Ice Folk unit gives way to its Human pair (docs section 7). */
 const EXPECTED_WORSE_AXES: Readonly<
   Record<(typeof ICE_FOLK_LAND_ROLES)[number], readonly Axis[]>
@@ -104,11 +120,11 @@ const EXPECTED_WORSE_AXES: Readonly<
 
 describe("the identity (pulp_wars-px48)", () => {
   it("is 7r136 after 7r135, whose save key is obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
-    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r135");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
+    expect(PRIOR_RULESET_7_IDS.at(-7)).toBe("pulp-wars-poc-7r135");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-7)).toBe(
       "pulpWars.save.v7r135.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -153,12 +169,47 @@ describe("the Ice Folk stat pass (pulp_wars-px48)", () => {
       expect(worseAxes(role)).toEqual([]);
   });
 
-  it("has no Ice Folk ship to pair: no Ice Folk technology unlocks one", () => {
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the Ice Folk ships
+  // are the Narwhal Riders, the Iceberg and the Orca, unlocked by Rime, the
+  // Ice Fortress and Under the Ice (none before). Their pair is the Human
+  // ship of the role.
+  it("pairs each Ice Folk sea beast with the Human ship of its role", () => {
     const unlocked = factionTreeV7("ICE_FOLK").nodes.flatMap((node) =>
       node.unlocks.flatMap((unlock) =>
         unlock.kind === "UNIT_ROLE" ? [unlock.role] : [],
       ),
     );
-    for (const ship of NAVAL_ROLE_IDS_V7) expect(unlocked).not.toContain(ship);
+    for (const ship of NAVAL_ROLE_IDS_V7) expect(unlocked).toContain(ship);
+    expect(
+      NAVAL_ROLE_IDS_V7.map(
+        (role) => effectiveRoleRuleV7(role, "ICE_FOLK").label,
+      ),
+    ).toEqual(["Narwhal Riders", "Iceberg", "Orca"]);
+  });
+
+  it.each(NAVAL_ROLE_IDS_V7)(
+    "the Ice Folk %s ties its Human ship on every axis, a listed exception",
+    (role) => {
+      // By design: every faction's ships keep the role's numbers.
+      expect(worseAxes(role)).toEqual([]);
+      expect(
+        Object.values(
+          compare(
+            effectiveRoleRuleV7(role, "ICE_FOLK"),
+            effectiveRoleRuleV7(role, "ORIGINAL"),
+          ),
+        ).every((delta) => delta === 0),
+      ).toBe(true);
+      expect(SEA_BEAST_EXCEPTIONS[role]).toBeDefined();
+    },
+  );
+
+  it("the Narwhal Riders give the Patrol Boat's Ram away", () => {
+    expect(effectiveRoleRuleV7("PATROL_BOAT", "ORIGINAL").abilities).toContain(
+      "RAM",
+    );
+    expect(
+      effectiveRoleRuleV7("PATROL_BOAT", "ICE_FOLK").abilities,
+    ).not.toContain("RAM");
   });
 });

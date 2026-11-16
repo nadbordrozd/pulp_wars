@@ -185,14 +185,14 @@ describe("the Industry reshuffle: identity", () => {
   it("was 7r56 after 7r55, with both save keys obsolete now", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r141");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r141.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-86, -84)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-87, -85)).toEqual([
       "pulp-wars-poc-7r55",
       "pulp-wars-poc-7r56",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-86, -84)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-87, -85)).toEqual([
       "pulpWars.save.v7r55.current",
       "pulpWars.save.v7r56.current",
     ]);
@@ -264,16 +264,16 @@ describe("the Industry reshuffle: the tree of every faction", () => {
     for (const faction of FACTION_IDS_V7) {
       const expected = FORTIFICATION[faction];
       const rule = effectiveRoleRuleV7("GUARD", faction);
-      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk's
-      // Walrus moved on to Rime; their Fortification keeps Deep Winter only.
-      const walrus = faction === "ICE_FOLK";
+      // (The naval branch rebuilt, `pulp_wars-tzk6`, 7r137, moved the Ice
+      // Folk's Walrus on to Rime; the Ice Folk sea beasts, `pulp_wars-lf1r`,
+      // 7r142, brought it back.)
       expect([rule.label, rule.technology], faction).toEqual([
         expected.defender,
-        walrus ? "SHORECRAFT" : "FORTIFICATION",
+        "FORTIFICATION",
       ]);
       expect(unlocksOf(faction, "FORTIFICATION"), faction).toEqual([
         ...(expected.keeps === null ? [] : [expected.keeps]),
-        ...(walrus ? [] : ["UNIT:GUARD"]),
+        "UNIT:GUARD",
       ]);
       const node = factionTreeV7(faction).nodes.find(
         (item) => item.id === "FORTIFICATION",
@@ -357,10 +357,8 @@ describe("the Industry reshuffle: the rules", () => {
     for (const faction of FACTION_IDS_V7) {
       const seat = (techs: readonly TechnologyIdV7[]): GameStateV7 =>
         field([], { factions: [faction, "ORIGINAL"], techs: { 0: techs } });
-      // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk's
-      // Walrus is on Rime.
-      const tech: TechnologyIdV7 =
-        faction === "ICE_FOLK" ? "SHORECRAFT" : "FORTIFICATION";
+      // (The Ice Folk's Walrus was on Rime from 7r137 to 7r141.)
+      const tech: TechnologyIdV7 = "FORTIFICATION";
       expect(produces(seat(["DRILL"]), "GUARD"), faction).toBe(false);
       expect(produces(seat(["DRILL", tech]), "GUARD"), faction).toBe(true);
       // The command itself names the technology it lacks.
@@ -679,9 +677,10 @@ describe("the Industry reshuffle: the Normal AI", () => {
     // last step to the defender is bought ahead of an economic technology
     // (`defenderLastStepResearchV7`). Here the seat trains a Fighter first
     // and still pays for the technology. (The Ice Folk left the cases with
-    // the naval branch rebuilt, `pulp_wars-tzk6`, 7r137: their Walrus is on
-    // Rime, not behind Fortification.)
+    // the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, and came back with
+    // the Ice Folk sea beasts, `pulp_wars-lf1r`, 7r142.)
     const cases: readonly (readonly [FactionIdV7, FactionIdV7])[] = [
+      ["ICE_FOLK", "CANDY"],
       ["DWARF", "CANDY"],
       ["CANDY", "ORIGINAL"],
       ["ORIGINAL", "CANDY"],

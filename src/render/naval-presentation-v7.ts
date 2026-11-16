@@ -55,6 +55,14 @@ export const TORPEDO_RULE_V7 =
   "Attacks only boats and transports, which cannot strike back.";
 /** Section 2 rule 6 (`pulp_wars-5ti.18`): a sea beast (the Plesiosaur). */
 export const SEA_BEAST_RULE_V7 = "A living beast: it cannot be boarded.";
+/**
+ * The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): the Narwhal Riders, the
+ * Iceberg and the Orca swim on ice as on water, never on land, and are never
+ * boarded.
+ */
+export const ICE_SWIMMER_LABEL_V7 = "Ice swimmer";
+export const ICE_SWIMMER_RULE_V7 =
+  "Swims on ice as on water, never on land; it cannot be boarded.";
 export const HARBOURS_RULE_V7 = `Every active Port and Shipyard gives ${HARBOUR_POPULATION_V7} more population.`;
 
 /** The Help screen's naval rules, in reading order. */
@@ -407,6 +415,7 @@ export function navalAbilityNameV7(
   if (ability === "DROWNED_CREW") return "Drowned Crew";
   if (ability === "DEEP_OFFERING") return DEEP_OFFERING_LABEL_V7;
   if (ability === "SEA_BEAST") return "Sea beast";
+  if (ability === "ICE_SWIMMER") return ICE_SWIMMER_LABEL_V7;
   if (ability !== "RAM") return null;
   return faction === undefined ? NAVAL_RAM_LABEL_V7 : navalRamLabelV7(faction);
 }

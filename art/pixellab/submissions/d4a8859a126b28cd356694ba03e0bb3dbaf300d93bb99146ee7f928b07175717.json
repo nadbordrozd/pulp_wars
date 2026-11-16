@@ -1,0 +1,36 @@
+{
+  "id": "orca-a-dry",
+  "jobId": "a24e7835-085a-4e3d-adb7-b01150afae4b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-submarine",
+    "subject": "UNIT:ICE_FOLK:SUBMARINE",
+    "faction": "ICE_FOLK",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96673,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the blue water puddle and the wave lines under the orca, so the bottom of the orca's body is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the orca, its fin, flippers, tail, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the blue water puddle and the wave lines under the orca, so the bottom of the orca's body is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the orca, its fin, flippers, tail, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the blue water puddle and the wave lines under the orca, so the bottom of the orca's body is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the orca, its fin, flippers, tail, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the blue water puddle and the wave lines under the orca, so the bottom of the orca's body is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the orca, its fin, flippers, tail, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orca-a",
+      "candidate": 0,
+      "sha256": "4b07488095a9098eca4c0ae135a430f07ead1132b0da35500759090f44e64aca"
+    }
+  }
+}

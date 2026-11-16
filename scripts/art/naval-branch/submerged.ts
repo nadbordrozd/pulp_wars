@@ -56,6 +56,8 @@ export const SUBMARINE_ASSET_IDS = [
   "chibi-naval-dwarf-submarine",
   "chibi-naval-candy-submarine",
   "chibi-naval-cult-submarine",
+  // The Ice Folk Orca (`pulp_wars-lf1r`, 7r142).
+  "chibi-naval-ice-folk-submarine",
 ] as const;
 
 const UNITS = "public/assets/chibi/units";
