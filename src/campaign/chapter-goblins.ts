@@ -90,7 +90,7 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "The Moon Gun fires a unit to any empty tile within 5.",
         "With Explosives an Orc Brute's hit ignores Walls.",
-        "Tribes storm Egg Rock from turn 4; Tarpit is halfway.",
+        "Tribes storm Egg Rock from turn 3; Tarpit is halfway.",
       ]),
       closing:
         "The vault is full: gold, silver, the good cutlery, and a long iron crate marked 'bell-tongue'. The Baron escapes into the jungle with his hat and his debts and nothing else. The crate hums.",
@@ -108,7 +108,7 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
         "The crate hums. Snikkit says it is just iron; Mogga says it is singing. Saucers have set down at the island's east end, the Baron's last loyal men have built a landing at its west end, and both want the loot. The getaway rafts will not be ready for sixteen days. Hold the Rock, and do not let them dig in.",
       objective: "Hold Smuggler's Rock for 16 turns.",
       hints: Object.freeze([
-        "Never stand beside a Brain: it takes your Goblins.",
+        "Brains beam down from turn 5. Never stand beside one.",
         "Both camps train men every turn. Break one early.",
         "A captured shore can build a Port; Fire Rafts sail.",
       ]),

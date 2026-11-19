@@ -282,10 +282,17 @@ describe("The Big Score", () => {
         others: { kind: "RUSH" },
       }),
     ]);
+    // Revision 6 (`pulp_wars-i9o2`, section 19.8): the tribes storm Egg
+    // Rock from round 3, hold both towns with Ankylosaurs and have Nesting.
     expect(seat("GOBLIN_4", 2).directive).toEqual([
-      { kind: "NORMAL", untilRound: 4 },
+      { kind: "NORMAL", untilRound: 3 },
       { kind: "ASSAULT", target: { x: 3, y: 3 } },
     ]);
+    expect(seat("GOBLIN_4", 2).technologies).toContain("FORTIFICATION");
+    for (const city of seat("GOBLIN_4", 2).cities)
+      expect(seat("GOBLIN_4", 2).units, city.name).toContainEqual(
+        expect.objectContaining({ role: "GUARD", at: city.at }),
+      );
     expect(g4.forbiddenTechnologies).toContain("SHORECRAFT");
     expect(g4.reinforcements ?? []).toEqual([]);
     // G5 (`pulp_wars-mv96`): both enemies hold a beachhead town on the
@@ -303,17 +310,25 @@ describe("The Big Score", () => {
       ).toHaveLength(1);
     }
     // The loyalists keep two at the Landing and rush with the rest; the
-    // Martians keep one at the Field and assault the Rock with the rest.
+    // Martians hold the Field for two rounds (revision 7, `pulp_wars-i9o2`),
+    // then keep one there and assault the Rock with the rest.
     expect(seat("GOBLIN_5", 1).directive).toMatchObject({
       kind: "GUARD",
       garrison: 2,
       others: { kind: "RUSH" },
     });
-    expect(seat("GOBLIN_5", 2).directive).toMatchObject({
-      kind: "GUARD",
-      garrison: 1,
-      others: { kind: "ASSAULT", target: rock },
-    });
+    expect(seat("GOBLIN_5", 2).directive).toMatchObject([
+      { kind: "GUARD", garrison: 3, untilRound: 3 },
+      { kind: "GUARD", garrison: 1, others: { kind: "ASSAULT", target: rock } },
+    ]);
+    // Revision 7: no Brain on the island at the start (the first beams
+    // down in round 5); the crew has two Brutes.
+    expect(
+      seat("GOBLIN_5", 2).units.filter((unit) => unit.role === "CAPTAIN"),
+    ).toEqual([]);
+    expect(
+      seat("GOBLIN_5", 0).units.filter((unit) => unit.role === "GUARD"),
+    ).toHaveLength(2);
     expect(g5.landmarks).toContainEqual({
       tag: "BARONS_LANDING",
       at: seat("GOBLIN_5", 1).cities[1]?.at,

@@ -24,6 +24,13 @@ import type { MissionDefinitionV7 } from "./types";
  * in the strait, is a Fire Raft's hop away, and its shallows reach the
  * Martians' island. Eliminating every enemy still wins early.
  *
+ * Revision 7 (`pulp_wars-i9o2`, CAMPAIGN.md section 19.8): the user found
+ * revision 6 too hard. In hand play the Field's Brain took the Rock's
+ * Brute off the centre in round 3. The Field now starts without a Brain
+ * (the first beams down in round 5) and holds its men for two rounds, and
+ * the crew has a second Brute, 8 Coins, and Mogga and the Chucker behind
+ * the walls.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ...^.~~~~~..^^..
@@ -58,7 +65,10 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
   // Revision 6 (`pulp_wars-mv96`, the beachheads): the Baron's Landing and
   // the Saucer Field on the Rock's island, Gull Islet in the strait, the
   // Landing as the second star.
-  revision: 6,
+  // Revision 7 (`pulp_wars-i9o2`, CAMPAIGN.md section 19.8): the user found
+  // it too hard; no Brain at the Saucer Field at the start, the Field digs
+  // in for two rounds, and the crew has a second Brute and 8 Coins.
+  revision: 7,
   seed: 20261505,
   // <map>
   size: 16,
@@ -151,8 +161,9 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "GOBLIN",
-      // Retune 4: four units, five technologies, 5 Coins.
-      coins: 5,
+      // Retune 4: four units, five technologies, 5 Coins. Revision 7: five
+      // units and 8 Coins.
+      coins: 8,
       technologies: [
         "GATHERING",
         "HUNTING",
@@ -169,11 +180,15 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
-        // Mogga the Ogre, who says the crate is singing.
-        { role: "SWORDSMAN", at: { x: 8, y: 12 }, tag: "MOGGA" },
+        // Mogga the Ogre, who says the crate is singing, behind the walls
+        // (in front of them a rifle shot him in round 1).
+        { role: "SWORDSMAN", at: { x: 8, y: 14 }, tag: "MOGGA" },
         { role: "GUARD", at: { x: 8, y: 13 } },
+        // Revision 7: a second Brute, and the Chucker out of the Ray
+        // Gunner's first-round reach.
+        { role: "GUARD", at: { x: 9, y: 13 } },
         { role: "FIGHTER", at: { x: 7, y: 13 } },
-        { role: "MARKSMAN", at: { x: 9, y: 14 } },
+        { role: "MARKSMAN", at: { x: 7, y: 14 } },
       ],
       // The Rock's island and the islet: both beachheads are known.
       reveal: { radius: 3, rects: [{ x0: 3, y0: 8, x1: 12, y1: 15 }] },
@@ -257,10 +272,11 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 13, y: 4 } },
         { role: "RAIDER", at: { x: 11, y: 5 } },
         { role: "RAIDER", at: { x: 12, y: 4 } },
-        // The Field: a Shield Projector holds it; a Brain, a Ray Gunner and
-        // a Grunt go for the crate.
+        // The Field: a Shield Projector holds it; a Ray Gunner and a Grunt
+        // go for the crate. Revision 7: no Brain at the start (in hand play
+        // it took the Rock's Brute off the centre in round 3); the first
+        // one beams down in round 5.
         { role: "GUARD", at: { x: 11, y: 12 }, home: 1 },
-        { role: "CAPTAIN", at: { x: 11, y: 11 }, home: 1 },
         { role: "MARKSMAN", at: { x: 11, y: 13 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 13 }, home: 1 },
       ],
@@ -276,13 +292,22 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // One holds the Field; every saucer and the rest fly at the Rock.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 10, y0: 11, x1: 12, y1: 13 }],
-        garrison: 1,
-        others: { kind: "ASSAULT", target: { x: 8, y: 13 } },
-      },
+      // Revision 7: the Field's men dig in for the first two rounds; then
+      // one holds it and every saucer and the rest fly at the Rock.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 10, y0: 11, x1: 12, y1: 13 }],
+          garrison: 3,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 10, y0: 11, x1: 12, y1: 13 }],
+          garrison: 1,
+          others: { kind: "ASSAULT", target: { x: 8, y: 13 } },
+        },
+      ],
     },
   ],
   forbiddenTechnologies: [],

@@ -32,6 +32,12 @@ import type { MissionDefinitionV7 } from "./types";
  * tribes. A first thoughtful attempt won in round 28 with its last
  * assault, so the clock is a lax 32.
  *
+ * Revision 6 (`pulp_wars-i9o2`, section 19.8): the user found it too easy.
+ * Under ruleset 7r143 the crew's Brutes took Tarpit in round 7 and broke
+ * the tribes by round 10, so the tribes now hold both towns with
+ * Ankylosaurs, have nine men, Nesting and 10 Coins, and storm Egg Rock from
+ * round 3; the port has 10 Coins to retrain its walls.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
@@ -61,7 +67,10 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
   // technologies more, a port of nine, no waves, a lax clock.
   // Revision 5 (`pulp_wars-hmyk.38`): a new board, the whole island; Port
   // Kessler ten tiles from the landing.
-  revision: 5,
+  // Revision 6 (`pulp_wars-i9o2`, CAMPAIGN.md section 19.8): the user found
+  // it too easy; the tribes hold both towns with Ankylosaurs, have Nesting
+  // and 10 Coins and storm Egg Rock from round 3; the port has 10 Coins.
+  revision: 6,
   seed: 20261504,
   // <map>
   size: 16,
@@ -199,7 +208,8 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
       // Kessler's island garrison: Port Kessler, walled. The Baron himself
       // stays in his counting-house.
       faction: "ORIGINAL",
-      coins: 6,
+      // Revision 6: 10 Coins (were 6), so the port retrains its walls.
+      coins: 10,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
@@ -260,12 +270,22 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
       ],
     },
     {
-      // The island's tribes, who bite whoever lands.
+      // The island's tribes, who bite whoever lands. Revision 6: Nesting
+      // from the start (Ankylosaurus eggs) and 10 Coins (were 5): in hand
+      // play the crew's Brutes broke their Cavemen and Raptors one by one
+      // and took Tarpit in round 7; only the Ankylosaurs held them.
       faction: "DINOSAUR",
-      coins: 5,
-      technologies: ["GATHERING", "HUNTING", "SCOUTING"],
+      coins: 10,
+      technologies: [
+        "GATHERING",
+        "HUNTING",
+        "SCOUTING",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       // Fernhollow, their home, is in the eastern woods; Tarpit is the
-      // hunting camp in the middle of the island.
+      // hunting camp in the middle of the island. Each centre is held by an
+      // Ankylosaurus.
       cities: [
         {
           name: "Fernhollow",
@@ -276,20 +296,23 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
         { name: "Tarpit", at: { x: 7, y: 8 }, level: 1, rewards: [] },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 12, y: 5 } },
+        { role: "GUARD", at: { x: 12, y: 5 } },
         { role: "RAIDER", at: { x: 11, y: 4 } },
         { role: "FIGHTER", at: { x: 13, y: 6 } },
-        { role: "RAIDER", at: { x: 7, y: 8 }, home: 1 },
+        { role: "FIGHTER", at: { x: 12, y: 6 } },
+        { role: "GUARD", at: { x: 7, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 6, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 7 }, home: 1 },
         { role: "RAIDER", at: { x: 8, y: 7 }, home: 1 },
+        { role: "RAIDER", at: { x: 8, y: 8 }, home: 1 },
       ],
       // They know where the crew landed.
       reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 4, y1: 4 }] },
       forbiddenTechnologies: ["METALLURGY", "CHIVALRY"],
-      // The tribes bite whoever lands: from round 4 they storm Egg Rock.
+      // The tribes bite whoever lands: from round 3 (was 4) they storm Egg
+      // Rock.
       directive: [
-        { kind: "NORMAL", untilRound: 4 },
+        { kind: "NORMAL", untilRound: 3 },
         { kind: "ASSAULT", target: { x: 3, y: 3 } },
       ],
     },

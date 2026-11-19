@@ -164,11 +164,15 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "3700a2e3e7f92d5cf0446b14eb446f3a105d421c15141321a55d86f3f8fbeb2b",
   "GOBLIN_3@4:GOBLIN":
     "740a88c4f192f3779cf7bd5d5c09a1891b06b092b2ddf1addf81a48a92636ac0",
-  "GOBLIN_4@5:GOBLIN":
-    "4076610af2a728139eeaff8fe7d4aa72450d5132dbd411957f5049474e0fe179",
+  // Revision 6 (`pulp_wars-i9o2`): Ankylosaurs on the tribes' centres,
+  // Nesting and 10 Coins, the storm from round 3; the port 10 Coins.
+  "GOBLIN_4@6:GOBLIN":
+    "7860047c40c17e8400f8dc5124c6f4412ec08d396c4e65c5193ddfaa4adeecdc",
   // Revision 6 (`pulp_wars-mv96`): the beachheads and Gull Islet.
-  "GOBLIN_5@6:GOBLIN":
-    "4621657b5831fb074de13e35050fd93e04ab8a63cfac347d672fc07f8ae9d66a",
+  // Revision 7 (`pulp_wars-i9o2`): no starting Brain, the Field holds two
+  // rounds, a second Brute and 8 Coins for the crew.
+  "GOBLIN_5@7:GOBLIN":
+    "dcf6a4e9336a8d1b337ab4f33edc8a520813e6ede354a346250764b041bc295f",
   "GOBLIN_6@4:GOBLIN":
     "b0cedc1ddaad37c163c4b563562d2b53e61b77cdcd2dca6d19094ccd6a0cff78",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
@@ -603,8 +607,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "890b6b53325f65ec199a8ae4544035d985853cdb0775398858f324fc82373558",
   "GOBLIN_3@4:GOBLIN":
     "215984be8f6726f7ef57407eb6b6a255f4cab2bc530e7dd42b03fcfd821e709f",
-  "GOBLIN_5@6:GOBLIN":
-    "6be57aa25073a2369ba8fc1057560d48758acff1fc6e984d2186df2bc76ee13d",
+  "GOBLIN_5@7:GOBLIN":
+    "98337298f1a4ea1bd955e5b9a10463f9e8c41a89322aeceb4b22b5afb4eecaa8",
   "GOBLIN_6@4:GOBLIN":
     "59538848d285ae75acd398bd38104664225ecee0d90b9a5c02a3b8ba1637ab2d",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).

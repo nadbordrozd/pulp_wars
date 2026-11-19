@@ -6063,6 +6063,95 @@ the Rock (as the Martians'), which brings melee men that can take the
 centre; it was not hand played and could overshoot, so ease the round-11
 landing party with it if needed.
 
+### 19.8 G4 tougher, G5 easier (`pulp_wars-i9o2`)
+
+The user, 2026-11-19: "goblin mission 4 is too easy and mission 5 is too
+hard. tweak them". Both missions were hand played through `play-text`
+under ruleset `7r143` (with the Heal command), first on their old
+definitions and then on the new ones. G4 is now revision 6 and G5
+revision 7, re-pinned in both pin tables (G4 has one pin). This section
+supersedes the G4 forces of section 19.6 and the G5 forces of section
+19.7. The boards, the clocks (G4 capture by 32, star 24; G5 hold 16) and
+the stars are unchanged.
+
+| Mission | Before                                                                                                                                                                                                    | Now                                                                                                                                                                                                                                                   |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| G4      | Tribes: seven men (Cavemen and Raptors, a Raptor on Tarpit's centre), Gathering, Hunting, Scouting, 5 Coins, `ASSAULT` on Egg Rock from round 4. Port: 6 Coins.                                           | Tribes: nine men, an Ankylosaurus on each centre (Fernhollow and Tarpit), a third Raptor at Tarpit and a Caveman more at Fernhollow; Crafting and Nesting added; 10 Coins; `ASSAULT` from round 3. Port: 10 Coins.                                    |
+| G5      | Crew: Mogga, a Brute, a Goblin and a Chucker, 5 Coins; Mogga at 8,12 and the Chucker at 9,14. Saucer Field: Shield Projector, Brain, Ray Gunner, Grunt; one holds it and the rest `ASSAULT` from round 1. | Crew: Mogga, two Brutes, a Goblin and a Chucker, 8 Coins; Mogga (8,14) and the Chucker (7,14) behind the walls. Saucer Field: Shield Projector, Ray Gunner, Grunt (no Brain); all three hold it until round 3, then one holds and the rest `ASSAULT`. |
+
+Enemies against the crew: G4 19 to 4 (was 17 to 4), G5 13 to 5 (was 14 to
+4). The waves are unchanged: the Martian Brains still beam down in rounds
+5 and 9, so G5's first Brain now comes with the first wave. The hints
+changed: G4's third is "Tribes storm Egg Rock from turn 3; Tarpit is
+halfway", G5's first is "Brains beam down from turn 5. Never stand beside
+one."
+
+**Hand play.**
+
+- **G4, revision 5 (attempt a): abandoned at the start of round 23 of
+  32**, ahead of section 19.6's attempt a. Two fruit and the Militia in
+  round 1 (two free Goblins); two villages in round 3; Explosives free
+  from the Lost Expedition in round 5. A Brute with Gang Up killed
+  Tarpit's Caveman in round 4. Tarpit fell in round 7 (it fell in round 17
+  in section 19.6): the Ogre and Brutes killed its Caveman and its
+  hatchling Raptor one at a time. A port Raider killed the Brute on Tarpit
+  in round 9 and was killed the next turn. The tribes' Raptors and
+  Cavemen came in ones and twos and died to Brute gangs and bombs. Only
+  their Ankylosaurs (from round 9) held the crew's Brutes. By round 12 the
+  crew had 16 units and five towns. Ashmoot (a port village) fell in round
+  17, Kestrow in round 20. In round 22 a Brute fired from the Moon Gun
+  beside the port died alone, and a Rocket Cart's death blast killed the
+  crew's own Ogre. At the start of round 23 the crew had about 20 units
+  and 33 Coins against the port's six, with the speed star about to be
+  missed. A win by about round 26 was on, with the whole early game a
+  walkover.
+- **G4, revision 6 (attempt b): a check of the opening only, 3 rounds.**
+  It used the same opening as attempt a. The Ogre was at 6 HP in round 4
+  (11 in attempt a) after two Cavemen, and Tarpit's centre is an
+  Ankylosaurus, which the crew's Brutes could not break with Gang Up in
+  attempt a. **Revision 6 has not been played to the end.** Its first
+  full run should show Tarpit holding to the middle game and a win in
+  the last third of the clock. If it is lost, take the Raptor added at
+  Tarpit away first.
+- **G5, revision 6 (attempt a): lost in round 3.** In round 1 the Ray
+  Gunner killed the Chucker (its death blast broke the centre Brute's
+  Field Defense), and a rifle and a Fighter took Mogga from 16 to 6 HP. In
+  round 2 a Fighter killed the Goblin, and a rallied Grunt and the Ray
+  Gunner killed the Brute that had stepped off the centre. In round 3 the
+  Brain stepped beside the Rock and took the centre's new Brute by
+  Psychic Command, and the Ray Gunner killed Mogga. The crew had no units
+  at the start of round 4.
+- **G5, revision 7 (attempt b): won (held to round 16), 1 star of 3.** In
+  round 1 a Workshop and a Field Defense; a Brute attacked the Grunt and
+  died to the Ray Gunner and the Grunt. In round 2 Mogga killed the Grunt,
+  and in round 3 the Ray Gunner. A farm then made the Rock level 4 (Boom),
+  and in round 5 a second farm made it level 5 (a Troll). The first Brain
+  wave landed in round 6, two rounds late, and the Troll killed the Brain
+  in round 7. Grunts (range 2) killed Mogga in round 7 and the Chucker in
+  round 6. The Troll killed a Grunt, a Saucer and, in round 10, the second
+  Brain, and died in round 12. From round 12 the crew rotated Brutes: one
+  stepped off the centre by a kill and a fresh one was trained on it. The
+  raft crews landed in round 13. Ray Gunners and Grunts emptied the
+  centre at the end of round 15, and the last Brute, trained there in
+  round 16, was killed too. The Rock was empty but not taken when round 16
+  ended. One Brute was left, with 37 Coins unspent; the Landing was never
+  attacked.
+
+What it showed. In G4 the crew's strength is massed Brutes (3 Coins, 15
+HP) with Gang Up, and units that come one at a time only feed it. An
+Ankylosaurus on a centre and a stronger, earlier storm are what stand up
+to them. In G5 the starting Brain was the run-ender: it moves beside the
+Rock's centre and takes its defender, and nothing on the crew's side can
+stop it in rounds 2 and 3. Without it, and with two rounds before the
+Field attacks, the crew can grow the Rock to a Troll. The hold is still
+narrow: the Martians' ranged men (Ray Gunners, Grunts) kill anything
+outside the walls, and Mogga's star is still the hard one.
+
+**Follow-ups.** Play G4 revision 6 to the end. The section 19.6 clock (32,
+star 24) assumed a round-28 win; if the tribes now stall the crew past
+the clock, ease Tarpit before touching the clock. G5's raft-crew wave of
+round 12 landed in round 13 (no calm ground).
+
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 
 The fourth tier-2 faction campaign, after the Goblins (section 19): six
