@@ -42,7 +42,9 @@ export const HELP_SECTIONS_V7: readonly HelpSectionV7[] = [
       "Tap a unit, then tap a highlighted tile to move, attack or help.",
       "A unit moves, then acts once. A bright ring under it means it can still move.",
       "Tap your city to train a unit. Each city trains once a turn.",
-      "End the turn when you are done. A unit that did nothing rests and heals.",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): Heal does at once what
+      // resting does at End Turn.
+      "End the turn when you are done. Idle units heal; Heal mends a wounded unit now and ends its turn.",
     ],
   },
   {

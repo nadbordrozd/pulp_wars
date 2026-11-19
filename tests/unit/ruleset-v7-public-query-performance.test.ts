@@ -53,7 +53,9 @@ describe("ruleset-7 late public query performance", () => {
     // offers more on Fertile Ground that no longer blocks them.
     // One tile, one meaning (`pulp_wars-3u8d`, 7r131): 77, without the
     // RECOVER offers of units 19 and 20 (idle recovery only).
-    expect(commands).toHaveLength(77);
+    // The Heal button (`pulp_wars-6y2r`, 7r143): 79, with the HEAL offers
+    // of units 19 and 20.
+    expect(commands).toHaveLength(79);
     expect(canonicalHash(commands)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
@@ -72,7 +74,9 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was e2898b…f2dc).
-      "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 7f5de2…5c0d).
+      "d375fe4af89eaf484d1ac67e051fb5657b4050a33950e72f72431a33551a8de6",
     );
     expect(
       commands.flatMap((command) =>
@@ -123,7 +127,9 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was e2898b…f2dc).
-      "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 7f5de2…5c0d).
+      "d375fe4af89eaf484d1ac67e051fb5657b4050a33950e72f72431a33551a8de6",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -218,7 +224,9 @@ describe("ruleset-7 late public query performance", () => {
       // The one Freeze effect (`pulp_wars-xv0t`, 7r133) removes THROW_BOLAS,
       // FREEZE and FROST_BOLT, moving the later command kinds back (was
       // 352e13…acec7: the same surface with the old kind ordinals).
-      "f19f546005dc04a0bfc8c50bb47a9d626fc76b8bbf6679ae670e944dd411ffbf",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was f19f54…ffbf).
+      "552a9f7d95cb2ac1e82873be40174751fba0070dafcc5fe55c66fc0b5ea0a8c4",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -238,7 +246,9 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 4b48ea…bf2f).
-      "50b4c05f77454f5de2afcf11a382fea536409cabf41f79922f9abf2dc4f63e33",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 50b4c0…3e33).
+      "e4e63e2a0dc5eb077c398fc77b63b5e4faeb5b7f9887eb92f121fe5880e4a769",
     );
     expect(
       canonicalHash(
@@ -260,7 +270,7 @@ describe("ruleset-7 late public query performance", () => {
       // (was 8109fe…b852).
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): without the two
       // RECOVER offers (was 73fd0a…7637).
-    ).toBe("a7428154a24f7ebee7ea3a01740cc745013cf82e06ca346369a846f3ab146bb5");
+    ).toBe("906277110fd0f5771bebbd16e6e2afff1e7dcd09ee0f27a5a2e77bfb04b0b0d2");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -281,7 +291,7 @@ describe("ruleset-7 late public query performance", () => {
       // (was 8109fe…b852).
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): without the two
       // RECOVER offers (was 73fd0a…7637).
-    ).toBe("a7428154a24f7ebee7ea3a01740cc745013cf82e06ca346369a846f3ab146bb5");
+    ).toBe("906277110fd0f5771bebbd16e6e2afff1e7dcd09ee0f27a5a2e77bfb04b0b0d2");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -405,7 +415,9 @@ describe("ruleset-7 late public query performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was df2a7f…22fa).
-        "0a3eacdb54814ffc4374b5fc195f445f1c6ebda2e635ee615b21f3f3a33d731b",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was 0a3eac…731b).
+        "a50d122ec2738d4482634310af997ab313d77a9dd6dc823ce85e2e1b3d2a9615",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -438,7 +450,9 @@ describe("ruleset-7 late public query performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was df2a7f…22fa).
-        "0a3eacdb54814ffc4374b5fc195f445f1c6ebda2e635ee615b21f3f3a33d731b",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was 0a3eac…731b).
+        "a50d122ec2738d4482634310af997ab313d77a9dd6dc823ce85e2e1b3d2a9615",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -516,7 +530,9 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was e2898b…f2dc).
-      "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 7f5de2…5c0d).
+      "d375fe4af89eaf484d1ac67e051fb5657b4050a33950e72f72431a33551a8de6",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -557,7 +573,9 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 5c3fa3…15c1).
-      "dfc1cc4f4d3a43f70c6e6691fe6fc766bb3fec1567fde4958f4f44a1a9b41a29",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was dfc1cc…1a29).
+      "ccaaf74cc34d1c4dfe0a9c13bb3c547bce3619862c2179e8d9f1ce9d6fedb4cb",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -577,7 +595,9 @@ describe("ruleset-7 late public query performance", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 5c3fa3…15c1).
-      "dfc1cc4f4d3a43f70c6e6691fe6fc766bb3fec1567fde4958f4f44a1a9b41a29",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was dfc1cc…1a29).
+      "ccaaf74cc34d1c4dfe0a9c13bb3c547bce3619862c2179e8d9f1ce9d6fedb4cb",
     );
   });
 

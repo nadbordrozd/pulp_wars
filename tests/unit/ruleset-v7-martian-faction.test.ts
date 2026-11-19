@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 142;
+const REVISION = 143;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -299,7 +299,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // (82: the naval branch rebuilt, `pulp_wars-tzk6`, 7r137, appends
     // BUILD_ICE_FORTRESS last; 83: the Witch and the Wyrm,
     // `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // (84: the Heal button, `pulp_wars-6y2r`, 7r143, appends HEAL.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",

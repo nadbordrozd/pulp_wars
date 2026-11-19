@@ -81,7 +81,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was e2898b…f2dc).
-        "7f5de2a0532058b5fa85e6f0702c8a83d5ae5579c3fe1d99f67448d3615b5c0d",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was 7f5de2…5c0d).
+        "d375fe4af89eaf484d1ac67e051fb5657b4050a33950e72f72431a33551a8de6",
       resultHash:
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
@@ -101,7 +103,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was ec361d…3db5).
-        "6192c9c9597b4579e337208006a7f1e665c0c4d3d811ba0d263c4e697ad29167",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was 6192c9…9167).
+        "c6bc7df1bbf0d81f28ca43d51250fde6f2e1b055955cf0c92aaaa347892289fc",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
       // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again);
@@ -117,7 +121,8 @@ describe("ruleset-7 exact public-planning performance", () => {
       // 7 117 since building placement (`pulp_wars-h0xx`, 7r106: ten
       // building offers more, on Fertile Ground no longer blocked).
       // (`pulp_wars-3u8d`, 7r131: two RECOVER offers fewer; was 7 117.)
-      operations: 7_115,
+      // (`pulp_wars-6y2r`, 7r143: two HEAL offers; was 7 115.)
+      operations: 7_117,
     },
     {
       id: "captured-command-300",
@@ -135,7 +140,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was 1e5e41…0fff).
-        "5d1d070ce572804d44945109068c23867d23b72f6f2a857bd0809ed7252a03e0",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was 5d1d07…03e0).
+        "8ac7246f1b0dd8e9c4819ad5052d861a46754425ec688e50df276c39b3d47ac3",
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
@@ -151,7 +158,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was e950d3…abd6).
-        "f00f37081d25681a37a8fe922a5bc5ba17ffbdc7af5813adc9ad88ac6777a5ec",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was f00f37…a5ec).
+        "7c9d7736a6dbbd5ff445c6d1ba7197448bcb3a6b676716072827ce7ad3ea5240",
       // Tuning 5: the Swordsman offers (was 66 233). The economy rejig
       // (`pulp_wars-w49.16`): research offers by the price per city, and a
       // mill counts every contributor of its owner (was 66 236). The
@@ -162,7 +171,8 @@ describe("ruleset-7 exact public-planning performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
       // moved (was 65 491).
       // (`pulp_wars-3u8d`, 7r131: three RECOVER offers fewer; was 64 397.)
-      operations: 64_394,
+      // (`pulp_wars-6y2r`, 7r143: three HEAL offers; was 64 394.)
+      operations: 64_397,
     },
     {
       id: "captured-command-425",
@@ -178,7 +188,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was 21c2d6…ba75).
-        "3b49fe0b29bdcede0ae1d3a7e595695c83b57431ab70f82cdbaede3574ad7fdc",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was 3b49fe…7fdc).
+        "cbcff02226c4076364249dcf54031fbb939a1ac62855c51339830c8fea427367",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
       // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
@@ -192,7 +204,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
         // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
         // (was e1fe79…b298).
-        "f136c079292822d20e57f04fdd3b7ecd527d94cd03001b4f061b11d39d1e76d2",
+        // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+        // of the wounded idle units (was f136c0…76d2).
+        "dff947b7487d20dc24e89f02eda5223679127b40ea21d0aaa6b733c8b839cd63",
       // Tuning 5: the Swordsman offer (was 94 438).
       // The economy rejig (`pulp_wars-w49.16`), as above (was 94 439).
       // The siege rules (`pulp_wars-0pgd`, 7r80): one neutral Road under an
@@ -200,7 +214,8 @@ describe("ruleset-7 exact public-planning performance", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
       // moved (was 94 026).
       // (`pulp_wars-3u8d`, 7r131: one RECOVER offer fewer; was 96 631.)
-      operations: 96_630,
+      // (`pulp_wars-6y2r`, 7r143: one HEAL offer; was 96 630.)
+      operations: 96_631,
     },
   ] as const;
 

@@ -1224,7 +1224,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): BOARD, RECOVER and
       // SWALLOW retired (later kinds' ordinals moved; RECOVER offers gone)
       // (was 37c050…dc3e).
-      "d151d3d281cc8739ed1c67b7f1a31f18444687e5cf7e11b483f568a3a05724df",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the two recovery Waits
+      // are HEALs (appended last), with the same scores; the cause is in
+      // the pin's comment (was d151d3…24df).
+      "28e9ce0cd829d596c595b8d92f9d89852049df13885d2ab6da56514781c28f57",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1368,7 +1371,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r142");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r143");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

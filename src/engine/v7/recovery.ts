@@ -9,8 +9,8 @@ import type { UnitActivationV7, UnitFormV7 } from "./types";
  * Section 10 Recover: everything the rule reads about one unit. The reducer
  * fills it from the authoritative state and the public query from the
  * owner's `PlayerView` (an own unit's facts are exact there), so the offered
- * `RECOVER`, End Turn idle recovery, and the End Turn hint share one
- * predicate and one amount.
+ * `HEAL` (`pulp_wars-6y2r`, 7r143; `RECOVER` until 7r131), End Turn idle
+ * recovery, and the End Turn hint share one predicate and one amount.
  */
 export interface RecoveryFactsV7 {
   readonly form: UnitFormV7;
@@ -44,9 +44,10 @@ export function restlessOutsideOwnTerritoryV7(
 }
 
 /**
- * The single Recover predicate: a `RECOVER` for this unit is offered and
- * accepted now, and the unit recovers by itself if its owner's turn ends
- * now. A unit that moved or used a primary action is not eligible; Wait
+ * The single Recover predicate: the unit recovers by itself if its owner's
+ * turn ends now, and (the Heal button, `pulp_wars-6y2r`, 7r143) a `HEAL`
+ * may heal it now by the same amount (`healRejectionV7`). A unit that moved
+ * or used a primary action (a `HEAL` included) is not eligible; Wait
  * changes nothing.
  */
 export function recoverEligibleV7(facts: RecoveryFactsV7): boolean {
@@ -68,6 +69,32 @@ export function recoverEligibleV7(facts: RecoveryFactsV7): boolean {
   );
 }
 
+/** Why a `HEAL` is refused (`HEAL_NOT_LEGAL { reason }`). */
+export type HealRejectionV7 =
+  "CRASHED" | "CHANTING" | "HANDLED" | "NOT_ELIGIBLE";
+
+/**
+ * The Heal button (`pulp_wars-6y2r`, 7r143): why the unit cannot `HEAL`
+ * now, or null when it can. A `HEAL` is legal exactly when End Turn idle
+ * recovery would heal the unit now (`recoverEligibleV7`, and not a cultist
+ * that chants) and the unit may still act: not Crashed (no primary action;
+ * the Candy revision section 5.3), and not already handled (a Wait) or in
+ * an Overrun. The reducer (`applyHeal`) and the public query share it, so
+ * `HEAL` is offered exactly when it is accepted.
+ */
+export function healRejectionV7(input: {
+  readonly facts: RecoveryFactsV7;
+  readonly crashed: boolean;
+  readonly chanting: boolean;
+  readonly handled: boolean;
+}): HealRejectionV7 | null {
+  if (!recoverEligibleV7(input.facts)) return "NOT_ELIGIBLE";
+  if (input.chanting) return "CHANTING";
+  if (input.crashed) return "CRASHED";
+  if (input.handled) return "HANDLED";
+  return null;
+}
+
 /** The rule's healing amount, before the cap at the missing HP. */
 export function recoveryHealV7(facts: RecoveryFactsV7): number {
   if (facts.form === "NAVAL") return facts.byOwnActivePort ? 4 : 0;
@@ -77,7 +104,7 @@ export function recoveryHealV7(facts: RecoveryFactsV7): number {
   return restlessOutsideOwnTerritoryV7(facts) ? 0 : 2;
 }
 
-/** The HP a Recover or an idle recovery restores now. */
+/** The HP a `HEAL` or an idle recovery restores now. */
 export function recoveryGainV7(facts: RecoveryFactsV7): number {
   return Math.min(recoveryHealV7(facts), facts.maxHp - facts.hp);
 }

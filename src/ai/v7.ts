@@ -11636,6 +11636,8 @@ function armyStormWaitsV7(
     (command.kind !== "MOVE" &&
       command.kind !== "ATTACK" &&
       command.kind !== "WAIT" &&
+      // The Heal button (`pulp_wars-6y2r`, 7r143): a Heal spends the Move.
+      command.kind !== "HEAL" &&
       command.kind !== "PILLAGE" &&
       command.kind !== "KABOOM")
   )
@@ -12557,10 +12559,14 @@ function isPolicyCandidate(
 ): boolean {
   // One tile, one meaning (`pulp_wars-3u8d`, 7r131): `RECOVER` is gone, and
   // a unit recovers by itself at End Turn when it has not moved or acted.
-  // The seat holds a wounded unit with a Wait where it used to Recover (the
+  // The seat held a wounded unit with a Wait where it used to Recover (the
   // same predicate: `recoveryWaitV7`), and a unit it held makes no other
-  // command this turn, as a Recover's spent action made none.
-  if (command.kind === "WAIT") return recoveryWaitV7(context, command.unitId);
+  // command this turn, as a Recover's spent action made none. The Heal
+  // button (`pulp_wars-6y2r`, 7r143): the seat Heals that unit instead (a
+  // `HEAL` is offered for exactly those units, by the same predicate), so
+  // it heals now and its turn is spent; a Wait is never a candidate.
+  if (command.kind === "HEAL") return recoveryWaitV7(context, command.unitId);
+  if (command.kind === "WAIT") return false;
   if (command.kind !== "END_TURN" && "unitId" in command) {
     const holder = context.lookup.unitsById.get(command.unitId);
     if (holder !== undefined && heldByWaitV7(holder)) return false;
@@ -16407,9 +16413,10 @@ function scoreCommandWithContext(
     }
   }
 
-  // `pulp_wars-3u8d` (7r131): the Wait that holds a wounded unit for its
-  // idle recovery, scored as the retired Recover was.
-  if (command.kind === "WAIT" && recoveryWaitV7(context, command.unitId)) {
+  // `pulp_wars-3u8d` (7r131): the Wait that held a wounded unit for its
+  // idle recovery, scored as the retired Recover was; the Heal button
+  // (`pulp_wars-6y2r`, 7r143) is scored the same in its place.
+  if (command.kind === "HEAL" && recoveryWaitV7(context, command.unitId)) {
     priority = (actor?.hp ?? 0) * 2 < (actor?.maxHp ?? 0) ? 400 : 300;
     immediateValue =
       actor === undefined ? 0 : Math.min(2, actor.maxHp - actor.hp) * 8;
@@ -25952,9 +25959,11 @@ const IDLE_RECOVERY_UNITS_V7 = new WeakMap<PlayerViewV7, ReadonlySet<UnitId>>();
 
 /**
  * One tile, one meaning (`pulp_wars-3u8d`, 7r131): whether the seat may hold
- * the own unit `unitId` with a Wait for its idle recovery: exactly the units
- * a `RECOVER` was offered for (the End Turn predicate, `queryIdleRecoveryV7`,
- * less a Crashed unit, which recovers idle but had no Recover).
+ * the own unit `unitId` for its idle recovery: exactly the units a
+ * `RECOVER` was offered for (the End Turn predicate, `queryIdleRecoveryV7`,
+ * less a Crashed unit, which recovers idle but had no Recover). The Heal
+ * button (`pulp_wars-6y2r`, 7r143): the seat holds it with a `HEAL`, which
+ * is offered for the same units.
  */
 function recoveryWaitV7(context: PolicyContextV7, unitId: UnitId): boolean {
   const view = context.view;

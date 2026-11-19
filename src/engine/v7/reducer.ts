@@ -407,6 +407,7 @@ import {
 } from "./cult-tricks";
 import { unitIsConstructV7 } from "./afflictions";
 import {
+  healRejectionV7,
   recoverEligibleV7,
   recoveryGainV7,
   type RecoveryFactsV7,
@@ -628,7 +629,13 @@ export type RuleErrorCodeV7 =
   // The Cult redesign (`pulp_wars-mch9.33`, section 8.1): an `ATTACK` by
   // a unit beside a standing hostile idol at anybody but an Idol Bearer
   // beside it (`ATTACK_AWESTRUCK { unitId }`, the bearer).
-  | "ATTACK_AWESTRUCK";
+  | "ATTACK_AWESTRUCK"
+  // The Heal button (`pulp_wars-6y2r`, 7r143): a `HEAL` of a unit that
+  // idle recovery would not heal now (`CRASHED`, `CHANTING`, `HANDLED`,
+  // or `NOT_ELIGIBLE`: full HP, moved or acted, an Egg, embarked, a
+  // construct or daemon, Restless outside its land, a ship away from a
+  // dock).
+  | "HEAL_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -2282,6 +2289,9 @@ function applyCommandCoreV7(
     return applyPromote(stateInput, state, actor, command.unitId);
   if (command.kind === "WAIT")
     return applyWait(stateInput, state, actor, command.unitId);
+  // The Heal button (`pulp_wars-6y2r`, 7r143).
+  if (command.kind === "HEAL")
+    return applyHeal(stateInput, state, actor, command.unitId);
   if (command.kind === "TOSS_COIN")
     return applyTossCoin(stateInput, state, actor, command.unitId);
   // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap and
@@ -8225,6 +8235,60 @@ function applyWait(
       ),
     }),
     [{ kind: "UNIT_WAITED", playerId: actor, unitId }],
+  );
+}
+
+/**
+ * The Heal button (`pulp_wars-6y2r`, 7r143; section 10): an own unit that
+ * End Turn idle recovery would heal now (`healRejectionV7` null: the same
+ * predicate, `recoverEligibleV7`, and not chanting) heals now by exactly
+ * that amount (`recoveryGainV7`) and ends its turn. It counts as acted
+ * (`recovered`, a primary action, and `handled`), so it neither moves nor
+ * acts again this turn and End Turn never heals it a second time. A Crashed
+ * unit has no primary action and cannot Heal, though it still recovers
+ * idle. Emits `UNIT_RECOVERED { automatic: false }`.
+ */
+function applyHeal(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  const facts = recoveryFacts(state, unit);
+  const reason = healRejectionV7({
+    facts,
+    crashed: unitIsCrashedV7(state, unit.id),
+    chanting: unitChantsV7(state.cult.rituals, unit.id),
+    handled: unit.activation.handled || unit.activation.overrunActive,
+  });
+  if (reason !== null) return rejected(original, "HEAL_NOT_LEGAL", { reason });
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const amount = recoveryGainV7(facts);
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((candidate) =>
+        candidate.id === unitId
+          ? {
+              ...candidate,
+              hp: candidate.hp + amount,
+              activation: {
+                ...candidate.activation,
+                recovered: true,
+                handled: true,
+                escapeAvailable: false,
+              },
+            }
+          : candidate,
+      ),
+    }),
+    [{ kind: "UNIT_RECOVERED", unitId, amount, automatic: false }],
   );
 }
 

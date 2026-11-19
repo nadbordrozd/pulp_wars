@@ -116,6 +116,7 @@ import {
   projectEventsV7,
   queryCombatPreviewV7,
   queryLandGrantPreviewV7,
+  queryIdleRecoveryV7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
   queryThreatenedTilesV7,
@@ -394,7 +395,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
 
 Command ids (case-insensitive, valid while offered; see docs/validation/TEXT_PLAY.md):
   u12.m.4,5        move unit 12 to x=4,y=5      u12.a.u31     attack unit 31
-  u12.capture | .promote | .fortify | .pillage | .disband | .wait | .rally | .tend
+  u12.capture | .promote | .fortify | .pillage | .disband | .heal | .wait | .rally | .tend
   c1.t.FIGHTER     train in city 1               c1.grant      Land Grant
   c1.reward.WALLS  choose a pending city reward  r.FARMING     research
   t.4,5.build_farm tile action at 4,5            t.4,5.monument.EXPLORER
@@ -1146,6 +1147,7 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.snowbalm`;
     case "SUGAR_RUSH":
       return `u${command.unitId}.rush`;
+    // The Heal button (`pulp_wars-6y2r`, 7r143) adds `u12.heal`.
     case "CAPTURE":
     case "PROMOTE":
     case "PILLAGE":
@@ -1153,6 +1155,7 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     case "WAIT":
     case "WAIL":
     case "KABOOM":
+    case "HEAL":
       return `u${command.unitId}.${command.kind.toLowerCase()}`;
     case "TOSS_COIN":
       return `u${command.unitId}.toss`;
@@ -1954,6 +1957,14 @@ function describeCommandV7(
       return `promote to veteran: max hp +${PROMOTION_HP_V7} and a full heal`;
     case "WAIT":
       return "mark the unit as handled (no effect on the game)";
+    // The Heal button (`pulp_wars-6y2r`, 7r143): the idle-recovery heal,
+    // now.
+    case "HEAL": {
+      const amount = queryIdleRecoveryV7(view).find(
+        (entry) => entry.unitId === command.unitId,
+      )?.amount;
+      return `heal${amount === undefined ? "" : ` +${amount} hp`} now and end this unit's turn (ending the turn idle heals the same amount)`;
+    }
     case "TOSS_COIN":
       return "toss a Coin into the Wishing Well (1c, once per player per match): nothing, +5 Coins, a full heal, or the land around the Well revealed";
     case "DISBAND":

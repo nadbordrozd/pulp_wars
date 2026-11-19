@@ -95,14 +95,15 @@ function cityAt(state: GameStateV7, at: CoordV7): CityId {
 }
 
 describe("the identity (pulp_wars-jjzz)", () => {
-  // The Ice Folk sea beasts (`pulp_wars-lf1r`) took 7r142 after it.
+  // The Ice Folk sea beasts (`pulp_wars-lf1r`) took 7r142 after it, and
+  // the Heal button (`pulp_wars-6y2r`) 7r143.
   it("was 7r141 after 7r140, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r141");
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r140");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r143");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r143.current");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r141");
+    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r140");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
       "pulpWars.save.v7r140.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r142" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r143" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -153,8 +153,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r139",
   "pulp-wars-poc-7r140",
   "pulp-wars-poc-7r141",
+  "pulp-wars-poc-7r142",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r142.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r143.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -519,6 +520,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's Snow
   // Balm, appended for the same reason.
   "SNOW_BALM",
+  // The Heal button (`pulp_wars-6y2r`, 7r143): a wounded unit that would
+  // recover idle heals now and ends its turn, appended for the same reason.
+  "HEAL",
 ] as const);
 export const REWARD_IDS_V7 = Object.freeze([
   "SURVEY",

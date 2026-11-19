@@ -274,6 +274,9 @@ import {
 } from "../curiosity-presentation-v7";
 import {
   endTurnRecoveryLabelV7,
+  HEAL_LABEL_V7,
+  healInWaitSlotV7,
+  healTooltipV7,
   idleRecoveryChipV7,
   idleRecoveryExplanationV7,
 } from "../recovery-presentation-v7";
@@ -10126,9 +10129,10 @@ export class Ruleset7DomAppView {
     // Bead pulp_wars-2yc.36: an action the viewer could take but for Coins,
     // and a unit its city could train but for a free slot, keep their
     // button, which cannot be pressed and says why.
-    for (const { command, blocked } of dockCommandsV7(
-      this.#snapshot.view,
-      this.#snapshot.offeredCommands,
+    // The Heal button (`pulp_wars-6y2r`, 7r143): a unit offered `HEAL`
+    // shows Heal in its Wait's slot; a unit that cannot heal keeps Wait.
+    for (const { command, blocked } of healInWaitSlotV7(
+      dockCommandsV7(this.#snapshot.view, this.#snapshot.offeredCommands),
     )
       .filter(
         (candidate) =>
@@ -10245,6 +10249,19 @@ export class Ruleset7DomAppView {
         action.append(
           economyChips(this.#document, { cost: WELL_TOSS_COST_V7 }),
         );
+      }
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the tooltip says what
+      // it heals now (the idle-recovery amount); no number on its face.
+      if (command.kind === "HEAL") {
+        const amount =
+          this.#snapshot.view === null || this.#snapshot.view === undefined
+            ? undefined
+            : queryIdleRecoveryV7(this.#snapshot.view).find(
+                (entry) => entry.unitId === command.unitId,
+              )?.amount;
+        const tooltip = healTooltipV7(amount ?? null);
+        action.title = `${label} · ${tooltip}`;
+        action.setAttribute("aria-description", tooltip);
       }
       if (command.kind === "CULTIVATE_FOREST") {
         action.title =
@@ -19902,7 +19919,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r142",
+    rulesetId: "pulp-wars-poc-7r143",
     seed,
     width,
     height: width,
@@ -20806,6 +20823,8 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   REDEVELOP: "Redevelop",
   LAND_GRANT: "Land grant",
   BUILD_FIELD_DEFENSE: "Fortify",
+  // The Heal button (`pulp_wars-6y2r`, 7r143).
+  HEAL: HEAL_LABEL_V7,
 };
 /**
  * The Candy aimed abilities' names, one-sentence tooltips and fallback

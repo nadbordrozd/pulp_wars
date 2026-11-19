@@ -721,7 +721,8 @@ export type UiArtSubjectV7 =
   // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the `RECOVER`,
   // `SWALLOW` and `BOARD` commands are gone (idle recovery at End Turn, and
   // an `ATTACK` that swallows or boards); their icons stay registered under
-  // their existing subject keys.
+  // their existing subject keys. The Heal button (`pulp_wars-6y2r`, 7r143)
+  // draws `ICON:ACTION:RECOVER`.
   | "ICON:ACTION:RECOVER"
   | "ICON:ACTION:SWALLOW"
   | "ICON:ACTION:BOARD"

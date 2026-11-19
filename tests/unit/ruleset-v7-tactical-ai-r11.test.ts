@@ -629,8 +629,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       const view = viewForV7(state, state.humanPlayerId);
       const decision = chooseNormalCommandV7(view);
       expect(
-        // `pulp_wars-3u8d` (7r131): the recovery is a Wait that holds it.
-        decision.candidates.some(({ command }) => command.kind === "WAIT"),
+        // `pulp_wars-3u8d` (7r131): the recovery was a Wait that held it;
+        // a Heal since `pulp_wars-6y2r` (7r143).
+        decision.candidates.some(({ command }) => command.kind === "HEAL"),
       ).toBe(true);
       expect(
         decision.candidates.some(({ command }) => command.kind === "ATTACK"),
@@ -690,7 +691,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       expect(
         chooseNormalCommandV7(viewForV7(counter, counter.humanPlayerId)).command
           ?.kind,
-      ).toBe("WAIT");
+      ).toBe("HEAL");
     },
   );
 

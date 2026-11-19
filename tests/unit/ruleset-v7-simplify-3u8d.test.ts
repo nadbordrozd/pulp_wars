@@ -156,11 +156,11 @@ function policyTurn(start: GameStateV7): {
 
 describe("the identity (pulp_wars-3u8d)", () => {
   it("was 7r131 after 7r130, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r142");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r142.current");
-    expect(PRIOR_RULESET_7_IDS.at(-12)).toBe("pulp-wars-poc-7r130");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r143");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r143.current");
+    expect(PRIOR_RULESET_7_IDS.at(-13)).toBe("pulp-wars-poc-7r130");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-12)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-13)).toBe(
       "pulpWars.save.v7r130.current",
     );
   });
@@ -587,7 +587,9 @@ describe("the Normal AI follows the new rules (pulp_wars-3u8d)", () => {
     ).toBe(false);
   });
 
-  it("holds a badly wounded unit with a Wait, and it recovers at End Turn", () => {
+  // The Heal button (`pulp_wars-6y2r`, 7r143): the seat Heals where it
+  // held the unit with a Wait, so it recovers at once.
+  it("holds a badly wounded unit with a Heal, and it recovers at once", () => {
     // A Fighter at 3 of 12 HP in its own territory, with an enemy far off.
     const state = fieldV7(
       [
@@ -597,19 +599,19 @@ describe("the Normal AI follows the new rules (pulp_wars-3u8d)", () => {
       { factions: ["ORIGINAL", "GOBLIN"] },
     );
     const fighter = unitAtV7(state, at(8, 7)).id;
-    const wait: CommandV7 = { kind: "WAIT", unitId: fighter };
-    expect(scoreCommandV7(activeView(state), wait).priority).toBe(930);
+    const heal: CommandV7 = { kind: "HEAL", unitId: fighter };
+    expect(scoreCommandV7(activeView(state), heal).priority).toBe(930);
     const turn = policyTurn(state);
-    expect(turn.commands).toContainEqual(wait);
+    expect(turn.commands).toContainEqual(heal);
     expect(
       turn.commands.filter(
         (command) =>
           "unitId" in command &&
           command.unitId === fighter &&
-          command.kind !== "WAIT",
+          command.kind !== "HEAL",
       ),
     ).toEqual([]);
-    expect(idleRecoveryOfV7(turn.state, fighter)?.amount).toBe(4);
+    expect(turn.state.units.find((unit) => unit.id === fighter)?.hp).toBe(7);
   });
 
   it("never fires the Moon Gun to a tile it could walk to", () => {

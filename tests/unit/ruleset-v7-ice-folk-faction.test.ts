@@ -208,9 +208,11 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // THROW_BOLAS, FREEZE and FROST_BOLT; 82: the naval branch rebuilt,
     // `pulp_wars-tzk6`, 7r137, appends BUILD_ICE_FORTRESS; 83: the Witch
     // and the Wyrm, `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
-    expect(COMMAND_KIND_ORDER_V7.at(-2)).toBe("BUILD_ICE_FORTRESS");
-    expect(COMMAND_KIND_ORDER_V7.at(-1)).toBe("SNOW_BALM");
+    // (84: the Heal button, `pulp_wars-6y2r`, 7r143, appends HEAL.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    expect(COMMAND_KIND_ORDER_V7.at(-3)).toBe("BUILD_ICE_FORTRESS");
+    expect(COMMAND_KIND_ORDER_V7.at(-2)).toBe("SNOW_BALM");
+    expect(COMMAND_KIND_ORDER_V7.at(-1)).toBe("HEAL");
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
     expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
       "BREAK_OFF",

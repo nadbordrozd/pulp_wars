@@ -80,6 +80,11 @@ export type CommandV7 =
         | "PILLAGE"
         | "DISBAND"
         | "WAIT"
+        /**
+         * The Heal button (`pulp_wars-6y2r`, 7r143): a wounded unit that
+         * would recover idle heals now by that amount and ends its turn.
+         */
+        | "HEAL"
         | "BUILD_FIELD_DEFENSE"
         | "WAIL"
         /** Map curiosities round 2: a unit on the Wishing Well tosses a Coin. */
@@ -536,6 +541,8 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "PILLAGE",
   "DISBAND",
   "WAIT",
+  // The Heal button (`pulp_wars-6y2r`, 7r143).
+  "HEAL",
   "BUILD_FIELD_DEFENSE",
   "WAIL",
   "KABOOM",

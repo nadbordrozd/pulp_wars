@@ -287,6 +287,7 @@ import {
   type TractorBeamRuleV7,
 } from "./martian";
 import {
+  healRejectionV7,
   recoverEligibleV7,
   recoveryGainV7,
   type RecoveryFactsV7,
@@ -1651,7 +1652,23 @@ function appendPublicUnitCommandsV7(
         candidates.push({ kind: "FIRE_MOON_GUN", unitId: unit.id, at });
   }
   // (Section 10: `RECOVER` retired with `pulp_wars-3u8d`, 7r131. A unit
-  // recovers idle at End Turn, by the same predicate and amount.)
+  // recovers idle at End Turn, by the same predicate and amount.) The Heal
+  // button (`pulp_wars-6y2r`, 7r143): `HEAL` heals it now by that amount
+  // and ends its turn, offered exactly when the reducer accepts it (the
+  // shared `healRejectionV7`).
+  if (
+    healRejectionV7({
+      facts: publicRecoveryFactsV7(view, unit),
+      crashed,
+      // A retained view captured before the Cult has no `cult` record.
+      chanting: unitChantsV7(
+        (view as { readonly cult?: PlayerViewV7["cult"] }).cult?.rituals ?? [],
+        unit.id,
+      ),
+      handled: unit.activation.handled || unit.activation.overrunActive,
+    }) === null
+  )
+    candidates.push({ kind: "HEAL", unitId: unit.id });
   // The Cultists (`pulp_wars-mch9.8`, section 8.7): Pamphlets, an Initiate
   // captures a neutral village in the turn it walked onto it.
   if (
@@ -11909,9 +11926,9 @@ export interface IdleRecoveryV7 {
 /**
  * Section 10 idle recovery, previewed: the viewer's own units that recover
  * by themselves if the viewer ends the turn now, in unit-ID order, each with
- * the HP it regains. These are exactly the units a `RECOVER` is offered for
- * (the shared predicate `recoverEligibleV7`), with the amount End Turn
- * applies. Empty whenever the viewer is offered no command.
+ * the HP it regains, by the shared predicate `recoverEligibleV7` and the
+ * amount End Turn applies (a `HEAL`, `pulp_wars-6y2r`, 7r143, heals the
+ * same amount now). Empty whenever the viewer is offered no command.
  */
 export function queryIdleRecoveryV7(
   input: GameStateV7 | PlayerViewV7,

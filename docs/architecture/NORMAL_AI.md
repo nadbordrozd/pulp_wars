@@ -1,5 +1,16 @@
 # Greedy Normal AI
 
+## The Heal button (`pulp_wars-6y2r`, `7r143`)
+
+A `HEAL` is offered for exactly the units the recovery Wait below held
+(idle recovery would heal them now; a Crashed unit is never offered one),
+so the seat Heals where it Waited: `HEAL` is the candidate, scored as
+that Wait was (930 at half HP or less, else 300 to 400, with the same
+Saucer, Troll, and grown-dinosaur exceptions), and a `WAIT` is never a
+candidate. The unit heals at once and its turn is spent (`recovered`), so
+it gets no other candidate. The army storm hold refuses a Heal as it does
+a Wait (a Heal spends the Move).
+
 ## One tile, one meaning (`pulp_wars-3u8d`, `7r131`)
 
 The policy plays the commands the engine offers, so the `7r131` rules
@@ -4893,8 +4904,8 @@ As Undead:
   (a 10-HP Zombie) to the killer's side.
 - **Restless**: a unit at half HP or less outside own territory scores 935 for a
   move into own territory, otherwise 720 plus progress toward its nearest own
-  city. Its recovery Wait is never planned outside own territory (idle
-  recovery skips it there).
+  city. Its recovery Heal (a Wait before `7r143`) is never planned outside
+  own territory (idle recovery skips it there, and no Heal is offered).
 - **Training**: Banshee +8 while a living hostile seat is active, −30
   otherwise (and no research toward it); Necromancer +4 per visible Grave (at
   most 3); Lich +4. The opening research keeps the revision-12 scorer and the

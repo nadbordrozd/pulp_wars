@@ -78,7 +78,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the three RECOVER
       // commands are no longer offered; the rest is unchanged (was
       // 1e5e41…0fff).
-      "5d1d070ce572804d44945109068c23867d23b72f6f2a857bd0809ed7252a03e0",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 5d1d07…03e0).
+      "8ac7246f1b0dd8e9c4819ad5052d861a46754425ec688e50df276c39b3d47ac3",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -115,7 +117,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
       // moved (was 65 491). One tile, one meaning (`pulp_wars-3u8d`,
       // 7r131): the view's three RECOVER commands are gone (was 64 397).
-      64_394 + publicPlanningFactScanOperations(measured.view),
+      // The Heal button (`pulp_wars-6y2r`, 7r143): three HEAL offers
+      // (was 64 394).
+      64_397 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
@@ -129,7 +133,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): the view's three
       // RECOVER scores (units 2, 9, and 12, score 0) are gone; every other
       // score and potential is unchanged (was e950d3…abd6).
-      "f00f37081d25681a37a8fe922a5bc5ba17ffbdc7af5813adc9ad88ac6777a5ec",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was f00f37…a5ec).
+      "7c9d7736a6dbbd5ff445c6d1ba7197448bcb3a6b676716072827ce7ad3ea5240",
     );
   });
 
@@ -184,7 +190,8 @@ describe("ruleset-7 exact public query indexing", () => {
       // building offers more).
       // 7 115 since one tile, one meaning (`pulp_wars-3u8d`, 7r131: the
       // view's two RECOVER commands are gone).
-      7_115 + publicPlanningFactScanOperations(rightView),
+      // 7 117 with the two HEAL offers (`pulp_wars-6y2r`, 7r143).
+      7_117 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -204,7 +211,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no RECOVER, so the
       // view's two RECOVER scores (units 19 and 20, score 0) are gone; every
       // other score and potential is unchanged (was ec361d…3db5).
-      "6192c9c9597b4579e337208006a7f1e665c0c4d3d811ba0d263c4e697ad29167",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 6192c9…9167).
+      "c6bc7df1bbf0d81f28ca43d51250fde6f2e1b055955cf0c92aaaa347892289fc",
     );
     expect(rightResult).toEqual(leftResult);
   });

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r142`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r143`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,43 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r143` (`pulp_wars-6y2r`, **the Heal button**; the user,
+2026-11-19: "I want to have the healing button back. instead of the
+waiting button. when you click it, the unit uses up the move and heals
+itself immediately. no need for the 'wait' button. do keep the 'wait'
+button for units that are unable to heal like the undead"). (1) **`HEAL`**
+(`{ kind, unitId }`, appended last to `COMMAND_KIND_ORDER_V7`, so no earlier
+kind's ordinal moves) heals an own unit **now** by exactly the amount End
+Turn idle recovery would give it there (`recoveryGainV7`: 4 in own
+territory, 6 for an Ice Folk land unit with Deep Winter, 2 elsewhere, 4
+for a ship by an own active dock, capped at the missing HP) and **ends its
+turn**: it sets `recovered` (a primary action) and `handled`, so it neither
+moves nor acts again this turn, and End Turn idle recovery never heals it a
+second time. It emits `UNIT_RECOVERED { unitId, amount, automatic: false }`
+(the event's `automatic` field is a boolean, `true` for End Turn idle
+recovery). (2) **Legality** (`healRejectionV7`, shared by the reducer and
+the public query, so `HEAL` is offered exactly when it is accepted): the
+unit is one End Turn would heal now (`recoverEligibleV7`: wounded, not
+moved, attacked, captured, recovered, or special-acted, not an Egg,
+embarked unit, Dwarf construct, or daemon, not a Restless unit outside its
+owner's territory, not a ship away from an own active dock; and not a
+cultist that chants), and it may still act: not Crashed, not already
+handled (a Wait), not in an Overrun. Otherwise `HEAL_NOT_LEGAL { reason }`
+(`NOT_ELIGIBLE`, `CHANTING`, `CRASHED`, `HANDLED`); a Frozen unit or a frog
+is refused by those statuses' own command gates. (3) **Idle recovery is
+unchanged**: an eligible unit that neither moves nor acts still recovers by
+itself at End Turn ([section 10](#10-recovery-and-support)). (4) **The
+dock** shows **Heal** in the slot of a unit's Wait whenever `HEAL` is
+offered for it (the retired Recover's helmet-on-a-bedroll icon, its tooltip
+the amount it heals now); a unit that cannot heal (an Undead unit outside
+its land, a construct, a daemon, a unit at full HP, or one that has moved or
+acted) keeps its Wait. A Heal is never counted as left to do before End
+Turn. (5) **The Normal AI** Heals where it held a wounded unit with a Wait
+for its idle recovery, scored as that Wait was (930 below half HP, else 300
+to 400), and never offers a Wait as a candidate. (6) The text harness names
+it `u<id>.heal`. A save, replay, or setup of `7r142` is rejected, and the
+browser autosave has a new key.
 
 `pulp-wars-poc-7r142` (`pulp_wars-lf1r`, **the Ice Folk sea beasts**;
 the user, 2026-11-16: "I would prefer that the deep winter ... unlocked
@@ -2581,10 +2618,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r142`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r143`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r142.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r143.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7217,18 +7254,18 @@ benefit of a Port connection.)
 
 ## 10. Recovery and support
 
-| Healing source                                    | Amount                                                                                                                                                       | When                                                                        |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| Idle recovery, land                               | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below); never a Dwarf construct                             | End Turn, for a unit that did not move or act (no `RECOVER` since `7r131`)  |
-| Idle recovery, naval                              | 4 on or adjacent to an own active Port/Shipyard; otherwise 0                                                                                                 | same                                                                        |
-| Embarked unit                                     | none                                                                                                                                                         | —                                                                           |
-| Windmill (Milling)                                | up to 6, every own unit (a Dwarf construct too, since `7r118`); never an Egg or a daemon                                                                     | Start Turn, once per unit                                                   |
-| Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                                                    | Start Turn, after Windmill healing                                          |
-| Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine; the Shaman: 4 on a hatched dinosaur), and cures Plague, Bitten, and Frozen                                      | Captain, Shaman, or Engineer action, once per unit per owner turn           |
-| Sugar Toss (Gumball Gunner)                       | up to 2 on one own land-form unit within 2 tiles; cures nothing ([section 23.7](#237-the-redesign-abilities))                                                | Gunner action, once per target per owner turn                               |
-| Top-Up (Confectioner)                             | up to 2 on one adjacent own land-form unit; ends its Crash; cures Plague, Bitten, Frozen, Stuck, and Toothache ([section 23.7](#237-the-redesign-abilities)) | Confectioner action                                                         |
-| Promotion, growth stage                           | full heal to the new maximum HP; cures nothing (a Dwarf construct's only full heal)                                                                          | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs) |
-| Egg                                               | none: no healing source ever heals an Egg                                                                                                                    | —                                                                           |
+| Healing source                                    | Amount                                                                                                                                                       | When                                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Idle recovery, land                               | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below); never a Dwarf construct                             | End Turn, for a unit that did not move or act; or at once by `HEAL` (`7r143`) |
+| Idle recovery, naval                              | 4 on or adjacent to an own active Port/Shipyard; otherwise 0                                                                                                 | same                                                                          |
+| Embarked unit                                     | none                                                                                                                                                         | —                                                                             |
+| Windmill (Milling)                                | up to 6, every own unit (a Dwarf construct too, since `7r118`); never an Egg or a daemon                                                                     | Start Turn, once per unit                                                     |
+| Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                                                    | Start Turn, after Windmill healing                                            |
+| Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine; the Shaman: 4 on a hatched dinosaur), and cures Plague, Bitten, and Frozen                                      | Captain, Shaman, or Engineer action, once per unit per owner turn             |
+| Sugar Toss (Gumball Gunner)                       | up to 2 on one own land-form unit within 2 tiles; cures nothing ([section 23.7](#237-the-redesign-abilities))                                                | Gunner action, once per target per owner turn                                 |
+| Top-Up (Confectioner)                             | up to 2 on one adjacent own land-form unit; ends its Crash; cures Plague, Bitten, Frozen, Stuck, and Toothache ([section 23.7](#237-the-redesign-abilities)) | Confectioner action                                                           |
+| Promotion, growth stage                           | full heal to the new maximum HP; cures nothing (a Dwarf construct's only full heal)                                                                          | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)   |
+| Egg                                               | none: no healing source ever heals an Egg                                                                                                                    | —                                                                             |
 
 - **Windmill healing:** at the owner's Start Turn, each Windmill in the
   owner's territory heals damaged own units (any form) on its eight
@@ -7249,7 +7286,7 @@ benefit of a Port connection.)
   its owner's territory: End Turn idle recovery skips it elsewhere (no HP
   change, no event), and its unit card's Restless chip says why. Undead
   naval units keep the naval rule; Windmill healing is unchanged.
-- **Idle recovery is the only Recover** (one tile, one meaning,
+- **Idle recovery** (one tile, one meaning,
   `pulp_wars-3u8d`, `7r131`; finding 10 of
   [the simplification review](SIMPLIFICATION_REVIEW_2026-11.md)): at its
   owner's End Turn, every own unit that did not move or act (and is
@@ -7261,11 +7298,25 @@ benefit of a Port connection.)
   and the amount are unchanged: one predicate, `recoverEligibleV7`, decides
   End Turn and the public preview `queryIdleRecoveryV7` (the viewer's units
   End Turn would heal now, with the amounts; the dock's "+N at End Turn if
-  idle" chip and the End Turn button's count). The Normal AI holds a
+  idle" chip and the End Turn button's count). The Normal AI held a
   wounded unit for its idle recovery with a **Wait**, scored as its Recover
-  was (930 below half HP, else 300 to 400), and gives that unit no other
-  command that turn.
-- **Wait** does not prevent idle recovery; moving or any primary action does.
+  was (930 below half HP, else 300 to 400), and gave that unit no other
+  command that turn; it Heals it since `7r143` (below).
+- **Heal** (`HEAL`, the Heal button, `pulp_wars-6y2r`, `7r143`): a unit
+  that End Turn idle recovery would heal now, and that may still act (not
+  Crashed, not handled by a Wait, not in an Overrun), heals **now** by that
+  same amount and **ends its turn** (`recovered` and `handled`: no Move,
+  attack, or action after it, and End Turn never heals it again), with
+  `UNIT_RECOVERED { automatic: false }`. Any other `HEAL` is
+  `HEAL_NOT_LEGAL { reason }` (`NOT_ELIGIBLE`, `CHANTING`, `CRASHED`,
+  `HANDLED`); one predicate, `healRejectionV7`, decides the offer and the
+  reducer. The dock shows **Heal** in the unit's Wait slot when it is
+  offered; a unit that cannot heal (Restless outside its land, a construct,
+  a daemon, full HP, moved or acted) keeps **Wait**. The Normal AI Heals
+  where it held a wounded unit with a Wait, with the same score, and never
+  Waits.
+- **Wait** does not prevent idle recovery; moving or any primary action does
+  (a `HEAL` heals at once instead).
 - **Goblin recovery** is the Human rule: Goblins are not Restless. A Goblin
   seat has no healer and no cure for Plague or Bitten
   ([section 18.3](#183-discipline-field-defense-and-no-healers)); beyond
@@ -9185,7 +9236,7 @@ The audit of every command (`7r107`):
 | Rally: Inspire, Frenzy, War Drums, Psychic Command (`RALLY`, area)                                                                                                                                                                               | the unit is Inspired already (it does not stack or refresh)                                                                                          | already no target; with none, `HEAL_TARGET_NOT_FOUND`. A unit that has attacked stays a target (an Overrun, a twin shot, a Feast, or a thaw by Tend Wounded may still use it)    |
 | Berserk (`RALLY` of the Orc Warboss, area)                                                                                                                                                                                                       | the unit has moved or is Berserk already                                                                                                             | already no target ([section 18.10](#1810-berserk-ram-and-troll-regeneration))                                                                                                    |
 | Sugar Toss (`SUGAR_TOSS`) and Top-Up (`TOP_UP`)                                                                                                                                                                                                  | a full-HP target (Toss); a full-HP target with nothing to cure and no Crash (Top-Up)                                                                 | already refused (`HEAL_TARGET_FULL`, `ALREADY_TOSSED`; `NOTHING_TO_DO`)                                                                                                          |
-| Recover (`RECOVER`, retired at `7r131`: idle recovery only)                                                                                                                                                                                      | full HP, or no healing (Restless, a construct, a ship away from a dock)                                                                              | already refused (`RECOVER_NOT_LEGAL`)                                                                                                                                            |
+| Heal (`HEAL`, `7r143`; `RECOVER` until `7r131`)                                                                                                                                                                                                  | full HP, or no healing (Restless, a construct, a daemon, a ship away from a dock)                                                                    | refused (`HEAL_NOT_LEGAL`)                                                                                                                                                       |
 | Sugar Rush (`SUGAR_RUSH`)                                                                                                                                                                                                                        | the unit is Rushed already                                                                                                                           | already refused (`RUSHED`)                                                                                                                                                       |
 | Mind Control (`MIND_CONTROL`)                                                                                                                                                                                                                    | the target is mind-controlled already (by any Brain)                                                                                                 | already refused (`TARGET_IMMUNE`)                                                                                                                                                |
 | Tractor Beam (`TRACTOR_BEAM`)                                                                                                                                                                                                                    | the target would not move (no free tile, held by City Walls, immovable)                                                                              | already refused (`BLOCKED`, `TARGET_IMMUNE`)                                                                                                                                     |

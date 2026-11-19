@@ -346,6 +346,7 @@ it first. Ids are case-insensitive.
 | `u12.a.u31`                               | unit 12 attacks unit 31                                                                                 |
 | `u12.capture`                             | unit 12 captures the settlement it stands on                                                            |
 | `u12.promote`, `u12.wait`                 | take a Promotion, mark the unit as done (an idle unit recovers at `end`)                                |
+| `u12.heal`                                | heal now by the idle-recovery amount; the unit's turn ends (`7r143`)                                    |
 | `u12.fortify`, `u12.pillage`              | build a Field Defense, pillage the improvement                                                          |
 | `u12.rally`, `u12.tend`, `u12.disband`    | Captain's Rally and Tend Wounded, disband (on a mind-controlled unit: Release, it returns to its owner) |
 | `c1.t.FIGHTER`                            | city 1 trains the role                                                                                  |
@@ -598,8 +599,9 @@ slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
   choice: choose it and send the rest again. End the turn with `--end` on
   the last `do` rather than with a second shell command.
 - Ending the turn with idle units is allowed. A wounded idle unit in the
-  right place recovers by itself (the `recover` preview says how much);
-  this is the only Recover since `7r131`.
+  right place recovers by itself at `end`; since `7r143` (`pulp_wars-6y2r`)
+  its `.heal` (offered exactly then; its preview says how much) heals the
+  same amount at once and ends its turn.
 - A unit captures a settlement it stands on with `.capture`; `can-capture-now`
   in its unit line says when. Move onto the center first.
 - Research costs its tier's base (5 / 6 / 7 Coins) plus 1 / 2 / 3 Coins

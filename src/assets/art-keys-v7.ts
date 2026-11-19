@@ -214,6 +214,9 @@ const STATIC_COMMAND_ART_KEYS: Readonly<
   PILLAGE: ACTION_ART_KEYS_V7.PILLAGE,
   DISBAND: ACTION_ART_KEYS_V7.DISBAND,
   WAIT: "ui-action-wait",
+  // The Heal button (`pulp_wars-6y2r`, 7r143): the heal action art (the
+  // retired Recover's `ui-action-recover` is no longer shipped).
+  HEAL: "ui-action-heal",
   HARVEST_FRUIT: RESOURCE_ART_KEYS_V7.FRUIT,
   HUNT_GAME: RESOURCE_ART_KEYS_V7.GAME,
   HARVEST_FISH: RESOURCE_ART_KEYS_V7.FISH,

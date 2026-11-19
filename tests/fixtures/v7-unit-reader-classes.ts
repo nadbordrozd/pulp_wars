@@ -742,6 +742,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyTrainNaval": "BOARD",
     "src/engine/v7/reducer.ts::applyWail": "BOARD",
     "src/engine/v7/reducer.ts::applyWait": "BOARD",
+    // The Heal button (`pulp_wars-6y2r`, 7r143): the healed unit is on the
+    // board (a burrowed unit is refused before).
+    "src/engine/v7/reducer.ts::applyHeal": "BOARD",
     // Map curiosities round 2: the toss's actor, a gate traversal's mover
     // and exit occupant, and a dead neutral unit's breed are on the board.
     "src/engine/v7/reducer.ts::applyTossCoin": "BOARD",

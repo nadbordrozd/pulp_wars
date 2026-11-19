@@ -50,7 +50,9 @@ describe("ruleset-7 exact public planning reuse", () => {
       // One tile, one meaning (`pulp_wars-3u8d`, 7r131): no RECOVER, so the
       // view's two RECOVER scores (units 19 and 20, score 0) are gone; every
       // other score and potential is unchanged (was ec361d…3db5).
-      "6192c9c9597b4579e337208006a7f1e665c0c4d3d811ba0d263c4e697ad29167",
+      // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
+      // of the wounded idle units (was 6192c9…9167).
+      "c6bc7df1bbf0d81f28ca43d51250fde6f2e1b055955cf0c92aaaa347892289fc",
     );
   });
 

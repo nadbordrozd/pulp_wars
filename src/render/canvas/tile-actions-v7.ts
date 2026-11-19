@@ -143,6 +143,8 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   PILLAGE: "BAR_ONLY",
   DISBAND: "BAR_ONLY",
   WAIT: "BAR_ONLY",
+  // The Heal button (`pulp_wars-6y2r`, 7r143): in Wait's slot of the dock.
+  HEAL: "BAR_ONLY",
   BUILD_FIELD_DEFENSE: "BAR_ONLY",
   WAIL: "BAR_ONLY",
   TOSS_COIN: "BAR_ONLY",

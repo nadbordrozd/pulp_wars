@@ -454,6 +454,10 @@ export function commandSubjectV7(
     // Snow Balm heals, so it shows the heal action icon (no new art).
     case "SNOW_BALM":
       return "ICON:ACTION:TEND_WOUNDED";
+    // The Heal button (`pulp_wars-6y2r`, 7r143): the retired Recover's
+    // icon (a helmet resting on a bedroll), still registered.
+    case "HEAL":
+      return "ICON:ACTION:RECOVER";
     default:
       break;
   }

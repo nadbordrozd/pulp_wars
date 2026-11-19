@@ -695,18 +695,26 @@ describe("Idle recovery hints (pulp_wars-v3w)", () => {
       document.querySelector('[data-unit-status="idle-recovery"]'),
     ).toBeNull();
 
-    // `pulp_wars-3u8d` (7r131): there is no Recover button; a Wait leaves
-    // the unit idle, so the End Turn count stays.
+    // `pulp_wars-3u8d` (7r131): there is no Recover button. The Heal button
+    // (`pulp_wars-6y2r`, 7r143) stands in the wounded unit's Wait slot: it
+    // heals the unit now, so End Turn counts one unit fewer.
     selectUnitAt(controller, host, AT.wounded);
     expect(
       document.querySelector('[data-action="command-recover"]'),
     ).toBeNull();
-    requiredButton("command-wait").click();
+    expect(document.querySelector('[data-action="command-wait"]')).toBeNull();
+    requiredButton("command-heal").click();
     await waitUntil(() => controller.accepted.length === 1);
-    expect(
-      requiredElement<HTMLElement>("[data-end-turn-recover]").dataset
-        .endTurnRecover,
-    ).toBe("2");
+    expect(controller.accepted[0]?.kind).toBe("HEAL");
+    await waitUntil(
+      () =>
+        document.querySelector<HTMLElement>("[data-end-turn-recover]")?.dataset
+          .endTurnRecover === "1",
+    );
+    // A healthy unit cannot heal: it keeps its Wait.
+    selectUnitAt(controller, host, AT.healthy);
+    expect(document.querySelector('[data-action="command-heal"]')).toBeNull();
+    requiredButton("command-wait");
     app.destroy();
   });
 });

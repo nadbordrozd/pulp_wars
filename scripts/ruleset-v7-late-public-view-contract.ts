@@ -218,7 +218,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // FREEZE and FROST_BOLT, moving the later command kinds back (was
     // 01d234…acf5: the same decision with the old kind ordinals); the
     // revision-12-ordinal value is unchanged.
-    "a4e786ec079fb6330fc908f76110cc37cfb1896a155743288df84b5c392e0f34",
+    // The Heal button (`pulp_wars-6y2r`, 7r143): the seat holds its two
+    // wounded idle units (19 and 20) with a HEAL, scored as their recovery
+    // Waits were (930 and 300), in place of those Waits; only their kind
+    // ordinal changes, and the command and candidate count are unchanged
+    // (was a4e786…0f34).
+    "823333b15496d370ec659852ecb10ff4992361e77b8c50f5e60ea56213e3b0b1",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -314,10 +319,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r142",
+    rulesetId: "pulp-wars-poc-7r143",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r142",
+      rulesetId: "pulp-wars-poc-7r143",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

@@ -803,7 +803,8 @@ const ENTRIES = {
   ],
   STATUS_RESTING: [
     "Resting",
-    "It has not moved or acted, so it heals at the end of your turn.",
+    // The Heal button (`pulp_wars-6y2r`, 7r143): Heal does it at once.
+    "It has not moved or acted, so it heals at the end of your turn. Heal does it at once and ends its turn.",
   ],
   STATUS_PLAGUED: [
     "Plagued",
