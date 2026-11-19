@@ -6203,6 +6203,67 @@ is what made revision 5 a walkover. Its first full run should
 show Tarpit falling by about round 12 and the port within reach by round 32. If that run is a comfortable win, give the port its 10 Coins back
 first, before Nesting.
 
+**G4 revision 9 played to the end (`pulp_wars-wgyc`).** Revision 9 was
+played through `play-text` under `7r143`, with the clock unchanged (capture
+by 32, star 24). Its first full run was a comfortable 3-star win, so as
+planned above the port got its 10 Coins back (revision 10). That lost three
+attempts, so revision 11 gives the port 8 Coins. G4 is now revision 11,
+re-pinned in both pin tables; revision 10 was never committed. The tribes are
+as in revision 9: the two centre Ankylosaurs, 5 Coins, the round-3 storm, the
+extra Caveman and the Nesting ban.
+
+| Revision | Port Coins | Attempts                             |
+| -------- | ---------- | ------------------------------------ |
+| 9        | 6          | i: won in round 24, 3 stars          |
+| 10       | 10         | j, k, l: lost                        |
+| 11       | 8          | m: lost; n: won in round 21, 2 stars |
+
+The attempts follow on from section 19.8's a to h. Attempt i was played
+blind. The others knew the earlier runs.
+
+| Attempt | Revision | Result                                                  | Key moments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------- | -------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| i       | 9        | **won in round 24 of 32, 3 stars**                      | Fruit and the Militia in round 1; Dregmuk and Fizzgob in round 3; Ratchug and Explosives (free, from the Lost Expedition) in round 5. In round 8 a mountain blast hit Tarpit's Ankylosaurus, and a port Raider finished it. Brutes killed the reward Raptor on the centre in round 9, and Tarpit fell in round 10. Forestry came in round 16 and Sawmilling in round 18. In round 19 the Explorer monument, Boom and a Lumber Camp made Tarpit level 5, giving a Troll. The tribes' Spitters took Dregmuk in round 20. In rounds 20 and 21 Ashmoot and Kestrow fell and both starting Marksmen died. A Warboss's Rally walked the Troll to the port in round 21, and a Brute was fired from the Moon Gun beside the centre in round 22. The port was captured in round 24 with 43 Coins unspent |
+| j       | 10       | lost, abandoned at the start of round 25 (Snikkit dead) | Tarpit fell in round 10; Sawmilling came in round 14; the Troll came in round 17 (Scouts, the Explorer monument, a Land Grant, a Workshop, Boom). The port sent a Fighter a turn. Dregmuk fell in round 14, and three Spitters and two Stegosauruses killed Brutes and Carts round Egg Rock. The Troll was fired beside the port in round 19 and killed the centre Guard in round 21. On the centre the port's two starting Marksmen, unseen in the fog, and a Fighter shot it from 16 HP to nothing. A Brute retook the centre in round 22 and died the same way. A Rocket Cart killed on Egg Rock's centre in round 20 took Snikkit with its death blast. At the start of round 25 the crew had 12 units                                                                                      |
+| k       | 10       | lost, abandoned at the start of round 11                | A lone Brute on Tarpit's centre died twice in rounds 8 and 9, to the port's Marksman, a Raider and Fighters. The port captured Tarpit in round 10. Dregmuk fell to the tribes in round 9                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| l       | 10       | lost, abandoned at the start of round 12                | A port Fighter captured Tarpit in round 7. The port then trained a Fighter or Raider there every turn, walled it in round 11, and its Marksman killed a Brute a turn                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| m       | 11       | lost, abandoned at the start of round 20                | Tarpit fell in round 10, held by a ring of four Brutes, and Ashmoot fell in round 13. A Moon Gun shot to the east finished the Explorer achievement, and the Troll came in round 17. Unseen tribal Stegosauruses killed every Rocket Cart on Tarpit's centre, and Dregmuk fell in round 13. At the start of round 20 the Troll was at 8 HP with the port intact                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| n       | 11       | **won in round 21 of 32, 2 stars** (Snikkit died)       | Attempt i's moves were replayed to round 12, and the game ran identically (the port's 8 Coins changed nothing yet). In round 13 no lone Brute was left on the Moon Gun. Explorer, Boom and a Lumber Camp gave the Troll in round 15. It killed the Guard on the Moon Gun in round 16 and took Kestrow in round 18. Rally put a Chucker in range and a ganged Brute killed one starting Marksman in round 17; a splash and the Troll killed the other two Marksmen by round 19. Rally walked the Troll beside the port in round 19, a Brute was fired beside the centre, and the Troll killed the centre Guard in round 20 from the forest at 11,13. The port was captured in round 21. A tribal Raptor killed Snikkit in round 20, unguarded at 4,2                                             |
+
+What it showed:
+
+- **Tarpit is no longer the wall.** Without Nesting its Ankylosaurus dies
+  by round 10 in every run, and the crew took Tarpit in round 10 in i, j, m
+  and n (in k and l the port took it first). The fight is the port, plus the tribes' late Spitters and
+  Stegosauruses, which snipe from fog and kill a Brute or a Cart a turn
+  round Egg Rock and Dregmuk.
+- **How a win is made.** Get Tarpit's free Troll at level 5 (the Explorer
+  monument, Boom and cheap buildings; a Moon Gun shot can finish the
+  Explorer count). Kill the port's Marksmen before the Troll stands on the
+  centre. Use a Warboss's Rally or the Moon Gun to put the Troll beside
+  the centre.
+- **How it is lost.** The Marksmen shoot from unseen tiles. Any lone unit
+  on Tarpit's centre, the Moon Gun or the port's centre dies.
+- **The Coins.** With 10 Coins the port also floods Tarpit with Fighters
+  and Raiders early (attempts k and l). With 6 or 8 Coins the same opening
+  (attempts i and n) plays out identically to round 12. Revision 11's
+  first attempt was lost and its planned one won in round 21, as the user
+  asked.
+
+Deviations from the bead:
+
+- Six attempts were played, not three. Each definition change required a
+  replay, and attempt n checked that revision 11 can be won.
+- Revision 10's three losses were partly misplays (lone units on centres).
+- Attempt n replayed the winning line of revision 9. A 10-Coin port might
+  allow the same line; that was not tried.
+- Snikkit died in j and n to avoidable misplays: a Cart's death blast and
+  an unguarded Goblin. Rocket Carts and Bomb Chuckers explode when they
+  die and hurt the crew's own Goblins.
+
+**The lever if revision 11 proves too hard:** a Marksman fewer at the port
+(the one at 13,12). The clock stays.
+
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 
 The fourth tier-2 faction campaign, after the Goblins (section 19): six

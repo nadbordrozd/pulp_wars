@@ -291,14 +291,15 @@ describe("The Big Score", () => {
     // Revisions 7 to 9 (`pulp_wars-e912`, section 19.8): revision 6 and
     // its first two easings were lost in hand play, so the tribes have eight
     // men (one Raptor at Tarpit), 5 Coins and Nesting forbidden (their two
-    // centre Ankylosaurs are the only ones); the
-    // port has 6 Coins.
+    // centre Ankylosaurs are the only ones). Revisions 10 and 11
+    // (`pulp_wars-wgyc`): revision 9 was a 3-star win and revision 10's 10
+    // Coins lost three attempts, so the port has 8 Coins.
     expect(seat("GOBLIN_4", 2).technologies).not.toContain("FORTIFICATION");
     expect(seat("GOBLIN_4", 2).forbiddenTechnologies).toContain(
       "FORTIFICATION",
     );
     expect(seat("GOBLIN_4", 2).coins).toBe(5);
-    expect(seat("GOBLIN_4", 1).coins).toBe(6);
+    expect(seat("GOBLIN_4", 1).coins).toBe(8);
     expect(seat("GOBLIN_4", 2).units).toHaveLength(8);
     expect(
       seat("GOBLIN_4", 2).units.filter(

@@ -46,6 +46,12 @@ import type { MissionDefinitionV7 } from "./types";
  * they keep the Ankylosaurs on their centres but can never hatch more (the
  * Bone Neck gate, `pulp_wars-v642.7`); the round-3 storm stays.
  *
+ * Revisions 10 and 11 (`pulp_wars-wgyc`, section 19.8): revision 9 played
+ * to the end was a 3-star win in round 24 of 32, so revision 10 gave the
+ * port its 10 Coins back; that lost three hand-played attempts (the port's
+ * Fighter stream took Tarpit, and its Marksmen shot the Troll off its
+ * centre), so revision 11 meets them halfway at 8 Coins.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
@@ -86,7 +92,11 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
   // time to the clock after the tribes' Ankylosaurus eggs held the crew
   // until Tarpit fell in round 14 to 16, so Nesting is forbidden to the
   // tribes (their two centre Ankylosaurs stay).
-  revision: 9,
+  // Revision 10 (`pulp_wars-wgyc`): revision 9 was won with 3 stars in round
+  // 24 of 32, so the port has 10 Coins again.
+  // Revision 11 (`pulp_wars-wgyc`): revision 10 lost three hand-played
+  // attempts, so the port has 8 Coins.
+  revision: 11,
   seed: 20261504,
   // <map>
   size: 16,
@@ -224,9 +234,11 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
       // Kessler's island garrison: Port Kessler, walled. The Baron himself
       // stays in his counting-house.
       faction: "ORIGINAL",
-      // 6 Coins (revision 6 had 10; revision 8 went back to revision 5's
-      // 6 along with the tribes' 5).
-      coins: 6,
+      // 8 Coins (revision 6 had 10; revision 8 went back to revision 5's
+      // 6 along with the tribes' 5; revision 10 restored the 10 after a
+      // 3-star win on revision 9 and lost three attempts; revision 11 has
+      // 8).
+      coins: 8,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {

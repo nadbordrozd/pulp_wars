@@ -168,8 +168,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Nesting and 10 Coins, the storm from round 3; the port 10 Coins.
   // Revisions 7 to 9 (`pulp_wars-e912`): the Raptor revision 6 added at
   // Tarpit is gone, the tribes have 5 Coins and Nesting forbidden, the port 6.
-  "GOBLIN_4@9:GOBLIN":
-    "a99615133385d6d0ba07a7b156d9c8c46b88401c076b8ec6d9808fc1343189ac",
+  // Revisions 10 and 11 (`pulp_wars-wgyc`): the port has 10 Coins, then 8.
+  "GOBLIN_4@11:GOBLIN":
+    "a991c0e7e59137bf13498ba641cfa6428c6a2d39faa87e5248ede3fdd8fa1e7e",
   // Revision 6 (`pulp_wars-mv96`): the beachheads and Gull Islet.
   // Revision 7 (`pulp_wars-i9o2`): no starting Brain, the Field holds two
   // rounds, a second Brute and 8 Coins for the crew.
