@@ -283,12 +283,28 @@ describe("The Big Score", () => {
       }),
     ]);
     // Revision 6 (`pulp_wars-i9o2`, section 19.8): the tribes storm Egg
-    // Rock from round 3, hold both towns with Ankylosaurs and have Nesting.
+    // Rock from round 3 and hold both towns with Ankylosaurs.
     expect(seat("GOBLIN_4", 2).directive).toEqual([
       { kind: "NORMAL", untilRound: 3 },
       { kind: "ASSAULT", target: { x: 3, y: 3 } },
     ]);
-    expect(seat("GOBLIN_4", 2).technologies).toContain("FORTIFICATION");
+    // Revisions 7 to 9 (`pulp_wars-e912`, section 19.8): revision 6 and
+    // its first two easings were lost in hand play, so the tribes have eight
+    // men (one Raptor at Tarpit), 5 Coins and Nesting forbidden (their two
+    // centre Ankylosaurs are the only ones); the
+    // port has 6 Coins.
+    expect(seat("GOBLIN_4", 2).technologies).not.toContain("FORTIFICATION");
+    expect(seat("GOBLIN_4", 2).forbiddenTechnologies).toContain(
+      "FORTIFICATION",
+    );
+    expect(seat("GOBLIN_4", 2).coins).toBe(5);
+    expect(seat("GOBLIN_4", 1).coins).toBe(6);
+    expect(seat("GOBLIN_4", 2).units).toHaveLength(8);
+    expect(
+      seat("GOBLIN_4", 2).units.filter(
+        (unit) => unit.role === "RAIDER" && unit.home === 1,
+      ),
+    ).toHaveLength(1);
     for (const city of seat("GOBLIN_4", 2).cities)
       expect(seat("GOBLIN_4", 2).units, city.name).toContainEqual(
         expect.objectContaining({ role: "GUARD", at: city.at }),

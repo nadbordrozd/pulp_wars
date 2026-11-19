@@ -38,6 +38,14 @@ import type { MissionDefinitionV7 } from "./types";
  * Ankylosaurs, have nine men, Nesting and 10 Coins, and storm Egg Rock from
  * round 3; the port has 10 Coins to retrain its walls.
  *
+ * Revisions 7 to 9 (`pulp_wars-e912`, section 19.8): revision 6 was too
+ * hard. Hand play lost it twice, and its first easings (no third Raptor at
+ * Tarpit; then 5 and 6 Coins for the tribes and the port) were lost to the
+ * clock: the tribes' Ankylosaurus eggs held the crew until Tarpit fell in
+ * round 14 to 16. So the tribes lose Nesting: it is forbidden to them, so
+ * they keep the Ankylosaurs on their centres but can never hatch more (the
+ * Bone Neck gate, `pulp_wars-v642.7`); the round-3 storm stays.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
@@ -70,7 +78,15 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
   // Revision 6 (`pulp_wars-i9o2`, CAMPAIGN.md section 19.8): the user found
   // it too easy; the tribes hold both towns with Ankylosaurs, have Nesting
   // and 10 Coins and storm Egg Rock from round 3; the port has 10 Coins.
-  revision: 6,
+  // Revision 7 (`pulp_wars-e912`, section 19.8): revision 6 was lost twice
+  // in hand play, so the Raptor it added at Tarpit is gone (eight men).
+  // Revision 8 (`pulp_wars-e912`): revision 7 was lost too, so the tribes
+  // and the port are back to their revision 5 Coins (5 and 6).
+  // Revision 9 (`pulp_wars-e912`): revision 8 was lost three times, each
+  // time to the clock after the tribes' Ankylosaurus eggs held the crew
+  // until Tarpit fell in round 14 to 16, so Nesting is forbidden to the
+  // tribes (their two centre Ankylosaurs stay).
+  revision: 9,
   seed: 20261504,
   // <map>
   size: 16,
@@ -208,8 +224,9 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
       // Kessler's island garrison: Port Kessler, walled. The Baron himself
       // stays in his counting-house.
       faction: "ORIGINAL",
-      // Revision 6: 10 Coins (were 6), so the port retrains its walls.
-      coins: 10,
+      // 6 Coins (revision 6 had 10; revision 8 went back to revision 5's
+      // 6 along with the tribes' 5).
+      coins: 6,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
@@ -274,15 +291,13 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
       // from the start (Ankylosaurus eggs) and 10 Coins (were 5): in hand
       // play the crew's Brutes broke their Cavemen and Raptors one by one
       // and took Tarpit in round 7; only the Ankylosaurs held them.
+      // Revision 8 (`pulp_wars-e912`): 5 Coins again; with 10 and Nesting
+      // their eggs outran the crew's Brutes in every hand-played attempt.
+      // Revision 9 (`pulp_wars-e912`): no Nesting, and it is forbidden (see
+      // below), so the two centre Ankylosaurs are the only ones.
       faction: "DINOSAUR",
-      coins: 10,
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      coins: 5,
+      technologies: ["GATHERING", "HUNTING", "SCOUTING", "DRILL"],
       // Fernhollow, their home, is in the eastern woods; Tarpit is the
       // hunting camp in the middle of the island. Each centre is held by an
       // Ankylosaurus.
@@ -303,12 +318,20 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 7, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 6, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 7 }, home: 1 },
+        // Revision 7 (`pulp_wars-e912`): the third Raptor revision 6 added
+        // at Tarpit (8,8) is gone.
         { role: "RAIDER", at: { x: 8, y: 7 }, home: 1 },
-        { role: "RAIDER", at: { x: 8, y: 8 }, home: 1 },
       ],
       // They know where the crew landed.
       reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 4, y1: 4 }] },
-      forbiddenTechnologies: ["METALLURGY", "CHIVALRY"],
+      // Revision 9: Nesting (Fortification) forbidden, so they keep their
+      // starting defenders and hatch no more; Explosives sits behind it.
+      forbiddenTechnologies: [
+        "METALLURGY",
+        "CHIVALRY",
+        "FORTIFICATION",
+        "EXPLOSIVES",
+      ],
       // The tribes bite whoever lands: from round 3 (was 4) they storm Egg
       // Rock.
       directive: [

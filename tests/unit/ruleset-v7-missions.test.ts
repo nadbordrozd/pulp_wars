@@ -166,8 +166,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "740a88c4f192f3779cf7bd5d5c09a1891b06b092b2ddf1addf81a48a92636ac0",
   // Revision 6 (`pulp_wars-i9o2`): Ankylosaurs on the tribes' centres,
   // Nesting and 10 Coins, the storm from round 3; the port 10 Coins.
-  "GOBLIN_4@6:GOBLIN":
-    "7860047c40c17e8400f8dc5124c6f4412ec08d396c4e65c5193ddfaa4adeecdc",
+  // Revisions 7 to 9 (`pulp_wars-e912`): the Raptor revision 6 added at
+  // Tarpit is gone, the tribes have 5 Coins and Nesting forbidden, the port 6.
+  "GOBLIN_4@9:GOBLIN":
+    "a99615133385d6d0ba07a7b156d9c8c46b88401c076b8ec6d9808fc1343189ac",
   // Revision 6 (`pulp_wars-mv96`): the beachheads and Gull Islet.
   // Revision 7 (`pulp_wars-i9o2`): no starting Brain, the Field holds two
   // rounds, a second Brute and 8 Coins for the crew.

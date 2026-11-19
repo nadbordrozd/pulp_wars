@@ -6152,6 +6152,57 @@ star 24) assumed a round-28 win; if the tribes now stall the crew past
 the clock, ease Tarpit before touching the clock. G5's raft-crew wave of
 round 12 landed in round 13 (no calm ground).
 
+**G4 played to the end (`pulp_wars-e912`).** Revision 6 was played
+through `play-text` under `7r143`, with the clock (capture by 32, star 24)
+left alone. It was too hard. It lost twice, and so did its first two
+easings, so G4 is now revision 9, re-pinned in both pin tables. The
+revisions below 9 were never committed.
+
+| Revision | Change                                                                    | Tribes' men and Coins | Port Coins |
+| -------- | ------------------------------------------------------------------------- | --------------------- | ---------- |
+| 6        | section 19.8 above                                                        | 9, 10, Nesting        | 10         |
+| 7        | the third Raptor at Tarpit (8,8) removed                                  | 8, 10, Nesting        | 10         |
+| 8        | 7, and the tribes and the port back to their revision 5 Coins             | 8, 5, Nesting         | 6          |
+| 9        | 8, and Nesting forbidden (the two centre Ankylosaurs stay, no more hatch) | 8, 5                  | 6          |
+
+The attempts. Each was abandoned when it was plainly lost, as in
+section 19.6. None reached the port, so no star was won; Snikkit lived
+in all of them.
+
+| Attempt | Revision                        | Result                                   | Key moments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------- | ------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| a       | 6                               | lost, abandoned at the start of round 16 | Fruit and the Militia in round 1, Explosives from the Lost Expedition in round 3, and four towns by round 5. A Brute gang and a bomb killed the first Ankylosaurus in round 8. Blasts of 6,7 and 5,9 came in round 11. Raptors, Cavemen and Spitters killed the Brutes at Dregmuk. At Tarpit, from round 12 to 15, the Ankylosaurs (one Big on the centre, more hatching) grew on each kill, full heal included. That cost six Brutes and the Ogre. The crew had 9 units to the tribes' 18 |
+| b       | 6                               | lost, abandoned at the start of round 12 | Same opening, with Goblin kabooms and Brutes on the blast-proof side of mountain blasts. Four Ankylosaurs (two Big) and a Raptor stream were taking Dregmuk. 10 units to 14                                                                                                                                                                                                                                                                                                                |
+| c       | 7                               | lost, abandoned at the start of round 25 | Tarpit fell in round 14 to a Brute gang with the Wolf Rider. Forestry and Sawmilling came in rounds 18 and 19; Rocket Carts (12 a hit on Guards, open to ranged) killed the port's forward men. Three Spitters took Dregmuk in round 22. The port's Fighters, Guards and Marksmen held the Moon Gun and Kestrow; anything fired or marched next to them died. The port was untouched with 8 rounds left                                                                                    |
+| d       | 8 draft (the port 6, tribes 10) | lost, abandoned at the start of round 17 | The tribes still killed two or three Brutes a round. A Caveman retook Tarpit's centre, and an Ankylosaurus grew to Alpha                                                                                                                                                                                                                                                                                                                                                                   |
+| e       | 8                               | lost, abandoned at the start of round 25 | The attrition turned from round 9 (17 units to 11 by round 13). Tarpit fell in round 16. Rocket Carts, then Scrap Buggies (Scouting, Raiding and Chivalry in round 20) followed. The port's two Marksmen (range 2), with a Fighter from Kestrow every turn, killed every unit that stepped onto Kestrow or the Moon Gun. The tribes retook Fizzgob in round 22 and Dregmuk in round 25, and 50-odd Coins went unspent for want of free slots                                               |
+| f       | 8 (e's moves to round 11)       | lost, abandoned at the start of round 23 | As e. Kestrow's centre was emptied twice by Carts, but the Brute and the Ogre that stepped in died to the Marksmen                                                                                                                                                                                                                                                                                                                                                                         |
+| g       | 8 (e's moves to round 15)       | lost, abandoned at the start of round 21 | Tarpit fell in round 16 again. The first Cart trained there was killed by Raptors on the centre, and the Brutes sent toward the port died one by one at Kestrow and on the Moon Gun                                                                                                                                                                                                                                                                                                        |
+| h       | 9                               | abandoned at the start of round 10       | Not informative: a lone Brute left in Dregmuk lost the town in round 7, and the Ogre was lost retaking it                                                                                                                                                                                                                                                                                                                                                                                  |
+
+What it showed. With Nesting the tribes always have more units than the crew. Their Ankylosaurs need three ganged Brute
+hits to kill, and they come back from eggs and grow (full heal) on every
+kill. Revision 8 made the middle game a fair fight: the crew wins it by
+round 13 to 16. But the nine rounds Tarpit now costs (it fell in round 7
+under revision 5) leave too little time for the port. The port's road men
+take Kestrow and Ashmoot, train a Fighter a turn in front of the walls,
+and with the two Marksmen beside the centre they kill any single unit
+that arrives.
+
+**Revision 9 is not validated.** Attempt h was played on a draft of it
+in which the tribes merely did not start with Nesting (they could research
+it), and only to round 10. That draft broke the missions' invariant that a
+seat fielding its defender with Crafting owns Fortification
+(`tests/unit/ruleset-v7-industry-reshuffle.test.ts`), so Fortification is
+forbidden to the tribes instead (with Explosives, which needs it), as at
+Bone Neck: they keep the two centre
+Ankylosaurs and never hatch more. A sturdier non-defender on the centres
+was considered and rejected: with Gathering, Hunting, Scouting and Crafting
+the tribes train only Cavemen and Raptors, and a Raptor on Tarpit's centre
+is what made revision 5 a walkover. Its first full run should
+show Tarpit falling by about round 12 and the port within reach by round 32. If that run is a comfortable win, give the port its 10 Coins back
+first, before Nesting.
+
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 
 The fourth tier-2 faction campaign, after the Goblins (section 19): six
