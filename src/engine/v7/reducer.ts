@@ -631,7 +631,7 @@ export type RuleErrorCodeV7 =
   // beside it (`ATTACK_AWESTRUCK { unitId }`, the bearer).
   | "ATTACK_AWESTRUCK"
   // The Heal button (`pulp_wars-6y2r`, 7r143): a `HEAL` of a unit that
-  // idle recovery would not heal now (`CRASHED`, `CHANTING`, `HANDLED`,
+  // idle recovery would not heal now (`CRASHED`, `CHANTING`,
   // or `NOT_ELIGIBLE`: full HP, moved or acted, an Egg, embarked, a
   // construct or daemon, Restless outside its land, a ship away from a
   // dock).
@@ -8263,7 +8263,6 @@ function applyHeal(
     facts,
     crashed: unitIsCrashedV7(state, unit.id),
     chanting: unitChantsV7(state.cult.rituals, unit.id),
-    handled: unit.activation.handled || unit.activation.overrunActive,
   });
   if (reason !== null) return rejected(original, "HEAL_NOT_LEGAL", { reason });
   if (state.commandIndex >= Number.MAX_SAFE_INTEGER)

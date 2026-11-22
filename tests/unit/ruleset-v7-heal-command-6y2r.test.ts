@@ -25,10 +25,15 @@ import {
   healTooltipV7,
 } from "../../src/render/recovery-presentation-v7";
 import { textPlayCommandIdV7 } from "../../scripts/play-text-v7";
+import {
+  healRejectionV7,
+  type RecoveryFactsV7,
+} from "../../src/engine/v7/recovery";
 import { withHorrorV7, cultFieldV7 } from "../fixtures/v7-cult";
 import { requiredButton, rig, waitUntil } from "../fixtures/v7-dom-rig";
 import { seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
-import { fieldV7 } from "../fixtures/v7-revision20";
+import { offeredV7, playV7 } from "../fixtures/v7-martian";
+import { fieldV7, patchUnitV7 } from "../fixtures/v7-revision20";
 
 /**
  * The Heal button (`pulp_wars-6y2r`, ruleset 7r143; the user, 2026-11-19:
@@ -107,12 +112,14 @@ function endTurnRecoveries(state: GameStateV7) {
 }
 
 describe("the identity (pulp_wars-6y2r)", () => {
-  it("is 7r143 after 7r142, whose save key is obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r143");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r143.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r142");
+  // `pulp_wars-vtiy` (a Wait never blocks a Heal) took 7r144 after it.
+  it("was 7r143 after 7r142, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r143");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r142");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r142.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -265,15 +272,306 @@ describe("HEAL is refused for a unit that cannot heal", () => {
       params: { reason: "NOT_ELIGIBLE" },
     });
   });
+});
 
-  it("refuses a unit that already waited", () => {
+/**
+ * `pulp_wars-vtiy` (7r144): a Wait never blocks `HEAL`. The full-HP Fighter
+ * on `FULL` Waits, then is wounded by hand, as an own unit's death blast
+ * would wound it.
+ */
+describe("a Wait never blocks HEAL (pulp_wars-vtiy)", () => {
+  function waitedThenWounded() {
     const state = humanField();
-    const unit = unitAtV7(state, HOME);
+    const unit = unitAtV7(state, FULL);
     const waited = play(state, { kind: "WAIT", unitId: unit.id }).state;
     expect(offeredFor(waited, unit.id, "HEAL")).toBe(false);
-    expect(refusal(waited, unit.id)).toEqual({
-      code: "HEAL_NOT_LEGAL",
-      params: { reason: "HANDLED" },
+    expect(offeredFor(waited, unit.id, "WAIT")).toBe(false);
+    // A Wait only dismisses the highlight: the Move is still there.
+    expect(offeredFor(waited, unit.id, "MOVE")).toBe(true);
+    return { unitId: unit.id, wounded: patchUnitV7(waited, FULL, { hp: 5 }) };
+  }
+
+  it("is the current identity, 7r144 after 7r143", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r143");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+      "pulpWars.save.v7r143.current",
+    );
+  });
+
+  it("offers and accepts HEAL for a unit that waited and was then wounded", () => {
+    const { unitId, wounded } = waitedThenWounded();
+    expect(offeredFor(wounded, unitId, "HEAL")).toBe(true);
+    const result = play(wounded, { kind: "HEAL", unitId });
+    expect(result.events).toEqual([
+      { kind: "UNIT_RECOVERED", unitId, amount: 4, automatic: false },
+    ]);
+    expect(unitAtV7(result.state, FULL).hp).toBe(9);
+  });
+
+  it("spends its turn, and End Turn does not heal it twice", () => {
+    const { unitId, wounded } = waitedThenWounded();
+    const healed = play(wounded, { kind: "HEAL", unitId }).state;
+    expect(unitAtV7(healed, FULL).activation).toMatchObject({
+      recovered: true,
+      handled: true,
+    });
+    for (const kind of ["MOVE", "HEAL", "WAIT"] as const)
+      expect(offeredFor(healed, unitId, kind), kind).toBe(false);
+    const ended = endTurnRecoveries(healed);
+    expect(ended.recovered.map((entry) => entry.unitId)).not.toContain(unitId);
+    expect(ended.state.units.find((unit) => unit.id === unitId)?.hp).toBe(9);
+  });
+
+  it("still idle-heals at End Turn if it never acted", () => {
+    const { unitId, wounded } = waitedThenWounded();
+    expect(queryIdleRecoveryV7(wounded, wounded.humanPlayerId)).toContainEqual({
+      unitId,
+      amount: 4,
+    });
+    const ended = endTurnRecoveries(wounded);
+    expect(ended.recovered).toContainEqual({ unitId, amount: 4 });
+    expect(ended.state.units.find((unit) => unit.id === unitId)?.hp).toBe(9);
+  });
+
+  it("refuses every handled path that is not a Wait", () => {
+    const exhausted = {
+      moved: true,
+      movedPathLength: 0,
+      attacked: true,
+      attacksUsed: 1 as const,
+      recovered: true,
+      captured: true,
+      handled: true,
+      specialActed: true,
+    };
+    const paths = {
+      moved: { moved: true, movedPathLength: 1, handled: true },
+      attacked: { attacked: true, attacksUsed: 1 as const, handled: true },
+      captured: { captured: true, handled: true },
+      "used an ability": { specialActed: true, handled: true },
+      "already healed": { recovered: true, handled: true },
+      "exhausted (Mind Control, a release, a bound daemon)": exhausted,
+    };
+    for (const [name, patch] of Object.entries(paths)) {
+      const state = humanField();
+      const unit = unitAtV7(state, HOME);
+      const acted = patchUnitV7(state, HOME, {
+        activation: { ...unit.activation, ...patch },
+      });
+      expect(offeredFor(acted, unit.id, "HEAL"), name).toBe(false);
+      expect(refusal(acted, unit.id), name).toEqual({
+        code: "HEAL_NOT_LEGAL",
+        params: { reason: "NOT_ELIGIBLE" },
+      });
+    }
+  });
+
+  it("refuses an Overrun and a Crashed unit, whatever their Wait", () => {
+    const facts: RecoveryFactsV7 = {
+      form: "LAND",
+      hp: 3,
+      maxHp: 12,
+      activation: {
+        moved: false,
+        attacked: false,
+        recovered: false,
+        captured: false,
+        specialActed: false,
+      },
+      construct: false,
+      restless: false,
+      inOwnTerritory: true,
+      byOwnActivePort: false,
+      deepWinter: false,
+    };
+    const rest = { crashed: false, chanting: false };
+    expect(healRejectionV7({ facts, ...rest })).toBeNull();
+    // The state schema admits an Overrun only on a unit that attacked.
+    expect(
+      healRejectionV7({
+        facts: {
+          ...facts,
+          activation: { ...facts.activation, attacked: true },
+        },
+        ...rest,
+      }),
+    ).toBe("NOT_ELIGIBLE");
+    expect(healRejectionV7({ facts, ...rest, crashed: true })).toBe("CRASHED");
+  });
+
+  it("refuses a unit of another seat, and any unit out of its turn", () => {
+    const state = humanField();
+    const unit = unitAtV7(state, HOME);
+    const ended = play(state, { kind: "END_TURN" }).state;
+    const after = ended.units.find((item) => item.id === unit.id);
+    expect(after?.activation.handled).toBe(true);
+    expect(
+      applyCommandV7(ended, state.humanPlayerId, {
+        kind: "HEAL",
+        unitId: unit.id,
+      }).accepted,
+    ).toBe(false);
+    expect(
+      applyCommandV7(state, seatIdV7(state, 1), {
+        kind: "HEAL",
+        unitId: unit.id,
+      }).accepted,
+    ).toBe(false);
+  });
+
+  describe("a chant", () => {
+    const GAZER: CoordV7 = { x: 5, y: 2 };
+    const JOINER: CoordV7 = { x: 4, y: 2 };
+
+    /** A Stargazer's star with a wounded Initiate joined to it. */
+    function chanting(): { state: GameStateV7; joinerId: UnitId } {
+      const field = cultFieldV7([
+        { seat: 0, role: "CATAPULT", at: GAZER },
+        { seat: 0, role: "FIGHTER", at: JOINER },
+        { seat: 1, role: "FIGHTER", at: { x: 5, y: 6 } },
+      ]);
+      const leaderUnitId = unitAtV7(field, GAZER).id;
+      const joinerId = unitAtV7(field, JOINER).id;
+      const begun = playV7(field, {
+        kind: "BEGIN_RITUAL",
+        ritual: "STARFALL",
+        unitId: leaderUnitId,
+        at: { x: 5, y: 6 },
+      }).state;
+      const joined = playV7(begun, {
+        kind: "JOIN_CHANT",
+        unitId: joinerId,
+        leaderUnitId,
+      }).state;
+      return { state: patchUnitV7(joined, JOINER, { hp: 3 }), joinerId };
+    }
+
+    /** The chant broken by its leader's Disband: the join stays handled. */
+    function broken() {
+      const { state, joinerId } = chanting();
+      // By hand: the seat may Disband, and the leader has its action back,
+      // so its own Disband ends the ritual and leaves the joiner handled.
+      const leader = unitAtV7(state, GAZER);
+      const disbandable = patchUnitV7(
+        {
+          ...state,
+          players: state.players.map((player) =>
+            player.seat === 0
+              ? {
+                  ...player,
+                  researchedTechs: [
+                    ...new Set([...player.researchedTechs, "ADMINISTRATION"]),
+                  ] as typeof player.researchedTechs,
+                }
+              : player,
+          ),
+        },
+        GAZER,
+        {
+          activation: {
+            ...leader.activation,
+            specialActed: false,
+            handled: false,
+          },
+        },
+      );
+      const after = playV7(disbandable, {
+        kind: "DISBAND",
+        unitId: leader.id,
+      }).state;
+      expect(after.cult.rituals).toEqual([]);
+      expect(unitAtV7(after, JOINER).activation.handled).toBe(true);
+      return { after, joinerId };
+    }
+
+    it("refuses a joiner as CHANTING and leaves it in the chant", () => {
+      const { state, joinerId } = chanting();
+      expect(offeredV7(state, "HEAL")).toEqual([]);
+      const result = applyCommandV7(state, seatIdV7(state, 0), {
+        kind: "HEAL",
+        unitId: joinerId,
+      });
+      expect(result.accepted).toBe(false);
+      if (result.accepted) return;
+      expect(result.error).toEqual({
+        code: "HEAL_NOT_LEGAL",
+        params: { reason: "CHANTING" },
+      });
+      expect(result.state.cult.rituals[0]?.chanterUnitIds).toEqual([joinerId]);
+    });
+
+    /** What End Turn idle recovery would give the joiner now. */
+    const idleAmount = (state: GameStateV7, joinerId: UnitId): number => {
+      const entry = queryIdleRecoveryV7(state, seatIdV7(state, 0)).find(
+        (item) => item.unitId === joinerId,
+      );
+      if (entry === undefined) throw new Error("no idle recovery");
+      return entry.amount;
+    };
+
+    it("offers and accepts HEAL once its chant broke, and End Turn does not heal it twice", () => {
+      const { after, joinerId } = broken();
+      const amount = idleAmount(after, joinerId);
+      expect(offeredV7(after, "HEAL")).toContainEqual({
+        kind: "HEAL",
+        unitId: joinerId,
+      });
+      const healed = playV7(after, { kind: "HEAL", unitId: joinerId });
+      expect(healed.events).toContainEqual({
+        kind: "UNIT_RECOVERED",
+        unitId: joinerId,
+        amount,
+        automatic: false,
+      });
+      expect(unitAtV7(healed.state, JOINER).hp).toBe(3 + amount);
+      const ended = playV7(healed.state, { kind: "END_TURN" });
+      expect(
+        ended.events.some(
+          (event) =>
+            event.kind === "UNIT_RECOVERED" && event.unitId === joinerId,
+        ),
+      ).toBe(false);
+      expect(ended.state.units.find((unit) => unit.id === joinerId)?.hp).toBe(
+        3 + amount,
+      );
+    });
+
+    it("idle-heals once at End Turn if it does not act after its chant broke", () => {
+      const { after, joinerId } = broken();
+      const amount = idleAmount(after, joinerId);
+      const ended = playV7(after, { kind: "END_TURN" });
+      expect(
+        ended.events.filter(
+          (event) =>
+            event.kind === "UNIT_RECOVERED" && event.unitId === joinerId,
+        ),
+      ).toEqual([
+        { kind: "UNIT_RECOVERED", unitId: joinerId, amount, automatic: true },
+      ]);
+      expect(ended.state.units.find((unit) => unit.id === joinerId)?.hp).toBe(
+        3 + amount,
+      );
+    });
+  });
+
+  describe("the dock", () => {
+    beforeEach(() => {
+      document.body.innerHTML = '<div id="app"></div>';
+      window.localStorage.clear();
+    });
+
+    it("shows Heal for a waited, wounded unit, and a tap heals it", async () => {
+      const { unitId, wounded } = waitedThenWounded();
+      const scene = rig(wounded);
+      scene.host.callbacks?.onSelection({ kind: "UNIT", unitId });
+      const heal = requiredButton("command-heal");
+      expect(heal.textContent).toBe(HEAL_LABEL_V7);
+      expect(document.querySelector('[data-action="command-wait"]')).toBeNull();
+      heal.click();
+      await waitUntil(() => scene.controller.accepted.length > 0);
+      expect(scene.controller.accepted).toEqual([{ kind: "HEAL", unitId }]);
     });
   });
 });

@@ -70,28 +70,28 @@ export function recoverEligibleV7(facts: RecoveryFactsV7): boolean {
 }
 
 /** Why a `HEAL` is refused (`HEAL_NOT_LEGAL { reason }`). */
-export type HealRejectionV7 =
-  "CRASHED" | "CHANTING" | "HANDLED" | "NOT_ELIGIBLE";
+export type HealRejectionV7 = "CRASHED" | "CHANTING" | "NOT_ELIGIBLE";
 
 /**
  * The Heal button (`pulp_wars-6y2r`, 7r143): why the unit cannot `HEAL`
  * now, or null when it can. A `HEAL` is legal exactly when End Turn idle
  * recovery would heal the unit now (`recoverEligibleV7`, and not a cultist
  * that chants) and the unit may still act: not Crashed (no primary action;
- * the Candy revision section 5.3), and not already handled (a Wait) or in
- * an Overrun. The reducer (`applyHeal`) and the public query share it, so
- * `HEAL` is offered exactly when it is accepted.
+ * the Candy revision section 5.3). `pulp_wars-vtiy` (7r144): a Wait never
+ * blocks it, so `handled` is not read. Every other way to be handled sets a
+ * flag `recoverEligibleV7` refuses (an Overrun needs `attacked`), or is a
+ * join, reversible like a Wait: `CHANTING` while the chant holds, and an
+ * ordinary idle unit once it broke. The reducer (`applyHeal`) and the public
+ * query share it, so `HEAL` is offered exactly when it is accepted.
  */
 export function healRejectionV7(input: {
   readonly facts: RecoveryFactsV7;
   readonly crashed: boolean;
   readonly chanting: boolean;
-  readonly handled: boolean;
 }): HealRejectionV7 | null {
   if (!recoverEligibleV7(input.facts)) return "NOT_ELIGIBLE";
   if (input.chanting) return "CHANTING";
   if (input.crashed) return "CRASHED";
-  if (input.handled) return "HANDLED";
   return null;
 }
 

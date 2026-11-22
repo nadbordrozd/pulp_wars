@@ -1665,7 +1665,6 @@ function appendPublicUnitCommandsV7(
         (view as { readonly cult?: PlayerViewV7["cult"] }).cult?.rituals ?? [],
         unit.id,
       ),
-      handled: unit.activation.handled || unit.activation.overrunActive,
     }) === null
   )
     candidates.push({ kind: "HEAL", unitId: unit.id });

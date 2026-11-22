@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r143`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r144`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r144` (`pulp_wars-vtiy`, **a Wait never blocks a Heal**;
+the user, 2026-11-22: "wait only dimisses the highlight that shows that the
+unit can still move"). (1) A unit that pressed **Wait** and is wounded later
+in the same turn (for example by an own unit's death blast) is offered and
+accepts `HEAL`, which heals it at once and ends its turn; if it never acts,
+End Turn idle recovery still heals it, once. (2) `healRejectionV7` no longer
+reads `handled`, and the reason `HANDLED` is gone: every other way to be
+handled either sets a flag `recoverEligibleV7` refuses (`NOT_ELIGIBLE`: a
+Move, an attack or Overrun, a capture, an ability, a Heal, an exhausted
+activation) or is a chant join, reversible like a Wait. (3) A Star-fall
+joiner is refused as `CHANTING` while its chant holds, and a `HEAL` order no
+longer takes it out of the chant (it was never offered). (4) A joiner whose
+chant **broke** is an ordinary idle unit: if wounded it is offered `HEAL`,
+and if it does not act End Turn idle recovery heals it once. A save, replay,
+or setup of `7r143` is rejected, and the browser autosave has a new key.
 
 `pulp-wars-poc-7r143` (`pulp_wars-6y2r`, **the Heal button**; the user,
 2026-11-19: "I want to have the healing button back. instead of the
@@ -2618,10 +2634,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r143`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r144`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r143.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r144.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -7304,19 +7320,23 @@ benefit of a Port connection.)
   command that turn; it Heals it since `7r143` (below).
 - **Heal** (`HEAL`, the Heal button, `pulp_wars-6y2r`, `7r143`): a unit
   that End Turn idle recovery would heal now, and that may still act (not
-  Crashed, not handled by a Wait, not in an Overrun), heals **now** by that
-  same amount and **ends its turn** (`recovered` and `handled`: no Move,
-  attack, or action after it, and End Turn never heals it again), with
+  Crashed, not chanting; an Overrun has attacked, so it is not eligible),
+  heals **now** by that same amount and
+  **ends its turn** (`recovered` and `handled`: no Move, attack, or action
+  after it, and End Turn never heals it again), with
   `UNIT_RECOVERED { automatic: false }`. Any other `HEAL` is
-  `HEAL_NOT_LEGAL { reason }` (`NOT_ELIGIBLE`, `CHANTING`, `CRASHED`,
-  `HANDLED`); one predicate, `healRejectionV7`, decides the offer and the
+  `HEAL_NOT_LEGAL { reason }` (`NOT_ELIGIBLE`, `CHANTING`,
+  `CRASHED`); one predicate, `healRejectionV7`, decides the offer and the
   reducer. The dock shows **Heal** in the unit's Wait slot when it is
-  offered; a unit that cannot heal (Restless outside its land, a construct,
-  a daemon, full HP, moved or acted) keeps **Wait**. The Normal AI Heals
-  where it held a wounded unit with a Wait, with the same score, and never
-  Waits.
-- **Wait** does not prevent idle recovery; moving or any primary action does
-  (a `HEAL` heals at once instead).
+  offered, and on its own for a unit that already Waited; a unit that cannot
+  heal (Restless outside its land, a construct, a daemon, full HP, moved or
+  acted) keeps **Wait**. The Normal AI Heals where it held a wounded unit
+  with a Wait, with the same score, and never Waits.
+- **Wait** does not prevent idle recovery or a later `HEAL` (`7r144`,
+  `pulp_wars-vtiy`: a unit that Waited and is then wounded in the same turn
+  may Heal); moving or any primary action does (a `HEAL` heals at once
+  instead). A Star-fall joiner whose chant broke is an ordinary idle unit:
+  it may Heal, and it recovers idle at End Turn if it does not act.
 - **Goblin recovery** is the Human rule: Goblins are not Restless. A Goblin
   seat has no healer and no cure for Plague or Bitten
   ([section 18.3](#183-discipline-field-defense-and-no-healers)); beyond

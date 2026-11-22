@@ -232,7 +232,7 @@ describe("another order takes the joiner out of the chant (pulp_wars-mch9.61)", 
     expect(chantersOf(refused.state)).toEqual([joiner]);
   });
 
-  it("is not taken back by Wait, Promote, Disband, or a join of the same star", () => {
+  it("is not taken back by Wait, Promote, Disband, Heal, or a join of the same star", () => {
     const { joined } = joinedField();
     const joiner = idAt(joined, WEST);
     const rituals = joined.cult.rituals;
@@ -240,6 +240,8 @@ describe("another order takes the joiner out of the chant (pulp_wars-mch9.61)", 
       { kind: "WAIT", unitId: joiner },
       { kind: "PROMOTE", unitId: joiner },
       { kind: "DISBAND", unitId: joiner },
+      // `pulp_wars-vtiy` (7r144): a `HEAL` is refused as `CHANTING`.
+      { kind: "HEAL", unitId: joiner },
       join(joined, WEST),
     ] satisfies CommandV7[])
       expect(

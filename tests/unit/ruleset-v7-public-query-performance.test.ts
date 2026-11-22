@@ -575,7 +575,10 @@ describe("ruleset-7 late public query performance", () => {
       // (was 5c3fa3…15c1).
       // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
       // of the wounded idle units (was dfc1cc…1a29).
-      "ccaaf74cc34d1c4dfe0a9c13bb3c547bce3619862c2179e8d9f1ce9d6fedb4cb",
+      // A Wait never blocks a Heal (`pulp_wars-vtiy`, 7r144): the handled,
+      // wounded unit 20 keeps a HEAL offer, 77 to 78 commands (was
+      // ccaaf7…b4cb).
+      "9ed20eb39ee50a755ea18e325228592ec45b636fbca29541784da38a89470238",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -597,7 +600,10 @@ describe("ruleset-7 late public query performance", () => {
       // (was 5c3fa3…15c1).
       // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
       // of the wounded idle units (was dfc1cc…1a29).
-      "ccaaf74cc34d1c4dfe0a9c13bb3c547bce3619862c2179e8d9f1ce9d6fedb4cb",
+      // A Wait never blocks a Heal (`pulp_wars-vtiy`, 7r144): the handled,
+      // wounded unit 20 keeps a HEAL offer, 77 to 78 commands (was
+      // ccaaf7…b4cb).
+      "9ed20eb39ee50a755ea18e325228592ec45b636fbca29541784da38a89470238",
     );
   });
 

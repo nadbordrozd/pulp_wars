@@ -490,12 +490,15 @@ export function unitChantsV7(
 /**
  * `pulp_wars-mch9.61`: the orders that keep a join. Wait is advisory and
  * Promote is free; a Disband takes the unit off the board, so it leaves
- * the chant by the disruption rule, as before.
+ * the chant by the disruption rule, as before. `pulp_wars-vtiy` (7r144): a
+ * `HEAL` keeps it too, so it is refused as `CHANTING`, as it is never
+ * offered to a chanter, instead of taking the joiner out of the chant.
  */
 const CHANT_KEEPING_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set([
   "WAIT",
   "PROMOTE",
   "DISBAND",
+  "HEAL",
 ]);
 
 /** A join that a command takes back. */
@@ -511,10 +514,10 @@ export interface ChantLeftV7 {
  * `command` of the seat `actor` takes back, read from `rituals` (the
  * canonical list, or the seat's own view of it). Joining a chant spends
  * nothing, so any other order to a joiner this turn (a Move, an attack, an
- * ability, a Recover, a join of another star) first takes it out of the
+ * ability, a join of another star) first takes it out of the
  * chant, and the order is then judged as if it had never joined; so is a
- * cultist named as a Summon's helper. Wait, Promote, Disband, and a join
- * of the same star keep it ({@link CHANT_KEEPING_KINDS_V7}). Shared by the
+ * cultist named as a Summon's helper. Wait, Promote, Disband, Heal, and a
+ * join of the same star keep it ({@link CHANT_KEEPING_KINDS_V7}). Shared by the
  * reducer and the Normal AI, which never orders a cultist out of a chant.
  */
 export function chantsLeftByCommandV7(
