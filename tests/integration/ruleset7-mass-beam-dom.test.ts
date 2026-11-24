@@ -5,14 +5,13 @@ import type { CoordV7, GameStateV7 } from "../../src/engine/index";
 import type { MapCommandTargetV7 } from "../../src/render/canvas/board-renderer-v7";
 import {
   BEAMING_BADGE_V7,
-  BEAM_BADGE_V7,
-  MASS_BEAM_DOWN_FULL_V7,
+  MOTHERSHIP_BEAMS_SPENT_V7,
+  MOTHERSHIP_BEAM_PICK_TILE_V7,
 } from "../../src/render/martian-presentation-v7";
 import {
   boardPlan,
   required,
   requiredButton,
-  requiredElement,
   rig,
   waitUntil,
 } from "../fixtures/v7-dom-rig";
@@ -20,14 +19,16 @@ import { martianFieldV7, type MartianPieceV7 } from "../fixtures/v7-martian";
 import { at } from "../fixtures/v7-revision20";
 
 /**
- * `pulp_wars-8vmy`: a Mass Beam Down's passengers are picked on the board.
- * The Mothership at (2, 2) has three Grunts beside it and a Ray Gunner two
- * tiles south; the nearest three go unless the player taps others.
+ * The Mothership's Beam Down in the dock and on the board. `pulp_wars-8vmy`
+ * picked a Mass Beam Down's passengers on the board; since `pulp_wars-eg3k`
+ * (7r146) the Mothership beams one unit at a time, three times a turn, with
+ * the Saucer's flow. The Mothership at (2, 2) has three Grunts beside it and
+ * a Ray Gunner two tiles south.
  */
 const MOTHERSHIP = at(2, 2);
 const GRUNTS = [at(1, 1), at(2, 1), at(3, 1)] as const;
 const GUNNER = at(2, 4);
-const TILE = at(2, 5);
+const LANDINGS = [at(1, 5), at(2, 5), at(3, 5)] as const;
 
 const own = (role: MartianPieceV7["role"], where: CoordV7): MartianPieceV7 => ({
   seat: 0,
@@ -50,163 +51,92 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-function aim() {
-  const scene = rig(field());
-  scene.host.callbacks?.onSelection({
-    kind: "UNIT",
-    unitId: scene.unitAt(MOTHERSHIP).id,
-  });
-  requiredButton("martian-mass-beam-down").click();
-  const targetAt = (
-    where: CoordV7,
-    family: MapCommandTargetV7["family"],
-  ): MapCommandTargetV7 =>
-    required(
-      boardPlan(scene.host).targets.find(
-        (target) => target.family === family && same(target.at, where),
+function scene() {
+  const base = rig(field());
+  const select = (): void =>
+    base.host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: base.unitAt(MOTHERSHIP).id,
+    });
+  const tap = (where: CoordV7, family: MapCommandTargetV7["family"]): void =>
+    base.host.callbacks?.onCommand(
+      required(
+        boardPlan(base.host).targets.find(
+          (target) => target.family === family && same(target.at, where),
+        ),
       ),
     );
-  const tap = (where: CoordV7): void => {
-    const target = required(
-      boardPlan(scene.host).targets.find((candidate) =>
-        same(candidate.at, where),
-      ),
-    );
-    scene.host.callbacks?.onCommand(target);
-  };
-  const labelsOf = (label: string): CoordV7[] =>
-    boardPlan(scene.host)
-      .entries.filter(
-        (entry) =>
-          entry.kind === "ABILITY_TARGET" &&
-          entry.key.startsWith("ability-target:BEAM_PASSENGER:") &&
-          entry.label === label,
-      )
-      .map((entry) => entry.at);
-  const landings = (): (string | undefined)[] =>
-    boardPlan(scene.host)
-      .entries.filter((entry) => entry.key.includes("MASS_BEAM_LANDING"))
-      .map((entry) => entry.label);
-  const line = (): string =>
-    requiredElement<HTMLElement>(".v7-mass-beam-count").textContent ?? "";
+  const label = (): string =>
+    requiredButton("martian-beam-down").querySelector(".v7-action-label")
+      ?.textContent ?? "";
   const live = (): string =>
     document.querySelector("#v7-live")?.textContent ?? "";
-  return { ...scene, targetAt, tap, labelsOf, landings, line, live };
+  return { ...base, select, tap, label, live };
 }
 
-describe("Mass Beam Down: the passengers picked on the board", () => {
-  it("starts with the nearest three, refuses a fourth, toggles, previews and beams the chosen set", async () => {
-    const scene = aim();
-    // Every unit it may take wears the Help ring; the nearest three the
-    // "Beam" badge; the panel says how many go and how to change them.
+describe("the Mothership's Beam Down: one unit a beam, three a turn", () => {
+  it("counts its beams down on its one button, each a passenger then a tile on the board", async () => {
+    const run = scene();
+    run.select();
+    expect(run.label()).toBe("Beam Down (3 left)");
+    // No Mass Beam Down button, no multi-select line.
     expect(
-      boardPlan(scene.host)
-        .targets.filter(
-          (target) => target.family === "MASS_BEAM_DOWN_PASSENGER",
-        )
-        .map((target) => target.at),
-    ).toEqual([...GRUNTS, GUNNER]);
-    expect(scene.labelsOf(BEAM_BADGE_V7)).toEqual(GRUNTS);
-    expect(scene.line()).toBe("Beam 3 of 3: tap your units to choose");
-    expect(
-      requiredElement<HTMLElement>(".v7-mass-beam-count").dataset.massBeamCount,
-    ).toBe("3");
-    // No per-passenger buttons in the dock.
-    expect(
-      document.querySelectorAll(".v7-martian-pick button").length,
-    ).toBeLessThanOrEqual(3);
-    // A fourth unit is refused with a short notice.
-    scene.tap(GUNNER);
-    expect(scene.live()).toBe(`${MASS_BEAM_DOWN_FULL_V7}.`);
-    expect(document.querySelector(".v7-toast")?.textContent).toBe(
-      `${MASS_BEAM_DOWN_FULL_V7}.`,
-    );
-    expect(scene.labelsOf(BEAM_BADGE_V7)).toEqual(GRUNTS);
-    // Leave a Grunt behind, take the Ray Gunner.
-    scene.tap(GRUNTS[1]);
-    expect(scene.line()).toBe("Beam 2 of 3: tap your units to choose");
-    expect(scene.labelsOf(BEAM_BADGE_V7)).toEqual([GRUNTS[0], GRUNTS[2]]);
-    scene.tap(GUNNER);
-    expect(scene.line()).toBe("Beam 3 of 3: tap your units to choose");
-    expect(scene.labelsOf(BEAM_BADGE_V7)).toEqual([
-      GRUNTS[0],
-      GRUNTS[2],
-      GUNNER,
-    ]);
-    // A tile shows the landing of the chosen set.
-    scene.tap(TILE);
-    expect(scene.targetAt(TILE, "MASS_BEAM_DOWN").previewLabel).toBe(
-      "Beam 3 units",
-    );
-    expect(scene.labelsOf(BEAMING_BADGE_V7)).toEqual([
-      GRUNTS[0],
-      GRUNTS[2],
-      GUNNER,
-    ]);
-    expect(scene.landings().sort()).toEqual(["Grunt", "Grunt", "Ray Gunner"]);
-    // Toggling with a tile chosen updates its preview.
-    scene.tap(GRUNTS[0]);
-    expect(scene.line()).toBe("Beam 2 of 3: tap your units to choose");
-    expect(scene.targetAt(TILE, "MASS_BEAM_DOWN").previewLabel).toBe(
-      "Beam 2 units",
-    );
-    expect(scene.landings().sort()).toEqual(["Grunt", "Ray Gunner"]);
-    // The confirm beams the chosen set.
-    requiredButton("martian-mass-beam-confirm").click();
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]).toEqual({
-      kind: "MASS_BEAM_DOWN",
-      unitId: scene.unitAt(MOTHERSHIP).id,
-      passengerUnitIds: [scene.unitAt(GRUNTS[2]).id, scene.unitAt(GUNNER).id],
-      to: TILE,
-    });
-    scene.app.destroy();
+      document.querySelector('[data-action="martian-mass-beam-down"]'),
+    ).toBeNull();
+    expect(document.querySelector(".v7-mass-beam-count")).toBeNull();
+    for (const [index, landing] of LANDINGS.entries()) {
+      // The dock waits for the last beam's landing to play.
+      await waitUntil(() => !requiredButton("martian-beam-down").disabled);
+      requiredButton("martian-beam-down").click();
+      const passenger = GRUNTS[index] as CoordV7;
+      run.tap(passenger, "BEAM_DOWN_PASSENGER");
+      expect(run.live()).toBe(`${MOTHERSHIP_BEAM_PICK_TILE_V7}.`);
+      // The picked Grunt wears "Beaming"; its tiles are the targets.
+      expect(
+        boardPlan(run.host)
+          .entries.filter((entry) => entry.label === BEAMING_BADGE_V7)
+          .map((entry) => entry.at),
+      ).toEqual([passenger]);
+      run.tap(landing, "BEAM_DOWN");
+      await waitUntil(() => run.controller.accepted.length === index + 1);
+      expect(run.controller.accepted[index]).toEqual({
+        kind: "BEAM_DOWN",
+        unitId: run.unitAt(MOTHERSHIP).id,
+        passengerUnitId: run.unitAt(passenger).id,
+        to: landing,
+      });
+      run.select();
+      if (index < LANDINGS.length - 1)
+        await waitUntil(() => run.label() === `Beam Down (${2 - index} left)`);
+    }
+    // All three spent: the button stays, disabled, and says why.
+    await waitUntil(() => run.label() === "Beam Down (0 left)");
+    const spent = requiredButton("martian-beam-down");
+    expect(spent.getAttribute("aria-disabled")).toBe("true");
+    expect(spent.dataset.disabledReason).toBe(MOTHERSHIP_BEAMS_SPENT_V7);
+    run.app.destroy();
   });
 
-  it("beams the default three when the tile is chosen twice, like before", async () => {
-    const scene = aim();
-    scene.tap(TILE);
-    scene.tap(TILE);
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    const accepted = scene.controller.accepted[0];
-    expect(accepted?.kind).toBe("MASS_BEAM_DOWN");
-    if (accepted?.kind !== "MASS_BEAM_DOWN") throw new Error("kind");
-    expect(accepted.passengerUnitIds).toEqual(
-      GRUNTS.map((where) => scene.unitAt(where).id).sort((a, b) => a - b),
-    );
-    scene.app.destroy();
-  });
-
-  it("offers no tile with nobody picked, and Escape steps back to the passengers", () => {
-    const scene = aim();
-    scene.tap(TILE);
+  it("steps back from the tiles to the passengers with Escape", () => {
+    const run = scene();
+    run.select();
+    requiredButton("martian-beam-down").click();
+    run.tap(GUNNER, "BEAM_DOWN_PASSENGER");
     expect(
-      document.querySelector('[data-action="martian-mass-beam-confirm"]'),
-    ).not.toBeNull();
-    // Escape steps back from the tile and keeps the selection.
-    scene.tap(GRUNTS[0]);
+      boardPlan(run.host).targets.every(
+        (target) => target.family === "BEAM_DOWN",
+      ),
+    ).toBe(true);
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
+    const passengers = boardPlan(run.host).targets;
     expect(
-      document.querySelector('[data-action="martian-mass-beam-confirm"]'),
-    ).toBeNull();
-    expect(scene.line()).toBe("Beam 2 of 3: tap your units to choose");
-    for (const where of [GRUNTS[1], GRUNTS[2]]) scene.tap(where);
-    expect(scene.line()).toBe("Beam 0 of 3: tap your units to choose");
-    expect(
-      boardPlan(scene.host).targets.some(
-        (target) => target.family === "MASS_BEAM_DOWN",
-      ),
-    ).toBe(false);
-    // The passengers stay tappable.
-    scene.tap(GUNNER);
-    expect(scene.line()).toBe("Beam 1 of 3: tap your units to choose");
-    expect(
-      boardPlan(scene.host).targets.some(
-        (target) => target.family === "MASS_BEAM_DOWN",
-      ),
+      passengers.every((target) => target.family === "BEAM_DOWN_PASSENGER"),
     ).toBe(true);
-    scene.app.destroy();
+    expect(passengers.map((target) => target.at)).toEqual(
+      expect.arrayContaining([...GRUNTS, GUNNER]),
+    );
+    run.app.destroy();
   });
 });

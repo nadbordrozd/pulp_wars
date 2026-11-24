@@ -446,8 +446,10 @@ export type UnitRoleAbilityV7 =
   | "FLY"
   | "STRIDE"
   // The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Mothership's
-  // Mass Beam Down (a command) and its Shield Canopy (passive).
-  | "MASS_BEAM_DOWN"
+  // Shield Canopy (passive). Its Mass Beam Down (`MASS_BEAM_DOWN`) retired
+  // with `pulp_wars-eg3k` (7r146): the Mothership has `BEAM_DOWN`, up to
+  // `MOTHERSHIP_BEAMS_PER_TURN_V7` beams a turn (role mechanic
+  // `mothershipBeam`).
   | "SHIELD_CANOPY"
   // The Ice Folk revision (section 3): Mountain-born, the Yeti's Rockfall,
   // the Snow Hunter's Cold Blood, the Mammoth's Sweep and Trample, the Ice
@@ -864,6 +866,16 @@ export interface RoleMechanicsV7 {
    * Mothership only.
    */
   readonly shieldCanopy: boolean;
+  /**
+   * `pulp_wars-eg3k` (7r146): the role's `BEAM_DOWN` is the Mothership's.
+   * It picks a passenger up only from within `BEAM_DOWN_PICKUP_RANGE_V7`
+   * (no city pick-up), sets it down on any tile within
+   * `MOTHERSHIP_BEAM_RANGE_V7`, and beams up to
+   * `MOTHERSHIP_BEAMS_PER_TURN_V7` times a turn (the first spends its
+   * primary action). False for every other role (the Saucer's Beam Down sets
+   * one unit down next to it, once a turn).
+   */
+  readonly mothershipBeam: boolean;
   /**
    * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
    * 7.1): Sticky Toffee. A unit the role hits in an `ATTACK` exchange (its
@@ -2057,6 +2069,7 @@ const mechanics = (
           plated: null,
           heavyTractorBeam: false,
           shieldCanopy: false,
+          mothershipBeam: false,
           sticky: false,
           glazeTrail: false,
           ricochet: false,
@@ -3251,7 +3264,9 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     // 7r108): the slow, tough anchor that projects the army, at the
     // Knight's price: 9 Coins, 20 HP (was 16), Attack 3 (was 2.5), Defense
     // 3 (was 2), Sight 2 (was 1); Mass Beam Down instead of Beam Down, and
-    // the Shield Canopy (role mechanic `shieldCanopy`).
+    // the Shield Canopy (role mechanic `shieldCanopy`). `pulp_wars-eg3k`
+    // (7r146): Beam Down again, one unit a beam, up to three beams a turn
+    // (role mechanic `mothershipBeam`), instead of Mass Beam Down.
     cost: 9,
     maxHp: 20,
     attack2: 6,
@@ -3266,7 +3281,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
       "ATTACK",
       "CAPTURE",
       "FLY",
-      "MASS_BEAM_DOWN",
+      "BEAM_DOWN",
       "TRACTOR_BEAM",
       "SHIELD_CANOPY",
     ],
@@ -3362,6 +3377,8 @@ export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
     heavyTractorBeam: true,
     // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
     shieldCanopy: true,
+    // `pulp_wars-eg3k` (7r146): one unit a beam, up to three beams a turn.
+    mothershipBeam: true,
   },
   // The giants' signatures (section 6.5): Overstride.
   JUGGERNAUT: {
@@ -7314,14 +7331,14 @@ export const HEAVY_TRACTOR_PULL_V7 = 2;
  */
 export const BEAM_DOWN_PICKUP_RANGE_V7 = 2;
 /**
- * The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down. The
- * Mothership sets its passengers (own units within
- * `BEAM_DOWN_PICKUP_RANGE_V7` of it) down around a tile it has explored
- * within this Chebyshev distance of it ...
+ * `pulp_wars-eg3k` (7r146): the Mothership's Beam Down sets its passenger
+ * (an own unit within `BEAM_DOWN_PICKUP_RANGE_V7` of it) down on a tile
+ * within this Chebyshev distance of it (Mass Beam Down's reach, whose
+ * `MASS_BEAM_DOWN_RANGE_V7` and `MASS_BEAM_DOWN_CAPACITY_V7` retired) ...
  */
-export const MASS_BEAM_DOWN_RANGE_V7 = 3;
-/** ... at most this many of them at once. */
-export const MASS_BEAM_DOWN_CAPACITY_V7 = 3;
+export const MOTHERSHIP_BEAM_RANGE_V7 = 3;
+/** ... one unit a beam, at most this many beams a turn. */
+export const MOTHERSHIP_BEAMS_PER_TURN_V7 = 3;
 /**
  * The Ice Folk balance revision (RULESET_7_BALANCE_MARTIAN_ICE.md section
  * 6.2): Snow cover is `x 1.25`. A Forest or Mountain stays

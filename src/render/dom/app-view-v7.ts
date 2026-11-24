@@ -587,14 +587,10 @@ import {
   BEAM_DOWN_PICK_PASSENGER_V7,
   BEAM_DOWN_PICK_TILE_V7,
   BEAM_DOWN_TOOLTIP_V7,
-  MASS_BEAM_DOWN_CONFIRM_LABEL_V7,
-  MASS_BEAM_DOWN_CONFIRM_V7,
-  MASS_BEAM_DOWN_FULL_V7,
-  MASS_BEAM_DOWN_LABEL_V7,
-  MASS_BEAM_DOWN_PICK_V7,
-  MASS_BEAM_DOWN_TOOLTIP_V7,
-  massBeamDownCountTextV7,
-  massBeamDownUnavailableTextV7,
+  MOTHERSHIP_BEAM_PICK_TILE_V7,
+  MOTHERSHIP_BEAM_TOOLTIP_V7,
+  mothershipBeamLabelV7,
+  mothershipBeamsLeftV7,
   BRAIN_SUPPORT_UNLOCK_TEXT_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
@@ -629,7 +625,6 @@ import {
 import {
   martianMachineV7,
   martianMoveLabelV7,
-  massBeamSelectionV7,
   type MartianPickV7,
 } from "../canvas/martian-board-plan-v7";
 import {
@@ -1213,12 +1208,11 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // The Martian revision: one button per unit aims the ability; its targets
   // (one command per passenger and tile, or per target) are picked on the
   // board.
+  // (`pulp_wars-eg3k`, 7r146: the Mothership's Beam Down too; its Mass
+  // Beam Down button, `MASS_BEAM_DOWN`, retired.)
   "BEAM_DOWN",
   "MIND_CONTROL",
   "TRACTOR_BEAM",
-  // The Mothership redesign (`pulp_wars-ewpj`): one Mass Beam Down button;
-  // its tile is picked on the board.
-  "MASS_BEAM_DOWN",
   // The Ice Folk revision: Cold Snap has one button per unit; its targets
   // are highlighted on the board. Ice Folk Freeze (`pulp_wars-w49.38`):
   // Stampede likewise (its end tile on the board). (The Bolas and the
@@ -10999,7 +10993,6 @@ export class Ruleset7DomAppView {
     }
     switch (id) {
       case "BEAM_DOWN":
-      case "MASS_BEAM_DOWN":
       case "MIND_CONTROL":
       case "TRACTOR_BEAM":
         this.#startMartianPick(id, unitId);
@@ -11219,38 +11212,6 @@ export class Ruleset7DomAppView {
       this.#chooseStampede(command, target.semanticLabel);
       return;
     }
-    // `pulp_wars-8vmy`: a unit the Mothership may take is taken or left
-    // behind; nothing is dispatched.
-    if (
-      target.family === "MASS_BEAM_DOWN_PASSENGER" &&
-      command.kind === "MASS_BEAM_DOWN"
-    ) {
-      this.#toggleMassBeamPassenger(view, command.passengerUnitIds[0] ?? null);
-      return;
-    }
-    // The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down tile is
-    // chosen first (its landings stay drawn) and beamed when chosen again.
-    if (
-      target.family === "MASS_BEAM_DOWN" &&
-      command.kind === "MASS_BEAM_DOWN"
-    ) {
-      const pick = this.#martianPick;
-      if (
-        pick?.kind === "MASS_BEAM_DOWN" &&
-        pick.unitId === command.unitId &&
-        (pick.chosen === null ||
-          pick.chosen.x !== command.to.x ||
-          pick.chosen.y !== command.to.y)
-      ) {
-        this.#martianPick = { ...pick, chosen: command.to };
-        this.#notice = target.semanticLabel ?? `${MASS_BEAM_DOWN_CONFIRM_V7}.`;
-        this.#render();
-        this.#queueBoardFocus();
-        return;
-      }
-      await this.#dispatch(command);
-      return;
-    }
     // The Martian revision: choosing a Beam Down passenger moves on to its
     // tiles; nothing is dispatched yet.
     if (
@@ -11262,7 +11223,7 @@ export class Ruleset7DomAppView {
         unitId: command.unitId,
         passengerUnitId: command.passengerUnitId,
       };
-      this.#notice = `${BEAM_DOWN_PICK_TILE_V7}.`;
+      this.#notice = `${this.#beamTilePrompt(view, command.unitId)}.`;
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -16377,9 +16338,11 @@ export class Ruleset7DomAppView {
     // `pulp_wars-1wy.5`: the unit's own Tractor Beam: the Saucer's pull, or
     // the Mothership's heavy one, free once a turn.
     const heavy = tractorBeamRuleV7(view, unit)?.free === true;
+    // `pulp_wars-eg3k` (7r146): a Mothership's Beam Down button names the
+    // beams it has left this turn ("Beam Down (2 left)").
+    const mothership = unitRoleMechanicsV7(view, unit).mothershipBeam;
     const entries: readonly {
-      readonly kind:
-        "BEAM_DOWN" | "MASS_BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM";
+      readonly kind: "BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM";
       readonly label: string;
       readonly tooltip: string;
       readonly icon: "beam-down" | "mind-control" | "tractor-beam";
@@ -16387,18 +16350,12 @@ export class Ruleset7DomAppView {
     }[] = [
       {
         kind: "BEAM_DOWN",
-        label: BEAM_DOWN_LABEL_V7,
-        tooltip: BEAM_DOWN_TOOLTIP_V7,
+        label: mothership
+          ? mothershipBeamLabelV7(mothershipBeamsLeftV7(view, unit.id))
+          : BEAM_DOWN_LABEL_V7,
+        tooltip: mothership ? MOTHERSHIP_BEAM_TOOLTIP_V7 : BEAM_DOWN_TOOLTIP_V7,
         icon: "beam-down",
         blocked: () => beamDownUnavailableTextV7(view, unit.id, false),
-      },
-      // The Mothership redesign (`pulp_wars-ewpj`).
-      {
-        kind: "MASS_BEAM_DOWN",
-        label: MASS_BEAM_DOWN_LABEL_V7,
-        tooltip: MASS_BEAM_DOWN_TOOLTIP_V7,
-        icon: "beam-down",
-        blocked: () => massBeamDownUnavailableTextV7(view, unit.id, false),
       },
       {
         kind: "MIND_CONTROL",
@@ -16431,10 +16388,8 @@ export class Ruleset7DomAppView {
         "v7-context-action",
       );
       action.append(
-        this.#chibiArt(
-          `ICON:ACTION:${entry.kind === "MASS_BEAM_DOWN" ? "BEAM_DOWN" : entry.kind}`,
-          CHIBI_DOM_BOXES_V7.action,
-        )?.element ??
+        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
           uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
@@ -16483,24 +16438,20 @@ export class Ruleset7DomAppView {
 
   /** Starts aiming a Martian ability of the selected unit on the board. */
   #startMartianPick(
-    kind: "BEAM_DOWN" | "MASS_BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM",
+    kind: "BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM",
     unitId: UnitId,
   ): void {
     if (this.#localBusy()) return;
     this.#martianPick =
       kind === "BEAM_DOWN"
         ? { kind, unitId, passengerUnitId: null }
-        : kind === "MASS_BEAM_DOWN"
-          ? { kind, unitId, chosen: null }
-          : { kind, unitId };
+        : { kind, unitId };
     this.#notice = `${
       kind === "BEAM_DOWN"
         ? BEAM_DOWN_PICK_PASSENGER_V7
-        : kind === "MASS_BEAM_DOWN"
-          ? MASS_BEAM_DOWN_PICK_V7
-          : kind === "MIND_CONTROL"
-            ? MIND_CONTROL_PICK_V7
-            : TRACTOR_BEAM_PICK_V7
+        : kind === "MIND_CONTROL"
+          ? MIND_CONTROL_PICK_V7
+          : TRACTOR_BEAM_PICK_V7
     }.`;
     this.#pendingFocusAction = null;
     this.#render();
@@ -16509,40 +16460,15 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * `pulp_wars-8vmy`: takes a unit along on the aimed Mass Beam Down, or
-   * leaves it behind. A fourth unit is refused with "Up to 3". A chosen
-   * tile stays chosen while the new selection can still land around it.
+   * `pulp_wars-eg3k` (7r146): the tile prompt of a Beam Down: a tile next
+   * to a Saucer, or one in a Mothership's reach.
    */
-  #toggleMassBeamPassenger(view: PlayerViewV7, unitId: UnitId | null): void {
-    const pick = this.#martianPick;
-    if (pick?.kind !== "MASS_BEAM_DOWN" || unitId === null) return;
-    const commands = this.#snapshot.offeredCommands;
-    const selection = massBeamSelectionV7(view, commands, pick);
-    if (selection === null) return;
-    const taken = selection.selected.includes(unitId);
-    if (!taken && selection.full) {
-      this.#notice = `${MASS_BEAM_DOWN_FULL_V7}.`;
-      this.#showToast(`${MASS_BEAM_DOWN_FULL_V7}.`);
-      this.#render();
-      this.#queueBoardFocus();
-      return;
-    }
-    const passengerUnitIds = (
-      taken
-        ? selection.selected.filter((id) => id !== unitId)
-        : [...selection.selected, unitId]
-    ).sort((left, right) => left - right);
-    const next = { ...pick, passengerUnitIds };
-    const chosen = pick.chosen;
-    const stillLands =
-      chosen !== null &&
-      (massBeamSelectionV7(view, commands, next)?.commands ?? []).some(
-        (command) => command.to.x === chosen.x && command.to.y === chosen.y,
-      );
-    this.#martianPick = stillLands ? next : { ...next, chosen: null };
-    this.#notice = `${massBeamDownCountTextV7(passengerUnitIds.length)}.`;
-    this.#render();
-    this.#queueBoardFocus();
+  #beamTilePrompt(view: PlayerViewV7, unitId: UnitId): string {
+    const carrier = view.units.find((unit) => unit.id === unitId);
+    return carrier !== undefined &&
+      unitRoleMechanicsV7(view, carrier).mothershipBeam
+      ? MOTHERSHIP_BEAM_PICK_TILE_V7
+      : BEAM_DOWN_PICK_TILE_V7;
   }
 
   /**
@@ -16558,12 +16484,6 @@ export class Ruleset7DomAppView {
     ) {
       this.#martianPick = { ...pick, passengerUnitId: null };
       this.#notice = `${BEAM_DOWN_PICK_PASSENGER_V7}.`;
-      this.#render();
-      return;
-    }
-    if (stepBack && pick?.kind === "MASS_BEAM_DOWN" && pick.chosen !== null) {
-      this.#martianPick = { ...pick, chosen: null };
-      this.#notice = `${MASS_BEAM_DOWN_PICK_V7}.`;
       this.#render();
       return;
     }
@@ -16586,16 +16506,9 @@ export class Ruleset7DomAppView {
   #martianPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     const pick = this.#martianPick;
     if (pick === null || pick.unitId !== unitId) return null;
-    const offered = this.#snapshot.offeredCommands.filter(
+    const commands = this.#snapshot.offeredCommands.filter(
       (command) => command.kind === pick.kind && command.unitId === unitId,
     );
-    // `pulp_wars-8vmy`: a Mass Beam Down's tiles are those of the passengers
-    // picked on the board.
-    const massSelection =
-      pick.kind === "MASS_BEAM_DOWN"
-        ? massBeamSelectionV7(view, this.#snapshot.offeredCommands, pick)
-        : null;
-    const commands: readonly CommandV7[] = massSelection?.commands ?? offered;
     const unitById = (id: number) =>
       view.units.find((candidate) => candidate.id === id);
     const nameOf = (id: number): string => {
@@ -16615,11 +16528,9 @@ export class Ruleset7DomAppView {
             ? pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null
               ? `${command.to.x},${command.to.y}`
               : String(command.passengerUnitId)
-            : command.kind === "MASS_BEAM_DOWN"
-              ? `${command.to.x},${command.to.y}`
-              : "targetUnitId" in command
-                ? String(command.targetUnitId)
-                : "",
+            : "targetUnitId" in command
+              ? String(command.targetUnitId)
+              : "",
         ),
       ).size,
     );
@@ -16629,15 +16540,11 @@ export class Ruleset7DomAppView {
           ? BEAM_DOWN_PICK_PASSENGER_V7
           : // The tiles are chosen on the board only (bead pulp_wars-b5f.8:
             // no text names a tile).
-            `${BEAM_DOWN_PICK_TILE_V7} for the ${nameOf(pick.passengerUnitId)}`
-        : pick.kind === "MASS_BEAM_DOWN"
-          ? pick.chosen === null
-            ? MASS_BEAM_DOWN_PICK_V7
-            : MASS_BEAM_DOWN_CONFIRM_V7
-          : pick.kind === "MIND_CONTROL"
-            ? MIND_CONTROL_PICK_V7
-            : TRACTOR_BEAM_PICK_V7;
-    if (offered.length === 0 && pick.kind !== "MIND_CONTROL") {
+            `${this.#beamTilePrompt(view, pick.unitId)} for the ${nameOf(pick.passengerUnitId)}`
+        : pick.kind === "MIND_CONTROL"
+          ? MIND_CONTROL_PICK_V7
+          : TRACTOR_BEAM_PICK_V7;
+    if (commands.length === 0 && pick.kind !== "MIND_CONTROL") {
       this.#martianPick = null;
       return null;
     }
@@ -16645,24 +16552,27 @@ export class Ruleset7DomAppView {
     // and caveat are in the "?" and the panel's accessible name.
     // `pulp_wars-1wy.5`: a beamed unit counts as moved: it can still
     // attack, but not move.
-    const beams = pick.kind === "BEAM_DOWN" || pick.kind === "MASS_BEAM_DOWN";
+    const beams = pick.kind === "BEAM_DOWN";
     const info = beams ? `${prompt}. ${BEAMED_HINT_V7}` : prompt;
     panel.setAttribute("aria-label", prompt);
+    // `pulp_wars-eg3k` (7r146): a Mothership's head names its beams left.
+    const carrier = unitById(unitId);
     panel.append(
       this.#pickHead(
-        `ICON:ACTION:${pick.kind === "MASS_BEAM_DOWN" ? "BEAM_DOWN" : pick.kind}`,
+        `ICON:ACTION:${pick.kind}`,
         beams
           ? "beam-down"
           : pick.kind === "MIND_CONTROL"
             ? "mind-control"
             : "tractor-beam",
         pick.kind === "BEAM_DOWN"
-          ? BEAM_DOWN_LABEL_V7
-          : pick.kind === "MASS_BEAM_DOWN"
-            ? MASS_BEAM_DOWN_LABEL_V7
-            : pick.kind === "MIND_CONTROL"
-              ? MIND_CONTROL_LABEL_V7
-              : TRACTOR_BEAM_LABEL_V7,
+          ? carrier !== undefined &&
+            unitRoleMechanicsV7(view, carrier).mothershipBeam
+            ? mothershipBeamLabelV7(mothershipBeamsLeftV7(view, unitId))
+            : BEAM_DOWN_LABEL_V7
+          : pick.kind === "MIND_CONTROL"
+            ? MIND_CONTROL_LABEL_V7
+            : TRACTOR_BEAM_LABEL_V7,
         info,
       ),
     );
@@ -16689,47 +16599,8 @@ export class Ruleset7DomAppView {
       }
       panel.append(hint);
     }
-    if (massSelection !== null) {
-      // `pulp_wars-8vmy`: how many go, and how to change them, in one line.
-      const count = text(
-        this.#document,
-        "p",
-        massBeamDownCountTextV7(massSelection.selected.length),
-        "v7-mass-beam-count",
-      );
-      count.dataset.massBeamCount = String(massSelection.selected.length);
-      panel.append(count);
-    }
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
-    // The Mothership redesign (`pulp_wars-ewpj`): a chosen Mass Beam Down
-    // tile is beamed by choosing it again or by this confirm (a Stampede's
-    // Charge likewise).
-    const massBeam =
-      pick.kind === "MASS_BEAM_DOWN" && pick.chosen !== null
-        ? commands.find(
-            (command) =>
-              command.kind === "MASS_BEAM_DOWN" &&
-              pick.chosen !== null &&
-              command.to.x === pick.chosen.x &&
-              command.to.y === pick.chosen.y,
-          )
-        : undefined;
-    if (massBeam !== undefined) {
-      const confirm = button(
-        this.#document,
-        MASS_BEAM_DOWN_CONFIRM_LABEL_V7,
-        "martian-mass-beam-confirm",
-        "v7-martian-choice-button",
-      );
-      confirm.title = MASS_BEAM_DOWN_TOOLTIP_V7;
-      confirm.disabled = this.#localBusy();
-      confirm.onclick = () => void this.#dispatch(massBeam);
-      buttons.append(confirm);
-    }
-    if (
-      (pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null) ||
-      (pick.kind === "MASS_BEAM_DOWN" && pick.chosen !== null)
-    ) {
+    if (pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null) {
       const back = button(
         this.#document,
         "Back",
@@ -16839,8 +16710,6 @@ export class Ruleset7DomAppView {
     // "Act" button.
     const namedElsewhere =
       beamDownUnavailableTextV7(view, unit.id, false) ===
-        MARTIAN_FROZEN_MOVED_V7 ||
-      massBeamDownUnavailableTextV7(view, unit.id, false) ===
         MARTIAN_FROZEN_MOVED_V7 ||
       tractorBeamUnavailableTextV7(view, unit.id, false) ===
         MARTIAN_FROZEN_MOVED_V7 ||
@@ -19901,7 +19770,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r145",
+    rulesetId: "pulp-wars-poc-7r146",
     seed,
     width,
     height: width,
@@ -21241,7 +21110,6 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   HATCH: "hatch",
   // The Martian revision: LEGACY glyphs of the three Martian abilities.
   BEAM_DOWN: "beam-down",
-  MASS_BEAM_DOWN: "beam-down",
   MIND_CONTROL: "mind-control",
   TRACTOR_BEAM: "tractor-beam",
   // The Ice Folk revision: the LEGACY glyph of Cold Snap (the Bolas went

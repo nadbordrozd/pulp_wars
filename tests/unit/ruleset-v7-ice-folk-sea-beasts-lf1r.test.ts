@@ -147,12 +147,12 @@ function settled(state: GameStateV7): GameStateV7 {
 describe("the identity (pulp_wars-lf1r)", () => {
   // The Heal button (`pulp_wars-6y2r`) took 7r143 after it.
   it("was 7r142 after 7r141, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
-    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r142");
-    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r141");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r146");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r146.current");
+    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r142");
+    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r141");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
       "pulpWars.save.v7r141.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

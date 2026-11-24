@@ -3,6 +3,7 @@ import type { PlayerId, UnitId } from "../model/ids";
 import {
   BARRICADE_CAP_V7,
   BARRICADE_HP_V7,
+  MOTHERSHIP_BEAMS_PER_TURN_V7,
   FORCE_FIELD_SHIELD_V7,
   GINGERBREAD_MAN_VARIANT_V7,
   GROWTH_HP_V7,
@@ -107,6 +108,7 @@ import {
   type ShieldStatusV7,
   type TechnologyIdV7,
   type MindControlledStatusV7,
+  type MothershipBeamsV7,
   type TileStateV7,
   type UnitActivationV7,
   type SummonedRoleIdV7,
@@ -263,9 +265,18 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     typeof input === "object" &&
     input !== null &&
     Object.prototype.hasOwnProperty.call(input, "heldWaves");
+  // `pulp_wars-eg3k` (7r146): the optional Mothership beam counts.
+  const storedBeams =
+    typeof input === "object" &&
+    input !== null &&
+    Object.prototype.hasOwnProperty.call(input, "mothershipBeams");
   const keys = storedLedger ? STATE_KEYS : STATE_KEYS_WITHOUT_LEDGER;
   if (
-    !hasExactKeysV7(input, storedHeld ? [...keys, "heldWaves"] : keys) ||
+    !hasExactKeysV7(input, [
+      ...keys,
+      ...(storedHeld ? ["heldWaves"] : []),
+      ...(storedBeams ? ["mothershipBeams"] : []),
+    ]) ||
     input.schemaVersion !== 7 ||
     input.rulesetId !== RULESET_7_ID
   )
@@ -333,6 +344,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // beamed passengers and used free Tractor Beams.
   const beamedThisTurn = parseSortedUnitIds(input.beamedThisTurn);
   const tractorUsedThisTurn = parseSortedUnitIds(input.tractorUsedThisTurn);
+  const mothershipBeams = storedBeams
+    ? parseMothershipBeams(input.mothershipBeams)
+    : undefined;
   // The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the
   // four Candy lists; the cross references are checked below.
   const sugarRush = parseSugarRush(input.sugarRush);
@@ -404,6 +418,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     bombedThisTurn === null ||
     beamedThisTurn === null ||
     tractorUsedThisTurn === null ||
+    mothershipBeams === null ||
     sugarRush === null ||
     crumbs === null ||
     splattedThisTurn === null ||
@@ -478,6 +493,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       bombedThisTurn,
       beamedThisTurn,
       tractorUsedThisTurn,
+      ...(mothershipBeams === undefined ? {} : { mothershipBeams }),
       sugarRush,
       crumbs,
       splattedThisTurn,
@@ -539,6 +555,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     bombedThisTurn,
     beamedThisTurn,
     tractorUsedThisTurn,
+    ...(mothershipBeams === undefined ? {} : { mothershipBeams }),
     sugarRush,
     crumbs,
     splattedThisTurn,
@@ -3131,6 +3148,7 @@ interface CrossInput {
   bombedThisTurn: readonly UnitId[];
   beamedThisTurn: readonly UnitId[];
   tractorUsedThisTurn: readonly UnitId[];
+  mothershipBeams?: readonly MothershipBeamsV7[];
   sugarRush: readonly SugarRushStatusV7[];
   crumbs: readonly CrumbsV7[];
   splattedThisTurn: readonly UnitId[];
@@ -3509,6 +3527,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       units,
       value.beamedThisTurn,
       value.tractorUsedThisTurn,
+      value.mothershipBeams ?? [],
       value.activePlayerId,
       value.setup,
     ) ||
@@ -4009,18 +4028,26 @@ function turnListsValid(
  * only units on the board owned by the active player (a controlled unit
  * included); `tractorUsedThisTurn` lists only units on the board owned by
  * the active player whose role, under its kind, has the Heavy Tractor Beam
- * (in land form when it pulled; before `7r116` it may have self-launched since). Both are
- * empty in a match without a Martian seat.
+ * (in land form when it pulled; before `7r116` it may have self-launched since).
+ * `pulp_wars-eg3k` (7r146): `mothershipBeams` lists only units on the board
+ * owned by the active player whose role, under its kind, has the
+ * `mothershipBeam` mechanic. All are empty in a match without a Martian
+ * seat.
  */
 function martianTurnListsValid(
   kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
   units: readonly UnitStateV7[],
   beamedThisTurn: readonly UnitId[],
   tractorUsedThisTurn: readonly UnitId[],
+  mothershipBeams: readonly MothershipBeamsV7[],
   activePlayerId: PlayerStateV7["id"],
   setup: MatchSetupV7,
 ): boolean {
-  if (beamedThisTurn.length === 0 && tractorUsedThisTurn.length === 0)
+  if (
+    beamedThisTurn.length === 0 &&
+    tractorUsedThisTurn.length === 0 &&
+    mothershipBeams.length === 0
+  )
     return true;
   if (!setup.factions.includes("MARTIAN")) return false;
   const unitById = new Map(units.map((unit) => [unit.id, unit]));
@@ -4041,8 +4068,44 @@ function martianTurnListsValid(
         unit.ownerId === activePlayerId &&
         mechanicsOf(unit)?.heavyTractorBeam === true
       );
+    }) &&
+    mothershipBeams.every((entry) => {
+      const unit = unitById.get(entry.unitId);
+      return (
+        unit !== undefined &&
+        unit.ownerId === activePlayerId &&
+        mechanicsOf(unit)?.mothershipBeam === true
+      );
     })
   );
+}
+
+/**
+ * `pulp_wars-eg3k` (7r146): a stored `mothershipBeams` is a non-empty list
+ * sorted by strictly ascending `unitId`, each `beams` 1 to
+ * `MOTHERSHIP_BEAMS_PER_TURN_V7` (the key is absent when no Mothership has
+ * beamed this turn).
+ */
+function parseMothershipBeams(
+  input: unknown,
+): readonly MothershipBeamsV7[] | null {
+  if (!isDenseArrayV7(input) || input.length === 0) return null;
+  const entries: MothershipBeamsV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["beams", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const beams = candidate.beams;
+    const last = entries.at(-1);
+    if (
+      unitId === null ||
+      !isPositiveSafeIntegerV7(beams) ||
+      beams > MOTHERSHIP_BEAMS_PER_TURN_V7 ||
+      (last !== undefined && last.unitId >= unitId)
+    )
+      return null;
+    entries.push({ unitId, beams });
+  }
+  return entries;
 }
 
 /**

@@ -245,10 +245,7 @@ describe("a flyer over water stays in the air as itself (7r116)", () => {
           .map((command) => command.kind),
       );
       expect(kinds.has("ATTACK"), role).toBe(true);
-      expect(
-        kinds.has(role === "RAIDER" ? "BEAM_DOWN" : "MASS_BEAM_DOWN"),
-        [...kinds].join(","),
-      ).toBe(true);
+      expect(kinds.has("BEAM_DOWN"), [...kinds].join(",")).toBe(true);
       expect(kinds.has("DISEMBARK"), role).toBe(false);
       expect(unit.form).toBe("LAND");
     }

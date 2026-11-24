@@ -1227,7 +1227,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Heal button (`pulp_wars-6y2r`, 7r143): the two recovery Waits
       // are HEALs (appended last), with the same scores; the cause is in
       // the pin's comment (was d151d3…24df).
-      "28e9ce0cd829d596c595b8d92f9d89852049df13885d2ab6da56514781c28f57",
+      // The Mothership's sequential beams (`pulp_wars-eg3k`, 7r146):
+      // MASS_BEAM_DOWN retired, so the two HEALs' ordinal is -41 (was -42);
+      // nothing else changes (was 28e9ce…8f57).
+      "0931e7a369ed391b9df5d8fea7ba4808fa4b18352938ebc45f658833b1388896",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1371,7 +1374,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r145");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r146");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

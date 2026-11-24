@@ -351,10 +351,12 @@ export function martianMobilityFixtureV7(): GameStateV7 {
  * The Mothership redesign (`pulp_wars-ewpj`, 7r108): a Mothership with a
  * strike force gathered under it (two Grunts and a Ray Gunner within two
  * tiles), an enemy Guard on the enemy capital (2, 8) and an enemy Fighter
- * at (4, 6), out of the strike force's walking reach. A Mass Beam Down
- * around `target` sets the three down beside the Fighter.
+ * at (4, 6), out of the strike force's walking reach. `pulp_wars-eg3k`
+ * (7r146): the Mothership beams them down one at a time, up to three beams
+ * a turn, onto `landings` around the Fighter (Mass Beam Down set all three
+ * down around one tile before).
  */
-export const MARTIAN_MASS_BEAM_V7 = {
+export const MARTIAN_MOTHERSHIP_BEAM_V7 = {
   mothership: { x: 2, y: 3 },
   passengers: [
     { x: 1, y: 2 },
@@ -363,44 +365,21 @@ export const MARTIAN_MASS_BEAM_V7 = {
   ],
   enemyGuard: { x: 2, y: 8 },
   enemyFighter: { x: 4, y: 6 },
-  target: { x: 3, y: 6 },
+  landings: [
+    { x: 3, y: 6 },
+    { x: 3, y: 5 },
+    { x: 4, y: 5 },
+  ],
 } as const;
 
-export function martianMassBeamFixtureV7(): GameStateV7 {
-  const at = MARTIAN_MASS_BEAM_V7;
+export function martianMothershipBeamFixtureV7(): GameStateV7 {
+  const at = MARTIAN_MOTHERSHIP_BEAM_V7;
   return martianUiFieldV7(
     [
       { seat: 0, role: "KNIGHT", at: at.mothership },
       { seat: 0, role: "FIGHTER", at: at.passengers[0] },
       { seat: 0, role: "FIGHTER", at: at.passengers[1] },
       { seat: 0, role: "MARKSMAN", at: at.passengers[2] },
-      { seat: 1, role: "GUARD", at: at.enemyGuard },
-      { seat: 1, role: "FIGHTER", at: at.enemyFighter },
-    ],
-    { factions: ["MARTIAN", "ORIGINAL"] },
-  );
-}
-
-/**
- * `pulp_wars-8vmy`: the Mass Beam Down scene with a fourth unit under the
- * Mothership, a Grunt at (1, 4) beside it. The nearest three (the Grunt at
- * (1, 2), the Ray Gunner and this Grunt) start chosen; the Grunt at (2, 1),
- * two tiles away, stays behind until the player takes it.
- */
-export const MARTIAN_MASS_BEAM_PICK_V7 = {
-  ...MARTIAN_MASS_BEAM_V7,
-  fourth: { x: 1, y: 4 },
-} as const;
-
-export function martianMassBeamPickFixtureV7(): GameStateV7 {
-  const at = MARTIAN_MASS_BEAM_PICK_V7;
-  return martianUiFieldV7(
-    [
-      { seat: 0, role: "KNIGHT", at: at.mothership },
-      { seat: 0, role: "FIGHTER", at: at.passengers[0] },
-      { seat: 0, role: "FIGHTER", at: at.passengers[1] },
-      { seat: 0, role: "MARKSMAN", at: at.passengers[2] },
-      { seat: 0, role: "FIGHTER", at: at.fourth },
       { seat: 1, role: "GUARD", at: at.enemyGuard },
       { seat: 1, role: "FIGHTER", at: at.enemyFighter },
     ],

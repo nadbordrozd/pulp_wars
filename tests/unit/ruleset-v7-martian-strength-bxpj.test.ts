@@ -107,11 +107,11 @@ const dealt = (preview: CombatPreviewV7) => ({
 
 describe("the identity (pulp_wars-bxpj)", () => {
   it("is the current identity, 7r145 after 7r144", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r144");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r146");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r146.current");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r144");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r144.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

@@ -209,7 +209,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // `pulp_wars-tzk6`, 7r137, appends BUILD_ICE_FORTRESS; 83: the Witch
     // and the Wyrm, `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
     // (84: the Heal button, `pulp_wars-6y2r`, 7r143, appends HEAL.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // (83: the Mothership's sequential beams, `pulp_wars-eg3k`, 7r146,
+    // remove MASS_BEAM_DOWN.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     expect(COMMAND_KIND_ORDER_V7.at(-3)).toBe("BUILD_ICE_FORTRESS");
     expect(COMMAND_KIND_ORDER_V7.at(-2)).toBe("SNOW_BALM");
     expect(COMMAND_KIND_ORDER_V7.at(-1)).toBe("HEAL");

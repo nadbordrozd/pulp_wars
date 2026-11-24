@@ -17,10 +17,11 @@ import { martianFieldV7, type MartianPieceV7 } from "../fixtures/v7-martian";
 import { at } from "../fixtures/v7-revision20";
 
 /**
- * `pulp_wars-8vmy`: the keyboard reaches a Mass Beam Down's passengers as
- * it reaches every board target: Tab steps through the units it may take
- * and the landing tiles in reading order, the cursor line names each, and
- * Enter takes the focused unit or leaves it behind.
+ * `pulp_wars-8vmy`: the keyboard reaches the Mothership's passengers as it
+ * reaches every board target. Since `pulp_wars-eg3k` (7r146) the Mothership
+ * beams one unit at a time with the Saucer's flow: Tab steps through the
+ * units it may take, the cursor line names each, Enter picks one; then Tab
+ * steps through the landing tiles and Enter beams.
  */
 const MOTHERSHIP = at(2, 2);
 const GRUNTS = [at(1, 1), at(2, 1), at(3, 1)] as const;
@@ -97,8 +98,8 @@ function model(view: PlayerViewV7, pick: MartianPickV7): BoardHostModelV7 {
   };
 }
 
-describe("Mass Beam Down passengers on the keyboard", () => {
-  it("tabs to each unit it may take, names it, and toggles it with Enter", () => {
+describe("the Mothership's Beam Down on the keyboard", () => {
+  it("tabs to each unit it may take, names it, and picks it with Enter; then its tiles", () => {
     const state = martianFieldV7([
       own("KNIGHT", MOTHERSHIP),
       ...GRUNTS.map((where) => own("FIGHTER", where)),
@@ -108,13 +109,15 @@ describe("Mass Beam Down passengers on the keyboard", () => {
     const unitAt = (where: CoordV7) =>
       view.units.find((unit) => unit.at.x === where.x && unit.at.y === where.y);
     const mothership = unitAt(MOTHERSHIP);
-    if (mothership === undefined) throw new Error("no Mothership");
+    const gunner = unitAt(GUNNER);
+    if (mothership === undefined || gunner === undefined)
+      throw new Error("no Mothership");
     const rig = hostRig();
     rig.host.update(
       model(view, {
-        kind: "MASS_BEAM_DOWN",
+        kind: "BEAM_DOWN",
         unitId: mothership.id,
-        chosen: null,
+        passengerUnitId: null,
       }),
     );
     const key = (name: string): void => {
@@ -126,36 +129,62 @@ describe("Mass Beam Down passengers on the keyboard", () => {
         }),
       );
     };
-    // Reading order: the top row's tiles and Grunts come first; Tab until
-    // the first Grunt is focused.
+    // Reading order: the top row's Grunts come first.
     let steps = 0;
-    while (!rig.description().includes("Beaming the Grunt") && steps < 40) {
+    while (!rig.description().includes("Beam the Grunt") && steps < 40) {
       key("Tab");
       steps += 1;
     }
     expect(rig.description()).toMatch(
-      /^Beaming the Grunt, (\d+) of \1 HP\. Choose again to leave it behind\./,
+      /^Beam the Grunt down, (\d+) of \1 HP, picked up nearby\. After landing it can attack but not move/,
     );
     expect(rig.description()).not.toMatch(/\d+, ?\d+/);
     key("Enter");
     expect(rig.callbacks.onCommand).toHaveBeenCalledTimes(1);
     expect(rig.callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
-      family: "MASS_BEAM_DOWN_PASSENGER",
+      family: "BEAM_DOWN_PASSENGER",
       at: GRUNTS[0],
       command: {
-        kind: "MASS_BEAM_DOWN",
+        kind: "BEAM_DOWN",
         unitId: mothership.id,
-        passengerUnitIds: [unitAt(GRUNTS[0])?.id],
+        passengerUnitId: unitAt(GRUNTS[0])?.id,
       },
     });
-    // The Ray Gunner is a stop too, and says why it stays behind.
+    // The Ray Gunner is a stop too.
     while (!rig.description().includes("Ray Gunner") && steps < 80) {
       key("Tab");
       steps += 1;
     }
-    expect(rig.description()).toContain(
-      "stays behind. Up to 3 units: leave one behind first",
+    expect(rig.description()).toContain("Beam the Ray Gunner down");
+    // With the Ray Gunner picked, the stops are its landing tiles.
+    rig.host.update(
+      model(view, {
+        kind: "BEAM_DOWN",
+        unitId: mothership.id,
+        passengerUnitId: gunner.id,
+      }),
     );
+    steps = 0;
+    while (
+      !rig.description().startsWith("Beam the Ray Gunner here") &&
+      steps < 40
+    ) {
+      key("Tab");
+      steps += 1;
+    }
+    expect(rig.description()).toMatch(
+      /^Beam the Ray Gunner here\. After landing it can attack but not move/,
+    );
+    key("Enter");
+    const last = rig.callbacks.onCommand.mock.calls.at(-1)?.[0];
+    expect(last).toMatchObject({
+      family: "BEAM_DOWN",
+      command: {
+        kind: "BEAM_DOWN",
+        unitId: mothership.id,
+        passengerUnitId: gunner.id,
+      },
+    });
     rig.host.destroy();
   });
 });

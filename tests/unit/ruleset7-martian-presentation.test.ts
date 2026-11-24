@@ -229,9 +229,9 @@ describe("Martian texts (section 13.2)", () => {
       "Launch",
       // The Hover Fleet (`pulp_wars-5ti.19`).
       "At sea",
+      // The Saucer's and (`pulp_wars-eg3k`, 7r146) the Mothership's.
       "Beam Down",
       // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
-      "Mass Beam Down",
       "Shield Canopy",
       "Mind Control",
       "Tractor Beam",

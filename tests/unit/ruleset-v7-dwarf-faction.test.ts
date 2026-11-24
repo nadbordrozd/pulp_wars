@@ -193,7 +193,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // BUILD_ICE_FORTRESS last; 83: the Witch and the Wyrm,
     // `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
     // (84: the Heal button, `pulp_wars-6y2r`, 7r143, appends HEAL.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // (83: the Mothership's sequential beams, `pulp_wars-eg3k`, 7r146,
+    // remove MASS_BEAM_DOWN.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("COLD_SNAP");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 8)).toEqual([
       "COLD_SNAP", // FREEZE (pulp_wars-5ti.3) followed it until 7r133

@@ -348,6 +348,8 @@ export const DISRUPTION_STATE_KEY_CLASSES_V7: Readonly<
   surfacedThisTurn: "NOT_A_STATUS",
   beamedThisTurn: "NOT_A_STATUS",
   tractorUsedThisTurn: "NOT_A_STATUS",
+  // `pulp_wars-eg3k` (7r146): a Mothership's own beams this turn.
+  mothershipBeams: "NOT_A_STATUS",
   tossedThisTurn: "NOT_A_STATUS",
   berserkThisTurn: "NOT_A_STATUS",
   feastedThisTurn: "NOT_A_STATUS",

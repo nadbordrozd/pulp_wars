@@ -70,16 +70,23 @@ describe("the turn chip of a handled unit", () => {
     expect(chip()?.textContent).toBe(UNIT_DONE_LABEL_V7);
     expect(chip()?.dataset.unitStatus).toBe("done");
     const mothership = scene.unitAt(at(2, 2));
-    const ids = [at(1, 1), at(2, 1), at(3, 1)]
-      .map((where) => scene.unitAt(where).id)
-      .sort((left, right) => left - right);
-    await scene.controller.dispatch({
-      kind: "MASS_BEAM_DOWN",
-      unitId: mothership.id,
-      passengerUnitIds: ids,
-      to: at(2, 5),
-    });
-    await waitUntil(() => scene.controller.accepted.length === 1);
+    // `pulp_wars-eg3k` (7r146): three beams, one Grunt each (one Mass Beam
+    // Down before).
+    const landings = [at(2, 5), at(1, 4), at(2, 4)];
+    const grunts = [at(1, 1), at(2, 1), at(3, 1)].map((where) =>
+      scene.unitAt(where),
+    );
+    for (const [index, to] of landings.entries()) {
+      const grunt = grunts[index];
+      if (grunt === undefined) throw new Error("no Grunt");
+      await scene.controller.dispatch({
+        kind: "BEAM_DOWN",
+        unitId: mothership.id,
+        passengerUnitId: grunt.id,
+        to,
+      });
+      await waitUntil(() => scene.controller.accepted.length === index + 1);
+    }
     select(at(2, 5));
     expect(chip()?.textContent).toBe(UNIT_ATTACK_LEFT_LABEL_V7);
     expect(chip()?.dataset.unitStatus).toBe("attack-left");

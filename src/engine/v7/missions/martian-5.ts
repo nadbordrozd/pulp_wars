@@ -303,7 +303,9 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
       // Chuckers (hand play: with Fortification and 6 Coins they trained
       // two Brutes a turn and walled the road in every attempt). Revision 6
       // (`pulp_wars-hmyk.37`): Fortification and 6 Coins again, now that
-      // Mass Beam Down lifts a strike force over the wall (hand play: they
+      // the Mothership's Beam Down (Mass Beam Down then; one unit a beam,
+      // three beams a turn since `pulp_wars-eg3k`, 7r146) lifts a strike
+      // force over the wall (hand play: they
       // fortified Brutes round the Hollow, took Quasik and brought the
       // Mothership down to 2 HP; without Brutes they were gone by round 4).
       coins: 6,

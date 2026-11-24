@@ -119,7 +119,6 @@ import {
   previewMonumentV7,
   queryAiReadyCommandsV7,
   restrictPublicCommandsV7,
-  previewMassBeamDownV7,
   queryCombatPreviewV7,
   previewSeizeV7,
   previewRewardArrivalV7,
@@ -512,7 +511,7 @@ import {
   isMothershipForPolicyV7,
   isSaucerForPolicyV7,
   enemyTurnShieldV7,
-  massBeamDownScoreV7,
+  mothershipBeamScoreV7,
   underOwnCanopyV7,
   fliesForPolicyV7,
   hasAbilityV7,
@@ -16130,20 +16129,18 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "BEAM_DOWN" && context.martian) {
-    const beam = martianBeamDownScoreV7(context, command);
-    priority = beam.priority;
-    strategicValue = beam.strategic;
-    immediateValue = beam.immediate;
-  }
-
-  if (command.kind === "MASS_BEAM_DOWN" && context.martian) {
-    // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
+    // `pulp_wars-eg3k` (7r146): a Mothership's beam is scored as one
+    // passenger of Mass Beam Down was (`pulp_wars-ewpj`, 7r108); the policy
+    // takes the best one at a time, up to its three a turn.
     const cache = martianCacheV7(context);
-    const beam = massBeamDownScoreV7(
-      cache.tools,
-      previewMassBeamDownV7(view, command),
-      (unitId) => cache.attackers.has(unitId),
-    );
+    const beam =
+      actor !== undefined && unitRoleMechanicsV7(view, actor).mothershipBeam
+        ? mothershipBeamScoreV7(
+            cache.tools,
+            command,
+            cache.attackers.has(command.passengerUnitId),
+          )
+        : martianBeamDownScoreV7(context, command);
     priority = beam.priority;
     strategicValue = beam.strategic;
     immediateValue = beam.immediate;

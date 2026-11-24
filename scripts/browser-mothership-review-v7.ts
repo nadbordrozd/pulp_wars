@@ -3,10 +3,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
-import {
-  MARTIAN_MASS_BEAM_PICK_V7,
-  MARTIAN_MASS_BEAM_V7,
-} from "../tests/fixtures/v7-martian-ui";
+import { MARTIAN_MOTHERSHIP_BEAM_V7 } from "../tests/fixtures/v7-martian-ui";
 import { prepareSmokeOutput } from "./browser-smoke-output";
 import {
   martianFixtureMountExpressionV7,
@@ -14,19 +11,18 @@ import {
 } from "./browser-martian-fixture-v7";
 
 /**
- * The Mothership redesign's review (bead pulp_wars-ewpj): on the
- * `martianMassBeamFixtureV7` scene, at desktop and phone widths in the
- * CHIBI art set, the Mothership's dock with its Mass Beam Down button, the
- * aiming (the tiles in reach, the pick-up range, the "Beam" badges), the
- * chosen tile's landing preview, the beam-down columns of light mid-cue,
- * the strike force after landing, and a beamed Grunt's attack on arrival.
- * It needs the Vite dev server (the fixture is imported from
- * `tests/fixtures`). Built on the Martian UI review below.
+ * The Mothership redesign's review (bead pulp_wars-ewpj; sequential beams
+ * since `pulp_wars-eg3k`, 7r146): on the `martianMothershipBeamFixtureV7`
+ * scene, at desktop and phone widths in the CHIBI art set, the Mothership's
+ * dock with its Beam Down button and the beams left ("Beam Down (3 left)"),
+ * then three beams, each a passenger then a landing tile picked on the
+ * board, with the beam-down column of light mid-cue, the dock after each
+ * beam, and a beamed Grunt's attack on arrival. It needs the Vite dev
+ * server (the fixture is imported from `tests/fixtures`). Built on the
+ * Martian UI review below.
  *
  * Usage: tsx scripts/browser-mothership-review-v7.ts http://localhost:6173/
- *   --output-dir=<new-dir> [--only=beam,passengers]
- *
- * `passengers` (bead pulp_wars-8vmy): the passengers picked on the board.
+ *   --output-dir=<new-dir> [--only=beam]
  *
  * Martian UI visual review (bead pulp_wars-t6s.4). It captures the
  * default-route setup with a Martian seat; real Showcase launches (the
@@ -112,7 +108,7 @@ const parts = (
   process.argv
     .slice(2)
     .find((argument) => argument.startsWith("--only="))
-    ?.slice("--only=".length) ?? "beam,passengers"
+    ?.slice("--only=".length) ?? "beam"
 ).split(",");
 
 try {
@@ -125,8 +121,7 @@ try {
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
   for (const size of ["desktop", "phone"] as const) {
-    if (parts.includes("beam")) await massBeamTour(connection, size);
-    if (parts.includes("passengers")) await passengerTour(connection, size);
+    if (parts.includes("beam")) await beamTour(connection, size);
   }
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
@@ -143,126 +138,63 @@ try {
   await rm(userData, { recursive: true, force: true, maxRetries: 5 });
 }
 
-/** The Mass Beam Down, from the dock to the shot on arrival. */
-async function massBeamTour(
-  connection: Connection,
-  size: ScreenSize,
-): Promise<void> {
-  const at = MARTIAN_MASS_BEAM_V7;
-  await viewport(connection, size);
-  await mount(connection, "chibi", "martianMassBeamFixtureV7");
-  await activate(connection, at.mothership);
-  evidence[`${size}Dock`] = await dockText(connection);
-  await capture(connection, `mass-beam-dock-${size}.png`);
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="martian-mass-beam-down"]')?.click()`,
-  );
-  await delay(700);
-  await capture(connection, `mass-beam-aim-${size}.png`);
-  // Bead pulp_wars-9im: every tile is a board target; the dock lists none.
-  evidence[`${size}Targets`] = await boardTargets(connection);
-  evidence[`${size}Panel`] = await evaluate(
-    connection,
-    `document.querySelector('[data-v7-martian-pick]')?.textContent ?? null`,
-  );
-  // The first choice of the tile previews the landings.
-  await evaluate(
-    connection,
-    `${REVIEW}.boardHost.activate(${JSON.stringify(at.target)})`,
-  );
-  await delay(700);
-  await capture(connection, `mass-beam-preview-${size}.png`);
-  evidence[`${size}Notice`] = await evaluate(
-    connection,
-    `document.querySelector('#v7-live')?.textContent ?? null`,
-  );
-  // Choosing it again beams (on the phone, the panel's confirm); the
-  // columns of light are caught mid-cue.
-  await evaluate(
-    connection,
-    size === "phone"
-      ? `document.querySelector('[data-action="martian-mass-beam-confirm"]')?.click()`
-      : `${REVIEW}.boardHost.activate(${JSON.stringify(at.target)})`,
-  );
-  await waitFor(
-    connection,
-    `${REVIEW}.traces.some((trace) => trace.command.kind === 'MASS_BEAM_DOWN')`,
-  );
-  for (const frame of [0, 1, 2, 3]) {
-    await capture(connection, `mass-beam-landing-${size}-${frame}.png`);
-    await delay(110);
-  }
-  await delay(1_500);
-  evidence[`${size}After`] = await evaluate(
-    connection,
-    `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
-  );
-  await capture(connection, `mass-beam-after-${size}.png`);
-  // A beamed Grunt on the target tile shoots on arrival.
-  await deselect(connection);
-  await activate(connection, at.target);
-  await capture(connection, `mass-beam-shot-${size}.png`);
-}
-
 /**
- * `pulp_wars-8vmy`: the passengers picked on the board, on the
- * `martianMassBeamPickFixtureV7` scene (four units under the Mothership):
- * the nearest three chosen, a fourth refused ("Up to 3"), one left behind
- * and the far Grunt taken, and the chosen tile's landing preview.
+ * `pulp_wars-eg3k`: three beams, from the dock to the shot on arrival. Each
+ * beam picks a passenger, then its landing tile, on the board.
  */
-async function passengerTour(
+async function beamTour(
   connection: Connection,
   size: ScreenSize,
 ): Promise<void> {
-  const at = MARTIAN_MASS_BEAM_PICK_V7;
+  const at = MARTIAN_MOTHERSHIP_BEAM_V7;
   await viewport(connection, size);
-  await mount(connection, "chibi", "martianMassBeamPickFixtureV7");
-  await activate(connection, at.mothership);
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="martian-mass-beam-down"]')?.click()`,
-  );
-  await delay(700);
-  const line = async (): Promise<unknown> =>
-    evaluate(
-      connection,
-      `({ line: document.querySelector('.v7-mass-beam-count')?.textContent ?? null, notice: document.querySelector('#v7-live')?.textContent ?? null })`,
-    );
-  await capture(connection, `passengers-default-${size}.png`);
-  evidence[`${size}PassengersDefault`] = await line();
-  const tap = async (where: Coord, name: string): Promise<void> => {
+  await mount(connection, "chibi", "martianMothershipBeamFixtureV7");
+  for (const [index, landing] of at.landings.entries()) {
+    const passenger = at.passengers[index];
+    if (passenger === undefined) break;
+    await activate(connection, at.mothership);
+    evidence[`${size}Dock${index}`] = await dockText(connection);
+    await capture(connection, `beam-${index}-dock-${size}.png`);
     await evaluate(
       connection,
-      `${REVIEW}.boardHost.activate(${JSON.stringify(where)})`,
+      `document.querySelector('[data-action="martian-beam-down"]')?.click()`,
     );
-    await delay(600);
-    await capture(connection, `passengers-${name}-${size}.png`);
-    evidence[`${size}Passengers-${name}`] = await line();
-  };
-  // The far Grunt: refused while three are chosen.
-  await tap(at.passengers[1], "full");
-  // Leave the Grunt at (1, 4) behind, then take the far one.
-  await tap(at.fourth, "left-behind");
-  await tap(at.passengers[1], "taken");
-  // The chosen tile previews the landing of the picked three.
-  await tap(at.target, "preview");
-  evidence[`${size}PassengersTargets`] = await boardTargets(connection);
-  // Bead pulp_wars-2yc.109: the beamed unit's turn chip says it can still
-  // attack.
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="martian-mass-beam-confirm"]')?.click()`,
-  );
-  await waitFor(
-    connection,
-    `${REVIEW}.traces.some((trace) => trace.command.kind === 'MASS_BEAM_DOWN')`,
-  );
-  await delay(2_000);
+    await delay(700);
+    await capture(connection, `beam-${index}-passengers-${size}.png`);
+    // Bead pulp_wars-9im: every target is on the board; the dock lists none.
+    evidence[`${size}Passengers${index}`] = await boardTargets(connection);
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify(passenger)})`,
+    );
+    await delay(700);
+    await capture(connection, `beam-${index}-tiles-${size}.png`);
+    evidence[`${size}Tiles${index}`] = await boardTargets(connection);
+    const beams = index + 1;
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify(landing)})`,
+    );
+    await waitFor(
+      connection,
+      `${REVIEW}.traces.filter((trace) => trace.command.kind === 'BEAM_DOWN').length >= ${beams}`,
+    );
+    for (const frame of [0, 1, 2]) {
+      await capture(connection, `beam-${index}-landing-${size}-${frame}.png`);
+      await delay(110);
+    }
+    await delay(1_500);
+    await deselect(connection);
+  }
+  await activate(connection, at.mothership);
+  evidence[`${size}DockAfter`] = await dockText(connection);
+  await capture(connection, `beam-after-${size}.png`);
+  // A beamed Grunt beside the Fighter shoots on arrival.
   await deselect(connection);
-  await activate(connection, at.target);
+  const first = at.landings[0];
+  await activate(connection, first);
   evidence[`${size}BeamedChip`] = await dockText(connection);
-  await capture(connection, `beamed-chip-${size}.png`);
+  await capture(connection, `beam-shot-${size}.png`);
   await deselect(connection);
 }
 

@@ -702,17 +702,6 @@ export interface MapCommandTargetV7 {
      */
     | "BEAM_DOWN_PASSENGER"
     | "BEAM_DOWN"
-    /**
-     * The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down tile
-     * (chosen once to preview the landings, then again to beam).
-     */
-    | "MASS_BEAM_DOWN"
-    /**
-     * `pulp_wars-8vmy`: a unit the Mothership may take; choosing it takes
-     * it or leaves it behind (nothing is dispatched; its command names the
-     * unit alone).
-     */
-    | "MASS_BEAM_DOWN_PASSENGER"
     | "MIND_CONTROL"
     | "TRACTOR_BEAM"
     /**
@@ -2144,7 +2133,7 @@ export function buildBoardRenderPlanV7(
       view.units.find((unit) => unit.id === curiosityPick.unitId)?.at ?? null,
     );
   if (martianPick !== null)
-    addMartianPickEntriesV7(entries, view, targets, martianPick, commands);
+    addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   if (dwarfPick !== null)
     addDwarfPickEntriesV7(entries, view, commands, dwarfPick);

@@ -226,7 +226,10 @@ describe("ruleset-7 late public query performance", () => {
       // 352e13…acec7: the same surface with the old kind ordinals).
       // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
       // of the wounded idle units (was f19f54…ffbf).
-      "552a9f7d95cb2ac1e82873be40174751fba0070dafcc5fe55c66fc0b5ea0a8c4",
+      // The Mothership's sequential beams (`pulp_wars-eg3k`, 7r146) retire
+      // MASS_BEAM_DOWN, appended after END_TURN: the two HEAL offers' kind
+      // ordinal is -82 (was -83); nothing else changes (was 552a9f…a8c4).
+      "17c68c44a09a6e7d162a3d301ca0ac796f5e8ca25eba83217e6fa526acda1c8e",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -248,7 +251,9 @@ describe("ruleset-7 late public query performance", () => {
       // (was 4b48ea…bf2f).
       // The Heal button (`pulp_wars-6y2r`, 7r143): the HEAL offers
       // of the wounded idle units (was 50b4c0…3e33).
-      "e4e63e2a0dc5eb077c398fc77b63b5e4faeb5b7f9887eb92f121fe5880e4a769",
+      // The Mothership's sequential beams (`pulp_wars-eg3k`, 7r146): the
+      // two HEALs' ordinal, as above (was e4e63e…a769).
+      "e8d6c2711bda1eb13134b749ff77b49827a37da1390ee2f0e6d88131be4902e1",
     );
     expect(
       canonicalHash(

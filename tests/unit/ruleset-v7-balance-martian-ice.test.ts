@@ -153,13 +153,14 @@ describe("the balance registry (section 10)", () => {
     const mothership = effectiveRoleRuleV7("KNIGHT", "MARTIAN");
     // The Mothership redesign (`pulp_wars-ewpj`, 7r108): 9 Coins (8 since
     // the balance round), Mass Beam Down instead of Beam Down, and the
-    // Shield Canopy.
+    // Shield Canopy; `pulp_wars-eg3k` (7r146): Beam Down again, one unit a
+    // beam, three beams a turn.
     expect(mothership.cost).toBe(9);
     expect(mothership.abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "FLY",
-      "MASS_BEAM_DOWN",
+      "BEAM_DOWN",
       "TRACTOR_BEAM",
       "SHIELD_CANOPY",
     ]);
@@ -415,9 +416,10 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
   });
 
   // The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Mothership's
-  // carrier action is Mass Beam Down (the single Beam Down is the
-  // Saucer's), taking the units within two tiles of it.
-  it("the Mothership is a carrier: Mass Beam Down is its primary action, after its Move too", () => {
+  // carrier action took the units within two tiles of it (Mass Beam Down;
+  // since `pulp_wars-eg3k`, 7r146, a `BEAM_DOWN` of one unit, three a turn,
+  // onto a tile within three, and no pick-up from a city).
+  it("the Mothership is a carrier: its first beam is its primary action, after its Move too", () => {
     const state = martianFieldV7([
       { seat: 0, role: "KNIGHT", at: at(4, 3), activation: movedV7(2) },
       { seat: 0, role: "FIGHTER", at: at(3, 3) },
@@ -426,14 +428,21 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
       FAR,
     ]);
     const ship = unitAtV7(state, at(4, 3));
-    expect(offeredFor(state, at(4, 3), "BEAM_DOWN")).toEqual([]);
-    const mass: CommandV7 = {
-      kind: "MASS_BEAM_DOWN",
+    // The Grunt on the capital is no passenger of a Mothership.
+    expect(
+      offeredFor(state, at(4, 3), "BEAM_DOWN").some(
+        (command) =>
+          command.kind === "BEAM_DOWN" &&
+          command.passengerUnitId === idAt(state, CAPITAL),
+      ),
+    ).toBe(false);
+    const first: CommandV7 = {
+      kind: "BEAM_DOWN",
       unitId: ship.id,
-      passengerUnitIds: [idAt(state, at(3, 3))],
+      passengerUnitId: idAt(state, at(3, 3)),
       to: at(6, 3),
     };
-    const run = playV7(state, mass);
+    const run = playV7(state, first);
     expect(run.events[0]).toMatchObject({
       kind: "UNIT_BEAMED",
       unitId: ship.id,
@@ -443,7 +452,8 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
       specialActed: true,
       handled: true,
     });
-    // Its primary action is spent; its free pull is not.
+    // Its primary action is spent; its free pull is not. (No passenger is
+    // left within two tiles for a second beam.)
     expect(
       offeredFor(run.state, at(4, 3)).map((command) => command.kind),
     ).toEqual(["TRACTOR_BEAM"]);
@@ -460,9 +470,9 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
     ]);
     expect(
       rejectedV7(attacked, {
-        kind: "MASS_BEAM_DOWN",
+        kind: "BEAM_DOWN",
         unitId: idAt(attacked, at(4, 3)),
-        passengerUnitIds: [idAt(attacked, at(3, 3))],
+        passengerUnitId: idAt(attacked, at(3, 3)),
         to: at(6, 3),
       }).code,
     ).toBe("UNIT_ALREADY_ACTED");
@@ -589,16 +599,13 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
       const key = `${command.unitId}:${command.passengerUnitId}`;
       pairs.set(key, [...(pairs.get(key) ?? []), command.to]);
     }
-    // The Saucer carries (the Mothership's carrier action is Mass Beam
-    // Down since `pulp_wars-ewpj`); the Tripod within two is a passenger.
+    // The Saucer and (`pulp_wars-eg3k`, 7r146) the Mothership both carry;
+    // the Tripod within two is a passenger.
     expect(
       new Set(
         offered.map((command) => ("unitId" in command ? command.unitId : 0)),
-      ).size,
-    ).toBe(1);
-    expect(
-      expectOfferedAcceptedV7(state, "MASS_BEAM_DOWN").length,
-    ).toBeGreaterThan(0);
+      ),
+    ).toEqual(new Set([idAt(state, at(6, 6)), idAt(state, at(4, 6))]));
     for (const [key, tiles] of pairs) {
       const [carrier, passenger] = key.split(":").map(Number) as [
         UnitId,

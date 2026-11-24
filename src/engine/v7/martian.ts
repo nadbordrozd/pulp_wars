@@ -4,8 +4,9 @@ import {
   FORCE_FIELD_SHIELD_V7,
   HEAVY_TRACTOR_PULL_V7,
   HEAVY_TRACTOR_RANGE_V7,
-  MASS_BEAM_DOWN_RANGE_V7,
   MIND_CONTROL_RANGE_V7,
+  MOTHERSHIP_BEAM_RANGE_V7,
+  MOTHERSHIP_BEAMS_PER_TURN_V7,
   TRACTOR_BEAM_PULL_V7,
   TRACTOR_BEAM_RANGE_V7,
   attackIsRayV7,
@@ -33,6 +34,7 @@ import type {
   CoordV7,
   GameStateV7,
   MindControlledStatusV7,
+  MothershipBeamsV7,
   ShieldStatusV7,
   TechnologyIdV7,
   TerrainIdV7,
@@ -652,14 +654,17 @@ export function prunedMartianV7(input: GameStateV7): GameStateV7 {
 
 /**
  * The Martian balance revision (`pulp_wars-1wy.3`): drops the
- * `beamedThisTurn` and `tractorUsedThisTurn` entries of units that left the
+ * `beamedThisTurn`, `tractorUsedThisTurn`, and (`pulp_wars-eg3k`)
+ * `mothershipBeams` entries of units that left the
  * board or no longer belong to the active player (a beamed controlled unit
  * released in the same turn).
  */
 function prunedMartianTurnListsV7(state: GameStateV7): GameStateV7 {
+  const mothershipBeams = state.mothershipBeams ?? [];
   if (
     state.beamedThisTurn.length === 0 &&
-    state.tractorUsedThisTurn.length === 0
+    state.tractorUsedThisTurn.length === 0 &&
+    mothershipBeams.length === 0
   )
     return state;
   const active = state.turnOrder[state.activeSeatIndex];
@@ -672,10 +677,17 @@ function prunedMartianTurnListsV7(state: GameStateV7): GameStateV7 {
   const tractorUsedThisTurn = state.tractorUsedThisTurn.filter((id) =>
     own.has(id),
   );
-  return beamedThisTurn.length === state.beamedThisTurn.length &&
-    tractorUsedThisTurn.length === state.tractorUsedThisTurn.length
-    ? state
-    : { ...state, beamedThisTurn, tractorUsedThisTurn };
+  // `pulp_wars-eg3k` (7r146): and the beam counts of Motherships gone.
+  const beams = mothershipBeams.filter((entry) => own.has(entry.unitId));
+  if (
+    beamedThisTurn.length === state.beamedThisTurn.length &&
+    tractorUsedThisTurn.length === state.tractorUsedThisTurn.length &&
+    beams.length === mothershipBeams.length
+  )
+    return state;
+  const pruned = { ...state, beamedThisTurn, tractorUsedThisTurn };
+  delete (pruned as { mothershipBeams?: unknown }).mothershipBeams;
+  return beams.length === 0 ? pruned : { ...pruned, mothershipBeams: beams };
 }
 
 /**
@@ -864,8 +876,8 @@ export function beamDownDestinationLegalV7(
 }
 
 /**
- * The tile part of Beam Down row 7, shared with Mass Beam Down
- * (`pulp_wars-ewpj`): explored, not a settlement site, enterable by the
+ * The tile part of Beam Down row 7, shared with the Mothership's Beam
+ * Down (`pulp_wars-eg3k`; Mass Beam Down's before, `pulp_wars-ewpj`): explored, not a settlement site, enterable by the
  * passenger in land form, with no unit, mound, or treasure chest, and not
  * in territory allied to the actor. `facts` is undefined off the board.
  */
@@ -901,19 +913,53 @@ export function beamDownLandingLegalV7(
 }
 
 // ---------------------------------------------------------------------------
-// The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down. The
-// Mothership sets up to `MASS_BEAM_DOWN_CAPACITY_V7` own units from within
-// `BEAM_DOWN_PICKUP_RANGE_V7` of it down around an explored tile within
-// `MASS_BEAM_DOWN_RANGE_V7`, each on the nearest free tile, in unit-ID
-// order. One predicate set, read by the reducer and the public query.
+// `pulp_wars-eg3k` (7r146): the Mothership's Beam Down (Mass Beam Down of
+// `pulp_wars-ewpj`, 7r108, made sequential). A Mothership beams one own unit
+// from within `BEAM_DOWN_PICKUP_RANGE_V7` of it (no city pick-up) down on a
+// tile within `MOTHERSHIP_BEAM_RANGE_V7`, up to
+// `MOTHERSHIP_BEAMS_PER_TURN_V7` times a turn. One predicate set, read by
+// the reducer and the public query.
 // ---------------------------------------------------------------------------
 
+/** Whether the unit's `BEAM_DOWN` is the Mothership's (`mothershipBeam`). */
+export function beamDownIsMothershipsV7(
+  roster: FactionRosterV7,
+  carrier: Parameters<typeof unitRoleMechanicsV7>[1],
+): boolean {
+  return unitRoleMechanicsV7(roster, carrier).mothershipBeam;
+}
+
+/** The Beam Downs the Mothership `unitId` made this turn (0 when none). */
+export function mothershipBeamsUsedV7(
+  mothershipBeams: readonly MothershipBeamsV7[] | undefined,
+  unitId: UnitId,
+): number {
+  return mothershipBeams?.find((entry) => entry.unitId === unitId)?.beams ?? 0;
+}
+
 /**
- * Mass Beam Down: whether `passenger` may go with `carrier`: the Beam Down
- * passenger rule without the city clause (a Mothership carries only the
- * units gathered under it).
+ * The Mothership's Beam Down readiness (section 20.7.1 row 3): its first
+ * beam is the Beam Down carrier rule (`beamDownCarrierReadyV7`: no primary
+ * action used, it may have moved); every later beam needs only a beam left
+ * of `MOTHERSHIP_BEAMS_PER_TURN_V7` (the first spent its primary action).
  */
-export function massBeamDownPassengerLegalV7(
+export function mothershipBeamReadyV7(
+  lookup: FrozenLookupV7,
+  carrier: MartianActorV7,
+  beamsUsed: number,
+): boolean {
+  if (beamsUsed >= MOTHERSHIP_BEAMS_PER_TURN_V7) return false;
+  return beamsUsed === 0
+    ? beamDownCarrierReadyV7(lookup, carrier)
+    : !carrier.activation.overrunActive;
+}
+
+/**
+ * The Mothership's Beam Down passenger rule: the Beam Down passenger rule
+ * without the city clause (a Mothership carries only the units gathered
+ * under it).
+ */
+export function mothershipBeamPassengerLegalV7(
   roster: FactionRosterV7,
   carrier: Parameters<typeof beamDownPassengerLegalV7>[1],
   passenger: Parameters<typeof beamDownPassengerLegalV7>[2],
@@ -928,101 +974,37 @@ export function massBeamDownPassengerLegalV7(
   );
 }
 
-/** Mass Beam Down: whether `target` is within the Mothership's reach. */
-export function massBeamDownTargetInRangeV7(
+/**
+ * The Mothership's Beam Down destination rule: `to` is within
+ * `MOTHERSHIP_BEAM_RANGE_V7` of it and passes the Beam Down tile rule
+ * (`beamDownLandingLegalV7`). `facts` is undefined off the board.
+ */
+export function mothershipBeamDestinationLegalV7(
+  roster: FactionRosterV7,
   carrier: { readonly at: CoordV7 },
-  target: CoordV7,
+  passenger: Parameters<typeof beamDownLandingLegalV7>[1],
+  technology: { readonly engineering: boolean; readonly navigation: boolean },
+  to: CoordV7,
+  facts: PlacementTileFactsV7 | undefined,
 ): boolean {
-  return chebyshev(carrier.at, target) <= MASS_BEAM_DOWN_RANGE_V7;
+  return (
+    chebyshev(carrier.at, to) <= MOTHERSHIP_BEAM_RANGE_V7 &&
+    beamDownLandingLegalV7(roster, passenger, technology, facts)
+  );
 }
 
 /**
- * Mass Beam Down: the landing tiles around `target`, nearest first: the
- * target itself, then the eight tiles around it in (y, x) order.
+ * `mothershipBeams` after one more beam of `unitId`: sorted by unit ID.
  */
-export function massBeamDownLandingTilesV7(
-  target: CoordV7,
-): readonly CoordV7[] {
-  const tiles: CoordV7[] = [{ x: target.x, y: target.y }];
-  for (let dy = -1; dy <= 1; dy += 1)
-    for (let dx = -1; dx <= 1; dx += 1)
-      if (dx !== 0 || dy !== 0)
-        tiles.push({ x: target.x + dx, y: target.y + dy });
-  return tiles;
-}
-
-/** Where one Mass Beam Down passenger lands. */
-export interface MassBeamPlacementV7 {
-  readonly unitId: UnitId;
-  readonly from: CoordV7;
-  readonly to: CoordV7;
-}
-
-/**
- * Mass Beam Down placement: each passenger, in the given (unit-ID) order,
- * takes the first landing tile (`massBeamDownLandingTilesV7`) that is
- * legal for it (`landingLegal`, the Beam Down tile rule) and not taken by
- * an earlier passenger. Null when one of them finds none.
- */
-export function massBeamDownPlacementsV7<
-  P extends { readonly id: UnitId; readonly at: CoordV7 },
->(
-  passengers: readonly P[],
-  target: CoordV7,
-  landingLegal: (passenger: P, at: CoordV7) => boolean,
-): readonly MassBeamPlacementV7[] | null {
-  const tiles = massBeamDownLandingTilesV7(target);
-  const placements: MassBeamPlacementV7[] = [];
-  for (const passenger of passengers) {
-    const to = tiles.find(
-      (at) =>
-        !placements.some((placed) => same(placed.to, at)) &&
-        landingLegal(passenger, at),
-    );
-    if (to === undefined) return null;
-    placements.push({ unitId: passenger.id, from: passenger.at, to });
-  }
-  return placements;
-}
-
-/**
- * Mass Beam Down: the passengers the public query offers for `target` (the
- * reducer accepts any legal set): from the legal passengers that have not
- * used a primary action (a fresh strike force), nearest the Mothership
- * first, then by unit ID, each one that can still be placed with those
- * already chosen, up to `capacity`. Returned in unit-ID order, the
- * command's order.
- */
-export function massBeamDownOfferedPassengersV7<
-  P extends {
-    readonly id: UnitId;
-    readonly at: CoordV7;
-    readonly activation: ActivationV7;
-  },
->(
-  carrier: { readonly at: CoordV7 },
-  candidates: readonly P[],
-  target: CoordV7,
-  capacity: number,
-  landingLegal: (passenger: P, at: CoordV7) => boolean,
-): readonly P[] {
-  const ordered = candidates
-    .filter((unit) => !primaryActionUsedV7(unit.activation))
-    .sort(
-      (left, right) =>
-        chebyshev(carrier.at, left.at) - chebyshev(carrier.at, right.at) ||
-        left.id - right.id,
-    );
-  let chosen: P[] = [];
-  for (const candidate of ordered) {
-    if (chosen.length >= capacity) break;
-    const next = [...chosen, candidate].sort(
-      (left, right) => left.id - right.id,
-    );
-    if (massBeamDownPlacementsV7(next, target, landingLegal) !== null)
-      chosen = next;
-  }
-  return chosen;
+export function withMothershipBeamV7(
+  mothershipBeams: readonly MothershipBeamsV7[] | undefined,
+  unitId: UnitId,
+): readonly MothershipBeamsV7[] {
+  const beams = mothershipBeamsUsedV7(mothershipBeams, unitId) + 1;
+  return [
+    ...(mothershipBeams ?? []).filter((entry) => entry.unitId !== unitId),
+    { unitId, beams },
+  ].sort((left, right) => left.unitId - right.unitId);
 }
 
 /**
@@ -1294,5 +1276,3 @@ export function exhaustedMartianActivationV7(): UnitStateV7["activation"] {
 
 const chebyshev = (left: CoordV7, right: CoordV7): number =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
-const same = (left: CoordV7, right: CoordV7): boolean =>
-  left.x === right.x && left.y === right.y;

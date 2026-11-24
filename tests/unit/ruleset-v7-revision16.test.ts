@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-130, -90)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r146");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r146.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-131, -91)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -266,8 +266,9 @@ describe("ruleset-7 prior identities", () => {
     // Freezes ice docks: a Port or Shipyard iced over and shut
     // (`pulp_wars-jjzz`): 7r141.
     // A Wait never blocks a Heal (`pulp_wars-vtiy`): 7r144. The Martian
-    // strength pass (`pulp_wars-bxpj`): 7r145.
-    expect(revision).toBe(145);
+    // strength pass (`pulp_wars-bxpj`): 7r145. The Mothership beams one
+    // unit at a time, three times a turn (`pulp_wars-eg3k`): 7r146.
+    expect(revision).toBe(146);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -302,7 +303,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r146", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r147", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

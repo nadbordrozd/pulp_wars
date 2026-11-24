@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 145;
+const REVISION = 146;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -300,7 +300,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // BUILD_ICE_FORTRESS last; 83: the Witch and the Wyrm,
     // `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
     // (84: the Heal button, `pulp_wars-6y2r`, 7r143, appends HEAL.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // (83: the Mothership's sequential beams, `pulp_wars-eg3k`, 7r146,
+    // remove MASS_BEAM_DOWN.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -768,6 +770,7 @@ const ROSTER = [
     // `pulp_wars-1wy.3` (M3): cost 8 (was 10) and Beam Down. The
     // Mothership redesign (`pulp_wars-ewpj`, 7r108): cost 9, 20 HP,
     // Attack 3, Defense 3, Sight 2, Mass Beam Down and the Shield Canopy.
+    // `pulp_wars-eg3k` (7r146): Beam Down again, three beams a turn.
     9,
     2,
     20,
@@ -779,14 +782,7 @@ const ROSTER = [
     1,
     2,
     true,
-    [
-      "ATTACK",
-      "CAPTURE",
-      "FLY",
-      "MASS_BEAM_DOWN",
-      "TRACTOR_BEAM",
-      "SHIELD_CANOPY",
-    ],
+    ["ATTACK", "CAPTURE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM", "SHIELD_CANOPY"],
     "FLY",
     false,
     false,
@@ -905,8 +901,8 @@ describe("Martian roster (section 3)", () => {
       "STRIDE",
       // The giants' signatures (`pulp_wars-w49.30`): the Colossus.
       "OVERSTRIDE",
-      // The Mothership redesign (`pulp_wars-ewpj`).
-      "MASS_BEAM_DOWN",
+      // The Mothership redesign (`pulp_wars-ewpj`; its `MASS_BEAM_DOWN`
+      // retired with `pulp_wars-eg3k`, 7r146).
       "SHIELD_CANOPY",
     ];
     // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter flies under
@@ -1664,7 +1660,8 @@ describe("Martian Showcase (section 2.4)", () => {
     // The Grunt on the capital center is a passenger of the Saucer
     // (`pulp_wars-1wy.3`: every own unit in a city or within two tiles of
     // the carrier). The Mothership redesign (`pulp_wars-ewpj`): the
-    // Mothership's Mass Beam Down takes the units within two tiles of it.
+    // Mothership's beam takes the units within two tiles of it (one a
+    // `BEAM_DOWN` since `pulp_wars-eg3k`, 7r146).
     expect(
       offered.some(
         (command) =>
@@ -1676,8 +1673,7 @@ describe("Martian Showcase (section 2.4)", () => {
     expect(
       offered.some(
         (command) =>
-          command.kind === "MASS_BEAM_DOWN" &&
-          command.unitId === own("KNIGHT").id,
+          command.kind === "BEAM_DOWN" && command.unitId === own("KNIGHT").id,
       ),
     ).toBe(true);
     // Both pullers have a target.

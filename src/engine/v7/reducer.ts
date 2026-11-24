@@ -243,14 +243,16 @@ import {
 import {
   beamDownCarrierReadyV7,
   beamDownDestinationLegalV7,
-  beamDownLandingLegalV7,
   beamDownPassengerLegalV7,
   beamedActivationV7,
-  massBeamDownPassengerLegalV7,
-  massBeamDownPlacementsV7,
-  massBeamDownTargetInRangeV7,
+  beamDownIsMothershipsV7,
   mindControlSpitTileV7,
   mindControlTargetBlockV7,
+  mothershipBeamDestinationLegalV7,
+  mothershipBeamPassengerLegalV7,
+  mothershipBeamReadyV7,
+  mothershipBeamsUsedV7,
+  withMothershipBeamV7,
   prunedMartianV7,
   rechargeShieldsAtEndTurnV7,
   rechargeShieldsV7,
@@ -521,9 +523,8 @@ export type RuleErrorCodeV7 =
   // Tractor Beam
   // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
   | "BEAM_DOWN_NOT_LEGAL"
-  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): an illegal Mass
-  // Beam Down (`EMBARKED`, `NO_PASSENGER`, `OUT_OF_RANGE`, `NO_ROOM`).
-  | "MASS_BEAM_DOWN_NOT_LEGAL"
+  // (`MASS_BEAM_DOWN_NOT_LEGAL`, the Mothership redesign's illegal Mass
+  // Beam Down, retired with the command, `pulp_wars-eg3k`, 7r146.)
   | "MIND_CONTROL_NOT_LEGAL"
   | "TRACTOR_BEAM_NOT_LEGAL"
   // The Ice Folk revision: an illegal Cold Snap (`EMBARKED`, `NO_TARGET`;
@@ -941,6 +942,17 @@ function resolveMissionReinforcementsV7(
       tiles: [...revealed].sort(compareCoords),
     });
   return { state: current, events };
+}
+
+/**
+ * `pulp_wars-eg3k` (7r146): `state` without `mothershipBeams` (emptied at
+ * the End Turn; the key is absent when the list is empty).
+ */
+function withoutMothershipBeamsV7(state: GameStateV7): GameStateV7 {
+  if (state.mothershipBeams === undefined) return state;
+  const rest = { ...state };
+  delete (rest as { mothershipBeams?: unknown }).mothershipBeams;
+  return rest;
 }
 
 /** `state` with `heldWaves`, the key absent when the list is empty. */
@@ -2318,8 +2330,6 @@ function applyCommandCoreV7(
     return applyHatch(stateInput, state, actor, command);
   if (command.kind === "BEAM_DOWN")
     return applyBeamDown(stateInput, state, actor, command);
-  if (command.kind === "MASS_BEAM_DOWN")
-    return applyMassBeamDown(stateInput, state, actor, command);
   if (command.kind === "MIND_CONTROL")
     return applyMindControl(stateInput, state, actor, command);
   if (command.kind === "TRACTOR_BEAM")
@@ -4546,13 +4556,20 @@ function applyHatch(
 /**
  * The Martian revision `BEAM_DOWN` (section 8.1; the balance revision
  * `pulp_wars-1wy.3`, RULESET_7_BALANCE_MARTIAN_ICE.md section 5.1): a
- * primary action of a carrier (the Saucer and the Mothership), which may
- * have moved. It moves one own land-form, one-slot, non-flying unit that
- * was not beamed this turn and stands on or next to an own city center, or
- * within `BEAM_DOWN_PICKUP_RANGE_V7` of the carrier, to a tile next to the
+ * primary action of a carrier (the Saucer), which may have moved. It moves
+ * one own land-form, one-slot, non-flying unit that was not beamed this
+ * turn and stands on or next to an own city center, or within
+ * `BEAM_DOWN_PICKUP_RANGE_V7` of the carrier, to a tile next to the
  * carrier; the passenger then counts as having moved. The legality checks
  * run in the section's fixed order, through the predicates the public
  * command query shares; the first failure is the (atomic) rejection.
+ *
+ * `pulp_wars-eg3k` (7r146, section 20.7.1): the Mothership's Beam Down (a
+ * role with the `mothershipBeam` mechanic) takes its passenger only from
+ * within `BEAM_DOWN_PICKUP_RANGE_V7` and sets it down on any tile within
+ * `MOTHERSHIP_BEAM_RANGE_V7` that passes the Beam Down tile rule, up to
+ * `MOTHERSHIP_BEAMS_PER_TURN_V7` times a turn (`mothershipBeams`); the first
+ * beam spends its primary action.
  */
 function applyBeamDown(
   original: GameStateV7,
@@ -4568,9 +4585,19 @@ function applyBeamDown(
   const saucer = actorCheck.unit;
   if (!unitRoleRuleV7(state, saucer).abilities.includes("BEAM_DOWN"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: saucer.role });
+  // `pulp_wars-eg3k` (7r146): the Mothership's Beam Down.
+  const mothership = beamDownIsMothershipsV7(state, saucer);
+  const beamsUsed = mothership
+    ? mothershipBeamsUsedV7(state.mothershipBeams, saucer.id)
+    : 0;
   // Row 3 (the carrier may have moved; a sluggish carrier that moved may
-  // not act), shared with the public command query.
-  if (!beamDownCarrierReadyV7(state, saucer))
+  // not act), shared with the public command query. A Mothership's later
+  // beams need only a beam left.
+  if (
+    mothership
+      ? !mothershipBeamReadyV7(state, saucer, beamsUsed)
+      : !beamDownCarrierReadyV7(state, saucer)
+  )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: saucer.id });
   if (saucer.form !== "LAND")
     return rejected(original, "BEAM_DOWN_NOT_LEGAL", { reason: "EMBARKED" });
@@ -4581,13 +4608,20 @@ function applyBeamDown(
   const passenger = state.units.find(
     (unit) =>
       unit.id === command.passengerUnitId &&
-      beamDownPassengerLegalV7(
-        state,
-        saucer,
-        unit,
-        ownCenters,
-        state.beamedThisTurn,
-      ),
+      (mothership
+        ? mothershipBeamPassengerLegalV7(
+            state,
+            saucer,
+            unit,
+            state.beamedThisTurn,
+          )
+        : beamDownPassengerLegalV7(
+            state,
+            saucer,
+            unit,
+            ownCenters,
+            state.beamedThisTurn,
+          )),
   );
   if (passenger === undefined)
     return rejected(original, "BEAM_DOWN_NOT_LEGAL", {
@@ -4601,10 +4635,13 @@ function applyBeamDown(
       : state.cities.find((city) => city.id === tile.territoryCityId)?.ownerId;
   // Row 7, shared with the public command query. A Rift (pulp_wars-9s0.5)
   // is never a Beam Down destination: every passenger is a non-flyer, and
-  // `canEnterTerrainV7` keeps them off it.
+  // `canEnterTerrainV7` keeps them off it. A Mothership's tile is any
+  // within its reach.
   if (
     tile === undefined ||
-    !beamDownDestinationLegalV7(
+    !(
+      mothership ? mothershipBeamDestinationLegalV7 : beamDownDestinationLegalV7
+    )(
       state,
       saucer,
       passenger,
@@ -4703,208 +4740,15 @@ function applyBeamDown(
         beamedThisTurn: [...state.beamedThisTurn, passenger.id].sort(
           (left, right) => left - right,
         ),
-      },
-      actor,
-      events,
-    );
-    return accepted(checked(staged), events);
-  } catch (cause) {
-    return arithmeticFailure(original, cause);
-  }
-}
-
-/**
- * The Mothership redesign `MASS_BEAM_DOWN` (`pulp_wars-ewpj`, 7r108, the
- * current rules section 20.7.1): a primary action of a Mothership, which
- * may have moved. It sets 1 to `MASS_BEAM_DOWN_CAPACITY_V7` own Beam Down
- * passengers from within `BEAM_DOWN_PICKUP_RANGE_V7` of it (no city
- * pick-up) down around an explored tile within `MASS_BEAM_DOWN_RANGE_V7`:
- * in unit-ID order each lands on the first tile of the target and the
- * eight tiles around it (`massBeamDownLandingTilesV7`) that passes the Beam
- * Down tile rule and is not taken. Each passenger counts as having moved,
- * as after a Beam Down; the Mothership has used its primary action. The
- * checks run in the section's order, through the predicates the public
- * query shares; the first failure is the (atomic) rejection.
- */
-function applyMassBeamDown(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: Extract<CommandV7, { kind: "MASS_BEAM_DOWN" }>,
-): ApplyCommandResultV7 {
-  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
-    return rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const mothership = actorCheck.unit;
-  if (!unitRoleRuleV7(state, mothership).abilities.includes("MASS_BEAM_DOWN"))
-    return rejected(original, "UNIT_ROLE_INVALID", { role: mothership.role });
-  if (!beamDownCarrierReadyV7(state, mothership))
-    return rejected(original, "UNIT_ALREADY_ACTED", {
-      unitId: mothership.id,
-    });
-  if (mothership.form !== "LAND")
-    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
-      reason: "EMBARKED",
-    });
-  const passengers = command.passengerUnitIds.map((id) =>
-    state.units.find(
-      (unit) =>
-        unit.id === id &&
-        massBeamDownPassengerLegalV7(
-          state,
-          mothership,
-          unit,
-          state.beamedThisTurn,
-        ),
-    ),
-  );
-  if (passengers.some((passenger) => passenger === undefined))
-    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
-      reason: "NO_PASSENGER",
-    });
-  const riders = passengers as readonly UnitStateV7[];
-  const player = requirePlayer(state, actor);
-  if (
-    tileAtV7(state.board, command.to) === undefined ||
-    !isExplored(player, command.to)
-  )
-    return rejected(original, "INVALID_TILE", { action: "MASS_BEAM_DOWN" });
-  if (!massBeamDownTargetInRangeV7(mothership, command.to))
-    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
-      reason: "OUT_OF_RANGE",
-    });
-  const technology = {
-    engineering: player.researchedTechs.includes("ENGINEERING"),
-    navigation: player.researchedTechs.includes("NAVIGATION"),
-  };
-  const territoryOwnerAt = (at: CoordV7): PlayerId | undefined => {
-    const tile = tileAtV7(state.board, at);
-    return tile === undefined
-      ? undefined
-      : state.cities.find((city) => city.id === tile.territoryCityId)?.ownerId;
-  };
-  // The Beam Down tile rule (row 7 without the carrier adjacency), shared
-  // with the public command query. A Rift is never a landing tile.
-  const placements = massBeamDownPlacementsV7(
-    riders,
-    command.to,
-    (rider, at) => {
-      const tile = tileAtV7(state.board, at);
-      const territoryOwner = territoryOwnerAt(at);
-      return (
-        tile !== undefined &&
-        beamDownLandingLegalV7(state, rider, technology, {
-          explored: isExplored(player, at),
-          site: tile.site,
-          terrain: tile.terrain,
-          ice: isIceAtV7(state, at),
-          occupied: tileOccupiedV7(state, at),
-          chest: state.treasureChests.some((chest) => same(chest, at)),
-          alliedTerritory:
-            territoryOwner !== undefined &&
-            arePlayersAlliedV7(state, actor, territoryOwner),
-        })
-      );
-    },
-  );
-  if (placements === null)
-    return rejected(original, "MASS_BEAM_DOWN_NOT_LEGAL", {
-      reason: "NO_ROOM",
-    });
-  try {
-    const landing = new Map(
-      placements.map((placement) => [placement.unitId, placement.to]),
-    );
-    // The disembarkation rule: Field Defense in hostile territory is
-    // destroyed by the unit that lands on it.
-    const destroyed = placements
-      .map((placement) => placement.to)
-      .filter((to) => {
-        const tile = requireValue(tileAtV7(state.board, to));
-        const territoryOwner = territoryOwnerAt(to);
-        return (
-          tile.fieldDefense &&
-          territoryOwner !== undefined &&
-          arePlayersHostileV7(state, actor, territoryOwner)
-        );
-      });
-    let board = state.board;
-    for (const to of destroyed)
-      board = replaceTile({ ...state, board }, to, {
-        ...requireValue(tileAtV7(board, to)),
-        fieldDefense: false,
-      });
-    const units = state.units.map((unit) => {
-      const to = landing.get(unit.id);
-      if (to !== undefined)
-        return {
-          ...unit,
-          at: { x: to.x, y: to.y },
-          captureEligible: false,
-          // As after a Beam Down: the passenger counts as having moved (it
-          // may still attack, at half power for a ray), not as exhausted.
-          activation: beamedActivationV7(unit.activation),
-        };
-      return unit.id === mothership.id
-        ? {
-            ...unit,
-            activation: {
-              ...unit.activation,
-              specialActed: true,
-              handled: true,
-            },
-          }
-        : unit;
-    });
-    let sightState = { ...state, board, units } as GameStateV7;
-    const revealed: CoordV7[] = [];
-    for (const placement of placements) {
-      const beamed = requireValue(
-        units.find((unit) => unit.id === placement.unitId),
-      );
-      const reveal = revealRadius(
-        sightState,
-        actor,
-        placement.to,
-        unitSightRadiusAtV7(sightState, beamed),
-      );
-      revealed.push(...reveal.revealed);
-      sightState = {
-        ...sightState,
-        players: setExplored(sightState.players, actor, reveal.explored),
-      };
-    }
-    const events: DomainEventV7[] = placements.map((placement) => ({
-      kind: "UNIT_BEAMED",
-      playerId: actor,
-      unitId: mothership.id,
-      passengerUnitId: placement.unitId,
-      from: placement.from,
-      to: { x: placement.to.x, y: placement.to.y },
-    }));
-    for (const at of destroyed)
-      events.push({
-        kind: "FIELD_DEFENSE_DESTROYED",
-        at: { x: at.x, y: at.y },
-        reason: "OCCUPATION",
-      });
-    if (revealed.length > 0)
-      events.push({
-        kind: "TILES_REVEALED",
-        playerId: actor,
-        tiles: [...revealed].sort(compareCoords),
-      });
-    const staged = graveActionTail(
-      {
-        ...sightState,
-        commandIndex: nextSafe(state.commandIndex),
-        // Once per turn per passenger (no chain teleports).
-        beamedThisTurn: [
-          ...state.beamedThisTurn,
-          ...placements.map((placement) => placement.unitId),
-        ].sort((left, right) => left - right),
+        // `pulp_wars-eg3k`: a Mothership's beams this turn.
+        ...(mothership
+          ? {
+              mothershipBeams: withMothershipBeamV7(
+                state.mothershipBeams,
+                saucer.id,
+              ),
+            }
+          : {}),
       },
       actor,
       events,
@@ -8998,16 +8842,17 @@ function applyEndTurn(
     // is permanent, so there is no thaw step.
     const counted = frozenCountdownV7(fields.state, actor);
     // The Martian balance revision (`pulp_wars-1wy.3`): so are the beamed
-    // passengers and the used free Tractor Beams.
-    const emptied =
+    // passengers and the used free Tractor Beams, and (`pulp_wars-eg3k`)
+    // the Motherships' beam counts.
+    const emptied = withoutMothershipBeamsV7(
       counted.surfacedThisTurn.length === 0 &&
-      counted.bombedThisTurn.length === 0 &&
-      counted.beamedThisTurn.length === 0 &&
-      counted.tractorUsedThisTurn.length === 0 &&
-      counted.huntedThisTurn.length === 0 &&
-      counted.berserkThisTurn.length === 0 &&
-      counted.terrorThisTurn.length === 0 &&
-      counted.feastedThisTurn.length === 0
+        counted.bombedThisTurn.length === 0 &&
+        counted.beamedThisTurn.length === 0 &&
+        counted.tractorUsedThisTurn.length === 0 &&
+        counted.huntedThisTurn.length === 0 &&
+        counted.berserkThisTurn.length === 0 &&
+        counted.terrorThisTurn.length === 0 &&
+        counted.feastedThisTurn.length === 0
         ? counted
         : {
             ...counted,
@@ -9024,7 +8869,8 @@ function applyEndTurn(
             // Feast last until the end of the turn.
             terrorThisTurn: [],
             feastedThisTurn: [],
-          };
+          },
+    );
     // The Candy revision section 10: the Crash, the Crumbs countdown, and
     // the emptied Splat and Toss lists, after the Dwarf per-turn lists and
     // before the income preview (and any neutral turn).

@@ -160,11 +160,9 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   HATCH: "SUPPORT",
   SUGAR_TOSS: "SUPPORT",
   BEAM_DOWN_PASSENGER: "SUPPORT",
-  MASS_BEAM_DOWN_PASSENGER: "SUPPORT",
   TUNNEL_PASSENGER: "SUPPORT",
   LAY_EGG: "PLACE",
   BEAM_DOWN: "PLACE",
-  MASS_BEAM_DOWN: "PLACE",
   ASSEMBLE: "PLACE",
   // Dwarf crowd control: a tile an Engineer may put a Barricade on.
   BARRICADE: "PLACE",

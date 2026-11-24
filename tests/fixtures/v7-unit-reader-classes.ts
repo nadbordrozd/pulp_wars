@@ -299,17 +299,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-ice-folk.ts::witchMoveKeyV7": "BOARD",
     "src/ai/v7-martian.ts::beamDownPassengerIsGarrisonV7": "BOARD",
     "src/ai/v7-martian.ts::martianArmyCountsV7": "BOARD",
-    // The Mothership redesign (`pulp_wars-ewpj`): Mass Beam Down and the
-    // Shield Canopy read the board's units.
-    "src/ai/v7-martian.ts::massBeamDownScoreV7": "BOARD",
+    // The Mothership redesign (`pulp_wars-ewpj`): the Shield Canopy reads
+    // the board's units; so did Mass Beam Down until `pulp_wars-eg3k`
+    // (7r146), whose Mothership's beam is scored on the board.
+    "src/ai/v7-martian.ts::mothershipBeamScoreV7": "BOARD",
     "src/engine/v7/martian.ts::rechargeShieldsAtEndTurnV7": "BOARD",
-    "src/engine/v7/query.ts::publicMassBeamDownCommandsV7": "BOARD",
-    "src/engine/v7/query.ts::previewMassBeamDownV7": "BOARD",
-    "src/engine/v7/reducer.ts::applyMassBeamDown": "BOARD",
-    "src/render/canvas/martian-board-plan-v7.ts::addMassBeamDownEntriesV7":
-      "BOARD",
-    "src/render/martian-presentation-v7.ts::massBeamDownUnavailableTextV7":
-      "BOARD",
     "src/ai/v7-martian.ts::martianFactsV7": "BOARD",
     "src/ai/v7-martian.ts::martianResearchV7": "BOARD",
     "src/ai/v7-martian.ts::martianRetainedValueV7": "BOARD",
@@ -911,9 +905,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/martian-board-plan-v7.ts::martianAttackTargetExtrasV7":
       "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::martianMoveLabelV7": "BOARD",
-    // `pulp_wars-8vmy`: the units a Mass Beam Down may take stand on the
-    // board within two tiles of the Mothership; a burrowed unit is not one.
-    "src/render/canvas/martian-board-plan-v7.ts::massBeamSelectionV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::martianPickTargetsV7": "BOARD",
     "src/render/canvas/presentation-plan-v7.ts::corePresentationPlanV7":
       "BOARD",

@@ -79,7 +79,7 @@ describe("the dock's turn chip of a handled unit", () => {
     expect(chipAt(attacked, after.at)?.label).toBe(UNIT_DONE_LABEL_V7);
   });
 
-  it("says a unit set down by Mass Beam Down can still attack, not Done", () => {
+  it("says a unit set down by a Mothership's Beam Down can still attack, not Done", () => {
     const state = martianFieldV7([
       own("KNIGHT", at(2, 2)),
       own("FIGHTER", at(1, 1)),
@@ -87,15 +87,22 @@ describe("the dock's turn chip of a handled unit", () => {
       own("FIGHTER", at(3, 1)),
       foe("FIGHTER", at(2, 6)),
     ]);
-    const ids = [at(1, 1), at(2, 1), at(3, 1)]
-      .map((where) => unitAtV7(state, where).id)
-      .sort((left, right) => left - right);
-    const beamed = played(state, {
-      kind: "MASS_BEAM_DOWN",
-      unitId: unitAtV7(state, at(2, 2)).id,
-      passengerUnitIds: ids,
-      to: at(2, 5),
-    });
+    // `pulp_wars-eg3k` (7r146): three beams, one Grunt each (one Mass
+    // Beam Down before).
+    const beamed = [
+      [at(1, 1), at(2, 5)],
+      [at(2, 1), at(1, 4)],
+      [at(3, 1), at(2, 4)],
+    ].reduce(
+      (current, [from, to]) =>
+        played(current, {
+          kind: "BEAM_DOWN",
+          unitId: unitAtV7(state, at(2, 2)).id,
+          passengerUnitId: unitAtV7(state, from as CoordV7).id,
+          to: to as CoordV7,
+        }),
+      state,
+    );
     // Every Grunt lands within its ray's reach of the enemy.
     for (const where of [at(2, 5), at(1, 4), at(2, 4)])
       expect(chipAt(beamed, where)?.status, `${where.x}/${where.y}`).toBe(

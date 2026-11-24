@@ -123,7 +123,27 @@ describe("tile actions: the audit of every command kind", () => {
     const aimed = Object.entries(TILE_ACTION_COMMAND_CLASSES_V7)
       .filter(([, kind]) => kind === "AIMED")
       .map(([kind]) => kind as CommandV7["kind"]);
-    expect(aimed.length).toBeGreaterThan(25);
+    // 25 since `pulp_wars-eg3k` (7r146) retired MASS_BEAM_DOWN: the
+    // Mothership aims the Saucer's BEAM_DOWN.
+    expect(aimed.length).toBeGreaterThanOrEqual(25);
+    expect(aimed).toContain("BEAM_DOWN");
+    expect(aimed).not.toContain("MASS_BEAM_DOWN");
+    const beam = TILE_ABILITIES_V7.find(
+      (ability) => ability.id === "BEAM_DOWN",
+    );
+    expect(beam?.dockAction).toBe("martian-beam-down");
+    expect(uiIconShapesV7(beam?.icon ?? "beam-down").length).toBeGreaterThan(0);
+    expect(
+      beam?.offered(
+        {
+          kind: "BEAM_DOWN",
+          unitId: id(1),
+          passengerUnitId: id(2),
+          to: at(0, 0),
+        },
+        id(1),
+      ),
+    ).toBe(true);
     for (const kind of aimed)
       for (const command of sample(kind))
         expect(

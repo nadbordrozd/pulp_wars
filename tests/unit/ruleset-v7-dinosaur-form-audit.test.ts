@@ -562,13 +562,15 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Moon Gun previews are a land-form unit's on the Tower or the Gun (an
     // Egg never acts, and an embarked unit never stands on either).
     // The Mothership redesign (`pulp_wars-ewpj`): the public Mass Beam
-    // Down preview is a land-form Mothership's (an embarked one beams
-    // nobody). Only the Ice Folk walk on ice (`pulp_wars-y242`): the public
+    // Down preview was a land-form Mothership's (an embarked one beams
+    // nobody); it went with the command (`pulp_wars-eg3k`, 7r146: 8), and
+    // the Mothership's Beam Down is offered under the shared land-form
+    // branch. Only the Ice Folk walk on ice (`pulp_wars-y242`): the public
     // Push preview reads ice as ground only for a land-form unit that walks
     // on it.
     // The one Freeze effect (`pulp_wars-xv0t`, 7r133): the public Cold Wake
     // preview, as the Cold Wake, is a land-form Giant's.
-    "src/engine/v7/query.ts": 9,
+    "src/engine/v7/query.ts": 8,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
@@ -589,14 +591,16 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Map curiosities round 3 (`pulp_wars-737.20`): ZAP and FIRE_MOON_GUN
     // are commands of a unit in land form on the Tower or the Gun (an Egg
     // and an embarked unit are refused NOT_ON_TOWER and NOT_ON_GUN).
-    // The Mothership redesign (`pulp_wars-ewpj`): MASS_BEAM_DOWN is a
+    // The Mothership redesign (`pulp_wars-ewpj`): MASS_BEAM_DOWN was a
     // land-form Mothership's (`MASS_BEAM_DOWN_NOT_LEGAL { reason:
-    // "EMBARKED" }`, as for BEAM_DOWN).
+    // "EMBARKED" }`, as for BEAM_DOWN); the Mothership's sequential beams
+    // (`pulp_wars-eg3k`, 7r146) are `BEAM_DOWN`s under its land-form test.
     // (18: the one Freeze effect, `pulp_wars-xv0t`, 7r133, took the Bolas's
     // and the Frost Bolt's land-form tests.) The Witch and the Wyrm
     // (`pulp_wars-xt9c`, 7r140): a Snow Balm needs a land-form Witch
-    // (`UNIT_ROLE_INVALID` otherwise, as for Tend Wounded): 19.
-    "src/engine/v7/reducer.ts": 19,
+    // (`UNIT_ROLE_INVALID` otherwise, as for Tend Wounded): 19. 18: the
+    // Mass Beam Down test went with the command (`pulp_wars-eg3k`).
+    "src/engine/v7/reducer.ts": 18,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat

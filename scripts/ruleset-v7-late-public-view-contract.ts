@@ -223,7 +223,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // Waits were (930 and 300), in place of those Waits; only their kind
     // ordinal changes, and the command and candidate count are unchanged
     // (was a4e786…0f34).
-    "823333b15496d370ec659852ecb10ff4992361e77b8c50f5e60ea56213e3b0b1",
+    // The Mothership's sequential beams (`pulp_wars-eg3k`, 7r146) retire
+    // MASS_BEAM_DOWN, appended after END_TURN, moving BUILD_ICE_FORTRESS,
+    // SNOW_BALM and HEAL back by one: the two HEAL candidates' kind ordinal
+    // is -82 (was -83); the command, the candidate count and every other
+    // candidate are unchanged (was 823333…b0b1).
+    "5147c7a131ba1f4863305e500b442f0dbb0d9ada6c61bd5c777b709419f64d0e",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -319,10 +324,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r145",
+    rulesetId: "pulp-wars-poc-7r146",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r145",
+      rulesetId: "pulp-wars-poc-7r146",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

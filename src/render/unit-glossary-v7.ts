@@ -558,12 +558,10 @@ const ENTRIES = {
   ],
   BEAM_DOWN: [
     "Beam Down",
-    "Brings one of your units from a city, or from nearby, to its side. That unit can still attack.",
-  ],
-  // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
-  MASS_BEAM_DOWN: [
-    "Mass Beam Down",
-    "Beams up to three of your units from around it down beside a tile up to 3 tiles away. They can still attack.",
+    // `pulp_wars-eg3k` (7r146): one entry for the Saucer's and the
+    // Mothership's Beam Down (the Mothership's was Mass Beam Down,
+    // `MASS_BEAM_DOWN`, from 7r108 to 7r145).
+    "Brings one of your units from a city, or from nearby, to its side; a Mothership beams one up to 3 tiles away, three times a turn. That unit can still attack.",
   ],
   SHIELD_CANOPY: [
     "Shield Canopy",

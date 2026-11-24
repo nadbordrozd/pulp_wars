@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
-  previewMassBeamDownV7,
+  previewBeamDownV7,
+  type CommandV7,
   type CoordV7,
   type GameStateV7,
 } from "../../src/engine/index";
@@ -9,26 +10,32 @@ import type { BoardRenderPlanEntryV7 } from "../../src/render/canvas/board-rende
 import {
   addMartianPickEntriesV7,
   martianPickTargetsV7,
-  massBeamSelectionV7,
   type MartianPickV7,
 } from "../../src/render/canvas/martian-board-plan-v7";
 import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   BEAMING_BADGE_V7,
   BEAM_BADGE_V7,
-  MASS_BEAM_DOWN_FULL_V7,
-  massBeamDownCountTextV7,
+  MOTHERSHIP_BEAMS_SPENT_V7,
+  MOTHERSHIP_BEAM_NO_PASSENGER_V7,
+  beamDownUnavailableTextV7,
+  mothershipBeamLabelV7,
+  mothershipBeamsLeftV7,
 } from "../../src/render/martian-presentation-v7";
 import { unitAtV7 } from "../fixtures/v7-goblin-arena";
 import {
   activeViewV7,
   martianFieldV7,
   offeredV7,
+  playV7,
   type MartianPieceV7,
 } from "../fixtures/v7-martian";
 import { activeIdV7, at } from "../fixtures/v7-revision20";
 
-// `pulp_wars-8vmy`: the passengers of a Mass Beam Down are picked on the
+// The Mothership's passengers on the board. `pulp_wars-8vmy` picked a Mass
+// Beam Down's set of passengers there; since `pulp_wars-eg3k` (7r146) the
+// Mothership beams one unit at a time, three times a turn, with the
+// Saucer's flow: a passenger on the board, then its landing tile on the
 // board. The field (tests/fixtures/v7-martian.ts): 11 x 11, seat 0
 // (Martian). The Mothership at (2, 2), three Grunts beside it, a Ray Gunner
 // two tiles south and a Grunt that has attacked two tiles east.
@@ -56,181 +63,127 @@ const field = (): GameStateV7 =>
   ]);
 
 const idAt = (state: GameStateV7, where: CoordV7) => unitAtV7(state, where).id;
-const same = (left: CoordV7, right: CoordV7) =>
-  left.x === right.x && left.y === right.y;
+const distance = (left: CoordV7, right: CoordV7) =>
+  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
 
 function pickOf(
   state: GameStateV7,
-  extra: Partial<Extract<MartianPickV7, { kind: "MASS_BEAM_DOWN" }>> = {},
-): Extract<MartianPickV7, { kind: "MASS_BEAM_DOWN" }> {
+  passenger: CoordV7 | null = null,
+): Extract<MartianPickV7, { kind: "BEAM_DOWN" }> {
   return {
-    kind: "MASS_BEAM_DOWN",
+    kind: "BEAM_DOWN",
     unitId: idAt(state, MOTHERSHIP),
-    chosen: null,
-    ...extra,
+    passengerUnitId: passenger === null ? null : idAt(state, passenger),
   };
 }
 
-describe("Mass Beam Down passengers picked on the board", () => {
-  it("starts with the nearest three fresh units, and rings every unit it may take", () => {
+describe("the Mothership's passengers picked on the board", () => {
+  it("rings every unit it may take, the one that acted too, with the Beam badge", () => {
     const state = field();
     const view = activeViewV7(state);
     const commands = offeredV7(state);
     const pick = pickOf(state);
-    const selection = massBeamSelectionV7(view, commands, pick);
-    expect(selection?.picked).toBe(false);
-    expect(selection?.full).toBe(true);
-    // The three Grunts beside the Mothership; the Ray Gunner and the Grunt
-    // that has acted stand two tiles away.
-    expect(selection?.selected).toEqual(
-      GRUNTS.map((where) => idAt(state, where)).sort((a, b) => a - b),
-    );
-    expect(selection?.eligible.map((unit) => unit.at)).toEqual([
-      ...GRUNTS,
-      GUNNER,
-      ACTED,
-    ]);
-    // Untouched, the tiles are the offered beams.
-    expect(selection?.commands).toEqual(offeredV7(state, "MASS_BEAM_DOWN"));
     const targets = martianPickTargetsV7(view, commands, pick);
-    const passengers = targets.filter(
-      (target) => target.family === "MASS_BEAM_DOWN_PASSENGER",
-    );
-    expect(passengers.map((target) => target.at)).toEqual([
-      ...GRUNTS,
-      GUNNER,
-      ACTED,
-    ]);
+    // Every target is a passenger first: no tile yet.
     expect(
-      passengers.every(
+      targets.every((target) => target.family === "BEAM_DOWN_PASSENGER"),
+    ).toBe(true);
+    expect(targets.map((target) => target.at)).toEqual(
+      expect.arrayContaining([...GRUNTS, GUNNER, ACTED]),
+    );
+    expect(targets).toHaveLength(5);
+    expect(
+      targets.every(
         (target) =>
           targetHighlightStyleV7(target.family, target.highlight) === "SUPPORT",
       ),
     ).toBe(true);
-    // No passenger's tile is also a landing target: a tap there toggles.
-    expect(
-      targets.some(
-        (target) =>
-          target.family === "MASS_BEAM_DOWN" &&
-          passengers.some((passenger) => same(passenger.at, target.at)),
-      ),
-    ).toBe(false);
-    expect(passengers[0]?.semanticLabel).toMatch(
-      /^Beaming the Grunt, \d+ of \d+ HP\. Choose again to leave it behind$/,
-    );
-    // The fourth and fifth say why a tap cannot take them now.
-    expect(passengers[4]?.semanticLabel).toContain(", has acted");
-    expect(passengers[3]?.semanticLabel).toContain(
-      `${MASS_BEAM_DOWN_FULL_V7} units`,
-    );
-    // The selected ones wear the "Beam" badge.
+    for (const target of targets) {
+      expect(target.previewLabel).toBe(BEAM_BADGE_V7);
+      expect(target.semanticLabel).toContain("picked up nearby");
+    }
+    // The pick-up range is tinted around it.
     const entries: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(entries, view, targets, pick, commands);
-    expect(
-      entries
-        .filter((entry) => entry.label === BEAM_BADGE_V7)
-        .map((entry) => entry.at),
-    ).toEqual(GRUNTS);
+    addMartianPickEntriesV7(entries, view, targets, pick);
+    const range = entries.filter((entry) =>
+      entry.key.startsWith("ability-area:BEAM_RANGE:"),
+    );
+    expect(range.length).toBeGreaterThan(0);
+    for (const entry of range)
+      expect(distance(entry.at, MOTHERSHIP)).toBeLessThanOrEqual(2);
   });
 
-  it("beams the units the player picked, onto every tile they can land around", () => {
+  it("then sets the picked unit down on any free tile within three", () => {
     const state = field();
     const view = activeViewV7(state);
     const commands = offeredV7(state);
-    const chosenIds = [idAt(state, GRUNTS[0]), idAt(state, GUNNER)].sort(
-      (a, b) => a - b,
+    const pick = pickOf(state, GUNNER);
+    const targets = martianPickTargetsV7(view, commands, pick);
+    expect(targets.length).toBeGreaterThan(8);
+    const preview = previewBeamDownV7(
+      view,
+      idAt(state, MOTHERSHIP),
+      idAt(state, GUNNER),
     );
-    const pick = pickOf(state, { passengerUnitIds: chosenIds });
-    const selection = massBeamSelectionV7(view, commands, pick);
-    expect(selection?.picked).toBe(true);
-    expect(selection?.full).toBe(false);
-    expect(selection?.selected).toEqual(chosenIds);
-    expect(selection?.commands.length).toBeGreaterThan(0);
-    for (const command of selection?.commands ?? []) {
-      expect(command.passengerUnitIds).toEqual(chosenIds);
-      expect(previewMassBeamDownV7(view, command)).not.toBeNull();
+    expect(targets.map((target) => target.at)).toEqual(preview?.destinations);
+    for (const target of targets) {
+      expect(target.family).toBe("BEAM_DOWN");
+      expect(distance(target.at, MOTHERSHIP)).toBeLessThanOrEqual(3);
+      expect([...GRUNTS, GUNNER, ACTED, MOTHERSHIP]).not.toContainEqual(
+        target.at,
+      );
       expect(
-        applyCommandV7(state, activeIdV7(state), command).accepted,
-        `${command.to.x}/${command.to.y}`,
+        applyCommandV7(state, activeIdV7(state), target.command as CommandV7)
+          .accepted,
       ).toBe(true);
     }
-    const targets = martianPickTargetsV7(view, commands, pick);
-    const tiles = targets.filter(
-      (target) => target.family === "MASS_BEAM_DOWN",
-    );
-    expect(tiles.map((target) => target.command)).toEqual(
-      (selection?.commands ?? []).filter(
-        (command) =>
-          !(selection?.eligible ?? []).some((unit) =>
-            same(unit.at, command.to),
-          ),
-      ),
-    );
-    const before: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(before, view, targets, pick, commands);
-    expect(
-      before
-        .filter((entry) => entry.label === BEAM_BADGE_V7)
-        .map((entry) => entry.at),
-    ).toEqual([GRUNTS[0], GUNNER]);
-    // A chosen tile previews the picked two: "Beaming" on each, and the
-    // name of each on its landing tile.
-    const chosen = { ...pick, chosen: at(2, 5) };
-    const after = martianPickTargetsV7(view, commands, chosen);
-    expect(
-      after.find(
-        (target) =>
-          target.family === "MASS_BEAM_DOWN" && same(target.at, at(2, 5)),
-      )?.previewLabel,
-    ).toBe("Beam 2 units");
+    // The picked unit wears "Beaming".
     const entries: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(entries, view, after, chosen, commands);
+    addMartianPickEntriesV7(entries, view, targets, pick);
     expect(
       entries
         .filter((entry) => entry.label === BEAMING_BADGE_V7)
         .map((entry) => entry.at),
-    ).toEqual([GRUNTS[0], GUNNER]);
-    expect(
-      entries
-        .filter((entry) => entry.key.includes("MASS_BEAM_LANDING"))
-        .map((entry) => entry.label),
-    ).toEqual(["Grunt", "Ray Gunner"]);
+    ).toEqual([GUNNER]);
   });
 
-  it("may carry a unit that has acted, and offers no tile with nobody picked", () => {
-    const state = field();
+  it("names the beams left, and why none is left", () => {
+    let state = field();
+    const mothership = idAt(state, MOTHERSHIP);
+    expect(mothershipBeamsLeftV7(activeViewV7(state), mothership)).toBe(3);
+    expect(mothershipBeamLabelV7(3)).toBe("Beam Down (3 left)");
+    for (const [index, [from, to]] of (
+      [
+        [GRUNTS[0], at(1, 5)],
+        [GRUNTS[1], at(2, 5)],
+        [GUNNER, at(3, 5)],
+      ] as const
+    ).entries()) {
+      state = playV7(state, {
+        kind: "BEAM_DOWN",
+        unitId: mothership,
+        passengerUnitId: idAt(state, from),
+        to,
+      }).state;
+      expect(mothershipBeamsLeftV7(activeViewV7(state), mothership)).toBe(
+        2 - index,
+      );
+    }
     const view = activeViewV7(state);
-    const commands = offeredV7(state);
-    const acted = idAt(state, ACTED);
-    const carried = massBeamSelectionV7(
-      view,
-      commands,
-      pickOf(state, { passengerUnitIds: [acted] }),
+    expect(beamDownUnavailableTextV7(view, mothership, false)).toBe(
+      MOTHERSHIP_BEAMS_SPENT_V7,
     );
-    expect(carried?.selected).toEqual([acted]);
-    expect(carried?.commands.length).toBeGreaterThan(0);
-    const nobody = pickOf(state, { passengerUnitIds: [] });
-    expect(massBeamSelectionV7(view, commands, nobody)?.commands).toEqual([]);
-    const targets = martianPickTargetsV7(view, commands, nobody);
-    expect(targets.every((target) => target.family !== "MASS_BEAM_DOWN")).toBe(
-      true,
+    expect(martianPickTargetsV7(view, offeredV7(state), pickOf(state))).toEqual(
+      [],
     );
-    expect(targets).toHaveLength(5);
-    // A unit that is not a legal passenger (here the Mothership itself) is
-    // dropped from a picked list.
+    // With beams left but nobody within two tiles, it says so.
+    const alone = martianFieldV7([own("KNIGHT", 2, 2), own("FIGHTER", 6, 6)]);
     expect(
-      massBeamSelectionV7(
-        view,
-        commands,
-        pickOf(state, { passengerUnitIds: [idAt(state, MOTHERSHIP), acted] }),
-      )?.selected,
-    ).toEqual([acted]);
-  });
-
-  it("says how many go in the aiming panel's line", () => {
-    expect(massBeamDownCountTextV7(2)).toBe(
-      "Beam 2 of 3: tap your units to choose",
-    );
-    expect(MASS_BEAM_DOWN_FULL_V7).toBe("Up to 3");
+      beamDownUnavailableTextV7(
+        activeViewV7(alone),
+        idAt(alone, MOTHERSHIP),
+        false,
+      ),
+    ).toBe(MOTHERSHIP_BEAM_NO_PASSENGER_V7);
   });
 });

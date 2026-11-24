@@ -109,7 +109,7 @@ describe("the board's turn states of the viewer's units", () => {
     expect([...states.values()]).toEqual(["ATTACK"]);
   });
 
-  it("shows the units set down by a Mass Beam Down beside an enemy as able to attack", () => {
+  it("shows the units set down by a Mothership's beams beside an enemy as able to attack", () => {
     const state = martianFieldV7([
       own("KNIGHT", at(2, 2)),
       own("FIGHTER", at(1, 1)),
@@ -117,15 +117,22 @@ describe("the board's turn states of the viewer's units", () => {
       own("FIGHTER", at(3, 1)),
       foe("FIGHTER", at(2, 6)),
     ]);
-    const ids = [at(1, 1), at(2, 1), at(3, 1)]
-      .map((where) => unitAtV7(state, where).id)
-      .sort((left, right) => left - right);
-    const beamed = played(state, {
-      kind: "MASS_BEAM_DOWN",
-      unitId: unitAtV7(state, at(2, 2)).id,
-      passengerUnitIds: ids,
-      to: at(2, 5),
-    });
+    // `pulp_wars-eg3k` (7r146): three beams, one Grunt each (one Mass
+    // Beam Down before).
+    const beamed = [
+      [at(1, 1), at(2, 5)],
+      [at(2, 1), at(1, 4)],
+      [at(3, 1), at(2, 4)],
+    ].reduce(
+      (current, [from, to]) =>
+        played(current, {
+          kind: "BEAM_DOWN",
+          unitId: unitAtV7(state, at(2, 2)).id,
+          passengerUnitId: unitAtV7(state, from as CoordV7).id,
+          to: to as CoordV7,
+        }),
+      state,
+    );
     const { at: stateAt } = statesOf(beamed);
     for (const where of [at(2, 5), at(1, 4), at(2, 4)])
       expect(stateAt(where), `${where.x}/${where.y}`).toBe("ATTACK");

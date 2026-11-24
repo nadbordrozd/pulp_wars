@@ -321,7 +321,7 @@ the city trains more than it can pay for.
 - **Two chips.** An own unit with nothing left to do this turn says
   `Done this turn`. Bead `pulp_wars-2yc.109`: the chip reads what the engine
   still offers the handled unit (its Move spent: it moved, was beamed by a
-  Beam Down or a Mass Beam Down, or acted), Promote, Disband and Wait
+  Beam Down, a Saucer's or a Mothership's, or acted), Promote, Disband and Wait
   aside: `Can attack · can't move` while an attack is offered (an Attack
   or an attack-type ability, `isAttackCommandV7`), `Can act ·
 can't move` while another action is (a Capture, a free Tractor Beam), and
@@ -1035,8 +1035,8 @@ Roads, that text now describes the **Classic look** developer option
   - **Active** (not handled and it has not acted, no Move left): the thin
     cream ring as before.
   - **Can attack** (bead `pulp_wars-2yc.110`, the user's test of
-    2026-10-26): it has acted (it moved, was set down by a Beam Down or a
-    Mass Beam Down, or attacked with an Overrun, a Feast or a second shot
+    2026-10-26): it has acted (it moved, was set down by a Beam Down, a
+    Saucer's or a Mothership's, or attacked with an Overrun, a Feast or a second shot
     pending) and the engine still offers it an attack: the same ellipse
     broken into eight long dashes in the Attack mark's red `#ff655f` on the
     marks' dark casing, still (no pulse, no chevron). It reads from the

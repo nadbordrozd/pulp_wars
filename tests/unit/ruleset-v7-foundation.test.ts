@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r146");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -161,7 +161,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // BUILD_ICE_FORTRESS last; 83: the Witch and the Wyrm,
     // `pulp_wars-xt9c`, 7r140, appends SNOW_BALM.)
     // (84: the Heal button, `pulp_wars-6y2r`, 7r143, appends HEAL.)
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // (83: the Mothership's sequential beams, `pulp_wars-eg3k`, 7r146,
+    // remove MASS_BEAM_DOWN.)
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     // (Right after it since FROST_BOLT went with the one Freeze effect,

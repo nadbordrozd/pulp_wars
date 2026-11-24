@@ -60,6 +60,7 @@ import type {
   CrumbsV7,
   CuriosityV7,
   SugarRushStatusV7,
+  MothershipBeamsV7,
   MonsterStateV7,
   EggStatusV7,
   FactionIdV7,
@@ -483,6 +484,12 @@ export interface PlayerViewV7 {
    */
   readonly beamedThisTurn: readonly UnitId[];
   readonly tractorUsedThisTurn: readonly UnitId[];
+  /**
+   * `pulp_wars-eg3k` (7r146): the `mothershipBeams` entries of visible
+   * units (the Beam Downs each Mothership made this turn); absent when there
+   * is none, as in the state.
+   */
+  readonly mothershipBeams?: readonly MothershipBeamsV7[];
   /**
    * The Candy revision (docs/product/RULESET_7_CANDY.md section 12.14): the
    * `sugarRush` entries of visible units, sorted by unit ID.
@@ -1258,6 +1265,8 @@ export function viewForV7(
     tractorUsedThisTurn: state.tractorUsedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
+    // `pulp_wars-eg3k` (7r146): the beams of visible Motherships.
+    ...publicMothershipBeamsV7(state.mothershipBeams, visibleUnitIds),
     // The Candy revision (section 12.14): Rush, Splat, and Toss are public
     // on visible units; Crumbs are public on explored tiles, with the bite.
     sugarRush: state.sugarRush
@@ -1455,6 +1464,20 @@ export function viewForV7(
 }
 
 /** Section 3.4: the viewer's part of the score (`PlayerViewV7.score`). */
+/**
+ * `pulp_wars-eg3k` (7r146): the `mothershipBeams` of visible units, as a
+ * spread that leaves the key out when none is visible.
+ */
+function publicMothershipBeamsV7(
+  mothershipBeams: readonly MothershipBeamsV7[] | undefined,
+  visibleUnitIds: ReadonlySet<UnitId>,
+): { readonly mothershipBeams?: readonly MothershipBeamsV7[] } {
+  const visible = (mothershipBeams ?? [])
+    .filter((entry) => visibleUnitIds.has(entry.unitId))
+    .map((entry) => ({ unitId: entry.unitId, beams: entry.beams }));
+  return visible.length === 0 ? {} : { mothershipBeams: visible };
+}
+
 function scoreViewV7(
   state: GameStateV7,
   viewerId: PlayerId,

@@ -699,6 +699,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/martian-presentation-v7.ts::martianRoleUnlockTextV7": "SEAT",
   // (`martianAbilityDescriptionV7` read the role's Heat Sinks mechanic by
   // the caller's kind until it retired, `pulp_wars-bxpj`, 7r145.)
+  // `pulp_wars-eg3k` (7r146): it reads the role's Mothership beam mechanic
+  // by the caller's kind (the unit's, resolved).
+  "src/render/martian-presentation-v7.ts::martianAbilityDescriptionV7":
+    "KIND_RESOLVED",
   "src/render/martian-presentation-v7.ts::martianRecruitNotesV7": "SEAT",
   "src/render/martian-presentation-v7.ts::mindControlPreviewLinesV7":
     "KIND_RESOLVED",

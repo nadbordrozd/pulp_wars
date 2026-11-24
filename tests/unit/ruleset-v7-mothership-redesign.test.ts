@@ -2,19 +2,17 @@ import { describe, expect, it } from "vitest";
 import { chooseNormalCommandV7 } from "../../src/ai/v7";
 import {
   BEAM_DOWN_KILL_PRIORITY_V7,
-  BEAM_DOWN_PRIORITY_V7,
   martianProductionAdjustmentV7,
   martianArmyCountsV7,
 } from "../../src/ai/v7-martian";
 import {
   FORCE_FIELD_SHIELD_V7,
-  MASS_BEAM_DOWN_CAPACITY_V7,
-  MASS_BEAM_DOWN_RANGE_V7,
+  MOTHERSHIP_BEAM_RANGE_V7,
+  MOTHERSHIP_BEAMS_PER_TURN_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   forceFieldHoldsV7,
   parseCommandV7,
-  previewMassBeamDownV7,
   rechargeShieldsAtEndTurnV7,
   rechargeShieldsV7,
   roleMechanicsV7,
@@ -34,8 +32,9 @@ import {
 } from "../../src/render/gallery-demo-v7";
 import {
   BEAM_BADGE_V7,
-  MASS_BEAM_DOWN_LABEL_V7,
-  MASS_BEAM_DOWN_TOOLTIP_V7,
+  BEAM_DOWN_LABEL_V7,
+  BEAM_DOWN_TOOLTIP_V7,
+  MOTHERSHIP_BEAM_TOOLTIP_V7,
   SHIELD_CANOPY_LABEL_V7,
   martianAbilityDescriptionV7,
   martianAbilityNameV7,
@@ -64,10 +63,11 @@ import {
 
 // The Mothership redesign (`pulp_wars-ewpj`, 7r108; the current rules
 // section 20.7.1 and 20.3): the Mothership is the Martian army-mover and
-// anchor. Mass Beam Down sets up to three own units from within two tiles
-// of it down around an explored tile within three, each on the nearest
-// free tile; its Shield Canopy covers the units beside it at every
-// recharge. The field (tests/fixtures/v7-martian.ts): 11 x 11, seat 0
+// anchor. Its Beam Down (Mass Beam Down until `pulp_wars-eg3k`, 7r146, made
+// it sequential) sets one own unit from within two tiles of it down on an
+// explored tile within three, up to three times a turn (the beam counts
+// are tested in ruleset-v7-mothership-beams-eg3k.test.ts); its Shield
+// Canopy covers the units beside it at every recharge. The field (tests/fixtures/v7-martian.ts): 11 x 11, seat 0
 // (Martian) capital (8, 8), seat 1 capital (2, 8), villages (5, 5), (8, 5),
 // (5, 8), open Grass elsewhere.
 
@@ -86,17 +86,15 @@ const foe = (
 
 const idAt = (state: GameStateV7, where: CoordV7) => unitAtV7(state, where).id;
 
-const massBeam = (
+const beam = (
   state: GameStateV7,
   mothership: CoordV7,
-  passengers: readonly CoordV7[],
+  passenger: CoordV7,
   to: CoordV7,
-): Extract<CommandV7, { kind: "MASS_BEAM_DOWN" }> => ({
-  kind: "MASS_BEAM_DOWN",
+): Extract<CommandV7, { kind: "BEAM_DOWN" }> => ({
+  kind: "BEAM_DOWN",
   unitId: idAt(state, mothership),
-  passengerUnitIds: passengers
-    .map((where) => idAt(state, where))
-    .sort((left, right) => left - right),
+  passengerUnitId: idAt(state, passenger),
   to,
 });
 
@@ -111,7 +109,7 @@ const strikeForce = (extra: readonly MartianPieceV7[] = []): GameStateV7 =>
   ]);
 
 describe("the Mothership's numbers", () => {
-  it("is a tough 9-Coin anchor in the Knight's class, with Mass Beam Down and the Shield Canopy", () => {
+  it("is a tough 9-Coin anchor in the Knight's class, with Beam Down and the Shield Canopy", () => {
     const mothership = effectiveRoleRuleV7("KNIGHT", "MARTIAN");
     const knight = effectiveRoleRuleV7("KNIGHT", "ORIGINAL");
     expect(mothership.cost).toBe(9);
@@ -126,19 +124,21 @@ describe("the Mothership's numbers", () => {
       "ATTACK",
       "CAPTURE",
       "FLY",
-      "MASS_BEAM_DOWN",
+      "BEAM_DOWN",
       "TRACTOR_BEAM",
       "SHIELD_CANOPY",
     ]);
-    // The single Beam Down stays the Saucer's.
+    // The Saucer beams too, its own way.
     expect(effectiveRoleRuleV7("RAIDER", "MARTIAN").abilities).toContain(
       "BEAM_DOWN",
     );
+    expect(roleMechanicsV7("RAIDER", "MARTIAN").mothershipBeam).toBe(false);
     const mechanics = roleMechanicsV7("KNIGHT", "MARTIAN");
     expect(mechanics.shield).toBe(4);
     expect(mechanics.capacitySlots).toBe(2);
     expect(mechanics.heavyTractorBeam).toBe(true);
     expect(mechanics.shieldCanopy).toBe(true);
+    expect(mechanics.mothershipBeam).toBe(true);
     // Tougher than the Knight: more HP behind a Shield, a higher Defense,
     // a lower Attack.
     expect(mothership.maxHp + mechanics.shield).toBeGreaterThan(
@@ -149,85 +149,45 @@ describe("the Mothership's numbers", () => {
     // No other role of any faction has the canopy.
     expect(roleMechanicsV7("GUARD", "MARTIAN").shieldCanopy).toBe(false);
     expect(roleMechanicsV7("KNIGHT", "ORIGINAL").shieldCanopy).toBe(false);
-    expect([MASS_BEAM_DOWN_RANGE_V7, MASS_BEAM_DOWN_CAPACITY_V7]).toEqual([
+    expect([MOTHERSHIP_BEAM_RANGE_V7, MOTHERSHIP_BEAMS_PER_TURN_V7]).toEqual([
       3, 3,
     ]);
   });
 });
 
-describe("Mass Beam Down", () => {
-  it("is offered for every explored tile in reach, with the fresh units nearest the Mothership", () => {
+describe("the Mothership's Beam Down", () => {
+  it("is offered for every passenger within two and every explored tile in reach", () => {
     const state = strikeForce();
-    const commands = expectOfferedAcceptedV7(state, "MASS_BEAM_DOWN");
+    const commands = expectOfferedAcceptedV7(state, "BEAM_DOWN");
     expect(commands.length).toBeGreaterThan(0);
     const mothership = unitAtV7(state, at(2, 2));
     for (const command of commands) {
-      if (command.kind !== "MASS_BEAM_DOWN") throw new Error("kind");
+      if (command.kind !== "BEAM_DOWN") throw new Error("kind");
       expect(command.unitId).toBe(mothership.id);
       expect(
         Math.max(Math.abs(command.to.x - 2), Math.abs(command.to.y - 2)),
-      ).toBeLessThanOrEqual(MASS_BEAM_DOWN_RANGE_V7);
-      expect(command.passengerUnitIds.length).toBeLessThanOrEqual(3);
+      ).toBeLessThanOrEqual(MOTHERSHIP_BEAM_RANGE_V7);
     }
-    // The far tile (2, 5) takes all three Grunts.
-    expect(commands).toContainEqual(
-      massBeam(state, at(2, 2), [at(1, 1), at(2, 1), at(3, 1)], at(2, 5)),
-    );
+    expect(commands).toContainEqual(beam(state, at(2, 2), at(1, 1), at(2, 5)));
     // Four tiles away is out of reach.
     expect(
       commands.some(
         (command) =>
-          command.kind === "MASS_BEAM_DOWN" &&
+          command.kind === "BEAM_DOWN" &&
           command.to.x === 2 &&
           command.to.y === 6,
       ),
     ).toBe(false);
   });
 
-  it("places the passengers in unit-ID order on the target, then the tiles around it in (y, x) order", () => {
-    const state = strikeForce();
-    const command = massBeam(
-      state,
-      at(2, 2),
-      [at(1, 1), at(2, 1), at(3, 1)],
-      at(2, 5),
-    );
-    const preview = previewMassBeamDownV7(activeViewV7(state), command);
-    expect(preview?.placements.map((placement) => placement.to)).toEqual([
-      at(2, 5),
-      at(1, 4),
-      at(2, 4),
-    ]);
-    const { state: after, events } = playV7(state, command);
-    const ids = command.passengerUnitIds;
-    expect(
-      ids.map((id) => after.units.find((unit) => unit.id === id)?.at),
-    ).toEqual([at(2, 5), at(1, 4), at(2, 4)]);
-    expect(events.filter((event) => event.kind === "UNIT_BEAMED")).toHaveLength(
-      3,
-    );
-    expect(after.beamedThisTurn).toEqual([...ids]);
-    // The Mothership stays where it is and has used its action.
-    const mothership = unitAtV7(after, at(2, 2));
-    expect(mothership.activation.specialActed).toBe(true);
-    // An occupied target: the landings move to the next free tiles.
-    const blocked = strikeForce([foe("FIGHTER", 2, 5)]);
-    const around = previewMassBeamDownV7(
-      activeViewV7(blocked),
-      massBeam(blocked, at(2, 2), [at(1, 1), at(2, 1), at(3, 1)], at(2, 5)),
-    );
-    expect(around?.placements.map((placement) => placement.to)).toEqual([
-      at(1, 4),
-      at(2, 4),
-      at(3, 4),
-    ]);
-  });
-
-  it("leaves the beamed units able to attack but not to move", () => {
+  it("leaves the beamed unit able to attack but not to move, once a turn", () => {
     const state = strikeForce([foe("FIGHTER", 2, 7)]);
-    const { state: after } = playV7(
+    const { state: after, events } = playV7(
       state,
-      massBeam(state, at(2, 2), [at(1, 1), at(2, 1), at(3, 1)], at(2, 5)),
+      beam(state, at(2, 2), at(1, 1), at(2, 5)),
+    );
+    expect(events.filter((event) => event.kind === "UNIT_BEAMED")).toHaveLength(
+      1,
     );
     const grunt = unitAtV7(after, at(2, 5));
     const target = unitAtV7(after, at(2, 7));
@@ -240,120 +200,76 @@ describe("Mass Beam Down", () => {
       targetUnitId: target.id,
     });
     expect(offered.some((command) => command.kind === "MOVE")).toBe(false);
-    // Once a turn: no second beam of the Mothership, and the beamed units
-    // are no passengers again this turn.
-    expect(offeredV7(after, "MASS_BEAM_DOWN")).toEqual([]);
+    expect(after.beamedThisTurn).toEqual([grunt.id]);
+    // The Mothership stays where it is and has used its action.
+    expect(unitAtV7(after, at(2, 2)).activation.specialActed).toBe(true);
   });
 
-  it("rejects an illegal Mass Beam Down with its reason", () => {
+  it("rejects an illegal beam with its reason", () => {
     const state = strikeForce([own("FIGHTER", 2, 6)]);
     // Out of reach: four tiles away.
     expect(
-      rejectedV7(state, massBeam(state, at(2, 2), [at(1, 1)], at(2, 7))),
-    ).toEqual({
-      code: "MASS_BEAM_DOWN_NOT_LEGAL",
-      params: { reason: "OUT_OF_RANGE" },
-    });
+      rejectedV7(state, beam(state, at(2, 2), at(1, 1), at(2, 7))),
+    ).toEqual({ code: "INVALID_TILE", params: { action: "BEAM_DOWN" } });
     // A passenger beyond the pick-up range (no pick-up from a city).
     expect(
-      rejectedV7(state, massBeam(state, at(2, 2), [at(2, 6)], at(2, 4))),
+      rejectedV7(state, beam(state, at(2, 2), at(2, 6), at(2, 4))),
     ).toEqual({
-      code: "MASS_BEAM_DOWN_NOT_LEGAL",
+      code: "BEAM_DOWN_NOT_LEGAL",
       params: { reason: "NO_PASSENGER" },
     });
-    // An unexplored target.
+    // An unexplored tile.
     const hidden = unexploreV7(state, 0, [at(4, 4)]);
     expect(
-      rejectedV7(hidden, massBeam(hidden, at(2, 2), [at(1, 1)], at(4, 4))),
-    ).toEqual({
-      code: "INVALID_TILE",
-      params: { action: "MASS_BEAM_DOWN" },
-    });
-    // No room: the target and every tile around it are taken.
-    const ring = [
-      at(4, 4),
-      at(3, 3),
-      at(4, 3),
-      at(5, 3),
-      at(3, 4),
-      at(5, 4),
-      at(3, 5),
-      at(4, 5),
-      at(5, 5),
-    ].filter((where) => !(where.x === 5 && where.y === 5));
-    const crowded = strikeForce(
-      ring.map((where) => foe("FIGHTER", where.x, where.y)),
-    );
+      rejectedV7(hidden, beam(hidden, at(2, 2), at(1, 1), at(4, 4))),
+    ).toEqual({ code: "INVALID_TILE", params: { action: "BEAM_DOWN" } });
+    // An occupied tile.
+    const crowded = strikeForce([foe("FIGHTER", 4, 4)]);
     expect(
-      rejectedV7(crowded, massBeam(crowded, at(2, 2), [at(1, 1)], at(4, 4))),
-    ).toEqual({
-      code: "MASS_BEAM_DOWN_NOT_LEGAL",
-      params: { reason: "NO_ROOM" },
-    });
+      rejectedV7(crowded, beam(crowded, at(2, 2), at(1, 1), at(4, 4))),
+    ).toEqual({ code: "INVALID_TILE", params: { action: "BEAM_DOWN" } });
     // A Mothership that has used its action.
     const acted = martianFieldV7([
       own("KNIGHT", 2, 2, { activation: { attacked: true, attacksUsed: 1 } }),
       own("FIGHTER", 1, 1),
     ]);
     expect(
-      rejectedV7(acted, massBeam(acted, at(2, 2), [at(1, 1)], at(2, 4))),
+      rejectedV7(acted, beam(acted, at(2, 2), at(1, 1), at(2, 4))),
     ).toEqual({
       code: "UNIT_ALREADY_ACTED",
       params: { unitId: idAt(acted, at(2, 2)) },
     });
-    // A Saucer has no Mass Beam Down.
-    const saucer = martianFieldV7([own("RAIDER", 2, 2), own("FIGHTER", 1, 1)]);
+  });
+
+  it("no longer parses the retired Mass Beam Down", () => {
     expect(
-      rejectedV7(saucer, massBeam(saucer, at(2, 2), [at(1, 1)], at(2, 4))).code,
-    ).toBe("UNIT_ROLE_INVALID");
+      parseCommandV7({
+        kind: "MASS_BEAM_DOWN",
+        unitId: 1,
+        passengerUnitIds: [2, 3, 4],
+        to: { x: 2, y: 4 },
+      }).ok,
+    ).toBe(false);
+    expect(
+      parseCommandV7({
+        kind: "BEAM_DOWN",
+        unitId: 1,
+        passengerUnitId: 2,
+        to: { x: 2, y: 4 },
+      }).ok,
+    ).toBe(true);
   });
 
-  it("carries one to three passengers, listed once in ascending order", () => {
-    const base = {
-      kind: "MASS_BEAM_DOWN",
-      unitId: 1,
-      to: { x: 2, y: 4 },
-    } as const;
-    expect(parseCommandV7({ ...base, passengerUnitIds: [2, 3, 4] }).ok).toBe(
-      true,
-    );
-    expect(parseCommandV7({ ...base, passengerUnitIds: [] }).ok).toBe(false);
-    expect(parseCommandV7({ ...base, passengerUnitIds: [2, 3, 4, 5] }).ok).toBe(
-      false,
-    );
-    expect(parseCommandV7({ ...base, passengerUnitIds: [3, 2] }).ok).toBe(
-      false,
-    );
-    expect(parseCommandV7({ ...base, passengerUnitIds: [2, 2] }).ok).toBe(
-      false,
-    );
-    expect(parseCommandV7({ ...base, passengerUnitIds: [1] }).ok).toBe(false);
-  });
-
-  it("offers at most three fresh units, nearest first, and accepts a chosen set", () => {
-    // Four Grunts in reach; the one at (4, 2) is the farthest, and the one
-    // at (2, 3) has fired.
+  it("may carry a unit that has acted, which is only relocated", () => {
     const state = martianFieldV7([
       own("KNIGHT", 2, 2),
-      own("FIGHTER", 1, 2),
-      own("FIGHTER", 3, 2),
-      own("FIGHTER", 2, 1),
-      own("FIGHTER", 4, 2),
       own("FIGHTER", 2, 3, { activation: { attacked: true, attacksUsed: 1 } }),
     ]);
-    const command = offeredV7(state, "MASS_BEAM_DOWN").find(
-      (candidate) =>
-        candidate.kind === "MASS_BEAM_DOWN" &&
-        candidate.to.x === 2 &&
-        candidate.to.y === 5,
+    const result = applyCommandV7(
+      state,
+      activeIdV7(state),
+      beam(state, at(2, 2), at(2, 3), at(2, 5)),
     );
-    expect(command).toEqual(
-      massBeam(state, at(2, 2), [at(1, 2), at(3, 2), at(2, 1)], at(2, 5)),
-    );
-    // The reducer takes any legal set: the far Grunt and the one that
-    // fired (it is only relocated).
-    const chosen = massBeam(state, at(2, 2), [at(4, 2), at(2, 3)], at(2, 5));
-    const result = applyCommandV7(state, activeIdV7(state), chosen);
     expect(result.accepted).toBe(true);
   });
 });
@@ -429,9 +345,9 @@ describe("the Shield Canopy", () => {
 });
 
 describe("the Normal AI's Mothership", () => {
-  it("beams its strike force down onto a weak enemy out of their walking reach", () => {
+  it("beams a Grunt down onto a weak enemy out of their walking reach", () => {
     // A wounded Fighter five tiles from the Grunts: none can reach it on
-    // foot, but beamed around (2, 5) they shoot it on arrival.
+    // foot, but beamed beside it a Grunt shoots it on arrival.
     const state = strikeForce([foe("FIGHTER", 2, 6, { hp: 2 })]);
     const decision = chooseNormalCommandV7(activeViewV7(state));
     const units = new Set(
@@ -444,30 +360,15 @@ describe("the Normal AI's Mothership", () => {
       (candidate) =>
         "unitId" in candidate.command && units.has(candidate.command.unitId),
     );
-    expect(best?.command.kind).toBe("MASS_BEAM_DOWN");
+    expect(best?.command.kind).toBe("BEAM_DOWN");
     expect(best?.score.priority).toBe(BEAM_DOWN_KILL_PRIORITY_V7);
-    if (best?.command.kind !== "MASS_BEAM_DOWN") throw new Error("no beam");
-    const preview = previewMassBeamDownV7(activeViewV7(state), best.command);
+    if (best?.command.kind !== "BEAM_DOWN") throw new Error("no beam");
     expect(
-      preview?.placements.some(
-        (placement) =>
-          Math.max(
-            Math.abs(placement.to.x - 2),
-            Math.abs(placement.to.y - 6),
-          ) <= 2,
+      Math.max(
+        Math.abs(best.command.to.x - 2),
+        Math.abs(best.command.to.y - 6),
       ),
-    ).toBe(true);
-  });
-
-  it("without a shot, only delivers the army toward its target at the routine tier", () => {
-    const state = strikeForce([foe("FIGHTER", 9, 1)]);
-    const beams = chooseNormalCommandV7(activeViewV7(state)).candidates.filter(
-      (candidate) =>
-        candidate.command.kind === "MASS_BEAM_DOWN" &&
-        candidate.score.priority > 0,
-    );
-    for (const beam of beams)
-      expect(beam.score.priority).toBe(BEAM_DOWN_PRIORITY_V7);
+    ).toBeLessThanOrEqual(2);
   });
 
   it("still buys a Mothership for a six-unit front", () => {
@@ -497,88 +398,72 @@ describe("the Normal AI's Mothership", () => {
 
 describe("the Mothership's presentation", () => {
   it("names and explains its abilities on the unit card, the glossary, and the technology card", () => {
-    expect(martianAbilityNameV7("MASS_BEAM_DOWN", "MARTIAN")).toBe(
-      MASS_BEAM_DOWN_LABEL_V7,
+    expect(martianAbilityNameV7("BEAM_DOWN", "MARTIAN")).toBe(
+      BEAM_DOWN_LABEL_V7,
     );
     expect(martianAbilityNameV7("SHIELD_CANOPY", "MARTIAN")).toBe(
       SHIELD_CANOPY_LABEL_V7,
     );
-    expect(martianAbilityDescriptionV7("MASS_BEAM_DOWN", "MARTIAN")).toBe(
-      MASS_BEAM_DOWN_TOOLTIP_V7,
+    // `pulp_wars-eg3k` (7r146): the Mothership's Beam Down has its own
+    // text; the Saucer's keeps its own.
+    expect(martianAbilityDescriptionV7("BEAM_DOWN", "MARTIAN", "KNIGHT")).toBe(
+      MOTHERSHIP_BEAM_TOOLTIP_V7,
     );
-    expect(MASS_BEAM_DOWN_TOOLTIP_V7).toContain("up to three of your units");
+    expect(martianAbilityDescriptionV7("BEAM_DOWN", "MARTIAN", "RAIDER")).toBe(
+      BEAM_DOWN_TOOLTIP_V7,
+    );
+    expect(MOTHERSHIP_BEAM_TOOLTIP_V7).toContain("up to three times a turn");
     expect(martianRoleUnlockTextV7("KNIGHT")).toBe(
-      "Train Mothership (flies, Mass Beam Down, Tractor Beam, Shield Canopy)",
+      "Train Mothership (flies, Beam Down, Tractor Beam, Shield Canopy)",
     );
-    const glossary = roleGlossaryV7("KNIGHT", "MARTIAN").map(
-      (entry) => entry.name,
+    const glossary = roleGlossaryV7("KNIGHT", "MARTIAN");
+    expect(glossary.map((entry) => entry.name)).toEqual(
+      expect.arrayContaining(["Beam Down", "Shield Canopy"]),
     );
-    expect(glossary).toEqual(
-      expect.arrayContaining(["Mass Beam Down", "Shield Canopy"]),
-    );
-    expect(glossary).not.toContain("Beam Down");
-    expect(martianCommandLabelV7("MASS_BEAM_DOWN", "ORIGINAL")).toBe(
-      MASS_BEAM_DOWN_LABEL_V7,
+    expect(glossary.map((entry) => entry.name)).not.toContain("Mass Beam Down");
+    expect(
+      glossary.find((entry) => entry.name === "Beam Down")?.text,
+    ).toContain("three times a turn");
+    expect(martianCommandLabelV7("BEAM_DOWN", "ORIGINAL")).toBe(
+      BEAM_DOWN_LABEL_V7,
     );
   });
 
-  it("aims on the board: the tiles in reach, then the chosen tile's landings", () => {
+  it("aims on the board: a passenger, then a tile in reach", () => {
     const state = strikeForce();
     const view = activeViewV7(state);
     const commands = offeredV7(state);
     const mothership = idAt(state, at(2, 2));
-    const unchosen = {
-      kind: "MASS_BEAM_DOWN",
+    const pick = {
+      kind: "BEAM_DOWN",
       unitId: mothership,
-      chosen: null,
+      passengerUnitId: null,
     } as const;
-    const targets = martianPickTargetsV7(view, commands, unchosen);
-    // `pulp_wars-8vmy`: the three Grunts are passenger targets (a tap takes
-    // or leaves one); every other offered tile is a landing target.
+    const targets = martianPickTargetsV7(view, commands, pick);
     expect(
-      targets.filter((target) => target.family === "MASS_BEAM_DOWN_PASSENGER"),
+      targets.filter((target) => target.family === "BEAM_DOWN_PASSENGER"),
     ).toHaveLength(3);
-    expect(
-      targets.filter((target) => target.family === "MASS_BEAM_DOWN").length,
-    ).toBe(offeredV7(state, "MASS_BEAM_DOWN").length - 3);
-    // Before a tile is chosen no label clutters the tiles; the passengers
-    // wear the "Beam" badge.
-    expect(targets.some((target) => target.previewLabel !== undefined)).toBe(
-      false,
-    );
     const before: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(before, view, targets, unchosen, commands);
+    addMartianPickEntriesV7(before, view, targets, pick);
     expect(
-      before.filter((entry) => entry.label === BEAM_BADGE_V7),
-    ).toHaveLength(3);
-    // Chosen: the tile says how many land, and each landing names its unit.
-    const pick = { ...unchosen, chosen: at(2, 5) };
-    const chosen = martianPickTargetsV7(view, commands, pick);
-    expect(
-      chosen.find((target) => target.at.x === 2 && target.at.y === 5)
-        ?.previewLabel,
-    ).toBe("Beam 3 units");
-    const entries: BoardRenderPlanEntryV7[] = [];
-    addMartianPickEntriesV7(entries, view, chosen, pick, commands);
-    expect(
-      entries
-        .filter((entry) => entry.key.includes("MASS_BEAM_LANDING"))
-        .map((entry) => [entry.at, entry.label]),
-    ).toEqual([
-      [at(2, 5), "Grunt"],
-      [at(1, 4), "Grunt"],
-      [at(2, 4), "Grunt"],
-    ]);
+      targets.every((target) => target.previewLabel === BEAM_BADGE_V7),
+    ).toBe(true);
+    const chosen = { ...pick, passengerUnitId: idAt(state, at(1, 1)) };
+    const tiles = martianPickTargetsV7(view, commands, chosen);
+    expect(tiles.length).toBe(
+      offeredV7(state, "BEAM_DOWN").filter(
+        (command) =>
+          command.kind === "BEAM_DOWN" &&
+          command.passengerUnitId === chosen.passengerUnitId,
+      ).length,
+    );
+    expect(tiles.every((target) => target.family === "BEAM_DOWN")).toBe(true);
   });
 
-  it("plays in the gallery: the strike force lands and shoots", () => {
-    expect(galleryDemoCuesV7("MARTIAN", "KNIGHT")).toContain("MASS_BEAM_DOWN");
-    const scene = buildGalleryDemoSceneV7(
-      "MARTIAN",
-      "KNIGHT",
-      "MASS_BEAM_DOWN",
-    );
-    expect(scene?.command.kind).toBe("MASS_BEAM_DOWN");
+  it("plays in the gallery: a beamed Grunt lands and shoots", () => {
+    expect(galleryDemoCuesV7("MARTIAN", "KNIGHT")).toContain("BEAM_DOWN");
+    const scene = buildGalleryDemoSceneV7("MARTIAN", "KNIGHT", "BEAM_DOWN");
+    expect(scene?.command.kind).toBe("BEAM_DOWN");
     expect(
       scene?.events.events.some((event) => event.kind === "UNIT_BEAMED"),
     ).toBe(true);

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r145" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r146" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -156,8 +156,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r142",
   "pulp-wars-poc-7r143",
   "pulp-wars-poc-7r144",
+  "pulp-wars-poc-7r145",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r145.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r146.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -511,13 +512,14 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "DISEMBARK",
   "CHOOSE_CITY_REWARD",
   "END_TURN",
-  // The Mothership redesign (`pulp_wars-ewpj`, 7r108): the Mothership's
-  // Mass Beam Down, appended, so no earlier kind's position (read by the
-  // Normal AI's tie-break and every pinned command surface) moves. An
+  // The Mothership redesign (`pulp_wars-ewpj`, 7r108) appended the
+  // Mothership's `MASS_BEAM_DOWN` here; it retired with `pulp_wars-eg3k`
+  // (7r146), when the Mothership's Beam Down became `BEAM_DOWN`. Kinds
+  // appended after End Turn keep their order among themselves, and an
   // offered command list still ends with End Turn (`compareCommandsV7`).
-  "MASS_BEAM_DOWN",
   // The naval branch rebuilt (`pulp_wars-tzk6`, 7r137): the Ice Folk Ice
-  // Fortress, appended for the same reason.
+  // Fortress, appended so no earlier kind's position (read by the Normal
+  // AI's tie-break and every pinned command surface) moves.
   "BUILD_ICE_FORTRESS",
   // The Witch and the Wyrm (`pulp_wars-xt9c`, 7r140): the Ice Witch's Snow
   // Balm, appended for the same reason.
@@ -1708,6 +1710,14 @@ export interface GameStateV7 {
    */
   readonly tractorUsedThisTurn: readonly UnitId[];
   /**
+   * `pulp_wars-eg3k` (7r146): the Beam Downs each of the active player's
+   * Motherships (a role with the `mothershipBeam` mechanic) made this turn,
+   * sorted by `unitId`, each `beams` 1 to `MOTHERSHIP_BEAMS_PER_TURN_V7`.
+   * Emptied at the End Turn. The key is absent when the list is empty, so
+   * a state of a turn without a Mothership beam is the state of before.
+   */
+  readonly mothershipBeams?: readonly MothershipBeamsV7[];
+  /**
    * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.3): the
    * Rushed and Crashed units, sorted by `unitId`, at most one entry per
    * unit. Always empty in a match whose setup has no CANDY seat.
@@ -2059,6 +2069,14 @@ export interface BarricadeV7 {
 export interface IceTileV7 {
   readonly at: CoordV7;
   readonly ownerId: PlayerId;
+}
+
+/**
+ * `pulp_wars-eg3k` (7r146): a Mothership made `beams` Beam Downs this turn.
+ */
+export interface MothershipBeamsV7 {
+  readonly unitId: UnitId;
+  readonly beams: number;
 }
 
 /**

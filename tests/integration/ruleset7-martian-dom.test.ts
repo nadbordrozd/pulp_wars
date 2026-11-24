@@ -711,13 +711,9 @@ describe("Martian mobility UI", () => {
     const app = mount(controller, host);
     for (const at of [MARTIAN_FROZEN_V7.saucer, MARTIAN_FROZEN_V7.mothership]) {
       selectUnitAt(controller, host, at);
-      // The Mothership redesign (`pulp_wars-ewpj`): the Mothership's carrier
-      // button is Mass Beam Down.
-      const beam =
-        at === MARTIAN_FROZEN_V7.mothership
-          ? "martian-mass-beam-down"
-          : "martian-beam-down";
-      for (const action of [beam, "martian-tractor-beam"]) {
+      // `pulp_wars-eg3k` (7r146): the Mothership's carrier button is Beam
+      // Down again (Mass Beam Down from `pulp_wars-ewpj`).
+      for (const action of ["martian-beam-down", "martian-tractor-beam"]) {
         const frozen = requiredButton(action);
         expect(frozen.getAttribute("aria-disabled")).toBe("true");
         expect(frozen.dataset.disabledReason).toBe(MARTIAN_FROZEN_MOVED_V7);

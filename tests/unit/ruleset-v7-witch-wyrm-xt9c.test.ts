@@ -81,11 +81,11 @@ describe("the identity (pulp_wars-xt9c)", () => {
   // Freezes ice docks (`pulp_wars-jjzz`) took 7r141 after it, and the Ice
   // Folk sea beasts (`pulp_wars-lf1r`) 7r142.
   it("was 7r140 after 7r139, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
-    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r140");
-    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r139");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r146");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r146.current");
+    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r140");
+    expect(PRIOR_RULESET_7_IDS.at(-7)).toBe("pulp-wars-poc-7r139");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-7)).toBe(
       "pulpWars.save.v7r139.current",
     );
   });

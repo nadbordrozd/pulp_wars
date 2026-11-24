@@ -10,10 +10,9 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
 export type MartianUiFixtureNameV7 =
   | "martianUiFixtureV7"
   | "martianDuelFixtureV7"
-  // The Mothership redesign (`pulp_wars-ewpj`): a Mass Beam Down scene.
-  | "martianMassBeamFixtureV7"
-  // `pulp_wars-8vmy`: the same scene with a fourth unit to pick.
-  | "martianMassBeamPickFixtureV7"
+  // The Mothership redesign (`pulp_wars-ewpj`): a strike force under a
+  // Mothership; `pulp_wars-eg3k` (7r146): beamed down one at a time.
+  | "martianMothershipBeamFixtureV7"
   // The Mind Control revision (bead pulp_wars-b5f.3): a controlled unit of
   // each other kind.
   | "martianControlGoblinFixtureV7"

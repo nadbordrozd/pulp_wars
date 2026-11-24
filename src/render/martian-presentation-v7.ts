@@ -4,10 +4,11 @@ import {
   FORCE_FIELD_SHIELD_V7,
   HEAVY_TRACTOR_PULL_V7,
   HEAVY_TRACTOR_RANGE_V7,
-  MASS_BEAM_DOWN_CAPACITY_V7,
-  MASS_BEAM_DOWN_RANGE_V7,
+  MOTHERSHIP_BEAM_RANGE_V7,
+  MOTHERSHIP_BEAMS_PER_TURN_V7,
   beamDownPassengerLegalV7,
-  massBeamDownPassengerLegalV7,
+  mothershipBeamPassengerLegalV7,
+  mothershipBeamsUsedV7,
   TRACTOR_BEAM_RANGE_V7,
   UNIT_ROLE_IDS_V7,
   activationIsExhaustedV7,
@@ -22,6 +23,7 @@ import {
   unitIsFrozenV7,
   tractorBeamRuleV7,
   unitFactionV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type BeamDownPreviewV7,
   type CombatPreviewV7,
@@ -140,41 +142,32 @@ export const BEAM_DOWN_PICK_TILE_V7 = "Choose a tile next to the carrier";
 export const BEAM_BADGE_V7 = "Beam";
 export const BEAMING_BADGE_V7 = "Beaming";
 /**
- * The Mothership redesign (`pulp_wars-ewpj`, 7r108): Mass Beam Down and
- * the Shield Canopy.
+ * `pulp_wars-eg3k` (7r146): the Mothership's Beam Down, one unit a beam, up
+ * to three beams a turn (Mass Beam Down's multi-select, `pulp_wars-ewpj`
+ * and `pulp_wars-8vmy`, retired). The Mothership redesign (`pulp_wars-ewpj`,
+ * 7r108): the Shield Canopy.
  */
-export const MASS_BEAM_DOWN_LABEL_V7 = "Mass Beam Down";
-export const MASS_BEAM_DOWN_TOOLTIP_V7 = `Beam up to ${numberWord(MASS_BEAM_DOWN_CAPACITY_V7)} of your units from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away down around a tile up to ${MASS_BEAM_DOWN_RANGE_V7} tiles away, each on the nearest free tile. They can still attack but not move.`;
-export const MASS_BEAM_DOWN_PICK_V7 = "Choose where to beam your units down";
-export const MASS_BEAM_DOWN_CONFIRM_V7 = "Choose the tile again to beam down";
-/** The aiming panel's confirm of a chosen tile. */
-export const MASS_BEAM_DOWN_CONFIRM_LABEL_V7 = "Beam down";
-/**
- * `pulp_wars-8vmy`: the passengers are picked on the board. The aiming
- * panel's line ("Beam 2 of 3: tap your units to choose"), and the notice of
- * a tap on a fourth unit ("Up to 3").
- */
-export function massBeamDownCountTextV7(count: number): string {
-  return `Beam ${count} of ${MASS_BEAM_DOWN_CAPACITY_V7}: tap your units to choose`;
+export const MOTHERSHIP_BEAM_TOOLTIP_V7 = `Beam one of your units from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away down on a tile up to ${MOTHERSHIP_BEAM_RANGE_V7} tiles away, up to ${numberWord(MOTHERSHIP_BEAMS_PER_TURN_V7)} times a turn; the first beam is this unit's action. Each can still attack but not move.`;
+export const MOTHERSHIP_BEAM_PICK_TILE_V7 = `Choose a tile up to ${MOTHERSHIP_BEAM_RANGE_V7} tiles away`;
+export const MOTHERSHIP_BEAM_NO_PASSENGER_V7 = `No unit within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
+export const MOTHERSHIP_BEAM_NO_TILE_V7 = "No free tile in reach";
+export const MOTHERSHIP_BEAMS_SPENT_V7 = "No beams left this turn";
+/** The beams a Mothership has left this turn (0 to 3). */
+export function mothershipBeamsLeftV7(
+  view: Pick<PlayerViewV7, "mothershipBeams">,
+  unitId: number,
+): number {
+  return Math.max(
+    0,
+    MOTHERSHIP_BEAMS_PER_TURN_V7 -
+      ((view.mothershipBeams ?? []).find((entry) => entry.unitId === unitId)
+        ?.beams ?? 0),
+  );
 }
-export const MASS_BEAM_DOWN_FULL_V7 = `Up to ${MASS_BEAM_DOWN_CAPACITY_V7}`;
-/** The spoken name of a unit the Mothership may take, on the board. */
-export function massBeamDownPassengerLabelV7(
-  name: string,
-  hp: number,
-  maxHp: number,
-  state: "SELECTED" | "UNSELECTED" | "FULL",
-  acted: boolean,
-): string {
-  const unit = `the ${name}, ${hp} of ${maxHp} HP${acted ? ", has acted, so it is only moved" : ""}`;
-  return state === "SELECTED"
-    ? `Beaming ${unit}. Choose again to leave it behind`
-    : state === "FULL"
-      ? `${capitalized(unit)}, stays behind. ${MASS_BEAM_DOWN_FULL_V7} units: leave one behind first`
-      : `${capitalized(unit)}, stays behind. Choose to beam it too`;
+/** The Mothership's Beam Down button: "Beam Down (2 left)". */
+export function mothershipBeamLabelV7(left: number): string {
+  return `${BEAM_DOWN_LABEL_V7} (${left} left)`;
 }
-export const MASS_BEAM_DOWN_NO_PASSENGER_V7 = `No unit within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
-export const MASS_BEAM_DOWN_NO_TILE_V7 = "No free tile in reach";
 export const SHIELD_CANOPY_LABEL_V7 = "Shield Canopy";
 export const SHIELD_CANOPY_TOOLTIP_V7 = `Your units next to it recharge their Shield to ${FORCE_FIELD_SHIELD_V7} at the start and at the end of your turn, with no technology needed; at full HP one attack cannot kill them.`;
 /**
@@ -395,8 +388,14 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
   const walkers = martianRolesMoving("STRIDE").map(label);
   const flyers = martianRolesMoving("FLY").map(label);
   const projector = martianRolesWith("FORCE_FIELD").map(label);
-  const beamers = martianRolesWith("BEAM_DOWN").map(label);
-  const massBeamers = martianRolesWith("MASS_BEAM_DOWN").map(label);
+  const mothershipBeam = (role: UnitRoleIdV7): boolean =>
+    roleMechanicsV7(role, "MARTIAN").mothershipBeam;
+  const beamers = martianRolesWith("BEAM_DOWN")
+    .filter((role) => !mothershipBeam(role))
+    .map(label);
+  const motherships = martianRolesWith("BEAM_DOWN")
+    .filter(mothershipBeam)
+    .map(label);
   const canopies = martianRolesWith("SHIELD_CANOPY").map(label);
   const brains = martianRolesWith("MIND_CONTROL").map(label);
   const heavy = (role: UnitRoleIdV7): boolean =>
@@ -478,12 +477,8 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       BEAM_DOWN_LABEL_V7,
-      `a ${joinOr(beamers)} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
-    ],
-    // The Mothership redesign (`pulp_wars-ewpj`, 7r108).
-    [
-      MASS_BEAM_DOWN_LABEL_V7,
-      `a ${joinOr(massBeamers)} beams up to ${numberWord(MASS_BEAM_DOWN_CAPACITY_V7)} of your units from up to ${numberWord(BEAM_DOWN_PICKUP_RANGE_V7)} tiles away down around a tile up to ${numberWord(MASS_BEAM_DOWN_RANGE_V7)} tiles away, each on the nearest free tile; they can still attack but not move.`,
+      // `pulp_wars-eg3k` (7r146): the Mothership's beams, one unit each.
+      `a ${joinOr(beamers)} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; a ${joinOr(motherships)} beams one of your units from up to ${numberWord(BEAM_DOWN_PICKUP_RANGE_V7)} tiles away down on a tile up to ${numberWord(MOTHERSHIP_BEAM_RANGE_V7)} tiles away, up to ${numberWord(MOTHERSHIP_BEAMS_PER_TURN_V7)} times a turn, the first beam being its action; the unit can still attack but not move.`,
     ],
     [
       SHIELD_CANOPY_LABEL_V7,
@@ -530,8 +525,6 @@ export function martianAbilityNameV7(
       return "Force Field";
     case "BEAM_DOWN":
       return BEAM_DOWN_LABEL_V7;
-    case "MASS_BEAM_DOWN":
-      return MASS_BEAM_DOWN_LABEL_V7;
     case "SHIELD_CANOPY":
       return SHIELD_CANOPY_LABEL_V7;
     case "MIND_CONTROL":
@@ -565,10 +558,11 @@ export function martianAbilityDescriptionV7(
       return "Its ray also hits the unit directly behind the target for half the damage, friend or foe.";
     case "FORCE_FIELD":
       return `${FORCE_FIELD_NEEDS_TEXT_V7} own units next to it recharge their Shield to ${FORCE_FIELD_SHIELD_V7}. ${FORCE_FIELD_HOLDS_RULE_V7}`;
+    // `pulp_wars-eg3k` (7r146): the Mothership's Beam Down has its own.
     case "BEAM_DOWN":
-      return BEAM_DOWN_TOOLTIP_V7;
-    case "MASS_BEAM_DOWN":
-      return MASS_BEAM_DOWN_TOOLTIP_V7;
+      return role !== undefined && roleMechanicsV7(role, faction).mothershipBeam
+        ? MOTHERSHIP_BEAM_TOOLTIP_V7
+        : BEAM_DOWN_TOOLTIP_V7;
     case "SHIELD_CANOPY":
       return SHIELD_CANOPY_TOOLTIP_V7;
     case "MIND_CONTROL":
@@ -595,7 +589,6 @@ export function martianCommandLabelV7(
   faction: FactionIdV7,
 ): string | null {
   if (kind === "BEAM_DOWN") return BEAM_DOWN_LABEL_V7;
-  if (kind === "MASS_BEAM_DOWN") return MASS_BEAM_DOWN_LABEL_V7;
   if (kind === "MIND_CONTROL") return MIND_CONTROL_LABEL_V7;
   if (kind === "TRACTOR_BEAM") return TRACTOR_BEAM_LABEL_V7;
   if (kind === "RALLY" && faction === "MARTIAN")
@@ -637,7 +630,6 @@ export function martianRoleUnlockTextV7(role: UnitRoleIdV7): string {
     // field alone ("Force Field with Force Fields" at the root before).
     ...(abilities.includes("FORCE_FIELD") ? ["Force Field"] : []),
     ...(abilities.includes("BEAM_DOWN") ? [BEAM_DOWN_LABEL_V7] : []),
-    ...(abilities.includes("MASS_BEAM_DOWN") ? [MASS_BEAM_DOWN_LABEL_V7] : []),
     ...(abilities.includes("TRACTOR_BEAM") ? [TRACTOR_BEAM_LABEL_V7] : []),
     ...(abilities.includes("SHIELD_CANOPY") ? [SHIELD_CANOPY_LABEL_V7] : []),
   ];
@@ -998,6 +990,19 @@ export function beamDownUnavailableTextV7(
   )
     return null;
   if (unitIsFrozenV7(view, saucer)) return MARTIAN_FROZEN_MOVED_V7;
+  // `pulp_wars-eg3k` (7r146): a Mothership names its spent beams, then
+  // its action, passengers, and tiles by its own rules.
+  if (unitRoleMechanicsV7(view, saucer).mothershipBeam) {
+    const used = mothershipBeamsUsedV7(view.mothershipBeams, saucer.id);
+    if (used >= MOTHERSHIP_BEAMS_PER_TURN_V7) return MOTHERSHIP_BEAMS_SPENT_V7;
+    if (used === 0 && primaryActionUsedV7(saucer.activation))
+      return MARTIAN_ACTED_V7;
+    return view.units.some((unit) =>
+      mothershipBeamPassengerLegalV7(view, saucer, unit, view.beamedThisTurn),
+    )
+      ? MOTHERSHIP_BEAM_NO_TILE_V7
+      : MOTHERSHIP_BEAM_NO_PASSENGER_V7;
+  }
   if (primaryActionUsedV7(saucer.activation)) return MARTIAN_ACTED_V7;
   // `pulp_wars-1wy.3`: a carrier that moved may still Beam Down (a moved
   // carrier is handled, so `handled` no longer hides the reason); the
@@ -1011,41 +1016,6 @@ export function beamDownUnavailableTextV7(
   return passengers.length === 0
     ? BEAM_DOWN_NO_PASSENGER_V7
     : BEAM_DOWN_NO_TILE_V7;
-}
-
-/**
- * The Mothership redesign (`pulp_wars-ewpj`, 7r108): why an own Mothership
- * has no Mass Beam Down: Frozen, its action used, no passenger within
- * `BEAM_DOWN_PICKUP_RANGE_V7`, or no free tile in reach; null when one is
- * offered, when it is not the viewer's to command now, or when it arrived
- * this turn.
- */
-export function massBeamDownUnavailableTextV7(
-  view: PlayerViewV7,
-  unitId: number,
-  offered: boolean,
-): string | null {
-  if (offered) return null;
-  const mothership = view.units.find((unit) => unit.id === unitId);
-  if (
-    mothership === undefined ||
-    !ownActorNow(view, mothership) ||
-    !(unitRoleRuleV7(view, mothership).abilities as readonly string[]).includes(
-      "MASS_BEAM_DOWN",
-    ) ||
-    activationIsExhaustedV7(mothership.activation)
-  )
-    return null;
-  if (unitIsFrozenV7(view, mothership)) return MARTIAN_FROZEN_MOVED_V7;
-  if (primaryActionUsedV7(mothership.activation)) return MARTIAN_ACTED_V7;
-  const passengers = view.units.filter(
-    (unit) =>
-      !primaryActionUsedV7(unit.activation) &&
-      massBeamDownPassengerLegalV7(view, mothership, unit, view.beamedThisTurn),
-  );
-  return passengers.length === 0
-    ? MASS_BEAM_DOWN_NO_PASSENGER_V7
-    : MASS_BEAM_DOWN_NO_TILE_V7;
 }
 
 /**
