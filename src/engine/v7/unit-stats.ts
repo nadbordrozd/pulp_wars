@@ -8,7 +8,6 @@ import {
   PROMOTION_HP_V7,
   chargeRunUpMaximumTilesV7,
   attackIsChargeV7,
-  attackIsRayV7,
   boardableAtV7,
   unitIsSubmergedV7,
   isIceAtV7,
@@ -67,7 +66,7 @@ import {
 } from "./ice-folk";
 import {
   controlledByBrainV7,
-  isCoolingV7,
+  rayPowerV7,
   shieldOfV7,
   unitShieldMaximumV7,
 } from "./martian";
@@ -103,7 +102,7 @@ export type UnitStatModifierSourceV7 =
   | "CHARGE"
   // Revision 20: the Charge! run-up of a Triceratops that moved this turn.
   | "RUN_UP"
-  // The Martian revision: a heat ray at half power (moved or Cooling), and
+  // The Martian revision: a heat ray at half power (after a Move), and
   // the Shield a Force Field added above the unit's own maximum.
   | "HALF_POWER"
   | "FORCE_FIELD"
@@ -195,13 +194,12 @@ export interface PublicDinosaurMechanicsV7 {
 /**
  * The Martian revision (section 11): the Martian mechanics of a unit of the
  * Martian kind. `rayPower` is what an `ATTACK` made now would be (null for
- * a unit without a heat ray or afloat); `cooling` is whether its next ray
- * is halved by Cooling; `mindControl` is a Brain's cooldown entry
- * (`cooldown`: the remaining `turnsRemaining`, or null when ready), the
- * units it controls (the Mind Control revision: `controlled`; any number
+ * a unit without a heat ray or afloat); `mindControl` is a Brain's block:
+ * the units it controls (the Mind Control revision: `controlled`; any number
  * since `pulp_wars-ev6q`, 7r129, which dropped the limit and
- * `controlLimit`). `capacitySlots` is 0 for a mind-controlled unit
- * (it has no home).
+ * `controlLimit`; the Martian strength pass, `pulp_wars-bxpj`, 7r145, retired
+ * Cooling and the Mind Control cooldown, so `cooling` and `cooldown` are
+ * gone). `capacitySlots` is 0 for a mind-controlled unit (it has no home).
  */
 export interface PublicMartianMechanicsV7 {
   readonly shield: number;
@@ -209,7 +207,6 @@ export interface PublicMartianMechanicsV7 {
   readonly capacitySlots: number;
   readonly movementMode: "GROUND" | "STRIDE" | "FLY";
   readonly rayPower: "FULL" | "HALF" | null;
-  readonly cooling: boolean;
   readonly pierce: boolean;
   readonly forceField: boolean;
   /**
@@ -218,7 +215,6 @@ export interface PublicMartianMechanicsV7 {
    */
   readonly shieldCanopy: boolean;
   readonly mindControl: {
-    readonly cooldown: number | null;
     readonly controlled: number;
   } | null;
 }
@@ -470,16 +466,16 @@ export function publicUnitStatsV7(
   const controlled = isMindControlledV7(state, unit.id);
   const shieldMaximum = unitShieldMaximumV7(state, unit);
   const shield = shieldOfV7(state.shields, unit.id);
-  const cooling = isCoolingV7(state.cooling, unit.id);
-  // Section 6.1: half power while Cooling, or (during its owner's turn,
-  // before the Start Turn reset) after it moved this turn.
-  const rayPower: "FULL" | "HALF" | null = !attackIsRayV7(state, unit)
-    ? null
-    : cooling ||
-        (state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
-          unit.activation.moved)
-      ? "HALF"
-      : "FULL";
+  // Section 6.1 (the Martian strength pass, `pulp_wars-bxpj`, 7r145): half
+  // power (during its owner's turn, before the Start Turn reset) after it
+  // moved this turn; no Cooling.
+  const ray = rayPowerV7(
+    state,
+    unit,
+    state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
+      unit.activation.moved,
+  );
+  const rayPower: "FULL" | "HALF" | null = ray === "NONE" ? null : ray;
   const mechanics = unitRoleMechanicsV7(state, unit);
   const growthStage = unitGrowthStageV7(state, unit);
   const alpha = embarked ? 0 : unitAlphaAttack2V7(state, unit);
@@ -623,9 +619,7 @@ export function publicUnitStatsV7(
                   -halfPower2,
                   "HALF_POWER",
                   "Half power",
-                  cooling
-                    ? "Cooling: the heat ray fires at half power until the end of its owner's next turn."
-                    : "A heat ray fires at half power after the unit moved this turn.",
+                  "A heat ray fires at half power after the unit moved this turn.",
                   2,
                 ),
               ]
@@ -884,7 +878,6 @@ export function publicUnitStatsV7(
             capacitySlots: controlled ? 0 : mechanics.capacitySlots,
             movementMode: mechanics.movementMode,
             rayPower,
-            cooling,
             pierce: !embarked && role.abilities.includes("PIERCE"),
             // The Martian pass (`pulp_wars-w49.14`, 7r52): a Projector
             // projects the field once its owner has Force Fields.
@@ -895,10 +888,6 @@ export function publicUnitStatsV7(
             shieldCanopy: !embarked && mechanics.shieldCanopy,
             mindControl: role.abilities.includes("MIND_CONTROL")
               ? {
-                  cooldown:
-                    state.mindControlCooldowns.find(
-                      (entry) => entry.unitId === unit.id,
-                    )?.turnsRemaining ?? null,
                   controlled: controlledByBrainV7(state.mindControlled, unit.id)
                     .length,
                 }

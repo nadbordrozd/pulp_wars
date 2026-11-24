@@ -25,7 +25,6 @@ import {
   HEX_COOLDOWN_TURNS_V7,
   TENTACLE_LIFETIME_V7,
   TENTACLE_RANGE_V7,
-  MIND_CONTROL_COOLDOWN_TURNS_V7,
   MASS_BEAM_DOWN_CAPACITY_V7,
   PROMOTION_KILLS_V7,
   RAMPAGE_ATTACKS_V7,
@@ -56,7 +55,6 @@ import {
   terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
   attackPlaguesV7,
-  rayOverheatsV7,
   attackIsChargeV7,
   canEnterTerrainV7,
   chargeRunUpAttack2V7,
@@ -262,7 +260,6 @@ import {
 import {
   absorbHitV7,
   forceFieldHoldsV7,
-  isCoolingV7,
   beamDownCarrierReadyV7,
   beamDownDestinationLegalV7,
   beamDownLandingLegalV7,
@@ -1574,11 +1571,6 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     rule.abilities.includes("RALLY") &&
-    // The Martian pass, correction: a Cooling Brain cannot command.
-    !(
-      unitRoleMechanicsV7(view, unit).rallyCools &&
-      isCoolingV7(view.cooling, unit.id)
-    ) &&
     view.units.some((target) => isRallyTargetV7(view, unit, target))
   )
     candidates.push({ kind: "RALLY", unitId: unit.id });
@@ -4341,9 +4333,9 @@ function publicBeamDownDestinationsV7(
 
 /**
  * The Mind Control revision (section 3): the legal Mind Control targets of
- * an own Brain that is ready (land form, no primary action used): none
- * while it has a cooldown entry (since `pulp_wars-ev6q`, 7r129, it holds
- * any number of units; a limit of 3 blocked it before); otherwise every
+ * an own Brain that is ready (land form, no primary action used; since
+ * `pulp_wars-ev6q`, 7r129, it holds any number of units, and since the
+ * Martian strength pass, `pulp_wars-bxpj`, 7r145, it has no cooldown): every
  * visible hostile unit that `mindControlTargetBlockV7` (the
  * reducer's own per-target check) accepts: since bolder abilities
  * (`pulp_wars-w49.42`, 7r99) any adjacent one that is not an Egg, a
@@ -4354,8 +4346,6 @@ function publicMindControlTargetsV7(
   view: PlayerViewV7,
   brain: PlayerViewV7["units"][number],
 ): readonly PlayerViewV7["units"][number][] {
-  if (view.mindControlCooldowns.some((entry) => entry.unitId === brain.id))
-    return [];
   return view.units
     .filter((target) => {
       const tile = tileAtView(view, target.at);
@@ -4534,8 +4524,6 @@ export interface MindControlPreviewV7 {
   readonly maxHp: number;
   /** The units the Brain controls afterwards (no limit since 7r129). */
   readonly controlledAfter: number;
-  /** The cooldown the Mind Control starts. */
-  readonly cooldownTurns: number;
   /**
    * Visible units released because the target is their Brain (duplicate
    * Martian seats only).
@@ -4574,7 +4562,6 @@ export function previewMindControlV7(
     maxHp: target.maxHp,
     controlledAfter:
       controlledByBrainV7(view.mindControlled, unitId).length + 1,
-    cooldownTurns: MIND_CONTROL_COOLDOWN_TURNS_V7,
     releasedUnitIds: controlledByBrainV7(view.mindControlled, targetUnitId),
   };
 }
@@ -12614,12 +12601,7 @@ function publicCombatPreviewCore(
   );
   // The Martian revision section 6.1: the halving of a half-power ray is
   // already in the public Attack total (the `HALF_POWER` modifier).
-  const rayPower = rayPowerV7(
-    view,
-    view.cooling,
-    attacker,
-    attacker.activation.moved,
-  );
+  const rayPower = rayPowerV7(view, attacker, attacker.activation.moved);
   const targetTile = tileAtView(view, target.at);
   if (targetTile?.explored !== true) return null;
   // Revision 19 Acid: a land-form Spitter's attack ignores the defender's
@@ -13146,13 +13128,6 @@ function publicCombatPreviewCore(
     defenderArmoured,
     attackerArmoured,
     rayPower,
-    // The Martian pass (`pulp_wars-w49.14`, 7r52): not with Heat Sinks (a
-    // viewer's own Ray Gunner; another player's research is not public, so
-    // its ray is read as overheating).
-    coolingApplied:
-      rayPower === "FULL" &&
-      (attacker.ownerId !== view.viewer.id ||
-        rayOverheatsV7(view, attacker, view.viewer.researchedTechs)),
     defenderShieldDamage,
     attackerShieldDamage,
     shatters,

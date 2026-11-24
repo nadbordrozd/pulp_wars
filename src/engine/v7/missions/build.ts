@@ -688,9 +688,7 @@ export function buildMissionStateV7(
     eggs,
     // A Martian seat's units start at their full Shield.
     shields: withFullShieldsV7({ players, mindControlled: [] }, [], units),
-    cooling: [],
     mindControlled: [],
-    mindControlCooldowns: [],
     frozen: [],
     burrowed: [],
     surfacedThisTurn: [],

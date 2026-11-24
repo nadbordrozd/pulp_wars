@@ -32,13 +32,7 @@ const captured300: PlayerViewV7 = {
     ) as {
       readonly view: Omit<
         PlayerViewV7,
-        | "graves"
-        | "plagued"
-        | "bitten"
-        | "shields"
-        | "cooling"
-        | "mindControlled"
-        | "mindControlCooldowns"
+        "graves" | "plagued" | "bitten" | "shields" | "mindControlled"
       >;
     }
   ).view,
@@ -46,10 +40,9 @@ const captured300: PlayerViewV7 = {
   plagued: [],
   bitten: [],
   // The Martian revision's neutral side lists.
+  // (`cooling` and `mindControlCooldowns` retired in 7r145.)
   shields: [],
-  cooling: [],
   mindControlled: [],
-  mindControlCooldowns: [],
   // The frozen sea: no ice.
   ice: [],
   // The giants' signatures (`pulp_wars-w49.30`): no held victim.
@@ -105,7 +98,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // Ice Folk Freeze (`pulp_wars-w49.37`) adds the empty `frozen` list
       // (was 5aa9c7…3388, the same view otherwise), and the empty
       // `curiosities` list the round-2 gate rule reads (was e88ae8…1325).
-      "c35bcdde78b4cfbb1b5795137eed988d27b6c163314c26aed200bf38ecd77ffb",
+      // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retires the
+      // empty `cooling` and `mindControlCooldowns` lists (was c35bcd…7ffb,
+      // which the same view with both empty lists still hashes to).
+      "2d0b31517d6917255adfc377f16355334fb90fdb0c784d69b891c00eafaa140f",
     );
 
     const planned = drain(measured.view, commands, 113);

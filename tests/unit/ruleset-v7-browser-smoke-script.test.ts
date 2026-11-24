@@ -357,14 +357,13 @@ describe("Ruleset 7 browser smoke script", () => {
       'JSON.stringify(["MARTIAN", "UNDEAD", "GOBLIN", "DINOSAUR"])',
     );
     expect(probe).not.toContain("launchWithFastForward");
-    // The ray: "Full power" in the dock, the preview's power and Cooling
-    // lines on the cursor, the shooter Cooling after the shot.
+    // The ray: "Full power" in the dock, the preview's power on the
+    // cursor, the shooter having attacked after the shot (its Cooling line
+    // and entry went with Cooling, `pulp_wars-bxpj`, 7r145).
     const preview = probe.indexOf(`rayPreview.includes("Full power")`);
     expect(preview).toBeGreaterThan(-1);
-    expect(probe).toContain(
-      `rayPreview.includes("Leaves it Cooling next turn")`,
-    );
-    expect(probe).toContain("entry.firedThisTurn");
+    expect(probe).not.toContain("Leaves it Cooling next turn");
+    expect(probe).toContain("unit.activation.attacksUsed > 0");
     // Beam Down: the button in the dock, then the passenger and a tile on
     // the board (bead pulp_wars-b5f.8: the dock names no tile, and the
     // board's targets are named without coordinates; bead pulp_wars-9im:
@@ -886,7 +885,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r144.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r145.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1170,7 +1169,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
     },
     persisted: {
       version: 7,
-      rulesetId: "pulp-wars-poc-7r144",
+      rulesetId: "pulp-wars-poc-7r145",
       commandIndex: 3,
     },
     ordinaryBoundary: {

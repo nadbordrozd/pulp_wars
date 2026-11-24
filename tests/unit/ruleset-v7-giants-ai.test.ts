@@ -1038,16 +1038,14 @@ describe("Thunder Stomp: against a Brontosaurus", () => {
 });
 
 describe("Overstride: the Colossus's own seat", () => {
-  // The Colossus on (4, 3), a Fighter beside it as a screen, and a
-  // Catapult two tiles behind the Fighter.
-  const scene = (cooling: boolean, fighter = 12) =>
+  // The Colossus on (4, 3), a screen beside it, and a Catapult two tiles
+  // behind the screen. The Martian strength pass (`pulp_wars-bxpj`, 7r145):
+  // no Cooling gate; a Guard screen survives the full-power ray (14 of 17),
+  // a Fighter does not (16 of 12).
+  const scene = (screen: "GUARD" | "FIGHTER") =>
     field(
       ["MARTIAN", "ORIGINAL"],
-      [
-        own(GIANT, 4, 3, cooling ? { cooling: "COOLING" } : {}),
-        foe("FIGHTER", 5, 3, { hp: fighter }),
-        foe("CATAPULT", 7, 3),
-      ],
+      [own(GIANT, 4, 3), foe(screen, 5, 3), foe("CATAPULT", 7, 3)],
     );
   const strides = (state: GameStateV7) =>
     unitCandidatesV7(state, at(4, 3), "MOVE").filter(
@@ -1057,8 +1055,8 @@ describe("Overstride: the Colossus's own seat", () => {
         same(candidate.command.path[0] ?? at(0, 0), at(5, 3)),
     );
 
-  it("strides over the screen to the Catapult while it is Cooling, the trample counted as its preview has it", () => {
-    const state = scene(true);
+  it("strides over a screen it cannot kill to the Catapult, the trample counted as its preview has it", () => {
+    const state = scene("GUARD");
     const stride = strides(state)[0];
     if (stride?.command.kind !== "MOVE") throw new Error("no stride");
     const trample = previewTrampleV7(
@@ -1086,15 +1084,12 @@ describe("Overstride: the Colossus's own seat", () => {
     });
   });
 
-  it("stands and fires its full ray when it is not Cooling", () => {
-    const state = scene(false);
-    for (const stride of strides(state))
-      expect(stride.score.priority).toBeLessThan(
-        ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7,
-      );
+  it("stands and kills the screen with its full ray first", () => {
+    const state = scene("FIGHTER");
     expect(unitCommands(policyTurn(state).commands)[0]).toMatchObject({
       kind: "ATTACK",
       unitId: unitIdAtV7(state, at(4, 3)),
+      targetUnitId: unitIdAtV7(state, at(5, 3)),
     });
   });
 
@@ -1104,7 +1099,7 @@ describe("Overstride: the Colossus's own seat", () => {
     const state = field(
       ["MARTIAN", "ORIGINAL"],
       [
-        own(GIANT, 4, 3, { cooling: "COOLING" }),
+        own(GIANT, 4, 3),
         foe("FIGHTER", 5, 3, { hp: TRAMPLE_DAMAGE_V7 }),
         foe("GUARD", 9, 3),
       ],

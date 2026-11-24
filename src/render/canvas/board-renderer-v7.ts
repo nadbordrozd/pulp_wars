@@ -165,7 +165,6 @@ import {
 } from "./goblin-canvas-v7";
 import {
   FLYER_LIFT_MASTER_PX_V7,
-  drawCoolingGlyphV7,
   drawFlyerShadowV7,
   drawMartianBadgeV7,
   controlHaloPulseV7,
@@ -877,7 +876,7 @@ export interface MapCommandTargetV7 {
   readonly previewNote?: string;
   /**
    * The Martian revision: a note that is the same for each of the selected
-   * unit's targets (a ray's power and its Cooling), drawn only on the
+   * unit's targets (a ray's power), drawn only on the
    * focused target (or the only one), so a row of targets stays calm.
    */
   readonly previewFocusNote?: string;
@@ -1289,7 +1288,7 @@ export interface BoardRenderPlanEntryV7 {
    */
   readonly swallowed?: SwallowedBadgeV7;
   /**
-   * UNIT only, the Martian revision: the Shield, Cooling, flying and afloat
+   * UNIT only, the Martian revision: the Shield, flying and afloat
    * markers of a visible Martian unit, and the control visual of a
    * mind-controlled unit of any kind.
    */
@@ -4872,9 +4871,8 @@ export function drawBoardV7(input: {
         )
           drawDinosaurBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Martian revision: the saucer badge over Human stand-in art
-        // (the classic look), then (below) the Cooling glyph, or
-        // a controlled unit's halo and brain chip, in the status slot right
-        // of the sprite.
+        // (the classic look), then (below) a controlled unit's halo and
+        // brain chip, in the status slot right of the sprite.
         if (entry.kind === "UNIT" && entry.faction === "MARTIAN" && !factionArt)
           drawMartianBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Ice Folk revision: the snow-capped peak badge over Human stand-in art
@@ -4925,11 +4923,7 @@ export function drawBoardV7(input: {
               chibi: chibiPiece,
               highContrast: input.highContrast ?? false,
             });
-          } else if (entry.martian.cooling)
-            drawCoolingGlyphV7(context, x, y, camera.zoom, {
-              chibi: chibiPiece,
-              highContrast: input.highContrast ?? false,
-            });
+          }
         }
         if (entry.kind === "UNIT")
           for (const [slot, affliction] of (
@@ -8244,7 +8238,7 @@ function commandMapTargets(
           ? dinosaurCombatNoteV7(preview, view)
           : null;
       // The Martian revision (Martian matches only): the Shield absorbed on
-      // either side, ray power and Cooling, the Disintegrator, and Pierce.
+      // either side, ray power, the Disintegrator, and Pierce.
       const martian = martianMatch
         ? martianAttackTargetExtrasV7(view, preview)
         : null;

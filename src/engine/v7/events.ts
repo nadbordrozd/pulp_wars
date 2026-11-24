@@ -226,8 +226,8 @@ export interface CombatPreviewV7 {
    * otherwise `NONE`; `attack2` includes the halving.
    */
   readonly rayPower: "FULL" | "HALF" | "NONE";
-  /** The attack is a full-power ray and leaves the attacker Cooling. */
-  readonly coolingApplied: boolean;
+  // `coolingApplied` retired with Cooling (the Martian strength pass,
+  // `pulp_wars-bxpj`, 7r145).
   /**
    * The Martian revision (section 5.3): what the defender's Shield absorbs
    * of the hit. `damageToDefender` stays HP damage; the whole hit is the sum.

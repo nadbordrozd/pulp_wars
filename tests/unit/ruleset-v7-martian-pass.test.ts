@@ -44,7 +44,6 @@ import {
   projectEventsV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
-  rayOverheatsV7,
   roleMechanicsV7,
   technologyCapabilitiesV7,
   viewForV7,
@@ -65,8 +64,6 @@ import {
   FORCE_FIELD_HOLDS_V7,
   FORCE_FIELD_NEEDS_TEXT_V7,
   martianCombatLinesV7,
-  HEAT_SINKS_UNLOCK_TEXT_V7,
-  HEAT_SINK_NOTE_V7,
   martianAbilityDescriptionV7,
   martianHelpRulesV7,
   martianRoleUnlockTextV7,
@@ -102,7 +99,7 @@ import {
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
 // the Force Fields technology; Heat Sinks (the Martian Fieldcraft: a Ray
-// Gunner does not overheat); Martian seats in the Normal AI's army play
+// Gunner did not overheat until Cooling went in 7r145); Martian seats in the Normal AI's army play
 // with their research order, shares, and unit rules; the lab
 // `LAB_MARTIAN_MID`. Two-seat field (tests/fixtures/v7-martian.ts, seed-2
 // Dry Land, 11 x 11): seat 0 capital (8, 8), seat 1 capital (2, 8),
@@ -205,33 +202,37 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-93, -91)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-94, -92)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-93, -91)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-94, -92)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
   });
 
   it("registers Heat Sinks and the Force Field gate on the Martian tree and moves no number", () => {
-    // One role mechanic: the Ray Gunner's heat sink, and no other role's.
-    for (const faction of FACTIONS)
-      for (const role of ROSTER)
-        expect(
-          roleMechanicsV7(role, faction).heatSink,
-          `${faction} ${role}`,
-        ).toBe(faction === "MARTIAN" && role === "MARKSMAN");
-    // One unlock kind, on the Martian Fieldcraft and nowhere else.
+    // The Martian strength pass (`pulp_wars-bxpj`, 7r145): the Ray Gunner's
+    // heat sink (the `heatSink` mechanic and the `HEAT_SINKS` unlock) went
+    // with Cooling; Heat Sinks is the Human Fieldcraft under its own name.
     for (const faction of FACTIONS)
       for (const node of factionTreeV7(faction).nodes)
         expect(
-          node.unlocks.some((unlock) => unlock.kind === "HEAT_SINKS"),
+          node.unlocks.some(
+            (unlock) => (unlock.kind as string) === "HEAT_SINKS",
+          ),
           `${faction} ${node.id}`,
-        ).toBe(faction === "MARTIAN" && node.id === "FIELDCRAFT");
+        ).toBe(false);
+    expect(
+      factionTreeV7("MARTIAN").nodes.find((node) => node.id === "FIELDCRAFT")
+        ?.unlocks,
+    ).toEqual(
+      factionTreeV7("ORIGINAL").nodes.find((node) => node.id === "FIELDCRAFT")
+        ?.unlocks,
+    );
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.MARTIAN).toEqual({
       FORTIFICATION: "Force Fields",
       EXPLOSIVES: "Disintegrator",
@@ -257,21 +258,22 @@ describe("the Martian pass: identity", () => {
     expect(capabilities("DRILL")).toMatchObject({
       projectsForceField: false,
       shieldsRechargeAtEndTurn: false,
-      heatSinks: false,
     });
     expect(capabilities("DRILL", "FORTIFICATION")).toMatchObject({
       projectsForceField: true,
       shieldsRechargeAtEndTurn: true,
-      heatSinks: false,
     });
     expect(capabilities("HUNTING", "MARKSMANSHIP", "FIELDCRAFT")).toMatchObject(
-      { projectsForceField: false, heatSinks: true },
+      { projectsForceField: false },
     );
+    expect(
+      capabilities("HUNTING", "MARKSMANSHIP", "FIELDCRAFT"),
+    ).not.toHaveProperty("heatSinks");
     for (const faction of FACTIONS.filter((item) => item !== "MARTIAN"))
       expect(
         technologyCapabilitiesV7(TECHNOLOGY_IDS_V7, faction),
         faction,
-      ).toMatchObject({ projectsForceField: false, heatSinks: false });
+      ).toMatchObject({ projectsForceField: false });
     // The roster's numbers are the ones of 7r51.
     const numbers = (role: UnitRoleIdV7) => {
       const rule = effectiveRoleRuleV7(role, "MARTIAN");
@@ -301,7 +303,9 @@ describe("the Martian pass: identity", () => {
       // Attack 3, Defense 3 (8, 16, 2.5, 2 before).
       ["Mothership", 9, 20, 4, 6, 6, 2, 1, 1, "CHIVALRY"],
       // The giants' signatures (`pulp_wars-w49.30`): the Colossus has Move 2.
-      ["Colossus", null, 32, 3, 8, 5, 2, 1, 2, null],
+      // The Martian strength pass (`pulp_wars-bxpj`, 7r145): Attack 5 (8
+      // half-units before).
+      ["Colossus", null, 32, 3, 10, 5, 2, 1, 2, null],
     ]);
   });
 });
@@ -637,116 +641,52 @@ describe("the Martian pass: Heat Sinks", () => {
       techs: { 0: techs, 1: [] },
     });
 
-  it("lets a Ray Gunner fire at full power turn after turn while it stands", () => {
-    let state = duel("MARKSMAN", martianWithout());
-    const martian = seatIdV7(state, 0);
-    for (let turn = 0; turn < 3; turn += 1) {
-      const run = attackV7(state, at(3, 2), at(5, 2));
-      expect(run.combat, `turn ${turn}`).toMatchObject({
-        rayPower: "FULL",
-        attack2: 6,
-        coolingApplied: false,
-      });
-      expect(run.state.cooling).toEqual([]);
-      state = endTurnUntilV7(run.state, martian).state;
-    }
-    expect(
-      rayOverheatsV7(state, unitAtV7(state, at(3, 2)), martianWithout()),
-    ).toBe(false);
-  });
-
-  it("leaves it overheating without the technology: full, then half", () => {
-    let state = duel("MARKSMAN", NO_HEAT_SINKS);
-    const martian = seatIdV7(state, 0);
-    const first = attackV7(state, at(3, 2), at(5, 2));
-    expect(first.combat).toMatchObject({
-      rayPower: "FULL",
-      coolingApplied: true,
-    });
-    state = endTurnUntilV7(first.state, martian).state;
-    expect(attackV7(state, at(3, 2), at(5, 2)).combat).toMatchObject({
-      rayPower: "HALF",
-      attack2: 3,
-      coolingApplied: false,
-    });
-  });
-
-  it("still halves a Ray Gunner that moved, and one that was Cooling already", () => {
-    expect(
-      previewAt(
-        duel("MARKSMAN", martianWithout(), { activation: movedV7(1) }),
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145): Cooling is gone,
+  // so every ray that stands still is at full power every turn, and Heat
+  // Sinks no longer changes the ray (it "did not overheat" from 7r52).
+  it("leaves the ray alone: a Ray Gunner is at half power after a one-tile Move with or without it", () => {
+    for (const techs of [martianWithout(), NO_HEAT_SINKS]) {
+      const run = attackV7(
+        duel("MARKSMAN", techs, { activation: movedV7(1) }),
         at(3, 2),
         at(5, 2),
-      ),
-    ).toMatchObject({ rayPower: "HALF", attack2: 3 });
-    expect(
-      previewAt(
-        duel("MARKSMAN", martianWithout(), { cooling: "COOLING" }),
-        at(3, 2),
-        at(5, 2),
-      ),
-    ).toMatchObject({ rayPower: "HALF", attack2: 3 });
-  });
-
-  it("is the Ray Gunner's alone: a Tripod and a Colossus overheat with it", () => {
-    for (const role of ["CATAPULT", "JUGGERNAUT"] as const) {
-      const run = attackV7(duel(role, martianWithout()), at(3, 2), at(5, 2));
-      expect(run.combat, role).toMatchObject({
-        rayPower: "FULL",
-        coolingApplied: true,
-      });
-      expect(run.state.cooling).toHaveLength(1);
-    }
-  });
-
-  it("says so on the Ray Gunner and the technology", () => {
-    expect(HEAT_SINKS_UNLOCK_TEXT_V7).toBe(
-      "Ray Gunners do not overheat: full power every turn they do not move",
-    );
-    expect(
-      recruitmentRolePresentationV7("MARKSMAN", "MARTIAN").restrictions,
-    ).toContain(HEAT_SINK_NOTE_V7);
-    for (const role of ROSTER.filter((item) => item !== "MARKSMAN"))
+      );
+      expect(run.combat).toMatchObject({ rayPower: "HALF", attack2: 3 });
       expect(
-        recruitmentRolePresentationV7(role, "MARTIAN").restrictions,
-        role,
-      ).not.toContain(HEAT_SINK_NOTE_V7);
+        attackV7(duel("MARKSMAN", techs), at(3, 2), at(5, 2)).combat,
+      ).toMatchObject({ rayPower: "FULL", attack2: 6 });
+    }
+  });
+
+  it("says nothing about the ray on the Ray Gunner or in Help", () => {
     expect(
       martianAbilityDescriptionV7("HEAT_RAY", "MARTIAN", "MARKSMAN"),
-    ).toContain(HEAT_SINK_NOTE_V7);
-    expect(
-      martianAbilityDescriptionV7("HEAT_RAY", "MARTIAN", "CATAPULT"),
     ).not.toContain("Heat Sinks");
     expect(
-      martianHelpRulesV7().find(([name]) => name === "Heat Sinks")?.[1],
-    ).toBe(
-      "with Heat Sinks, a Ray Gunner does not overheat: it fires at full power every turn it does not move.",
-    );
-    // The unit card's ray line of a Ray Gunner that does not overheat.
+      recruitmentRolePresentationV7("MARKSMAN", "MARTIAN").restrictions.join(
+        " ",
+      ),
+    ).not.toContain("Heat Sinks");
+    expect(
+      martianHelpRulesV7().find(([name]) => name === "Heat Sinks"),
+    ).toBeUndefined();
     const mechanics = {
       shield: 2,
       shieldMaximum: 2,
       capacitySlots: 1,
       movementMode: "GROUND",
       rayPower: "FULL",
-      cooling: false,
       pierce: false,
       forceField: false,
       shieldCanopy: false,
       mindControl: null,
     } as const;
-    const ray = (overheats: boolean): string | undefined =>
+    expect(
       martianUnitInfoLinesV7(
         { role: "MARKSMAN", form: "LAND" },
         mechanics,
-        overheats,
-      ).find((line) => line.id === "ray")?.description;
-    expect(ray(true)).toBe(
-      "Its next shot fires at full Attack and leaves it Cooling.",
-    );
-    expect(ray(false)).toBe(
-      "Its next shot fires at full Attack. Heat Sinks: it does not overheat.",
-    );
+      ).find((line) => line.id === "ray")?.description,
+    ).toBe("Its next shot fires at full Attack.");
   });
 });
 
@@ -1879,7 +1819,9 @@ describe("the Martian pass, correction: the Force Field holds", () => {
   });
 });
 
-describe("the Martian pass, correction: Psychic Command every second turn", () => {
+// The Martian strength pass (`pulp_wars-bxpj`, 7r145): Psychic Command is
+// every turn again (every second turn, Cooling in between, from 7r52).
+describe("the Martian pass, correction: Psychic Command (every turn since 7r145)", () => {
   const field = () =>
     asMartian([
       own("CAPTAIN", 4, 5),
@@ -1895,53 +1837,19 @@ describe("the Martian pass, correction: Psychic Command every second turn", () =
   const nextOwnTurn = (state: GameStateV7): GameStateV7 =>
     endTurnUntilV7(state, seatIdV7(state, 0)).state;
 
-  it("leaves the Brain Cooling for its next turn, and a Cooling Brain cannot command", () => {
-    expect(roleMechanicsV7("CAPTAIN", "MARTIAN").rallyCools).toBe(true);
+  it("lets the Brain command on consecutive turns", () => {
     const start = field();
     const commanded = playV7(start, { kind: "RALLY", unitId: brainId(start) });
-    expect(commanded.state.cooling).toEqual([
-      { unitId: brainId(start), firedThisTurn: true },
-    ]);
-    // Its next turn: Cooling, not offered, refused.
-    const cooling = nextOwnTurn(commanded.state);
-    expect(cooling.cooling).toEqual([
-      { unitId: brainId(start), firedThisTurn: false },
-    ]);
-    expect(rallyOffered(cooling)).toBe(false);
+    // Its next turn: offered and accepted again.
+    const next = nextOwnTurn(commanded.state);
+    expect(rallyOffered(next)).toBe(true);
+    const again = playV7(next, { kind: "RALLY", unitId: brainId(start) });
+    expect(again.events.map((event) => event.kind)).toContain("UNITS_RALLIED");
+    // Still once a turn: a primary action.
+    expect(rallyOffered(again.state)).toBe(false);
     expect(
-      rejectedV7(cooling, { kind: "RALLY", unitId: brainId(start) }).code,
+      rejectedV7(again.state, { kind: "RALLY", unitId: brainId(start) }).code,
     ).toBe("UNIT_ALREADY_ACTED");
-    // Mind Control and its Move are not held by it.
-    expect(
-      queryPlayerCommandsV7(viewOf(cooling)).some(
-        (command) =>
-          command.kind === "MOVE" && command.unitId === brainId(start),
-      ),
-    ).toBe(true);
-    // The turn after: ready again.
-    const ready = nextOwnTurn(cooling);
-    expect(ready.cooling).toEqual([]);
-    expect(rallyOffered(ready)).toBe(true);
-  });
-
-  it("is the Brain's alone: a Human Captain rallies every turn", () => {
-    for (const faction of FACTIONS)
-      for (const role of ROSTER)
-        expect(
-          roleMechanicsV7(role, faction).rallyCools,
-          `${faction} ${role}`,
-        ).toBe(faction === "MARTIAN" && role === "CAPTAIN");
-    const state = againstMartian([
-      own("CAPTAIN", 4, 5),
-      own("FIGHTER", 3, 4),
-      foe("FIGHTER", 4, 1),
-    ]);
-    const rallied = playV7(state, {
-      kind: "RALLY",
-      unitId: unitAtV7(state, at(4, 5)).id,
-    });
-    expect(rallied.state.cooling).toEqual([]);
-    expect(rallyOffered(nextOwnTurn(rallied.state))).toBe(true);
   });
 
   it("makes a commanded Grunt shoot like a Ray Gunner at full power, and leaves the Tripod above both", () => {

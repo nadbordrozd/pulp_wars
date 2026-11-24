@@ -37,7 +37,6 @@ const STATUS_MODIFIER_SOURCES: Readonly<Record<string, readonly string[]>> = {
   cracked: ["CRACKED"],
   "dug-in": ["DIG_IN"],
   "ray-power": ["HALF_POWER"],
-  cooling: ["HALF_POWER"],
   shield: ["FORCE_FIELD"],
   growth: ["GROWTH", "ALPHA"],
   // Chips the card adds for a stat term no other chip shows.

@@ -117,8 +117,13 @@ export function normalizedInitialState(state: GameStateV7): string {
   // Coins; the pins were taken with 5, so each player gets the 2 back.
   // The village density (`pulp_wars-ykw.2`, 7r40) renamed the map revision a
   // setup names; the pins hash the name they were taken with.
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retired the
+  // `cooling` and `mindControlCooldowns` lists, empty in every initial
+  // state; the pins were taken with them.
   return canonicalHash({
     ...rest,
+    cooling: [],
+    mindControlCooldowns: [],
     chilled: frozen,
     players: rest.players.map((player) => ({
       ...player,

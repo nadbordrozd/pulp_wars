@@ -7423,11 +7423,6 @@ html:has(.v7-match-shell) body {
   white-space: nowrap;
 }
 
-.v7-martian-chip[data-unit-status="cooling"] {
-  border-color: var(--pw-line-soft);
-  color: var(--pw-text-2);
-}
-
 .v7-martian-chip[data-force-field="true"] {
   border-color: var(--pw-pink);
   font-weight: var(--pw-fw-bold);

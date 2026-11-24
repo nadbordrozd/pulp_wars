@@ -355,7 +355,7 @@ describe("Beam Down (section 8.1)", () => {
     expect(tileV7(run.state, at(3, 8)).fieldDefense).toBe(true);
   });
 
-  it("an acted, Plagued, Cooling, or mind-controlled passenger is fine and keeps its statuses", () => {
+  it("an acted, Plagued, or mind-controlled passenger is fine and keeps its statuses", () => {
     const base = martianFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(4, 3) },
@@ -365,7 +365,6 @@ describe("Beam Down (section 8.1)", () => {
           at: CAPITAL,
           hp: 5,
           shield: 1,
-          cooling: "COOLING",
           kills: 2,
           activation: {
             ...movedV7(1),
@@ -404,7 +403,6 @@ describe("Beam Down (section 8.1)", () => {
       kills: 2,
     });
     expect(shieldAtV7(run.state, at(5, 3))).toBe(1);
-    expect(run.state.cooling).toEqual(state.cooling);
     expect(run.state.plagued).toEqual(state.plagued);
     // A controlled unit is a legal passenger and stays controlled.
     const controlled = playV7(state, beam(state, at(4, 3), at(7, 7), at(5, 3)));

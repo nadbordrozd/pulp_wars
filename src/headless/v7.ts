@@ -135,7 +135,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r144";
+  readonly rulesetId: "pulp-wars-poc-7r145";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -434,9 +434,12 @@ export interface MartianMetricsV7 {
   raysHalf: number;
   rayDamage: number;
   rayKills: number;
-  /** Half-power rays by reason. */
+  /**
+   * Half-power rays after a Move (every half-power ray since the Martian
+   * strength pass, `pulp_wars-bxpj`, 7r145, retired Cooling and its
+   * `raysHalfCooling` count).
+   */
   raysHalfMoved: number;
-  raysHalfCooling: number;
   /** Rays that ignored fortification levels (the Disintegrator). */
   raysIgnoringFortification: number;
   /** Pierce hits on hostile and on own or allied units, damage, kills. */
@@ -1111,7 +1114,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r144",
+              rulesetId: "pulp-wars-poc-7r145",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1232,7 +1235,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r144",
+    rulesetId: "pulp-wars-poc-7r145",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1411,7 +1414,6 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       rayDamage: 0,
       rayKills: 0,
       raysHalfMoved: 0,
-      raysHalfCooling: 0,
       raysIgnoringFortification: 0,
       pierceHitsHostile: 0,
       pierceHitsFriendly: 0,
@@ -2320,14 +2322,7 @@ function recordMartianV7(
         if (preview.rayPower === "FULL") martian.raysFull += 1;
         else {
           martian.raysHalf += 1;
-          if (
-            before.cooling.some(
-              (entry) =>
-                entry.unitId === preview.attackerId && !entry.firedThisTurn,
-            )
-          )
-            martian.raysHalfCooling += 1;
-          else martian.raysHalfMoved += 1;
+          martian.raysHalfMoved += 1;
         }
         martian.rayDamage += preview.damageToDefender;
         martian.rayKills += Number(preview.defenderDies);

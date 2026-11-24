@@ -53,7 +53,6 @@ import {
   brainControlTextV7,
   martianRoleUnlockTextV7,
   mindControlPreviewLinesV7,
-  mindControlReadyInV7,
   mindControlledInfoV7,
   shieldTextV7,
   tractorBeamTooltipV7,
@@ -136,7 +135,7 @@ describe("Martian setup", () => {
 });
 
 describe("Martian unit dock", () => {
-  it("shows the Shield, the ray's power, Cooling, a controlled unit and a Brain's control", () => {
+  it("shows the Shield, the ray's power (no Cooling), a controlled unit and a Brain's control", () => {
     const controller = new FixtureController(martianUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -163,9 +162,10 @@ describe("Martian unit dock", () => {
     closeDetailsV7();
     selectUnitAt(controller, host, AT.rayGunner);
     expect(chipText("ray-power")).toBe("Full power");
-    selectUnitAt(controller, host, AT.coolingGunner);
-    expect(chipText("cooling")).toBe("Cooling");
-    expect(chipText("ray-power")).toBeNull();
+    // Cooling is gone (`pulp_wars-bxpj`, 7r145): a moved one is at half.
+    selectUnitAt(controller, host, AT.movedGunner);
+    expect(chipText("cooling")).toBeNull();
+    expect(chipText("ray-power")).toBe("Half power: moved");
     // The Mind Control revision (section 9): a controlled Human Fighter
     // keeps its name; its brain badge says "Controlled" and names the
     // controller and the original owner, with the sentences in its tooltip.
@@ -461,15 +461,9 @@ describe("Martian abilities", () => {
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
       "Marksman",
     );
-    // The Brain now recovers: its button is disabled with the reason.
+    // No cooldown since `pulp_wars-bxpj` (7r145): no "Recovering" chip.
     selectUnitAt(controller, host, AT.brain);
-    const view = required(controller.snapshot().view);
-    const cooldown = required(
-      view.mindControlCooldowns.find((entry) => entry.unitId === brain.id),
-    ).turnsRemaining;
-    expect(chipText("mind-control-cooldown")).toBe(
-      `Recovering: ${mindControlReadyInV7(cooldown)} turns`,
-    );
+    expect(chipText("mind-control-cooldown")).toBeNull();
     app.destroy();
   });
 

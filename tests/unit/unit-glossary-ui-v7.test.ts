@@ -392,7 +392,8 @@ describe("Ruleset 7 unit glossary", () => {
     }
     for (const faction of ["ORIGINAL", "UNDEAD", "DINOSAUR"] as const)
       expect(idOf("CAPTAIN", faction, "RALLY"), faction).toBe("RALLY");
-    // Similar but not the same: a Brain's Rally cools, a Warboss's moves.
+    // Similar but not the same: a Brain's Rally has its own name (it cooled
+    // until `pulp_wars-bxpj`, 7r145), a Warboss's moves.
     expect(idOf("CAPTAIN", "MARTIAN", "RALLY")).toBe("PSYCHIC_COMMAND");
     expect(idOf("CAPTAIN", "GOBLIN", "RALLY")).toBe("BERSERK");
     expect(idOf("MARKSMAN", "UNDEAD", "ETHEREAL")).toBe("SLIPS_PAST");
@@ -482,10 +483,8 @@ describe("Ruleset 7 unit glossary", () => {
     // source as written here, and each has its entry.
     for (const status of [
       "shield",
-      "cooling",
       "ray-power",
       "controlled",
-      "mind-control-cooldown",
       "slots",
       "submerged",
       "boardable",

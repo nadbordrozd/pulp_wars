@@ -340,11 +340,9 @@ export const DISRUPTION_STATE_KEY_CLASSES_V7: Readonly<
   giants: "NOT_A_STATUS",
   burrowed: "NOT_A_STATUS",
   // A unit's own state, set by its own action or its own kind's rules: a
-  // Shield, Cooling, a Brain's cooldown, Sugar Rush and the Crash, an Egg's
+  // Shield (Cooling and a Brain's cooldown until 7r145), Sugar Rush and the Crash, an Egg's
   // countdown, and the per-turn markers of the active seat's own units.
   shields: "NOT_A_STATUS",
-  cooling: "NOT_A_STATUS",
-  mindControlCooldowns: "NOT_A_STATUS",
   sugarRush: "NOT_A_STATUS",
   eggs: "NOT_A_STATUS",
   surfacedThisTurn: "NOT_A_STATUS",

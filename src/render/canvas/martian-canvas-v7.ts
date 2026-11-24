@@ -2,8 +2,8 @@
  * Code-drawn Martian board cues (docs/product/RULESET_7_MARTIANS.md section
  * 13.1, docs/art/factions/MARTIAN.md "Suggestions for the code-drawn
  * markers", bead pulp_wars-t6s.4): the faction badge over Human stand-in
- * art (LEGACY and the classic look), the segmented Shield bar, the Cooling
- * glyph, the flyers' ground shadow and lift, and the ripples of a wading
+ * art (LEGACY and the classic look), the segmented Shield bar (the Cooling
+ * glyph went with Cooling in 7r145), the flyers' ground shadow and lift, and the ripples of a wading
  * machine, in MARTIAN_PALETTE_V7; and the Mind Control revision's control
  * visual (the halo, the brain chip and the control link), in the Martian
  * faction colour of faction-colours-v7. Sizes are world units (128 = one
@@ -38,8 +38,6 @@ export interface MartianUnitMarkersV7 {
   readonly shieldSegments: number;
   /** The role's own Shield maximum; segments above it are Force Field ones. */
   readonly shieldMaximum: number;
-  /** A ray unit that is Cooling (its next ray fires at half power). */
-  readonly cooling: boolean;
   /**
    * The Mind Control revision: a mind-controlled unit (of any kind), drawn
    * with the control halo and the brain chip.
@@ -257,7 +255,7 @@ export function drawShieldBarV7(
 
 /**
  * The status chip slot right of the sprite (the brain chip of a controlled
- * unit, else Cooling), clear of the HP bar, the seat badge, the affliction
+ * unit), clear of the HP bar, the seat badge, the affliction
  * markers (left) and the Grave marker (bottom right).
  */
 export const MARTIAN_STATUS_FRAME_V7 = {
@@ -292,55 +290,8 @@ function statusChip(
   return { cx, cy, r };
 }
 
-/**
- * The Cooling glyph (section 13.1): three wavy heat lines rising, in a dull
- * grey on a gunmetal chip, with no magenta: "not glowing" reads as "not at
- * full power".
- */
-export function drawCoolingGlyphV7(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  zoom: number,
-  options: { readonly chibi: boolean; readonly highContrast?: boolean },
-): void {
-  const highContrast = options.highContrast ?? false;
-  context.save();
-  const { cx, cy, r } = statusChip(
-    context,
-    x,
-    y,
-    zoom,
-    options.chibi,
-    highContrast,
-  );
-  context.strokeStyle = highContrast ? "#ffffff" : MARTIAN_PALETTE_V7.cooling;
-  context.lineWidth = Math.max(1.2, r * 0.17);
-  context.lineCap = "round";
-  for (const dx of [-0.42, 0, 0.42]) {
-    const left = cx + dx * r;
-    context.beginPath();
-    context.moveTo(left, cy + r * 0.5);
-    context.bezierCurveTo(
-      left - r * 0.22,
-      cy + r * 0.2,
-      left + r * 0.22,
-      cy - r * 0.05,
-      left,
-      cy - r * 0.25,
-    );
-    context.bezierCurveTo(
-      left - r * 0.22,
-      cy - r * 0.42,
-      left + r * 0.12,
-      cy - r * 0.55,
-      left,
-      cy - r * 0.6,
-    );
-    context.stroke();
-  }
-  context.restore();
-}
+// The Cooling glyph (`drawCoolingGlyphV7`, three dull heat lines on a
+// gunmetal chip) went with Cooling (`pulp_wars-bxpj`, 7r145).
 
 /**
  * The Mind Control revision (docs/product/RULESET_7_MIND_CONTROL.md section

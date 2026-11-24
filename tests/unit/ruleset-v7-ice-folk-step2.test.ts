@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
-    expect(PRIOR_RULESET_7_IDS.slice(-86, -84)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
+    expect(PRIOR_RULESET_7_IDS.slice(-87, -85)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-86, -84)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-87, -85)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);

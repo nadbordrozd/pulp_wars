@@ -66,7 +66,6 @@ describe("Martian Shields: absorption (section 5.3)", () => {
       damageToAttacker: 3,
       attackerShieldDamage: 0,
       rayPower: "NONE",
-      coolingApplied: false,
     });
     // 8 HP since `pulp_wars-1wy.6`: 5 left.
     expect(first.target?.hp).toBe(5);
@@ -753,7 +752,7 @@ describe("Martian Shields: recharge (sections 5.2, 5.4, and 5.5)", () => {
     expect(shieldAtV7(started.state, at(4, 2))).toBe(4);
   });
 
-  it("Force Fields: a second recharge at End Turn after the Cooling step, with the positions at that moment", () => {
+  it("Force Fields: a second recharge at End Turn, with the positions at that moment", () => {
     const state = martianFieldV7([
       { seat: 0, role: "FIGHTER", at: at(5, 2) },
       { seat: 0, role: "GUARD", at: at(7, 3) },

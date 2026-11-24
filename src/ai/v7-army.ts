@@ -603,7 +603,7 @@ export const ARMY_DINOSAUR_SKIRMISHER_MAXIMUM_V7 = 3;
 /**
  * The Martian pass: an army seat's Martian shooter next to a hostile melee
  * unit steps back to two tiles before it shoots (the Grunt's and the
- * Tripod's step back, a Cooling ray unit's): above a committed melee attack
+ * Tripod's step back; a Cooling ray unit's until 7r145): above a committed melee attack
  * (1174) and with a committed ranged unit's Move to a shot (1175), below
  * every kill (1180).
  */

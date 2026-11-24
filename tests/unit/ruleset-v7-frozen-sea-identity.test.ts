@@ -68,17 +68,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
-    expect(PRIOR_RULESET_7_IDS.slice(-101, -97)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
+    expect(PRIOR_RULESET_7_IDS.slice(-102, -98)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(143);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(144);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-100, -97)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-101, -98)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -91,7 +91,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r144");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r145");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(

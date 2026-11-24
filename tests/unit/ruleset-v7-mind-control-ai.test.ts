@@ -286,11 +286,7 @@ describe("Mind Control AI: the most valuable adjacent unit, three at a time (7r9
     ]);
     const view = viewerViewV7(human);
     expect(
-      readyHostileBrainsV7(
-        view,
-        martianFactsV7(view),
-        (owner) => owner !== view.viewer.id,
-      ),
+      readyHostileBrainsV7(view, (owner) => owner !== view.viewer.id),
     ).toEqual([unitAt(view, at(7, 4))]);
   });
 });
@@ -487,7 +483,6 @@ describe("Mind Control AI: against Martians", () => {
     const view = viewerViewV7(sea);
     const brains = readyHostileBrainsV7(
       view,
-      martianFactsV7(view),
       (owner) => owner !== view.viewer.id,
     );
     expect(brains).toHaveLength(1);

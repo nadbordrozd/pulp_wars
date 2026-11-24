@@ -596,11 +596,8 @@ import {
   massBeamDownCountTextV7,
   massBeamDownUnavailableTextV7,
   BRAIN_SUPPORT_UNLOCK_TEXT_V7,
-  COOLING_LABEL_V7,
-  COOLING_TOOLTIP_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
-  HEAT_SINKS_UNLOCK_TEXT_V7,
   MARTIAN_FROZEN_MOVED_V7,
   MIND_CONTROL_LABEL_V7,
   MIND_CONTROL_PICK_V7,
@@ -620,10 +617,8 @@ import {
   martianRewardLabelV7,
   martianRoleUnlockTextV7,
   martianSlotCapacityTooltipV7,
-  martianStatsV7,
   martianTurnChipsV7,
   martianUnitNameV7,
-  mindControlUnavailableTextV7,
   mindControlledInfoV7,
   rayPowerTextV7,
   type MindControlledInfoV7,
@@ -8282,8 +8277,8 @@ export class Ruleset7DomAppView {
           identityColumn?.append(growth);
         }
       }
-      // The Martian revision (section 13.1): the Shield, Cooling, and a
-      // Brain's controlled units and cooldown, from `stats.martian`.
+      // The Martian revision (section 13.1): the Shield, the ray power, and
+      // a Brain's controlled units, from `stats.martian`.
       const martian = stats?.martian;
       if (martian !== undefined) {
         const chip = (
@@ -8312,25 +8307,23 @@ export class Ruleset7DomAppView {
           if (martian.shield > martian.shieldMaximum)
             shield.dataset.forceField = "true";
         }
-        // The ray's power now (section 13.1): Cooling, or "Full power" /
-        // "Half power: moved".
+        // The ray's power now (section 13.1): "Full power" / "Half power:
+        // moved" (the Cooling chip went with Cooling, `pulp_wars-bxpj`,
+        // 7r145).
         const ray = rayPowerTextV7(martian);
-        if (martian.cooling)
-          chip(COOLING_LABEL_V7, "cooling", COOLING_TOOLTIP_V7);
-        else if (ray !== null)
+        if (ray !== null)
           chip(
             ray,
             "ray-power",
             martian.rayPower === "FULL"
-              ? "Full power: its next shot fires at full Attack and leaves it Cooling"
+              ? "Full power: its next shot fires at full Attack"
               : "Half power: it moved this turn",
           );
         if (martian.mindControl !== null) {
-          const blocked = mindControlUnavailableTextV7(martian.mindControl);
           const controls = chip(
             brainControlTextV7(martian.mindControl),
             "controlled",
-            blocked ?? `${MIND_CONTROL_LABEL_V7} is ready`,
+            `${MIND_CONTROL_LABEL_V7} is ready every turn`,
           );
           // The Mind Control revision (section 9): the portrait of each
           // unit this Brain controls, in its chip.
@@ -8342,8 +8335,6 @@ export class Ruleset7DomAppView {
             if (held === undefined) continue;
             controls.prepend(this.#controlledPortrait(view, held));
           }
-          if (martian.mindControl.cooldown !== null && blocked !== null)
-            chip(blocked, "mind-control-cooldown", blocked);
         }
         if (martian.capacitySlots > 1)
           chip(
@@ -16414,12 +16405,8 @@ export class Ruleset7DomAppView {
         label: MIND_CONTROL_LABEL_V7,
         tooltip: MIND_CONTROL_TOOLTIP_V7,
         icon: "mind-control",
-        blocked: () =>
-          acted
-            ? null
-            : (mindControlUnavailableTextV7(
-                martianStatsV7(view, unit.id)?.mindControl ?? null,
-              ) ?? MIND_CONTROL_NO_TARGET_V7),
+        // No cooldown since `pulp_wars-bxpj` (7r145): only a missing target.
+        blocked: () => (acted ? null : MIND_CONTROL_NO_TARGET_V7),
       },
       {
         kind: "TRACTOR_BEAM",
@@ -16483,12 +16470,7 @@ export class Ruleset7DomAppView {
           this.#showToast(`${reason}.`);
           // A Mind Control without a legal target still shows on the board
           // why the enemies in reach cannot be taken.
-          if (
-            entry.kind === "MIND_CONTROL" &&
-            mindControlUnavailableTextV7(
-              martianStatsV7(view, unit.id)?.mindControl ?? null,
-            ) === null
-          )
+          if (entry.kind === "MIND_CONTROL")
             this.#martianPick = { kind: "MIND_CONTROL", unitId: unit.id };
           this.#pendingFocusAction = action.dataset.action ?? null;
           this.#render();
@@ -19919,7 +19901,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r144",
+    rulesetId: "pulp-wars-poc-7r145",
     seed,
     width,
     height: width,
@@ -20213,8 +20195,6 @@ function effectDescription(
       return BRAIN_SUPPORT_UNLOCK_TEXT_V7;
     case "FORCE_FIELDS":
       return FORCE_FIELDS_UNLOCK_TEXT_V7;
-    case "HEAT_SINKS":
-      return HEAT_SINKS_UNLOCK_TEXT_V7;
     case "DISINTEGRATOR":
       return DISINTEGRATOR_UNLOCK_TEXT_V7;
     // The Ice Folk revision (section 4).
@@ -20503,7 +20483,6 @@ function technologyEffectGroupIdV7(
     case "WHOLE_ZOMBIES":
     case "BRAIN_SUPPORT":
     case "FORCE_FIELDS":
-    case "HEAT_SINKS":
     case "DISINTEGRATOR":
     case "WITCH_SUPPORT":
     case "DEEP_WINTER":

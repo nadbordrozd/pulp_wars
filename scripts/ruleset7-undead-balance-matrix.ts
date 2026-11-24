@@ -1509,7 +1509,6 @@ interface MartianSeatStats {
   rayFull: MartianTally;
   rayHalf: MartianTally;
   raysHalfMoved: number;
-  raysHalfCooling: number;
   raysIgnoringFortification: number;
   /** Field Defense destroyed by this seat's Tripods. */
   tripodFieldDefense: number;
@@ -1585,7 +1584,6 @@ function emptyMartianSeat(seat: number): MartianSeatStats {
     rayFull: emptyTally(),
     rayHalf: emptyTally(),
     raysHalfMoved: 0,
-    raysHalfCooling: 0,
     raysIgnoringFortification: 0,
     tripodFieldDefense: 0,
     pierceHostile: emptyTally(),
@@ -1958,16 +1956,9 @@ function martianTelemetry(
           tally.hits += 1;
           tally.damage += preview.damageToDefender;
           tally.kills += Number(preview.defenderDies);
-          if (!full) {
-            if (
-              before.cooling.some(
-                (entry) =>
-                  entry.unitId === preview.attackerId && !entry.firedThisTurn,
-              )
-            )
-              attackerSeat.raysHalfCooling += 1;
-            else attackerSeat.raysHalfMoved += 1;
-          }
+          // Every half-power ray follows a Move since Cooling retired
+          // (`pulp_wars-bxpj`, 7r145).
+          if (!full) attackerSeat.raysHalfMoved += 1;
           if (preview.fortificationIgnored > 0)
             attackerSeat.raysIgnoringFortification += 1;
         }
@@ -3040,7 +3031,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r144",
+    rulesetId: "pulp-wars-poc-7r145",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
@@ -3714,7 +3705,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r144",
+          rulesetId: "pulp-wars-poc-7r145",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -5115,7 +5106,6 @@ function martianAggregate(group: readonly MatrixEntry[]) {
       full: tallyTotal(all.map((seat) => seat.rayFull)),
       half: tallyTotal(all.map((seat) => seat.rayHalf)),
       halfMoved: sum(all.map((seat) => seat.raysHalfMoved)),
-      halfCooling: sum(all.map((seat) => seat.raysHalfCooling)),
       ignoringFortification: sum(
         all.map((seat) => seat.raysIgnoringFortification),
       ),

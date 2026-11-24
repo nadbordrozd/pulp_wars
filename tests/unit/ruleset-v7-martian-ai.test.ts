@@ -7,7 +7,6 @@ import {
   MIND_CONTROL_PRIORITY_V7,
   MOTHERSHIP_GUARD_PRIORITY_V7,
   RANGED_STEP_BACK_PRIORITY_V7,
-  RAY_KITE_PRIORITY_V7,
   SHIELD_BREAK_PRIORITY_V7,
   TRACTOR_CAPTURE_PRIORITY_V7,
   martianArmyCountsV7,
@@ -123,26 +122,8 @@ describe("Martian Normal AI: heat rays", () => {
     expect(unitCandidatesV7(free, at(6, 3), "MOVE").length).toBeGreaterThan(0);
   });
 
-  it("steps a Cooling ray unit out of melee reach before its half shot", () => {
-    const state = asMartian([
-      own("MARKSMAN", 5, 3, { cooling: "COOLING" }),
-      foe("FIGHTER", 4, 3),
-    ]);
-    const best = unitCandidatesV7(state, at(5, 3))[0];
-    expect(best?.command.kind).toBe("MOVE");
-    expect(best?.score.priority).toBe(ARMY_STEP_BACK_PRIORITY_V7);
-    // Against a seat that does not play the army rules (a Candy one since
-    // the Dinosaur pass, `pulp_wars-w49.15`): the kite priority.
-    const other = martianFieldV7(
-      [own("MARKSMAN", 5, 3, { cooling: "COOLING" }), foe("FIGHTER", 4, 3)],
-      { factions: ["MARTIAN", "CANDY"] },
-    );
-    expect(unitCandidatesV7(other, at(5, 3))[0]?.score.priority).toBe(
-      RAY_KITE_PRIORITY_V7,
-    );
-    const end = best === undefined ? undefined : endOf(best.command);
-    expect(end === undefined ? 0 : Math.abs(end.x - 4)).toBe(2);
-  });
+  // (A Cooling ray unit stepped out of melee reach before its half shot,
+  // `RAY_KITE_PRIORITY_V7`, until Cooling went in `pulp_wars-bxpj`, 7r145.)
 
   it("refuses a Pierce shot that kills an own unit without killing the target", () => {
     // A full-power Tripod ray on a Guard (15 HP) pierces the 2-HP Grunt

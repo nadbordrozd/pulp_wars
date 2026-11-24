@@ -47,7 +47,7 @@ interface KindV7 {
   readonly role: UnitRoleIdV7;
   /** A Saucer or Raider that moved two tiles (Strafe or Charge with Raiding). */
   readonly charging?: boolean;
-  /** A heat ray at half power (the unit moved, or is Cooling). */
+  /** A heat ray at half power (the unit moved). */
   readonly halfPower?: boolean;
 }
 
@@ -161,13 +161,14 @@ const without = (
   );
 };
 
-/** A piece of the arena: a Martian unit's Shield and Cooling may be set. */
+/**
+ * A piece of the arena: a Martian unit's Shield may be set (its Cooling too
+ * until the Martian strength pass, `pulp_wars-bxpj`, 7r145, retired it).
+ */
 export type MartianPieceV7 = GoblinPieceV7 & {
   readonly tag?: string;
   /** The Shield it starts with (default: its maximum; 0 for no Shield). */
   readonly shield?: number;
-  /** It fired at full power on its owner's last turn. */
-  readonly cooling?: boolean;
 };
 
 export interface GroundV7 {
@@ -183,8 +184,8 @@ export interface GroundV7 {
   /** Seat 0 / seat 1 own Explosives (a Martian seat's Disintegrator). */
   readonly explosives?: readonly [boolean, boolean];
   /**
-   * A Martian seat owns Heat Sinks (its Fieldcraft: Ray Gunners do not
-   * overheat). Without this no Martian seat of the arena owns it.
+   * A Martian seat owns Heat Sinks (its Fieldcraft: Forest freedom and
+   * Sight 2 for Ray Gunners since 7r145). Without this no Martian seat of the arena owns it.
    */
   readonly heatSinks?: boolean;
   /** The units on these tiles are Bitten by seat 0. */
@@ -270,17 +271,12 @@ export function arena(
       return shield > 0 ? [{ unitId: unit.id, shield }] : [];
     })
     .sort((left, right) => left.unitId - right.unitId);
-  const cooling = base.units
-    .filter((unit) => pieceAt(unit.at)?.cooling === true)
-    .map((unit) => ({ unitId: unit.id, firedThisTurn: false }))
-    .sort((left, right) => left.unitId - right.unitId);
   const hidden = ground.unexplored?.tiles ?? [];
   const hiddenSeat = ground.unexplored?.seat ?? -1;
   return {
     ...base,
     bitten,
     shields,
-    cooling,
     players: base.players.map((player) =>
       hidden.length === 0 || player.seat !== hiddenSeat
         ? player
@@ -401,9 +397,9 @@ function previewOf(
       seat: 0,
       role: attacker.role,
       at: from,
-      ...(attacker.halfPower === true ? { cooling: true } : {}),
       activation: {
-        ...(attacker.charging === true
+        // A half-power ray follows a Move (Cooling is gone since 7r145).
+        ...(attacker.charging === true || attacker.halfPower === true
           ? { moved: true, movedPathLength: 2 }
           : {}),
         ...(options.inspired === true ? { inspired: true } : {}),

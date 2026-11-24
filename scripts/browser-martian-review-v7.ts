@@ -91,7 +91,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__MARTIAN_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r144.current";
+const SAVE_KEY = "pulpWars.save.v7r145.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -283,16 +283,16 @@ async function fixtureTour(
   await keys(connection, ["ArrowLeft", "ArrowDown"]);
   evidence[`${suffix}PierceFriendlyCursor`] = await cursorText(connection);
   await capture(connection, `attack-pierce-friendly-${suffix}.png`);
-  // The Ray Gunner on a fortified Guard (Disintegrator), the Cooling one.
+  // The Ray Gunner on a fortified Guard (Disintegrator), the moved one.
   await deselect(connection);
   await activate(connection, at.rayGunner as Coord);
   await keys(connection, ["ArrowLeft", "ArrowLeft"]);
   evidence[`${suffix}RayCursor`] = await cursorText(connection);
   await capture(connection, `attack-ray-${suffix}.png`);
   await deselect(connection);
-  await activate(connection, at.coolingGunner as Coord);
-  evidence[`${suffix}CoolingDock`] = await dockText(connection);
-  await capture(connection, `cooling-dock-${suffix}.png`);
+  await activate(connection, at.movedGunner as Coord);
+  evidence[`${suffix}MovedRayDock`] = await dockText(connection);
+  await capture(connection, `moved-ray-dock-${suffix}.png`);
   // The Shield Projector's Force Field.
   await deselect(connection);
   await activate(connection, at.projector as Coord);

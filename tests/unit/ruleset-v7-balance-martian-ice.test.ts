@@ -363,7 +363,6 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
       );
       expect(preview, role).toMatchObject({
         rayPower: "HALF",
-        coolingApplied: false,
         damageToDefender: half,
       });
       const shot = attackV7(run.state, at(5, 3), at(7, 3));

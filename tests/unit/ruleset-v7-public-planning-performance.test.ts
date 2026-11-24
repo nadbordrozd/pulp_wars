@@ -30,13 +30,7 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
     ) as {
       readonly view: Omit<
         PlayerViewV7,
-        | "graves"
-        | "plagued"
-        | "bitten"
-        | "shields"
-        | "cooling"
-        | "mindControlled"
-        | "mindControlCooldowns"
+        "graves" | "plagued" | "bitten" | "shields" | "mindControlled"
       >;
     }
   ).view,
@@ -44,10 +38,9 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
   plagued: [],
   bitten: [],
   // The Martian revision's neutral side lists.
+  // (`cooling` and `mindControlCooldowns` retired in 7r145.)
   shields: [],
-  cooling: [],
   mindControlled: [],
-  mindControlCooldowns: [],
   // The frozen sea: no ice.
   ice: [],
   // The giants' signatures (`pulp_wars-w49.30`): no held victim.

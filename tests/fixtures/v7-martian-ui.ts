@@ -26,15 +26,11 @@ import {
 export interface MartianUiPieceV7 extends GoblinPieceV7 {
   /** Current Shield (default: the Shield maximum). */
   readonly shield?: number;
-  /** COOLING: fired on its owner's last turn; FIRED: this turn. */
-  readonly cooling?: "COOLING" | "FIRED";
   /**
    * The Mind Control revision: the unit (built for its `seat`, its original
    * owner) is controlled by the Brain on this tile.
    */
   readonly controlledBy?: CoordV7;
-  /** A Mind Control cooldown entry with this `turnsRemaining`. */
-  readonly cooldown?: number;
 }
 
 export interface MartianUiOptionsV7 {
@@ -151,21 +147,7 @@ export function martianUiFieldV7(
         return shield > 0 ? [{ unitId: unit.id, shield }] : [];
       })
       .sort((left, right) => left.unitId - right.unitId),
-    cooling: pieces
-      .filter((piece) => piece.cooling !== undefined)
-      .map((piece) => ({
-        unitId: unitOf(piece).id,
-        firedThisTurn: piece.cooling === "FIRED",
-      }))
-      .sort((left, right) => left.unitId - right.unitId),
     mindControlled,
-    mindControlCooldowns: pieces
-      .filter((piece) => piece.cooldown !== undefined)
-      .map((piece) => ({
-        unitId: unitOf(piece).id,
-        turnsRemaining: piece.cooldown as number,
-      }))
-      .sort((left, right) => left.unitId - right.unitId),
   });
 }
 
@@ -214,8 +196,11 @@ export const MARTIAN_UI_V7 = {
   /** Shield Projector with an own Grunt (Shield 1 of 2) beside it. */
   projector: { x: 7, y: 3 },
   dentedGrunt: { x: 7, y: 2 },
-  /** A Cooling Ray Gunner. */
-  coolingGunner: { x: 0, y: 0 },
+  /**
+   * A Ray Gunner that moved this turn (half power; it was a Cooling one
+   * until `pulp_wars-bxpj`, 7r145, retired Cooling).
+   */
+  movedGunner: { x: 0, y: 0 },
   /** A Colossus (reward only). */
   colossus: { x: 0, y: 4 },
   /** A Saucer and a Tripod afloat on Shallow Water. */
@@ -253,7 +238,12 @@ export function martianUiFixtureV7(
       { seat: 0, role: "KNIGHT", at: at.mothership },
       { seat: 0, role: "GUARD", at: at.projector },
       { seat: 0, role: "FIGHTER", at: at.dentedGrunt, shield: 1 },
-      { seat: 0, role: "MARKSMAN", at: at.coolingGunner, cooling: "COOLING" },
+      {
+        seat: 0,
+        role: "MARKSMAN",
+        at: at.movedGunner,
+        activation: { moved: true, movedPathLength: 1, handled: true },
+      },
       { seat: 0, role: "JUGGERNAUT", at: at.colossus },
       { seat: 0, role: "RAIDER", at: at.saucerAfloat, form: "EMBARKED" },
       { seat: 0, role: "CATAPULT", at: at.tripodAfloat, form: "EMBARKED" },

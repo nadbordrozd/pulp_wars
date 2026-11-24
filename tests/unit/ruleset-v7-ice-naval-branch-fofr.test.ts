@@ -128,7 +128,7 @@ const offered = (state: GameStateV7, seat: 0 | 1 = 0) =>
 
 describe("the rebuilt branch: each node's unlocks, in the tree and on its card", () => {
   it("is ruleset 7r137", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
   });
 
   // The Ice Folk sea beasts (`pulp_wars-lf1r`, 7r142): Rime trained the

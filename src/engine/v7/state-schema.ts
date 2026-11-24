@@ -6,7 +6,6 @@ import {
   FORCE_FIELD_SHIELD_V7,
   GINGERBREAD_MAN_VARIANT_V7,
   GROWTH_HP_V7,
-  MIND_CONTROL_COOLDOWN_TURNS_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   NEUTRAL_ROLE_RULES_V7,
@@ -81,7 +80,6 @@ import {
   type CityStateV7,
   type HeldRewardUnitV7,
   type CandyStatusEntryV7,
-  type CoolingStatusV7,
   type CoordV7,
   type CrumbsV7,
   type CultStateV7,
@@ -96,7 +94,6 @@ import {
   type ImprovementIdV7,
   type MatchOutcomeV7,
   type MatchSetupV7,
-  type MindControlCooldownV7,
   type NinthUnitStateV7,
   type PendingChoiceV7,
   type PlagueStatusV7,
@@ -177,7 +174,8 @@ const STATE_KEYS = [
   "burrowed",
   "cities",
   "commandIndex",
-  "cooling",
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retired `cooling`
+  // and `mindControlCooldowns`.
   "crumbs",
   // The Cultists (docs/product/RULESET_7_CULTISTS.md section 3).
   "cult",
@@ -191,7 +189,6 @@ const STATE_KEYS = [
   "humanPlayerId",
   "huntedThisTurn",
   "ice",
-  "mindControlCooldowns",
   "monsters",
   "nextEntityId",
   "ninthUnit",
@@ -318,10 +315,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const bitten = parseBitten(input.bitten);
   const eggs = parseEggs(input.eggs);
   const shields = parseShields(input.shields);
-  const cooling = parseCooling(input.cooling);
-  const mindControlCooldowns = parseMindControlCooldowns(
-    input.mindControlCooldowns,
-  );
   const frozen = parseFrozen(input.frozen);
   // The Dwarf revision (section 5.2): the burrowed units and the two
   // per-turn lists; the cross references are checked below.
@@ -404,9 +397,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     bitten === null ||
     eggs === null ||
     shields === null ||
-    cooling === null ||
     mindControlled === null ||
-    mindControlCooldowns === null ||
     frozen === null ||
     burrowed === null ||
     surfacedThisTurn === null ||
@@ -480,9 +471,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       bitten,
       eggs,
       shields,
-      cooling,
       mindControlled,
-      mindControlCooldowns,
       frozen,
       burrowed,
       surfacedThisTurn,
@@ -543,9 +532,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     bitten,
     eggs,
     shields,
-    cooling,
     mindControlled,
-    mindControlCooldowns,
     frozen,
     burrowed,
     surfacedThisTurn,
@@ -1895,24 +1882,6 @@ function parseShields(input: unknown): readonly ShieldStatusV7[] | null {
   return values;
 }
 
-/** The Martian revision `cooling` entries, sorted by unit ID. */
-function parseCooling(input: unknown): readonly CoolingStatusV7[] | null {
-  if (!isDenseArrayV7(input)) return null;
-  const values: CoolingStatusV7[] = [];
-  for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["firedThisTurn", "unitId"])) return null;
-    const unitId = parseUnitIdV7(candidate.unitId);
-    if (
-      unitId === null ||
-      typeof candidate.firedThisTurn !== "boolean" ||
-      (values.length > 0 && (values.at(-1) as CoolingStatusV7).unitId >= unitId)
-    )
-      return null;
-    values.push({ unitId, firedThisTurn: candidate.firedThisTurn });
-  }
-  return values;
-}
-
 /**
  * The Mind Control revision (section 2.1) `mindControlled` entries, sorted
  * by unit ID without duplicates.
@@ -1940,31 +1909,6 @@ function parseMindControlled(
     )
       return null;
     values.push({ unitId, brainUnitId, originalOwnerId });
-  }
-  return values;
-}
-
-/**
- * The Martian revision `mindControlCooldowns` entries, sorted by unit ID,
- * with `turnsRemaining` an integer from 0 to the cooldown (2).
- */
-function parseMindControlCooldowns(
-  input: unknown,
-): readonly MindControlCooldownV7[] | null {
-  if (!isDenseArrayV7(input)) return null;
-  const values: MindControlCooldownV7[] = [];
-  for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["turnsRemaining", "unitId"])) return null;
-    const unitId = parseUnitIdV7(candidate.unitId);
-    if (
-      unitId === null ||
-      !isNonNegativeSafeIntegerV7(candidate.turnsRemaining) ||
-      candidate.turnsRemaining > MIND_CONTROL_COOLDOWN_TURNS_V7 ||
-      (values.length > 0 &&
-        (values.at(-1) as MindControlCooldownV7).unitId >= unitId)
-    )
-      return null;
-    values.push({ unitId, turnsRemaining: candidate.turnsRemaining });
   }
   return values;
 }
@@ -3180,9 +3124,7 @@ interface CrossInput {
   bitten: readonly BittenStatusV7[];
   eggs: readonly EggStatusV7[];
   shields: readonly ShieldStatusV7[];
-  cooling: readonly CoolingStatusV7[];
   mindControlled: readonly MindControlledStatusV7[];
-  mindControlCooldowns: readonly MindControlCooldownV7[];
   frozen: readonly FrozenStatusV7[];
   burrowed: readonly BurrowedEntryV7[];
   surfacedThisTurn: readonly UnitId[];
@@ -3229,9 +3171,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     bitten,
     eggs,
     shields,
-    cooling,
     mindControlled,
-    mindControlCooldowns,
     frozen,
     burrowed,
     surfacedThisTurn,
@@ -3755,36 +3695,6 @@ function validateCrossReferences(value: CrossInput): boolean {
     if (
       maximum === 0 ||
       entry.shield > Math.max(maximum, FORCE_FIELD_SHIELD_V7)
-    )
-      return false;
-  }
-  for (const entry of cooling) {
-    const unit = unitById.get(entry.unitId);
-    const faction = unit === undefined ? undefined : kindOf(unit);
-    if (
-      unit === undefined ||
-      unit.hp <= 0 ||
-      faction === undefined ||
-      // The Martian pass, correction: a ray unit, or a unit whose Rally
-      // cools (the Brain after its Psychic Command).
-      (!effectiveRoleRuleV7(unit.role, faction).abilities.includes(
-        "HEAT_RAY",
-      ) &&
-        !roleMechanicsV7(unit.role, faction).rallyCools) ||
-      (entry.firedThisTurn && unit.ownerId !== value.activePlayerId)
-    )
-      return false;
-  }
-  for (const entry of mindControlCooldowns) {
-    const unit = unitById.get(entry.unitId);
-    const faction = unit === undefined ? undefined : kindOf(unit);
-    if (
-      unit === undefined ||
-      unit.hp <= 0 ||
-      faction === undefined ||
-      !effectiveRoleRuleV7(unit.role, faction).abilities.includes(
-        "MIND_CONTROL",
-      )
     )
       return false;
   }

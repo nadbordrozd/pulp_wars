@@ -89,10 +89,11 @@ const ENTRIES = {
     "Rally",
     "Friendly units next to it hit harder on their next attack this turn.",
   ],
-  // The same Inspire as Rally, every second turn only.
+  // The Brain's Inspire under its own name (every second turn only until
+  // the Brain's Cooling went, `pulp_wars-bxpj`, 7r145).
   PSYCHIC_COMMAND: [
     "Psychic Command",
-    "Friendly units next to it hit harder on their next attack this turn. It can do this only every second turn.",
+    "The Brain's mind reaches the friendly units next to it: they hit harder on their next attack this turn.",
   ],
   // `pulp_wars-w49.36`: the Orc Warboss's Berserk replaced WAAAGH!.
   BERSERK: [
@@ -545,7 +546,7 @@ const ENTRIES = {
   ],
   HEAT_RAY: [
     "Heat ray",
-    "Strongest when it has not moved. A full-power shot leaves it Cooling: weaker until the end of its next turn.",
+    "Hits hardest when it has not moved this turn, every turn; after moving it fires at half power.",
   ],
   PIERCE: [
     "Pierce",
@@ -819,10 +820,6 @@ const ENTRIES = {
     "Growth",
     "A dinosaur grows as it kills: first Big, then Alpha.",
   ],
-  STATUS_COOLING: [
-    "Cooling",
-    "Its heat ray fires at half power until the end of its next turn.",
-  ],
   STATUS_RAY_POWER: [
     "Ray power",
     "Full power when it has not moved this turn; half power after moving.",
@@ -830,10 +827,6 @@ const ENTRIES = {
   STATUS_CONTROLLING: [
     "Controlling",
     "This Brain holds an enemy unit. The unit goes home when the Brain is lost.",
-  ],
-  STATUS_RECHARGING: [
-    "Recharging",
-    "It must wait a few turns before it can take another unit.",
   ],
   STATUS_CONTROLLED: [
     "Controlled",
@@ -1039,7 +1032,7 @@ export const ABILITIES_WITHOUT_ENTRY_V7: readonly UnitRoleAbilityV7[] = [
 /**
  * The entry of a role ability as a faction's role has it, by its mechanic
  * (bead pulp_wars-2yc.63: one entry per mechanic, whatever the faction; a
- * Brain's Rally cools, so it is Psychic Command; a Warboss's is Berserk; a
+ * Martian's Rally is Psychic Command; a Warboss's is Berserk; a
  * Mothership's Tractor Beam is the heavy one), or null for an ability with
  * no line of its own.
  */
@@ -1054,7 +1047,7 @@ export function abilityGlossaryIdV7(
     case "RALLY":
       return mechanics.rallyEffect === "BERSERK"
         ? "BERSERK"
-        : mechanics.rallyCools
+        : faction === "MARTIAN"
           ? "PSYCHIC_COMMAND"
           : "RALLY";
     case "TEND_WOUNDED":
@@ -1278,10 +1271,8 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   slots: "TERM_SLOTS",
   growth: "STATUS_GROWTH",
   shield: "SHIELD",
-  cooling: "STATUS_COOLING",
   "ray-power": "STATUS_RAY_POWER",
   controlled: "STATUS_CONTROLLING",
-  "mind-control-cooldown": "STATUS_RECHARGING",
   "mind-controlled": "STATUS_CONTROLLED",
   beamed: "STATUS_BEAMED",
   "tractor-used": "STATUS_BEAM_USED",

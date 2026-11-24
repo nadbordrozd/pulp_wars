@@ -14,6 +14,7 @@ import { goblinFieldDefenseBlockedV7 } from "../../src/render/goblin-presentatio
 import { iceFolkFieldDefenseBlockedV7 } from "../../src/render/ice-folk-presentation-v7";
 import {
   MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
+  MIND_CONTROL_NO_TARGET_V7,
   martianFieldDefenseBlockedV7,
 } from "../../src/render/martian-presentation-v7";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
@@ -57,7 +58,7 @@ describe("permanently impossible actions are not shown", () => {
   it("shows a Martian Grunt no greyed Fortify, and keeps the Brain's situational Mind Control", () => {
     const state = martianUiFieldV7([
       { seat: 0, role: "FIGHTER", at: GRUNT_AT },
-      { seat: 0, role: "CAPTAIN", at: BRAIN_AT, cooldown: 2 },
+      { seat: 0, role: "CAPTAIN", at: BRAIN_AT },
     ]);
     const { host, view, unitAt } = rig(state);
     const grunt = unitAt(GRUNT_AT);
@@ -77,15 +78,16 @@ describe("permanently impossible actions are not shown", () => {
     ).toBe(null);
     expect(dockActions().length).toBeGreaterThan(0);
     expectNoPermanentlyDisabled();
-    // A reason that passes with time still shows, disabled, with its words.
+    // A reason that passes with time still shows, disabled, with its words
+    // (no enemy beside the Brain; its cooldown, "Recovering", went in 7r145).
     host.callbacks?.onSelection({ kind: "UNIT", unitId: unitAt(BRAIN_AT).id });
     const control = document.querySelector<HTMLElement>(
       '[data-action="martian-mind-control"]',
     );
     expect(control?.getAttribute("aria-disabled")).toBe("true");
-    expect(control?.dataset.disabledReason).toMatch(/^Recovering: /);
-    expect(control?.getAttribute("aria-label")).toMatch(
-      /^Mind Control unavailable\. Recovering: /,
+    expect(control?.dataset.disabledReason).toBe(MIND_CONTROL_NO_TARGET_V7);
+    expect(control?.getAttribute("aria-label")).toBe(
+      `Mind Control unavailable. ${MIND_CONTROL_NO_TARGET_V7}`,
     );
     expectNoPermanentlyDisabled();
   });

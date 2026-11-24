@@ -410,7 +410,6 @@ describe("ruleset-7 all-Human parity digests", () => {
           defenderArmoured,
           attackerArmoured,
           rayPower,
-          coolingApplied,
           defenderShieldDamage,
           attackerShieldDamage,
           splash: shieldedSplash,
@@ -476,16 +475,15 @@ describe("ruleset-7 all-Human parity digests", () => {
           sweep,
           hiddenBlizzardPossible,
         ]).toEqual([false, false, false, false, false, false, false, false]);
-        // The Martian revision: the four neutral combat-preview fields and
-        // the neutral `shieldDamage: 0` of every splash entry.
+        // The Martian revision: the neutral combat-preview fields (three
+        // since `coolingApplied` retired in 7r145) and the neutral
+        // `shieldDamage: 0` of every splash entry.
         expect({
           rayPower,
-          coolingApplied,
           defenderShieldDamage,
           attackerShieldDamage,
         }).toEqual({
           rayPower: "NONE",
-          coolingApplied: false,
           defenderShieldDamage: 0,
           attackerShieldDamage: 0,
         });
@@ -546,9 +544,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           bitten: _bitten,
           eggs,
           shields,
-          cooling,
           mindControlled,
-          mindControlCooldowns,
           frozen,
           burrowed,
           surfacedThisTurn,
@@ -560,9 +556,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           bitten: unknown;
           eggs: unknown;
           shields: unknown;
-          cooling: unknown;
           mindControlled: unknown;
-          mindControlCooldowns: unknown;
           frozen: unknown;
           burrowed: unknown;
           surfacedThisTurn: unknown;
@@ -572,17 +566,11 @@ describe("ruleset-7 all-Human parity digests", () => {
         void _plagued;
         void _bitten;
         expect(eggs).toEqual([]);
-        // The Martian revision: four empty side lists in state and view.
-        expect({
-          shields,
-          cooling,
-          mindControlled,
-          mindControlCooldowns,
-        }).toEqual({
+        // The Martian revision: the empty side lists in state and view
+        // (two since `cooling` and `mindControlCooldowns` retired in 7r145).
+        expect({ shields, mindControlled }).toEqual({
           shields: [],
-          cooling: [],
           mindControlled: [],
-          mindControlCooldowns: [],
         });
         // The Ice Folk revision: the empty Chill list (`frozen` since Ice
         // Folk Freeze, `pulp_wars-w49.37`), and the neutral tile flags and

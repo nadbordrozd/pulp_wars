@@ -15,9 +15,9 @@
   },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r144",
+    "rulesetId": "pulp-wars-poc-7r145",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r144",
+      "rulesetId": "pulp-wars-poc-7r145",
       "seed": 1,
       "width": 16,
       "height": 16,
@@ -7025,9 +7025,7 @@
     "bitten": [{ "unitId": 171, "biterPlayerId": 1, "biterUnitId": 132 }],
     "eggs": [],
     "shields": [],
-    "cooling": [],
     "mindControlled": [],
-    "mindControlCooldowns": [],
     "frozen": [],
     "burrowed": [],
     "surfacedThisTurn": [],

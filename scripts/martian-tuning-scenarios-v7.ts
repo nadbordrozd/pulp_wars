@@ -248,10 +248,10 @@ export function martianScenariosV7(h: ScenarioHelpersV7): string[] {
       ],
     ),
     "",
-    "#### Psychic Command every second turn",
+    "#### Psychic Command every turn",
     "",
     ...play(
-      "A Brain commands two Grunts; they shoot a Swordsman. Next turn the Brain is Cooling and cannot command; the turn after it can",
+      "A Brain commands two Grunts; they shoot a Swordsman. It commands again on each of the next two turns (every second turn, Cooling in between, until 7r145)",
       ["MARTIAN", "ORIGINAL"],
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 5), tag: "b" },
@@ -515,7 +515,7 @@ export function martianScenariosV7(h: ScenarioHelpersV7): string[] {
       { activeSeat: 1 },
     ),
     ...battle(
-      "The same three Ray Gunners with Heat Sinks (no Cooling: full power every turn they do not move)",
+      "The same three Ray Gunners with Heat Sinks (Forest freedom and Sight 2; the ray is unchanged since 7r145)",
       ["MARTIAN", "ORIGINAL"],
       [
         ...row(0, "MARKSMAN", 4, [3, 4, 5]),

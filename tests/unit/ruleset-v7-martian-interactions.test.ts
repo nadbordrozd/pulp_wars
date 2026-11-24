@@ -421,12 +421,10 @@ describe("public queries (section 11)", () => {
     expect(estimateCombatV7(state, tripod, target)).toMatchObject({
       rayPower: "FULL",
       attack2: 8,
-      coolingApplied: true,
     });
     expect(estimateCombatV7(state, tripod, target, 1)).toMatchObject({
       rayPower: "HALF",
       attack2: 4,
-      coolingApplied: false,
     });
     // And equals the resolution after that Move.
     const moved = applyOkV7(state, activeIdV7(state), {

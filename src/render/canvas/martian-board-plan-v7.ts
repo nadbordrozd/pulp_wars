@@ -107,7 +107,6 @@ export function martianUnitMarkersV7(
           shield: 0,
           shieldSegments: 0,
           shieldMaximum: 0,
-          cooling: false,
           controlled,
           flyer: false,
           afloat: false,
@@ -118,7 +117,6 @@ export function martianUnitMarkersV7(
     shield: mechanics.shield,
     shieldSegments: shieldBarMaximumV7(mechanics),
     shieldMaximum: mechanics.shieldMaximum,
-    cooling: mechanics.cooling,
     controlled,
     flyer: mechanics.movementMode === "FLY" && unit.form !== "NAVAL",
     afloat: machine && unit.form === "EMBARKED",
@@ -717,7 +715,7 @@ export function addMartianSelectionEntriesV7(
 /** The Martian additions to an ATTACK target (section 13.1). */
 export interface MartianAttackTargetExtrasV7 {
   readonly notes: readonly string[];
-  /** The shooter's lines (ray power, Cooling), drawn on the focused target. */
+  /** The shooter's lines (ray power), drawn on the focused target. */
   readonly shooter: readonly string[];
   readonly warnings: readonly string[];
   readonly pierce: MapCommandTargetV7["pierce"];
@@ -725,7 +723,7 @@ export interface MartianAttackTargetExtrasV7 {
 
 /**
  * The Martian lines of an attack preview: notes (Shield, ray power,
- * Cooling, Disintegrator), friendly-fire warnings, and the Pierce victim
+ * Disintegrator), friendly-fire warnings, and the Pierce victim
  * drawn while the target is focused. Null in a match without a Martian
  * seat, so its attack previews are unchanged.
  */

@@ -116,7 +116,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // player and nothing else; the hashes return once they are removed too.
     // The Martian revision (`pulp_wars-t6s.2`) adds the four empty lists
     // `shields`, `cooling`, `mindControlled`, and `mindControlCooldowns`; the
-    // hashes return once they are removed as well.
+    // hashes return once they are removed as well (`cooling` and
+    // `mindControlCooldowns` retired in 7r145, `pulp_wars-bxpj`).
     // Revision 20 section 6.3 (`pulp_wars-0hi.3`) gives the starting Human
     // Fighter 12 HP (was 10) and changes nothing else in these states; the
     // hashes return once that is undone as well.
@@ -151,9 +152,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       const {
         eggs,
         shields,
-        cooling,
         mindControlled,
-        mindControlCooldowns,
         frozen,
         // The Dwarf revision (`pulp_wars-78i.3`): three empty lists.
         burrowed,
@@ -168,14 +167,12 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       expect(curiosities).toEqual([]);
       expect([
         shields,
-        cooling,
         mindControlled,
-        mindControlCooldowns,
         frozen,
         burrowed,
         surfacedThisTurn,
         bombedThisTurn,
-      ]).toEqual([[], [], [], [], [], [], [], []]);
+      ]).toEqual([[], [], [], [], [], []]);
       for (const player of revision19State.players)
         expect(player.achievementEntitlements.slice(3)).toEqual(
           ["CONQUEROR", "LAND_BARON", "SEA_DOG", "SLAYER"].map(

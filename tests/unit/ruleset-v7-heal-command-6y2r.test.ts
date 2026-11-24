@@ -112,14 +112,15 @@ function endTurnRecoveries(state: GameStateV7) {
 }
 
 describe("the identity (pulp_wars-6y2r)", () => {
-  // `pulp_wars-vtiy` (a Wait never blocks a Heal) took 7r144 after it.
+  // `pulp_wars-vtiy` (a Wait never blocks a Heal) took 7r144 after it, and
+  // the Martian strength pass (`pulp_wars-bxpj`) 7r145.
   it("was 7r143 after 7r142, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r143");
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r142");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r143");
+    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r142");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
       "pulpWars.save.v7r142.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -291,13 +292,16 @@ describe("a Wait never blocks HEAL (pulp_wars-vtiy)", () => {
     return { unitId: unit.id, wounded: patchUnitV7(waited, FULL, { hp: 5 }) };
   }
 
-  it("is the current identity, 7r144 after 7r143", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r144");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r144.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r143");
+  // The Martian strength pass (`pulp_wars-bxpj`) took 7r145 after it.
+  it("was 7r144 after 7r143, both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r145");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r145.current");
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r144");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r143");
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r143.current",
+      "pulpWars.save.v7r144.current",
     );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
 
   it("offers and accepts HEAL for a unit that waited and was then wounded", () => {

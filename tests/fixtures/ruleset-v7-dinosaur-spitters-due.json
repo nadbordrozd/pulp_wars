@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r144",
+  "rulesetId": "pulp-wars-poc-7r145",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r144",
+    "rulesetId": "pulp-wars-poc-7r145",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -3477,9 +3477,7 @@
   "bitten": [],
   "eggs": [{ "unitId": 62, "turnsRemaining": 1, "laidThisTurn": false }],
   "shields": [],
-  "cooling": [],
   "mindControlled": [],
-  "mindControlCooldowns": [],
   "frozen": [],
   "burrowed": [],
   "surfacedThisTurn": [],

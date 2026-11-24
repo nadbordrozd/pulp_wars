@@ -611,8 +611,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Mission curiosities (`pulp_wars-hmyk.14`): no hand-placed curiosity
     // on a definition's starting unit, which stands on the board.
     "src/engine/v7/missions/build.ts::validateMissionCuriositiesV7": "BOARD",
-    "src/engine/v7/martian.ts::coolingStepV7": "BOARD",
-    "src/engine/v7/martian.ts::mindControlCooldownStepV7": "BOARD",
     // `pulp_wars-1wy.3`: the per-turn Martian lists name units on the board
     // (a beamed passenger and a pulling Mothership stand on it; neither can
     // burrow in the same turn).

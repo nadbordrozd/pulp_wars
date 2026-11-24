@@ -56,7 +56,6 @@ import {
   drawControlBrainChipV7,
   drawControlHaloV7,
   drawControlLinkV7,
-  drawCoolingGlyphV7,
   drawShieldBarV7,
   flyerPresentationV7,
 } from "../../src/render/canvas/martian-canvas-v7";
@@ -67,10 +66,7 @@ import {
   type MartianFeedbackEffectV7,
 } from "../../src/render/canvas/martian-effects-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
-import {
-  DISINTEGRATOR_PREVIEW_V7,
-  LEAVES_COOLING_V7,
-} from "../../src/render/martian-presentation-v7";
+import { DISINTEGRATOR_PREVIEW_V7 } from "../../src/render/martian-presentation-v7";
 import {
   MARTIAN_DUEL_V7,
   MARTIAN_UI_V7,
@@ -315,7 +311,7 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
 });
 
 describe("Martian board plan", () => {
-  it("carries each unit's Shield, Cooling, Thrall and flying markers from the public stats", () => {
+  it("carries each unit's Shield, Thrall and flying markers from the public stats", () => {
     const view = humanView(martianUiFixtureV7());
     const plan = planFor(view, null);
     const dented = unitEntry(plan, view, AT.dentedGrunt);
@@ -324,13 +320,15 @@ describe("Martian board plan", () => {
       shield: dentedStats.shield,
       shieldSegments: dentedStats.shieldMaximum,
       shieldMaximum: dentedStats.shieldMaximum,
-      cooling: false,
       controlled: false,
       flyer: false,
     });
     expect(dented.faction).toBe("MARTIAN");
     expect(dented.artSubject).toBe("UNIT:MARTIAN:FIGHTER");
-    expect(unitEntry(plan, view, AT.coolingGunner).martian?.cooling).toBe(true);
+    // (The Cooling marker went with Cooling, `pulp_wars-bxpj`, 7r145.)
+    expect(unitEntry(plan, view, AT.movedGunner).martian).not.toHaveProperty(
+      "cooling",
+    );
     // The Mind Control revision: a controlled Human Fighter keeps its own
     // name and sprite and carries the control marker.
     const controlled = unitEntry(plan, view, AT.controlled);
@@ -538,7 +536,7 @@ describe("Martian board plan", () => {
     expect(fills(log)).toContain("rgba(255, 143, 214, 0.26)");
   });
 
-  it("adds the Shield, ray power, Cooling, Disintegrator and Pierce lines to attack targets", () => {
+  it("adds the Shield, ray power, Disintegrator and Pierce lines to attack targets", () => {
     const view = humanView(martianUiFixtureV7());
     const tripod = unitAt(view, AT.tripod);
     const plan = planFor(view, AT.tripod);
@@ -552,7 +550,7 @@ describe("Martian board plan", () => {
     const preview = queryCombatPreviewV7(view, tripod.id, target.id);
     if (preview === null || hostile === undefined) throw new Error("preview");
     expect(preview.rayPower).toBe("FULL");
-    expect(hostile.previewFocusNote).toBe(`Full power · ${LEAVES_COOLING_V7}`);
+    expect(hostile.previewFocusNote).toBe("Full power");
     const pierced = preview.splash[0];
     expect(hostile.pierce).toMatchObject({
       at: AT.pierceVictim,
@@ -604,8 +602,9 @@ describe("Martian board plan", () => {
   });
 
   it("draws the shooter's note only on the focused target", () => {
-    // The Martian pass (`pulp_wars-w49.14`, 7r52): a Ray Gunner overheats
-    // only without Heat Sinks (the fixture's seat owns every technology).
+    // The Martian pass (`pulp_wars-w49.14`, 7r52): the shooter's line of a
+    // Ray Gunner without Heat Sinks ("Full power"; "Leaves it Cooling next
+    // turn" until `pulp_wars-bxpj`, 7r145).
     const fixture = martianUiFixtureV7();
     const view = humanView({
       ...fixture,
@@ -628,7 +627,7 @@ describe("Martian board plan", () => {
         (call) =>
           call[0] === "fillText" &&
           typeof call[1] === "string" &&
-          call[1].includes(LEAVES_COOLING_V7),
+          call[1] === "Full power",
       ).length;
     expect(count(all)).toBe(0);
     expect(count(focused)).toBe(1);
@@ -692,18 +691,6 @@ describe("Martian board markers", () => {
         (fill) => fill === MARTIAN_PALETTE_V7.magentaGlow,
       ),
     ).toHaveLength(2);
-  });
-
-  it("draws the Cooling glyph without magenta", () => {
-    const cooling = recordingContext();
-    drawCoolingGlyphV7(cooling.context, 0, 0, 1, { chibi: true });
-    const strokes = cooling.log
-      .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
-      .map((call) => call[2]);
-    expect(strokes).toContain(MARTIAN_PALETTE_V7.cooling);
-    expect([...strokes, ...fills(cooling.log)]).not.toContain(
-      MARTIAN_PALETTE_V7.magenta,
-    );
   });
 
   it("draws the control halo, brain chip and link in the Martian faction colour", () => {
@@ -834,11 +821,8 @@ describe("Martian board markers", () => {
     const view = humanView(martianUiFixtureV7());
     const log = draw(planFor(view, null));
     expect(fills(log)).toContain(MARTIAN_PALETTE_V7.magenta);
-    // The cooling glyph's grey and the badge's gunmetal.
-    const strokes = log
-      .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
-      .map((call) => call[2]);
-    expect(strokes).toContain(MARTIAN_PALETTE_V7.cooling);
+    // The badge's gunmetal (the Cooling glyph's grey went with Cooling,
+    // `pulp_wars-bxpj`, 7r145).
     expect(fills(log)).toContain(MARTIAN_PALETTE_V7.gunmetal);
   });
 

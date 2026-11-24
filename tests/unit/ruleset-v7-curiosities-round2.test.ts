@@ -217,9 +217,11 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
       expect(mechanics.advancesAfterKill).toBe(false);
       expect(mechanics.shield).toBe(0);
     }
+    // It carried `heatSink` so that it never Cooled; the mechanic went with
+    // Cooling (`pulp_wars-bxpj`, 7r145).
     expect(
-      unitRoleMechanicsV7(state, neutralOf(state, "RAY_GUNNER").unit).heatSink,
-    ).toBe(true);
+      unitRoleMechanicsV7(state, neutralOf(state, "RAY_GUNNER").unit),
+    ).not.toHaveProperty("heatSink");
   });
 
   it("tells the Zombie from the Shield Projector by breed, both GUARD", () => {
@@ -418,21 +420,19 @@ describe("camps: provocation and the attack (sections 25.3 and 25.4)", () => {
     ]);
   });
 
-  it("fires the Ray Gunner's ray at full power without a step and at half power after one, never Cooling", () => {
+  it("fires the Ray Gunner's ray at full power without a step and at half power after one", () => {
     const still = saucerArena(
       [{ breed: "RAY_GUNNER", home: SAUCER, at: at(5, 8) }],
       { pieces: [{ seat: 0, role: "FIGHTER", at: at(5, 10) }] },
     );
     const full = endRound(still);
     expect(combats(full.events)[0]?.rayPower).toBe("FULL");
-    expect(full.state.cooling).toEqual([]);
     const stepping = saucerArena(
       [{ breed: "RAY_GUNNER", home: SAUCER, at: at(4, 8) }],
       { pieces: [{ seat: 0, role: "FIGHTER", at: at(6, 11) }] },
     );
     const half = endRound(stepping);
     expect(combats(half.events)[0]?.rayPower).toBe("HALF");
-    expect(half.state.cooling).toEqual([]);
   });
 
   it("wanders by the Spider's stateless draw with no candidate", () => {

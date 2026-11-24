@@ -62,9 +62,9 @@ export const TOSS_ESCORT_RADIUS_V7 = 5;
 /** A hostile Field Defense a Stomp or a Siege Hammer blow smashes. */
 export const GIANT_FIELD_DEFENSE_VALUE_V7 = 8;
 /**
- * A Colossus that is Cooling (its ray is at half power whatever it does)
- * strides over a screen to a ranged, siege, or support unit: before its
- * own shot from where it stands (the army's breakthrough tier, 1177).
+ * A Colossus strides over a screen to a ranged, siege, or support unit (the
+ * army's breakthrough tier, 1177, below a full-power kill from where it
+ * stands; only a Cooling one did until `pulp_wars-bxpj`, 7r145).
  */
 export const OVERSTRIDE_BREAKTHROUGH_VALUE_V7 = 10;
 /**

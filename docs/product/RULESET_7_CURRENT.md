@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r144`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r145`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -446,6 +446,38 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+
+`pulp-wars-poc-7r145` (`pulp_wars-bxpj`, **the Martian strength pass**;
+the user, 2026-11-24: "the martian brain is too nerfed. it should be able
+to take control of another unit with no cooldown", and of the heat rays,
+"maybe it should be stronger than the human one while at full strength
+while being weaker at half strength? so it averages out"). (1) **Mind
+Control has no cooldown**: a Brain may take a unit every turn (it is its
+primary action, once a turn); `GameStateV7.mindControlCooldowns`, its view
+list, the Start Turn cooldown step, the reason `COOLDOWN`,
+`MIND_CONTROL_COOLDOWN_TURNS_V7` (2), and the Mind Control preview's
+`cooldownTurns` are retired ([section 20.8](#208-mind-control)). (2)
+**Cooling is retired**: a heat ray fires at full power every turn its unit
+has not moved and at half power after a Move, with no alternation;
+`GameStateV7.cooling`, its view list, the End Turn Cooling step, the
+combat preview's and `COMBAT_RESOLVED`'s `coolingApplied`, the published
+`martian.cooling`, and the board's Cooling glyph and chip are gone. The
+Brain's Psychic Command, which also cooled (every second turn, role
+mechanic `rallyCools`), is every turn like a Captain's Rally. (3) **Heat
+Sinks** (the Martian Fieldcraft) keeps only the Human Fieldcraft unlocks
+(Replant Forest, Forest freedom, Sight 2): its no-overheat effect is every
+ray's baseline now, so the unlock `HEAT_SINKS`, the capability
+`heatSinks`, and the role mechanic `heatSink` (the neutral Ray Gunner's
+too) are retired. (4) **Numbers**, retuned against
+the Human twins ([section 20.4](#204-heat-rays)): the **Colossus has
+Attack 5** (4 before); the Ray Gunner (Attack 3) and the Tripod (Attack 4)
+keep theirs. (5) The Normal AI drops its Cooling and cooldown readings: a
+Brain is ready every turn, every hostile ray unit is read at full power
+where it need not move, a full-power kill no longer waits for a half-power
+one, a ray unit no longer steps out of melee reach to kite, and a Colossus strides over a screen it cannot kill to a ranged, siege, or
+support unit. Mission definitions are unchanged. A save, replay, or setup
+of `7r144` is rejected (a state with a `cooling` or `mindControlCooldowns`
+key is not valid), and the browser autosave has a new key.
 
 `pulp-wars-poc-7r144` (`pulp_wars-vtiy`, **a Wait never blocks a Heal**;
 the user, 2026-11-22: "wait only dimisses the highlight that shows that the
@@ -2238,7 +2270,7 @@ Fields**: a Shield Projector raises no Shield but its own until its owner
 has the Martian Fortification
 ([section 20.3](#203-force-field-and-force-fields)); the Martian
 Fieldcraft is **Heat Sinks**: with it a Ray Gunner's full-power ray
-leaves it no Cooling ([section 20.4](#204-heat-rays-and-cooling)); and a
+leaves it no Cooling ([section 20.4](#204-heat-rays)); and a
 Martian city's level-2 Survey is **Scouts**, with a free Saucer, as the
 Humans', the Goblins', and the Undead's is
 ([section 4.8](#48-city-rewards)). A Martian seat of the Normal AI plays
@@ -2634,10 +2666,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r144`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r145`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r144.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r145.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -2661,7 +2693,8 @@ sections here cite.
   Revision 21 (`7r21`) widened every player's achievement entitlements and
   progress to seven entries. The Martian overlay (`7r22`) registered the
   fifth faction with the `shields`, `cooling`, `thralls` (now
-  `mindControlled`), and `mindControlCooldowns` state and view lists, the `BEAM_DOWN`,
+  `mindControlled`), and `mindControlCooldowns` state and view lists (`cooling`
+  and `mindControlCooldowns` retired in `7r145`), the `BEAM_DOWN`,
   `MIND_CONTROL`, and `TRACTOR_BEAM` commands, the `SHIELDS_RECHARGED`,
   `UNIT_BEAMED`, `UNIT_MIND_CONTROLLED`, and `UNIT_PULLED` events, the
   `UNIT_DIED` cause `BRAIN_LOST`, four combat-preview fields, and the
@@ -2862,8 +2895,9 @@ sections here cite.
   regeneration changes HP. Its only Dinosaur field is `eggs`, the Egg
   countdowns ([section 19.3](#193-eggs)); growth is derived from the
   existing `kills` and `maxHp` unit fields, and capacity slots are
-  registration values. Its Martian fields are four side lists sorted by unit
-  ID, `shields`, `cooling`, `mindControlled`, and `mindControlCooldowns`,
+  registration values. Its Martian fields are side lists sorted by unit
+  ID, `shields` and `mindControlled` (and `cooling` and
+  `mindControlCooldowns` until `7r145`),
   and two per-turn lists of sorted unit IDs of the active seat's turn,
   `beamedThisTurn` and `tractorUsedThisTurn`
   ([sections 20.7](#207-beam-down) and [20.10](#2010-tractor-beam))
@@ -4159,8 +4193,8 @@ entity IDs of its three boats stay unused (so every other seat keeps the
 unit IDs it has beside any other faction), and no `TRAIN_NAVAL` is offered
 to it ([section 21.16](#2116-the-frozen-sea)). A Dinosaur seat's units are all
 hatched (no Egg exists at setup) and at growth stage 0. A Martian seat's
-units are at full Shield, with no controlled unit, no Cooling entry, and no
-Mind Control cooldown; the first seat's first Start Turn recharges its Shields
+units are at full Shield, with no controlled unit; the first seat's first
+Start Turn recharges its Shields
 under the Force Field rule like any Start Turn, and with every technology
 known, Force Fields, Heat Sinks, and the Disintegrator apply from the first turn. An Ice
 Folk seat's units start with no Frozen entry; with every technology known,
@@ -4784,7 +4818,7 @@ Spider on the board, sorted by `unitId`, with `provokedBy` sorted; it is
 empty with the option off, on the Showcase and missions, and below width 16. Parsing rejects an entry without a neutral-owned unit, a neutral unit
 without an entry (or burrowed), a Spider off the tiles of its area it may
 stand on, a `provokedBy` ID that is not a unit on the board, any status
-entry (Plague, Bitten, Frozen, Shield, Cooling, Mind Control) on it, and a
+entry (Plague, Bitten, Frozen, Shield, Mind Control) on it, and a
 neutral unit that is not the registration's role and form at its maximum
 HP with at most one attack. `PlayerViewV7.monsters` lists every visible
 Spider (a unit on a tile the viewer explored) with its home and its
@@ -4890,8 +4924,8 @@ breed (`GIANT_SPIDER`, `GRUNT`, `RAY_GUNNER`, `SHIELD_PROJECTOR`, `ZOMBIE`,
 `BIGFOOT`) selects its registration. A guard has its faction role's stats
 with its Shield maximum added to its HP (no Shield) and may attack after
 its step: Grunt (`FIGHTER`) 10 HP, Attack 2, Defense 1.5, range 1–2, bounty
-3; Ray Gunner (`MARKSMAN`) 10, 3 (a heat ray, half power after a step, never
-Cooling), 1, range 1–2, bounty 4; Shield Projector (`GUARD`) 15, 1.5, 2.5,
+3; Ray Gunner (`MARKSMAN`) 10, 3 (a heat ray, half power after a step), 1,
+range 1–2, bounty 4; Shield Projector (`GUARD`) 15, 1.5, 2.5,
 range 1, bounty 4; Zombie (`GUARD`) 18, 2, 2, range 1, bounty 5. Bigfoot
 (`RAIDER`) has 15 HP, Defense 2, no attack and range 0 (it never attacks or
 retaliates), bounty 12. No neutral unit has Sight, cost, technology,
@@ -5305,8 +5339,8 @@ Online multiplayer (`pulp_wars-eqc6.1`, `pulp-wars-poc-7r120`;
   allies against the human.
 - **Start Turn** (in order): set the active seat and reset its units'
   activations and capture eligibility (an Egg keeps its exhausted
-  activation); set every owned city's city action available; count down the
-  seat's Mind Control cooldowns ([section 20.8](#208-mind-control)); recharge
+  activation); set every owned city's city action available (the Mind
+  Control cooldown step that followed was retired in `7r145`); recharge
   the seat's Shields ([section 20.2](#202-shields)) (the frozen sea runs
   nothing here: Black Ice freezes on entry since `7r100`, and the crush of
   the icebound units went with Icebound in `pulp_wars-s55m.1`,
@@ -5321,7 +5355,7 @@ Online multiplayer (`pulp_wars-eqc6.1`, `pulp-wars-poc-7r120`;
   ([section 2.7](#27-map-curiosities)); regenerate Trolls
   ([section 18.10](#1810-berserk-ram-and-troll-regeneration)); award income;
   settle pending city rewards; evaluate achievements. A Cult seat's Start
-  Turn adds its hex cooldowns (with the Mind Control cooldowns) and, after
+  Turn adds its hex cooldowns (before the Shield recharge) and, after
   Plague and its chains and before the Eggs, its channel check and its
   rituals ([section 26.13](#2613-resolution-order)). Events:
   `TURN_STARTED`, then `SHIELDS_RECHARGED`, then one block
@@ -5341,15 +5375,15 @@ Online multiplayer (`pulp_wars-eqc6.1`, `pulp-wars-poc-7r120`;
   before income, so a rising that besieges its victim's city center cuts
   that city's income this turn, and Plunder from a Start Turn chain is added
   before income. A unit that hatched this Start Turn counts for that turn's
-  Muster evaluation. The cooldown and Shield steps do nothing in a match
+  Muster evaluation. The Shield step does nothing in a match
   without a Martian seat, and the surfacing step nothing in a match
   without a Dwarf seat. (Before `pulp_wars-w49.37` the Cold Aura ran
   here, after the Shield recharge; it now follows the Frost Giant's own
   Move.)
 - **End Turn** (in order): auto-recover idle damaged units (never a Dwarf
   construct); expire Inspired and
-  Overrun; run the player's Cooling step
-  ([section 20.4](#204-heat-rays-and-cooling)); with Force Fields, recharge
+  Overrun (the Cooling step that followed was retired in `7r145`); with
+  Force Fields, recharge
   the player's Shields again ([section 20.3](#203-force-field-and-force-fields));
   count down the Frozen entries of the player's units, burrowed ones
   included, and thaw those at the end of their count
@@ -6438,8 +6472,10 @@ project their Force Field (since `7r52`; capability `projectsForceField`)
 and its Shields also recharge at the end of its turn
 ([section 20.3](#203-force-field-and-force-fields)).
 **Fieldcraft**, displayed as **Heat Sinks** since `7r52`, keeps its Human
-unlocks and adds `HEAT_SINKS` (capability `heatSinks`): the player's Ray
-Gunners do not overheat ([section 20.4](#204-heat-rays-and-cooling)).
+unlocks only (since `7r145`; from `7r52` to `7r144` it also added
+`HEAT_SINKS`, capability `heatSinks`: the player's Ray Gunners did not
+overheat, which is every ray's baseline now,
+[section 20.4](#204-heat-rays)).
 **Explosives**, displayed as **Disintegrator**, keeps Blast Mountain and
 Breach and adds `DISINTEGRATOR`: the player's heat
 rays ignore the defender's fortification
@@ -6457,7 +6493,7 @@ differently from the Human table are:
 | Administration | same          | Brain (Psychic Command, Mind Control); Market; Disband                                                                                   |
 | Sawmilling     | same          | Sawmill; Tripod (heat ray, Pierce)                                                                                                       |
 | Marksmanship   | same          | Ray Gunner (heat ray)                                                                                                                    |
-| Fieldcraft     | Heat Sinks    | Replant Forest; Ray Gunner ignores Forest movement stops; Ray Gunner Sight 2; Ray Gunners do not overheat                                |
+| Fieldcraft     | Heat Sinks    | Replant Forest; Ray Gunner ignores Forest movement stops; Ray Gunner Sight 2                                                             |
 | Scouting       | same          | Saucer (flies, Beam Down, Tractor Beam); Saucer Sight 2                                                                                  |
 | Raiding        | same          | Pillage for land units that do not fly; Saucer Strafe                                                                                    |
 | Chivalry       | same          | Mothership (flies, Beam Down, Tractor Beam); Cultivate Forest                                                                            |
@@ -7879,20 +7915,20 @@ The Martian (`MARTIAN`) roster, by mechanical role, with the
 ([section 20.2](#202-shields)); "Slots" is the capacity the unit uses; "Mode"
 is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-water)):
 
-| Unit             | Role          | Tech              | Cost | Slots |   HP | Shield |  Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                                                                  |
-| ---------------- | ------------- | ----------------- | ---: | ----: | ---: | -----: | ------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |   8⁸ |      2 |  2 (4)⁷ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                                                                  |
-| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |    8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | yes     | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance                                 |
-| Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |    8 |      2 |   3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                                                   |
-| Shield Projector | `GUARD`       | Fortification     |    4 |     1 |   12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                                              |
-| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |    8 |      2 |     0¹¹ |    1 (2) |    1 |   0¹¹ |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no attack¹¹; no Tend Wounded                                                |
-| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |   12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | yes     | heat ray; Pierce; never advances                                                                           |
-| Mothership       | `KNIGHT`      | Chivalry          |  9¹⁰ |     2 | 20¹⁰ |      4 | 3 (6)¹⁰ |  3 (6)¹⁰ |    2 |     1 |   2¹⁰ | fly    | yes               | yes     | Mass Beam Down¹⁰; Shield Canopy¹⁰; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
-| Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |   12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                                                   |
-| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |   32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                                       |
-| Skimmer⁹         | `PATROL_BOAT` | Shorecraft        |    5 |     1 |    8 |      2 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Hover Pods)                                                                                    |
-| Hover Cruiser⁹   | `BATTLESHIP`  | Naval Engineering |   16 |     1 |   20 |      3 |  5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                                              |
-| Bathysphere⁹     | `SUBMARINE`   | Submersibles      |    9 |     1 |   10 |      2 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                                                  |
+| Unit             | Role          | Tech              | Cost | Slots |   HP | Shield |   Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                                                                  |
+| ---------------- | ------------- | ----------------- | ---: | ----: | ---: | -----: | -------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |   8⁸ |      2 |   2 (4)⁷ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                                                                  |
+| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |    8 |      2 |  1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | yes     | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance                                 |
+| Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |    8 |      2 |    3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                                                   |
+| Shield Projector | `GUARD`       | Fortification     |    4 |     1 |   12 |      3 |  1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                                              |
+| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |    8 |      2 |      0¹¹ |    1 (2) |    1 |   0¹¹ |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no attack¹¹; no Tend Wounded                                                |
+| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |   12 |      2 |    4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | yes     | heat ray; Pierce; never advances                                                                           |
+| Mothership       | `KNIGHT`      | Chivalry          |  9¹⁰ |     2 | 20¹⁰ |      4 |  3 (6)¹⁰ |  3 (6)¹⁰ |    2 |     1 |   2¹⁰ | fly    | yes               | yes     | Mass Beam Down¹⁰; Shield Canopy¹⁰; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
+| Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |   12 |      3 |    3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                                                   |
+| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |   32 |      3 | 5 (10)¹² | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                                       |
+| Skimmer⁹         | `PATROL_BOAT` | Shorecraft        |    5 |     1 |    8 |      2 |    2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Hover Pods)                                                                                    |
+| Hover Cruiser⁹   | `BATTLESHIP`  | Naval Engineering |   16 |     1 |   20 |      3 |   5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                                              |
+| Bathysphere⁹     | `SUBMARINE`   | Submersibles      |    9 |     1 |   10 |      2 |    4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                                                  |
 
 ⁵ Ray Gunner Sight becomes 2 with Fieldcraft.
 ⁶ [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record)
@@ -7925,13 +7961,16 @@ Shield Canopy ([section 20.3](#203-force-field-and-force-fields)).
 Brain has no attack (no `ATTACK`, Attack 0, Range 0; Attack 1 at range 1
 before), never strikes back, and holds any number of units with Mind
 Control ([section 20.8](#208-mind-control)).
+¹² The Martian strength pass (`pulp-wars-poc-7r145`, `pulp_wars-bxpj`,
+[section 20.4](#204-heat-rays)): the Colossus has Attack 5 (4 before), so
+its unmoved ray outhits the Juggernaut and its half-power ray (2.5) stays
+below it; the Ray Gunner and the Tripod keep their numbers.
 
 - **Grunt** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion: 13 HP promoted) except its numbers, its Shield, its
   range, and that it cannot build Field Defense; it is trained on the city
   center. Its attack is a **ray pistol**: an ordinary attack at range 1 or
-  2 (minimum range 1), not a heat ray (full Attack after moving, no
-  Cooling). Like any attacker with range 2 it retaliates against an
+  2 (minimum range 1), not a heat ray (full Attack after moving). Like any attacker with range 2 it retaliates against an
   attacker two tiles away. Having range 2 it is a ranged unit and never
   advances (tuning 2, `7r47`; before, it advanced after an adjacent kill).
 - **Saucer** flies. It has Raider parity for Sight 2 and for Charge with
@@ -7944,8 +7983,8 @@ Control ([section 20.8](#208-mind-control)).
 - **Ray Gunner** has Marksman parity (range 1–2, minimum range 1, capture,
   Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
   tuning 2, `7r47`) and a heat ray
-  ([section 20.4](#204-heat-rays-and-cooling)); with Heat Sinks (`7r52`)
-  its full-power ray leaves it no Cooling.
+  ([section 20.4](#204-heat-rays)); from `7r52` to `7r144` Heat Sinks
+  kept its full-power ray from leaving it Cooling.
 - **Shield Projector** has Guard parity for "cannot attack after moving" and
   capture, cannot build Field Defense, and, once its owner has Force
   Fields (`7r52`), projects the Force Field
@@ -8482,7 +8521,7 @@ General roster rules:
   ability (no Beam Down, Mind Control, Tractor Beam, Psychic Command, or
   Force Field); a unit of the Ice Folk kind never embarks, so no Ice Folk
   ability is ever afloat; an embarked dinosaur keeps its slots and
-  growth, an embarked Martian unit keeps its slots, its Cooling, and its
+  growth, an embarked Martian unit keeps its slots and its
   Shield, which still absorbs damage and recharges, and an embarked unit
   cannot be Frozen, and a Frozen unit cannot embark (it cannot move;
   [section 21.3](#213-what-a-frozen-unit-cannot-do)). It has no
@@ -9399,12 +9438,11 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   Rally, Frenzy, War Drums, or Psychic Command. (Goblin WAAAGH! was one
   until `pulp_wars-w49.35`; its replacement, Berserk, adds Move instead.)
 - **Heat ray** (a land-form Ray Gunner, Tripod, or Colossus,
-  [section 20.4](#204-heat-rays-and-cooling)): full power only from a unit
-  that has not moved this turn and is not Cooling, otherwise the role's
-  Attack is halved (rounded down in half-units) before every bonus; a
-  full-power ray leaves the unit Cooling (not a Ray Gunner whose owner has
-  Heat Sinks, `7r52`). The preview carries `rayPower` and
-  `coolingApplied`. A ray unit's retaliation is never a ray.
+  [section 20.4](#204-heat-rays)): full power from a unit that has not
+  moved this turn, every turn, otherwise the role's Attack is halved (rounded down in
+  half-units) before every bonus. There is no Cooling since `7r145`. The
+  preview carries `rayPower` (and carried `coolingApplied` until `7r145`).
+  A ray unit's retaliation is never a ray.
 - **Alpha** (a dinosaur with 3 or more kills): +1 Attack on every attack it
   makes, included in `attack2` ([section 19.8](#198-grow)).
 - **Charge!** (the Triceratops, [section 19.11](#1911-charge)): +1 Attack
@@ -9719,8 +9757,9 @@ Disintegrator ([section 21.5](#215-snow)).
   [revision 14 §10](RULESET_7_REVISION_14_BALANCE.md#10-combat-resolution-order),
   [revision 17 §6.7](RULESET_7_REVISION_17_GOBLINS.md#67-where-chains-run-and-event-order),
   and [section 19.11](#1911-charge) here (growth, Push, and follow); a
-  Martian attack then spends the Shields the exchange absorbed and records
-  the Cooling of a full-power ray; the Ice Folk steps are in
+  Martian attack then spends the Shields the exchange absorbed (and
+  recorded the Cooling of a full-power ray until `7r145`); the Ice Folk
+  steps are in
   [section 21.13](#2113-attack-resolution-order), the Dwarf steps in
   [section 22.11](#2211-resolution-order), and the Candy steps in
   [section 23.8](#238-resolution-order). The naval branch adds to the
@@ -9959,7 +9998,7 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   self-launch, and a Saucer or Mothership stays in the air over water
   (`7r116`). Afloat, a Martian unit is an ordinary embarked unit (Move 2,
   Defense 1, Sight 1, no Attack, retaliation, ZOC, or ability) that keeps its
-  Shield and Cooling; a walker afloat may enter Deep Water with Navigation.
+  Shield; a walker afloat may enter Deep Water with Navigation.
   An embarked Martian unit on a hostile dock blockades it, and so does an
   embarked mind-controlled unit.
 - **The Ice Folk have no boats** (`pulp-wars-poc-7r44`). Their tree unlocks
@@ -10316,10 +10355,10 @@ Harbours from it.
   hatched unit reveals its sight. A city's capacity and used slots stay
   owner-private; each unit's own slot value is public in its unit stats.
 - **Martian statuses** are public on a visible unit: its Shield and Shield
-  maximum (`PlayerViewV7.shields`), Cooling (`cooling`), control
-  (`mindControlled`, naming the Brain only when the viewer sees it, and the
-  original owner), and a Brain's Mind Control cooldown
-  (`mindControlCooldowns`) and controlled-unit count.
+  maximum (`PlayerViewV7.shields`), control (`mindControlled`, naming the
+  Brain only when the viewer sees it, and the original owner), and a
+  Brain's controlled-unit count (Cooling, `cooling`, and the Mind Control
+  cooldown, `mindControlCooldowns`, were public until `7r145`).
   `SHIELDS_RECHARGED` is projected like `WINDMILL_HEALING_RESOLVED`, with
   the entries of units the viewer can see; `UNIT_BEAMED`,
   `UNIT_MIND_CONTROLLED`, and `UNIT_PULLED` go to the actor and to every
@@ -10778,8 +10817,10 @@ Harbours from it.
   Troll throws a Goblin where its Kaboom kills or deals 8 net, and the
   Goblin sets it off; a Goblin keeps beside a Troll that has an enemy near.
   A Brontosaurus Stomps when the Stomp's hits are worth more than its best
-  attack, unless the attack kills. A Cooling Colossus strides over a screen
-  to a ranged, siege, or support unit, and a trample that kills is a kill.
+  attack, unless the attack kills. A Colossus strides over a screen to a
+  ranged, siege, or support unit when none is in its range (a Cooling one
+  only, until `7r145`; a full-power kill from where it stands goes first),
+  and a trample that kills is a kill.
   A Frost Giant steps where its Cold Wake freezes a unit (the Cold Aura
   before `7r133`) and then smashes it. A Brass Titan strikes the garrison of a walled center before the
   other units do, and walks toward the nearest hostile city with Walls. A
@@ -11421,16 +11462,17 @@ Harbours from it.
   Mind Control, a controlled unit, the Tractor Beam; `src/ai/v7-martian.ts`), so
   matches without one are byte-identical. Shared estimates reduce the
   projected damage to a unit by the Shield it will have in the enemy turn,
-  give a visible hostile ray unit full power only where it need not move and
-  is not Cooling, and give walkers and flyers their own reach (no terrain
+  give a visible hostile ray unit full power only where it need not move
+  (and not while Cooling, until `7r145`), and give walkers and flyers their own reach (no terrain
   stop; a flyer passes every unit and ignores ZOC) and no cover. As
   Martians, Normal values a role by its HP plus twice its Shield, trains
   Grunts first in a threatened city, researches Drill and Scouting first,
   then (with two cities) Marksmanship and Administration, Force Fields once
   it owns a Projector, the Tripod's and the Mothership's technologies, and
   the Disintegrator against visible fortified units; fires rays at full power
-  from where the unit stands (a ready ray unit holds its tile) and steps a
-  Cooling ray unit out of melee reach; since `pulp_wars-b5f.2` a shooter
+  from where the unit stands (a ready ray unit holds its tile; a Cooling
+  ray unit stepped out of melee reach before its half shot until `7r145`);
+  since `pulp_wars-b5f.2` a shooter
   with range 2 (the Grunt's ray pistol, the Tripod) steps back from an
   adjacent melee unit (the Tripod from any adjacent unit) to shoot from two
   tiles (904); ends Moves next to its Projectors;
@@ -11463,8 +11505,7 @@ Harbours from it.
   against Martians every seat guards a center a Saucer could empty
   ([Normal AI notes](../architecture/NORMAL_AI.md#martian-mobility-play-pulp_wars-1wy4)).
   Against Martians, Normal focus-fires a shielded unit that this turn's
-  attacks can kill through its Shield (ranged hits first), values hits on
-  Cooling ray units, keeps every unit (since `7r99` at any HP, a giant and
+  attacks can kill through its Shield (ranged hits first), keeps every unit (since `7r99` at any HP, a giant and
   a ship too) out of a ready visible Brain's reach, keeps a second unit by a city center in a visible
   Mothership's reach, and (Goblin seats) values the Shield a Kaboom strips.
   Details and measurements:
@@ -13160,16 +13201,18 @@ numbers are first guesses.
 Humans are sustain, Undead are attrition, Goblins are a reckless horde,
 Dinosaurs are few, big, and growing, and Martians are a **small high-tech
 invasion force**: frail bodies behind energy Shields that recharge every
-turn, heat rays that hit hard and then run hot, machines that walk or fly
+turn, heat rays that hit hardest from a standing start, machines that walk or fly
 over any terrain, troops beamed down from Saucers, and enslaved locals to
 hold the front line. They are weak when rushed and focus-fired, and weak in a
 sustained brawl. Every rule in this section applies only to units of a
 `MARTIAN` seat, except where a rule names its target (Mind Control, the
 Tractor Beam, and Pierce act on other players' units); in a match without
-one the lists `shields`, `cooling`, `mindControlled`, and `mindControlCooldowns` are
+one the lists `shields` and `mindControlled` are
 empty, no `BEAM_DOWN`, `MIND_CONTROL`, or `TRACTOR_BEAM` is offered or
 accepted, every role has movement mode `GROUND`, and every combat preview
-has `rayPower: "NONE"`, `coolingApplied: false`, and both Shield damages 0.
+has `rayPower: "NONE"` and both Shield damages 0. (The lists `cooling` and
+`mindControlCooldowns` and the preview's `coolingApplied` were retired in
+`7r145`.)
 Each rule resolves through the unit's kind's registration (`FACTION_RULES_V7`,
 `MARTIAN_ROLE_RULES_V7`, `MARTIAN_ROLE_MECHANICS_V7`) and the helpers of
 `src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, Ice Folk,
@@ -13216,17 +13259,13 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
   Mothership, and Colossus are Psychic Command targets, and so is a
   mind-controlled unit of another kind by its own role (never `SUPPORT` or
   `SIEGE`).
-- **Psychic Command every second turn** (the Martian pass's correction,
-  `7r52`; role mechanic `rallyCools`, the Martian `CAPTAIN` only). An
-  accepted `RALLY` by a Brain adds `{ unitId, firedThisTurn: true }` to
-  `GameStateV7.cooling` ([section 20.4](#204-heat-rays-and-cooling); the
-  Cooling step turns it into a Cooling entry at the owner's End Turn and
-  removes it at the next), and a Cooling Brain's `RALLY` is not offered
-  and is rejected with `UNIT_ALREADY_ACTED`. So a Brain commands in one
-  turn of two. Its Move, its attack, and Mind Control are not affected,
-  and a Human Captain (also a controlled one) rallies every turn. State
-  parsing accepts a `cooling` entry for a unit whose role has `HEAT_RAY`
-  or `rallyCools` under its kind.
+- **Psychic Command every turn** (the Martian strength pass,
+  `pulp_wars-bxpj`, `7r145`). A Brain's `RALLY` is offered and accepted
+  every turn, like a Captain's; it is a primary action, so a Brain uses
+  Psychic Command or Mind Control, once a turn. From `7r52` to `7r144`
+  (role mechanic `rallyCools`, the Martian `CAPTAIN` only) an accepted
+  `RALLY` left the Brain Cooling for its owner's next turn, so a Brain
+  commanded in one turn of two.
 - **No Field Defense, no healer:** no Martian unit builds Field Defense, and
   the Brain has no Tend Wounded, so a Martian seat cures neither Plague nor
   Bitten. City Walls are unchanged: a Martian city may choose the Walls
@@ -13253,8 +13292,8 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
   kind).
   `PlayerViewV7.shields` lists the visible units' entries: a visible unit's
   Shield and Shield maximum are public, like its HP.
-- **Recharge** at its owner's Start Turn, after the reset, the city actions,
-  and the Mind Control cooldown step and **before Plague**
+- **Recharge** at its owner's Start Turn, after the reset and the city
+  actions and **before Plague**
   ([section 3](#3-players-turns-and-victory)): every shielded unit of that
   player on the board, land or embarked, has its Shield **set** to its
   maximum, or to `max(maximum, 4)` when the Force Field covers it
@@ -13359,19 +13398,21 @@ Examples (engine formula, full HP, open Grass):
   `shieldsRechargeAtEndTurn`). While
   its owner has it, its Projectors project the Force Field above, and the
   recharge also runs at that owner's End Turn, after
-  idle recovery, the expiry of Inspired and Overrun, and the Cooling step,
-  and before the income preview, with the Force Field test made on the
+  idle recovery and the expiry of Inspired and Overrun (and the Cooling
+  step, until `7r145`), and before the income preview, with the Force Field test made on the
   positions at that moment, emitting `SHIELDS_RECHARGED` like the Start Turn
   step. So Shield spent on retaliation during the owner's own attacks is back
   before the enemy moves, and a unit that ends its turn next to a Projector
   is covered during the enemy turn.
 
-### 20.4 Heat rays and Cooling
+### 20.4 Heat rays
 
 Every `ATTACK` made by a land-form unit with `HEAT_RAY` (Ray Gunner, Tripod,
 Colossus), at range 1 or 2, is a ray. It fires at **full power** when the
 unit has not moved this turn (`activation.moved` false, an interrupted Move
-counting as moved) and is not Cooling; otherwise at **half power**:
+counting as moved), every turn it stands; otherwise (after a Move or a Beam
+Down) at **half power**. There is no Cooling since the Martian strength
+pass (`pulp_wars-bxpj`, `7r145`):
 
 ```text
 ray attack2 = full power: role attack2
@@ -13383,61 +13424,82 @@ attack      = ray Attack + 1 (Psychic Command)
 | ---------- | ----------------------: | ----------------------: |
 | Ray Gunner |                   3 (6) |                 1.5 (3) |
 | Tripod     |                   4 (8) |                   2 (4) |
-| Colossus   |                   4 (8) |                   2 (4) |
+| Colossus   |                  5 (10) |                 2.5 (5) |
 
 - The halving applies to the role's base Attack only; Psychic Command's +1
   comes after it. Everything else is the ordinary attack: range,
   visibility, the damage formula, retaliation from a defender that reaches
   the shooter, the advance of a Ray Gunner or Colossus after an adjacent
   kill, and Push for the Colossus at range 1.
-- A ray unit's **retaliation** is not a ray: it depends on Defense, is never
-  halved, and never causes Cooling.
-- **Heat Sinks** (the Martian `FIELDCRAFT`, `7r52`; unlock `HEAT_SINKS`,
-  capability `heatSinks`, role mechanic `heatSink` on the Martian
-  `MARKSMAN` only; `rayOverheatsV7`). A Ray Gunner whose owner has it
-  **does not overheat**: its full-power ray adds no Cooling entry, so it
-  fires at full power every turn it has not moved. A ray after a Move is
-  still at half power, an entry it already has runs out as usual, and a
-  Tripod and a Colossus overheat with or without the technology.
-- **Cooling.** A full-power ray (one that the attacker survives) leaves the
-  unit Cooling until the end of its owner's next turn (except under Heat
-  Sinks); a half-power ray changes nothing. So a ray unit that stands still fires full, half, full,
-  half, and on its Cooling turn it loses nothing by moving.
-  `GameStateV7.cooling: { unitId, firedThisTurn }[]` (sorted by unit ID): a
-  full-power ray adds `{ unitId, firedThisTurn: true }`; a unit **is
-  Cooling** exactly while its entry has `firedThisTurn` false. The **Cooling
-  step** at the owner's End Turn removes every entry of that player's units
-  with `firedThisTurn` false, then sets `firedThisTurn: false` on the
-  others. Cooling changes nothing but the ray's power (not Defense, the
-  Shield, Move, retaliation, or another ability), persists through embarking
-  and landing, and ends when its entry is removed or the unit leaves the
-  board. State parsing rejects an entry without a unit on the board whose
-  role has `HEAT_RAY` under its owner's registration, a duplicate or unsorted
-  entry, a non-boolean flag, and `firedThisTurn: true` for a unit of a
-  player other than the active one. `PlayerViewV7.cooling` lists the visible
-  units' entries: Cooling is public.
+- A ray unit's **retaliation** is not a ray: it depends on Defense and is
+  never halved.
+- **Heat Sinks** (the Martian `FIELDCRAFT`) does not touch the ray since
+  `7r145`: it keeps the Human Fieldcraft unlocks only (Replant Forest,
+  Forest freedom, Sight 2). From `7r52` to `7r144` it added `HEAT_SINKS`
+  (capability `heatSinks`, role mechanic `heatSink` on the Ray Gunner and
+  the neutral Ray Gunner), with which a Ray Gunner's full-power ray left
+  no Cooling; that is every ray's baseline now, and the unlock, the
+  capability, and the mechanic are retired.
+- **No Cooling** (retired in `7r145`). From `7r22` to `7r144` a full-power
+  ray that the shooter survived left it **Cooling** until the end of its
+  owner's next turn (not a Ray Gunner with Heat Sinks), so a ray unit that
+  stood still fired full, half, full, half. The state and view list
+  `cooling` (`{ unitId, firedThisTurn }`), the End Turn Cooling step, the
+  preview's `coolingApplied`, the published `martian.cooling`, and the
+  board's Cooling glyph and chip are gone; a state or save with a
+  `cooling` key is rejected.
 - The combat preview and `COMBAT_RESOLVED` carry `rayPower` (`"FULL"`,
-  `"HALF"`, or `"NONE"`; `attack2` includes the halving) and
-  `coolingApplied` (true only for a full-power ray of a unit that
-  overheats). An estimate for an attack after a planned Move uses half
-  power.
+  `"HALF"`, or `"NONE"`; `attack2` includes the halving). An estimate for
+  an attack after a planned Move uses half power.
 
-Worked examples (engine formula, full HP, open Grass, range 2; the damage
-to the target, before the cap at its HP):
+**Against the Human twins** (`pulp_wars-bxpj`; the user, 2026-11-24: "maybe
+it should be stronger than the human one while at full strength while being
+weaker at half strength? so it averages out"). Each ray unit is set against
+the Human unit of its role: the Ray Gunner against the Marksman (both 4
+Coins, Move 1, range 1–2, attack after a Move), the Tripod against the
+Catapult (9 against 8 Coins; the Catapult has range 2–3 and cannot attack
+after a Move at all), the Colossus against the Juggernaut (both reward
+giants). The damage of one attack (engine formula, full HP, open Grass,
+before the cap at the target's HP; the ray unit unmoved, full, and after a
+Move, half; the twin standing; the Juggernaut from the next tile, every
+other shooter from two):
 
-| Target (HP, Defense)                       | Ray Gunner full / half | Tripod or Colossus full / half | Marksman | Catapult |
-| ------------------------------------------ | ---------------------: | -----------------------------: | -------: | -------: |
-| Fighter (12, 2)                            |                  8 / 3 |                         12 / 5 |        5 |       10 |
-| Guard (17, 3)                              |                  7 / 2 |                         10 / 4 |        4 |        8 |
-| Guard on Field Defense                     |                  6 / 2 |                          9 / 3 |        3 |        7 |
-| Guard on a Walled center                   |                  5 / 2 |                          8 / 3 |        3 |        6 |
-| Raider or Marksman (12, 1), Knight (10, 1) |                 10 / 4 |                         14 / 6 |        6 |       12 |
-| Zombie (18, 2)                             |                  8 / 3 |                         12 / 5 |        5 |       10 |
-| Fighter, with Psychic Command              |                 12 / 6 |             — (never Inspired) |        — |        — |
+| Target (HP, Defense)                       | Ray Gunner full / half | Marksman | Tripod full / half | Catapult | Colossus full / half | Juggernaut |
+| ------------------------------------------ | ---------------------: | -------: | -----------------: | -------: | -------------------: | ---------: |
+| Goblin (6, 0.5)                            |                 12 / 5 |        7 |             16 / 7 |       12 |               20 / 9 |         16 |
+| Fighter (12, 2)                            |                  8 / 3 |        5 |             12 / 5 |        8 |               16 / 6 |         12 |
+| Guard (17; 1 from two tiles, 3 next to it) |                 10 / 4 |        6 |             14 / 6 |       10 |               19 / 8 |         10 |
+| Raider, Marksman (12, 1), Knight (13, 1)   |                 10 / 4 |        6 |             14 / 6 |       10 |               19 / 8 |         14 |
+| Champion (15, 2.5)                         |                  7 / 3 |        4 |             11 / 4 |        7 |               15 / 6 |         11 |
+| Fighter, a mix of half unmoved, half moved |                    5.5 |        5 |                8.5 |        8 |                   11 |         12 |
 
-Two turns of a shooter that stands still, against fresh targets: Ray Gunner
-8 + 3 = 11 on Fighters (Marksman 5 + 5 = 10); Tripod 12 + 5 = 17 (Catapult
-10 + 10 = 20).
+The reasoning, with a fair mix taken as half the turns unmoved and half
+after a Move, against a twin that hits every turn:
+
+- **Ray Gunner, unchanged (Attack 3).** At full power it deals 60% more
+  than the Marksman, at half 40% less, and the mix is 10% above it. Its
+  8 HP behind Shield 2 take as many Fighter hits to kill as the Marksman's
+  12 HP (two), but one Catapult shot kills it where the Marksman keeps 2
+  HP, which the small lead pays for. A full-power ray one-shots a full-HP
+  Goblin (12 against 6 HP), a half-power one does not (5), and the
+  Marksman does (7).
+- **Tripod, unchanged (Attack 4).** At full power it kills a Fighter the
+  Catapult leaves at 4 HP and deals 14 to a Guard against 10; at half it
+  deals 5 and 6. The mix (8.5 on a Fighter) equals a Catapult that fires
+  every turn. Its extra Coin buys 12 HP behind Shield 2 and Defense 1
+  (three Fighter hits to kill, two Catapult shots, against two and one),
+  Move 2 with Stride, Sight 2, and Pierce; it gives up range 3 and fires
+  at exactly two tiles. Attack 3.5 would leave half power at 1.5 (3 on a
+  Fighter), the weakness the user named, so it stays at 4.
+- **Colossus, Attack 5 (was 4).** At 4 its unmoved ray only equalled the
+  Juggernaut's blow and its half-power ray was half of it (a mix of 8.5
+  against 12 on a Fighter). At 5 its full ray deals a third more (it kills
+  a full-HP Champion, 15 of 15, that the Juggernaut leaves at 4 HP), its
+  half ray (2.5) half as much, and the mix (11 against 12) stays a little
+  below; its reach of two tiles (no melee answers it), Move 2, and the
+  Overstride trample make up for that and for its smaller body (32 HP
+  behind Shield 3 and Defense 2.5 against 40 HP and Defense 4: a Knight
+  kills it in three hits, the Juggernaut in four).
 
 ### 20.5 Pierce and the Disintegrator
 
@@ -13549,7 +13611,7 @@ interrupted as usual.
   lands on water, **never embarks**: it keeps its land form, its activation
   (it may still attack and use its abilities that turn, like after any
   Move), and its own Move, Attack, Defense, Sight, retaliation, abilities,
-  Shield, Cooling, and sprite. It is **not afloat**: no Ram, Board,
+  Shield, and sprite. It is **not afloat**: no Ram, Board,
   torpedo, or Kraken Drag reaches it, a Submarine cannot target it, and it
   blockades no dock; it still salvages a Wreck it ends a Move on. On a
   later turn it moves on with an ordinary `MOVE` (never `DISEMBARK`), and it
@@ -13563,7 +13625,7 @@ interrupted as usual.
   Sight 1, no Attack, no retaliation, no ZOC, no ability, Deep Water with
   Navigation (walkers too), and landing with `DISEMBARK` on an adjacent land
   cell it can enter (a Mountain included, under its movement mode), which
-  ends its activation. It keeps its Shield and its Cooling entry, and on a
+  ends its activation. It keeps its Shield, and on a
   hostile dock it blockades. It is drawn as the machine itself over the
   water, never as a boat.
 - **Foot units** embark at an own active, empty Port or Shipyard with
@@ -13625,12 +13687,12 @@ offered `BEAM_DOWN` is accepted and every rejected one is not offered.
   `captureEligible` becomes false. So a passenger that has not yet acted
   may still use any primary action a unit may use after moving: a Grunt
   shoots at full Attack, a ray unit fires at **half power**
-  ([section 20.4](#204-heat-rays-and-cooling)), a Brain may use Mind Control
+  ([section 20.4](#204-heat-rays)), a Brain may use Mind Control
   or Psychic Command, and a Shield Projector cannot attack (it never
   attacks after moving). It cannot Move again (a pending Escape of a
   controlled unit is spent), Recover, or Capture this turn. A passenger
   that had already acted is only relocated. It keeps its HP, Shield, kills,
-  home city, Cooling, and statuses (it may be plagued or bitten). Field
+  home city, and statuses (it may be plagued or bitten). Field
   Defense on `to` is destroyed when the tile's territory belongs to a
   player hostile to the actor (reason `OCCUPATION`). The passenger reveals
   its sight; the carrier has used its primary action and is handled.
@@ -13753,8 +13815,9 @@ bolder abilities, `pulp_wars-w49.42`, `7r99`, removed the HP limit and
 every immunity but an Egg, a neutral unit, and an already controlled unit,
 made the reach 1, and raised the limit to three; `pulp_wars-ev6q`,
 `7r129`, removed the limit, so a Brain holds any number of units, and took
-the Brain's attack, so Mind Control is its only offensive action). It is
-not an Attack and costs no Coins. Legality, in this order (all rejections
+the Brain's attack, so Mind Control is its only offensive action; the
+Martian strength pass, `pulp_wars-bxpj`, `7r145`, removed the cooldown, so
+a Brain takes a unit every turn). It is not an Attack and costs no Coins. Legality, in this order (all rejections
 atomic):
 
 | #   | Requirement                                                                                                                                                                                                                                                            | Rejection                                              |
@@ -13763,7 +13826,7 @@ atomic):
 | 2   | Its role has `MIND_CONTROL`.                                                                                                                                                                                                                                           | `UNIT_ROLE_INVALID { role }`                           |
 | 3   | It has not used a primary action and has not landed this turn (it may have moved).                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                                   |
 | 4   | It is in land form.                                                                                                                                                                                                                                                    | `MIND_CONTROL_NOT_LEGAL { reason: "EMBARKED" }`        |
-| 5   | It has no entry in `mindControlCooldowns`.                                                                                                                                                                                                                             | `MIND_CONTROL_NOT_LEGAL { reason: "COOLDOWN" }`        |
+| 5   | Retired in `7r145`: no cooldown (it had no entry in `mindControlCooldowns`, and was refused with `COOLDOWN`).                                                                                                                                                          | none                                                   |
 | 6   | Retired in `7r129`: a Brain holds any number of units (it controlled fewer than `MIND_CONTROL_LIMIT_V7`, 3 from `7r99` and 1 before, and was refused with `CONTROL_LIMIT`).                                                                                            | none                                                   |
 | 7   | `targetUnitId` is a unit on the board that the actor can see.                                                                                                                                                                                                          | `TARGET_NOT_FOUND`                                     |
 | 8   | It is hostile to the actor.                                                                                                                                                                                                                                            | `TARGET_ALLIED`                                        |
@@ -13787,7 +13850,7 @@ above 6 HP or unwounded (`TARGET_HEALTHY`, retired).
   `homeCityId` null (its old city's slot frees at once), `captureEligible`
   false, and it gets the exhausted activation. It keeps everything else: ID,
   role, kind, HP, maximum HP, kills, `veteran`, form, tile, and every status
-  entry (Plague, Bitten, Frozen, Shield, Cooling, the Dwarf lists, a
+  entry (Plague, Bitten, Frozen, Shield, the Dwarf lists, a hex
   cooldown). Nothing that depends on it ends: a Lich's Plagues and a
   Witch's Blizzard stay, now on the controller's side. If the target is a
   Brain, its own controlled units are released (section 20.9). Since
@@ -13798,20 +13861,20 @@ above 6 HP or unwounded (`TARGET_HEALTHY`, retired).
   capture-eligible, with `SWALLOWED_UNIT_RELEASED`, or, with no such tile,
   it is digested (`UNIT_DIED` cause `DIGESTED`, no credit): a controlled
   Abomination has no Swallow. The Brain has
-  used its primary action, is handled, and gets the cooldown entry
-  `{ unitId, turnsRemaining: 2 }` (`MIND_CONTROL_COOLDOWN_TURNS_V7`). The
+  used its primary action and is handled (until `7r145` it also got the
+  cooldown entry `{ unitId, turnsRemaining: 2 }`). The
   unit reveals its sight for the actor; then the tail and the naval
   blockade and sea-network events. There is no `UNIT_DIED`, Grave, rising,
   death blast, kill credit, growth, or Plunder.
-- **Cooldown.** `GameStateV7.mindControlCooldowns: { unitId, turnsRemaining }[]`
-  (sorted by unit ID, 0 to 2): at the Brain's owner's Start Turn, before the
-  Shield recharge, each of that player's entries at 0 is removed and every
-  other loses 1. So a Brain that used Mind Control on turn `N` cannot on
-  `N + 1` and `N + 2` and can again on `N + 3`; the cooldown starts at the
-  Mind Control, not at a loss. The cooldown is public on a
-  visible Brain (`PlayerViewV7.mindControlCooldowns`). State parsing rejects
-  an entry without a unit on the board that has `MIND_CONTROL`, a duplicate
-  or unsorted entry, and a value outside 0 to 2.
+- **No cooldown** (since `7r145`). Mind Control is the Brain's primary
+  action, so a Brain takes at most one unit a turn, and may take one every
+  turn (or use Psychic Command instead). From `7r22` to `7r144` a Brain
+  that used Mind Control on turn `N` could not on `N + 1` and `N + 2`
+  (`MIND_CONTROL_COOLDOWN_TURNS_V7` 2; the state and view list
+  `mindControlCooldowns: { unitId, turnsRemaining }[]`, counted down at its
+  owner's Start Turn before the Shield recharge, and the preview's
+  `cooldownTurns`). A state or save with a `mindControlCooldowns` key is
+  rejected.
 - **Events:** `UNIT_MIND_CONTROLLED { playerId, unitId, targetUnitId, targetOwnerId, targetRole, at, hp }`
   (the unit keeps its ID: `targetUnitId` is the controlled unit); for a
   Brain target, the release events of section 20.9; `TILES_REVEALED`; the
@@ -13863,7 +13926,8 @@ Rider with no Charge. Three rulings decide the rest:
 | Per faction                       | Human: all (Field Defense, Rally, Tend Wounded on the controller's units, Charge, Escape, Overrun). Undead: all but Raise Dead, Infect, Bite. Goblin: all (Kaboom, blasts, Ram, Berserk, Gang Up with the controller's helpers). Dinosaur: all but Hatch. Martian: all but Mind Control. Ice Folk: all (her Blizzard halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units). Dwarf: all but Assemble and tunnel riding (a controlled Mole tunnels alone; a controlled Engineer repairs) |
 
 - **No limit** (since `7r129`, `pulp_wars-ev6q`). A Brain controls any
-  number of units; its two-turn cooldown is the only pace. (It controlled
+  number of units; one Mind Control a turn is the only pace (a two-turn
+  cooldown until `7r145`). (It controlled
   at most `MIND_CONTROL_LIMIT_V7` units, 3 from `7r99` and 1 before, and at
   the limit was offered no Mind Control, `CONTROL_LIMIT`.)
 - **Daemons** (since `7r99`). A bound daemon a Brain holds is held by the
@@ -13886,8 +13950,8 @@ Rider with no Charge. Three rulings decide the rest:
   the exhausted activation, keeping HP, kills, and statuses; or removed
   with `UNIT_DIED { cause: "BRAIN_LOST" }` if that owner is out of the
   game. Events: `UNIT_RELEASED` and the released unit's `TILES_REVEALED`;
-  no `UNIT_DISBANDED` and no Coins. The Brain keeps its Mind Control
-  cooldown and may take another unit when it is over.
+  no `UNIT_DISBANDED` and no Coins. The Brain may take another unit as
+  usual, once a turn (it kept its two-turn cooldown until `7r145`).
 - **Release.** A controlled unit is released when its Brain leaves the
   board (killed, infected, shattered, disbanded, removed by displacement or
   elimination) or changes owner (mind-controlled itself); a Brain that
@@ -14087,21 +14151,22 @@ cost.
 - **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`): `SHIELDS_RECHARGED` right after
   `UNITS_REGENERATED`, `UNIT_BEAMED` right after `UNIT_DISEMBARKED`,
   `UNIT_PULLED` right after `UNIT_PUSHED`, and `UNIT_MIND_CONTROLLED` right
-  after `UNIT_INFECTED`. `UNIT_DIED.cause` gains `BRAIN_LOST`. There is no
-  event for the start or end of Cooling or for a cooldown: the view lists
-  are the source. `PLAGUE_DAMAGED` entries carry no `shieldDamage`.
+  after `UNIT_INFECTED`. `UNIT_DIED.cause` gains `BRAIN_LOST`. (There was
+  no event for Cooling or for the Mind Control cooldown either, both
+  retired in `7r145`.) `PLAGUE_DAMAGED` entries carry no `shieldDamage`.
 - **Combat preview** (`CombatPreviewV7`, so also `COMBAT_RESOLVED`):
-  `rayPower` (`"FULL"`, `"HALF"`, or `"NONE"`), `coolingApplied`,
-  `defenderShieldDamage`, and `attackerShieldDamage`; `damageToDefender` and
+  `rayPower` (`"FULL"`, `"HALF"`, or `"NONE"`; `coolingApplied` until
+  `7r145`), `defenderShieldDamage`, and `attackerShieldDamage`; `damageToDefender` and
   `damageToAttacker` stay HP damage, and the whole hit is the sum. Splash
   entries (a Pierce victim among them), Wail results, and explosion results
   carry `shieldDamage` next to their HP `damage`. The Disintegrator reports
   `fortificationLevel: 0` and `fortificationIgnored`.
 - **Errors:** `BEAM_DOWN_NOT_LEGAL` (reasons `EMBARKED` and
   `NO_PASSENGER`; `MOVED` was retired in `7r37`), `MIND_CONTROL_NOT_LEGAL`
-  (`EMBARKED`, `COOLDOWN`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, and since
-  `7r99` `DEEP_WATER`; `TARGET_HEALTHY` was retired with the HP limit, and
-  `CONTROL_LIMIT` with the control limit in `7r129`), and
+  (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, and since
+  `7r99` `DEEP_WATER`; `TARGET_HEALTHY` was retired with the HP limit,
+  `CONTROL_LIMIT` with the control limit in `7r129`, and `COOLDOWN` with
+  the cooldown in `7r145`), and
   `TRACTOR_BEAM_NOT_LEGAL` (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
   `BLOCKED`); `DISBAND_NOT_LEGAL` gains the reason `MIND_CONTROLLED`; the movement
   failure reasons and `UNIT_MOVE_INTERRUPTED` gain `SETTLEMENT_FORBIDDEN`
@@ -14119,7 +14184,8 @@ cost.
   [section 11](#11-unit-roster) states; faction rule
   `treasureUnitRole` `RAIDER`; constants `FORCE_FIELD_SHIELD_V7` 4,
   `SHIELD_CAP_V7` 4, `MIND_CONTROL_HP_V7` 6, `MIND_CONTROL_RANGE_V7` 2,
-  `MIND_CONTROL_COOLDOWN_TURNS_V7` 2, `MIND_CONTROL_LIMIT_V7` 1 (3 from
+  `MIND_CONTROL_COOLDOWN_TURNS_V7` 2 (retired in `7r145`),
+  `MIND_CONTROL_LIMIT_V7` 1 (3 from
   `7r99`; retired in `7r129`),
   `TRACTOR_BEAM_RANGE_V7` 2, `TRACTOR_BEAM_PULL_V7` 1,
   `HEAVY_TRACTOR_RANGE_V7` 3, `HEAVY_TRACTOR_PULL_V7` 2, and
@@ -14150,8 +14216,9 @@ cost.
   Defense. It covers a pick-up passenger like a city one.
 - **`previewMindControlV7(view, unitId, targetUnitId)`** returns null unless
   that command is offered, otherwise
-  `{ unitId, targetUnitId, at, originalOwnerId, role, faction, hp, maxHp, controlledAfter, controlLimit, cooldownTurns, releasedUnitIds }`
-  (`faction` is the target's kind, which it keeps).
+  `{ unitId, targetUnitId, at, originalOwnerId, role, faction, hp, maxHp, controlledAfter, releasedUnitIds }`
+  (`faction` is the target's kind, which it keeps; `controlLimit` went in
+  `7r129` and `cooldownTurns` in `7r145`).
 - **`previewTractorBeamV7(view, unitId, targetUnitId)`** returns null unless
   that command is offered, otherwise
   `{ unitId, targetUnitId, from, to, path, fortificationLost, emptiesCenterOfCityId, liftsSiegeOfCityId }`
@@ -14161,8 +14228,8 @@ cost.
   (the Normal AI's scoring reads it); it does not test whether the puller
   may still act.
 - `queryCombatPreviewV7` and `estimateCombatV7` include Shields, ray power
-  (from the unit's `moved` flag and Cooling; half power for an attack after
-  a planned Move), Pierce on a visible unit, and the Disintegrator;
+  (from the unit's `moved` flag; half power for an attack after a planned
+  Move), Pierce on a visible unit, and the Disintegrator;
   `previewAttackExplosionsV7`, `previewKaboomV7`, and `previewWailV7` apply
   Shields to every listed hit, and `previewAttackExplosionsV7` flags
   `touchesUnexplored` when the tile behind a Pierce target is unexplored.
@@ -14173,8 +14240,9 @@ cost.
 - **Public unit stats** carry, exactly for units of the Martian kind, the
   `martian` block: `shield`, `shieldMaximum`, `capacitySlots` (0 for a
   controlled unit), `movementMode`, `rayPower` (what an attack made now
-  would be, or null), `cooling`, `pierce`, `forceField`, and `mindControl`
-  (null, or a Brain's `{ cooldown, controlled, controlLimit }`). In a match
+  would be, or null), `pierce`, `forceField`, `shieldCanopy`, and
+  `mindControl` (null, or a Brain's `{ controlled }`; `cooling` and
+  `cooldown` went in `7r145`, `controlLimit` in `7r129`). In a match
   with a Martian seat every unit's stats carry a top-level `mindControl`:
   null, or `{ brainUnitId, originalOwnerId }` for a controlled unit
   (`brainUnitId` null when the viewer cannot see the Brain). A controlled
@@ -14360,7 +14428,7 @@ stays Frozen for the rest of that turn and through its next one.
   Frozen.
 
 **Thaw.** At the end of a player's turn, after idle recovery, the
-expiry of Inspired and Overrun, the Cooling step, and the Force Fields
+expiry of Inspired and Overrun, and the Force Fields
 recharge, and before the income preview, every entry of that player's
 units, burrowed units included, is updated, with no event (the view list is
 the source; `frozenCountdownV7`):
@@ -16024,7 +16092,7 @@ at)` is true when a unit stands on the tile **or a mound is on it** (or,
   it surfaces (the surfacing asserts it).
 
 **Surfacing.** At its owner's **Start Turn**, after the activation reset,
-the city actions, the Mind Control cooldowns, the Shield recharge, and the
+the city actions, the Shield recharge, and the
 Cold Aura (which never runs in the same Start Turn: a seat has one faction)
 and before Plague, each burrowed Mole of that seat surfaces, in unit-ID
 order:
@@ -16522,7 +16590,7 @@ unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
 
 ```text
 reset activations and capture eligibility → city actions available →
-Mind Control cooldowns → Shield recharge → Cold Aura → SURFACING →
+Shield recharge → Cold Aura → SURFACING →
 Plague and its chain → hatching → Windmill healing (constructs too) →
 Troll regeneration → income → rewards → achievements
 ```
@@ -16530,7 +16598,7 @@ Troll regeneration → income → rewards → achievements
 **End Turn** for the active seat:
 
 ```text
-idle recovery (constructs skipped) → Inspired and Overrun expire → Cooling →
+idle recovery (constructs skipped) → Inspired and Overrun expire →
 Force Fields → Frozen countdown (burrowed units included) →
 empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Start Turn
 ```
@@ -18984,7 +19052,7 @@ it was before. It is disrupted when:
 Who caused it does not matter: the Cult's own Boo!, its own Star-fall, and
 its own daemon's kill of an exploding unit beside a channeller disrupt like
 an enemy's act. A unit that gains Hit Points is not disrupted. A unit's own
-states (a Shield, Cooling, Sugar Rush and the Crash, Berserk) are no
+states (a Shield, Sugar Rush and the Crash, Berserk) are no
 status. A disrupted cultist's strand breaks at once.
 
 **Candlelit.** Every unit on a tile a player has explored is visible to
@@ -19479,7 +19547,7 @@ frog does not preach.
 **A Cult seat's Start Turn** adds these steps to
 [section 3](#3-players-turns-and-victory):
 
-1. With the Mind Control cooldowns, before the Shield recharge: the seat's
+1. Before the Shield recharge: the seat's
    Switcheroo cooldowns count down (Ribbit has none since `7r130`).
 2. After Plague and its chains, the watched units are judged (a channeller
    Plague hurt is disrupted), and then **the channel check** runs for each

@@ -63,10 +63,9 @@ describe("headless Normal matches with Martian seats", () => {
         martian.shieldAbsorbed.wail +
         martian.shieldAbsorbed.blast;
       recharges += martian.rechargeEvents;
-      // Rays are full or half, and a half ray has exactly one reason.
-      expect(martian.raysHalf, label).toBe(
-        martian.raysHalfMoved + martian.raysHalfCooling,
-      );
+      // Rays are full or half, and every half ray follows a Move (no
+      // Cooling since `pulp_wars-bxpj`, 7r145).
+      expect(martian.raysHalf, label).toBe(martian.raysHalfMoved);
     }
     // The generic policy trains, moves, attacks, and researches for a
     // Martian seat ...

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
   applyCommandV7,
@@ -220,10 +219,9 @@ describe("Mind Control revision: legality (section 3)", () => {
   it("the constants", () => {
     // Bolder abilities (`pulp_wars-w49.42`, 7r99): adjacent (2 before) and
     // no HP limit (6 before); `pulp_wars-ev6q` (7r129): no control limit
-    // (three at a time from 7r99, one before).
-    expect([MIND_CONTROL_RANGE_V7, MIND_CONTROL_COOLDOWN_TURNS_V7]).toEqual([
-      1, 2,
-    ]);
+    // (three at a time from 7r99, one before); `pulp_wars-bxpj` (7r145): no
+    // cooldown (`MIND_CONTROL_COOLDOWN_TURNS_V7` was 2).
+    expect(MIND_CONTROL_RANGE_V7).toBe(1);
     expect([...MIND_CONTROLLED_LOST_ABILITIES_V7]).toEqual([
       "RAISE_DEAD",
       "INFECT",
@@ -256,7 +254,7 @@ describe("Mind Control revision: legality (section 3)", () => {
     ]);
   });
 
-  it("row 6 is gone (7r129): a Brain that controls three units takes a fourth; a cooldown still blocks it", () => {
+  it("rows 5 and 6 are gone (7r145, 7r129): a Brain that controls three units takes a fourth", () => {
     // `pulp_wars-ev6q`: no control limit (three at a time from 7r99, one
     // before), so the `CONTROL_LIMIT` reason is never given.
     const state = brainField(
@@ -278,14 +276,18 @@ describe("Mind Control revision: legality (section 3)", () => {
     expect(
       controlledByBrainV7(run.state.mindControlled, idAt(state, BRAIN)),
     ).toHaveLength(4);
-    // The cooldown (row 5) still blocks it.
-    const onCooldown = checkedV7({
-      ...state,
-      mindControlCooldowns: [{ unitId: idAt(state, BRAIN), turnsRemaining: 1 }],
-    });
+    // The cooldown (row 5) is gone too (`pulp_wars-bxpj`, 7r145): no state
+    // holds one, and a state that names the list is refused.
     expect(
-      rejectedV7(onCooldown, control(onCooldown, BRAIN, at(5, 3))).params,
-    ).toEqual({ reason: "COOLDOWN" });
+      parseGameStateV7(
+        JSON.parse(
+          JSON.stringify({
+            ...run.state,
+            mindControlCooldowns: [],
+          }),
+        ),
+      ),
+    ).toBeNull();
   });
 
   it("7r99: any HP, wounded or not, is a target; row 10: only the eight tiles around the Brain", () => {
@@ -459,7 +461,6 @@ describe("Mind Control revision: the result (section 3)", () => {
       hp: 5,
       maxHp: 18,
       controlledAfter: 1,
-      cooldownTurns: 2,
       releasedUnitIds: [],
     });
     const run = playV7(state, control(state, BRAIN, at(5, 3)));
@@ -522,9 +523,6 @@ describe("Mind Control revision: the result (section 3)", () => {
     expect(run.state.bitten).toEqual(state.bitten);
     // The old city's slot is free at once.
     expect(previewCityCapacityV7(run.state, home)?.assigned).toBe(assigned - 1);
-    expect(run.state.mindControlCooldowns).toEqual([
-      { unitId: brain.id, turnsRemaining: 2 },
-    ]);
     expect(unitAtV7(run.state, BRAIN).activation.handled).toBe(true);
     // It is the controller's unit from its next Start Turn.
     const next = endTurnUntilV7(

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r144" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r145" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -155,8 +155,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r141",
   "pulp-wars-poc-7r142",
   "pulp-wars-poc-7r143",
+  "pulp-wars-poc-7r144",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r144.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r145.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -1657,23 +1658,16 @@ export interface GameStateV7 {
    * whose setup has no MARTIAN seat.
    */
   readonly shields: readonly ShieldStatusV7[];
-  /**
-   * The Martian revision (section 6.2): heat-ray Cooling entries, sorted by
-   * `unitId`. Always empty in a match whose setup has no MARTIAN seat.
-   */
-  readonly cooling: readonly CoolingStatusV7[];
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retired the
+  // heat-ray `cooling` list: a ray's power reads only whether it moved.
   /**
    * The Mind Control revision (docs/product/RULESET_7_MIND_CONTROL.md
    * section 2.1): one entry per mind-controlled unit, sorted by `unitId`.
    * Always empty in a match whose setup has no MARTIAN seat.
    */
   readonly mindControlled: readonly MindControlledStatusV7[];
-  /**
-   * The Martian revision (section 8.2): Mind Control cooldowns of Brains,
-   * sorted by `unitId`. Always empty in a match whose setup has no MARTIAN
-   * seat.
-   */
-  readonly mindControlCooldowns: readonly MindControlCooldownV7[];
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retired
+  // `mindControlCooldowns`: a Brain may use Mind Control every turn.
   /**
    * Ice Folk Freeze (`pulp_wars-w49.37`, docs/product/RULESET_7_CURRENT.md
    * section 21.2): one entry per Frozen unit, sorted by `unitId`. Always
@@ -2128,16 +2122,6 @@ export interface ShieldStatusV7 {
 }
 
 /**
- * The Martian revision: a heat-ray unit that fired at full power. It is
- * Cooling exactly while `firedThisTurn` is false (from the end of the turn
- * it fired in until the end of its owner's next turn).
- */
-export interface CoolingStatusV7 {
-  readonly unitId: UnitId;
-  readonly firedThisTurn: boolean;
-}
-
-/**
  * The Mind Control revision (section 2.1): the unit `unitId` is controlled
  * by the Brain `brainUnitId` (its owner is the Brain's owner) and goes back
  * to `originalOwnerId` when it is released. Its kind is the faction of
@@ -2147,16 +2131,6 @@ export interface MindControlledStatusV7 {
   readonly unitId: UnitId;
   readonly brainUnitId: UnitId;
   readonly originalOwnerId: PlayerId;
-}
-
-/**
- * The Martian revision: the Brain `unitId` cannot use Mind Control while it
- * has an entry; `turnsRemaining` (0 to 2) counts its owner's Start Turns
- * before the entry is removed.
- */
-export interface MindControlCooldownV7 {
-  readonly unitId: UnitId;
-  readonly turnsRemaining: number;
 }
 
 /**

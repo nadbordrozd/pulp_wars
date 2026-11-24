@@ -47,7 +47,6 @@ import {
   FISHING_HOLE_POPULATION_V7,
   ICE_FORTRESS_COST_V7,
   ICE_FORTRESS_POPULATION_V7,
-  MIND_CONTROL_COOLDOWN_TURNS_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   attackIsTorpedoV7,
@@ -250,9 +249,6 @@ import {
   massBeamDownPassengerLegalV7,
   massBeamDownPlacementsV7,
   massBeamDownTargetInRangeV7,
-  coolingStepV7,
-  isCoolingV7,
-  mindControlCooldownStepV7,
   mindControlSpitTileV7,
   mindControlTargetBlockV7,
   prunedMartianV7,
@@ -266,7 +262,6 @@ import {
   tractorBeamStepLegalV7,
   tractorBeamTargetBlockV7,
   unitHeldByCityWallsV7,
-  withFiredRayV7,
   withFullShieldsV7,
   withShieldDamageV7,
 } from "./martian";
@@ -520,8 +515,9 @@ export type RuleErrorCodeV7 =
   | "HATCH_NOT_LEGAL"
   | "UNIT_IS_EGG"
   // The Martian revision: an illegal Beam Down (`EMBARKED`, `MOVED`,
-  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `COOLDOWN`, `TARGET_IMMUNE`,
-  // `OUT_OF_RANGE`, `TARGET_HEALTHY`; `CONTROL_LIMIT` until 7r129), or
+  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `TARGET_IMMUNE`,
+  // `OUT_OF_RANGE`, `TARGET_HEALTHY`; `CONTROL_LIMIT` until 7r129,
+  // `COOLDOWN` until 7r145), or
   // Tractor Beam
   // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
   | "BEAM_DOWN_NOT_LEGAL"
@@ -4959,8 +4955,9 @@ function applyMindControl(
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: brain.id });
   if (brain.form !== "LAND")
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "EMBARKED" });
-  if (state.mindControlCooldowns.some((entry) => entry.unitId === brain.id))
-    return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "COOLDOWN" });
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145): no cooldown (the
+  // reason `COOLDOWN` is gone); Mind Control is the Brain's primary action,
+  // once a turn, every turn.
   // `pulp_wars-ev6q` (7r129): a Brain holds any number of units (the limit
   // of 3 and its `CONTROL_LIMIT` reason are gone).
   const target = state.units.find(
@@ -5071,10 +5068,6 @@ function applyMindControl(
         giants: spat.giants,
         burrowed: release.burrowed,
         mindControlled,
-        mindControlCooldowns: [
-          ...state.mindControlCooldowns,
-          { unitId: brain.id, turnsRemaining: MIND_CONTROL_COOLDOWN_TURNS_V7 },
-        ].sort((left, right) => left.unitId - right.unitId),
       },
       actor,
       events,
@@ -7245,8 +7238,8 @@ function resolveAttackExchangeV7(
     state.board,
   );
   units = [...release.units];
-  // Sections 5.3 and 6.2: the Shields the exchange spent, and the Cooling
-  // a full-power ray starts.
+  // Section 5.3: the Shields the exchange spent. (A full-power ray started
+  // Cooling until the Martian strength pass, `pulp_wars-bxpj`, 7r145.)
   const shields = withShieldDamageV7(
     state.shields,
     new Map([
@@ -7257,10 +7250,6 @@ function resolveAttackExchangeV7(
       ),
     ]),
   );
-  const cooling =
-    preview.coolingApplied && !preview.attackerDies
-      ? withFiredRayV7(state.cooling, attacker.id)
-      : state.cooling;
   // Revision 14 sections 3.1 and 4.1: Plague and bites on the survivors.
   const plagued = withPlaguedV7(
     state.plagued,
@@ -7686,7 +7675,6 @@ function resolveAttackExchangeV7(
       plagued,
       bitten,
       shields: chain.shields,
-      cooling,
       splattedThisTurn,
       stuck,
       toothache,
@@ -7739,10 +7727,8 @@ function applyRally(
     return rejected(original, "INTEGER_OVERFLOW");
   const result = supportCaptain(original, state, actor, unitId, "RALLY");
   if ("accepted" in result) return result;
-  // The Martian pass, correction: a Brain commands every second turn.
-  const rallyCools = unitRoleMechanicsV7(state, result.captain).rallyCools;
-  if (rallyCools && isCoolingV7(state.cooling, result.captain.id))
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  // The Martian strength pass (`pulp_wars-bxpj`, 7r145): a Brain commands
+  // every turn (every second turn, Cooling in between, from 7r52).
   // Revision 13 Frenzy eligibility: Rally targets also need ATTACK, which
   // every Human non-support, non-siege land role has. Goblin explosions and
   // Berserk (`pulp_wars-w49.35`): the Orc Warboss's Berserk reaches radius 2
@@ -7761,9 +7747,6 @@ function applyRally(
       berserkThisTurn: berserk
         ? [...state.berserkThisTurn, ...ids].sort((a, b) => a - b)
         : state.berserkThisTurn,
-      cooling: rallyCools
-        ? withFiredRayV7(state.cooling, result.captain.id)
-        : state.cooling,
       units: state.units.map((unit) =>
         unit.id === result.captain.id
           ? {
@@ -8485,7 +8468,7 @@ function applyDisband(
   // mind-controlled unit is **Release**: it returns to its owner where it
   // stands (exhausted, as when its Brain is lost) and pays no Coins; with
   // its owner out of the game it is removed. The Brain is free to take
-  // another unit once its cooldown is over. Needs no technology and no
+  // another unit at once. Needs no technology and no
   // unused action. (A tester's 3-HP Swordsman blocked a Brain for six
   // rounds.)
   if (isMindControlledV7(state, unitId)) {
@@ -9003,11 +8986,10 @@ function applyEndTurn(
           : unit,
       ),
     };
-    // The Martian revision: the Cooling step (section 6.2), then the Force
-    // Fields recharge (section 5.5), after idle recovery and the expiry of
-    // Inspired and Overrun and before the income preview.
-    const cooled = coolingStepV7(expiredUnits, actor);
-    const fields = rechargeShieldsAtEndTurnV7(cooled, actor);
+    // The Martian revision: the Force Fields recharge (section 5.5), after
+    // idle recovery and the expiry of Inspired and Overrun and before the
+    // income preview. (The Cooling step ran first until 7r145.)
+    const fields = rechargeShieldsAtEndTurnV7(expiredUnits, actor);
     // Ice Folk Freeze (`pulp_wars-w49.37`, section 21.2): the Frozen
     // countdown of the player's units, after the Force Fields recharge (no
     // event). The Dwarf revision (sections 5.4 and 6.3): the per-turn lists
@@ -9135,20 +9117,18 @@ function applyEndTurn(
     );
     // Revision 19 section 6.4: the hatch step runs after Plague and any
     // chain it started, and before Windmill healing.
-    // The Martian revision section 5.2: Mind Control cooldowns, then the
-    // Shield recharge, run after the reset and before Plague.
+    // The Martian revision section 5.2: the Shield recharge runs after the
+    // reset and before Plague (after the Mind Control cooldown step until
+    // 7r145).
     const started = startTurnEconomyV7(
       advanced,
       nextPlayer,
       false,
       (reset) => {
         // The Cultists (`pulp_wars-mch9.8`, sections 9.1 and 9.2): the hex
-        // cooldowns count down with the Mind Control cooldowns.
+        // cooldowns count down before the Shield recharge.
         const recharge = rechargeShieldsV7(
-          tricksStartTurnStepV7(
-            mindControlCooldownStepV7(reset, nextPlayer.id),
-            nextPlayer.id,
-          ),
+          tricksStartTurnStepV7(reset, nextPlayer.id),
           nextPlayer.id,
         );
         // The frozen sea: the crush that ran here after the Shield recharge
@@ -11213,8 +11193,8 @@ function checked(state: GameStateV7): GameStateV7 {
   checkedOutputValidationCountV7 += 1;
   // Revision 14: drop afflictions of departed units, sources, and biters.
   // Revision 19: drop the countdowns of Eggs that left the board. The
-  // Martian revision: drop the Shield, Cooling, controlled, and cooldown entries
-  // of units that left the board.
+  // Martian revision: drop the Shield and controlled entries of units that
+  // left the board.
   // The Ice Folk revision: drop the Chill entries of units that left it.
   // The Dwarf revision: drop the per-turn entries of units that left the
   // board.

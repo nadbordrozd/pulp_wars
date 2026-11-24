@@ -512,6 +512,11 @@ function missionStateHash(state: GameStateV7): string {
     ...(monsters.length === 0 ? {} : { monsters }),
     ...(ice.length === 0 ? {} : { ice }),
     ...(snow.length === 0 ? {} : { snow }),
+    // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retired the
+    // `cooling` and `mindControlCooldowns` lists, empty in every initial
+    // state; the pins were taken with them, so no pin moves.
+    cooling: [],
+    mindControlCooldowns: [],
     chilled: frozen,
     rulesetId: "*",
     setup: {
@@ -853,6 +858,11 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     ...rest,
     ...(ice.length === 0 ? {} : { ice }),
     ...(snow.length === 0 ? {} : { snow }),
+    // The Martian strength pass (`pulp_wars-bxpj`, 7r145) retired the
+    // `cooling` and `mindControlCooldowns` lists, empty in every initial
+    // state; the pins were taken with them, so no pin moves.
+    cooling: [],
+    mindControlCooldowns: [],
     chilled: frozen,
     rulesetId: "*",
     setup: {

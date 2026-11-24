@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 144;
+const REVISION = 145;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -622,11 +622,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
             )
             .map((unit) => ({ unitId: unit.id, shield: 2 })),
         );
-        expect([
-          other.cooling,
-          other.mindControlled,
-          other.mindControlCooldowns,
-        ]).toEqual([[], [], []]);
+        expect(other.mindControlled).toEqual([]);
       }
     }
   });
@@ -803,7 +799,8 @@ const ROSTER = [
     2,
     32,
     3,
-    8,
+    // The Martian strength pass (`pulp_wars-bxpj`, 7r145): Attack 5 (was 4).
+    10,
     // `pulp_wars-t6s.5`: Defense 2.5 (contract 3; section 16.5).
     5,
     // The giants' signatures (`pulp_wars-w49.30`): Move 2 and Overstride
@@ -1062,7 +1059,8 @@ describe("Martian roster (section 3)", () => {
         role,
         coinDelta: refund,
       });
-      // The Shield, Cooling, and cooldown entries end with the unit.
+      // The Shield entries end with the unit (Cooling and the Mind Control
+      // cooldown retired in 7r145).
       expect(result.state.shields).toEqual([]);
     }
     const state = martianFieldV7([
@@ -1197,12 +1195,10 @@ describe("Martian technology (section 4)", () => {
           ...human.unlocks,
           { kind: "DISINTEGRATOR" },
         ]);
-      // The Martian pass (7r52): Fieldcraft is Heat Sinks.
+      // The Martian pass (7r52): Fieldcraft is Heat Sinks, with the Human
+      // unlocks only since its `HEAT_SINKS` went with Cooling (7r145).
       else if (human.id === "FIELDCRAFT")
-        expect(martian.unlocks).toEqual([
-          ...human.unlocks,
-          { kind: "HEAT_SINKS" },
-        ]);
+        expect(martian.unlocks).toEqual(human.unlocks);
       // Themed naval branches (`pulp_wars-5ti.19`): Seamanship is the Ram
       // and Hover Pods instead of Board.
       else if (human.id === "SEAMANSHIP")
@@ -1357,11 +1353,7 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
       });
       if (!initial.ok) throw new Error(initial.error.code);
       const { state } = initial;
-      expect([
-        state.cooling,
-        state.mindControlled,
-        state.mindControlCooldowns,
-      ]).toEqual([[], [], []]);
+      expect(state.mindControlled).toEqual([]);
       factions.forEach((faction, seat) => {
         const player = state.players[seat];
         const capital = state.cities[seat];
@@ -1617,11 +1609,7 @@ describe("Martian Showcase (section 2.4)", () => {
     // (The ninth unit, 7r55: nine, with the Shock Trooper; twelve with the
     // Skimmer, the Hover Cruiser, and the Bathysphere.)
     expect(state.shields).toHaveLength(12);
-    expect([
-      state.cooling,
-      state.mindControlled,
-      state.mindControlCooldowns,
-    ]).toEqual([[], [], []]);
+    expect(state.mindControlled).toEqual([]);
     expect(
       state.players.find((player) => player.id === martianId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
@@ -1727,11 +1715,11 @@ describe("Martian public unit stats (section 11)", () => {
           role: "CATAPULT",
           at: at(4, 3),
           shield: 1,
-          cooling: "COOLING",
+          activation: movedV7(1),
         },
         { seat: 0, role: "MARKSMAN", at: at(6, 3), activation: movedV7(1) },
         { seat: 0, role: "GUARD", at: at(7, 3) },
-        { seat: 0, role: "CAPTAIN", at: at(4, 5), cooldown: 1 },
+        { seat: 0, role: "CAPTAIN", at: at(4, 5) },
         // A Human Fighter the Brain controls (the Mind Control revision).
         {
           seat: 1,
@@ -1755,7 +1743,6 @@ describe("Martian public unit stats (section 11)", () => {
       capacitySlots: 1,
       movementMode: "STRIDE",
       rayPower: "HALF",
-      cooling: true,
       pierce: true,
       forceField: false,
       shieldCanopy: false,
@@ -1764,7 +1751,6 @@ describe("Martian public unit stats (section 11)", () => {
     expect(stats(at(6, 3)).martian).toMatchObject({
       shield: 2,
       rayPower: "HALF",
-      cooling: false,
       pierce: false,
       movementMode: "GROUND",
     });
@@ -1774,10 +1760,7 @@ describe("Martian public unit stats (section 11)", () => {
       forceField: true,
       rayPower: null,
     });
-    expect(stats(at(4, 5)).martian?.mindControl).toEqual({
-      cooldown: 1,
-      controlled: 1,
-    });
+    expect(stats(at(4, 5)).martian?.mindControl).toEqual({ controlled: 1 });
     // A controlled Human unit has no Martian block; its control is public.
     expect(stats(at(5, 5))).not.toHaveProperty("martian");
     expect(stats(at(5, 5)).mindControl).toEqual({
@@ -1889,7 +1872,7 @@ describe("Martian persistence (section 15)", () => {
         role,
       ).id;
     const enemyAt = (where: CoordV7) => unitAtV7(state, where).id;
-    // The Colossus fires a full-power ray: it is Cooling next turn.
+    // The Colossus fires a full-power ray (no Cooling since 7r145).
     play({
       kind: "ATTACK",
       unitId: own("JUGGERNAUT"),
@@ -1936,9 +1919,6 @@ describe("Martian persistence (section 15)", () => {
     // Everyone ends the turn; the Martian seat's second turn starts.
     for (let seat = 0; seat < 4; seat += 1) play({ kind: "END_TURN" });
     expect(state.turnOrder[state.activeSeatIndex]).toBe(martianId);
-    expect(state.cooling).toEqual([
-      { unitId: own("JUGGERNAUT"), firedThisTurn: false },
-    ]);
     // Bolder abilities (`pulp_wars-w49.42`, 7r99): Mind Control reaches
     // the eight tiles around the Brain (it took the weakened Raider from
     // (3, 7), two tiles away, in the first turn before). In its second turn
@@ -1958,16 +1938,10 @@ describe("Martian persistence (section 15)", () => {
     );
     play(must(walk, "the Brain's walk"));
     play(must(takeFrom(state), "Mind Control"));
-    // Every Martian list is non-empty now: the Colossus still Cooling, the
-    // unit just taken, and the Brain's cooldown.
+    // Every Martian list is non-empty now: the Shields and the unit just
+    // taken (Cooling and the Brain's cooldown retired in 7r145).
     expect(state.shields.length).toBeGreaterThan(0);
-    expect(state.cooling).toEqual([
-      { unitId: own("JUGGERNAUT"), firedThisTurn: false },
-    ]);
     expect(state.mindControlled).toHaveLength(1);
-    expect(state.mindControlCooldowns).toEqual([
-      { unitId: own("CAPTAIN"), turnsRemaining: 2 },
-    ]);
     for (const kind of [
       "UNIT_BEAMED",
       "UNIT_PULLED",
@@ -1989,7 +1963,8 @@ describe("Martian persistence (section 15)", () => {
     );
     const loaded = parseSaveV7(JSON.stringify(save));
     expect(loaded).toEqual({ kind: "VALID", save });
-    // A save whose Martian lists were tampered with is not valid.
+    // A save whose Martian lists were tampered with is not valid (a retired
+    // list, `cooling` or `mindControlCooldowns`, included).
     for (const key of [
       "shields",
       "cooling",

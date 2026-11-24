@@ -319,10 +319,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r144",
+    rulesetId: "pulp-wars-poc-7r145",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r144",
+      rulesetId: "pulp-wars-poc-7r145",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -420,9 +420,7 @@ export function upgradeRetainedPublicViewV7(
     bitten: [],
     // The Martian revision: nor any Shield, Cooling, control, or cooldown.
     shields: [],
-    cooling: [],
     mindControlled: [],
-    mindControlCooldowns: [],
     // The Ice Folk revision: nor any Frozen unit (Ice Folk Freeze).
     frozen: [],
     // The Dwarf revision: nor any mound, surfacing, or bomb.

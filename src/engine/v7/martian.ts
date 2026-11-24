@@ -30,10 +30,8 @@ import { isAfloatFormV7, isNeutralOwnerV7 } from "./types";
 import type {
   BoardStateV7,
   BurrowedEntryV7,
-  CoolingStatusV7,
   CoordV7,
   GameStateV7,
-  MindControlCooldownV7,
   MindControlledStatusV7,
   ShieldStatusV7,
   TechnologyIdV7,
@@ -45,8 +43,9 @@ import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
 
 /**
  * The Martian revision (docs/product/RULESET_7_MARTIANS.md): Shields
- * (section 5), heat-ray Cooling (section 6.2), the Mind Control cooldown
- * (section 8.2), and the mind-controlled units
+ * (section 5), heat-ray power (section 6.1; the Cooling of section 6.2 and
+ * the Mind Control cooldown of section 8.2 retired with the Martian
+ * strength pass, `pulp_wars-bxpj`, 7r145), and the mind-controlled units
  * (docs/product/RULESET_7_MIND_CONTROL.md). Each lives in a side list of the
  * canonical state sorted by unit ID, like `plagued`, `bitten`, and `eggs`,
  * and is empty in a match without a Martian seat. Every helper here reads
@@ -335,100 +334,22 @@ export function rechargeShieldsAtEndTurnV7(
   return rechargeShieldsV7(state, playerId, !forceFields);
 }
 
-/** Section 6.2: a unit is Cooling while its entry has `firedThisTurn` false. */
-export function isCoolingV7(
-  cooling: readonly CoolingStatusV7[],
-  unitId: UnitId,
-): boolean {
-  if (cooling.length === 0) return false;
-  return cooling.some(
-    (entry) => entry.unitId === unitId && !entry.firedThisTurn,
-  );
-}
-
 /** The power of a ray: `NONE` for an attack that is not a ray. */
 export type RayPowerV7 = "FULL" | "HALF" | "NONE";
 
 /**
- * Section 6.1: the power an `ATTACK` by `unit` has: `NONE` unless it is a
- * ray; `FULL` when the unit has not moved this turn and is not Cooling;
- * otherwise `HALF`.
+ * Section 6.1, as the Martian strength pass (`pulp_wars-bxpj`, 7r145) left
+ * it: the power an `ATTACK` by `unit` has. `NONE` unless it is a ray; `FULL`
+ * when the unit has not moved this turn; otherwise `HALF`. There is no
+ * Cooling: a unit that stands still fires at full power every turn.
  */
 export function rayPowerV7(
   roster: FactionRosterV7,
-  cooling: readonly CoolingStatusV7[],
-  unit: MartianUnitFactsV7 & { readonly id: UnitId },
+  unit: MartianUnitFactsV7,
   moved: boolean,
 ): RayPowerV7 {
   if (!attackIsRayV7(roster, unit)) return "NONE";
-  return moved || isCoolingV7(cooling, unit.id) ? "HALF" : "FULL";
-}
-
-/** Records a full-power ray: `{ unitId, firedThisTurn: true }`. */
-export function withFiredRayV7(
-  cooling: readonly CoolingStatusV7[],
-  unitId: UnitId,
-): readonly CoolingStatusV7[] {
-  return [
-    ...cooling.filter((entry) => entry.unitId !== unitId),
-    { unitId, firedThisTurn: true },
-  ].sort((left, right) => left.unitId - right.unitId);
-}
-
-/**
- * Section 6.2: the Cooling step at `playerId`'s End Turn: every entry of
- * that player's units with `firedThisTurn` false is removed, then every
- * remaining entry of that player gets `firedThisTurn: false`.
- */
-export function coolingStepV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): GameStateV7 {
-  if (state.cooling.length === 0) return state;
-  const own = new Set(
-    state.units
-      .filter((unit) => unit.ownerId === playerId)
-      .map((unit) => unit.id),
-  );
-  const cooling = state.cooling.flatMap((entry): CoolingStatusV7[] =>
-    !own.has(entry.unitId)
-      ? [entry]
-      : entry.firedThisTurn
-        ? [{ unitId: entry.unitId, firedThisTurn: false }]
-        : [],
-  );
-  return { ...state, cooling };
-}
-
-/**
- * Section 8.2: the Mind Control cooldown step at `playerId`'s Start Turn:
- * each of that player's entries with `turnsRemaining` 0 is removed and every
- * other one loses 1.
- */
-export function mindControlCooldownStepV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): GameStateV7 {
-  if (state.mindControlCooldowns.length === 0) return state;
-  const own = new Set(
-    state.units
-      .filter((unit) => unit.ownerId === playerId)
-      .map((unit) => unit.id),
-  );
-  const mindControlCooldowns = state.mindControlCooldowns.flatMap(
-    (entry): MindControlCooldownV7[] =>
-      !own.has(entry.unitId)
-        ? [entry]
-        : entry.turnsRemaining <= 0
-          ? []
-          : [
-              {
-                unitId: entry.unitId,
-                turnsRemaining: entry.turnsRemaining - 1,
-              },
-            ],
-  );
-  return { ...state, mindControlCooldowns };
+  return moved ? "HALF" : "FULL";
 }
 
 /**
@@ -693,8 +614,8 @@ export function releaseControlledV7<U extends UnitStateV7>(
 }
 
 /**
- * Drops Martian side-list entries of units that left the board (Shields,
- * Cooling, Mind Control cooldowns), and the `mindControlled` entries of
+ * Drops Martian side-list entries of units that left the board (Shields),
+ * and the `mindControlled` entries of
  * units that are gone or were released (their owner is the original owner
  * again). A controlled unit whose Brain left the board is NOT pruned here:
  * its release is an event (`releaseControlledV7`), and state parsing
@@ -703,12 +624,7 @@ export function releaseControlledV7<U extends UnitStateV7>(
  */
 export function prunedMartianV7(input: GameStateV7): GameStateV7 {
   const state = prunedMartianTurnListsV7(input);
-  if (
-    state.shields.length === 0 &&
-    state.cooling.length === 0 &&
-    state.mindControlled.length === 0 &&
-    state.mindControlCooldowns.length === 0
-  )
+  if (state.shields.length === 0 && state.mindControlled.length === 0)
     return state;
   // The Dwarf revision section 5.2: a burrowed unit keeps its entries.
   const living = allOwnedUnitsV7(state).filter((unit) => unit.hp > 0);
@@ -721,7 +637,6 @@ export function prunedMartianV7(input: GameStateV7): GameStateV7 {
     return kept.length === entries.length ? entries : kept;
   };
   const shields = keep(state.shields);
-  const cooling = keep(state.cooling);
   const controlled = state.mindControlled.filter((entry) => {
     const owner = ownerOf.get(entry.unitId);
     return owner !== undefined && owner !== entry.originalOwnerId;
@@ -730,13 +645,9 @@ export function prunedMartianV7(input: GameStateV7): GameStateV7 {
     controlled.length === state.mindControlled.length
       ? state.mindControlled
       : controlled;
-  const mindControlCooldowns = keep(state.mindControlCooldowns);
-  return shields === state.shields &&
-    cooling === state.cooling &&
-    mindControlled === state.mindControlled &&
-    mindControlCooldowns === state.mindControlCooldowns
+  return shields === state.shields && mindControlled === state.mindControlled
     ? state
-    : { ...state, shields, cooling, mindControlled, mindControlCooldowns };
+    : { ...state, shields, mindControlled };
 }
 
 /**

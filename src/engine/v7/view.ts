@@ -54,7 +54,6 @@ import type {
   AchievementIdV7,
   CandyStatusEntryV7,
   FrozenStatusV7,
-  CoolingStatusV7,
   CoordV7,
   CowedCityV7,
   HexCooldownV7,
@@ -73,7 +72,6 @@ import type {
   ImprovementIdV7,
   MatchOutcomeV7,
   MatchSetupV7,
-  MindControlCooldownV7,
   NinthUnitStateV7,
   BarricadeV7,
   PendingChoiceV7,
@@ -456,16 +454,12 @@ export interface PlayerViewV7 {
    * is at least 1, sorted by unit ID (a visible unit's Shield is public).
    */
   readonly shields: readonly ShieldStatusV7[];
-  /** The Martian revision: the Cooling entries of the units in `units`. */
-  readonly cooling: readonly CoolingStatusV7[];
   /**
    * The Mind Control revision (section 6): every mind-controlled unit in
    * `units` and `burrowed`, sorted by unit ID; its Brain is named only when
    * the viewer can see it, and its original owner is public.
    */
   readonly mindControlled: readonly PublicMindControlledStatusV7[];
-  /** The Martian revision: the Mind Control cooldowns of visible Brains. */
-  readonly mindControlCooldowns: readonly MindControlCooldownV7[];
   /**
    * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.2): the Frozen entries
    * of every unit in `units`, sorted by unit ID (Frozen is public on a
@@ -1218,17 +1212,10 @@ export function viewForV7(
         turnsRemaining: entry.turnsRemaining,
         laidThisTurn: entry.laidThisTurn,
       })),
-    // The Martian revision: Shields, Cooling, and Mind Control cooldowns are
-    // public on every visible unit.
+    // The Martian revision: Shields are public on every visible unit.
     shields: state.shields
       .filter((entry) => visibleUnitIds.has(entry.unitId))
       .map((entry) => ({ unitId: entry.unitId, shield: entry.shield })),
-    cooling: state.cooling
-      .filter((entry) => visibleUnitIds.has(entry.unitId))
-      .map((entry) => ({
-        unitId: entry.unitId,
-        firedThisTurn: entry.firedThisTurn,
-      })),
     // The Mind Control revision (section 6): every visible controlled unit
     // (on the board or a visible mound); the original owner is public.
     mindControlled: state.mindControlled
@@ -1243,12 +1230,6 @@ export function viewForV7(
           ? entry.brainUnitId
           : null,
         originalOwnerId: entry.originalOwnerId,
-      })),
-    mindControlCooldowns: state.mindControlCooldowns
-      .filter((entry) => visibleUnitIds.has(entry.unitId))
-      .map((entry) => ({
-        unitId: entry.unitId,
-        turnsRemaining: entry.turnsRemaining,
       })),
     // Ice Folk Freeze: Frozen is public on every visible unit.
     frozen: state.frozen

@@ -292,7 +292,6 @@ import {
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
   FORCE_FIELD_HOLDS_V7,
-  HEAT_SINKS_UNLOCK_TEXT_V7,
   martianCombatLinesV7,
 } from "../src/render/martian-presentation-v7";
 
@@ -895,18 +894,17 @@ export const BLAST_PROOF_TEXT_V7 =
   "Blast-proof: blasts and bomb splash don't hurt it";
 export const CRASH_TEXT_V7 = "Crash: can Kaboom after attacking";
 // The Martian pass (`pulp_wars-w49.14`, 7r52): the two rules a technology
-// gates, and the ray rule they stand on.
+// gates, and the ray rule they stand on (the Martian strength pass,
+// `pulp_wars-bxpj`, 7r145: no Cooling, and Heat Sinks no longer changes the
+// ray, so `HEAT_SINK_TEXT_V7` is gone).
 export const HEAT_RAY_TEXT_V7 =
-  "heat ray: half Attack after moving or while Cooling (a full shot leaves it Cooling for a turn)";
-export const HEAT_SINK_TEXT_V7 =
-  "with Heat Sinks it does not overheat (no Cooling)";
+  "heat ray: full Attack every turn it has not moved, half Attack after moving";
 // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Shield Projector
 // is trained with Force Fields, so the note no longer says "needs".
 export const FORCE_FIELD_NEEDS_NOTE_V7 =
   "Force Field (the Force Fields technology, which also trains it): your units that start a turn next to it have Shield 4, and at full HP one attack cannot kill them (1 HP left)";
-/** The Martian pass, correction (`pulp_wars-w49.14`). */
-export const PSYCHIC_COOLDOWN_TEXT_V7 =
-  "Psychic Command every second turn (the Brain is Cooling in between)";
+// `PSYCHIC_COOLDOWN_TEXT_V7` ("Psychic Command every second turn") went
+// with the Brain's Cooling (`pulp_wars-bxpj`, 7r145).
 /**
  * Step two of the Martian pass (`pulp_wars-w49.25`): the Shock Trooper's
  * rule on its own line (the `tech` and train lines listed it as a unit with
@@ -928,8 +926,6 @@ function roleNotesV7(
     | "blastProof"
     | "kaboomAfterAttack"
     | "carrionBonus2"
-    | "heatSink"
-    | "rallyCools"
     | "packHuntBonus2"
     | "armourReduction"
     | "capacitySlots"
@@ -966,11 +962,8 @@ function roleNotesV7(
   }
   // The Martian pass (`pulp_wars-w49.14`, 7r52).
   if (rule.abilities.includes("HEAT_RAY")) notes.push(HEAT_RAY_TEXT_V7);
-  if (mechanics !== null && mechanics.heatSink) notes.push(HEAT_SINK_TEXT_V7);
   if (rule.abilities.includes("FORCE_FIELD"))
     notes.push(FORCE_FIELD_NEEDS_NOTE_V7);
-  if (mechanics !== null && mechanics.rallyCools)
-    notes.push(PSYCHIC_COOLDOWN_TEXT_V7);
   if ((rule.abilities as readonly string[]).includes("BEAM_DOWN"))
     notes.push(BEAM_DOWN_TEXT_V7);
   if (mechanics !== null && mechanics.shockFieldDamage > 0)
@@ -1742,8 +1735,6 @@ function unlockTextV7(
       return `${BRAIN_SUPPORT_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     case "FORCE_FIELDS":
       return `${FORCE_FIELDS_UNLOCK_TEXT_V7} [${unlock.kind}]`;
-    case "HEAT_SINKS":
-      return `${HEAT_SINKS_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     case "DISINTEGRATOR":
       return `${DISINTEGRATOR_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaur unlocks in the
@@ -1992,8 +1983,8 @@ function describeCommandV7(
         ).length;
         return `berserk: ${count} own ${count === 1 ? "unit" : "units"} within ${unitRoleMechanicsV7(view, unit).rallyRadius} that ${count === 1 ? "has" : "have"} not moved get +${BERSERK_MOVE_BONUS_V7} move and ignore enemy zones of control until the end of the turn (still never through a unit)`;
       }
-      return unit !== undefined && unitRoleMechanicsV7(view, unit).rallyCools
-        ? "psychic command: inspires own units beside it (+1 Attack on their next attack); the Brain is then Cooling and cannot command next turn"
+      return unit !== undefined && unitFactionV7(view, unit) === "MARTIAN"
+        ? "psychic command: inspires own units beside it (+1 Attack on their next attack)"
         : "rally: inspires own units in reach (bonus on their next attack)";
     }
     case "TEND_WOUNDED":
@@ -3039,7 +3030,7 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // The Martian pass (`pulp_wars-w49.14`): the one lab played as the
   // Martians, on land with Forest, Fertile Ground, and Ore.
   LAB_MARTIAN_MID:
-    "YOU PLAY THE MARTIANS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Martian unit (thirteen technologies; the Shock Trooper needs none more) and hold 5 Grunts, 2 Shield Projectors, 2 Saucers, 2 Ray Gunners, a Brain, 2 Tripods and a Mothership (15 units), 35c in hand on the first turn and three free unit slots (the capital is full; a Mothership fills two); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Force Fields, where the Shield Projector is (units next to a Projector have Shield 4), and your Ray Gunners overheat until you research Heat Sinks",
+    "YOU PLAY THE MARTIANS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Martian unit (thirteen technologies; the Shock Trooper needs none more) and hold 5 Grunts, 2 Shield Projectors, 2 Saucers, 2 Ray Gunners, a Brain, 2 Tripods and a Mothership (15 units), 35c in hand on the first turn and three free unit slots (the capital is full; a Mothership fills two); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Force Fields, where the Shield Projector is (units next to a Projector have Shield 4), and your Ray Gunners fire at full power every turn they stand and at half power after moving",
   // The Dinosaur pass (`pulp_wars-w49.15`): the one lab played as the
   // Dinosaurs, on the same land.
   LAB_DINOSAUR_MID:
@@ -3759,13 +3750,6 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   if (unit.captureEligible) parts.push("can-capture-now");
   const shield = view.shields.find((entry) => entry.unitId === unit.id);
   if (shield !== undefined) parts.push(`shield ${shield.shield}`);
-  // The Martian pass: a ray unit that is Cooling (its next ray is halved).
-  if (
-    view.cooling.some(
-      (entry) => entry.unitId === unit.id && !entry.firedThisTurn,
-    )
-  )
-    parts.push("cooling");
   const egg = view.eggs.find((entry) => entry.unitId === unit.id);
   if (egg !== undefined) parts.push(`hatches in ${egg.turnsRemaining}`);
   const plague = view.plagued.find((entry) => entry.unitId === unit.id);

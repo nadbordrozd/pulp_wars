@@ -697,9 +697,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/martian-presentation-v7.ts::martianHelpRulesV7": "SEAT",
   "src/render/martian-presentation-v7.ts::martianRewardLabelV7": "SEAT",
   "src/render/martian-presentation-v7.ts::martianRoleUnlockTextV7": "SEAT",
-  // The Martian pass: the caller passes the unit's kind.
-  "src/render/martian-presentation-v7.ts::martianAbilityDescriptionV7":
-    "KIND_RESOLVED",
+  // (`martianAbilityDescriptionV7` read the role's Heat Sinks mechanic by
+  // the caller's kind until it retired, `pulp_wars-bxpj`, 7r145.)
   "src/render/martian-presentation-v7.ts::martianRecruitNotesV7": "SEAT",
   "src/render/martian-presentation-v7.ts::mindControlPreviewLinesV7":
     "KIND_RESOLVED",

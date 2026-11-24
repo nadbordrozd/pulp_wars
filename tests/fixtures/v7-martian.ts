@@ -40,19 +40,12 @@ export interface MartianPieceV7 extends GoblinPieceV7 {
   /** The unit's current Shield (default: its Shield maximum). */
   readonly shield?: number;
   /**
-   * A Cooling entry: `"COOLING"` (fired on its owner's last turn) or
-   * `"FIRED"` (fired at full power this turn).
-   */
-  readonly cooling?: "COOLING" | "FIRED";
-  /**
    * The Mind Control revision: the unit (built for its `seat`, its original
    * owner, so it has that seat's kind) is controlled by the Brain standing
    * on this tile: its owner becomes the Brain's owner and its home is
    * cleared.
    */
   readonly controlledBy?: CoordV7;
-  /** A Mind Control cooldown entry with this `turnsRemaining`. */
-  readonly cooldown?: number;
   readonly kills?: number;
 }
 
@@ -63,9 +56,8 @@ export interface MartianFieldOptionsV7 extends FieldOptionsV7 {
 
 /**
  * A field with the given pieces. Units of a Martian seat get their Shield
- * (the piece's `shield`, or the maximum), and the pieces' Cooling,
- * control (`mindControlled`), and cooldown entries are added to the side
- * lists.
+ * (the piece's `shield`, or the maximum), and the pieces' control
+ * (`mindControlled`) entries are added to the side list.
  */
 export function martianFieldV7(
   pieces: readonly MartianPieceV7[],
@@ -126,21 +118,7 @@ export function martianFieldV7(
       };
     }),
     shields,
-    cooling: pieces
-      .filter((piece) => piece.cooling !== undefined)
-      .map((piece) => ({
-        unitId: unitOf(piece).id,
-        firedThisTurn: piece.cooling === "FIRED",
-      }))
-      .sort((left, right) => left.unitId - right.unitId),
     mindControlled,
-    mindControlCooldowns: pieces
-      .filter((piece) => piece.cooldown !== undefined)
-      .map((piece) => ({
-        unitId: unitOf(piece).id,
-        turnsRemaining: piece.cooldown as number,
-      }))
-      .sort((left, right) => left.unitId - right.unitId),
   });
 }
 

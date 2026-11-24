@@ -243,8 +243,8 @@ export const MASS_BEAM_DOWN_CITY_VALUE_V7 = 6;
 export const MASS_BEAM_DOWN_EMPTY_CITY_VALUE_V7 = 10;
 /** A carrier flies to where it can extract such a unit: just above it. */
 export const CARRIER_RESCUE_MOVE_PRIORITY_V7 = 891;
-/** A Cooling ray unit steps out of melee reach before its half shot. */
-export const RAY_KITE_PRIORITY_V7 = 905;
+// `RAY_KITE_PRIORITY_V7` (905, a Cooling ray unit stepping out of melee
+// reach before its half shot) retired with Cooling (`pulp_wars-bxpj`, 7r145).
 /**
  * `pulp_wars-b5f.2`: a shooter next to a hostile it would rather not shoot
  * from there (a melee unit retaliates; the Tripod cannot fire at an
@@ -252,8 +252,9 @@ export const RAY_KITE_PRIORITY_V7 = 905;
  * before it shoots, below the kills.
  */
 export const RANGED_STEP_BACK_PRIORITY_V7 = 904;
-/** A full-power kill that a half-power shot would also make waits. */
-export const RAY_WASTED_KILL_PRIORITY_V7 = 1176;
+// `RAY_WASTED_KILL_PRIORITY_V7` (1176; a full-power kill that a half-power
+// shot would also make waited, to spare the Cooling) retired with Cooling
+// (`pulp_wars-bxpj`, 7r145).
 /** A controlled unit's chip goes before other chips (900): the front row. */
 export const CONTROLLED_CHIP_PRIORITY_V7 = 901;
 /** A wounded unit without a Shield leaves visible reach to recover. */
@@ -343,8 +344,6 @@ export const BEAM_DOWN_STEP_VALUE_V7 = 4;
 export const SAUCER_STAGING_DISTANCE_V7 = 4;
 /** Attacks: Shield spent on retaliation is exposure without Force Fields. */
 export const RETALIATION_SHIELD_COST_V7 = 2;
-/** A full ray whose half shot would kill wastes next turn's full shot. */
-export const WASTED_FULL_RAY_COST_V7 = 6;
 /** A Move that ends next to an own Projector (covered at the recharge). */
 export const FORCE_FIELD_COVER_VALUE_V7 = 3;
 /** A Projector Move: per own shielded unit next to it. */
@@ -357,8 +356,8 @@ export const PROJECTOR_TARGET_BONUS_V7 = 4;
 export const CONTROLLED_TARGET_BONUS_V7 = 8;
 /** Against Martians: a hostile ray unit ready to fire at full power. */
 export const READY_RAY_TARGET_BONUS_V7 = 4;
-/** Against Martians: a Cooling ray unit (weak now and next turn). */
-export const COOLING_RAY_ATTACK_BONUS_V7 = 6;
+// `COOLING_RAY_ATTACK_BONUS_V7` (6, against a Cooling ray unit) retired
+// with Cooling (`pulp_wars-bxpj`, 7r145).
 /** Against Martians: a hit that this turn's attacks complete into a kill. */
 export const SHIELD_BREAK_VALUE_V7 = 10;
 /** Against Martians: a hostile Brain reaches this far before Mind Control. */
@@ -376,16 +375,11 @@ export interface MartianFactsV7 {
   readonly viewerMartian: boolean;
   readonly forceFields: boolean;
   readonly shieldByUnit: ReadonlyMap<UnitId, number>;
-  /** Units Cooling now (their next ray is half power). */
-  readonly coolingNow: ReadonlySet<UnitId>;
-  /** Own units that fired a full ray this turn (Cooling next turn). */
-  readonly firedThisTurn: ReadonlySet<UnitId>;
   /** The Mind Control revision: each visible controlled unit's Brain. */
   readonly brainOfControlled: ReadonlyMap<UnitId, UnitId | null>;
   readonly controlledOfBrain: ReadonlyMap<UnitId, readonly UnitId[]>;
   /** Each visible controlled unit's original owner (it returns there). */
   readonly originalOwnerOfControlled: ReadonlyMap<UnitId, PlayerId>;
-  readonly cooldownBrains: ReadonlySet<UnitId>;
   /** Own land-form Shield Projectors. */
   readonly ownProjectors: readonly PublicUnitV7[];
   /**
@@ -400,10 +394,6 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
   const shieldByUnit = new Map<UnitId, number>();
   for (const entry of view.shields)
     shieldByUnit.set(entry.unitId, entry.shield);
-  const coolingNow = new Set<UnitId>();
-  const firedThisTurn = new Set<UnitId>();
-  for (const entry of view.cooling)
-    (entry.firedThisTurn ? firedThisTurn : coolingNow).add(entry.unitId);
   const brainOfControlled = new Map<UnitId, UnitId | null>();
   const controlledOfBrain = new Map<UnitId, UnitId[]>();
   const originalOwnerOfControlled = new Map<UnitId, PlayerId>();
@@ -423,14 +413,9 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
       view.viewer.faction,
     ).shieldsRechargeAtEndTurn,
     shieldByUnit,
-    coolingNow,
-    firedThisTurn,
     brainOfControlled,
     controlledOfBrain,
     originalOwnerOfControlled,
-    cooldownBrains: new Set(
-      view.mindControlCooldowns.map((entry) => entry.unitId),
-    ),
     ownProjectors: view.units.filter(
       (unit) =>
         unit.ownerId === view.viewer.id &&
@@ -539,26 +524,27 @@ export function enemyTurnShieldV7(
 
 /**
  * The `attack2` a visible hostile ray unit fires at the viewer next turn:
- * full when it is not Cooling and need not move, otherwise half
- * (section 12, "read Cooling"). Null for a unit without a heat ray.
+ * full when it need not move, otherwise half (section 12; Cooling, read
+ * here until `pulp_wars-bxpj`, 7r145, is gone; its owner's Heat Sinks are
+ * not public, so a ray after a Move is read at half). Null for a unit
+ * without a heat ray.
  */
 export function hostileRayAttack2V7(
   view: PlayerViewV7,
-  facts: MartianFactsV7,
   unit: PublicUnitV7,
   mustMove: boolean,
 ): number | null {
   if (!isRayUnitV7(view, unit)) return null;
   const attack2 = unitRoleRuleV7(view, unit).attack2;
-  return mustMove || facts.coolingNow.has(unit.id)
-    ? Math.floor(attack2 / 2)
-    : attack2;
+  return mustMove ? Math.floor(attack2 / 2) : attack2;
 }
 
-/** A ready hostile Brain: no cooldown (no control limit since 7r129). */
+/**
+ * A ready hostile Brain: every hostile land-form Brain (no control limit
+ * since 7r129, no cooldown since `pulp_wars-bxpj`, 7r145).
+ */
 export function readyHostileBrainsV7(
   view: PlayerViewV7,
-  facts: MartianFactsV7,
   isHostile: (ownerId: PlayerId) => boolean,
 ): readonly PublicUnitV7[] {
   return view.units.filter(
@@ -566,8 +552,7 @@ export function readyHostileBrainsV7(
       unit.form === "LAND" &&
       unit.hp > 0 &&
       isHostile(unit.ownerId) &&
-      hasAbilityV7(view, unit, "MIND_CONTROL") &&
-      !facts.cooldownBrains.has(unit.id),
+      hasAbilityV7(view, unit, "MIND_CONTROL"),
   );
 }
 
@@ -651,8 +636,9 @@ export function martianTargetBonusV7(
           ? 2 * value
           : value;
     }
-  if (abilities.includes("HEAT_RAY") && !facts.coolingNow.has(unit.id))
-    bonus += READY_RAY_TARGET_BONUS_V7;
+  // Every hostile ray unit is ready to fire at full power from where it
+  // stands (no Cooling since `pulp_wars-bxpj`, 7r145).
+  if (abilities.includes("HEAT_RAY")) bonus += READY_RAY_TARGET_BONUS_V7;
   return bonus;
 }
 

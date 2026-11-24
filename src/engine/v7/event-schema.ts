@@ -2684,7 +2684,6 @@ function combat(input: unknown): boolean {
       "defenderArmoured",
       "attackerArmoured",
       "rayPower",
-      "coolingApplied",
       "defenderShieldDamage",
       "attackerShieldDamage",
       "shatters",
@@ -2769,14 +2768,10 @@ function combat(input: unknown): boolean {
     (input.attackerArmoured !== true ||
       Number(input.damageToAttacker) + Number(input.attackerShieldDamage) >=
         1) &&
-    // The Martian revision: ray power, Cooling, and absorbed Shield damage.
+    // The Martian revision: ray power and absorbed Shield damage.
     (input.rayPower === "FULL" ||
       input.rayPower === "HALF" ||
       input.rayPower === "NONE") &&
-    // The Martian pass (`pulp_wars-w49.14`, 7r52): a full-power ray with
-    // Heat Sinks leaves no Cooling; nothing but a full-power ray does.
-    typeof input.coolingApplied === "boolean" &&
-    (input.coolingApplied !== true || input.rayPower === "FULL") &&
     [input.defenderShieldDamage, input.attackerShieldDamage].every(
       (item) => nn(item) && Number(item) <= SHIELD_CAP_V7,
     ) &&

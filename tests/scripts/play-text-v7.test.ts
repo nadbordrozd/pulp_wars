@@ -793,7 +793,8 @@ describe("text-mode play harness", () => {
       }
       if (lab === "LAB_MARTIAN_MID") {
         // The Martian pass: the Coins of the first turn, the Force Field
-        // and Heat Sinks behind their technologies on the unit lines.
+        // behind its technology on the unit lines, and the heat ray (Heat
+        // Sinks no longer changes it since `pulp_wars-bxpj`, 7r145).
         expect(started).toContain("YOU PLAY THE MARTIANS");
         expect(started).toContain("35c in hand on the first turn");
         expect(started).toContain("YOUR TURN | coins 35 |");
@@ -802,18 +803,21 @@ describe("text-mode play harness", () => {
           "| Force Field (the Force Fields technology, which also trains it): your units that start a turn next to it have Shield 4",
         );
         expect(started).toContain(
-          "| with Heat Sinks it does not overheat (no Cooling)",
+          "heat ray: full Attack every turn it has not moved, half Attack after moving",
+        );
+        expect(started).not.toContain("with Heat Sinks it");
+        expect(started).toContain(
+          "your Ray Gunners fire at full power every turn they stand and at half power after moving",
         );
         expect(ok("help")).toContain("LAB_MARTIAN_MID: the Martians");
-        // The correction: the field's hold, the Brain's cooldown, Beam
+        // The correction: the field's hold (the Brain's cooldown line went
+        // with its Cooling in 7r145), Beam
         // Down from any city, where the Colossus comes from, and the
         // Martian units' own map codes.
         expect(started).toContain(
           "and at full HP one attack cannot kill them (1 HP left)",
         );
-        expect(started).toContain(
-          "| Psychic Command every second turn (the Brain is Cooling in between)",
-        );
+        expect(started).not.toContain("Psychic Command every second turn");
         expect(started).toContain(
           "| Beam Down: sets one of your units down beside itself, lifted from on or beside ANY of your city centers or from up to 2 tiles away",
         );

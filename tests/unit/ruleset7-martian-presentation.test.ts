@@ -29,8 +29,6 @@ import {
   martianRoleUnlockTextV7,
   martianUnitInfoLinesV7,
   mindControlPreviewLinesV7,
-  mindControlReadyInV7,
-  mindControlUnavailableTextV7,
   mindControlledInfoV7,
   rayPowerTextV7,
   shieldBarMaximumV7,
@@ -86,44 +84,30 @@ describe("Martian texts (section 13.2)", () => {
   });
 
   it("names the ray's power now and why it is halved", () => {
-    expect(rayPowerTextV7({ rayPower: "FULL", cooling: false })).toBe(
-      "Full power",
-    );
-    expect(rayPowerTextV7({ rayPower: "HALF", cooling: false })).toBe(
-      "Half power: moved",
-    );
-    expect(rayPowerTextV7({ rayPower: "HALF", cooling: true })).toBe(
-      "Half power: Cooling",
-    );
-    expect(rayPowerTextV7({ rayPower: null, cooling: false })).toBeNull();
+    expect(rayPowerTextV7({ rayPower: "FULL" })).toBe("Full power");
+    expect(rayPowerTextV7({ rayPower: "HALF" })).toBe("Half power: moved");
+    expect(rayPowerTextV7({ rayPower: null })).toBeNull();
     const view = humanView(martianUiFixtureV7());
     expect(rayPowerTextV7(statsAt(view, AT.rayGunner))).toBe("Full power");
-    expect(rayPowerTextV7(statsAt(view, AT.coolingGunner))).toBe(
-      "Half power: Cooling",
+    // Cooling is gone (`pulp_wars-bxpj`, 7r145): only a Move halves a ray.
+    expect(rayPowerTextV7(statsAt(view, AT.movedGunner))).toBe(
+      "Half power: moved",
     );
   });
 
-  it("names a Brain's control and why it cannot Mind Control", () => {
+  it("names a Brain's control (no cooldown since 7r145)", () => {
     const view = humanView(martianUiFixtureV7());
     const brain = statsAt(view, AT.brain).mindControl;
     if (brain === null) throw new Error("no Mind Control block");
     // `pulp_wars-ev6q` (7r129): no limit, so no "/ 3".
     expect(brainControlTextV7(brain)).toBe("Controls 0");
-    expect(mindControlUnavailableTextV7(brain)).toBeNull();
-    expect(mindControlUnavailableTextV7({ ...brain, cooldown: 1 })).toBe(
-      `Recovering: ${mindControlReadyInV7(1)} turns`,
-    );
-    expect(mindControlUnavailableTextV7({ ...brain, cooldown: 0 })).toBe(
-      "Recovering: 1 turn",
-    );
+    expect(brain).toEqual({ controlled: 0 });
     const controller = statsAt(view, AT.controller).mindControl;
     if (controller === null) throw new Error("no Mind Control block");
     // `pulp_wars-ev6q` (7r129): any number, so three is not a reason.
     expect(brainControlTextV7(controller)).toBe("Controls 1");
-    expect(mindControlUnavailableTextV7(controller)).toBeNull();
     const many = { ...controller, controlled: 3 };
     expect(brainControlTextV7(many)).toBe("Controls 3");
-    expect(mindControlUnavailableTextV7(many)).toBeNull();
   });
 
   it("names a controlled unit's controller, original owner and fate (section 9)", () => {
@@ -176,7 +160,7 @@ describe("Martian texts (section 13.2)", () => {
     // `pulp_wars-ev6q` (7r129): no limit, so no "/ 3".
     expect(brainLines.find((line) => line.id === "brain")).toMatchObject({
       name: "Controls 1",
-      description: "Mind Control is ready.",
+      description: "Mind Control is ready every turn.",
     });
     const projector = martianUnitInfoLinesV7(
       unitAt(view, AT.projector),
@@ -236,8 +220,7 @@ describe("Martian texts (section 13.2)", () => {
       "Force Field",
       "Force Fields",
       "Heat rays",
-      // The Martian pass (7r52).
-      "Heat Sinks",
+      // ("Heat Sinks", the Martian pass of 7r52, went with Cooling in 7r145.)
       "Pierce",
       "Ranges",
       "Disintegrator",
@@ -276,9 +259,6 @@ describe("Martian texts (section 13.2)", () => {
     expect(rules.get("Ranges")).toBe(
       `a ${label("FIGHTER")}'s ray pistol shoots up to two tiles away at full Attack, even after moving; a ${label("CATAPULT")} fires only at units two tiles away, never at one next to it.`,
     );
-    expect(rules.get("Heat Sinks")).toBe(
-      `with Heat Sinks, a ${label("MARKSMAN")} does not overheat: it fires at full power every turn it does not move.`,
-    );
     expect(rules.get("Heat rays")).toContain(
       `a ${label("MARKSMAN")}, ${label("CATAPULT")}, or ${label("JUGGERNAUT")} fires at full power`,
     );
@@ -296,10 +276,7 @@ describe("Martian previews (section 13.1)", () => {
     expect(lines.notes).toContain(
       `Shield absorbs ${preview.defenderShieldDamage}`,
     );
-    expect(lines.shooter).toEqual([
-      "Full power",
-      ...(preview.coolingApplied ? ["Leaves it Cooling next turn"] : []),
-    ]);
+    expect(lines.shooter).toEqual(["Full power"]);
     expect(lines.pierce).toEqual([]);
     // Retaliation on the Tripod (the Grunt's ray pistol reaches range 2):
     // its own Shield absorbs.
@@ -326,7 +303,6 @@ describe("Martian previews (section 13.1)", () => {
     if (mind === null) throw new Error("no Mind Control preview");
     expect(mindControlPreviewLinesV7(view, mind)).toEqual([
       `Becomes yours: ${effectiveRoleRuleV7("MARKSMAN", "ORIGINAL").label} (${mind.hp} / ${mind.maxHp} HP)`,
-      `Mind Control recovers for ${mind.cooldownTurns} turns`,
       "Returns if this Brain is lost",
     ]);
     const mothership = unitAt(view, AT.mothership);

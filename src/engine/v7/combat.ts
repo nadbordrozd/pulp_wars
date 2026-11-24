@@ -13,7 +13,6 @@ import {
   unitIsBlastProofV7,
   attackIgnoresCityWallsV7,
   attackPlaguesV7,
-  rayOverheatsV7,
   attackIsChargeV7,
   attackIsRamV7,
   attackIsTorpedoV7,
@@ -516,13 +515,13 @@ export function calculateCombatPreviewV7(
     defender,
     state.huntedThisTurn,
   );
-  // The Martian revision section 6.1: a heat ray fires at full power only
-  // from a unit that has not moved this turn and is not Cooling; otherwise
-  // the role's Attack is halved (rounded down) before every bonus. An
-  // estimate for an attack after a planned Move uses half power.
+  // The Martian revision section 6.1, as the Martian strength pass
+  // (`pulp_wars-bxpj`, 7r145) left it: a heat ray fires at full power from a
+  // unit that has not moved this turn (no Cooling); otherwise the role's
+  // Attack is halved (rounded down) before every bonus. An estimate for an
+  // attack after a planned Move uses half power.
   const rayPower = rayPowerV7(
     state,
-    state.cooling,
     attacker,
     attacker.activation.moved || (plannedPathLength ?? 0) > 0,
   );
@@ -1118,15 +1117,6 @@ export function calculateCombatPreviewV7(
     defenderArmoured,
     attackerArmoured,
     rayPower,
-    // The Martian pass (`pulp_wars-w49.14`, 7r52): not with Heat Sinks
-    // (the Ray Gunner's ray then does not overheat).
-    coolingApplied:
-      rayPower === "FULL" &&
-      rayOverheatsV7(
-        state,
-        attacker,
-        ownerResearchedTechsV7(state, attacker.ownerId),
-      ),
     defenderShieldDamage,
     attackerShieldDamage,
     shatters,

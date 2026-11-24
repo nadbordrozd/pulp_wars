@@ -476,15 +476,12 @@ import {
   technologyWithUnlockV7,
 } from "./v7-dinosaur";
 import {
-  COOLING_RAY_ATTACK_BONUS_V7,
   FORCE_FIELD_COVER_VALUE_V7,
   MARTIAN_ROUTINE_MOVE_PRIORITY_V7,
   MIND_CONTROL_APPROACH_PRIORITY_V7,
   MIND_CONTROL_ESCAPE_PRIORITY_V7,
   PROJECTOR_COVER_VALUE_V7,
   PSYCHIC_COMMAND_DEFERRED_PRIORITY_V7,
-  RAY_KITE_PRIORITY_V7,
-  RAY_WASTED_KILL_PRIORITY_V7,
   RANGED_STEP_BACK_PRIORITY_V7,
   RETALIATION_SHIELD_COST_V7,
   SAUCER_STAGING_DISTANCE_V7,
@@ -502,7 +499,6 @@ import {
   RAY_SIEGE_PRIORITY_V7,
   MOTHERSHIP_GUARD_PRIORITY_V7,
   MOTHERSHIP_PULL_RADIUS_V7,
-  WASTED_FULL_RAY_COST_V7,
   CARRIER_RESCUE_MOVE_PRIORITY_V7,
   BEAM_DOWN_EXTRACT_PRIORITY_V7,
   HEAVY_PULL_RADIUS_V7,
@@ -4659,8 +4655,10 @@ function armyResearchTargetV7(
         // Step two of the Martian pass (`pulp_wars-w49.25`): at the first
         // unit of the order after the Ray Gunner, not at the Mothership
         // (the last). A seat fielded five and six Ray Gunners from round
-        // 17 to round 25 of two diagnostic matches without Heat Sinks:
-        // every second ray at half power.
+        // 17 to round 25 of two diagnostic matches without Heat Sinks
+        // (then every second ray was at half power; since `pulp_wars-bxpj`,
+        // 7r145, Heat Sinks gives the Ray Gunners only Forest freedom and
+        // Sight 2).
         else if (
           role !== "GUARD" &&
           role !== "MARKSMAN" &&
@@ -15837,7 +15835,7 @@ function scoreCommandWithContext(
             priority = CHARGE_BREAKER_PRIORITY_V7;
         }
       }
-      // The Martian revision (`pulp_wars-t6s.3`): Shields, rays, Cooling.
+      // The Martian revision (`pulp_wars-t6s.3`): Shields and rays.
       if (context.martian && actor !== undefined && targetUnit !== undefined) {
         const martian = martianAttackAdjustmentV7(
           context,
@@ -22793,7 +22791,7 @@ function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
     movers,
     mindControllers,
     mindControlTargets,
-    hostileBrains: readyHostileBrainsV7(view, facts, (owner) =>
+    hostileBrains: readyHostileBrainsV7(view, (owner) =>
       isHostile(view, owner),
     ),
     beamers: new Map(),
@@ -22898,7 +22896,6 @@ function martianProjectedKillersV7(
   excludeUnitId?: UnitId,
 ): number {
   const view = context.view;
-  const facts = martianCacheV7(context).facts;
   const moved = { ...target, at };
   let total = 0;
   for (const unit of view.units) {
@@ -22919,8 +22916,10 @@ function martianProjectedKillersV7(
     if (!combat.abilities.includes("ATTACK") || combat.attack2 <= 0) continue;
     const range = distance(unit.at, at);
     if (range < combat.minimumRange || range > combat.maximumRange) continue;
+    // The Martian strength pass (`pulp_wars-bxpj`, 7r145): half power after
+    // a Move (no Cooling).
     const rayAttack2 = isRayUnitV7(view, unit)
-      ? unit.activation.moved || facts.coolingNow.has(unit.id)
+      ? unit.activation.moved
         ? Math.floor(unitRoleRuleV7(view, unit).attack2 / 2)
         : unitRoleRuleV7(view, unit).attack2
       : undefined;
@@ -22939,15 +22938,14 @@ function martianProjectedKillersV7(
 /**
  * Martian attack scoring (both sides of a match with a Martian seat).
  *
- * As Martians: Shield spent on retaliation is exposure without Force Fields;
- * a full-power kill that a half-power shot would also make waits for other
- * killers (the next turn's full shot is worth keeping).
+ * As Martians: Shield spent on retaliation is exposure without Force Fields.
+ * (A full-power kill that a half-power shot would also make waited for other
+ * killers, to spare the Cooling, until `pulp_wars-bxpj`, 7r145.)
  *
  * Against Martians (any seat): a hit that this turn's other attacks complete
  * into a kill through the Shield is taken before other chips (ranged hits,
  * which draw no retaliation, first) and is worth a share of the Shield it
- * strips; a Cooling ray unit is attacked first (it is weak now and next
- * turn).
+ * strips. (A Cooling ray unit was attacked first until 7r145.)
  */
 function martianAttackAdjustmentV7(
   context: PolicyContextV7,
@@ -22973,27 +22971,6 @@ function martianAttackAdjustmentV7(
       next = CONTROLLED_CHIP_PRIORITY_V7;
     if (preview.attackerShieldDamage > 0 && !facts.forceFields)
       strategic -= RETALIATION_SHIELD_COST_V7 * preview.attackerShieldDamage;
-    if (
-      preview.rayPower === "FULL" &&
-      preview.defenderDies &&
-      priority === 1180
-    ) {
-      const half = publicProjectedDamageWithLookupV7(
-        view,
-        actor,
-        target,
-        target.at,
-        {
-          rayAttack2: Math.floor(unitRoleRuleV7(view, actor).attack2 / 2),
-          uncapped: true,
-        },
-        context.lookup,
-      );
-      if (half >= target.hp + (facts.shieldByUnit.get(target.id) ?? 0)) {
-        next = RAY_WASTED_KILL_PRIORITY_V7;
-        strategic -= WASTED_FULL_RAY_COST_V7;
-      }
-    }
   }
   // Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain takes any
   // adjacent unit at any HP, so no hit sets a Mind Control up (the setup
@@ -23032,8 +23009,6 @@ function martianAttackAdjustmentV7(
             Math.max(1, target.hp + shield),
         );
     }
-    if (isRayUnitV7(view, target) && facts.coolingNow.has(target.id))
-      strategic += COOLING_RAY_ATTACK_BONUS_V7;
   }
   return { priority: next, strategic };
 }
@@ -23653,7 +23628,6 @@ function martianRangedStepBackV7(
 ): { readonly priority: number; readonly strategic: number } | null {
   const view = context.view;
   const cache = martianCacheV7(context);
-  const facts = cache.facts;
   if (
     actor.activation.moved ||
     !primaryReadyForPolicyV7(actor) ||
@@ -23687,12 +23661,7 @@ function martianRangedStepBackV7(
   )
     return null;
   // A ready ray unit with a full-power shot where it stands keeps it.
-  if (
-    isRayUnitV7(view, actor) &&
-    !facts.coolingNow.has(actor.id) &&
-    !blockedHere &&
-    cache.attackers.has(actor.id)
-  )
+  if (isRayUnitV7(view, actor) && !blockedHere && cache.attackers.has(actor.id))
     return null;
   return {
     priority: RANGED_STEP_BACK_PRIORITY_V7,
@@ -23704,8 +23673,9 @@ function martianRangedStepBackV7(
  * Martian Move adjustments.
  *
  * As Martians: a ray unit that can fire at full power fires before it moves
- * and holds its tile while a non-ray hostile unit is three tiles away; a
- * Cooling ray unit next to a hostile melee unit steps back to range two; a
+ * and holds its tile while a non-ray hostile unit is three tiles away (a
+ * Cooling ray unit next to a hostile melee unit stepped back to range two
+ * until 7r145); a
  * Saucer stays out of lethal reach, waits unmoved where it can beam, and
  * otherwise stages within four tiles of the wave target next to the army; a
  * Mothership stays with the army; a Brain stays out of contact and steps
@@ -23827,7 +23797,7 @@ function martianMoveValueV7(
     hostileLand.some((unit) => distance(unit.at, actor.at) < rule.minimumRange);
   // Rays: full power from where the unit stands.
   if (isRayUnitV7(view, actor) && routine) {
-    const ready = !actor.activation.moved && !facts.coolingNow.has(actor.id);
+    const ready = !actor.activation.moved;
     if (ready && dangerHere() < actor.hp && !blockedHere) {
       if (cache.attackers.has(actor.id)) return { priority: -1, strategic: 0 };
       const approaching = hostileLand.some(
@@ -23849,28 +23819,9 @@ function martianMoveValueV7(
       next = Math.max(next, RAY_SIEGE_PRIORITY_V7);
       strategic += 4;
     }
-    if (facts.coolingNow.has(actor.id)) {
-      const meleeNear = (at: CoordV7): boolean =>
-        hostileLand.some(
-          (unit) =>
-            distance(unit.at, at) === 1 &&
-            publicCombatFacts(view, unit, context.lookup).minimumRange <= 1,
-        );
-      if (
-        meleeNear(actor.at) &&
-        !hostileLand.some((unit) => distance(unit.at, to) <= 1) &&
-        hostileLand.some((unit) => distance(unit.at, to) === 2) &&
-        dangerThere() < actor.hp
-      ) {
-        // The Martian pass: an army seat steps back before its committed
-        // attack from the next tile too (`ARMY_STEP_BACK_PRIORITY_V7`).
-        next = Math.max(
-          next,
-          context.army ? ARMY_STEP_BACK_PRIORITY_V7 : RAY_KITE_PRIORITY_V7,
-        );
-        strategic += 6;
-      }
-    }
+    // (A Cooling ray unit next to a melee unit stepped back to range two
+    // before its half shot, `RAY_KITE_PRIORITY_V7` 905; gone with Cooling in
+    // `pulp_wars-bxpj`, 7r145.)
   }
   // `pulp_wars-b5f.2`: the step back of the Grunt's ray pistol and the
   // Tripod's range-2 ray.
@@ -24045,9 +23996,7 @@ function martianMoveValueV7(
   // The Brain: out of contact; into range of a convertible target.
   if (abilities.includes("MIND_CONTROL")) {
     const ready =
-      !facts.cooldownBrains.has(actor.id) &&
-      !actor.activation.handled &&
-      !cache.mindControllers.has(actor.id);
+      !actor.activation.handled && !cache.mindControllers.has(actor.id);
     // Bolder abilities (7r99): any adjacent unit, afloat too, at any HP.
     const takeable = context.lookup.visibleHostiles.filter(
       (unit) => unit.hp > 0,
@@ -26385,10 +26334,11 @@ function giantLethalAtV7(
  * away from it (the Stomp needs it unmoved). A Colossus's Overstride: the
  * trample of the offered path (`previewTrampleV7`) is 10 a point and 20 a
  * kill and its share of each unit's value, a trample that kills has a
- * kill's tier, and a Cooling Colossus (its ray is at half power whatever
- * it does) strides over a unit to a tile with a ranged, siege, or support
- * unit in its range, when none is in range now, at the army's breakthrough
- * tier. A Frost Giant that has not moved: `GLACIAL_FREEZE_VALUE_V7` for
+ * kill's tier, and a Colossus strides over a unit to a tile with a ranged,
+ * siege, or support unit in its range, when none is in range now, at the
+ * army's breakthrough tier (only a Cooling Colossus did until
+ * `pulp_wars-bxpj`, 7r145; a full-power kill from where it stands still
+ * goes first). A Frost Giant that has not moved: `GLACIAL_FREEZE_VALUE_V7` for
  * each unit the Cold Wake of the tile newly freezes, at 1177 (before its
  * own blow: a Frozen unit does not strike back), and at a Shatter setup's
  * tier with the value of the unit when its Glacial Smash from there kills
@@ -26461,7 +26411,6 @@ function giantMoveValueV7(
       context.martian &&
       !actor.activation.moved &&
       primaryReadyForPolicyV7(actor) &&
-      martianCacheV7(context).facts.coolingNow.has(actor.id) &&
       visibleImmediateDamage(view, actor, to, context) < actor.hp
     ) {
       const facts = publicCombatFacts(view, actor, context.lookup);
@@ -26475,6 +26424,10 @@ function giantMoveValueV7(
             armyFragileClassV7(view, unit)
           );
         });
+      // The Martian strength pass (`pulp_wars-bxpj`, 7r145): no Cooling
+      // gate (the stride waited for a Cooling Colossus before). It costs the
+      // full-power ray, so a full-power kill from where it stands (1180)
+      // still goes first.
       if (fragileFrom(to) && !fragileFrom(actor.at)) {
         next = Math.max(next, ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7);
         strategic += OVERSTRIDE_BREAKTHROUGH_VALUE_V7;
@@ -28049,11 +28002,11 @@ function computeVisibleImmediateDamage(
                 naval.ramBonus2 + navalSugarRushAttack2V7(view, hostile),
             }
           : {}),
-        // The Martian revision: full power only when it need not move and
-        // is not Cooling.
+        // The Martian revision: full power only when it need not move (no
+        // Cooling since `pulp_wars-bxpj`, 7r145).
         ...(martian === null
           ? {}
-          : rayAttack2OptionV7(view, martian, hostile, !directlyThreatened)),
+          : rayAttack2OptionV7(view, hostile, !directlyThreatened)),
       },
       effectiveLookup,
     );
@@ -28173,11 +28126,10 @@ function iceFolkMeleeReachesV7(
 
 function rayAttack2OptionV7(
   view: PlayerViewV7,
-  facts: MartianFactsV7,
   hostile: PublicUnitV7,
   mustMove: boolean,
 ): { readonly rayAttack2?: number } {
-  const attack2 = hostileRayAttack2V7(view, facts, hostile, mustMove);
+  const attack2 = hostileRayAttack2V7(view, hostile, mustMove);
   return attack2 === null ? {} : { rayAttack2: attack2 };
 }
 
@@ -28262,8 +28214,8 @@ export function publicDangerForPolicyV7(
  * "kills" that were not (three Tripods in one turn of the lab, dealing 2,
  * 4, and 5; four of the seat's five were dead a turn later). Undefined for
  * every other attacker, for a unit projected from its own tile, and for
- * one that has moved or is Cooling (its published Attack is the half
- * already). Psychic Command's +1 Attack is kept.
+ * one that has moved (its published Attack is the half already). Psychic
+ * Command's +1 Attack is kept.
  */
 function movedRayAttack2V7(
   view: PlayerViewV7,
